@@ -1,5 +1,5 @@
 <% content_for(:page_title) do %>
-  Edit mobile application |
+  New mobile application |
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
@@ -30,22 +30,14 @@
               </a>
             </li>
             <li class="Filters-typeItem">
-              <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink is-selected">
-                App info
-              </a>
-            </li>
-            <li class="Filters-typeItem">
-              <a href="<%= CartoDB.url(self, 'mobile_app_api_keys', id: @mobile_app.id) %>" class="Filters-typeLink">
-                API keys
-              </a>
+              <div class="FormAccount-title"><p class="FormAccount-titleText">New application</p></div>
             </li>
           </ul>
         </div>
       </div>
     </div>
 
-    <%= render :partial => 'admin/mobile_apps/form' %>
-
+    <%= render :partial => 'carto/admin/mobile_apps/form' %>
   </div>
 
 </div>

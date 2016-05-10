@@ -123,8 +123,8 @@ module Cartodb
       send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :get, [200])
     end
 
-    def create_mobile_app(username, mobile_app_attributes)
-      body = { mobile_app: mobile_app_attributes }
+    def create_mobile_app(username, api_key, mobile_app_attributes)
+      body = { mobile_app: mobile_app_attributes, api_key: api_key }
       send_request("api/users/#{username}/mobile_apps", body, :post, [201])
     end
 

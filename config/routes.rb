@@ -315,6 +315,8 @@ CartoDB::Application.routes.draw do
   scope :module => 'carto/admin' do
     # 1b Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
+
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
   end
 
   scope :module => 'carto/api', :format => :json do
@@ -486,6 +488,8 @@ CartoDB::Application.routes.draw do
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end
+
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ }
     end
   end
 

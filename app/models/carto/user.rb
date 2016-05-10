@@ -247,6 +247,11 @@ class Carto::User < ActiveRecord::Base
     [table_quota - service.table_count, 0].max unless !table_quota.present
   end
 
+  # TODO: Remove unused param `use_total`
+  def remaining_quota(_use_total = false, db_size = service.db_size_in_bytes)
+    quota_in_bytes - db_size
+  end
+
   def oauth_for_service(service)
     synchronization_oauths.where(service: service).first
   end
@@ -321,11 +326,6 @@ class Carto::User < ActiveRecord::Base
     from_date = from ? from.to_date : last_billing_cycle
 
     [to_date, from_date]
-  end
-
-  # TODO: Remove unused param `use_total`
-  def remaining_quota(_use_total = false, db_size = service.db_size_in_bytes)
-    quota_in_bytes - db_size
   end
 
   def organization_user?

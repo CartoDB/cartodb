@@ -93,6 +93,10 @@ class Carto::User < ActiveRecord::Base
                             .sort
   end
 
+  def has_feature_flag?(feature_flag_name)
+    feature_flags_names.present? && feature_flags_names.include?(feature_flag_name)
+  end
+
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself
 
   def service
@@ -125,16 +129,6 @@ class Carto::User < ActiveRecord::Base
     else
       organization ? username : organization.name
     end
-  end
-
-  def feature_flags_list
-    @feature_flag_names ||= (self.feature_flags_user
-                                 .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
-                                                                                 .map { |ff| ff.name }).uniq.sort
-  end
-
-  def has_feature_flag?(feature_flag_name)
-    self.feature_flags_list.present? && self.feature_flags_list.include?(feature_flag_name)
   end
 
   def has_organization?

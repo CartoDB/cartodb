@@ -8,6 +8,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   ssl_required  :index, :show, :new, :create, :edit, :update, :destroy
   before_filter :invalidate_browser_cache
   before_filter :login_required
+  before_filter :check_user_permissions
   before_filter :initialize_cartodb_central_client
   before_filter :validate_id, only: [:show, :update, :destroy]
   before_filter :load_mobile_app, only: [:show, :update]
@@ -90,6 +91,10 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   private
+
+  def check_user_permissions
+    raise Carto::LoadError.new('Mobile apps disabled') unless current_user.mobile_sdk_enabled?
+  end
 
   def initialize_cartodb_central_client
     raise Carto::LoadError.new('Mobile apps disabled') unless Cartodb::Central.sync_data_with_cartodb_central?

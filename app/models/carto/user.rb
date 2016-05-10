@@ -131,8 +131,8 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def has_organization?
-    !!organization_id
+  def organization_user?
+    !!organization
   end
 
   def avatar
@@ -156,13 +156,13 @@ class Carto::User < ActiveRecord::Base
   def google_maps_api_key
     org_gmaps_key = organization.google_maps_key
 
-    (has_organization? && org_gmaps_key) ? org_gmaps_key : google_maps_key
+    (organization_user? && org_gmaps_key) ? org_gmaps_key : google_maps_key
   end
 
   def twitter_datasource_enabled
     org_twitter_enabled = organization.twitter_datasource_enabled
 
-    (has_organization? && org_twitter_enabled) ? org_twitter_enabled : read_attribute(:twitter_datasource_enabled)
+    (organization_user? && org_twitter_enabled) ? org_twitter_enabled : read_attribute(:twitter_datasource_enabled)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
@@ -173,7 +173,7 @@ class Carto::User < ActiveRecord::Base
   def google_maps_private_key
     org_gmaps_private_key = organization.google_maps_private_key
 
-    (has_organization? && org_gmaps_private_key) ? org_gmaps_private_key : read_attribute(:google_maps_private_key)
+    (organization_user? && org_gmaps_private_key) ? org_gmaps_private_key : read_attribute(:google_maps_private_key)
   end
 
   def google_maps_geocoder_enabled?
@@ -328,10 +328,6 @@ class Carto::User < ActiveRecord::Base
     [to_date, from_date]
   end
 
-  def organization_user?
-    self.organization.present?
-  end
-
   def belongs_to_organization?(organization)
     self.organization_user? && organization != nil && self.organization_id == organization.id
   end
@@ -400,7 +396,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def viewable_by?(user)
-    self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
+    self.id == user.id || (organization_user? && self.organization.owner.id == user.id)
   end
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)

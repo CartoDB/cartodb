@@ -379,11 +379,11 @@ class Carto::User < ActiveRecord::Base
   alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
 
   def trial_ends_at
-    if self.account_type.to_s.downcase == 'magellan' && self.upgraded_at && self.upgraded_at + 15.days > Date.today
-      self.upgraded_at + 15.days
-    else
-      nil
-    end
+    return unless upgraded_at
+
+    fifteen_days_after_upgrade = upgraded_at + 15.days
+
+    fifteen_days_after_upgrade if account_type.to_s.casecmp('magellan') == 0 && Date.today > fifteen_days_after_upgrade
   end
 
   def dedicated_support?

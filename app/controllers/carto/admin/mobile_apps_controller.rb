@@ -1,7 +1,7 @@
 # coding: utf-8
-require_relative '../helpers/avatar_helper'
+require_dependency 'helpers/avatar_helper'
 
-class Admin::MobileAppsController < Admin::AdminController
+class Carto::Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
   include AvatarHelper
 

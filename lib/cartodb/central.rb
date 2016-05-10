@@ -133,6 +133,11 @@ module Cartodb
       send_request("api/users/#{username}/mobile_apps/#{app_id}", body, :put, [204])
     end
 
+    def update_all_mobile_apps_api_key(username, api_key)
+      body = { api_key: api_key }
+      send_request("api/users/#{username}/mobile_apps", body, :put, [204])
+    end
+
     def delete_mobile_app(username, app_id)
       send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :delete, [204])
     end

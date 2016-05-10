@@ -136,7 +136,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def avatar
-    self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
+    avatar_url ? "//#{default_avatar}" : avatar_url
   end
 
   def remove_logo?

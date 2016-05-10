@@ -123,7 +123,7 @@ class Carto::User < ActiveRecord::Base
     if CartoDB.subdomainless_urls?
       username
     else
-      organization.nil? ? username : organization.name
+      organization ? username : organization.name
     end
   end
 

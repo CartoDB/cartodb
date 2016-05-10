@@ -67,6 +67,8 @@ module Carto
 
   module VisualizationExporter
     include ExporterConfig
+    DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
+
     EXPORT_EXTENSION = '.carto.json'.freeze
 
     VISUALIZATION_EXTENSIONS = [Carto::VisualizationExporter::EXPORT_EXTENSION].freeze
@@ -77,7 +79,7 @@ module Carto
 
     def export(visualization, user,
                user_tables_ids: nil,
-               format: 'gpkg',
+               format: DEFAULT_EXPORT_FORMAT,
                data_exporter: DataExporter.new,
                visualization_export_service: Carto::VisualizationsExportService2.new,
                base_dir: exporter_folder)

@@ -78,7 +78,7 @@ class Carto::User < ActiveRecord::Base
     self.crypted_password = service_class.password_digest(value, salt)
   end
 
-  def password_confirmation=(password_confirmation)
+  def password_confirmation=(_password_confirmation)
     # TODO: Implement
   end
 

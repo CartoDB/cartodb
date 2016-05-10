@@ -11,6 +11,8 @@ var CartoDBLayer = LayerModelBase.extend({
     visible: true
   },
 
+  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'],
+
   initialize: function (attrs, options) {
     attrs = attrs || {};
     LayerModelBase.prototype.initialize.apply(this, arguments);
@@ -27,13 +29,21 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
-    this.bind('change:visible change:sql change:source change:sql_wrap', this._reloadMap, this);
-    this.bind('change:cartocss', this._onCartoCSSChanged);
+    this.bind('change', this._onAttributeChanged, this);
   },
 
-  _onCartoCSSChanged: function (layer, cartocss) {
-    if (!layer._dataProvider) {
-      layer._reloadMap();
+  _onAttributeChanged: function () {
+    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+      if (this.hasChanged(attr)) {
+        if (attr === 'cartocss' && this._dataProvider) {
+          return false;
+        }
+        return true;
+      }
+    }, this);
+
+    if (reloadMap) {
+      this._reloadMap();
     }
   },
 

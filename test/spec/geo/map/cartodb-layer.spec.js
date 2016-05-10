@@ -16,14 +16,42 @@ describe('geo/map/cartodb-layer', function () {
     expect(layer.tooltip).toBeDefined();
   });
 
-  _.each(['visible', 'sql', 'source', 'sql_wrap'], function (attribute) {
-    it("should reload the map when '" + attribute + "' attribute changes", function () {
+  describe('map reloading', function () {
+    var ATTRIBUTES = ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'];
+
+    _.each(ATTRIBUTES, function (attribute) {
+      it("should reload the map when '" + attribute + "' attribute changes", function () {
+        var map = jasmine.createSpyObj('map', ['reload']);
+        var layer = new CartoDBLayer({}, { map: map });
+
+        layer.set(attribute, 'new_value');
+
+        expect(map.reload).toHaveBeenCalled();
+      });
+    });
+
+    it('should reload the map just once when multiple attributes change', function () {
       var map = jasmine.createSpyObj('map', ['reload']);
       var layer = new CartoDBLayer({}, { map: map });
 
-      layer.set(attribute, 'new_value');
+      var newAttributes = {};
+      _.each(ATTRIBUTES, function (attr, index) {
+        newAttributes[attr] = 'new_value_' + index;
+      });
+      layer.set(newAttributes);
 
       expect(map.reload).toHaveBeenCalled();
+      expect(map.reload.calls.count()).toEqual(1);
+    });
+
+    it('should NOT reload the map if cartocss has changed and layer has a dataProvider', function () {
+      var map = jasmine.createSpyObj('map', ['reload']);
+      var layer = new CartoDBLayer({}, { map: map });
+      layer.setDataProvider('wadus');
+
+      layer.set('cartocss', 'new_value');
+
+      expect(map.reload).not.toHaveBeenCalled();
     });
   });
 

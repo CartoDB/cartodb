@@ -111,7 +111,7 @@ class Carto::User < ActiveRecord::Base
   #   +-------------------------+--------+---------+------+
   #
   def valid_privacy?(privacy)
-    self.private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
+    private_tables_enabled || privacy == UserTable::PRIVACY_PUBLIC
   end
 
   # @return String public user url, which is also the base url for a given user

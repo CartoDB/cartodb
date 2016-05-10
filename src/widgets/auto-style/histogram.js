@@ -34,7 +34,7 @@ var HistogramAutoStyler = AutoStyler.extend({
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}}))')
                      .replace('{{markerWidth}}', '6');
       } else if (shape === 'L' || shape === 'J') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}))')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)')
                      .replace('{{markerWidth}}', '6');
       } else if (shape === 'A') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}}))')
@@ -43,7 +43,7 @@ var HistogramAutoStyler = AutoStyler.extend({
         style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
       }
     } else {
-      style = style.replace('{{defaultColor}}', '#000');
+      style = style.replace('{{defaultColor}}', '#3e57b5');
     }
     return style;
   }

@@ -309,6 +309,7 @@ CartoDB::Application.routes.draw do
     delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'  => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
 
     resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
+    get       '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile/:id/api_keys' => 'mobile_apps#api_keys', as: :mobile_app_api_keys
   end
 
   scope :module => 'carto/admin' do

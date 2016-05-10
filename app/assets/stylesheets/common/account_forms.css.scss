@@ -371,6 +371,12 @@ $sLabel-width: 140px;
   max-height: 110px;
   padding: 9px 12px;
 }
+.FormAccount-textarea.no-resize {
+  resize: none;
+}
+.FormAccount-textarea--longHeight {
+  height: 90px;
+}
 .FormAccount-textarea.is-disabled {
   color: $cTypography-help;
 }

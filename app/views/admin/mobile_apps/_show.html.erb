@@ -1,15 +1,19 @@
 <% @mobile_apps.each do |a| %>
-  <div class="OrganizationList-userLink">
-    <div class="OrganizationList-userAvatar UserAvatar">
-      <img src="<%= a.icon_url %>" class="UserAvatar-img UserAvatar-img--medium-large OrganizationList-userAvatar--img" />
+  <div class="MobileAppsList-item">
+    <div class="MobileAppsList-itemIcon UserAvatar">
+      <img src="<%= a.icon_url %>" class="UserAvatar-img UserAvatar-img--medium-large MobileAppsList-userAvatar--img" />
     </div>
-    <div class="OrganizationList-userInfo">
-      <div class="OrganizationList-userInfoName">
-        <h3 class="OrganizationList-userInfoTitle u-ellipsLongText"><%= a.name %></h3>
-        <h4 class="OrganizationList-userInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
+    <div class="MobileAppsList-itemInfo">
+      <div class="MobileAppsList-itemInfoName">
+        <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, CartoDB.url(self, 'mobile_app', id: a.id) %></h3>
+        <h4 class="MobileAppsList-itemInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
       </div>
-      <div class="OrganizationList-userInfoData">
-        <p class="OrganizationList-userInfoData--paragraph"><%= a.app_id %></p>
+      <div class="MobileAppsList-itemDetails">
+        <p class="MobileAppsList-itemDetails--paragraph">
+        <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.app_type %>
+        <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.platform.capitalize %>
+        </p>
+        <p class="MobileAppsList-itemDetails--paragraph"><%= a.app_id %></p>
       </div>
     </div>
   </div>

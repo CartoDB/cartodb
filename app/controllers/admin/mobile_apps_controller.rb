@@ -5,12 +5,15 @@ class Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
   include AvatarHelper
 
-  ssl_required  :index, :show, :new, :create, :edit, :update, :destroy
+  APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
+  APP_TYPES = %w(dev open private).freeze
+
+  ssl_required  :index, :show, :new, :create, :edit, :update, :destroy, :api_keys
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :initialize_cartodb_central_client
-  before_filter :validate_id, only: [:show, :update, :destroy]
-  before_filter :load_mobile_app, only: [:show, :update]
+  before_filter :validate_id, only: [:show, :update, :destroy, :api_keys]
+  before_filter :load_mobile_app, only: [:show, :update, :api_keys]
   before_filter :setup_avatar_upload, only: [:new, :create, :show, :update]
 
   rescue_from Carto::LoadError, with: :render_404
@@ -19,6 +22,7 @@ class Admin::MobileAppsController < Admin::AdminController
 
   def index
     @mobile_apps = @cartodb_central_client.get_mobile_apps(current_user.username).map { |a| MobileApp.new(a) }
+
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)
@@ -40,10 +44,12 @@ class Admin::MobileAppsController < Admin::AdminController
       render :new
       return
     end
+
     attributes = @mobile_app.as_json.symbolize_keys.slice(:name, :description, :icon_url, :platform, :app_id, :app_type)
     @cartodb_central_client.create_mobile_app(current_user.username, attributes)
 
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been added succesfully!' }
+
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
       # TODO: Descriptive errors?
@@ -66,9 +72,11 @@ class Admin::MobileAppsController < Admin::AdminController
       render :show
       return
     end
+
     @cartodb_central_client.update_mobile_app(current_user.username, @app_id, updated_attributes)
 
     redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { success: 'Your app has been updated succesfully!' }
+
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
       # TODO: Descriptive errors?
@@ -83,10 +91,17 @@ class Admin::MobileAppsController < Admin::AdminController
   def destroy
     @cartodb_central_client.delete_mobile_app(current_user.username, @app_id)
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been deleted succesfully!' }
+
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
     redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
+  end
+
+  def api_keys
+    respond_to do |format|
+      format.html { render 'mobile_app_api_keys' }
+    end
   end
 
   private
@@ -106,6 +121,7 @@ class Admin::MobileAppsController < Admin::AdminController
 
   def load_mobile_app
     @mobile_app = MobileApp.new(@cartodb_central_client.get_mobile_app(current_user.username, @app_id))
+
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)

@@ -9,6 +9,7 @@
   box-sizing: border-box;
   padding: $baseSize * 2 0;
   background: $cBlue;
+  flex-shrink: 0;
 }
 
 .EditorMenu-navigation {

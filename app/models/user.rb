@@ -1504,6 +1504,10 @@ class User < Sequel::Model
     user_creation && user_creation.invitation_token
   end
 
+  def mobile_sdk_enabled?
+    mobile_max_open_users > 0 || mobile_max_private_users > 0
+  end
+
   private
 
   def destroy_shared_with

@@ -1,5 +1,6 @@
 # coding: utf-8
 require_dependency 'helpers/avatar_helper'
+require_dependency 'cartodb/central'
 
 class Carto::Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
@@ -42,7 +43,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
       return
     end
     attributes = @mobile_app.as_json.symbolize_keys.slice(:name, :description, :icon_url, :platform, :app_id, :app_type)
-    @cartodb_central_client.create_mobile_app(current_user.username, attributes)
+    @cartodb_central_client.create_mobile_app(current_user.username, current_user.api_key, attributes)
 
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been added succesfully!' }
   rescue CartoDB::CentralCommunicationFailure => e

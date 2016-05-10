@@ -399,7 +399,9 @@ class Carto::User < ActiveRecord::Base
   end
 
   def viewable_by?(user)
-    self.id == user.id || (organization_user? && self.organization.owner.id == user.id)
+    user_id = user.id
+
+    id == user_id || (organization_user? && organization.owner.id == user_id)
   end
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)

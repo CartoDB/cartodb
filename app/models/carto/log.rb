@@ -9,7 +9,7 @@ class Carto::Log < ActiveRecord::Base
   ENTRY_POSTFIX = "\n"
   ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
 
-  TYPE_USER_CREATION   = 'user_creation'
+  TYPE_USER_CREATION = 'user_creation'.freeze
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
@@ -29,8 +29,18 @@ class Carto::Log < ActiveRecord::Base
     self.save
   end
 
+  def append_exception(line, exception:, truncate: true, timestamp: Time.now.utc)
+    append("#{line}: #{exception_to_string(exception)}", truncate, timestamp)
+  end
+
   def store
     self.save
+  end
+
+  private
+
+  def exception_to_string(error)
+    error.inspect + "\n" + error.backtrace.join("\n") + "\n"
   end
 
 end

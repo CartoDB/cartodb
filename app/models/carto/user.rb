@@ -171,11 +171,9 @@ class Carto::User < ActiveRecord::Base
   # Returns the google maps private key. If the user is in an organization and
   # that organization has a private key, the org's private key is returned.
   def google_maps_private_key
-    if has_organization?
-      organization.google_maps_private_key || read_attribute(:google_maps_private_key)
-    else
-      read_attribute(:google_maps_private_key)
-    end
+    org_gmaps_private_key = organization.google_maps_private_key
+
+    (has_organization? && org_gmaps_private_key) ? org_gmaps_private_key : read_attribute(:google_maps_private_key)
   end
 
   def google_maps_geocoder_enabled?

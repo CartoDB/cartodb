@@ -395,11 +395,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def private_maps_enabled?
-    flag_enabled = self.private_maps_enabled
-    return true if flag_enabled.present? && flag_enabled == true
-
-    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
-    return false
+    !!private_maps_enabled || !!private_tables_enabled
   end
 
   def viewable_by?(user)

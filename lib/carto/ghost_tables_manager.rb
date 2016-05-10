@@ -79,18 +79,24 @@ module Carto
     def find_renamed_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
+      user_table_names = user_tables.map(&:name)
+      user_table_ids = user_tables.map(&:id)
+
       cartodbfied_tables.select do |cartodbfied_table|
-        user_tables.map(&:id).include?(cartodbfied_table.id) &&
-          !user_tables.map(&:name).include?(cartodbfied_table.name)
+        user_table_ids.include?(cartodbfied_table.id) &&
+          !user_table_names.include?(cartodbfied_table.name)
       end
     end
 
     def find_regenerated_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
+      user_table_names = user_tables.map(&:name)
+      user_table_ids = user_tables.map(&:id)
+
       cartodbfied_tables.select do |cartodbfied_table|
-        user_tables.map(&:name).include?(cartodbfied_table.name) &&
-          !user_tables.map(&:id).include?(cartodbfied_table.id)
+        user_table_names.include?(cartodbfied_table.name) &&
+          !user_table_ids.include?(cartodbfied_table.id)
       end
     end
 

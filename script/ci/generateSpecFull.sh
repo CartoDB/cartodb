@@ -1,6 +1,8 @@
 #!/bin/bash
 # Jesus Vazquez
 
+truncate -s 0 *.log
+
 # The following tests are disabled in a parallel environment and are run afterwards, sequentially
 DISABLED_TESTS=(
   'spec/models/asset_spec.rb' # Hangs sometimes when serving files

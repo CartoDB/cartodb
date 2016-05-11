@@ -31,19 +31,32 @@ var HistogramAutoStyler = AutoStyler.extend({
       style = style.replace('{{defaultColor}}', 'ramp([{{column}}], colorbrewer({{color}}, {{bins}}))');
     } else if (geometryType === 'marker') {
       if (shape === 'F') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}}))')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}})), quantiles')
                      .replace('{{markerWidth}}', '6');
       } else if (shape === 'L' || shape === 'J') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)')
                      .replace('{{markerWidth}}', '6');
       } else if (shape === 'A') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}}))')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')
+                     .replace('{{markerWidth}}', '6');
+      } else if (shape === 'C') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Emrld1, {{bins}}), jenks)')
                      .replace('{{markerWidth}}', '6');
       } else {
         style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
       }
     } else {
-      style = style.replace('{{defaultColor}}', '#3e57b5');
+      if (shape === 'F') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset3, {{bins}})), quantiles')
+      } else if (shape === 'L' || shape === 'J') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)')
+      } else if (shape === 'A') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')
+      } else if (shape === 'C') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Emrld1, {{bins}}), jenks)')
+      } else {
+        style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
+      }
     }
     return style;
   }

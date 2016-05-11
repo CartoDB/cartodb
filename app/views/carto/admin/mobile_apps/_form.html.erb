@@ -46,32 +46,15 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="android" <%= @mobile_app.platform == 'android' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Android</label>
-      </div>
-      <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="ios" <%= @mobile_app.platform == 'ios' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">iOS</label>
-      </div>
-      <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-android" <%= @mobile_app.platform == 'xamarin-android' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Xamarin Android</label>
-      </div>
-      <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="xamarin-ios" <%= @mobile_app.platform == 'xamarin-ios' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Xamarin iOS</label>
-      </div>
-      <div class="RadioButton u-rspace--20">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="windows-phone" <%= @mobile_app.platform == 'windows-phone' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Windows Phone</label>
-      </div>
-    </div>
+      <%- MobileAppsHelper.get_mobile_apps_platforms.each do |platform| %>
+        <%- is_disabled = (@mobile_app.persisted? && @mobile_app.platform != platform[:name]) ? 'disabled' : '' %>
+        <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == platform[:name]) ? 'checked' : '' %>
+        <div class="RadioButton u-rspace--20">
+          <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="<%= platform[:name] %>" <%= is_disabled %> <%= is_checked %>>
+          <span class="RadioButtonInput-face"></span>
+          <label class="RadioButton-label dark-color"><%= platform[:text] %></label>
+        </div>
+      <% end %>
   </div>
 
    <div class="FormAccount-row">
@@ -91,38 +74,20 @@
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">App type</label>
     </div>
-    <div class="FormAccount-rowData in-block u-vspace-s">
-      <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="open" <%= @mobile_app.app_type == 'open' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Open</label>
+    <%- MobileAppsHelper.get_mobile_apps_types.each do |type| %>
+      <%- is_disabled = (@mobile_app.persisted? && @mobile_app.type != type[:name]) ? 'disabled' : '' %>
+      <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == type[:name]) ? 'checked' : '' %>
+      <div class="FormAccount-rowData in-block u-vspace-s">
+        <div class="RadioButton">
+          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type[:name] %>" <%= is_disabled %> <%= is_checked %>>
+          <span class="RadioButtonInput-face"></span>
+          <label class="RadioButton-label dark-color"><%= type[:name].capitalize %></label>
+        </div>
+        <div class="FormAccount-rowInfo u-lspace-28">
+          <p class="FormAccount-rowInfoText"><%= type[:text] %></p>
+        </div>
       </div>
-      <div class="FormAccount-rowInfo u-lspace-28">
-        <p class="FormAccount-rowInfoText">Limits based on your CartoDB plan. <a href="#">Learn more</a>.</p>
-      </div>
-    </div>
-
-    <div class="FormAccount-rowData in-block u-vspace-s">
-      <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="dev" <%= @mobile_app.app_type == 'dev' ? 'checked' : '' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Dev</label>
-      </div>
-      <div class="FormAccount-rowInfo u-lspace-28">
-        <p class="FormAccount-rowInfoText">Charged, unlimited feature-wise. <a href="#">Learn more</a>.</p>
-      </div>
-    </div>
-
-    <div class="FormAccount-rowData in-block">
-      <div class="RadioButton">
-        <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="private" <%= @mobile_app.app_type == 'private' ? 'checked' : 'disabled' %>>
-        <span class="RadioButtonInput-face"></span>
-        <label class="RadioButton-label dark-color">Private</label>
-      </div>
-      <div class="FormAccount-rowInfo u-lspace-28">
-        <p class="FormAccount-rowInfoText">Only for enterprise. <a href="#">Learn more</a>.</p>
-      </div>
-    </div>
+    <% end %>
   </div>
 
   <div class="FormAccount-footer">
@@ -131,4 +96,22 @@
       <% content_tag(:span, 'Save') %>
     <% end %>
   </div>
+
+  <%- if @mobile_app.persisted? %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Delete application</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row FormAccount-row--wideMarginBottom">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Are you sure?</label>
+      </div>
+    <div class="FormAccount-row FormAccount-row--wideMarginBottom">
+      <div class="FormAccount-rowData">
+        <span class="FormAccount-button--deleteAccount js-deleteMobileApp">Delete this application</span>
+      </div>
+    </div>
+  <% end %>
 <% end %>

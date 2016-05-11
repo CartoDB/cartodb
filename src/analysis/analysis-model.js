@@ -28,10 +28,12 @@ module.exports = Model.extend({
 
   url: function () {
     var url = this.get('url');
-    if (this.get('apiKey')) {
-      url += '?api_key=' + this.get('apiKey');
+    if (url) {
+      if (this.get('apiKey')) {
+        url += '?api_key=' + this.get('apiKey');
+      }
+      return url;
     }
-    return url;
   },
 
   _initBinds: function () {

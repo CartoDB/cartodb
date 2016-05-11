@@ -262,7 +262,7 @@ var Vis = View.extend({
     this._analysisPoller.reset();
     this._analysisCollection.each(function (analysisModel) {
       analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
-      if (!analysisModel.isDone()) {
+      if (analysisModel.url() && !analysisModel.isDone()) {
         this._analysisPoller.poll(analysisModel);
         this.model.trackLoadingObject(analysisModel);
         analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);

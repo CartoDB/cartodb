@@ -42,7 +42,9 @@ module Carto
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?(cartodbfied_tables)
+    def safe_async?
+      cartodbfied_tables = fetch_cartodbfied_tables
+
       find_dropped_tables(cartodbfied_tables).empty? && find_stale_tables(cartodbfied_tables).empty?
     end
 

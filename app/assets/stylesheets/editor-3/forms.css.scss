@@ -12,3 +12,47 @@
   @include flex(1);
   position: relative;
 }
+
+// TODO: temporary CSS for the Fill component
+
+.Editor-FormDialog {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 248px;
+  z-index: 100;
+}
+
+.Editor-FormDialog .CustomList {
+  display: block;
+  position: relative;
+  top: auto;
+  right: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.CDB-OptionInput-container { // TODO: fix this in CartoAsssets
+  height: 100%;
+}
+
+.RampItem {
+  width: 100%;
+}
+
+.InputColor {
+  width: 100%;
+  padding: 7px 8px 6px;
+  background: #FFF;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.InputColor .InputColor-band {
+  min-width: 60px;
+  height: 5px;
+  border: 1px solid #DDD;
+  border-radius: 3px;
+}

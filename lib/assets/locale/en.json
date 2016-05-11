@@ -488,6 +488,21 @@
         }
       },
       "components": {
+        "fill": "Fill",
+        "stroke": "Stroke",
+        "blending": {
+          "label": "Blending",
+          "options": {
+            "none": "none",
+            "darken": "darken",
+            "ligthen": "lighten",
+            "color-dodge": "color-dodge",
+            "color-burn": "color-burn",
+            "multiply": "multiply",
+            "screen": "screen",
+            "overlay": "overlay"
+          }
+        },
         "labels-enabled": {
           "label": "labels",
           "not-with-animated": "It won't be available with animated"

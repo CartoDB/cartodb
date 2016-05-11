@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.80",
+  "version": "3.23.81",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
@@ -74,7 +75,8 @@
         {
           "minifierOpts": false
         }
-      ]
+      ],
+      "brfs"
     ]
   },
   "browser": {

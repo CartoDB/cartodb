@@ -1088,11 +1088,6 @@
       "from": "camshaft-reference@0.4.0",
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
     },
-    "cartoassets": {
-      "version": "0.1.30",
-      "from": "cartodb/CartoAssets#master",
-      "resolved": "git://github.com/cartodb/CartoAssets.git#9ce66b6fd0607a68e56fe2155b855100a4216e40"
-    },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",

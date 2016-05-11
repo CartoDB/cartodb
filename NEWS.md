@@ -26,7 +26,9 @@ The task will report visualization that could not be automatically fixed, where 
 which should be fixed manually.
 
 ### Features
-* Update CartoDB PostgreSQL extension to 0.16.0 to support analysis catalog.
+* Update CartoDB PostgreSQL extension to 0.16.3:
+  * Support for analysis catalog (0.16.0)
+  * Schema quoting bugfix for overviews (0.16.3)
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups

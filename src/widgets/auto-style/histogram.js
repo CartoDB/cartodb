@@ -26,16 +26,16 @@ var HistogramAutoStyler = AutoStyler.extend({
 
   _getHistGeometry: function (geometryType) {
     var style = AutoStyler.STYLE_TEMPLATE[geometryType];
-    var shape = this.dataviewModel.getHistogramShape();
+    var shape = this.dataviewModel.getDistributionType();
     if (geometryType === 'polygon') {
       if (shape === 'F') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset3, {{bins}})), quantiles')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset3, {{bins}})), quantiles');
       } else if (shape === 'L' || shape === 'J') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)');
       } else if (shape === 'A') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')
-      } else if (shape === 'C') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Emrld1, {{bins}}), jenks)')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles');
+      } else if (shape === 'C' || shape === 'U') {
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Emrld1, {{bins}}), jenks)');
       } else {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], colorbrewer({{color}}, {{bins}}))');
       }
@@ -49,7 +49,7 @@ var HistogramAutoStyler = AutoStyler.extend({
       } else if (shape === 'A') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')
                      .replace('{{markerWidth}}', '6');
-      } else if (shape === 'C') {
+      } else if (shape === 'C' || shape === 'U') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Emrld1, {{bins}}), jenks)')
                      .replace('{{markerWidth}}', '6');
       } else {

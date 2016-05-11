@@ -65,34 +65,25 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
-    @last_authentication_result = nil
+    ldap_connection = Net::LDAP.new
+    ldap_connection.host = self.host
+    ldap_connection.port = self.port
+    configure_encryption(ldap_connection)
 
-    # To be used for domain bases search
-    username_stringified_filter = "#{self.user_id_field}=#{username}"
-    # To be used in real search
-    username_filter =  Net::LDAP::Filter.eq(self.user_id_field, username)
+    ldap_connection.auth self.connection_user, self.connection_password
 
-    domain_base = domain_bases_list.find { |domain|
-      # This is just checking if provided auth user can connect, connection is not stored
-      ldap_connection = connect("#{username_stringified_filter},#{domain}", password)
-      result = ldap_connection.bind
-      @last_authentication_result = ldap_connection.get_operation_result
-      result
-    }
-    return false if domain_base.nil?
+    valid_ldap_entry = nil
+    domain_bases_list.find do |domain|
+      valid_ldap_entry = ldap_connection.bind_as(
+        :base => domain,
+        :filter => "(#{self.user_id_field}=#{username})",
+        :password => password
+      )
+    end
+    @last_authentication_result = ldap_connection.get_operation_result
+    return false unless valid_ldap_entry
 
-    search_results = search(domain_base, username_filter)
-    return false if search_results.nil?
-
-    #Sample result
-    # [ #<Net::LDAP::Entry:0x00000008c54628 @myhash={
-    #     :dn=>["cn=test,dc=cartodb"],
-    #     :objectclass=>["simpleSecurityObject", "organizationalRole"],
-    #     :cn=>["test"],
-    #     :description=>["xxxx"],
-    #     :userpassword=>["{SSHA}aaaaa"]
-    # }> ]
-    Carto::Ldap::Entry.new(search_results.is_a?(Array) ? search_results.first : search_results, self)
+    Carto::Ldap::Entry.new(valid_ldap_entry.first, self)
   end
 
   # INFO: Resets connection if already made

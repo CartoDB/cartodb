@@ -111,6 +111,21 @@ describe('windshaft/anonymous-map', function () {
       });
     });
 
+    it('should include the sql_wrap option', function () {
+      this.cartoDBLayer1.set('sql_wrap', 'sql_wrap_1', { silent: true });
+
+      expect(this.map.toJSON().layers[0]).toEqual({
+        'type': 'cartodb',
+        'options': {
+          'cartocss': 'cartoCSS1',
+          'cartocss_version': '2.0',
+          'interactivity': [],
+          'sql': 'sql1',
+          'sql_wrap': 'sql_wrap_1'
+        }
+      });
+    });
+
     it('should include dataviews', function () {
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',

@@ -47,6 +47,10 @@ var AnonymousMap = MapBase.extend({
           layerConfig.options.sql = layerModel.get('sql');
         }
 
+        if (layerModel.get('sql_wrap')) {
+          layerConfig.options.sql_wrap = layerModel.get('sql_wrap');
+        }
+
         if (layerModel.infowindow.hasFields()) {
           layerConfig.options.attributes = {
             id: 'cartodb_id',

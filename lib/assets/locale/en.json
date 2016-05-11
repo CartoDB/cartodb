@@ -6,6 +6,23 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon"
   },
+  "form-components": {
+    "editors": {
+      "fill": {
+        "input-color": {
+          "solid": "Solid",
+          "value": "By value"
+        },
+        "input-number": {
+          "fixed": "Fixed",
+          "value": "By value"
+        },
+        "input-ramp": {
+          "buckets": "bucket |||| buckets"
+        }
+      }
+    }
+  },
   "data": {
     "import-model": {
       "error-title": "There was an error",
@@ -416,8 +433,12 @@
         "data": "Data",
         "analyses": "Analyses",
         "style": "Style",
-        "popup": "Pop-up",
+        "infowindow": "Pop-up",
         "legends": "Legend"
+      },
+      "infowindow-menu-tab-pane-labels": {
+        "click": "Click",
+        "hover": "Hover"
       },
       "analysis-form": {
         "by": "By",
@@ -443,6 +464,21 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+      },
+      "infowindow": {
+        "style": {
+          "title-label": "Style",
+          "none": "None",
+          "window-size": "Window size",
+          "light": "Light",
+          "dark": "Dark",
+          "color": "Color",
+          "image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
       }
     },
     "widgets": {
@@ -460,6 +496,7 @@
           "time_series": "Time Series"
         },
         "data": {
+          "columns-unavailable": "No columns available",
           "aggregation": "Aggregation",
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",

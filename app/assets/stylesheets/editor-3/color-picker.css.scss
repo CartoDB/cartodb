@@ -15,7 +15,7 @@
   z-index: 1;
 }
 
-.ColorPicker-pickerIndicator:before {
+.ColorPicker-pickerIndicator::before {
   position: absolute;
   top: -2px;
   left: -2px;
@@ -59,7 +59,7 @@
   border-radius: 0 0 0 2px;
   cursor: crosshair;
 }
-.ColorPicker-picker:before {
+.ColorPicker-picker::before {
   position: absolute;
   top: 0;
   right: 0;

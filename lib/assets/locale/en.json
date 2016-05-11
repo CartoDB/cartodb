@@ -440,7 +440,11 @@
         "by": "By",
         "by-walk": "walk",
         "by-bike": "bike",
-        "by-car": "drive",
+        "by-car": "car",
+        "tracts": "Tracts",
+        "boundaries": "Boundaries",
+        "intact": "Intact",
+        "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
         "kilometers": "km",
@@ -473,6 +477,7 @@
           "time_series": "Time Series"
         },
         "data": {
+          "columns-unavailable": "No columns available",
           "aggregation": "Aggregation",
           "aggregation_column": "Aggregation Column",
           "bins": "Buckets",

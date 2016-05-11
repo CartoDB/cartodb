@@ -27,7 +27,7 @@
   cursor: move;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
-  border: 1px solid $cBlue;
+  border: 1px solid rgba($cBlue, 0.48);
   box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
   opacity: 0.8;
@@ -97,6 +97,20 @@
   margin-bottom: 8px;
   background: #FFF;
 }
+.Editor-ListAnalysis-item.has-error {
+  &::after {
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
 
 .Editor-ListAnalysis-item:last-child {
   margin-bottom: 0;
@@ -127,7 +141,9 @@
   @include align-items(center);
   margin: 0 $halfBaseSize;
   background: $cWhite;
-  overflow: hidden;
+}
+.Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
+  max-width: calc(50% - 8px);
 }
 
 .Editor-ListAnalysis-layer {

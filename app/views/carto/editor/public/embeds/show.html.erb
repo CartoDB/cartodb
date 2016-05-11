@@ -20,6 +20,8 @@
     <script>
       var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
     </script>
+    <%= javascript_include_tag 'vendor_editor3.js' %>
+    <%= javascript_include_tag 'common_editor3.js' %>
     <%= javascript_include_tag 'public_editor3.js' %>
   </body>
 </html>

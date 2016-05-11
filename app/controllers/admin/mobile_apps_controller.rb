@@ -1,8 +1,7 @@
 # coding: utf-8
-require_dependency 'helpers/avatar_helper'
-require_dependency 'cartodb/central'
+require_relative '../helpers/avatar_helper'
 
-class Carto::Admin::MobileAppsController < Admin::AdminController
+class Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
   include AvatarHelper
 
@@ -12,7 +11,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   ssl_required  :index, :show, :new, :create, :edit, :update, :destroy, :api_keys
   before_filter :invalidate_browser_cache
   before_filter :login_required
-  before_filter :check_user_permissions
   before_filter :initialize_cartodb_central_client
   before_filter :validate_id, only: [:show, :update, :destroy, :api_keys]
   before_filter :load_mobile_app, only: [:show, :update, :api_keys]
@@ -48,7 +46,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     end
 
     attributes = @mobile_app.as_json.symbolize_keys.slice(:name, :description, :icon_url, :platform, :app_id, :app_type)
-    @cartodb_central_client.create_mobile_app(current_user.username, current_user.api_key, attributes)
+    @cartodb_central_client.create_mobile_app(current_user.username, attributes)
 
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been added succesfully!' }
 
@@ -107,10 +105,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   private
-
-  def check_user_permissions
-    raise Carto::LoadError.new('Mobile apps disabled') unless current_user.mobile_sdk_enabled?
-  end
 
   def initialize_cartodb_central_client
     raise Carto::LoadError.new('Mobile apps disabled') unless Cartodb::Central.sync_data_with_cartodb_central?

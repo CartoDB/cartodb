@@ -1,0 +1,82 @@
+<% content_for(:page_title) do %>
+  Edit mobile application |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var mobile_app_name = "<%= @mobile_app.name %>";
+    var mobile_app_icon = "<%= @mobile_app.icon_url %>";
+    var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+
+  <div class="Filters is-relative">
+    <div class="Filters-inner">
+      <span class="Filters-separator"></span>
+      <div class="Filters-row">
+        <ul class="Filters-group">
+          <li>
+            <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+              <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink">
+              App info
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'mobile_app_api_keys', id: @mobile_app.id) %>" class="Filters-typeLink is-selected">
+              API keys
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Your API Key</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <textarea class="FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">User key (same as CartoDB key)</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <input type="text" value="<%= current_user.api_key %>" class="FormAccount-input FormAccount-input--long" readonly />
+
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <p class="FormAccount-rowInfoText">You need to add this as a user_key URL parameter for direct API access.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-footer">
+    <p class="FormAccount-footerText">
+      <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
+      <span>Check our <a>code sample</a> to learn how to use your API keys.</span>
+    </p>
+  </div>
+
+  </div>
+
+</div>
+
+<%= render 'admin/shared/footer' %>

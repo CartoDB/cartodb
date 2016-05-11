@@ -30,14 +30,26 @@
               </a>
             </li>
             <li class="Filters-typeItem">
-              <div class="FormAccount-title"><p class="FormAccount-titleText">Edit application</p></div>
+              <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink is-selected">
+                App info
+              </a>
+            </li>
+            <li class="Filters-typeItem">
+              <a href="<%= CartoDB.url(self, 'mobile_app_api_keys', id: @mobile_app.id) %>" class="Filters-typeLink">
+                API keys
+              </a>
             </li>
           </ul>
         </div>
       </div>
     </div>
 
+<<<<<<< HEAD:app/views/admin/mobile_apps/show.html.erb
+    <%= render :partial => 'admin/mobile_apps/form' %>
+
+=======
     <%= render :partial => 'carto/admin/mobile_apps/form' %>
+>>>>>>> 96d6e21ff0f9c8d02ad8ff7c3f1ce83a856b5719:app/views/carto/admin/mobile_apps/show.html.erb
   </div>
 
 </div>

@@ -1,3 +1,6 @@
+var URLHelper = require('./url-helper');
+var _ = require('underscore');
+
 function Dashboard (dashboard) {
   this._dashboard = dashboard;
 }
@@ -16,6 +19,21 @@ Dashboard.prototype = {
    */
   getWidgets: function () {
     return this._dashboard.widgets.getList();
+  },
+
+  getDashboardURL: function () {
+    return URLHelper.getURLFromState(this.getState());
+  },
+
+  getState: function () {
+    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    var mapState = {}; // TODO
+    return _.extend(mapState, widgetsState);
+  },
+
+  setState: function (state) {
+    // todo: set map state
+    this._dashboard.widgets.setWidgetsState(state);
   },
 
   /**

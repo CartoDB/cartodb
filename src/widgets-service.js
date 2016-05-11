@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var URLHelper = require('./api/url-helper.js');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
@@ -148,6 +149,13 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
+};
+
+WidgetsService.prototype.setWidgetsState = function (state) {
+  if (!state) {
+    URLHelper.getStateFromCurrentURL();
+  }
+  this._widgetsCollection.setStates(state);
 };
 
 function _checkProperties (obj, propertiesArray) {

@@ -76,6 +76,8 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     }
   });
 
+  widgetsService.setWidgetsState();
+
   dashboardView.render();
 
   if (widgets.size() > 0) {

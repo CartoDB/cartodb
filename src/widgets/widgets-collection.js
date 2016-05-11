@@ -30,5 +30,23 @@ module.exports = Backbone.Collection.extend({
   _onChangeOrder: function () {
     this.sort();
     this.trigger('orderChanged', this);
+  },
+
+  getStates: function () {
+    var state = {};
+    this.each(function (widgetModel, index) {
+      var widgetState = widgetModel.getState();
+      if (!_.isEmpty(widgetState)) {
+        state[index] = widgetState;
+      }
+    });
+    return state;
+  },
+
+  setStates: function (states) {
+    for (var i in states) {
+      var widget = this.at(i);
+      widget.setState(states[i]);
+    }
   }
 });

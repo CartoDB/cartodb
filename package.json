@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.79",
+  "version": "3.23.81",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -84,7 +84,8 @@
     "markdown": "./vendor/assets/javascripts/markdown.js",
     "dragster": "./vendor/assets/javascripts/dragster.js",
     "dropzone": "./vendor/assets/javascripts/dropzone.js",
-    "datepicker": "./vendor/assets/javascripts/datepicker.js"
+    "datepicker": "./vendor/assets/javascripts/datepicker.js",
+    "colorpicker": "./vendor/assets/javascripts/colorpicker.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",

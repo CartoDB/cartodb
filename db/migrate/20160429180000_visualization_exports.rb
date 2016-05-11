@@ -12,6 +12,23 @@ Sequel.migration do
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
     end
+
+    # Note: add "NOT VALID" at the end of each FK if validation takes long.
+    Rails::Sequel.connection.run(%{
+      ALTER TABLE visualization_exports
+        ADD CONSTRAINT visualization_exports_visualization_id_fkey FOREIGN KEY (visualization_id)
+          REFERENCES visualizations (id) ON DELETE CASCADE NOT VALID;
+    })
+    Rails::Sequel.connection.run(%{
+      ALTER TABLE visualization_exports
+        ADD CONSTRAINT visualization_exports_user_id_fkey FOREIGN KEY (user_id)
+          REFERENCES users (id) ON DELETE CASCADE;
+    })
+    Rails::Sequel.connection.run(%{
+      ALTER TABLE visualization_exports
+        ADD CONSTRAINT visualization_exports_log_id_fkey FOREIGN KEY (log_id)
+          REFERENCES logs (id) ON DELETE CASCADE;
+    })
   end
 
   down do

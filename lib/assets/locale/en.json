@@ -495,7 +495,7 @@
           "options": {
             "none": "none",
             "darken": "darken",
-            "ligthen": "lighten",
+            "lighten": "lighten",
             "color-dodge": "color-dodge",
             "color-burn": "color-burn",
             "multiply": "multiply",

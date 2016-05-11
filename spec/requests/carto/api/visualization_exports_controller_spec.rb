@@ -60,6 +60,14 @@ describe Carto::Api::VisualizationExportsController do
       end
     end
 
+    it 'returns 422 if visualization type is `table`' do
+      @visualization.update_attributes(type: Carto::Visualization::TYPE_CANONICAL)
+      post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|
+        response.status.should eq 422
+        response.body[:errors].should match(/Only derived visualizations can be exported/)
+      end
+    end
+
     it 'enqueues a job and returns the id' do
       Resque.expects(:enqueue).with(Resque::ExporterJobs, anything).once
       post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|

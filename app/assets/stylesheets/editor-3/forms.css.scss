@@ -13,6 +13,9 @@
   @include flex(1);
   position: relative;
 }
+.Editor-formInput:focus {
+  outline: none;
+}
 .Editor-formInner--nested {
   position: relative;
 }

@@ -3,6 +3,7 @@
 @import 'cdb-variables/sizes';
 
 .EditorMenu {
+  @include flex(0 0 72px);
   position: relative;
   width: 72px;
   min-height: 450px;

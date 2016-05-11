@@ -3,13 +3,13 @@
 @import 'cdb-variables/sizes';
 
 .EditorMenu {
+  @include flex(0 0 72px);
   position: relative;
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
   padding: $baseSize * 2 0;
   background: $cBlue;
-  flex-shrink: 0;
 }
 
 .EditorMenu-navigation {

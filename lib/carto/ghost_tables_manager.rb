@@ -36,9 +36,9 @@ module Carto
       user_tables = fetch_user_tables
       cartodbfied_tables = fetch_cartodbfied_tables
 
-      false if user_tables.length != cartodbfied_tables.length
-
-      (user_tables - cartodbfied_tables).empty? && (cartodbfied_tables - user_tables).empty?
+      user_tables.length == cartodbfied_tables.length &&
+      (user_tables - cartodbfied_tables).empty? &&
+      (cartodbfied_tables - user_tables).empty?
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user

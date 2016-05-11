@@ -72,12 +72,12 @@ module Carto
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
     end
 
+    # Any UserTable that has been renamed or regenerated.
     def find_stale_tables(cartodbfied_tables)
-      find_regenerated_tables(cartodbfied_tables) |
-        find_renamed_tables(cartodbfied_tables)   |
-        find_dropped_tables(cartodbfied_tables)
+      find_regenerated_tables(cartodbfied_tables) | find_renamed_tables(cartodbfied_tables)
     end
 
+    # UserTables that coincide with a cartodbfied table in name but not id
     def find_renamed_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
@@ -90,6 +90,7 @@ module Carto
       end
     end
 
+    # UserTables that coincide with a cartodbfied table in id but not in name
     def find_regenerated_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
@@ -102,13 +103,14 @@ module Carto
       end
     end
 
+    # Cartodbfied tables that are not stale and are not linked as UserTables yet
     def find_new_tables(cartodbfied_tables)
       cartodbfied_tables - fetch_user_tables - find_stale_tables(cartodbfied_tables)
     end
 
-    # Tables that have been dropped via API but have an old UserTable
+    # UserTables that are not stale and have no cartodbfied table associated to it
     def find_dropped_tables(cartodbfied_tables)
-      fetch_user_tables - cartodbfied_tables
+      fetch_user_tables - cartodbfied_tables - find_stale_tables(cartodbfied_tables)
     end
 
     # Fetches all currently linked user tables

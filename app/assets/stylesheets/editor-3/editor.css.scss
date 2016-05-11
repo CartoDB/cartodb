@@ -32,9 +32,9 @@
   box-sizing: border-box;
 }
 .Editor-panelWrapper {
+  @include flex(0 0 344px);
   position: relative;
   width: 344px;
-  flex-shrink: 0;
 }
 .Editor-panel.is-larger {
   width: 488px;
@@ -44,7 +44,7 @@
 }
 .CDB-Dashboard-canvas {
   @include block-shadow();
-  flex: 1;
+  @include flex(1);
 }
 .Editor-panel .ps-scrollbar-y-rail {
   right: 0 !Important;

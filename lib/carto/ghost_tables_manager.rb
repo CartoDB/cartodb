@@ -38,7 +38,7 @@ module Carto
 
       false if user_tables.length != cartodbfied_tables.length
 
-      !(user_tables - cartodbfied_tables).empty? || !(cartodbfied_tables - user_tables).empty? ? false : true
+      (user_tables - cartodbfied_tables).empty? && (cartodbfied_tables - user_tables).empty?
     end
 
     # Check if any unsafe stale (dropped or renamed) tables will be shown to the user

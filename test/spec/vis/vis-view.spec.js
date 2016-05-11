@@ -591,7 +591,7 @@ describe('vis/vis-view', function () {
       this.visView.load(new VizJSON(this.vizjson));
       this.visView.instantiateMap();
 
-      // Instance
+      // Response from Maps API is received
       $.ajax.calls.argsFor(0)[0].success({
         'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
         'metadata': {
@@ -652,7 +652,7 @@ describe('vis/vis-view', function () {
       this.visView.load(new VizJSON(this.vizjson));
       this.visView.instantiateMap();
 
-      // Instance
+      // Response from Maps API is received
       $.ajax.calls.argsFor(0)[0].success({
         'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
         'metadata': {
@@ -703,7 +703,69 @@ describe('vis/vis-view', function () {
         'last_updated': '1970-01-01T00:00:00.000Z'
       });
 
-      // Polling has NOT started, there was only on ajax call to instantiate the map
+      // Polling has NOT started, there was only one ajax call to instantiate the map
+      expect($.ajax.calls.count()).toEqual(1);
+    });
+
+    it("should NOT start polling for analyses that don't have a URL yet", function () {
+      this.visView.load(new VizJSON(this.vizjson));
+      this.visView.instantiateMap();
+
+      // Analysis node is created using analyse but node is not associated to any layer or dataview
+      this.visView.analysis.analyse({
+        id: 'something',
+        type: 'source',
+        params: {
+          query: 'SELECT * FROM people'
+        }
+      });
+
+      // Response from Maps API is received
+      $.ajax.calls.argsFor(0)[0].success({
+        'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss'
+              }
+            }
+          ],
+          'dataviews': { },
+          'analyses': [
+            {
+              'nodes': {
+                'a0': {
+                  'status': 'ready',
+                  'query': 'SELECT * FROM arboles',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/5af683d5d8a6f67e11916a31cd76632884d4064f'
+                  }
+                },
+                'a1': {
+                  'status': 'ready',
+                  'query': 'select * from analysis_trade_area_e65b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                },
+                'a2': {
+                  'status': 'ready',
+                  'query': 'select * from analysis_trade_area_b35b1ae05854aea96266808ec0686b91f3ee0a81',
+                  'url': {
+                    'http': 'http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        'last_updated': '1970-01-01T00:00:00.000Z'
+      });
+
+      // Polling has NOT started, there was only one ajax call to instantiate the map
       expect($.ajax.calls.count()).toEqual(1);
     });
 
@@ -711,7 +773,7 @@ describe('vis/vis-view', function () {
       this.visView.load(new VizJSON(this.vizjson));
       this.visView.instantiateMap();
 
-      // Instance
+      // Response from Maps API is received
       $.ajax.calls.argsFor(0)[0].success({
         'layergroupid': '9d7bf465e45113123bf9949c2a4f0395:0',
         'metadata': {

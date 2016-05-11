@@ -225,7 +225,7 @@
         <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-vis-id="<%= vis.id %>" data-vis-owner-name="<%= vis.user[:username] %>">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
               <div class="MapCard-content MapCard-content--compact">

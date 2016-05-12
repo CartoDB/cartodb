@@ -73,7 +73,7 @@ describe Carto::Api::AnalysesController do
         :source_analysis,
         visualization_id: @visualization.id,
         user_id: @user.id,
-        analysis_definition: { "id": UUIDTools::UUID.random_create.to_s }
+        analysis_definition: { id: UUIDTools::UUID.random_create.to_s }
       )
 
       get_json viz_analysis_url(@user, @visualization, analysis2.natural_id) do |response|

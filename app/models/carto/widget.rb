@@ -6,13 +6,12 @@ class Carto::Widget < ActiveRecord::Base
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  serialize :options, ::Carto::CartoJsonSymbolyzerSerializer
+  serialize :options, ::Carto::CartoJsonSymbolizerSerializer
+  validates :options, carto_json_symbolizer: true
 
   belongs_to :layer, class_name: Carto::Layer
 
   validates :layer, :order, :type, :options, presence: true
-
-  validate :options_must_be_json
 
   after_save :notify_maps_change
   after_destroy :notify_maps_change
@@ -43,10 +42,6 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   private
-
-  def options_must_be_json
-    errors.add(:options, 'wrongly formatted (not a Hash or invalid JSON)') unless options.nil? || options.is_a?(Hash)
-  end
 
   def notify_maps_change
     layer.maps.each do |m|

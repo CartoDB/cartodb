@@ -15,9 +15,15 @@ module Carto
   # for load. The problem with that is that although you can _access_ first
   # level keys both with symbols and keys, other common operations, such as
   # key comparison, fail, and it only applies to the first level.
-  class CartoJsonSymbolyzerSerializer < CartoJsonSerializer
+  class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
       value.nil? ? nil : JSON.parse(value).deep_symbolize_keys
     end
+  end
+end
+
+class CartoJsonSymbolizerValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    record.errors[attribute] << 'wrongly formatted (not a Hash or invalid JSON)' if value && !value.is_a?(Hash)
   end
 end

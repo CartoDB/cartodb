@@ -4,12 +4,11 @@ require 'json'
 require_relative './carto_json_serializer'
 
 class Carto::Analysis < ActiveRecord::Base
-  serialize :analysis_definition, ::Carto::CartoJsonSymbolyzerSerializer
+  serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
+  validates :analysis_definition, carto_json_symbolizer: true
 
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
-
-  validate :analysis_definition_must_be_json
 
   after_save :notify_map_change
   after_destroy :notify_map_change
@@ -42,12 +41,6 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   private
-
-  def analysis_definition_must_be_json
-    unless analysis_definition.nil? || analysis_definition.is_a?(Hash)
-      errors.add(:analysis_definition, 'wrongly formatted (not a Hash or invalid JSON)')
-    end
-  end
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
   # This methods extract the needed ones.

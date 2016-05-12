@@ -35,7 +35,7 @@ module Carto
         update_params = params.slice(:order, :type, :title)
         update_params[:source_id] = source_id_from_params if source_id_from_params
         @widget.update_attributes(update_params)
-        @widget.options = params[:options] if params[:options]
+        @widget.options = params[:options]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)

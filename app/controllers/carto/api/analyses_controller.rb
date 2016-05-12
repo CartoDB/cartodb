@@ -29,14 +29,14 @@ module Carto
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          analysis_definition: analysis_definition_from_request.to_json
+          analysis_definition: analysis_definition_from_request
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.analysis_definition = analysis_definition_from_request.to_json
+        @analysis.analysis_definition = analysis_definition_from_request
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end

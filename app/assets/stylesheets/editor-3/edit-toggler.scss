@@ -1,0 +1,21 @@
+// Edition toggler
+// --------------------------------------------------
+
+@import '../variables/mixins';
+@import '../variables/colors';
+
+
+.EditToggler {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.EditToggler-control {
+  
+}
+
+.EditToggler-actions {
+  @include display-flex();
+  @include align-items(center);
+  margin-left: auto;
+}

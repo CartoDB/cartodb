@@ -412,6 +412,13 @@ describe Carto::VisualizationsExportService2 do
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
       end
 
+      it 'imports protected maps as private' do
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        imported.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        visualization.privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
+      end
+
       it 'does not import more layers than the user limit' do
         old_max_layers = @user.max_layers
         @user.max_layers = 1

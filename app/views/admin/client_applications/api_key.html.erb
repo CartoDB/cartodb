@@ -29,8 +29,7 @@
         <label class="FormAccount-label">Your API Key</label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <input type="text" class="FormAccount-input FormAccount-input--long" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
           <a class="js-regenerateApiKey" href="#">Request a new API key</a>

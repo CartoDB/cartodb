@@ -1,25 +1,35 @@
-<div class="Filters is-relative js-org-subheader">
-  <div class="Filters-inner">
-    <span class="Filters-separator"></span>
-    <div class="Filters-row">
-      <ul class="Filters-group">
-        <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">
-            CartoDB
-          </a>
-        </li>
-        <li class="Filters-typeItem">
-          <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "carto/admin/mobile_apps" %>">
-            Mobile apps (4)
-          </a>
-        </li>
-      </ul>
+<%- if Cartodb::Central.sync_data_with_cartodb_central? && current_user.mobile_sdk_enabled? %>
 
-      <% if "#{params[:controller]}_#{params[:action]}" == "carto/admin/mobile_apps_index" %>
+    <div class="Filters is-relative js-org-subheader">
+    <div class="Filters-inner">
+      <span class="Filters-separator"></span>
+      <div class="Filters-row">
         <ul class="Filters-group">
-          <a href="<%= CartoDB.url(self, 'new_mobile_app', {}, current_user) %>" class="Button Button--positive is-smaller"><span>New application</span></a>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'api_key_credentials', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/client_applications_api_key" %>">
+              CartoDB
+            </a>
+          </li>
+          <li class="Filters-typeItem">
+            <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "carto/admin/mobile_apps" %>">
+              Mobile apps
+            </a>
+          </li>
         </ul>
-      <% end %>
+
+        <% if "#{params[:controller]}_#{params[:action]}" == "carto/admin/mobile_apps_index" %>
+          <ul class="Filters-group">
+            <a href="<%= CartoDB.url(self, 'new_mobile_app', {}, current_user) %>" class="Button Button--positive is-smaller"><span>New application</span></a>
+          </ul>
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
+
+<% else %>
+
+  <div class="FormAccount-title">
+    <p class="FormAccount-titleText">The simplest way to access your private data or perform writes and updates to your account</p>
+  </div>
+
+<% end %>

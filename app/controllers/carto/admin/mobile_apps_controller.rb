@@ -4,12 +4,13 @@ require_dependency 'cartodb/central'
 
 class Carto::Admin::MobileAppsController < Admin::AdminController
   include Carto::ControllerHelper
+  include MobileAppsHelper
   include AvatarHelper
 
   APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
   APP_TYPES = %w(dev open private).freeze
 
-  ssl_required  :index, :show, :new, :create, :edit, :update, :destroy, :api_keys
+  ssl_required  :index, :show, :new, :create, :update, :destroy, :api_keys
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :check_user_permissions
@@ -24,6 +25,8 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   def index
     @mobile_apps = @cartodb_central_client.get_mobile_apps(current_user.username).map { |a| MobileApp.new(a) }
+
+    get_open_monthly_users
 
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
@@ -42,7 +45,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app = MobileApp.new(params[:mobile_app])
 
     unless @mobile_app.valid?
-      flash[:error] = @mobile_app.errors.full_messages.join('; ')
+      flash[:error] = @mobile_app.errors.full_messages.join(', ')
       render :new
       return
     end
@@ -70,7 +73,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app.description = updated_attributes[:description]
 
     unless @mobile_app.valid?
-      flash[:error] = @mobile_app.errors.full_messages.join('; ')
+      flash[:error] = @mobile_app.errors.full_messages.join(', ')
       render :show
       return
     end
@@ -132,5 +135,13 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
+  end
+
+  def get_open_monthly_users
+    @open_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'open'}
+  end
+
+  def get_private_monthly_users
+    @private_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'private'}
   end
 end

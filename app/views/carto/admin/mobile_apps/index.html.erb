@@ -28,6 +28,16 @@
 
     <% else %>
 
+      <div class="ProgressBar-container">
+        <div class="ProgressBar">
+          <%- max_open_users = current_user.mobile_max_open_users %>
+          <%- bar_width = (@open_monthly_users*100)/max_open_users %>
+          <span class="ProgressBar-bar ProgressBar-bar--bar-2 <%=progress_bar_range(bar_width) %>" style="width:<%= bar_width %>%"></span>
+        </div>
+
+        <div class="SideMenu-progressSize"><%= @open_monthly_users %>/<%= max_open_users %> monthly open users</div>
+      </div>
+
       <%= render :partial => 'carto/admin/mobile_apps/show' %>
 
     <% end %>

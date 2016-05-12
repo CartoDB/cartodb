@@ -1514,6 +1514,14 @@ class User < Sequel::Model
     mobile_max_open_users > 0 || mobile_max_private_users > 0
   end
 
+  def private_apps_enabled?
+    mobile_max_private_users > 0
+  end
+
+  def open_apps_enabled?
+    mobile_max_open_users > 0
+  end
+
   private
 
   def destroy_shared_with

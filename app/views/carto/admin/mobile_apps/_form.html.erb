@@ -1,4 +1,5 @@
 <%= form_for @mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }) : CartoDB.url(self, 'mobile_apps')) do |f| %>
+  <%= csrf_meta_tags %>
 
   <span class="FormAccount-separator"></span>
 
@@ -11,7 +12,7 @@
         <img src="" class="FormAccount-avatarPreviewImage" />
       </div>
       <div class="FormAccount-avatar--input">
-        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image" %>
+        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image", :required => "true" %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
         </div>
@@ -24,7 +25,7 @@
       <label class="FormAccount-label">Name</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
+      <%= f.text_field :name, :placeholder => "Application name", :class => "FormAccount-input FormAccount-input--med", :required => "true" %>
     </div>
   </div>
 
@@ -33,7 +34,7 @@
       <label class="FormAccount-label">Description</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+      <%= f.text_area :description, :placeholder => "Application description", :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
     </div>
     <div class="FormAccount-rowInfo">
       <p class="FormAccount-rowInfoText"></p>
@@ -46,23 +47,24 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <%- MobileAppsHelper.get_mobile_apps_platforms.each do |platform| %>
-        <%- is_disabled = (@mobile_app.persisted? && @mobile_app.platform != platform[:name]) ? 'disabled' : '' %>
-        <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == platform[:name]) ? 'checked' : '' %>
+      <%- get_mobile_apps_platforms.each do |platform, values| %>
+        <%- is_disabled = ((@mobile_app.persisted? && @mobile_app.platform != platform) || values[:available] === false) ? 'disabled' : '' %>
+        <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == platform) ? 'checked' : '' %>
         <div class="RadioButton u-rspace--20">
-          <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="<%= platform[:name] %>" <%= is_disabled %> <%= is_checked %>>
+          <input class="RadioButtonInput" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
           <span class="RadioButtonInput-face"></span>
-          <label class="RadioButton-label dark-color"><%= platform[:text] %></label>
+          <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= values[:text] %></label>
         </div>
       <% end %>
+    </div>
   </div>
 
-   <div class="FormAccount-row">
+  <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">Aplication ID</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_field :app_id, :class => "FormAccount-input FormAccount-input--med #{'is-disabled' if @mobile_app.persisted?}", :readonly => @mobile_app.persisted? %>
+      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "FormAccount-input FormAccount-input--med #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
 
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="FormAccount-rowInfoText">This side note will change depending on the platform selected.</p>
@@ -74,23 +76,23 @@
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">App type</label>
     </div>
-    <%- MobileAppsHelper.get_mobile_apps_types.each do |type| %>
-      <%- is_disabled = (@mobile_app.persisted? && @mobile_app.type != type[:name]) ? 'disabled' : '' %>
-      <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == type[:name]) ? 'checked' : '' %>
+    <%- get_mobile_apps_types.each do |type, values| %>
+      <%- is_disabled = ((@mobile_app.persisted? && @mobile_app.app_type != type) || values[:available] === false) ? 'disabled' : '' %>
+      <%- is_checked = (@mobile_app.persisted? && @mobile_app.app_type == type) ? 'checked' : '' %>
       <div class="FormAccount-rowData in-block u-vspace-s">
         <div class="RadioButton">
-          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type[:name] %>" <%= is_disabled %> <%= is_checked %>>
+          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_disabled %> <%= is_checked %> required>
           <span class="RadioButtonInput-face"></span>
-          <label class="RadioButton-label dark-color"><%= type[:name].capitalize %></label>
+          <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= type.capitalize %></label>
         </div>
         <div class="FormAccount-rowInfo u-lspace-28">
-          <p class="FormAccount-rowInfoText"><%= type[:text] %></p>
+          <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
         </div>
       </div>
     <% end %>
   </div>
 
-  <div class="FormAccount-footer">
+  <div class="FormAccount-footer FormAccount-footer--noMarginBottom">
     <p class="FormAccount-footerText"></p>
     <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
       <% content_tag(:span, 'Save') %>
@@ -108,10 +110,12 @@
       <div class="FormAccount-rowLabel">
         <label class="FormAccount-label">Are you sure?</label>
       </div>
-    <div class="FormAccount-row FormAccount-row--wideMarginBottom">
-      <div class="FormAccount-rowData">
-        <span class="FormAccount-button--deleteAccount js-deleteMobileApp">Delete this application</span>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowData">
+          <span class="FormAccount-button--deleteAccount js-deleteMobileApp">Delete this application</span>
+        </div>
       </div>
     </div>
   <% end %>
+
 <% end %>

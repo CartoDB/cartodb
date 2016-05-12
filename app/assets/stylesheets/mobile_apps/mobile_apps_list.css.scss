@@ -4,7 +4,6 @@
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
-@import '../variables/progress-bar';
 
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
@@ -64,13 +63,12 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .MobileAppsList-itemDetails {
   @include display-flex();
   @include flex-direction(column);
+  @include align-items(flex-end);
 }
 .MobileAppsList-itemDetails--paragraph {
   color: $cTypography-linkSecondary;
   font-size: 14px;
   font-weight: 300;
-
-  &:not(:last-child) { margin-right: 20px; }
 }
 .MobileAppsList-itemDetails--paragraphIcon {
   margin-right: 4px;

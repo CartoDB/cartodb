@@ -11,7 +11,7 @@
       <div class="MobileAppsList-itemDetails">
         <p class="MobileAppsList-itemDetails--paragraph">
         <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.app_type %>
-        <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.platform.capitalize %>
+        <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= get_mobile_apps_platforms["#{a.platform}"][:text] %>
         </p>
         <p class="MobileAppsList-itemDetails--paragraph"><%= a.app_id %></p>
       </div>

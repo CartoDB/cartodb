@@ -6,7 +6,6 @@
     var username = "<%= current_user.username %>";
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
-    var authenticity_token = "<%= form_authenticity_token %>";
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>

@@ -69,7 +69,9 @@ describe CartoDB::DataMover::ExportJob do
       moved_user
     end
 
-    it_behaves_like "a migrated user"
+    it_behaves_like 'a migrated user' do
+      before { pending }
+    end
 
     xit "matches old and new user except database_name" do
       expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })

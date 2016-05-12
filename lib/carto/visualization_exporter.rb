@@ -68,8 +68,8 @@ module Carto
   module VisualizationExporter
     include ExporterConfig
     DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
-
     EXPORT_EXTENSION = '.carto.json'.freeze
+    CARTO_EXTENSION = '.carto'.freeze
 
     VISUALIZATION_EXTENSIONS = [Carto::VisualizationExporter::EXPORT_EXTENSION].freeze
 
@@ -94,16 +94,28 @@ module Carto
         tmp_dir,
         format,
         user_tables_ids: user_tables_ids)
+
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
-      zipfile = "#{visualization_id}.carto"
-      `cd #{export_dir}/ && zip -r #{zipfile} #{visualization_id} && cd -`
+      carto_filename = produce_carto_filename(visualization.name).freeze
+
+      `cd #{export_dir}/ && zip -r #{carto_filename} #{visualization_id} && cd -`
 
       FileUtils.remove_dir(tmp_dir)
 
-      "#{export_dir}/#{zipfile}"
+      "#{export_dir}/#{carto_filename}"
+    end
+
+    private
+
+    def produce_carto_filename(visualization_name)
+      sanitized_visualization_name = Carto::DB::Sanitize.sanitize_identifier(visualization_name)
+
+      date_appendix = Time.now.utc.strftime("on_%Y-%m-%d_%H.%M.%S")
+
+      "#{sanitized_visualization_name}_#{date_appendix}#{CARTO_EXTENSION}"
     end
   end
 end

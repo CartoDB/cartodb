@@ -19,7 +19,7 @@ var CategoryAutoStyler = AutoStyler.extend({
     }
     return style
       .replace(/{{defaultColor}}/g, defColor)
-      .replace('{{markerWidth}}', 10);
+      .replace('{{markerWidth}}', 7);
   },
 
   _generateCategoryRamp: function (sym) {

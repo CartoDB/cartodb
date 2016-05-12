@@ -1,10 +1,5 @@
 var _ = require('underscore');
-var colorScales = [['#2CA095', '#E5811B', '#4A4DBA', '#AD2BAD', '#559030', '#E1C221'],
-                   ['rgb(166,206,227)', 'rgb(31,120,180)', 'rgb(178,223,138)', 'rgb(51,160,44)', 'rgb(251,154,153)'],
-                   ['rgb(27,158,119)', 'rgb(217,95,2)', 'rgb(117,112,179)', 'rgb(231,41,138)', 'rgb(102,166,30)', 'rgb(230,171,2)'],
-                   ['rgb(127,201,127)', 'rgb(190,174,212)', 'rgb(253,192,134)', 'rgb(255,255,153)', 'rgb(56,108,176)', 'rgb(240,2,127)'],
-                   ['rgb(141,211,199)', 'rgb(255,255,179)', 'rgb(190,186,218)', 'rgb(251,128,114)', 'rgb(128,177,211)', 'rgb(253,180,98)']
-                  ]; // Demo colors
+var colorScales = [['#7F3C8D','#11A579','#3969AC','#F2B701','#E73F74']]; // Demo colors
 
 /**
  *  Class to set categories to each color
@@ -55,7 +50,7 @@ CategoryColors.prototype.getColorByCategory = function (category) {
       return i;
     }
   }
-  return Object.keys(this.colors)[Object.keys(this.colors).length - 1];
+  return 'A5AA99';
 };
 
 CategoryColors.prototype.getCategoryByColor = function (color) {

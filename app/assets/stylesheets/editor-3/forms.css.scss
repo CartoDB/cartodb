@@ -13,6 +13,9 @@
   @include flex(1);
   position: relative;
 }
+.Editor-formInput:focus {
+  outline: none;
+}
 .Editor-formInner--nested {
   position: relative;
 }
@@ -65,6 +68,15 @@
 
 .CDB-OptionInput-container { // TODO: fix this in CartoAsssets
   height: 100%;
+}
+
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+.Form-InputFill.is-disabled {
+  border-color: #EEE;
+  background: #F9F9F9;
+  cursor: default;
 }
 
 .RampItem {

@@ -70,6 +70,15 @@
   height: 100%;
 }
 
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+.Form-InputFill.is-disabled {
+  border-color: #EEE;
+  background: #F9F9F9;
+  cursor: default;
+}
+
 .RampItem {
   width: 100%;
 }

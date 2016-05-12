@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.82",
+  "version": "3.23.83",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -430,29 +430,26 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.8.2",
-                              "from": "https://registry.npmjs.org/sshpk/-/sshpk-1.8.2.tgz",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.8.2.tgz",
+                              "version": "1.7.4",
+                              "from": "https://registry.npmjs.org/sshpk/-/sshpk-1.7.4.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.7.4.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
                                   "from": "https://registry.npmjs.org/asn1/-/asn1-0.2.3.tgz",
                                   "resolved": "https://registry.npmjs.org/asn1/-/asn1-0.2.3.tgz"
                                 },
-                                "assert-plus": {
-                                  "version": "1.0.0",
-                                  "from": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz",
-                                  "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
-                                },
                                 "dashdash": {
-                                  "version": "1.13.1",
-                                  "from": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.1.tgz",
-                                  "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.1.tgz"
-                                },
-                                "getpass": {
-                                  "version": "0.1.5",
-                                  "from": "https://registry.npmjs.org/getpass/-/getpass-0.1.5.tgz",
-                                  "resolved": "https://registry.npmjs.org/getpass/-/getpass-0.1.5.tgz"
+                                  "version": "1.13.0",
+                                  "from": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.0.tgz",
+                                  "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.0.tgz",
+                                  "dependencies": {
+                                    "assert-plus": {
+                                      "version": "1.0.0",
+                                      "from": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz",
+                                      "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
+                                    }
+                                  }
                                 },
                                 "jsbn": {
                                   "version": "0.1.0",
@@ -460,9 +457,9 @@
                                   "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
                                 },
                                 "tweetnacl": {
-                                  "version": "0.13.3",
-                                  "from": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz",
-                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz"
+                                  "version": "0.14.3",
+                                  "from": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz",
+                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
                                 },
                                 "jodid25519": {
                                   "version": "1.0.2",
@@ -753,7 +750,7 @@
         },
         "lodash": {
           "version": "2.4.2",
-          "from": "lodash@>=2.4.1 <2.5.0",
+          "from": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz",
           "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz"
         }
       }
@@ -1085,7 +1082,7 @@
     },
     "camshaft-reference": {
       "version": "0.4.0",
-      "from": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz",
+      "from": "camshaft-reference@0.4.0",
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
     },
     "cartodb-deep-insights.js": {
@@ -1106,7 +1103,7 @@
             "d3.cartodb": {
               "version": "1.1.0",
               "from": "cartodb/d3.cartodb#gh-pages",
-              "resolved": "git://github.com/cartodb/d3.cartodb.git#640eaa720cb7b684daf76c2c19b633da97ea5ac3",
+              "resolved": "git://github.com/cartodb/d3.cartodb.git#3a6b7775ff04a4f66a30f4ae1122cd2db726cb1d",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1246,8 +1243,8 @@
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
-                  "from": "https://github.com/CartoDB/carto/tarball/0.15.1-cdb2",
-                  "resolved": "https://github.com/CartoDB/carto/tarball/0.15.1-cdb2",
+                  "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+                  "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
                   "dependencies": {
                     "underscore": {
                       "version": "1.6.0",
@@ -1317,7 +1314,7 @@
         "d3.cartodb": {
           "version": "1.1.0",
           "from": "cartodb/d3.cartodb#gh-pages",
-          "resolved": "git://github.com/cartodb/d3.cartodb.git#640eaa720cb7b684daf76c2c19b633da97ea5ac3",
+          "resolved": "git://github.com/cartodb/d3.cartodb.git#3a6b7775ff04a4f66a30f4ae1122cd2db726cb1d",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -1457,8 +1454,8 @@
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
-              "from": "https://github.com/CartoDB/carto/tarball/0.15.1-cdb2",
-              "resolved": "https://github.com/CartoDB/carto/tarball/0.15.1-cdb2",
+              "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+              "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
               "dependencies": {
                 "underscore": {
                   "version": "1.6.0",

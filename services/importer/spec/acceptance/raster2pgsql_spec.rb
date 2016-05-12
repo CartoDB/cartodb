@@ -34,7 +34,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests extracting size from a tif' do
     expected_size = [2052, 1780]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     size = rasterizer.send(:extract_raster_size)
     size.should eq expected_size
@@ -54,7 +54,7 @@ describe 'raster2pgsql acceptance tests' do
                                      "o_32_raster_test", "o_64_raster_test", "o_128_raster_test", \
                                      "o_256_raster_test", "o_512_raster_test" ]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     overviews = rasterizer.send(:calculate_raster_overviews, raster_1_size)
     overviews.should eq expected_overviews_1
@@ -72,7 +72,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests calculating raster scale' do
     pixel_size = 3667.822831377844
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     scale = rasterizer.send(:calculate_raster_scale, pixel_size)
     expected_scale = 2445.7403258239747

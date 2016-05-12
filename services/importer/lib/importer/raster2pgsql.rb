@@ -13,6 +13,7 @@ module CartoDB
       SQL_FILENAME                  = '%s%s.sql'
       OVERLAY_TABLENAME             = 'o_%s_%s'
       RASTER_COLUMN_NAME            = 'the_raster_webmercator'
+      GDALWARP_COMMON_OPTIONS       = '-co "COMPRESS=LZW" -co "BIGTIFF=IF_SAFER"'
 
       def initialize(table_name, filepath, pg_options, db)
         self.filepath             = filepath
@@ -62,7 +63,7 @@ module CartoDB
                     :basepath, :additional_tables, :db, :base_table_fqtn
 
       def align_raster(scale)
-        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
+        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -72,7 +73,7 @@ module CartoDB
       end
 
       def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} -ot Byte -co "COMPRESS=LZW" -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+        gdalwarp_command = %Q(#{gdalwarp_path} -ot Byte #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"

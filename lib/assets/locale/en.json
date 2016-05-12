@@ -486,8 +486,8 @@
     },
     "style": {
       "types": {
-        "none": "...",
-        "simple": "none",
+        "none": "none",
+        "simple": "simple",
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Deep-Insights.js | Populated Places</title>
+    <meta name=viewport content="width=device-width initial-scale=1">
+    <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
+    <script src="../dist/deep-insights.uncompressed.js"></script>
+    <style type="text/css">
+      html, body {
+        position:relative;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dashboard"></div>
+
+    <script>
+      window.onload = function() {
+        var vizJSON = {
+          "title": "Populated places",
+          "description": "This map shows the populates places in the world!",
+          "user": {
+            "fullname": "Emilio García",
+            "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+          },
+          "updated_at": "2015-10-26T11:50:30+00:00",
+
+          "widgets": [
+            {
+              "id": "min-population-formula",
+              "type": "formula",
+              "title": "Min population (disabled sync)",
+              "order": 1,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "sync_on_data_change": false,
+                "sync_on_bbox_change": false,
+                "operation": "min",
+                "suffix": " people",
+                "description": "This is a test for formula description",
+                "show_stats": true
+              }
+            }, {
+              "id": "max-population-formula",
+              "type": "formula",
+              "title": "Max population",
+              "order": 5,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "operation": "max"
+              }
+            }, {
+              "id": "avg-population-formula",
+              "type": "formula",
+              "title": "Avg population",
+              "order": 4,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "operation": "avg"
+              }
+            }, {
+              "id": "total-population-formula",
+              "type": "formula",
+              "title": "Total population",
+              "order": 2,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "operation": "sum"
+              }
+            }, {
+              "id": "places-count-formula",
+              "type": "formula",
+              "title": "# places",
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "order": 7,
+              "options": {
+                "column": "pop_max",
+                "operation": "count"
+              }
+            }, {
+              "id": "amount-spent-histogram",
+              "type": "histogram",
+              "title": "Population (with stats)",
+              "order": 3,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "bins": 10,
+                "show_stats": true
+              }
+            }, {
+              "id": "population-histogram",
+              "type": "histogram",
+              "title": "Population",
+              "order": 6,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "pop_max",
+                "bins": 10
+              }
+            }, {
+              "id": "country-category",
+              "type": "category",
+              "title": "Country",
+              "order": 8,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "adm0_a3",
+                "aggregation": "count",
+                "show_stats": true
+              },
+            }, {
+              "id": "rank-category",
+              "type": "category",
+              "title": "Rank category",
+              "order": 9,
+              "layer_id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+              "options": {
+                "column": "labelrank",
+                "aggregation": "count"
+              }
+            }
+          ],
+
+          "datasource": {
+            "user_name": "editor3",
+            "maps_api_template": "https://{user}.cartodb.com:443",
+            "force_cors": true, // This is sometimes set in the editor,
+            "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
+          },
+
+          "id": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+          "version": "0.1.0",
+          "likes": 0,
+          "scrollwheel": false,
+          "legends": true,
+          "url": null,
+          "map_provider": "leaflet",
+          "bounds": [
+            [
+              -10.3967,
+              -80.6479
+            ],
+            [
+              60.2137,
+              45.1867
+            ]
+          ],
+          "center": "[40.7127, -74.0059]",
+          "zoom": 4,
+          "updated_at": "2015-10-26T11:50:30+00:00",
+          "layers": [
+            {
+              "options": {
+                "visible": true,
+                "type": "Tiled",
+                "name": "Positron",
+                "className": "httpsbasemapscartocdncomdark_nolabelszxypng",
+                "base_type": "default",
+                "urlTemplate": "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+                "minZoom": "0",
+                "maxZoom": "18",
+                "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+                "subdomains": "abcd",
+                "style": null,
+                "labels": {
+                  "url": "http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png"
+                },
+                "read_only": true,
+                "category": "CartoDB",
+                "order": 0,
+                "id": "a4b5985f-5757-4ff3-8957-01e41247318c",
+                "parent_id": null
+              },
+              "infowindow": null,
+              "tooltip": null,
+              "id": "a4b5985f-5757-4ff3-8957-01e41247318c",
+              "order": 0,
+              "type": "tiled"
+            },
+            {
+              "type": "layergroup",
+              "options": {
+                "user_name": "editor3",
+                "maps_api_template": "https://{user}.cartodb.com:443",
+                "layer_definition": {
+                  "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6",
+                  "version": "1.0.1",
+                  "layers": [
+                    {
+                      "id": "4d82e8df-f21b-4225-b776-61b1bdffde6c",
+                      "type": "CartoDB",
+                      "interactivity": "cartodb_id,adm0_a3,name,pop_max",
+                      "infowindow": {
+                        "fields": [],
+                        "template_name": "table/views/infowindow_light",
+                        "template": "<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n",
+                        "alternative_names": {},
+                        "width": 226,
+                        "maxHeight": 180
+                      },
+                      "tooltip": {
+                        "fields": [
+                          {
+                            "name": "adm0_a3",
+                            "title": true,
+                            "position": 1
+                          },
+                          {
+                            "name": "name",
+                            "title": true,
+                            "position": 2
+                          },
+                          {
+                            "name": "pop_max",
+                            "title": true,
+                            "position": 3
+                          }
+                        ],
+                        "template_name": "tooltip_light",
+                        "template": "<div class=\"CDB-Tooltip CDB-Tooltip--isLight\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>",
+                        "alternative_names": {},
+                        "maxHeight": 180
+                      },
+                      "legend": {
+                        "type": "none",
+                        "show_title": false,
+                        "title": "",
+                        "template": "",
+                        "visible": true
+                      },
+                      "order": 1,
+                      "visible": true,
+                      "options": {
+                        "sql": "select * from ne_10m_populated_places_simple",
+                        "layer_name": "Populated places",
+                        "cartocss": "/** simple visualization */\n\n#places{\n marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 0.6;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: 8;\n  marker-fill: green;\n  marker-allow-overlap: true;\n}",
+                        "cartocss_version": "2.1.1",
+                        "interactivity": "cartodb_id,adm0_a3,name,pop_max",
+                        "table_name": "\"\"."
+                      }
+                    }
+                  ]
+                },
+                "attribution": "wadus"
+              }
+            },
+            {
+              "options": {
+                "visible": true,
+                "type": "Tiled",
+                "name": "Positron Labels",
+                "urlTemplate": "http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png",
+                "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+                "minZoom": "0",
+                "maxZoom": "18",
+                "subdomains": "abcd",
+                "kind": "tiled",
+                "order": 4,
+                "id": "2045d4f7-7a76-4b41-8acf-88e32ac49370",
+                "className": "httpsbasemapscartocdncomdark_only_labelszxypng",
+                "parent_id": null
+              },
+              "infowindow": null,
+              "tooltip": null,
+              "id": "2045d4f7-7a76-4b41-8acf-88e32ac49370",
+              "order": 4,
+              "type": "tiled"
+            }
+          ],
+          "overlays": [
+            {
+              "type": "search",
+              "order": 3,
+              "options": {
+                "display": true,
+                "x": 60,
+                "y": 20
+              },
+              "template": ""
+            },
+            {
+              "type": "zoom",
+              "order": 6,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 20
+              },
+            "template": "<div class=\"CDB-Overlay\"><button class=\"CDB-Zoom-action CDB-Zoom-action--out js-zoomOut\"></button><button class=\"CDB-Zoom-action CDB-Zoom-action--in js-zoomIn\"></button></div><div class=\"CDB-Zoom-info js-zoomInfo\">1</div>"
+          },
+            {
+              "type": "loader",
+              "order": 8,
+              "options": {
+                "display": true,
+                "x": 20,
+                "y": 150
+              },
+              "template": ""
+            }
+          ],
+          "prev": null,
+          "next": null,
+          "transition_options": {
+            "time": 0
+          }
+        };
+
+        cartodb.deepInsights.createDashboard('#dashboard', vizJSON, {
+          no_cdn: false,
+          cartodb_logo: false
+        });
+      }
+    </script>
+  </body>
+</html>

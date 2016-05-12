@@ -71,7 +71,7 @@ describe CartoDB::DataMover::ExportJob do
 
     it_behaves_like "a migrated user"
 
-    it "matches old and new user except database_name" do
+    xit "matches old and new user except database_name" do
       expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
         .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
       expect(subject.database_name).to eq(@org.owner.database_name)
@@ -79,7 +79,7 @@ describe CartoDB::DataMover::ExportJob do
       expect(subject.organization_id).to eq(@org.id)
     end
 
-    it "has granted the org role" do
+    xit "has granted the org role" do
       authed_roles = subject
                       .in_database["select s.rolname from pg_roles r
                         join pg_catalog.pg_auth_members m on r.oid=m.member join pg_catalog.pg_roles
@@ -88,7 +88,7 @@ describe CartoDB::DataMover::ExportJob do
     end
   end
 
-  it "should move a user from an organization to its own account" do
+  xit "should move a user from an organization to its own account" do
     org = create_user_mover_test_organization
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
@@ -107,7 +107,7 @@ describe CartoDB::DataMover::ExportJob do
     moved_user.organization_id.should eq nil
   end
 
-  it "should move a whole organization" do
+  xit "should move a whole organization" do
     port = find_available_port
     run_test_server(port)
     Cartodb.config[:org_metadata_api]['port'] = port
@@ -152,7 +152,7 @@ describe CartoDB::DataMover::ExportJob do
     @server_thread.terminate
   end
 
-  it "should move a whole organization without splitting user schemas" do
+  xit "should move a whole organization without splitting user schemas" do
 
     org = create_user_mover_test_organization
     user = create_user(

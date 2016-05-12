@@ -7,7 +7,6 @@
       <% } %>
     </label>
   <% } %>
-  <div class="CDB-Text CDB-Size-medium Editor-formInput">
-    <span data-editor></span>
+  <div class="Editor-formInput" data-editor>
   </div>
 </div>

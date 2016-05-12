@@ -113,7 +113,7 @@ module Carto
     def produce_carto_filename(visualization_name)
       sanitized_visualization_name = Carto::DB::Sanitize.sanitize_identifier(visualization_name)
 
-      date_appendix = Time.now.utc.strftime("on_%Y-%m-%d_at_%H.%M.%S")
+      date_appendix = Time.now.utc.strftime("(on_%Y-%m-%d_at_%H.%M.%S)")
 
       "#{sanitized_visualization_name}_#{date_appendix}#{CARTO_EXTENSION}"
     end

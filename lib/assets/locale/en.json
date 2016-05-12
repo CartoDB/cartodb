@@ -436,8 +436,12 @@
         "data": "Data",
         "analyses": "Analyses",
         "style": "Style",
-        "popup": "Pop-up",
+        "infowindow": "Pop-up",
         "legends": "Legend"
+      },
+      "infowindow-menu-tab-pane-labels": {
+        "click": "Click",
+        "hover": "Hover"
       },
       "analysis-form": {
         "by": "By",
@@ -463,6 +467,21 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+      },
+      "infowindow": {
+        "style": {
+          "title-label": "Style",
+          "none": "None",
+          "window-size": "Window size",
+          "light": "Light",
+          "dark": "Dark",
+          "color": "Color",
+          "image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
       }
     },
     "style": {

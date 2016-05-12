@@ -506,6 +506,11 @@
           "desc": "Change the visualization"
         }
       },
+      "messages": {
+        "fetched": "Schema fetched, select a style",
+        "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
+        "unavailable": "There was a problem getting schema, try to reload",
+      },
       "components": {
         "fill": "Fill",
         "stroke": "Stroke",

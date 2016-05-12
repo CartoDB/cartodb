@@ -14,6 +14,12 @@ module Carto
     end
   end
 
+  module VisualizationsExportService2Validator
+    def check_valid_visualization(visualization)
+      raise "Only derived visualizations can be exported" unless visualization.derived?
+    end
+  end
+
   module VisualizationsExportService2Importer
     include VisualizationsExportService2Configuration
 
@@ -147,6 +153,7 @@ module Carto
 
   module VisualizationsExportService2Exporter
     include VisualizationsExportService2Configuration
+    include VisualizationsExportService2Validator
 
     def export_visualization_json_string(visualization_id, user)
       export_visualization_json_hash(visualization_id, user).to_json
@@ -164,10 +171,6 @@ module Carto
     def export(visualization, user)
       check_valid_visualization(visualization)
       export_visualization(visualization, user)
-    end
-
-    def check_valid_visualization(visualization)
-      raise "Only derived visualizations can be exported" unless visualization.derived?
     end
 
     def export_visualization(visualization, user)

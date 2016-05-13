@@ -135,7 +135,7 @@ describe Carto::Api::VizJSON3Presenter do
 
     it 'includes analyses information without including sources parameters' do
       analysis = FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user_1)
-      analysis.analysis_definition_json[:params].should_not be_nil
+      analysis.analysis_definition[:params].should_not be_nil
       @visualization.reload
       v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization, nil)
       named_vizjson = v3_presenter.to_vizjson

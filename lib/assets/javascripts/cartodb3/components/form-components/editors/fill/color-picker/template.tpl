@@ -1,12 +1,4 @@
-<div class="ColorPicker-pickerWrapper">
-  <div class="ColorPicker-picker js-picker"></div>
-  <div class="ColorPicker-pickerIndicator js-pickerIndicator"></div>
-</div>
-
-<div class="ColorPicker-sliderWrapper">
-  <div class="ColorPicker-slider js-slider"></div>
-  <div class="ColorPicker-sliderIndicator js-sliderIndicator"></div>
-</div>
+<div class="ColorPicker-pickerWrapper js-colorPicker"></div>
 
 <div class="ColorPicker-inputs">
   <div class="ColorPicker-inputWrapper">
@@ -30,5 +22,3 @@
     <span class="ColorPicker-inputLabel u-upperCase">A</span>
   </div>
 </div>
-
-<div class="ColorPicker-preview js-preview"></div>

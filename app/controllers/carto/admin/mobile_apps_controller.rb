@@ -80,7 +80,8 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
     @cartodb_central_client.update_mobile_app(current_user.username, @app_id, updated_attributes)
 
-    redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { success: 'Your app has been updated succesfully!' }
+    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
+                flash: { success: 'Your app has been updated succesfully!' })
 
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
@@ -100,7 +101,8 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
-    redirect_to CartoDB.url(self, 'mobile_app', id: @app_id), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
+    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
+                flash: { error: 'Unable to connect to license server. Try again in a moment.' })
   end
 
   def api_keys
@@ -134,14 +136,15 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)
-    redirect_to CartoDB.url(self, 'mobile_apps'), flash: { error: 'Unable to connect to license server. Try again in a moment.' }
+    redirect_to(CartoDB.url(self, 'mobile_apps'),
+                flash: { error: 'Unable to connect to license server. Try again in a moment.' })
   end
 
   def get_open_monthly_users
-    @open_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'open'}
+    @open_monthly_users = @mobile_apps.sum { |a| a.monthly_users if a.app_type == 'open' }
   end
 
   def get_private_monthly_users
-    @private_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'private'}
+    @private_monthly_users = @mobile_apps.sum { |a| a.monthly_users if a.app_type == 'private' }
   end
 end

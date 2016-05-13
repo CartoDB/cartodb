@@ -65,6 +65,13 @@ module Carto
         request.run
 
         downloaded_file
+      rescue => e
+        CartoDB::Logger.error(
+          exception: e,
+          url: url,
+          file_path: file_path
+        )
+        raise e
       end
 
       private

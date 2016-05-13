@@ -10,12 +10,15 @@ require_dependency 'carto/visualization_exporter'
 module Carto
   class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
+    include Carto::VisualizationsExportService2Validator
+
     belongs_to :visualization, class_name: Carto::Visualization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log
 
     validate :visualization_exportable_by_user?, if: :new_record?
     validate :user_tables_ids_valid?, if: :new_record?
+    validate :valid_visualization_type?, if: :new_record?
 
     STATE_PENDING = 'pending'.freeze
     STATE_EXPORTING = 'exporting'.freeze
@@ -67,7 +70,7 @@ module Carto
     end
 
     def visualization_exportable_by_user?
-      errors.add(:visualization, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+      errors.add(:user, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
     end
 
     def user_tables_ids_valid?
@@ -79,5 +82,10 @@ module Carto
       end
     end
 
+    def valid_visualization_type?
+      check_valid_visualization(visualization)
+    rescue => e
+      errors.add(:visualization, e.message)
+    end
   end
 end

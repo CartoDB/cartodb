@@ -32,8 +32,9 @@
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
-    "backbone-undo": "0.2.5",
     "aws-sdk": "2.0.0-rc11",
+    "backbone-undo": "0.2.5",
+    "bootstrap-colorpicker": "^2.3.3",
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",

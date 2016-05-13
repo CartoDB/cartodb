@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var WindshaftClient = require('../../../src/windshaft/client');
 var AnonymousMap = require('../../../src/windshaft/anonymous-map');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -42,13 +43,13 @@ describe('windshaft/anonymous-map', function () {
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
 
     this.dataviewsCollection = new Backbone.Collection();
-
+    this.layersCollection = new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]);
     this.map = new AnonymousMap({}, {
       client: this.client,
       modelUpdater: this.modelUpdater,
       statTag: 'stat_tag',
       dataviewsCollection: this.dataviewsCollection,
-      layersCollection: new Backbone.Collection([this.cartoDBLayer1, this.cartoDBLayer2, this.cartoDBLayer3]),
+      layersCollection: this.layersCollection,
       analysisCollection: this.analysisCollection
     });
   });
@@ -123,6 +124,74 @@ describe('windshaft/anonymous-map', function () {
           'sql': 'sql1',
           'sql_wrap': 'sql_wrap_1'
         }
+      });
+    });
+
+    it('should include the interactiviy and attributes options for layers that have infowindow with fields', function () {
+      this.cartoDBLayer1.infowindow.fields.add({ name: 'something' });
+
+      expect(this.map.toJSON()).toEqual({
+        'layers': [
+          {
+            'type': 'cartodb',
+            'options': {
+              'cartocss': 'cartoCSS1',
+              'cartocss_version': '2.0',
+              'interactivity': [
+                'cartodb_id',
+                'something'
+              ],
+              'attributes': {
+                id: 'cartodb_id',
+                columns: [ 'something' ]
+              },
+              'sql': 'sql1'
+            }
+          },
+          {
+            'type': 'cartodb',
+            'options': {
+              'cartocss': 'cartoCSS2',
+              'cartocss_version': '2.0',
+              'interactivity': [],
+              'sql': 'sql2'
+            }
+          },
+          {
+            'type': 'cartodb',
+            'options': {
+              'cartocss': 'cartoCSS3',
+              'cartocss_version': '2.0',
+              'interactivity': [],
+              'sql': 'sql3'
+            }
+          }
+        ],
+        'dataviews': {},
+        'analyses': []
+      });
+    });
+
+    it('should NOT include interactivity and attributes options for "torque" layers', function () {
+      this.layersCollection.reset(new TorqueLayer({
+        sql: 'sql',
+        cartocss: 'cartocss'
+      }));
+
+      expect(this.map.toJSON()).toEqual({
+        'layers': [
+          {
+            'type': 'torque',
+            'options': {
+              'sql': 'sql',
+              'cartocss': 'cartocss',
+              'cartocss_version': '2.1.0',
+              'interactivity': []
+            }
+          }
+        ],
+        'dataviews': {},
+        'analyses': []
       });
     });
 

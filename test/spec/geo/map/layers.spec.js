@@ -4,14 +4,14 @@ var TileLayer = require('../../../../src/geo/map/tile-layer');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 
-describe('geo/map/layers', function() {
+describe('geo/map/layers', function () {
   var layers;
 
   beforeEach(function () {
     layers = new Layers();
   });
 
-  it("should compare equal layers correctly", function() {
+  it('should compare equal layers correctly', function () {
     var layer1 = new PlainLayer({ name: 'Positron' });
     var layer2 = new PlainLayer({});
     var layer3 = new PlainLayer({});

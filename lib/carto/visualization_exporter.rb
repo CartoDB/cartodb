@@ -99,23 +99,13 @@ module Carto
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
-      carto_filename = produce_carto_filename(visualization.name).freeze
+      filename = "#{visualization.name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
 
-      `cd #{export_dir}/ && zip -r #{carto_filename} #{visualization_id} && cd -`
+      `cd #{export_dir}/ && zip -r \"#{filename}\" #{visualization_id} && cd -`
 
       FileUtils.remove_dir(tmp_dir)
 
-      "#{export_dir}/#{carto_filename}"
-    end
-
-    private
-
-    def produce_carto_filename(visualization_name)
-      sanitized_visualization_name = Carto::DB::Sanitize.sanitize_identifier(visualization_name)
-
-      date_appendix = Time.now.utc.strftime("on_%Y-%m-%d_at_%H.%M.%S")
-
-      "#{sanitized_visualization_name}_#{date_appendix}#{CARTO_EXTENSION}"
+      "#{export_dir}/#{filename}"
     end
   end
 end

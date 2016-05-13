@@ -64,7 +64,7 @@
       <label class="FormAccount-label">Aplication ID</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "FormAccount-input FormAccount-input--med #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
+      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
 
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="FormAccount-rowInfoText js-appPlatformsLegend"></p>
@@ -99,8 +99,18 @@
     <% end %>
   </div>
 
-  <%- if @mobile_app.persisted? && @mobile_app.app_type == "dev" %>
-    <%- dev_users_bar_width = (@mobile_app.monthly_users*100)/@max_dev_users %>
+  <%- if @mobile_app.persisted? %>
+    <%- if @mobile_app.app_type == "dev" %>
+      <%- max_users = @max_dev_users %>
+      <%- users_bar_width = (@mobile_app.monthly_users*100)/@max_dev_users %>
+    <% elsif @mobile_app.app_type == "open" %>
+      <%- max_users = current_user.mobile_max_open_users %>
+      <%- users_bar_width = (@mobile_app.monthly_users*100)/max_users %>
+    <% elsif @mobile_app.app_type == "private" %>
+      <%- max_users = current_user.mobile_max_private_users %>
+      <%- users_bar_width = (@mobile_app.monthly_users*100)/max_users %>
+    <%end%>
+
     <div class="FormAccount-title">
       <p class="FormAccount-titleText">Application quota</p>
     </div>
@@ -110,9 +120,9 @@
     <div class="FormAccount-row">
       <div class="ProgressBar-container">
         <div class="ProgressBar">
-          <span class="ProgressBar-bar <%= progress_bar_range(dev_users_bar_width) %>" style="width: <%= dev_users_bar_width %>%"></span>
+          <span class="ProgressBar-bar <%= progress_bar_range(users_bar_width) %>" style="width: <%= users_bar_width %>%"></span>
         </div>
-        <div class="ProgressBar-legend"><%= @mobile_app.monthly_users %>/<%= @max_dev_users %> monthly private users</div>
+        <div class="ProgressBar-legend"><%= @mobile_app.monthly_users %><%- if @mobile_app.app_type == "dev" %>/<%= max_users %><% end %> monthly  users</div>
       </div>
     </div>
 

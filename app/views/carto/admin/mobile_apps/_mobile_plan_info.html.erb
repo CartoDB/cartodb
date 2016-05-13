@@ -20,7 +20,7 @@
       <div class="ProgressBar">
         <span class="ProgressBar-bar <%= progress_bar_range(open_users_bar_width) %>" style="width:<%= open_users_bar_width %>%"></span>
       </div>
-      <div class="ProgressBar-legend"><%= @open_monthly_users %>/<%= max_open_users %> monthly open users</div>
+      <div class="ProgressBar-legend"><%= number_with_delimiter(@open_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_open_users, delimiter: ",") %> monthly open users</div>
     </div>
   <% end %>
 
@@ -30,7 +30,7 @@
       <div class="ProgressBar">
         <span class="ProgressBar-bar <%= progress_bar_range(private_users_bar_width) %>" style="width:<%= private_users_bar_width %>%"></span>
       </div>
-      <div class="ProgressBar-legend"><%= @private_monthly_users %>/<%= max_private_users %> monthly private users</div>
+      <div class="ProgressBar-legend"><%= number_with_delimiter(@private_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_private_users, delimiter: ",") %> monthly private users</div>
     </div>
   <% end %>
 </div>

@@ -7,10 +7,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   include MobileAppsHelper
   include AvatarHelper
 
-  APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
-  APP_TYPES = %w(dev open private).freeze
-  MAX_DEV_USERS = 5
-
   ssl_required  :index, :show, :new, :create, :update, :destroy, :api_keys
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -37,7 +33,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def show
-    @max_dev_users = MAX_DEV_USERS
+    @max_dev_users = MobileApp::MAX_DEV_USERS
   end
 
   def new
@@ -61,7 +57,12 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
       # TODO: Descriptive errors?
-      flash.now[:error] = e.errors
+      if e.errors["app_id"].present?
+        @mobile_app.errors["app_id"] = 'has already been taken'
+        flash.now[:error] = "That application ID has already been taken. Please make sure that it is unique."
+      else
+        flash.now[:error] = e.errors
+      end
     else
       CartoDB::Logger.error(message: 'Error creating mobile_app in Central', exception: e)
       flash.now[:error] = 'Unable to connect to license server. Try again in a moment.'

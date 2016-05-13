@@ -1,2 +1,2 @@
-<div class="js-menu"></div>
-<div class="js-content"></div>
+<div class="TabPane-menu js-menu"></div>
+<div class="TabPane-content js-content"></div>

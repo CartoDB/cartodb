@@ -51,7 +51,6 @@
 **/src/geo/leaflet/leaflet-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
 **/src/geo/map/gmaps-base-layer.js
-**/src/geo/map/layers.js
 **/src/geo/map/plain-layer.js
 **/src/geo/map/tile-layer.js
 **/src/geo/map/torque-layer.js
@@ -135,7 +134,6 @@
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
 **/test/spec/geo/gmaps_cartodb_layer/show.js
 **/test/spec/geo/map/gmaps-base-layer.spec.js
-**/test/spec/geo/map/layers.spec.js
 **/test/spec/geo/map/tile-layer.spec.js
 **/test/spec/geo/map-view.spec.js
 **/test/spec/geo/map.spec.js

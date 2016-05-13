@@ -74,6 +74,7 @@ module CartoDB
       public_map.js
       public_map_deps.js
       editor.js
+      vendor_editor3.js
       common_editor3.js
       editor3.js
       public_editor3.js
@@ -102,7 +103,7 @@ module CartoDB
       confirmation_templates.js
       confirmation.js
       new_public_table.js
-      
+
       mobile_apps.js
       mobile_apps_templates.js
       mobile_apps_deps.js
@@ -182,7 +183,7 @@ require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
 require 'cartodb/central'
-#require 'importer/lib/cartodb-importer'
+# require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new

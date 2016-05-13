@@ -116,7 +116,7 @@ module Carto
         vizjson[:analyses] = if display_named_map?(@visualization, forced_privacy_version)
                                visualization_analyses.map { |a| named_map_analysis_json(a) }
                              else
-                               visualization_analyses.map(&:analysis_definition_json)
+                               visualization_analyses.map(&:analysis_definition)
                              end
 
         auth_tokens = @visualization.needed_auth_tokens
@@ -225,16 +225,16 @@ module Carto
       end
 
       def named_map_analysis_json(analysis)
-        analysis_definition_json_without_sources(analysis.analysis_definition_json)
+        analysis_definition_without_sources(analysis.analysis_definition)
       end
 
-      def analysis_definition_json_without_sources(analysis_definition_json)
-        if analysis_definition_json[:type] == 'source'
-          analysis_definition_json.delete(:params)
-        elsif analysis_definition_json[:params] && analysis_definition_json[:params][:source]
-          analysis_definition_json_without_sources(analysis_definition_json[:params][:source])
+      def analysis_definition_without_sources(analysis_definition)
+        if analysis_definition[:type] == 'source'
+          analysis_definition.delete(:params)
+        elsif analysis_definition[:params] && analysis_definition[:params][:source]
+          analysis_definition_without_sources(analysis_definition[:params][:source])
         end
-        analysis_definition_json
+        analysis_definition
       end
 
       def configuration

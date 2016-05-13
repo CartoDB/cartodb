@@ -207,11 +207,11 @@ module CartoDB
         # We first import the owner. If schemas are not split, this will also import the whole org database
         @logger.info("Importing org owner #{@owner_id}..")
         @import_job_admin_instance = ImportJob.new(file: @path + "user_#{@owner_id}.json",
-                      mode: @options[:mode],
-                      host: @target_dbhost,
-                      target_org: @pack_config['organization']['name'],
-                      logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                      update_metadata: @options[:update_metadata])
+                                                   mode: @options[:mode],
+                                                   host: @target_dbhost,
+                                                   target_org: @pack_config['organization']['name'],
+                                                   logger: @logger, data: @options[:data], metadata: @options[:metadata],
+                                                   update_metadata: @options[:update_metadata])
         @import_job_admin_instance.run!
 
         # Fix permissions and metadata settings for owner
@@ -222,11 +222,11 @@ module CartoDB
         @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
           @logger.info("Importing org user #{user['id']}..")
           i = ImportJob.new(file: @path + "user_#{user['id']}.json",
-                        mode: @options[:mode],
-                        host: @target_dbhost,
-                        target_org: @pack_config['organization']['name'],
-                        logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                        update_metadata: @options[:update_metadata])
+                            mode: @options[:mode],
+                            host: @target_dbhost,
+                            target_org: @pack_config['organization']['name'],
+                            logger: @logger, data: @options[:data], metadata: @options[:metadata],
+                            update_metadata: @options[:update_metadata])
           i.run!
           @import_job_user_instances << i
         end
@@ -553,9 +553,9 @@ module CartoDB
       end
 
       def update_metadata_org_admin(owner_id, target_dbhost)
-          owner_user = ::User.find(id: owner_id)
-          owner_user.database_host = target_dbhost
-          owner_user.db_service.setup_organization_owner
+        owner_user = ::User.find(id: owner_id)
+        owner_user.database_host = target_dbhost
+        owner_user.db_service.setup_organization_owner
       end
 
       def update_metadata_user(target_dbhost)

@@ -397,7 +397,10 @@
       "select": {
         "placeholder": "Select a %{keyAttr}"
       },
-      "interval-error": "Value must between %{minValue} and %{maxValue}"
+      "operators": {
+        "count-message": "If you select COUNT all columns are selected"
+      },
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
     }
   },
   "data": {

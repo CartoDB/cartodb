@@ -530,6 +530,10 @@
             "overlay": "overlay"
           }
         },
+        "aggregation-resolution": "Resolution",
+        "aggregation-value": "Value",
+        "aggregation-size": "Size",
+        "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",
           "not-with-animated": "It won't be available with animated"

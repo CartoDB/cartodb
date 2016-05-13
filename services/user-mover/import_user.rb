@@ -22,6 +22,9 @@ module CartoDB
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
 
+        @import_job_admin_instance = nil
+        @import_job_user_instances = Array.new
+
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
 
@@ -181,7 +184,7 @@ module CartoDB
         end
 
         if @options[:update_metadata]
-          update_metadata
+          update_metadata_user(@target_dbhost)
         end
 
         log_success
@@ -203,28 +206,29 @@ module CartoDB
 
         # We first import the owner. If schemas are not split, this will also import the whole org database
         @logger.info("Importing org owner #{@owner_id}..")
-        ImportJob.new(file: @path + "user_#{@owner_id}.json",
+        @import_job_admin_instance = ImportJob.new(file: @path + "user_#{@owner_id}.json",
                       mode: @options[:mode],
                       host: @target_dbhost,
                       target_org: @pack_config['organization']['name'],
                       logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                      update_metadata: @options[:update_metadata]).run!
+                      update_metadata: @options[:update_metadata])
+        @import_job_admin_instance.run!
 
         # Fix permissions and metadata settings for owner
         if @options[:update_metadata]
-          owner_user = ::User.find(id: @owner_id)
-          owner_user.database_host = @target_dbhost
-          owner_user.db_service.setup_organization_owner
+          update_metadata_org_admin(@owner_id, @target_dbhost)
         end
 
         @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
           @logger.info("Importing org user #{user['id']}..")
-          ImportJob.new(file: @path + "user_#{user['id']}.json",
+          i = ImportJob.new(file: @path + "user_#{user['id']}.json",
                         mode: @options[:mode],
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
                         logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                        update_metadata: @options[:update_metadata]).run!
+                        update_metadata: @options[:update_metadata])
+          i.run!
+          @import_job_user_instances << i
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
@@ -548,7 +552,13 @@ module CartoDB
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
       end
 
-      def update_metadata
+      def update_metadata_org_admin(owner_id, target_dbhost)
+          owner_user = ::User.find(id: owner_id)
+          owner_user.database_host = target_dbhost
+          owner_user.db_service.setup_organization_owner
+      end
+
+      def update_metadata_user(target_dbhost)
         user_model = ::User.find(username: @target_username)
         orig_dbhost = user_model.database_host
         changed_metadata = false
@@ -560,7 +570,7 @@ module CartoDB
             update_postgres_organization(@target_userid, nil)
           end
           begin
-            update_database_retries(@target_userid, @target_username, @target_dbhost, @target_dbname, 1)
+            update_database_retries(@target_userid, @target_username, target_dbhost, @target_dbname, 1)
             changed_metadata = true
             user_model.reload
           end
@@ -573,6 +583,19 @@ module CartoDB
           log_error(e)
           remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
           throw e
+        end
+      end
+
+      def update_metadata(target_dbhost)
+        if !@pack_config['organization'].nil?
+          @import_job_admin_instance.update_metadata_org_admin(@owner_id, target_dbhost)
+          @import_job_admin_instance.update_metadata_user(target_dbhost)
+
+          @import_job_user_instances.each do |instance|
+            instance.update_metadata_user(target_dbhost)
+          end
+        else
+          update_metadata_user(target_dbhost)
         end
       end
 

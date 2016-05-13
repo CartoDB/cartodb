@@ -25,6 +25,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   text-decoration: none;
 
   &:not(:last-child) { border-bottom: 1px solid $cStructure-softLine; }
+  &:last-child { margin-bottom: 28px; }
 }
 .MobileAppsList-itemIcon {
   width: 42px;

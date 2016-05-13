@@ -8,6 +8,7 @@
     var mobile_app_name = "<%= @mobile_app.name %>";
     var mobile_app_icon = "<%= get_default_mobile_app_icon %>";
     var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
+    var app_platforms_legends = <%= safe_js_object get_app_platform_legends.to_json %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
 <% end %>

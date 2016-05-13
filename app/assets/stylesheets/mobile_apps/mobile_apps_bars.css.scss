@@ -5,19 +5,75 @@
 @import '../variables/colors';
 @import '../variables/sizes';
 
+.MobilePlan {
+  @include display-flex();
+  @include flex-direction(row);
+  @include align-items(center);
+  @include justify-content(space-between);
+  padding: 25px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.MobilePlan-items {
+  @include display-flex();
+  @include flex-direction(row);
+  @include align-items(center);
+  @include justify-content(flex-start);
+  width: 100%;
+}
+.MobilePlan-icon {
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  line-height: 50px;
+  text-align: center;
+  margin-right: 15px;
+  border-color: #6BB72E;
+  color: #6BB72E;
+
+  i {
+    height: 35px;
+    font-size: 25px;
+  }
+}
+.MobilePlan-info {
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(flex-start);
+}
+.MobilePlan-title--lightGreen {
+  color: $cTypography-paragraphs;
+  font-size: 16px;
+}
+.MobilePlan-subtitle {
+  max-width: 410px;
+  color: $cTypography-secondary;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.ProgressBars {
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(flex-start);
+  padding: 25px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
 .ProgressBar-container {
   @include display-flex();
   @include flex-direction(row);
   @include justify-content(space-between);
   @include align-items(center);
-  &:not(:last-child) { margin-bottom: 20px; }
+  width: 100%;
+  
+  &:not(:last-child) { 
+    margin-bottom: 20px;
+  }
 }
 .ProgressBar {
   display: block;
   position: relative;
   width: 380px;
   height: 6px;
-  margin: 9px 0 0;
   border-radius: 3px;
   background: #F5F5F5;
   box-shadow: inset 0 1px 0 0 rgba(#000, 0.1);
@@ -25,11 +81,14 @@
 }
 .ProgressBar-bar {
   position: absolute;
+  min-width: 1%;
   top: 0;
   bottom: 0;
   left: 0;
-  border-radius: 3px;
   margin: 0;
+  border-radius: 3px;
+  background: $cHighlight-main;
+  z-index: 2;
 }
 .ProgressBar-bar.is-danger {
   background: $cHighlight-negative;
@@ -37,13 +96,9 @@
 .ProgressBar-bar.is-caution {
   background: $cHighlight-caution;
 }
-.ProgressBar-bar--bar-2 {
-  background: $cHighlight-main;
-  z-index: 2;
-}
-.SideMenu-progressSize {
-  color: $cTypography-secondary;
+.ProgressBar-legend {
   margin-left: $sMargin-elementInline;
+  color: $cTypography-secondary;
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-lighter;
   line-height: 12px;

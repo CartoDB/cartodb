@@ -1,0 +1,36 @@
+<div class="MobilePlan">
+  <div class="MobilePlan-items">
+    <div class="MobilePlan-icon LayoutIcon LayoutIcon--lightGreen"><i class="CDB-IconFont CDB-IconFont-dollar"></i></div>
+
+    <div class="MobilePlan-info">
+      <div class="MobilePlan-title--lightGreen"><%= current_user.account_type.capitalize %></div>
+
+      <div class="MobilePlan-subtitle"><%= number_with_delimiter(current_user.mobile_max_open_users+current_user.mobile_max_private_users, delimiter: ",") %> monthly users.</div>
+    </div>
+  </div>
+</div>
+
+<div class="ProgressBars">
+  <%- max_open_users = current_user.mobile_max_open_users %>
+  <%- max_private_users = current_user.mobile_max_private_users %>
+
+  <%- if max_open_users > 0 %>
+    <%- open_users_bar_width = (@open_monthly_users*100)/max_open_users %>
+    <div class="ProgressBar-container">
+      <div class="ProgressBar">
+        <span class="ProgressBar-bar <%= progress_bar_range(open_users_bar_width) %>" style="width:<%= open_users_bar_width %>%"></span>
+      </div>
+      <div class="ProgressBar-legend"><%= @open_monthly_users %>/<%= max_open_users %> monthly open users</div>
+    </div>
+  <% end %>
+
+  <%- if max_private_users > 0 %>
+    <%- private_users_bar_width = (@private_monthly_users*100)/max_private_users %>
+    <div class="ProgressBar-container">
+      <div class="ProgressBar">
+        <span class="ProgressBar-bar <%= progress_bar_range(private_users_bar_width) %>" style="width:<%= private_users_bar_width %>%"></span>
+      </div>
+      <div class="ProgressBar-legend"><%= @private_monthly_users %>/<%= max_private_users %> monthly private users</div>
+    </div>
+  <% end %>
+</div>

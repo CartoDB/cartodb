@@ -9,6 +9,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
   APP_TYPES = %w(dev open private).freeze
+  MAX_DEV_USERS = 5
 
   ssl_required  :index, :show, :new, :create, :update, :destroy, :api_keys
   before_filter :invalidate_browser_cache
@@ -27,14 +28,16 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_apps = @cartodb_central_client.get_mobile_apps(current_user.username).map { |a| MobileApp.new(a) }
 
     get_open_monthly_users
+    get_private_monthly_users
 
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)
-    flash[:error] = 'Unable to connect to license server. Try again in a moment.'
+    flash.now[:error] = 'Unable to connect to license server. Try again in a moment.'
   end
 
   def show
+    @max_dev_users = MAX_DEV_USERS
   end
 
   def new
@@ -45,7 +48,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app = MobileApp.new(params[:mobile_app])
 
     unless @mobile_app.valid?
-      flash[:error] = @mobile_app.errors.full_messages.join(', ')
+      flash.now[:error] = @mobile_app.errors.full_messages.join(', ')
       render :new
       return
     end
@@ -58,10 +61,10 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
       # TODO: Descriptive errors?
-      flash[:error] = e.errors
+      flash.now[:error] = e.errors
     else
       CartoDB::Logger.error(message: 'Error creating mobile_app in Central', exception: e)
-      flash[:error] = 'Unable to connect to license server. Try again in a moment.'
+      flash.now[:error] = 'Unable to connect to license server. Try again in a moment.'
     end
     render :new
   end
@@ -73,7 +76,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app.description = updated_attributes[:description]
 
     unless @mobile_app.valid?
-      flash[:error] = @mobile_app.errors.full_messages.join(', ')
+      flash.now[:error] = @mobile_app.errors.full_messages.join(', ')
       render :show
       return
     end
@@ -85,10 +88,10 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
       # TODO: Descriptive errors?
-      flash[:error] = e.errors
+      flash.now[:error] = e.errors
     else
       CartoDB::Logger.error(message: 'Error updating mobile_app in Central', exception: e)
-      flash[:error] = 'Unable to connect to license server. Try again in a moment.'
+      flash.now[:error] = 'Unable to connect to license server. Try again in a moment.'
     end
     render :show
   end
@@ -138,10 +141,10 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def get_open_monthly_users
-    @open_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'open'}
+    @open_monthly_users = @mobile_apps.select{|a| a.app_type == 'open'}.map(&:monthly_users).compact.sum
   end
 
   def get_private_monthly_users
-    @private_monthly_users = @mobile_apps.sum {|a| a.monthly_users if a.app_type == 'private'}
+    @private_monthly_users = @mobile_apps.select{|a| a.app_type == 'private'}.map(&:monthly_users).compact.sum
   end
 end

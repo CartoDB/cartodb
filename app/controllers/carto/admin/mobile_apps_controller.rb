@@ -24,10 +24,10 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   layout 'application'
 
   def index
-    @mobile_apps = @cartodb_central_client.get_mobile_apps(current_user.username).map { |a| MobileApp.new(a) }
-
-    get_open_monthly_users
-
+    response = @cartodb_central_client.get_mobile_apps(current_user.username).deep_symbolize_keys
+    @mobile_apps = response[:mobile_apps].map { |a| MobileApp.new(a) }
+    @open_monthly_users = response[:monthly_users][:open]
+    @private_monthly_users = response[:monthly_users][:private]
   rescue CartoDB::CentralCommunicationFailure => e
     @mobile_apps = []
     CartoDB::Logger.error(message: 'Error loading mobile apps from Central', exception: e)
@@ -138,13 +138,5 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     CartoDB::Logger.error(message: 'Error loading mobile app from Central', exception: e, app_id: @app_id)
     redirect_to(CartoDB.url(self, 'mobile_apps'),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
-  end
-
-  def get_open_monthly_users
-    @open_monthly_users = @mobile_apps.sum { |a| a.monthly_users if a.app_type == 'open' }
-  end
-
-  def get_private_monthly_users
-    @private_monthly_users = @mobile_apps.sum { |a| a.monthly_users if a.app_type == 'private' }
   end
 end

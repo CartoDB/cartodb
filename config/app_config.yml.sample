@@ -89,6 +89,7 @@ defaults: &defaults
         connect_dataset: ''
         create_map: ''
         export_table: ''
+        export_map: ''
         select_wms: ''
         color_basemap: ''
         pattern_basemap: ''

@@ -41,7 +41,7 @@ module CartoDB
         return results
       end
 
-      filename = filename.gsub(/ /, '_')
+      filename = filename.tr(/ /, '_') unless params[:allow_spaces]
 
       random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
 

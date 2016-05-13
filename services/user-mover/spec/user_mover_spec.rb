@@ -69,11 +69,9 @@ describe CartoDB::DataMover::ExportJob do
       moved_user
     end
 
-    it_behaves_like 'a migrated user' do
-      before { pending }
-    end
+    it_behaves_like "a migrated user"
 
-    xit "matches old and new user except database_name" do
+    it "matches old and new user except database_name" do
       expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
         .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
       expect(subject.database_name).to eq(@org.owner.database_name)
@@ -81,7 +79,7 @@ describe CartoDB::DataMover::ExportJob do
       expect(subject.organization_id).to eq(@org.id)
     end
 
-    xit "has granted the org role" do
+    it "has granted the org role" do
       authed_roles = subject
                       .in_database["select s.rolname from pg_roles r
                         join pg_catalog.pg_auth_members m on r.oid=m.member join pg_catalog.pg_roles
@@ -90,7 +88,7 @@ describe CartoDB::DataMover::ExportJob do
     end
   end
 
-  xit "should move a user from an organization to its own account" do
+  it "should move a user from an organization to its own account" do
     org = create_user_mover_test_organization
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
@@ -109,7 +107,7 @@ describe CartoDB::DataMover::ExportJob do
     moved_user.organization_id.should eq nil
   end
 
-  xit "should move a whole organization" do
+  it "should move a whole organization" do
     port = find_available_port
     run_test_server(port)
     Cartodb.config[:org_metadata_api]['port'] = port
@@ -154,7 +152,7 @@ describe CartoDB::DataMover::ExportJob do
     @server_thread.terminate
   end
 
-  xit "should move a whole organization without splitting user schemas" do
+  it "should move a whole organization without splitting user schemas" do
 
     org = create_user_mover_test_organization
     user = create_user(

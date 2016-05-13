@@ -4,7 +4,6 @@ APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
 APP_TYPES = %w(dev open private).freeze
 
 module MobileAppsHelper
-
   def get_mobile_apps_platforms
     {"android"         => { text: "Android", available: true },
      "ios"             => { text: "iOS", available: true  },

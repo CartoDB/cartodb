@@ -24,7 +24,9 @@
   outline: none;
   background: #FFF;
 
-  &:hover { border-color: #AAA; }
+  &:hover {
+    border-color: #AAA;
+  }
 }
 .RadioButton-input.is-checked {
   &::before {
@@ -79,7 +81,9 @@
     border-color: $cStructure-mainLine;
     cursor: default;
   }
-  &:focus { border-color: $cStructure-mainLine; }
+  &:focus {
+    border-color: $cStructure-mainLine;
+  }
 }
 .RadioButton.is-disabled .RadioButton-label {
   @include opacity(0.4);
@@ -91,8 +95,8 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  opacity: 0;
   vertical-align: middle;
+  opacity: 0;
   z-index: 1;
   cursor: pointer;
 }
@@ -118,22 +122,24 @@
 }
 .RadioButtonInput:checked + .RadioButtonInput-face {
   &::before {
-    background: #4A90E2;
     position: absolute;
     top: 3px;
     left: 3px;
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    background: #4A90E2;
     content: '';
   }
 }
 .RadioButtonInput:disabled + .RadioButtonInput-face {
   @include opacity(0.4);
-  &:focus { border-color: $cStructure-mainLine; }
+  &:focus {
+    border-color: $cStructure-mainLine;
+  }
   &:hover {
     border-color: $cStructure-mainLine;
-    cursor:default;
+    cursor: default;
   }
 }
 .RadioButtonInput:hover + .RadioButtonInput-face {

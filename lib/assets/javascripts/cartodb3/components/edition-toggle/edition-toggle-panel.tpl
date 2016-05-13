@@ -1,1 +1,1 @@
-<div class="u-flex-full-height js-content"></div>
+<div class="js-content"></div>

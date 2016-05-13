@@ -22,5 +22,3 @@
     <span class="ColorPicker-inputLabel u-upperCase">A</span>
   </div>
 </div>
-
-<div class="ColorPicker-preview js-preview"></div>

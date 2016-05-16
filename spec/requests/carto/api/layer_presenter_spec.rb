@@ -47,6 +47,14 @@ describe Carto::Api::LayerPresenter do
       style_properties.should be_nil
     end
 
+    it "doesn't autogenerate `style_properties` if type is not mapped" do
+      unknown_type = 'wadus'
+      layer = FactoryGirl.build(:carto_layer, options: options_for_wizard_properties(type: unknown_type))
+      poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+      poro_options['wizard_properties']['type'].should eq unknown_type
+      poro_options['style_properties'].should be_nil
+    end
+
     describe 'simple' do
       it 'is generated from several types' do
         types_generating_simple = %w(polygon bubble cloropeth category torque torque_cat torque_heat)

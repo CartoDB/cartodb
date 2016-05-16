@@ -13,11 +13,15 @@ describe "Carto::Api::LayersController - Carto::Layer" do
 end
 
 describe Carto::Api::LayerPresenter do
-  describe 'wizard_properties' do
-    let(:wizard_properties) do
+  describe 'wizard_properties migration to style_properties' do
+    def wizard_properties(type: 'polygon')
       {
-        "type" => "polygon"
+        "type" => type
       }
+    end
+
+    def options_for_wizard_properties(type: 'polygon')
+      { 'wizard_properties' => wizard_properties(type: type) }
     end
 
     it "autogenerates `style_properties` based on `wizard_properties` if it isn't present" do
@@ -41,6 +45,19 @@ describe Carto::Api::LayerPresenter do
       poro_options['wizard_properties'].should_not be_nil
       style_properties = poro_options['style_properties']
       style_properties.should be_nil
+    end
+
+    describe 'simple' do
+      it 'is generated from several types' do
+        types_generating_simple = %w(polygon bubble cloropeth category torque torque_cat torque_heat)
+        types_generating_simple.each do |type_generating_simple|
+          layer = FactoryGirl.build(:carto_layer, options: options_for_wizard_properties(type: type_generating_simple))
+          poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          poro_options['wizard_properties']['type'].should eq type_generating_simple
+          style_properties = poro_options['style_properties']
+          style_properties['type'].should eq 'simple'
+        end
+      end
     end
   end
 end

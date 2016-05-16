@@ -54,7 +54,7 @@ module CartoDB
 
       file = nil
       if load_file_from_request_body
-        file = filedata_from_params(filename_param, file_param, request_body, random_token)
+        file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         filepath = file.path
       end
 
@@ -71,7 +71,7 @@ module CartoDB
         results[:file_uri] = file_url
       else
         unless load_file_from_request_body
-          file = filedata_from_params(filename_param, file_param, request_body, random_token)
+          file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         end
 
         if use_s3 && do_long_upload
@@ -108,7 +108,7 @@ module CartoDB
 
     private
 
-    def filedata_from_params(filename_param, file_param, request_body, random_token)
+    def filedata_from_params(filename_param, file_param, request_body, random_token, filename)
       case
       when filename_param.present? && request_body.present?
         filedata = filename_param

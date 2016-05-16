@@ -14,8 +14,8 @@ end
 
 describe Carto::Api::LayerPresenter do
   describe 'wizard_properties migration to style_properties' do
-    def wizard_properties(type: 'polygon')
-      { "type" => type }
+    def wizard_properties(type: 'polygon', properties: {})
+      { "type" => type, 'properties' => properties }
     end
 
     def build_layer_with_wizard_properties(properties)
@@ -70,6 +70,42 @@ describe Carto::Api::LayerPresenter do
           poro_options['wizard_properties']['type'].should eq type_generating_simple
           style_properties = poro_options['style_properties']
           style_properties['type'].should eq 'simple'
+        end
+      end
+    end
+
+    describe 'color properties' do
+      COLOR = '#fabada'.freeze
+
+      describe 'polygon-fill, marker-fill' do
+        describe 'become "color fill" structure' do
+          it 'setting opacity 1 if unknown' do
+            %w(polygon-fill marker-fill).each do |property|
+              properties = { property => COLOR }
+              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+
+              options['wizard_properties']['properties'][property].should eq COLOR
+
+              fill_color = options['style_properties']['properties']['fill']['color']
+              fill_color.should eq('fixed' => COLOR, 'opacity' => 1)
+            end
+          end
+
+          it 'setting related opacity if known' do
+            OPACITY = 0.3
+
+            %w(polygon marker).each do |property|
+              properties = { "#{property}-fill" => COLOR, "#{property}-opacity" => OPACITY }
+              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+
+              options['wizard_properties']['properties']["#{property}-fill"].should eq COLOR
+
+              fill_color = options['style_properties']['properties']['fill']['color']
+              fill_color.should eq('fixed' => COLOR, 'opacity' => OPACITY)
+            end
+          end
         end
       end
     end

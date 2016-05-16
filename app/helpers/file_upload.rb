@@ -126,7 +126,7 @@ module CartoDB
         begin
           data = filedata.read.force_encoding(FILE_ENCODING)
         rescue
-          data = request.body.read.force_encoding(FILE_ENCODING)
+          data = request_body.read.force_encoding(FILE_ENCODING)
         end
         save(data, random_token, filename)
       end

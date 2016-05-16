@@ -18,7 +18,11 @@ module CartoDB
       @uploads_path
     end
 
-    def upload_file_to_storage(filename_param: nil, file_param: nil, request_body: nil, s3_config: nil, timestamp: Time.now)
+    def upload_file_to_storage(filename_param: nil,
+                               file_param: nil,
+                               request_body: nil,
+                               s3_config: nil,
+                               timestamp: Time.now)
       results = {
         file_uri: nil,
         enqueue:  true

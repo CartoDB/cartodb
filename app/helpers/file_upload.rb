@@ -94,7 +94,12 @@ module CartoDB
       o = s3_bucket.objects[path]
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
-      o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      content_disposition = s3_config['content-disposition']
+      if content_disposition.present?
+        o.url_for(:get, expires: s3_config['url_ttl'], response_content_disposition: content_disposition).to_s
+      else
+        o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      end
     end
 
     private

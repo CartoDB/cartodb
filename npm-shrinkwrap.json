@@ -1493,11 +1493,6 @@
         }
       }
     },
-    "codemirror": {
-      "version": "5.14.2",
-      "from": "codemirror@*",
-      "resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.14.2.tgz"
-    },
     "jquery": {
       "version": "2.1.4",
       "from": "https://registry.npmjs.org/jquery/-/jquery-2.1.4.tgz",

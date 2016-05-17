@@ -516,7 +516,12 @@
       },
       "components": {
         "fill": "Fill",
-        "stroke": "Stroke",
+        "stroke": {
+          "label": "Stroke",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
         "blending": {
           "label": "Blending",
           "options": {

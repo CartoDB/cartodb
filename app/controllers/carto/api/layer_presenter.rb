@@ -359,10 +359,15 @@ module Carto
 
         %w(polygon marker).each do |prefix|
           fill_color = wpp["#{prefix}-fill"]
-          if fill_color.present?
+          color['fixed'] = fill_color if fill_color.present?
+
+          unless color['opacity']
             opacity = wpp["#{prefix}-opacity"]
-            color['fixed'] = fill_color
-            color['opacity'] = opacity || 1
+            color['opacity'] = opacity if opacity
+          end
+
+          if color['fixed'] && !color['opacity']
+            color['opacity'] = 1
           end
         end
 

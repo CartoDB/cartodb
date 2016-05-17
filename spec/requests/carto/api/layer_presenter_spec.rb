@@ -107,10 +107,10 @@ describe Carto::Api::LayerPresenter do
       end
 
       describe 'bubble' do
-        let(:radius_min) { 10 }
-        let(:radius_max) { 25 }
         let(:property) { "actor_foll" }
         let(:qfunction) { "Quantile" }
+        let(:radius_min) { 10 }
+        let(:radius_max) { 25 }
         let(:bubble_wizard_properties) do
           {
             "type" => "bubble",
@@ -164,6 +164,7 @@ describe Carto::Api::LayerPresenter do
       describe 'choropleth' do
         let(:property) { "actor_foll" }
         let(:number_of_buckets) { 7 }
+        let(:qfunction) { "Quantile" }
         let(:choropleth_wizard_properties) do
           {
             "type" => "choropleth",
@@ -171,29 +172,29 @@ describe Carto::Api::LayerPresenter do
               {
                 "property" => property,
                 "method" => "#{number_of_buckets} Buckets",
-                "qfunction" => "Quantile",
+                "qfunction" => qfunction,
                 "color_ramp" => "red",
-                "marker-opacity": 0.8,
-                "marker-width": 10,
-                "marker-allow-overlap": true,
+                "marker-opacity" =>OPACITY,
+                "marker-width" =>10,
+                "marker-allow-overlap" =>true,
                 "marker-placement" => "point",
                 "marker-type" => "ellipse",
-                "marker-line-width": 1,
+                "marker-line-width" =>1,
                 "marker-line-color" => "#FFF",
-                "marker-line-opacity": 1,
+                "marker-line-opacity" =>1,
                 "marker-comp-op" => "none",
                 "text-name" => "None",
                 "text-face-name" => "DejaVu Sans Book",
-                "text-size": 10,
+                "text-size" =>10,
                 "text-fill" => "#000",
                 "text-halo-fill" => "#FFF",
-                "text-halo-radius": 1,
-                "text-dy": -10,
-                "text-allow-overlap": true,
+                "text-halo-radius" =>1,
+                "text-dy" =>-10,
+                "text-allow-overlap" =>true,
                 "text-placement-type" => "simple",
-                "text-label-position-tolerance": 10,
+                "text-label-position-tolerance" =>10,
                 "text-placement" => "point",
-                "zoom": 4,
+                "zoom" =>4,
                 "geometry_type" => "point"
               }
           }
@@ -215,6 +216,14 @@ describe Carto::Api::LayerPresenter do
 
         it 'method generates bins' do
           expect(@fill_color).to include('bins' => number_of_buckets)
+        end
+
+        it 'qfunction becomes quantification' do
+          expect(@fill_color).to include('quantification' => qfunction)
+        end
+
+        it 'takes opacity from marker-* or polygon-*' do
+          expect(@fill_color).to include('opacity' => OPACITY)
         end
       end
     end

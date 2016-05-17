@@ -333,6 +333,12 @@ module Carto
         hash[key] = value if value.present?
       end
 
+      def apply_direct_mapping(hash, original_hash, mapping)
+        mapping.each do |source, target|
+          set_if_present(hash, target, original_hash[source])
+        end
+      end
+
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
         spp = {}
         wpp = wizard_properties_properties
@@ -379,9 +385,7 @@ module Carto
           color['range'] = [radius_min, radius_max]
         end
 
-        COLOR_DIRECT_MAPPING.each do |source, target|
-          set_if_present(color, target, wpp[source])
-        end
+        apply_direct_mapping(color, wpp, COLOR_DIRECT_MAPPING)
 
         if @source_type == 'bubble'
           color['bins'] = 10
@@ -440,9 +444,7 @@ module Carto
       def generate_labels(wpp)
         labels = {}
 
-        TEXT_DIRECT_MAPPING.each do |source, target|
-          set_if_present(labels, target, wpp[source])
-        end
+        apply_direct_mapping(labels, wpp, TEXT_DIRECT_MAPPING)
 
         set_if_present(labels, 'fill', generate_labels_fill(wpp))
 
@@ -466,9 +468,7 @@ module Carto
       def generate_labels_fill_size(wpp)
         size = {}
 
-        TEXT_SIZE_DIRECT_MAPPING.each do |source, target|
-          set_if_present(size, target, wpp[source])
-        end
+        apply_direct_mapping(size, wpp, TEXT_SIZE_DIRECT_MAPPING)
 
         size
       end

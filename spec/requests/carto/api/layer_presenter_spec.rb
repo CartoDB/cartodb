@@ -74,37 +74,34 @@ describe Carto::Api::LayerPresenter do
       end
     end
 
-    describe 'color properties' do
-      COLOR = '#fabada'.freeze
+    COLOR = '#fabada'.freeze
+    OPACITY = 0.3
 
-      describe 'polygon polygon-fill, marker-fill' do
-        describe 'become "color fill" structure' do
-          it 'setting opacity 1 if unknown' do
-            %w(polygon-fill marker-fill).each do |property|
-              properties = { property => COLOR }
-              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
-              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+    describe 'polygon' do
+      describe 'polygon-fill, marker-fill become "color fill" structure' do
+        it 'setting opacity 1 if unknown' do
+          %w(polygon-fill marker-fill).each do |property|
+            properties = { property => COLOR }
+            layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
 
-              options['wizard_properties']['properties'][property].should eq COLOR
+            options['wizard_properties']['properties'][property].should eq COLOR
 
-              fill_color = options['style_properties']['properties']['fill']['color']
-              fill_color.should eq('fixed' => COLOR, 'opacity' => 1)
-            end
+            fill_color = options['style_properties']['properties']['fill']['color']
+            fill_color.should eq('fixed' => COLOR, 'opacity' => 1)
           end
+        end
 
-          it 'setting related opacity if known' do
-            OPACITY = 0.3
+        it 'setting related opacity if known' do
+          %w(polygon marker).each do |property|
+            properties = { "#{property}-fill" => COLOR, "#{property}-opacity" => OPACITY }
+            layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
 
-            %w(polygon marker).each do |property|
-              properties = { "#{property}-fill" => COLOR, "#{property}-opacity" => OPACITY }
-              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
-              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+            options['wizard_properties']['properties']["#{property}-fill"].should eq COLOR
 
-              options['wizard_properties']['properties']["#{property}-fill"].should eq COLOR
-
-              fill_color = options['style_properties']['properties']['fill']['color']
-              fill_color.should eq('fixed' => COLOR, 'opacity' => OPACITY)
-            end
+            fill_color = options['style_properties']['properties']['fill']['color']
+            fill_color.should eq('fixed' => COLOR, 'opacity' => OPACITY)
           end
         end
       end
@@ -123,8 +120,8 @@ describe Carto::Api::LayerPresenter do
                 "qfunction" => qfunction,
                 "radius_min" => radius_min,
                 "radius_max" => radius_max,
-                "marker-fill" => "#FF5C00",
-                "marker-opacity" => 0.9,
+                "marker-fill" => COLOR,
+                "marker-opacity" => OPACITY,
                 "marker-line-width" => 1,
                 "marker-line-color" => "#FFF",
                 "marker-line-opacity" => 1,
@@ -157,6 +154,10 @@ describe Carto::Api::LayerPresenter do
 
         it 'qfunction becomes quantification' do
           expect(@fill_color).to include('quantification' => qfunction)
+        end
+
+        it 'takes fixed color and opacity from marker-*' do
+          expect(@fill_color).to include('fixed' => COLOR, 'opacity' => OPACITY)
         end
       end
     end

@@ -584,7 +584,7 @@
         },
         "animated-trails": "trails",
         "animated-resolution": "resolution",
-        "animated-steps": "resolution",
+        "animated-steps": "steps",
         "animated-duration": "duration",
       }
     },

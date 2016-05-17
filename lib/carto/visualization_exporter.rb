@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'carto/file_system/sanitize'
+
 module Carto
   class DataExporter
     def initialize(http_client = Carto::Http::Client.get('data_exporter', log_requests: true))
@@ -67,6 +69,7 @@ module Carto
 
   module VisualizationExporter
     include ExporterConfig
+
     DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
     EXPORT_EXTENSION = '.carto.json'.freeze
     CARTO_EXTENSION = '.carto'.freeze
@@ -99,7 +102,7 @@ module Carto
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
-      safe_vis_name = Carto::FileSystem::Sanitize.sanitize_identifier(filename)
+      safe_vis_name = Carto::FileSystem::Sanitize.sanitize_identifier(visualization.name)
 
       filename = "#{safe_vis_name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
 

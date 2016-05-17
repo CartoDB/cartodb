@@ -5,7 +5,7 @@
     <div class="MobilePlan-info">
       <div class="MobilePlan-title--lightGreen"><%= current_user.account_type.capitalize %></div>
 
-      <div class="MobilePlan-subtitle"><%= number_with_delimiter(current_user.mobile_max_open_users+current_user.mobile_max_private_users, delimiter: ",") %> monthly users.</div>
+      <div class="MobilePlan-subtitle"><%= 'Xamarin features enabled. ' if current_user.mobile_xamarin %><%= 'Custom watermark. ' if current_user.mobile_custom_watermark %><%= 'Offline maps. ' if current_user.mobile_offline_maps %><%= 'GIS extension.' if current_user.mobile_gis_extension %></div>
     </div>
   </div>
 </div>

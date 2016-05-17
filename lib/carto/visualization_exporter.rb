@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_dependency 'carto/file_system/sanitize'
+require_relative 'file_system/sanitize'
 
 module Carto
   class DataExporter

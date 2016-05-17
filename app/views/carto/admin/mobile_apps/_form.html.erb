@@ -122,7 +122,7 @@
         <div class="ProgressBar">
           <span class="ProgressBar-bar <%= progress_bar_range(users_bar_width) %>" style="width: <%= users_bar_width %>%"></span>
         </div>
-        <div class="ProgressBar-legend"><%= @mobile_app.monthly_users %><%- if @mobile_app.app_type == "dev" %>/<%= max_users %><% end %> monthly  users</div>
+        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><%- if @mobile_app.app_type == "dev" %>/<%= max_users %><% end %> monthly  users</div>
       </div>
     </div>
 

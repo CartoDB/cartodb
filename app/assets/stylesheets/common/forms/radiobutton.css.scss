@@ -89,16 +89,15 @@
   @include opacity(0.4);
 }
 
-//////////////////////////////////////////////
-
+// CSS-only behaviour
 .RadioButtonInput {
   position: absolute;
   width: 20px;
   height: 20px;
-  opacity: 0;
-  z-index: 1;
-  vertical-align: middle;
   cursor: pointer;
+  opacity: 0;
+  vertical-align: middle;
+  z-index: 1;
 }
 .RadioButtonInput-face {
   position: relative;

@@ -11,7 +11,7 @@
   @include align-items(center);
   @include justify-content(space-between);
   padding: 25px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 .MobilePlan-items {
   @include display-flex();
@@ -21,14 +21,14 @@
   width: 100%;
 }
 .MobilePlan-icon {
-  border-radius: 4px;
   width: 40px;
   height: 40px;
-  line-height: 50px;
-  text-align: center;
   margin-right: 15px;
+  border-radius: 4px;
   border-color: #6BB72E;
   color: #6BB72E;
+  line-height: 50px;
+  text-align: center;
 
   i {
     height: 35px;

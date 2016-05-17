@@ -64,7 +64,9 @@ describe CartoDB::DataMover::ExportJob do
       CartoDB::DataMover::ImportJob.new(
         file: @tmp_path + "user_#{first_user.id}.json", mode: :import, host: '127.0.0.2', target_org: @org.name).run!
 
-      moved_user = ::User.find(username: first_user.username)
+      moved_user = ::User[first_user.id]
+      moved_user.reload # Clean user sequel cache
+
       Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
       moved_user
     end
@@ -102,6 +104,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
 
     moved_user = ::User.find(username: user.username)
+    moved_user.reload
     Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)
     moved_user.organization_id.should eq nil
@@ -143,6 +146,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
 
     moved_user = ::User.find(username: user.username)
+    moved_user.reload
     moved_user.database_host.should eq '127.0.0.2'
     Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)
@@ -172,6 +176,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
 
     moved_user = ::User.find(username: user.username)
+    moved_user.reload
     moved_user.database_host.should eq '127.0.0.2'
     Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
     check_tables(moved_user)

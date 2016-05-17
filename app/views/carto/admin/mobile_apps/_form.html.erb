@@ -47,13 +47,14 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <%- get_mobile_apps_platforms.each do |platform, values| %>
-        <%- is_disabled = ((@mobile_app.persisted? && @mobile_app.platform != platform) || values[:available] === false) ? 'disabled' : '' %>
-        <%- is_checked = (@mobile_app.persisted? && @mobile_app.platform == platform) ? 'checked' : '' %>
+      <%- @mobile_app.data(current_user).each do |platform, values| %>
+        <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+        <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
         <div class="RadioButton u-rspace--20">
           <input class="RadioButtonInput js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
           <span class="RadioButtonInput-face"></span>
-          <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= values[:text] %></label>
+          <label class="RadioButton-label <%= values[:available] === true ? 'dark-color' : '' %>"><%= values[:text] %></label>
         </div>
       <% end %>
     </div>

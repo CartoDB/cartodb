@@ -5,9 +5,7 @@
   <script type="text/javascript">
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
-    var mobile_app_id = "<%= @mobile_app.id %>";
-    var mobile_app_name = "<%= @mobile_app.name %>";
-    var mobile_app_icon = "<%= @mobile_app.icon_url %>";
+    var mobile_app_data = <%= safe_js_object @mobile_app.data(current_user).to_json %>;
     var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
     var authenticity_token = "<%= form_authenticity_token %>";
   </script>

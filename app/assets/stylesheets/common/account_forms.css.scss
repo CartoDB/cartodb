@@ -332,6 +332,15 @@ $sLabel-width: 140px;
 .FormAccount-inputIcon--clock {
   top: 11px;
 }
+.FormAccount-inputIcon--noIcon {
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 100px;
+  color: $cTypography-help;
+  font-size: $sFontSize-normal;
+}
 .FormAccount-inputError {
   @include transition(top, 200ms, ease-in-out);
   position: absolute;

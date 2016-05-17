@@ -24,4 +24,8 @@ class MobileApp
   def persisted?
     id.present?
   end
+
+  def data(current_user)
+    Carto::Api::MobileAppPresenter.new(self, current_user, mobile_platforms: true).data
+  end
 end

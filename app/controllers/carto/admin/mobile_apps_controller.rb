@@ -42,6 +42,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   def create
     @mobile_app = MobileApp.new(params[:mobile_app])
+    @mobile_app.icon_url = get_default_avatar if !@mobile_app.icon_url.present?
 
     unless @mobile_app.valid?
       flash.now[:error] = @mobile_app.errors.full_messages.join(', ')
@@ -143,5 +144,13 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
     redirect_to(CartoDB.url(self, 'mobile_apps'),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
+  end
+
+  def get_default_avatar
+    if Cartodb.config[:app_assets] && Cartodb.config[:app_assets]['asset_host']
+      "//#{Cartodb.config[:app_assets]['asset_host']}/assets/unversioned/images/avatars/mobile_app_default_avatar.png"
+    else
+      "//#{Cartodb.config[:avatars]['base_url']}/mobile_app_default_avatar.png"
+    end
   end
 end

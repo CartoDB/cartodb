@@ -301,12 +301,13 @@ module Carto
     class StylePropertiesGenerator
       def initialize(wizard_properties)
         @wizard_properties = wizard_properties
+        @source_type = @wizard_properties.present? ? @wizard_properties['type'] : nil
       end
 
       def generate
         return nil unless @wizard_properties.present?
 
-        type = STYLE_PROPERTIES_TYPE[@wizard_properties['type']]
+        type = STYLE_PROPERTIES_TYPE[@source_type]
         return nil unless type
 
         {
@@ -375,6 +376,8 @@ module Carto
           value = wpp[source]
           color[target] = value if value
         end
+
+        color['bins'] = 10 if @source_type == 'bubble'
 
         color
       end

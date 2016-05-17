@@ -151,6 +151,10 @@ describe Carto::Api::LayerPresenter do
           expect(@fill_color).to include('attribute' => property)
         end
 
+        it 'bins is set to 10' do
+          expect(@fill_color).to include('bins' => 10)
+        end
+
         it 'qfunction becomes quantification' do
           expect(@fill_color).to include('quantification' => qfunction)
         end

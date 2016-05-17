@@ -113,13 +113,14 @@ describe Carto::Api::LayerPresenter do
         let(:radius_min) { 10 }
         let(:radius_max) { 25 }
         let(:property) { "actor_foll" }
+        let(:qfunction) { "Quantile" }
         let(:bubble_wizard_properties) do
           {
             "type" => "bubble",
             "properties" =>
               {
                 "property" => property,
-                "qfunction" => "Quantile",
+                "qfunction" => qfunction,
                 "radius_min" => radius_min,
                 "radius_max" => radius_max,
                 "marker-fill" => "#FF5C00",
@@ -148,6 +149,10 @@ describe Carto::Api::LayerPresenter do
 
         it 'property becomes attribute' do
           expect(@fill_color).to include('attribute' => property)
+        end
+
+        it 'qfunction becomes quantification' do
+          expect(@fill_color).to include('quantification' => qfunction)
         end
       end
     end

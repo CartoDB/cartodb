@@ -369,6 +369,9 @@ module Carto
         property = wpp['property']
         color['attribute'] = property if property
 
+        qfunction = wpp['qfunction']
+        color['quantification'] = qfunction if qfunction
+
         color
       end
     end

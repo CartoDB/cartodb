@@ -4,7 +4,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     var style = '';
     var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
     var color = colors[Math.floor(Math.random() * colors.length)];
-    var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
+    var stylesByGeometry = this.STYLE_TEMPLATE;
     var geometryType = this.layer.getGeometryType();
     if (geometryType) {
       style = this._getHistGeometry(geometryType)
@@ -25,7 +25,7 @@ var HistogramAutoStyler = AutoStyler.extend({
   },
 
   _getHistGeometry: function (geometryType) {
-    var style = AutoStyler.STYLE_TEMPLATE[geometryType];
+    var style = this.STYLE_TEMPLATE[geometryType];
     var shape = this.dataviewModel.getDistributionType();
     if (geometryType === 'polygon') {
       if (shape === 'F') {

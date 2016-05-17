@@ -3,7 +3,7 @@ var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');
-    var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
+    var stylesByGeometry = this.STYLE_TEMPLATE;
     var geometryType = this.layer.getGeometryType();
     if (geometryType) {
       var ramp = this._generateCategoryRamp(geometryType);

@@ -5,6 +5,8 @@ var AutoStyler = cdb.core.Model.extend({
     this.dataviewModel = dataviewModel;
     this.colors = new CategoryColors();
     this.layer = this.dataviewModel.layer;
+    var basemapStyle = dataviewModel.layer._map.layers.at(0).get('urlTemplate').indexOf('light') > -1? 'LIGHT': 'DARK';
+    this.STYLE_TEMPLATE = AutoStyler['STYLE_TEMPLATE_' + basemapStyle];
   },
 
   _getLayerHeader: function (symbol) {
@@ -14,7 +16,7 @@ var AutoStyler = cdb.core.Model.extend({
 });
 
 //for Light Basemap
-AutoStyler.STYLE_TEMPLATE = {
+AutoStyler.STYLE_TEMPLATE_LIGHT = {
   polygon: ['{{layername}}',
           '  polygon-fill: {{defaultColor}};',
           '  polygon-opacity: 0.9;  ',

@@ -348,6 +348,11 @@ module Carto
         fill
       end
 
+      DIRECT_MAPPING = {
+        'property' => 'attribute',
+        'qfunction' => 'quantification'
+      }.freeze
+
       def generate_color(wpp)
         color = {}
 
@@ -366,11 +371,10 @@ module Carto
           color['range'] = [radius_min, radius_max]
         end
 
-        property = wpp['property']
-        color['attribute'] = property if property
-
-        qfunction = wpp['qfunction']
-        color['quantification'] = qfunction if qfunction
+        DIRECT_MAPPING.each do |source, target|
+          value = wpp[source]
+          color[target] = value if value
+        end
 
         color
       end

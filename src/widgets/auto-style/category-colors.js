@@ -50,7 +50,7 @@ CategoryColors.prototype.getColorByCategory = function (category) {
       return i;
     }
   }
-  return 'A5AA99';
+  return '#A5AA99';
 };
 
 CategoryColors.prototype.getCategoryByColor = function (color) {

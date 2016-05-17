@@ -8,8 +8,8 @@ module Carto
 
       ssl_required :create, :show
 
-      skip_before_filter :api_authorization_required
-      before_filter :optional_api_authorization
+      skip_before_filter :api_authorization_required, only: [:create, :show]
+      before_filter :optional_api_authorization, only: [:create, :show]
 
       before_filter :load_visualization, only: :create
       before_filter :load_visualization_export, only: :show

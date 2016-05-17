@@ -22,8 +22,8 @@ module CartoDB
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
 
-        @import_job_admin_instance = nil
-        @import_job_user_instances = Array.new
+        @org_owner_import_job = nil
+        @user_import_jobs = Array.new
 
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
@@ -59,6 +59,10 @@ module CartoDB
         else
           process_user
         end
+      end
+
+      def organization_import?
+        @pack_config['organization'] != nil
       end
 
       def process_user
@@ -163,10 +167,14 @@ module CartoDB
               create_db(@target_dbname, false)
               run_file_restore_schema("#{@target_username}.schema.sql")
             end
+
           rescue => e
-            remove_user_mover_banner(@pack_config['user']['id'])
-            log_error(e)
-            throw e
+            begin
+              remove_user_mover_banner(@pack_config['user']['id'])
+            ensure
+              log_error(e)
+              throw e
+            end
           end
         end
 
@@ -181,6 +189,10 @@ module CartoDB
             remove_user_mover_banner(@pack_config['user']['id']) if @options[:set_banner]
             throw e
           end
+        end
+
+        if @options[:data]
+          configure_database(@target_dbhost)
         end
 
         if @options[:update_metadata]
@@ -206,18 +218,14 @@ module CartoDB
 
         # We first import the owner. If schemas are not split, this will also import the whole org database
         @logger.info("Importing org owner #{@owner_id}..")
-        @import_job_admin_instance = ImportJob.new(file: @path + "user_#{@owner_id}.json",
+        @org_owner_import_job = ImportJob.new(file: @path + "user_#{@owner_id}.json",
                                                    mode: @options[:mode],
                                                    host: @target_dbhost,
                                                    target_org: @pack_config['organization']['name'],
                                                    logger: @logger, data: @options[:data], metadata: @options[:metadata],
                                                    update_metadata: @options[:update_metadata])
-        @import_job_admin_instance.run!
+        @org_owner_import_job.run!
 
-        # Fix permissions and metadata settings for owner
-        if @options[:update_metadata]
-          update_metadata_org_admin(@owner_id, @target_dbhost)
-        end
 
         @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
           @logger.info("Importing org user #{user['id']}..")
@@ -228,7 +236,7 @@ module CartoDB
                             logger: @logger, data: @options[:data], metadata: @options[:metadata],
                             update_metadata: @options[:update_metadata])
           i.run!
-          @import_job_user_instances << i
+          @user_import_jobs << i
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
@@ -552,10 +560,17 @@ module CartoDB
         metadata_redis_conn.hset("rails:users:#{user}", 'database_name', db)
       end
 
-      def update_metadata_org_admin(owner_id, target_dbhost)
-        owner_user = ::User.find(id: owner_id)
-        owner_user.database_host = target_dbhost
-        owner_user.db_service.setup_organization_owner
+      def configure_database(target_dbhost)
+        # Note: this will change database_host on the user model to perform configuration but will not actually store
+        # the change
+        user_model = ::User.find(username: @target_username)
+        user_model.database_host = target_dbhost
+        user_model.database_name = @target_dbname
+        user_model.organization_id = @target_org_id if @target_org_id != nil
+
+        user_model.db_service.setup_organization_owner if @target_is_owner
+        user_model.db_service.monitor_user_notification # Used to inform the database_server
+        user_model.db_service.configure_database
       end
 
       def update_metadata_user(target_dbhost)
@@ -574,8 +589,6 @@ module CartoDB
             changed_metadata = true
             user_model.reload
           end
-          user_model.db_service.monitor_user_notification
-          user_model.db_service.configure_database
         rescue => e
           if changed_metadata
             update_database_retries(@target_userid, @target_username, orig_dbhost, @target_dbname, 1)
@@ -587,11 +600,9 @@ module CartoDB
       end
 
       def update_metadata(target_dbhost)
-        if @pack_config['organization']
-          @import_job_admin_instance.update_metadata_org_admin(@owner_id, target_dbhost)
-          @import_job_admin_instance.update_metadata_user(target_dbhost)
-
-          @import_job_user_instances.each do |instance|
+        if organization_import?
+          @org_owner_import_job.update_metadata_user(target_dbhost)
+          @user_import_jobs.each do |instance|
             instance.update_metadata_user(target_dbhost)
           end
         else

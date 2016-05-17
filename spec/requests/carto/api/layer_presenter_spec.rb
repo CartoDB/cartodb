@@ -236,6 +236,7 @@ describe Carto::Api::LayerPresenter do
           let(:text_name) { "None" }
           let(:text_face_name) { "DejaVu Sans Book" }
           let(:text_size) { 10 }
+          let(:text_fill) { "#000" }
           let(:text_wizard_properties) do
             {
               "type" => "choropleth",
@@ -244,7 +245,7 @@ describe Carto::Api::LayerPresenter do
                   "text-name" => text_name,
                   "text-face-name" => text_face_name,
                   "text-size" => text_size,
-                  "text-fill" => "#000",
+                  "text-fill" => text_fill,
                   "text-halo-fill" => "#FFF",
                   "text-halo-radius" => 1,
                   "text-dy" => -10,
@@ -285,6 +286,19 @@ describe Carto::Api::LayerPresenter do
 
             it 'text-size generates fill size fixed' do
               expect(@labels_fill_size).to include('fixed' => text_size)
+            end
+
+            it 'text-fill generates fill color fixed and opacity 1 if not present' do
+              expect(@labels_fill_color).to include('fixed' => text_fill, 'opacity' => 1)
+            end
+
+            it 'text-fill generates fill color fixed and opacity if not present' do
+              text_with_opacity = text_wizard_properties
+              text_with_opacity["properties"]["text-opacity"] = OPACITY
+              layer = build_layer_with_wizard_properties(text_with_opacity)
+              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+              labels_fill_color = options['style_properties']['properties']['labels']['fill']['color']
+              expect(labels_fill_color).to include('fixed' => text_fill, 'opacity' => OPACITY)
             end
           end
         end

@@ -339,6 +339,12 @@ module Carto
         end
       end
 
+      def apply_default_opacity(hash)
+        if hash['fixed'] && !hash['opacity']
+          hash['opacity'] = 1
+        end
+      end
+
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
         spp = {}
         wpp = wizard_properties_properties
@@ -374,9 +380,7 @@ module Carto
             set_if_present(color, 'opacity', wpp["#{prefix}-opacity"])
           end
 
-          if color['fixed'] && !color['opacity']
-            color['opacity'] = 1
-          end
+          apply_default_opacity(color)
         end
 
         radius_min = wpp['radius_min']
@@ -457,6 +461,7 @@ module Carto
         labels_fill = {}
 
         set_if_present(labels_fill, 'size', generate_labels_fill_size(wpp))
+        set_if_present(labels_fill, 'color', generate_labels_fill_color(wpp))
 
         labels_fill
       end
@@ -465,12 +470,26 @@ module Carto
         'text-size' => 'fixed'
       }.freeze
 
+      TEXT_COLOR_DIRECT_MAPPING = {
+        'text-fill' => 'fixed',
+        'text-opacity' => 'opacity'
+      }.freeze
+
       def generate_labels_fill_size(wpp)
         size = {}
 
         apply_direct_mapping(size, wpp, TEXT_SIZE_DIRECT_MAPPING)
 
         size
+      end
+
+      def generate_labels_fill_color(wpp)
+        color = {}
+
+        apply_direct_mapping(color, wpp, TEXT_COLOR_DIRECT_MAPPING)
+        apply_default_opacity(color)
+
+        color
       end
     end
   end

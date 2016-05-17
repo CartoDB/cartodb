@@ -1,12 +1,16 @@
 var cdb = require('cartodb.js');
 var CategoryColors = require('./category-colors');
 var AutoStyler = cdb.core.Model.extend({
-  initialize: function (dataviewModel) {
+  initialize: function (dataviewModel, options) {
+    this.options = options || {};
     this.dataviewModel = dataviewModel;
     this.colors = new CategoryColors();
     this.layer = this.dataviewModel.layer;
-    var basemapStyle = dataviewModel.layer._map.layers.at(0).get('urlTemplate').indexOf('light') > -1 ? 'LIGHT' : 'DARK';
-    this.STYLE_TEMPLATE = AutoStyler['STYLE_TEMPLATE_' + basemapStyle];
+    if (this.options.basemap) { // DARK or LIGHT
+      this.STYLE_TEMPLATE = AutoStyler['STYLE_TEMPLATE_' + basemap];
+    } else {
+      this.STYLE_TEMPLATE = AutoStyler.STYLE_TEMPLATE_LIGHT;
+    }
   },
 
   _getLayerHeader: function (symbol) {

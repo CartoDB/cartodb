@@ -68,7 +68,8 @@ module Concerns
           :twitter_datasource_block_price, :twitter_datasource_quota,
           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
-          :obs_snapshot_quota, :obs_snapshot_block_price]
+          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+          :obs_general_block_price]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -77,7 +78,8 @@ module Concerns
           :twitter_datasource_block_price, :twitter_datasource_quota,
           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
-          :obs_snapshot_quota, :obs_snapshot_block_price]
+          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+          :obs_general_block_price]
         end
       elsif self.is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -96,6 +98,7 @@ module Concerns
          :arcgis_datasource_enabled,
          :private_maps_enabled, :here_isolines_quota, :here_isolines_block_price, :soft_here_isolines_limit,
          :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
+         :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
          :mobile_xamarin, :mobile_custom_watermark, :mobile_offline_maps,
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users]
       end
@@ -121,7 +124,8 @@ module Concerns
           :twitter_datasource_enabled, :soft_twitter_datasource_limit,
           :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date,
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
-          :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit
+          :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
+          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit
         )
         case action
         when :create

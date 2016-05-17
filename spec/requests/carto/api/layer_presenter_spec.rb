@@ -108,6 +108,41 @@ describe Carto::Api::LayerPresenter do
           end
         end
       end
+
+      describe 'bubble' do
+        let(:radius_min) { 10 }
+        let(:radius_max) { 25 }
+        let(:bubble_wizard_properties) do
+          {
+            "type" => "bubble",
+            "properties" =>
+              {
+                "property" => "actor_foll",
+                "qfunction" => "Quantile",
+                "radius_min" => radius_min,
+                "radius_max" => radius_max,
+                "marker-fill" => "#FF5C00",
+                "marker-opacity" => 0.9,
+                "marker-line-width" => 1,
+                "marker-line-color" => "#FFF",
+                "marker-line-opacity" => 1,
+                "marker-comp-op" => "none",
+                "zoom" => 4,
+                "geometry_type" => "point",
+                "text-placement-type" => "simple",
+                "text-label-position-tolerance" => 10
+              }
+          }
+        end
+
+        it 'groups radius_min, radius_max into fill color range' do
+          layer = build_layer_with_wizard_properties(bubble_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+
+          fill_color = options['style_properties']['properties']['fill']['color']
+          expect(fill_color).to include('range' => [radius_min, radius_max])
+        end
+      end
     end
   end
 end

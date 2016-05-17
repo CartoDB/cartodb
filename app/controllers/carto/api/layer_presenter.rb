@@ -342,20 +342,31 @@ module Carto
       def generate_fill(wpp)
         fill = {}
 
+        color = generate_color(wpp)
+        fill['color'] = color if color.present?
+
+        fill
+      end
+
+      def generate_color(wpp)
+        color = {}
+
         %w(polygon marker).each do |prefix|
           fill_color = wpp["#{prefix}-fill"]
           if fill_color.present?
             opacity = wpp["#{prefix}-opacity"]
-            fill = {
-              'color' => {
-                'fixed' => fill_color,
-                'opacity' => opacity || 1
-              }
-            }
+            color['fixed'] = fill_color
+            color['opacity'] = opacity || 1
           end
         end
 
-        fill
+        radius_min = wpp['radius_min']
+        radius_max = wpp['radius_max']
+        if radius_min && radius_max
+          color['range'] = [radius_min, radius_max]
+        end
+
+        color
       end
     end
   end

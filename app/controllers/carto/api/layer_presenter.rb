@@ -366,6 +366,9 @@ module Carto
           color['range'] = [radius_min, radius_max]
         end
 
+        property = wpp['property']
+        color['attribute'] = property if property
+
         color
       end
     end

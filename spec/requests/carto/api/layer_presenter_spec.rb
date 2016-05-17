@@ -112,12 +112,13 @@ describe Carto::Api::LayerPresenter do
       describe 'bubble' do
         let(:radius_min) { 10 }
         let(:radius_max) { 25 }
+        let(:property) { "actor_foll" }
         let(:bubble_wizard_properties) do
           {
             "type" => "bubble",
             "properties" =>
               {
-                "property" => "actor_foll",
+                "property" => property,
                 "qfunction" => "Quantile",
                 "radius_min" => radius_min,
                 "radius_max" => radius_max,
@@ -135,12 +136,18 @@ describe Carto::Api::LayerPresenter do
           }
         end
 
-        it 'groups radius_min, radius_max into fill color range' do
+        before(:each) do
           layer = build_layer_with_wizard_properties(bubble_wizard_properties)
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @fill_color = options['style_properties']['properties']['fill']['color']
+        end
 
-          fill_color = options['style_properties']['properties']['fill']['color']
-          expect(fill_color).to include('range' => [radius_min, radius_max])
+        it 'groups radius_min, radius_max into fill color range' do
+          expect(@fill_color).to include('range' => [radius_min, radius_max])
+        end
+
+        it 'property becomes attribute' do
+          expect(@fill_color).to include('attribute' => property)
         end
       end
     end

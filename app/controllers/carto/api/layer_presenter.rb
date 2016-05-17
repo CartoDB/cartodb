@@ -435,7 +435,8 @@ module Carto
       end
 
       TEXT_DIRECT_MAPPING = {
-        'text-name' => 'attribute'
+        'text-name' => 'attribute',
+        'text-face-name' => 'font'
       }.freeze
 
       def generate_labels(wpp)
@@ -446,9 +447,36 @@ module Carto
           labels[target] = value if value
         end
 
+        fill = generate_labels_fill(wpp)
+        labels['fill'] = fill if fill.present?
+
         labels['enabled'] = true if labels.present?
 
         labels
+      end
+
+      def generate_labels_fill(wpp)
+        labels_fill = {}
+
+        labels_fill_size = generate_labels_fill_size(wpp)
+        labels_fill['size'] = labels_fill_size if labels_fill_size.present?
+
+        labels_fill
+      end
+
+      TEXT_SIZE_DIRECT_MAPPING = {
+        'text-size' => 'fixed'
+      }
+
+      def generate_labels_fill_size(wpp)
+        size = {}
+
+        TEXT_SIZE_DIRECT_MAPPING.each do |source, target|
+          value = wpp[source]
+          size[target] = value if value
+        end
+
+        size
       end
     end
   end

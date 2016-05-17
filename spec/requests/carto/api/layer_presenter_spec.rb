@@ -234,14 +234,16 @@ describe Carto::Api::LayerPresenter do
 
         describe 'with text-* properties' do
           let(:text_name) { "None" }
+          let(:text_face_name) { "DejaVu Sans Book" }
+          let(:text_size) { 10 }
           let(:text_wizard_properties) do
             {
               "type" => "choropleth",
               "properties" =>
                 {
                   "text-name" => text_name,
-                  "text-face-name" => "DejaVu Sans Book",
-                  "text-size" => 10,
+                  "text-face-name" => text_face_name,
+                  "text-size" => text_size,
                   "text-fill" => "#000",
                   "text-halo-fill" => "#FFF",
                   "text-halo-radius" => 1,
@@ -267,6 +269,23 @@ describe Carto::Api::LayerPresenter do
 
           it 'text-name generates attribute' do
             expect(@labels).to include('attribute' => text_name)
+          end
+
+          it 'text-face-name generates font' do
+            expect(@labels).to include('font' => text_face_name)
+          end
+
+          describe 'fill' do
+            before(:each) do
+              @labels_fill = @labels['fill']
+              @labels_fill.should_not be_nil
+              @labels_fill_size = @labels_fill['size']
+              @labels_fill_color = @labels_fill['color']
+            end
+
+            it 'text-size generates fill size fixed' do
+              expect(@labels_fill_size).to include('fixed' => text_size)
+            end
           end
         end
       end

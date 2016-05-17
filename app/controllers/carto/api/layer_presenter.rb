@@ -442,7 +442,10 @@ module Carto
 
       TEXT_DIRECT_MAPPING = {
         'text-name' => 'attribute',
-        'text-face-name' => 'font'
+        'text-face-name' => 'font',
+        'text-dy' => 'offset',
+        'text-allow-overlap' => 'overlap',
+        'text-placement-type' => 'placement'
       }.freeze
 
       def generate_labels(wpp)
@@ -502,7 +505,7 @@ module Carto
         labels_halo
       end
 
-      HALP_SIZE_DIRECT_MAPPING = {
+      HALO_SIZE_DIRECT_MAPPING = {
         'text-halo-radius' => 'fixed'
       }.freeze
 
@@ -514,7 +517,7 @@ module Carto
       def generate_labels_halo_size(wpp)
         size = {}
 
-        apply_direct_mapping(size, wpp, HALP_SIZE_DIRECT_MAPPING)
+        apply_direct_mapping(size, wpp, HALO_SIZE_DIRECT_MAPPING)
 
         size
       end

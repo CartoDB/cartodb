@@ -239,6 +239,9 @@ describe Carto::Api::LayerPresenter do
           let(:text_fill) { "#000" }
           let(:text_halo_radius) { 1 }
           let(:text_halo_fill) { "#ABC" }
+          let(:text_dy) { -10 }
+          let(:text_allow_overlap) { true }
+          let(:text_placement_type) { "simple" }
           let(:text_wizard_properties) do
             {
               "type" => "choropleth",
@@ -250,9 +253,9 @@ describe Carto::Api::LayerPresenter do
                   "text-fill" => text_fill,
                   "text-halo-fill" => text_halo_fill,
                   "text-halo-radius" => text_halo_radius,
-                  "text-dy" => -10,
-                  "text-allow-overlap" => true,
-                  "text-placement-type" => "simple",
+                  "text-dy" => text_dy,
+                  "text-allow-overlap" => text_allow_overlap,
+                  "text-placement-type" => text_placement_type,
                   "text-label-position-tolerance" => 10,
                   "text-placement" => "point"
                 }
@@ -276,6 +279,18 @@ describe Carto::Api::LayerPresenter do
 
           it 'text-face-name generates font' do
             expect(@labels).to include('font' => text_face_name)
+          end
+
+          it 'text-dy generates offset' do
+            expect(@labels).to include('offset' => text_dy)
+          end
+
+          it 'text-allow-overlap generates overlap' do
+            expect(@labels).to include('overlap' => text_allow_overlap)
+          end
+
+          it 'text-placement-type generates placement' do
+            expect(@labels).to include('placement' => text_placement_type)
           end
 
           describe 'fill' do

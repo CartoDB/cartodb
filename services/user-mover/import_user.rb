@@ -54,7 +54,7 @@ module CartoDB
       end
 
       def run!
-        if !@pack_config['organization'].nil?
+        if @pack_config['organization']
           process_org
         else
           process_user
@@ -587,7 +587,7 @@ module CartoDB
       end
 
       def update_metadata(target_dbhost)
-        if !@pack_config['organization'].nil?
+        if @pack_config['organization']
           @import_job_admin_instance.update_metadata_org_admin(@owner_id, target_dbhost)
           @import_job_admin_instance.update_metadata_user(target_dbhost)
 

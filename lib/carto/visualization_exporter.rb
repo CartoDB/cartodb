@@ -99,7 +99,9 @@ module Carto
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
-      filename = "#{visualization.name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
+      safe_vis_name = Carto::FileSystem::Sanitize.sanitize_identifier(filename)
+
+      filename = "#{safe_vis_name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
 
       `cd #{export_dir}/ && zip -r \"#{filename}\" #{visualization_id} && cd -`
 

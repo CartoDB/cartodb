@@ -77,7 +77,7 @@ describe Carto::Api::LayerPresenter do
     describe 'color properties' do
       COLOR = '#fabada'.freeze
 
-      describe 'polygon-fill, marker-fill' do
+      describe 'polygon polygon-fill, marker-fill' do
         describe 'become "color fill" structure' do
           it 'setting opacity 1 if unknown' do
             %w(polygon-fill marker-fill).each do |property|

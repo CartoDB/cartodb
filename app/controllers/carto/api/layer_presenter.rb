@@ -337,6 +337,9 @@ module Carto
         fill = generate_fill(wpp)
         spp['fill'] = fill if fill.present?
 
+        labels = generate_labels(wpp)
+        spp['labels'] = labels if labels.present?
+
         spp
       end
 
@@ -349,7 +352,7 @@ module Carto
         fill
       end
 
-      DIRECT_MAPPING = {
+      COLOR_DIRECT_MAPPING = {
         'property' => 'attribute',
         'qfunction' => 'quantification'
       }.freeze
@@ -377,7 +380,7 @@ module Carto
           color['range'] = [radius_min, radius_max]
         end
 
-        DIRECT_MAPPING.each do |source, target|
+        COLOR_DIRECT_MAPPING.each do |source, target|
           value = wpp[source]
           color[target] = value if value
         end
@@ -429,6 +432,23 @@ module Carto
 
         number_match = method.match(/(\d*) Buckets/i)
         number_match && number_match[1] ? number_match[1] : DEFAULT_BINS
+      end
+
+      TEXT_DIRECT_MAPPING = {
+        'text-name' => 'attribute'
+      }.freeze
+
+      def generate_labels(wpp)
+        labels = {}
+
+        TEXT_DIRECT_MAPPING.each do |source, target|
+          value = wpp[source]
+          labels[target] = value if value
+        end
+
+        labels['enabled'] = true if labels.present?
+
+        labels
       end
     end
   end

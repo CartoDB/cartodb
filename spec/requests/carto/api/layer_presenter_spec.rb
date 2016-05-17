@@ -183,17 +183,6 @@ describe Carto::Api::LayerPresenter do
                 "marker-line-color" => "#FFF",
                 "marker-line-opacity" =>1,
                 "marker-comp-op" => "none",
-                "text-name" => "None",
-                "text-face-name" => "DejaVu Sans Book",
-                "text-size" =>10,
-                "text-fill" => "#000",
-                "text-halo-fill" => "#FFF",
-                "text-halo-radius" =>1,
-                "text-dy" =>-10,
-                "text-allow-overlap" =>true,
-                "text-placement-type" => "simple",
-                "text-label-position-tolerance" =>10,
-                "text-placement" => "point",
                 "zoom" =>4,
                 "geometry_type" => "point"
               }
@@ -224,6 +213,61 @@ describe Carto::Api::LayerPresenter do
 
         it 'takes opacity from marker-* or polygon-*' do
           expect(@fill_color).to include('opacity' => OPACITY)
+        end
+      end
+
+      describe 'labels' do
+        describe 'without text-* properties' do
+          let(:no_text_wizard_properties) do
+            {
+              "type" => "choropleth",
+              "properties" => { "property" => 'actor_foll' }
+            }
+          end
+
+          it 'does not generate any label' do
+            layer = build_layer_with_wizard_properties(no_text_wizard_properties)
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+            options['style_properties']['properties']['labels'].should be_nil
+          end
+        end
+
+        describe 'with text-* properties' do
+          let(:text_name) { "None" }
+          let(:text_wizard_properties) do
+            {
+              "type" => "choropleth",
+              "properties" =>
+                {
+                  "text-name" => text_name,
+                  "text-face-name" => "DejaVu Sans Book",
+                  "text-size" => 10,
+                  "text-fill" => "#000",
+                  "text-halo-fill" => "#FFF",
+                  "text-halo-radius" => 1,
+                  "text-dy" => -10,
+                  "text-allow-overlap" => true,
+                  "text-placement-type" => "simple",
+                  "text-label-position-tolerance" => 10,
+                  "text-placement" => "point"
+                }
+            }
+          end
+
+          before(:each) do
+            layer = build_layer_with_wizard_properties(text_wizard_properties)
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+            @labels = options['style_properties']['properties']['labels']
+          end
+
+          it 'generates labels' do
+            @labels.should_not be_nil
+            @labels['enabled'].should be_true
+          end
+
+          it 'text-name generates attribute' do
+            expect(@labels).to include('attribute' => text_name)
+          end
         end
       end
     end

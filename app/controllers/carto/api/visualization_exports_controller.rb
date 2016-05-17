@@ -8,6 +8,9 @@ module Carto
 
       ssl_required :create, :show
 
+      skip_before_filter :api_authorization_required
+      before_filter :optional_api_authorization
+
       before_filter :load_visualization, only: :create
       before_filter :load_visualization_export, only: :show
 
@@ -16,7 +19,7 @@ module Carto
       rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        user = Carto::User.find(current_user.id)
+        user = current_user ? Carto::User.find(current_user.id) : nil
         visualization_export = Carto::VisualizationExport.new(
           visualization: @visualization,
           user: user,
@@ -27,7 +30,7 @@ module Carto
           else
             CartoDB::Logger.warning(
               message: 'Validation error creating visualization export',
-              user: current_user,
+              user: user,
               visualization: @visualization.id,
               user_tables_ids: params[:user_tables_ids]
             )
@@ -56,7 +59,8 @@ module Carto
         id = uuid_parameter(:id)
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
-        raise Carto::UnauthorizedError.new unless @visualization_export.user_id == current_user.id
+        export_user_id = @visualization_export.user_id
+        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_user.id
       end
     end
   end

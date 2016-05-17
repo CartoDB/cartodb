@@ -451,6 +451,7 @@ module Carto
         apply_direct_mapping(labels, wpp, TEXT_DIRECT_MAPPING)
 
         set_if_present(labels, 'fill', generate_labels_fill(wpp))
+        set_if_present(labels, 'halo', generate_labels_halo(wpp))
 
         labels['enabled'] = true if labels.present?
 
@@ -487,6 +488,41 @@ module Carto
         color = {}
 
         apply_direct_mapping(color, wpp, TEXT_COLOR_DIRECT_MAPPING)
+        apply_default_opacity(color)
+
+        color
+      end
+
+      def generate_labels_halo(wpp)
+        labels_halo = {}
+
+        set_if_present(labels_halo, 'size', generate_labels_halo_size(wpp))
+        set_if_present(labels_halo, 'color', generate_labels_halo_color(wpp))
+
+        labels_halo
+      end
+
+      HALP_SIZE_DIRECT_MAPPING = {
+        'text-halo-radius' => 'fixed'
+      }.freeze
+
+      HALO_COLOR_DIRECT_MAPPING = {
+        'text-halo-fill' => 'fixed',
+        'text-halo-opacity' => 'opacity'
+      }.freeze
+
+      def generate_labels_halo_size(wpp)
+        size = {}
+
+        apply_direct_mapping(size, wpp, HALP_SIZE_DIRECT_MAPPING)
+
+        size
+      end
+
+      def generate_labels_halo_color(wpp)
+        color = {}
+
+        apply_direct_mapping(color, wpp, HALO_COLOR_DIRECT_MAPPING)
         apply_default_opacity(color)
 
         color

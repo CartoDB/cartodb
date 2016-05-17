@@ -184,7 +184,7 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer geometry is %{inputGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "option-types": {
           "buffer": {
             "title": "Buffer",

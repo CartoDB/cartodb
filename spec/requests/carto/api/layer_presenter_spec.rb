@@ -162,13 +162,15 @@ describe Carto::Api::LayerPresenter do
       end
 
       describe 'choropleth' do
+        let(:property) { "actor_foll" }
+        let(:number_of_buckets) { 7 }
         let(:choropleth_wizard_properties) do
           {
             "type" => "choropleth",
             "properties" =>
               {
-                "property" => "actor_foll",
-                "method" => "7 Buckets",
+                "property" => property,
+                "method" => "#{number_of_buckets} Buckets",
                 "qfunction" => "Quantile",
                 "color_ramp" => "red",
                 "marker-opacity": 0.8,
@@ -205,6 +207,14 @@ describe Carto::Api::LayerPresenter do
 
         it 'transform color ramp  to color array in range' do
           expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+        end
+
+        it 'property becomes attribute' do
+          expect(@fill_color).to include('attribute' => property)
+        end
+
+        it 'method generates bins' do
+          expect(@fill_color).to include('bins' => number_of_buckets)
         end
       end
     end

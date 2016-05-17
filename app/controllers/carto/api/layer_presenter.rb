@@ -383,6 +383,7 @@ module Carto
 
         if @source_type == 'choropleth'
           color['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
+          color['bins'] = extract_bins_from_method(wpp['method']).to_i
         end
 
         color
@@ -414,6 +415,15 @@ module Carto
         return [] unless ramp
 
         COLOR_ARRAYS_FROM_RAMPS[ramp]
+      end
+
+      DEFAULT_BINS = 6
+
+      def extract_bins_from_method(method)
+        return DEFAULT_BINS unless method
+
+        number_match = method.match(/(\d*) Buckets/i)
+        number_match && number_match[1] ? number_match[1] : DEFAULT_BINS
       end
     end
   end

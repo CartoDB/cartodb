@@ -322,7 +322,7 @@ module Carto
       STYLE_PROPERTIES_TYPE = {
         'polygon' => 'simple',
         'bubble' => 'simple',
-        'cloropeth' => 'simple',
+        'choropleth' => 'simple',
         'category' => 'simple',
         'torque' => 'simple',
         'torque_cat' => 'simple',
@@ -377,9 +377,43 @@ module Carto
           color[target] = value if value
         end
 
-        color['bins'] = 10 if @source_type == 'bubble'
+        if @source_type == 'bubble'
+          color['bins'] = 10
+        end
+
+        if @source_type == 'choropleth'
+          color['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
+        end
 
         color
+      end
+
+      # Taken from `lib/assets/javascripts/cartodb/models/color_ramps.js`
+      COLOR_ARRAYS_FROM_RAMPS = {
+        'pink' => "['#E7E1EF', '#C994C7', '#DD1C77']",
+        'red' => "['#FFEDA0', '#FEB24C', '#F03B20']",
+        'black' => "['#F0F0F0', '#BDBDBD', '#636363']",
+        'green' => "['#E5F5F9', '#99D8C9', '#2CA25F']",
+        'blue' => "['#EDF8B1', '#7FCDBB', '#2C7FB8']",
+        'inverted_pink' => "['#DD1C77','#C994C7','#E7E1EF']",
+        'inverted_red' => "['#F03B20','#FEB24C','#FFEDA0']",
+        'inverted_black' => "['#636363','#BDBDBD','#F0F0F0']",
+        'inverted_green' => "['#2CA25F','#99D8C9','#E5F5F9']",
+        'inverted_blue' => "['#2C7FB8','#7FCDBB','#EDF8B1']",
+        'spectrum1' => "['#1a9850', '#fff2cc', '#d73027']",
+        'spectrum2' => "['#0080ff', '#fff2cc', '#ff4d4d']",
+        'blue_states' => "['#ECF0F6', '#6182B5', '#43618F']",
+        'purple_states' => "['#F1E6F1', '#B379B3', '#8A4E8A']",
+        'red_states' => "['#F2D2D3', '#D4686C', '#C1373C']",
+        'inverted_blue_states' => "['#43618F', '#6182B5', '#ECF0F6']",
+        'inverted_purple_states' => "['#8A4E8A', '#B379B3', '#F1E6F1']",
+        'inverted_red_states' => "['#C1373C', '#D4686C', '#F2D2D3']"
+      }.freeze
+
+      def colorbrewer_ramp_array_from_color_ramp(ramp)
+        return [] unless ramp
+
+        COLOR_ARRAYS_FROM_RAMPS[ramp]
       end
     end
   end

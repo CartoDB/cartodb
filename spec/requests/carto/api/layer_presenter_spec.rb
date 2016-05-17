@@ -63,7 +63,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'simple' do
       it 'is generated from several types' do
-        types_generating_simple = %w(polygon bubble cloropeth category torque torque_cat torque_heat)
+        types_generating_simple = %w(polygon bubble choropleth category torque torque_cat torque_heat)
         types_generating_simple.each do |type_generating_simple|
           layer = build_layer_with_wizard_properties('type' => type_generating_simple)
           poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
@@ -158,6 +158,53 @@ describe Carto::Api::LayerPresenter do
 
         it 'takes fixed color and opacity from marker-*' do
           expect(@fill_color).to include('fixed' => COLOR, 'opacity' => OPACITY)
+        end
+      end
+
+      describe 'choropleth' do
+        let(:choropleth_wizard_properties) do
+          {
+            "type" => "choropleth",
+            "properties" =>
+              {
+                "property" => "actor_foll",
+                "method" => "7 Buckets",
+                "qfunction" => "Quantile",
+                "color_ramp" => "red",
+                "marker-opacity": 0.8,
+                "marker-width": 10,
+                "marker-allow-overlap": true,
+                "marker-placement" => "point",
+                "marker-type" => "ellipse",
+                "marker-line-width": 1,
+                "marker-line-color" => "#FFF",
+                "marker-line-opacity": 1,
+                "marker-comp-op" => "none",
+                "text-name" => "None",
+                "text-face-name" => "DejaVu Sans Book",
+                "text-size": 10,
+                "text-fill" => "#000",
+                "text-halo-fill" => "#FFF",
+                "text-halo-radius": 1,
+                "text-dy": -10,
+                "text-allow-overlap": true,
+                "text-placement-type" => "simple",
+                "text-label-position-tolerance": 10,
+                "text-placement" => "point",
+                "zoom": 4,
+                "geometry_type" => "point"
+              }
+          }
+        end
+
+        before(:each) do
+          layer = build_layer_with_wizard_properties(choropleth_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @fill_color = options['style_properties']['properties']['fill']['color']
+        end
+
+        it 'transform color ramp  to color array in range' do
+          expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
         end
       end
     end

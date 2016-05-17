@@ -29,7 +29,9 @@ module Carto
               message: 'Validation error creating visualization export',
               user: current_user,
               visualization: @visualization.id,
-              user_tables_ids: params[:user_tables_ids]
+              user_tables_ids: params[:user_tables_ids],
+              visualization_export: visualization_export.inspect,
+              error_messages: visualization_export.errors.full_messages
             )
             raise Carto::UnprocesableEntityError.new("Errors: #{visualization_export.errors.full_messages}")
           end

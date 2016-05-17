@@ -22,7 +22,6 @@ module CartoDB
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
 
-        @org_owner_import_job = nil
         @user_import_jobs = Array.new
 
         @start = Time.now
@@ -216,19 +215,14 @@ module CartoDB
           grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
-        # We first import the owner. If schemas are not split, this will also import the whole org database
-        @logger.info("Importing org owner #{@owner_id}..")
-        @org_owner_import_job = ImportJob.new(file: @path + "user_#{@owner_id}.json",
-                                              mode: @options[:mode],
-                                              host: @target_dbhost,
-                                              target_org: @pack_config['organization']['name'],
-                                              logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                                              update_metadata: @options[:update_metadata])
-        @org_owner_import_job.run!
 
-        @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
-          @logger.info("Importing org user #{user['id']}..")
-          i = ImportJob.new(file: @path + "user_#{user['id']}.json",
+        org_user_ids = @pack_config['users'].map{|u| u['id']}
+        # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
+        org_user_ids = org_user_ids.insert(0, org_user_ids.delete(@owner_id))
+
+        org_user_ids.each do |user|
+          @logger.info("Importing org user #{user}..")
+          i = ImportJob.new(file: @path + "user_#{user}.json",
                             mode: @options[:mode],
                             host: @target_dbhost,
                             target_org: @pack_config['organization']['name'],
@@ -596,16 +590,20 @@ module CartoDB
         end
       end
 
-      def update_metadata(target_dbhost)
+      def update_metadata_org(target_dbhost)
+        @user_import_jobs.each do |instance|
+          instance.update_metadata_user(target_dbhost)
+        end
+      end
+
+      def update_metadata(target_dbhost = @target_dbhost)
         if organization_import?
-          @org_owner_import_job.update_metadata_user(target_dbhost)
-          @user_import_jobs.each do |instance|
-            instance.update_metadata_user(target_dbhost)
-          end
+          update_metadata_org(target_dbhost)
         else
           update_metadata_user(target_dbhost)
         end
       end
+
 
       def importjob_logger
         @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")

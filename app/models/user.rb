@@ -80,12 +80,14 @@ class User < Sequel::Model
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
+  OBS_GENERAL_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
+  DEFAULT_OBS_GENERAL_QUOTA = 0
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
@@ -129,6 +131,7 @@ class User < Sequel::Model
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
+    errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
   end
 
   def organization_validation
@@ -179,6 +182,7 @@ class User < Sequel::Model
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
+    self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
   end
 
   def before_create
@@ -466,7 +470,10 @@ class User < Sequel::Model
         limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
         over_obs_snapshot = u.get_obs_snapshot_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot
+        limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
+        over_obs_general = u.get_obs_general_calls > limit
+
+        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
           users_overquota.push(u)
         end
     end
@@ -803,6 +810,20 @@ class User < Sequel::Model
     self[:soft_obs_snapshot_limit] = !val
   end
 
+  def soft_obs_general_limit?
+    Carto::AccountType.new.soft_obs_general_limit?(self)
+  end
+  alias_method :soft_obs_general_limit, :soft_obs_general_limit?
+
+  def hard_obs_general_limit?
+    !soft_obs_general_limit?
+  end
+  alias_method :hard_obs_general_limit, :hard_obs_general_limit?
+
+  def hard_obs_general_limit=(val)
+    self[:soft_obs_general_limit] = !val
+  end
+
   def arcgis_datasource_enabled?
     self.arcgis_datasource_enabled == true
   end
@@ -867,6 +888,8 @@ class User < Sequel::Model
       'soft_here_isolines_limit', soft_here_isolines_limit,
       'obs_snapshot_quota', obs_snapshot_quota,
       'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
+      'obs_general_quota', obs_general_quota,
+      'soft_obs_general_limit', soft_obs_general_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date
@@ -933,6 +956,11 @@ class User < Sequel::Model
     get_user_obs_snapshot_data(self, date_from, date_to)
   end
 
+  def get_obs_general_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_obs_general_data(self, date_from, date_to)
+  end
+
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
   end
@@ -972,6 +1000,15 @@ class User < Sequel::Model
       remaining = organization.remaining_obs_snapshot_quota
     else
       remaining = obs_snapshot_quota - get_obs_snapshot_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_general_quota
+    if organization.present?
+      remaining = organization.remaining_obs_general_quota
+    else
+      remaining = obs_general_quota - get_obs_general_calls
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1479,7 +1516,8 @@ class User < Sequel::Model
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
       :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
       :here_isolines_block_price, :soft_here_isolines_limit, :obs_snapshot_quota,
-      :obs_snapshot_block_price, :soft_obs_snapshot_limit
+      :obs_snapshot_block_price, :soft_obs_snapshot_limit, :obs_general_quota,
+      :obs_general_block_price, :soft_obs_general_limit
     ])
     to.invite_token = ::User.make_token
   end

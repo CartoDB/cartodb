@@ -46,6 +46,10 @@ module Carto
           account_creator.with_soft_obs_snapshot_limit(create_params[:soft_obs_snapshot_limit])
         end
 
+        if create_params[:soft_obs_general_limit].present?
+          account_creator.with_soft_obs_general_limit(create_params[:soft_obs_general_limit])
+        end
+
         if create_params[:soft_twitter_datasource_limit].present?
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
@@ -113,13 +117,13 @@ module Carto
       # TODO: Use native strong params when in Rails 4+
       def create_params
         permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
+               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
         permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
+               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
       end
     end
   end

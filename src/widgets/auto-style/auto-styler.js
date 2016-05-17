@@ -7,7 +7,7 @@ var AutoStyler = cdb.core.Model.extend({
     this.colors = new CategoryColors();
     this.layer = this.dataviewModel.layer;
     if (this.options.basemap) { // DARK or LIGHT
-      this.STYLE_TEMPLATE = AutoStyler['STYLE_TEMPLATE_' + basemap];
+      this.STYLE_TEMPLATE = AutoStyler['STYLE_TEMPLATE_' + this.options.basemap];
     } else {
       this.STYLE_TEMPLATE = AutoStyler.STYLE_TEMPLATE_LIGHT;
     }

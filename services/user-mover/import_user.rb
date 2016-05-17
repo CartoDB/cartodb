@@ -219,13 +219,12 @@ module CartoDB
         # We first import the owner. If schemas are not split, this will also import the whole org database
         @logger.info("Importing org owner #{@owner_id}..")
         @org_owner_import_job = ImportJob.new(file: @path + "user_#{@owner_id}.json",
-                                                   mode: @options[:mode],
-                                                   host: @target_dbhost,
-                                                   target_org: @pack_config['organization']['name'],
-                                                   logger: @logger, data: @options[:data], metadata: @options[:metadata],
-                                                   update_metadata: @options[:update_metadata])
+                                              mode: @options[:mode],
+                                              host: @target_dbhost,
+                                              target_org: @pack_config['organization']['name'],
+                                              logger: @logger, data: @options[:data], metadata: @options[:metadata],
+                                              update_metadata: @options[:update_metadata])
         @org_owner_import_job.run!
-
 
         @pack_config['users'].reject { |u| u['id'] == @owner_id }.each do |user|
           @logger.info("Importing org user #{user['id']}..")
@@ -365,7 +364,7 @@ module CartoDB
         run_command("cat #{@path}#{file} | psql -v ON_ERROR_STOP=1 #{conn_string(@config[:dbuser], @config[:dbhost], @config[:dbport], @config[:dbname])}")
       end
 
-      def run_file_restore_postgres(file, sections=nil)
+      def run_file_restore_postgres(file, sections = nil)
         command = "pg_restore -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
@@ -513,17 +512,15 @@ module CartoDB
       end
 
       def update_database_retries(userid, username, db_host, db_name, retries = 1)
-        begin
-          update_database(userid, username, db_host, db_name)
-        rescue => e
-          @logger.error "Error updating database"
-          if retries > 0
-            @logger.info "Retrying..."
-            update_database_retries(userid, username, db_host, db_name, retries - 1)
-          else
-            @logger.info "No more retries"
-            throw e
-          end
+        update_database(userid, username, db_host, db_name)
+      rescue => e
+        @logger.error "Error updating database"
+        if retries > 0
+          @logger.info "Retrying..."
+          update_database_retries(userid, username, db_host, db_name, retries - 1)
+        else
+          @logger.info "No more retries"
+          throw e
         end
       end
 
@@ -566,7 +563,7 @@ module CartoDB
         user_model = ::User.find(username: @target_username)
         user_model.database_host = target_dbhost
         user_model.database_name = @target_dbname
-        user_model.organization_id = @target_org_id if @target_org_id != nil
+        user_model.organization_id = @target_org_id if !@target_org_id.nil?
 
         user_model.db_service.setup_organization_owner if @target_is_owner
         user_model.db_service.monitor_user_notification # Used to inform the database_server

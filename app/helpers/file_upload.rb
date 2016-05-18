@@ -22,7 +22,8 @@ module CartoDB
                                file_param: nil,
                                request_body: nil,
                                s3_config: nil,
-                               timestamp: Time.now)
+                               timestamp: Time.now,
+                               allow_spaces: false)
       results = {
         file_uri: nil,
         enqueue:  true
@@ -45,7 +46,7 @@ module CartoDB
         return results
       end
 
-      filename = filename.gsub(/ /, '_')
+      filename = filename.tr(' ', '_') unless allow_spaces
 
       random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
 

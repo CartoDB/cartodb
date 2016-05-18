@@ -7,7 +7,7 @@ describe('widgets/category/category-colors', function () {
   });
 
   it('should generate colors from the beginning', function () {
-    expect(_.size(this.model.colors)).toBe(6);
+    expect(_.size(this.model.colors)).toBe(5);
   });
 
   describe('updateData', function () {
@@ -25,7 +25,7 @@ describe('widgets/category/category-colors', function () {
     it('should unset color<>category if that category is not present in the new data', function () {
       this.model.updateData(['ES', 'IT', 'PT', 'FR', 'AND', 'LUX', 'SUZ', 'SWD']);
       var color = this.model.getColorByCategory('PT');
-      expect(this.model.getColorByCategory('PT')).not.toBe('#E1C221');
+      expect(this.model.getColorByCategory('PT')).not.toBe('#A5AA99');
       this.model.updateData(['FR', 'AND']);
       expect(this.model.getCategoryByColor(color)).toBe(null);
     });
@@ -42,41 +42,30 @@ describe('widgets/category/category-colors', function () {
       var color = this.model.getColorByCategory('IT');
       this.model.updateData(['ES', 'PT', 'FR', 'AND', 'NOR']);
       expect(this.model.getColorByCategory('NOR')).toBe(color);
-      expect(this.model.getColorByCategory('IT')).toBe('#E1C221');
-    });
-
-    it('should not change colors if data changes but there is no new categories', function () {
-      this.model.updateData(['ES', 'IT', 'PT', 'FR', 'AND', 'LUX', 'SUZ', 'SWD']);
-      var luxColor = this.model.getColorByCategory('LUX');
-      var andColor = this.model.getColorByCategory('AND');
-      var esColor = this.model.getColorByCategory('ES');
-      this.model.updateData(['LUX', 'AND', 'ES']);
-      expect(this.model.getColorByCategory('LUX')).toBe(luxColor);
-      expect(this.model.getColorByCategory('AND')).toBe(andColor);
-      expect(this.model.getColorByCategory('ES')).toBe(esColor);
+      expect(this.model.getColorByCategory('IT')).toBe('#A5AA99');
     });
   });
 
   describe('getColorByCategory', function () {
     it('should return the color from a category', function () {
       this.model.updateData(_generateData(7));
-      expect(this.model.getColorByCategory('CAT3')).not.toBe('#E1C221');
-      expect(this.model.getColorByCategory('CAT2')).not.toBe('#E1C221');
+      expect(this.model.getColorByCategory('CAT3')).not.toBe('#A5AA99');
+      expect(this.model.getColorByCategory('CAT2')).not.toBe('#A5AA99');
     });
 
     it('should return a default color if that category has not a color set', function () {
       this.model.updateData(_generateData(9));
-      expect(this.model.getColorByCategory('CAT8')).toBe('#E1C221');
-      expect(this.model.getColorByCategory('CAT9')).toBe('#E1C221');
-      expect(this.model.getColorByCategory('@')).toBe('#E1C221');
+      expect(this.model.getColorByCategory('CAT8')).toBe('#A5AA99');
+      expect(this.model.getColorByCategory('CAT9')).toBe('#A5AA99');
+      expect(this.model.getColorByCategory('@')).toBe('#A5AA99');
     });
   });
 
   describe('getCategoryByColor', function () {
     it('should return the category from a color', function () {
       this.model.updateData(_generateData(10));
-      expect(this.model.getCategoryByColor('#2CA095')).not.toBeUndefined();
-      expect(this.model.getCategoryByColor('#559030')).not.toBeUndefined();
+      expect(this.model.getCategoryByColor('#3969AC')).not.toBeUndefined();
+      expect(this.model.getCategoryByColor('#11A579')).not.toBeUndefined();
     });
 
     it('should return undefined if color is not defined', function () {

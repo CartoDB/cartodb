@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var CartoColor = require('CartoColor');
+var CartoColor = require('cartocolor');
 var colorScales = [CartoColor.Bold[5]]; // Demo colors
 
 /**

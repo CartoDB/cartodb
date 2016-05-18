@@ -73,11 +73,12 @@ describe CartoDB::DataMover::ExportJob do
 
     it_behaves_like "a migrated user"
 
-    it "matches old and new user except database_name" do
-      expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
-        .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :organization_id, :database_schema].include? x })
+    it "matches old and new user except database_name and database_host" do
+      expect(first_user.as_json.reject { |x| [:updated_at, :database_name, :database_host, :organization_id, :database_schema].include? x })
+        .to eq(subject.as_json.reject { |x| [:updated_at, :database_name, :database_host, :organization_id, :database_schema].include? x })
       expect(subject.database_name).to eq(@org.owner.database_name)
       expect(subject.database_schema).to eq(subject.username)
+      expect(subject.database_host).to eq('127.0.0.2')
       expect(subject.organization_id).to eq(@org.id)
     end
 
@@ -101,7 +102,7 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path, schema_mode: true)
     CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
     CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :rollback).run!
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, host: '127.0.0.2').run!
 
     moved_user = ::User.find(username: user.username)
     moved_user.reload
@@ -199,7 +200,8 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.new(
       file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2',
       drop_database: true, drop_roles: true).run!
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, update_metadata: false).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, host: '127.0.0.2',
+                                      update_metadata: false).run!
 
     new_user = ::User.find(username: user.username)
 
@@ -214,9 +216,9 @@ module Helpers
     CartoDB::DataMover::ExportJob.new(id: user.username, path: @tmp_path)
     CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
     CartoDB::DataMover::ImportJob.new(
-      file: @tmp_path + "user_#{user.id}.json", mode: :rollback, host: '127.0.0.2',
+      file: @tmp_path + "user_#{user.id}.json", mode: :rollback,
       drop_database: true, drop_roles: true).run!
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import).run!
+    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "user_#{user.id}.json", mode: :import, host: '127.0.0.2').run!
     ::User.find(username: user.username)
   end
 

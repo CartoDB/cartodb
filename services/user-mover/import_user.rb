@@ -86,9 +86,9 @@ module CartoDB
             @target_dbname = user_database(@target_userid)
             @target_is_owner = true
           else
-            # We find the configuration data for the owner
+            # We fill the missing configuration data for the owner
             organization_owner_data = get_user_info(organization_data['owner_id'])
-            @target_dbhost = organization_owner_data['database_host']
+            @target_dbhost = @options[:host] || organization_owner_data['database_host']
             @target_dbname = organization_owner_data['database_name']
             @target_is_owner = false
           end
@@ -251,7 +251,7 @@ module CartoDB
                         mode: :rollback,
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, metadata: true, data: false).run!
+                        logger: @logger, metadata: @options[:metadata], data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         if @options[:data]

@@ -74,34 +74,36 @@ describe Carto::Api::LayerPresenter do
       end
     end
 
-    COLOR = '#fabada'.freeze
-    OPACITY = 0.3
+    describe 'wizard migration' do
+      COLOR = '#fabada'.freeze
+      OPACITY = 0.3
 
-    describe 'polygon' do
-      describe 'polygon-fill, marker-fill become "color fill" structure' do
-        it 'setting opacity 1 if unknown' do
-          %w(polygon-fill marker-fill).each do |property|
-            properties = { property => COLOR }
-            layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
-            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+      describe 'polygon' do
+        describe 'polygon-fill, marker-fill become "color fill" structure' do
+          it 'setting opacity 1 if unknown' do
+            %w(polygon-fill marker-fill).each do |property|
+              properties = { property => COLOR }
+              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
 
-            options['wizard_properties']['properties'][property].should eq COLOR
+              options['wizard_properties']['properties'][property].should eq COLOR
 
-            fill_color = options['style_properties']['properties']['fill']['color']
-            fill_color.should eq('fixed' => COLOR, 'opacity' => 1)
+              fill_color = options['style_properties']['properties']['fill']['color']
+              fill_color.should eq('fixed' => COLOR, 'opacity' => 1)
+            end
           end
-        end
 
-        it 'setting related opacity if known' do
-          %w(polygon marker).each do |property|
-            properties = { "#{property}-fill" => COLOR, "#{property}-opacity" => OPACITY }
-            layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
-            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          it 'setting related opacity if known' do
+            %w(polygon marker).each do |property|
+              properties = { "#{property}-fill" => COLOR, "#{property}-opacity" => OPACITY }
+              layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
+              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
 
-            options['wizard_properties']['properties']["#{property}-fill"].should eq COLOR
+              options['wizard_properties']['properties']["#{property}-fill"].should eq COLOR
 
-            fill_color = options['style_properties']['properties']['fill']['color']
-            fill_color.should eq('fixed' => COLOR, 'opacity' => OPACITY)
+              fill_color = options['style_properties']['properties']['fill']['color']
+              fill_color.should eq('fixed' => COLOR, 'opacity' => OPACITY)
+            end
           end
         end
       end
@@ -215,134 +217,134 @@ describe Carto::Api::LayerPresenter do
           expect(@fill_color).to include('opacity' => OPACITY)
         end
       end
+    end
 
-      describe 'labels' do
-        describe 'without text-* properties' do
-          let(:no_text_wizard_properties) do
-            {
-              "type" => "choropleth",
-              "properties" => { "property" => 'actor_foll' }
-            }
+    describe 'labels' do
+      describe 'without text-* properties' do
+        let(:no_text_wizard_properties) do
+          {
+            "type" => "choropleth",
+            "properties" => { "property" => 'actor_foll' }
+          }
+        end
+
+        it 'does not generate any label' do
+          layer = build_layer_with_wizard_properties(no_text_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          options['style_properties']['properties']['labels'].should be_nil
+        end
+      end
+
+      describe 'with text-* properties' do
+        let(:text_name) { "None" }
+        let(:text_face_name) { "DejaVu Sans Book" }
+        let(:text_size) { 10 }
+        let(:text_fill) { "#000" }
+        let(:text_halo_radius) { 1 }
+        let(:text_halo_fill) { "#ABC" }
+        let(:text_dy) { -10 }
+        let(:text_allow_overlap) { true }
+        let(:text_placement_type) { "simple" }
+        let(:text_wizard_properties) do
+          {
+            "type" => "choropleth",
+            "properties" =>
+              {
+                "text-name" => text_name,
+                "text-face-name" => text_face_name,
+                "text-size" => text_size,
+                "text-fill" => text_fill,
+                "text-halo-fill" => text_halo_fill,
+                "text-halo-radius" => text_halo_radius,
+                "text-dy" => text_dy,
+                "text-allow-overlap" => text_allow_overlap,
+                "text-placement-type" => text_placement_type,
+                "text-label-position-tolerance" => 10,
+                "text-placement" => "point"
+              }
+          }
+        end
+
+        before(:each) do
+          layer = build_layer_with_wizard_properties(text_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @labels = options['style_properties']['properties']['labels']
+        end
+
+        it 'generates labels' do
+          @labels.should_not be_nil
+          @labels['enabled'].should be_true
+        end
+
+        it 'text-name generates attribute' do
+          expect(@labels).to include('attribute' => text_name)
+        end
+
+        it 'text-face-name generates font' do
+          expect(@labels).to include('font' => text_face_name)
+        end
+
+        it 'text-dy generates offset' do
+          expect(@labels).to include('offset' => text_dy)
+        end
+
+        it 'text-allow-overlap generates overlap' do
+          expect(@labels).to include('overlap' => text_allow_overlap)
+        end
+
+        it 'text-placement-type generates placement' do
+          expect(@labels).to include('placement' => text_placement_type)
+        end
+
+        describe 'fill' do
+          before(:each) do
+            @labels_fill = @labels['fill']
+            @labels_fill.should_not be_nil
+            @labels_fill_size = @labels_fill['size']
+            @labels_fill_color = @labels_fill['color']
           end
 
-          it 'does not generate any label' do
-            layer = build_layer_with_wizard_properties(no_text_wizard_properties)
+          it 'text-size generates fill size fixed' do
+            expect(@labels_fill_size).to include('fixed' => text_size)
+          end
+
+          it 'text-fill generates fill color fixed and opacity 1 if not present' do
+            expect(@labels_fill_color).to include('fixed' => text_fill, 'opacity' => 1)
+          end
+
+          it 'text-fill generates fill color fixed and opacity if present' do
+            text_with_opacity = text_wizard_properties
+            text_with_opacity["properties"]["text-opacity"] = OPACITY
+            layer = build_layer_with_wizard_properties(text_with_opacity)
             options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-            options['style_properties']['properties']['labels'].should be_nil
+            labels_fill_color = options['style_properties']['properties']['labels']['fill']['color']
+            expect(labels_fill_color).to include('fixed' => text_fill, 'opacity' => OPACITY)
           end
         end
 
-        describe 'with text-* properties' do
-          let(:text_name) { "None" }
-          let(:text_face_name) { "DejaVu Sans Book" }
-          let(:text_size) { 10 }
-          let(:text_fill) { "#000" }
-          let(:text_halo_radius) { 1 }
-          let(:text_halo_fill) { "#ABC" }
-          let(:text_dy) { -10 }
-          let(:text_allow_overlap) { true }
-          let(:text_placement_type) { "simple" }
-          let(:text_wizard_properties) do
-            {
-              "type" => "choropleth",
-              "properties" =>
-                {
-                  "text-name" => text_name,
-                  "text-face-name" => text_face_name,
-                  "text-size" => text_size,
-                  "text-fill" => text_fill,
-                  "text-halo-fill" => text_halo_fill,
-                  "text-halo-radius" => text_halo_radius,
-                  "text-dy" => text_dy,
-                  "text-allow-overlap" => text_allow_overlap,
-                  "text-placement-type" => text_placement_type,
-                  "text-label-position-tolerance" => 10,
-                  "text-placement" => "point"
-                }
-            }
-          end
-
+        describe 'halo' do
           before(:each) do
-            layer = build_layer_with_wizard_properties(text_wizard_properties)
+            @labels_halo = @labels['halo']
+            @labels_halo.should_not be_nil
+            @labels_halo_size = @labels_halo['size']
+            @labels_halo_color = @labels_halo['color']
+          end
+
+          it 'text-halo-radius generates halo size fixed' do
+            expect(@labels_halo_size).to include('fixed' => text_halo_radius)
+          end
+
+          it 'text-halo-fill generates halo color fixed and opacity 1 if not present' do
+            expect(@labels_halo_color).to include('fixed' => text_halo_fill, 'opacity' => 1)
+          end
+
+          it 'text-halo-fill generates fill color fixed and opacity if present' do
+            halo_with_opacity = text_wizard_properties
+            halo_with_opacity["properties"]["text-halo-opacity"] = OPACITY
+            layer = build_layer_with_wizard_properties(halo_with_opacity)
             options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-            @labels = options['style_properties']['properties']['labels']
-          end
-
-          it 'generates labels' do
-            @labels.should_not be_nil
-            @labels['enabled'].should be_true
-          end
-
-          it 'text-name generates attribute' do
-            expect(@labels).to include('attribute' => text_name)
-          end
-
-          it 'text-face-name generates font' do
-            expect(@labels).to include('font' => text_face_name)
-          end
-
-          it 'text-dy generates offset' do
-            expect(@labels).to include('offset' => text_dy)
-          end
-
-          it 'text-allow-overlap generates overlap' do
-            expect(@labels).to include('overlap' => text_allow_overlap)
-          end
-
-          it 'text-placement-type generates placement' do
-            expect(@labels).to include('placement' => text_placement_type)
-          end
-
-          describe 'fill' do
-            before(:each) do
-              @labels_fill = @labels['fill']
-              @labels_fill.should_not be_nil
-              @labels_fill_size = @labels_fill['size']
-              @labels_fill_color = @labels_fill['color']
-            end
-
-            it 'text-size generates fill size fixed' do
-              expect(@labels_fill_size).to include('fixed' => text_size)
-            end
-
-            it 'text-fill generates fill color fixed and opacity 1 if not present' do
-              expect(@labels_fill_color).to include('fixed' => text_fill, 'opacity' => 1)
-            end
-
-            it 'text-fill generates fill color fixed and opacity if present' do
-              text_with_opacity = text_wizard_properties
-              text_with_opacity["properties"]["text-opacity"] = OPACITY
-              layer = build_layer_with_wizard_properties(text_with_opacity)
-              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-              labels_fill_color = options['style_properties']['properties']['labels']['fill']['color']
-              expect(labels_fill_color).to include('fixed' => text_fill, 'opacity' => OPACITY)
-            end
-          end
-
-          describe 'halo' do
-            before(:each) do
-              @labels_halo = @labels['halo']
-              @labels_halo.should_not be_nil
-              @labels_halo_size = @labels_halo['size']
-              @labels_halo_color = @labels_halo['color']
-            end
-
-            it 'text-halo-radius generates halo size fixed' do
-              expect(@labels_halo_size).to include('fixed' => text_halo_radius)
-            end
-
-            it 'text-halo-fill generates halo color fixed and opacity 1 if not present' do
-              expect(@labels_halo_color).to include('fixed' => text_halo_fill, 'opacity' => 1)
-            end
-
-            it 'text-halo-fill generates fill color fixed and opacity if present' do
-              halo_with_opacity = text_wizard_properties
-              halo_with_opacity["properties"]["text-halo-opacity"] = OPACITY
-              layer = build_layer_with_wizard_properties(halo_with_opacity)
-              options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-              labels_halo_color = options['style_properties']['properties']['labels']['halo']['color']
-              expect(labels_halo_color).to include('fixed' => text_halo_fill, 'opacity' => OPACITY)
-            end
+            labels_halo_color = options['style_properties']['properties']['labels']['halo']['color']
+            expect(labels_halo_color).to include('fixed' => text_halo_fill, 'opacity' => OPACITY)
           end
         end
       end

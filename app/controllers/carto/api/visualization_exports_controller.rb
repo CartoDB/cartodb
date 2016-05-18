@@ -8,8 +8,8 @@ module Carto
 
       ssl_required :create, :show
 
-      skip_before_filter :api_authorization_required
-      before_filter :optional_api_authorization
+      skip_before_filter :api_authorization_required, only: [:create, :show]
+      before_filter :optional_api_authorization, only: [:create, :show]
 
       before_filter :load_visualization, only: :create
       before_filter :load_visualization_export, only: :show
@@ -32,7 +32,9 @@ module Carto
               message: 'Validation error creating visualization export',
               user: user,
               visualization: @visualization.id,
-              user_tables_ids: params[:user_tables_ids]
+              user_tables_ids: params[:user_tables_ids],
+              visualization_export: visualization_export.inspect,
+              error_messages: visualization_export.errors.full_messages
             )
             raise Carto::UnprocesableEntityError.new("Errors: #{visualization_export.errors.full_messages}")
           end

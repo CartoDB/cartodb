@@ -345,10 +345,16 @@ module Carto
         end
       end
 
+      PROPERTIES_DIRECT_MAPPING = {
+        "marker-comp-op" => "blending"
+      }.freeze
+
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
         spp = {}
         wpp = wizard_properties_properties
         return spp unless wpp
+
+        apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
         set_if_present(spp, 'fill', generate_fill(wpp))
 

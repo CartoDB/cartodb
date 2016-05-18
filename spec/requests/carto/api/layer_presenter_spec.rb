@@ -113,6 +113,7 @@ describe Carto::Api::LayerPresenter do
         let(:qfunction) { "Quantile" }
         let(:radius_min) { 10 }
         let(:radius_max) { 25 }
+        let(:marker_comp_op) { "multiply" }
         let(:bubble_wizard_properties) do
           {
             "type" => "bubble",
@@ -131,7 +132,8 @@ describe Carto::Api::LayerPresenter do
                 "zoom" => 4,
                 "geometry_type" => "point",
                 "text-placement-type" => "simple",
-                "text-label-position-tolerance" => 10
+                "text-label-position-tolerance" => 10,
+                "marker-comp-op" => marker_comp_op
               }
           }
         end
@@ -139,7 +141,12 @@ describe Carto::Api::LayerPresenter do
         before(:each) do
           layer = build_layer_with_wizard_properties(bubble_wizard_properties)
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-          @fill_color = options['style_properties']['properties']['fill']['color']
+          @properties = options['style_properties']['properties']
+          @fill_color = @properties['fill']['color']
+        end
+
+        it 'marker-comp-op becomes blending' do
+          expect(@properties).to include('blending' => marker_comp_op)
         end
 
         it 'groups radius_min, radius_max into fill color range' do

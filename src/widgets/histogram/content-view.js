@@ -37,7 +37,7 @@ module.exports = cdb.core.View.extend({
 
     var dropdown = new DropdownView({
       model: this.model,
-      target: this.$('.js-actions'),
+      target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
         normalizeHistogram: true

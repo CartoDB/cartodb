@@ -45,7 +45,6 @@ which should be fixed manually.
 * Full visualization export (metadata + data). Example: `bundle exec rake cartodb:vizs:export_full_visualization['5478433b-b791-419c-91d9-d934c56f2053']` (replace the id with the visualization that you want to export).
   * New configuration parameter: `exporter.exporter_temporal_folder`. Default value: `/tmp/exporter`. See `app_config.yml.sample`.
   * Geopackage internal format.
-* Full visualization/map export of public maps.
 * Full visualization export API. Needed configuration changes:
   * New Resque queue: `exports`.
   * `exporter.uploads_path` (`public/uploads`, for example).

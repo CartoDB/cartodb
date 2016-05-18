@@ -197,12 +197,17 @@ module CartoDB
           decorate_with_data(layer.options, @decoration_data)
         else
           data = {
-            sql:                wrap(sql_from(layer.options), layer.options),
             layer_name:         name_for(layer),
             cartocss:           css_from(layer.options),
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
+          source = layer.options['source']
+          if options[:for_named_map] && source
+            data[:source] = { id: source }
+          else
+            data[:sql] = wrap(sql_from(layer.options), layer.options)
+          end
 
           data = decorate_with_data(data, @decoration_data)
 

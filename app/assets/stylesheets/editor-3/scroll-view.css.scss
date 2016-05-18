@@ -1,0 +1,64 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.ScrollView {
+  margin-top: -19px;
+
+  &,
+  .ScrollView-wrapper {
+    position: relative;
+    margin-right: -10px;
+    margin-left: -10px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .ScrollView-content {
+    padding: 18px 0;
+  }
+}
+
+.ScrollView-shadow {
+  display: none;
+  position: absolute;
+  right: -15px;
+  left: -15px;
+  height: 18px;
+  overflow: hidden;
+  z-index: 20;
+
+  &::before {
+    display: block;
+    height: 1px;
+    box-shadow: 0 3px 10px #666;
+    content: '';
+  }
+}
+
+.ScrollView-shadow--top {
+  top: 0;
+}
+
+.ScrollView-shadow--bottom {
+  @include transform(scaleY(-1));
+  bottom: 0;
+}
+
+.has-both-shadow {
+  .ScrollView-shadow--top,
+  .ScrollView-shadow--bottom {
+    display: block;
+  }
+}
+
+.has-top-shadow {
+  .ScrollView-shadow--top {
+    display: block;
+  }
+}
+
+.has-bottom-shadow {
+  .ScrollView-shadow--bottom {
+    display: block;
+  }
+}

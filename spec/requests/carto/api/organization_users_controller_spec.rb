@@ -15,7 +15,8 @@ describe Carto::Api::OrganizationUsersController do
       user.soft_geocoding_limit,
       user.soft_twitter_datasource_limit,
       user.soft_here_isolines_limit,
-      user.soft_obs_snapshot_limit
+      user.soft_obs_snapshot_limit,
+      user.soft_obs_general_limit
     ]
   end
 
@@ -24,6 +25,7 @@ describe Carto::Api::OrganizationUsersController do
     user.soft_twitter_datasource_limit = soft_limits[1]
     user.soft_here_isolines_limit = soft_limits[2]
     user.soft_obs_snapshot_limit = soft_limits[3]
+    user.soft_obs_general_limit = soft_limits[4]
   end
 
   def replace_soft_limits(user, soft_limits)
@@ -38,14 +40,16 @@ describe Carto::Api::OrganizationUsersController do
                 soft_geocoding_limit: soft_limit,
                 soft_twitter_datasource_limit: soft_limit,
                 soft_here_isolines_limit: soft_limit,
-                soft_obs_snapshot_limit: soft_limit)
+                soft_obs_snapshot_limit: soft_limit,
+                soft_obs_general_limit: soft_limit)
   end
 
   def user_params(username = nil,
                   soft_geocoding_limit: false,
                   soft_twitter_datasource_limit: nil,
                   soft_here_isolines_limit: nil,
-                  soft_obs_snapshot_limit: nil)
+                  soft_obs_snapshot_limit: nil,
+                  soft_obs_general_limit: nil)
 
     params = {
       password: '2{Patrañas}',
@@ -59,6 +63,7 @@ describe Carto::Api::OrganizationUsersController do
     params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
     params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     params[:soft_obs_snapshot_limit] = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
+    params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
 
     params
   end
@@ -68,6 +73,7 @@ describe Carto::Api::OrganizationUsersController do
     user.soft_twitter_datasource_limit.should eq value
     user.soft_here_isolines_limit.should eq value
     user.soft_obs_snapshot_limit.should eq value
+    user.soft_obs_general_limit.should eq value
   end
 
   before(:each) do
@@ -169,8 +175,8 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
-    it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit and obs_snapshot_limit if owner has them' do
-      replace_soft_limits(@organization.owner, [true, true, true, true])
+    it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
+      replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
       username = 'soft-limits-true-user'
@@ -188,8 +194,8 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
-    it 'can disable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit and obs_snapshot_limit if owner has them' do
-      replace_soft_limits(@organization.owner, [true, true, true, true])
+    it 'can disable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
+      replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
       username = 'soft-limits-false-user'
@@ -207,8 +213,8 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
-    it 'cannot enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit or obs_snapshot_limit if owner has not them' do
-      replace_soft_limits(@organization.owner, [false, false, false, false])
+    it 'cannot enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit or obs_general_limit if owner has not them' do
+      replace_soft_limits(@organization.owner, [false, false, false, false, false])
 
       login(@organization.owner)
       username = 'soft-limits-true-invalid-user'
@@ -217,7 +223,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
-      errors.count.should eq 4
+      errors.count.should eq 5
 
       @organization.reload
       @organization.users.detect { |u| u.username == username }.should be_nil
@@ -352,8 +358,8 @@ describe Carto::Api::OrganizationUsersController do
       user_to_update.quota_in_bytes.should == 2048
     end
 
-    it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit and obs_snapshot_limit if owner has them' do
-      replace_soft_limits(@organization.owner, [true, true, true, true])
+    it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
+      replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
       user_to_update = @organization.users[0]
@@ -368,8 +374,8 @@ describe Carto::Api::OrganizationUsersController do
       verify_soft_limits(user_to_update, true)
     end
 
-    it 'can disable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit and obs_snapshot_limit if owner has them' do
-      replace_soft_limits(@organization.owner, [true, true, true, true])
+    it 'can disable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
+      replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
       user_to_update = @organization.users[0]
@@ -384,8 +390,8 @@ describe Carto::Api::OrganizationUsersController do
       verify_soft_limits(user_to_update, false)
     end
 
-    it 'cannot enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit and obs_snapshot_limit if owner has not them' do
-      replace_soft_limits(@organization.owner, [false, false, false, false])
+    it 'cannot enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has not them' do
+      replace_soft_limits(@organization.owner, [false, false, false, false, false])
 
       login(@organization.owner)
       user_to_update = @organization.users[0]
@@ -397,7 +403,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should eq 410
       errors = JSON.parse(last_response.body)
-      errors.count.should eq 4
+      errors.count.should eq 5
 
       user_to_update.reload
       verify_soft_limits(user_to_update, false)

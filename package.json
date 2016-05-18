@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.84",
+  "version": "3.23.86",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -33,10 +33,13 @@
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
+    "backbone-undo": "0.2.5",
+    "bootstrap-colorpicker": "^2.3.3",
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
+    "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
@@ -84,8 +87,7 @@
     "markdown": "./vendor/assets/javascripts/markdown.js",
     "dragster": "./vendor/assets/javascripts/dragster.js",
     "dropzone": "./vendor/assets/javascripts/dropzone.js",
-    "datepicker": "./vendor/assets/javascripts/datepicker.js",
-    "colorpicker": "./vendor/assets/javascripts/colorpicker.js"
+    "datepicker": "./vendor/assets/javascripts/datepicker.js"
   },
   "browserify-shim": {
     "jquery-cdb-v3": "global:$",

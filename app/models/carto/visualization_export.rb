@@ -77,7 +77,7 @@ module Carto
     end
 
     def visualization_exportable_by_user?
-      errors.add(:user, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+      errors.add(:user, 'Must be viewable by the user') unless visualization.is_viewable_by_user?(user)
     end
 
     def user_tables_ids_valid?

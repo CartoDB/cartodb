@@ -47,7 +47,8 @@ module Carto
 
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
-        s3_config: s3_config
+        s3_config: s3_config,
+        allow_spaces: true
       )
 
       url = results[:file_uri]

@@ -174,16 +174,16 @@ describe Carto::Api::LayerPresenter do
                 "method" => "#{number_of_buckets} Buckets",
                 "qfunction" => qfunction,
                 "color_ramp" => "red",
-                "marker-opacity" =>OPACITY,
-                "marker-width" =>10,
-                "marker-allow-overlap" =>true,
+                "marker-opacity" => OPACITY,
+                "marker-width" => 10,
+                "marker-allow-overlap" => true,
                 "marker-placement" => "point",
                 "marker-type" => "ellipse",
-                "marker-line-width" =>1,
+                "marker-line-width" => 1,
                 "marker-line-color" => "#FFF",
-                "marker-line-opacity" =>1,
+                "marker-line-opacity" => 1,
                 "marker-comp-op" => "none",
-                "zoom" =>4,
+                "zoom" => 4,
                 "geometry_type" => "point"
               }
           }

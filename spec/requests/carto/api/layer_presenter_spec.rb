@@ -149,24 +149,26 @@ describe Carto::Api::LayerPresenter do
           expect(@properties).to include('blending' => marker_comp_op)
         end
 
-        it 'groups radius_min, radius_max into fill color range' do
-          expect(@fill_color).to include('range' => [radius_min, radius_max])
-        end
+        describe 'fill' do
+          it 'groups radius_min, radius_max into fill color range' do
+            expect(@fill_color).to include('range' => [radius_min, radius_max])
+          end
 
-        it 'property becomes attribute' do
-          expect(@fill_color).to include('attribute' => property)
-        end
+          it 'property becomes attribute' do
+            expect(@fill_color).to include('attribute' => property)
+          end
 
-        it 'bins is set to 10' do
-          expect(@fill_color).to include('bins' => 10)
-        end
+          it 'bins is set to 10' do
+            expect(@fill_color).to include('bins' => 10)
+          end
 
-        it 'qfunction becomes quantification' do
-          expect(@fill_color).to include('quantification' => qfunction)
-        end
+          it 'qfunction becomes quantification' do
+            expect(@fill_color).to include('quantification' => qfunction)
+          end
 
-        it 'takes fixed color and opacity from marker-*' do
-          expect(@fill_color).to include('fixed' => COLOR, 'opacity' => OPACITY)
+          it 'takes fixed color and opacity from marker-*' do
+            expect(@fill_color).to include('fixed' => COLOR, 'opacity' => OPACITY)
+          end
         end
       end
 
@@ -204,24 +206,26 @@ describe Carto::Api::LayerPresenter do
           @fill_color = options['style_properties']['properties']['fill']['color']
         end
 
-        it 'transform color ramp  to color array in range' do
-          expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
-        end
+        describe 'fill' do
+          it 'transform color ramp  to color array in range' do
+            expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+          end
 
-        it 'property becomes attribute' do
-          expect(@fill_color).to include('attribute' => property)
-        end
+          it 'property becomes attribute' do
+            expect(@fill_color).to include('attribute' => property)
+          end
 
-        it 'method generates bins' do
-          expect(@fill_color).to include('bins' => number_of_buckets)
-        end
+          it 'method generates bins' do
+            expect(@fill_color).to include('bins' => number_of_buckets)
+          end
 
-        it 'qfunction becomes quantification' do
-          expect(@fill_color).to include('quantification' => qfunction)
-        end
+          it 'qfunction becomes quantification' do
+            expect(@fill_color).to include('quantification' => qfunction)
+          end
 
-        it 'takes opacity from marker-* or polygon-*' do
-          expect(@fill_color).to include('opacity' => OPACITY)
+          it 'takes opacity from marker-* or polygon-*' do
+            expect(@fill_color).to include('opacity' => OPACITY)
+          end
         end
       end
     end

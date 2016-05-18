@@ -128,7 +128,6 @@ describe Carto::Api::LayerPresenter do
                 "marker-line-width" => 1,
                 "marker-line-color" => "#FFF",
                 "marker-line-opacity" => 1,
-                "marker-comp-op" => "none",
                 "zoom" => 4,
                 "geometry_type" => "point",
                 "text-placement-type" => "simple",

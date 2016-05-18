@@ -334,7 +334,7 @@ module CartoDB
       }.freeze
 
       def self.dataview_data(widget)
-        options = widget.options_json
+        options = widget.options
         options[:aggregationColumn] = options[:aggregation_column]
         options.delete(:aggregation_column)
 

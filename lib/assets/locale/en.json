@@ -161,7 +161,7 @@
     },
     "likes-pluralize": "like |||| likes",
     "custom-list": {
-      "placeholder": "Select a %{typeLabel}",
+      "placeholder": "Search by %{typeLabel}",
       "no-items": "There is no %{typeLabel} items",
       "no-results": "No %{typeLabel} results found with '%{query}'"
     },
@@ -394,7 +394,13 @@
       "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
     },
     "backbone-forms": {
-      "interval-error": "Value must between %{minValue} and %{maxValue}"
+      "select": {
+        "placeholder": "Select a %{keyAttr}"
+      },
+      "operators": {
+        "count-message": "If you select COUNT all columns are selected"
+      },
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
     }
   },
   "data": {
@@ -479,6 +485,112 @@
           "title-label": "Show items",
           "description": "Add items"
         }
+      }
+    },
+    "style": {
+      "types": {
+        "none": "none",
+        "simple": "simple",
+        "hexabins": "hexabins",
+        "squares": "squares",
+        "regions": "Adm. Regions",
+        "heatmap": "heatmap"
+      },
+      "style-form": {
+        "type": {
+          "title-label": "Aggregation"
+        },
+        "aggregation": {
+          "title-label": "Aggregation Options",
+          "desc": "Configure how the aggregation works"
+        },
+        "properties": {
+          "title-label": "Style",
+          "desc": "Change the visualization"
+        }
+      },
+      "messages": {
+        "fetched": "Schema fetched, select a style",
+        "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
+        "unavailable": "There was a problem getting schema, try to reload",
+      },
+      "components": {
+        "fill": "Fill",
+        "stroke": {
+          "label": "Stroke",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "blending": {
+          "label": "Blending",
+          "options": {
+            "none": "none",
+            "darken": "darken",
+            "lighten": "lighten",
+            "color-dodge": "color-dodge",
+            "color-burn": "color-burn",
+            "multiply": "multiply",
+            "screen": "screen",
+            "overlay": "overlay"
+          }
+        },
+        "aggregation-resolution": "Resolution",
+        "aggregation-value": "Value",
+        "aggregation-size": "Size",
+        "aggregation-dataset": "Admin. level",
+        "labels-enabled": {
+          "label": "labels",
+          "not-with-animated": "It won't be available with animated"
+        },
+        "labels-attribute": {
+          "label": "column",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "labels-font": "font",
+        "labels-offset": "offset",
+        "labels-fill": "size/color",
+        "labels-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "True",
+            "false": "False"
+          }
+        },
+        "labels-halo": "halo",
+        "labels-placement": {
+          "label": "placement",
+          "options": {
+            "point": "point",
+            "line": "line",
+            "vertex": "vertex",
+            "interior": "interior"
+          }
+        },
+        "animated-enabled": {
+          "label": "animated",
+          "already-one-torque": "There is already a torque layer in your map",
+          "not-with-labels": "It won't be available with labels"
+        },
+        "animated-attribute": {
+          "label": "column",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "animated-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "Accum.",
+            "false": "None"
+          }
+        },
+        "animated-trails": "trails",
+        "animated-resolution": "resolution",
+        "animated-steps": "steps",
+        "animated-duration": "duration",
       }
     },
     "widgets": {

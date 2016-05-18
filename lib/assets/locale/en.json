@@ -469,6 +469,7 @@
         "style": {
           "title-label": "Style",
           "none": "None",
+          "select-style": "Select style",
           "window-size": "Window size",
           "light": "Light",
           "dark": "Dark",

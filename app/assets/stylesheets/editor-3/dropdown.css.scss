@@ -1,0 +1,93 @@
+// Styles for Dropdowns
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+
+.Editor-dropdownContainer {
+  position: relative;
+  height: 250px;
+}
+.Editor-dropdown {
+  @include display-flex();
+  @include flex-direction(row);
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 2;
+}
+
+.Editor-dropDownInfoText {
+  width: 160px;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.Editor-dropdownCalculations {
+  padding: $sMargin-element;
+  border-right: 1px solid $cMainLine;
+  border-radius: 4px 0 0 4px;
+  background-color: $cSecondaryBackground;
+  box-sizing: border-box;
+}
+.Editor-dropdownCalculationsElement {
+  margin-bottom: $sLineHeight-medium;
+  color: $cMainBg;
+  font-size: $sFontSize-small;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+.Editor-dropdownOptions {
+  width: $baseSize * 20;
+  border-radius: 0 4px 4px 0;
+  background-color: $cWhite;
+  vertical-align: top;
+}
+.Editor-dropdownOptionsElement {
+  @include text-overflow();
+  padding: 12px 10px;
+  border-bottom: 1px solid $cMainLine;
+  color: $cBlue;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+  &:hover {
+    background-color: rgba(157, 224, 173, 0.2);
+    color: $cMainBg;
+    cursor: pointer;
+  }
+}
+.Editor-dropdownOptionsElement.is-selected {
+  color: $cMainBg;
+}
+.Editor-dropdownOptionsElement.is-disabled {
+  color: $cHintText;
+
+  &:hover {
+    background-color: transparent;
+    cursor: default;
+  }
+}
+
+.Editor-boxModal {
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  background: $cWhite;
+  box-shadow: 0  $baseSize  $baseSize * 2 0 rgba(0, 0, 0, 0.16);
+}
+
+.Editor-boxModalHeader {
+  background: $cSecondaryBackground;
+}
+
+.Editor-boxModalHeaderItem {
+  @include display-flex();
+  @include align-items(center);
+  padding: $baseSize + 4 $baseSize * 2;
+  border-bottom: 1px solid $cMainLine;
+}

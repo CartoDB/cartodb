@@ -12,7 +12,7 @@
         <div class="MobileAppsList-itemDetails">
           <p class="MobileAppsList-itemDetails--paragraph">
           <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.app_type %>
-          <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.data(current_user)["#{a.platform}"][:text] %>
+          <i class="CDB-IconFont CDB-IconFont-map MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.data(current_user, mobile_platforms: true)[:mobile_platforms]["#{a.platform}"][:text] %>
           </p>
           <p class="MobileAppsList-itemDetails--paragraph"><%= a.app_id %></p>
         </div>

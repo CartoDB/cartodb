@@ -56,6 +56,28 @@ module Carto
             }
           }
         end
+
+        if @options[:app_types].present?
+          data[:app_types] = {
+            "open" => {
+              text: "Limits based on your CartoDB plan. <a href='#'>Learn more</a>.",
+              available: is_app_type_available?('open', @current_user.open_apps_enabled?),
+              selected: is_app_type_selected?('open')
+            },
+            "dev" => {
+              text: "Limited to 5 users, unlimited feature-wise. <a href='#'>Learn more</a>.",
+              available: is_app_type_available?('dev', true),
+              selected: is_app_type_selected?('dev')
+            },
+            "private" => {
+              text: "Only for enterprise. <a href='#'>Learn more</a>.",
+              available: is_app_type_available?('private', @current_user.private_apps_enabled?),
+              selected: is_app_type_selected?('private')
+            }
+          }
+        end
+
+        return data
       end
 
       private
@@ -66,6 +88,14 @@ module Carto
 
       def is_platform_selected?(platform)
         (@mobile_app.persisted? && @mobile_app.platform == platform) ? true : false
+      end
+
+      def is_app_type_available?(app_type, selectable)
+        ((@mobile_app.persisted? && @mobile_app.app_type != app_type) || selectable == false) ? false : true
+      end
+
+      def is_app_type_selected?(app_type)
+        (@mobile_app.persisted? && @mobile_app.app_type == app_type) ? true : false
       end
 
     end

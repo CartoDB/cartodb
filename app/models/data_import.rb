@@ -314,11 +314,7 @@ class DataImport < Sequel::Model
     end
     notify(results)
 
-    begin
-      track_new_datasets(results)
-    rescue => exception
-      CartoDB::notify_exception(exception)
-    end
+    track_new_datasets(results)
 
     self
   end
@@ -948,21 +944,47 @@ class DataImport < Sequel::Model
   def track_new_datasets(results)
     return unless current_user
 
+    # Generate an event for every new imported dataset
     results.each do |result|
-      if result.success?
-        if result.name != nil
-          map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
-          origin = self.from_common_data? ? 'common-data' : 'import'
-        else
-          map_id = UserTable.where(data_import_id: self.id).first.map_id
-          origin = 'copy'
+      begin
+        if result.success?
+          if result.name != nil
+            map = UserTable.where(data_import_id: self.id, name: result.name).first
+            origin = self.from_common_data? ? 'common-data' : 'import'
+          else
+            map = UserTable.where(data_import_id: self.id).first
+            origin = 'copy'
+          end
+          vis = Carto::Visualization.where(map_id: map.map_id).first
+          custom_properties = { privacy: vis.privacy, type: vis.type,  vis_id: vis.id, origin: origin }
+          Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
         end
-        vis = Carto::Visualization.where(map_id: map_id).first
+      rescue => e
+        Rollbar.report_message('EventTracker: segment event tracking error', 
+                               'error', 
+                               { user_id: current_user.id, 
+                                 event: 'Created dataset',
+                                 properties: custom_properties,  
+                                 error_message: e.inspect 
+                               })
+      end
+    end
 
-        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => origin}
-        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
+    # Generate an event if a map is imported as well
+    unless self.visualization_id.nil?
+      begin
+        vis = Carto::Visualization.where(id: self.visualization_id).first
+        custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
+        Cartodb::EventTracker.new.send_event(current_user, 'Created map', custom_properties)
+      rescue => e
+        Rollbar.report_message('EventTracker: segment event tracking error', 
+                               'error', 
+                               { user_id: current_user.id,  
+                                 event: 'Created map',
+                                 properties: custom_properties,  
+                                 error_message: e.inspect 
+                               })
       end
     end
   end
-
 end

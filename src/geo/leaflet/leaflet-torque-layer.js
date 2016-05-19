@@ -41,6 +41,10 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.model.get('visible') ? this.show() : this.hide();
     }
 
+    if ('cartocss' in changed) {
+      this.setCartoCSS(this.model.get('cartocss'));
+    }
+
     if ('urls' in changed) {
       // REAL HACK
       this.provider.templateUrl = this.model.get('urls').tiles[0];

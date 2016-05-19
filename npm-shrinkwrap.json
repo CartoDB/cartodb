@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.86",
+  "version": "3.23.88-demo",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1088,7 +1088,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#33e8bcdc29084c1fde1c82f2074f55969f2b1b4e",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#f7dc02bb8bc49347743f6c69d3f021813e559ea3",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1103,7 +1103,7 @@
             "d3.cartodb": {
               "version": "1.1.0",
               "from": "cartodb/d3.cartodb#gh-pages",
-              "resolved": "git://github.com/cartodb/d3.cartodb.git#3a6b7775ff04a4f66a30f4ae1122cd2db726cb1d",
+              "resolved": "git://github.com/cartodb/d3.cartodb.git#c5d3f3b434667910fb51c9743b7ee9c68c9ec0c6",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1314,7 +1314,7 @@
         "d3.cartodb": {
           "version": "1.1.0",
           "from": "cartodb/d3.cartodb#gh-pages",
-          "resolved": "git://github.com/cartodb/d3.cartodb.git#3a6b7775ff04a4f66a30f4ae1122cd2db726cb1d",
+          "resolved": "git://github.com/cartodb/d3.cartodb.git#c5d3f3b434667910fb51c9743b7ee9c68c9ec0c6",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",

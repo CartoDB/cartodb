@@ -476,6 +476,7 @@
           "title-label": "Style",
           "select-style": "Select style",
           "window-size": "Window size",
+          "header-color": "Header color",
           "light": "Light",
           "dark": "Dark",
           "color": "Color",

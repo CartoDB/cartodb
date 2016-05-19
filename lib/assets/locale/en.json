@@ -538,7 +538,10 @@
         },
         "aggregation-resolution": "Resolution",
         "aggregation-value": "Value",
-        "aggregation-size": "Size",
+        "aggregation-size": {
+          "label": "Size",
+          "help": "In pixels"
+        },
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",

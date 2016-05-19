@@ -574,6 +574,12 @@ module Carto
           else
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
+
+          sql_wrap = @layer.options['sql_wrap']
+          if sql_wrap 
+            data[:sql_wrap] = sql_wrap 
+          end
+
           data = decorate_with_data(data, @decoration_data)
 
           data

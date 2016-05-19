@@ -27,6 +27,7 @@ module Carto
           data_layer = visualization.map.data_layers.first
           data_layer.options[:table_name] = table.name
           data_layer.options[:query] = "select * from #{table.name}"
+          data_layer.options[:sql_wrap] = "select * from (<%= sql %>) __wrap"
           data_layer.save
         end
 

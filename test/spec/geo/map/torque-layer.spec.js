@@ -45,10 +45,10 @@ describe('geo/map/torque-layer', function () {
     it("should NOT reload the map if cartocss attribute has changed but torque-time-attribute property hasn't changed", function () {
       var map = jasmine.createSpyObj('map', ['reload']);
       var layer = new TorqueLayer({
-        cartocss: 'layer { something: "a", -torque-time-attribute: "column" }'
+        cartocss: 'Map { something: "a"; -torque-time-attribute: "column"; }'
       }, { map: map });
 
-      layer.set('cartocss', 'layer { something: "b", -torque-time-attribute: "column" }');
+      layer.set('cartocss', 'Map { something: "b"; -torque-time-attribute: "column"; }');
 
       expect(map.reload).not.toHaveBeenCalled();
     });
@@ -56,10 +56,10 @@ describe('geo/map/torque-layer', function () {
     it('should reload the map if cartocss attribute has changed and torque-time-attribute property has changed', function () {
       var map = jasmine.createSpyObj('map', ['reload']);
       var layer = new TorqueLayer({
-        cartocss: 'layer { something: "a", -torque-time-attribute: "columnA" }'
+        cartocss: 'Map { something: "a"; -torque-time-attribute: "columnA"; }'
       }, { map: map });
 
-      layer.set('cartocss', 'layer { something: "b", -torque-time-attribute: "columnB" }');
+      layer.set('cartocss', 'Map { something: "b"; -torque-time-attribute: "columnB"; }');
 
       expect(map.reload).toHaveBeenCalled();
     });

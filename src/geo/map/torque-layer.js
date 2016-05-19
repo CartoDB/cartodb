@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
+var carto = require('carto');
 
 /**
  * Model for a Torque Layer
@@ -19,6 +20,10 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+
+  TORQUE_TIME_ATTRIBUTE_PROP: '-torque-time-attribute',
+
+  LAYER_NAME_IN_CARTO_CSS: 'Map',
 
   initialize: function (attrs, options) {
     LayerModelBase.prototype.initialize.apply(this, arguments);
@@ -44,10 +49,18 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   _torqueTimeAttributeCartoCSSPropChanged: function () {
-    var regexp = /-torque-time-attribute:\s*["'](\w*)["']/;
-    var previousTorqueTimeAttributeProp = this.previous('cartocss').match(regexp) && this.previous('cartocss').match(regexp)[1];
-    var newTorqueTimeAttributeProp = this.get('cartocss').match(regexp) && this.get('cartocss').match(regexp)[1];
-    return newTorqueTimeAttributeProp !== previousTorqueTimeAttributeProp;
+    var currentCartoCSS = this.get('cartocss');
+    var previousCartoCSS = this.previous('cartocss');
+    var currentValue = this._getPropertyValueFromCartoCSS(currentCartoCSS, this.TORQUE_TIME_ATTRIBUTE_PROP);
+    var previousValue = this._getPropertyValueFromCartoCSS(previousCartoCSS, this.TORQUE_TIME_ATTRIBUTE_PROP);
+    return currentValue !== previousValue;
+  },
+
+  _getPropertyValueFromCartoCSS: function (cartoCSS, propertyName) {
+    var renderer = new carto.RendererJS();
+    var shader = renderer.render(cartoCSS);
+    var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
+    return  layer && layer.eval(propertyName);
   },
 
   _reloadMap: function () {

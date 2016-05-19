@@ -13,7 +13,8 @@ module Carto
       def data(options = {})
         return {} if @mobile_app.nil?
         data = {
-          :name       => @mobile_app.name,
+          :id => @mobile_app.id,
+          :name => @mobile_app.name,
           :description => @mobile_app.description,
           :icon_url => @mobile_app.icon_url,
           :platform => @mobile_app.platform,

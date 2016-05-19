@@ -10,7 +10,7 @@ module Carto
         @current_user = current_user
       end
 
-      def data(options = {})
+      def data
         return {} if @mobile_app.nil?
         data = {
           :id => @mobile_app.id,
@@ -27,32 +27,32 @@ module Carto
           data[:mobile_platforms] = {
             "android" => {
               text: "Android",
-              available: is_platform_available?('android', true),
-              selected: is_platform_selected?('android'),
+              available: platform_available?('android', true),
+              selected: platform_selected?('android'),
               legend: "Use package from AndroidManifest.xml. E.g: com.example.mycartoapp."
             },
             "ios" => {
               text: "iOS",
-              available: is_platform_available?('ios', true),
-              selected: is_platform_selected?('ios'),
+              available: platform_available?('ios', true),
+              selected: platform_selected?('ios'),
               legend: "Use Bundle identifier. You can find it in the project properties. E.g: com.example.mycartoapp."
             },
             "xamarin-android" => {
               text: "Xamarin Android",
-              available: is_platform_available?('xamarin-android', @current_user.mobile_xamarin),
-              selected: is_platform_selected?('xamarin-android'),
+              available: platform_available?('xamarin-android', @current_user.mobile_xamarin),
+              selected: platform_selected?('xamarin-android'),
               legend: "Use package from AndroidManifest.xml. E.g: com.example.mycartoapp."
               },
             "xamarin-ios" => {
               text: "Xamarin iOS",
-              available: is_platform_available?('xamarin-ios', @current_user.mobile_xamarin),
-              selected: is_platform_selected?('xamarin-ios'),
+              available: platform_available?('xamarin-ios', @current_user.mobile_xamarin),
+              selected: platform_selected?('xamarin-ios'),
               legend: "Use Bundle identifier. You can find it in the project properties. E.g: com.example.mycartoapp."
               },
             "windows-phone" => {
               text: "Windows Phone",
-              available: is_platform_available?('windows-phone', @current_user.mobile_xamarin),
-              selected: is_platform_selected?('windows-phone'),
+              available: platform_available?('windows-phone', @current_user.mobile_xamarin),
+              selected: platform_selected?('windows-phone'),
               legend: "Use the Package name from Package.appmanifest. E.g: c882d38a-5c09-4994-87f0-89875cdee539."
             }
           }
@@ -62,40 +62,39 @@ module Carto
           data[:app_types] = {
             "open" => {
               text: "Limits based on your CartoDB plan. <a href='#'>Learn more</a>.",
-              available: is_app_type_available?('open', @current_user.open_apps_enabled?),
-              selected: is_app_type_selected?('open')
+              available: app_type_available?('open', @current_user.open_apps_enabled?),
+              selected: app_type_selected?('open')
             },
             "dev" => {
               text: "Limited to 5 users, unlimited feature-wise. <a href='#'>Learn more</a>.",
-              available: is_app_type_available?('dev', true),
-              selected: is_app_type_selected?('dev')
+              available: app_type_available?('dev', true),
+              selected: app_type_selected?('dev')
             },
             "private" => {
               text: "Only for enterprise. <a href='#'>Learn more</a>.",
-              available: is_app_type_available?('private', @current_user.private_apps_enabled?),
-              selected: is_app_type_selected?('private')
+              available: app_type_available?('private', @current_user.private_apps_enabled?),
+              selected: app_type_selected?('private')
             }
           }
         end
 
-        return data
       end
 
       private
 
-      def is_platform_available?(platform, selectable)
+      def platform_available?(platform, selectable)
         ((@mobile_app.persisted? && @mobile_app.platform != platform) || selectable == false) ? false : true
       end
 
-      def is_platform_selected?(platform)
+      def platform_selected?(platform)
         (@mobile_app.persisted? && @mobile_app.platform == platform) ? true : false
       end
 
-      def is_app_type_available?(app_type, selectable)
+      def app_type_available?(app_type, selectable)
         ((@mobile_app.persisted? && @mobile_app.app_type != app_type) || selectable == false) ? false : true
       end
 
-      def is_app_type_selected?(app_type)
+      def app_type_selected?(app_type)
         (@mobile_app.persisted? && @mobile_app.app_type == app_type) ? true : false
       end
 

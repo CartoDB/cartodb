@@ -18,12 +18,39 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  initialize: function(attrs, options) {
+  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+
+  initialize: function (attrs, options) {
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
     this._map = options.map;
-    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
+    this.bind('change', this._onAttributeChanged, this);
+  },
+
+  _onAttributeChanged: function () {
+    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+      if (this.hasChanged(attr)) {
+        if (attr === 'cartocss') {
+          if (this.previous('cartocss')) {
+            return this._torqueTimeAttributeCartoCSSPropChanged();
+          }
+          return false;
+        }
+        return true;
+      }
+    }, this);
+
+    if (reloadMap) {
+      this._reloadMap();
+    }
+  },
+
+  _torqueTimeAttributeCartoCSSPropChanged: function () {
+    var regexp = /-torque-time-attribute:\s*["'](\w*)["']/;
+    var previousTorqueTimeAttributeProp = this.previous('cartocss').match(regexp) && this.previous('cartocss').match(regexp)[1];
+    var newTorqueTimeAttributeProp = this.get('cartocss').match(regexp) && this.get('cartocss').match(regexp)[1];
+    return newTorqueTimeAttributeProp !== previousTorqueTimeAttributeProp;
   },
 
   _reloadMap: function () {

@@ -19,7 +19,7 @@
           <div class="CDB-ArrowToogle is-blue is-small"></div>
         </li>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
-          <button class="CDB-Shape-threePoints is-blue is-small">
+          <button class="CDB-Shape-threePoints is-blue is-small js-show-menu">
             <div class="CDB-Shape-threePointsItem"></div>
             <div class="CDB-Shape-threePointsItem"></div>
             <div class="CDB-Shape-threePointsItem"></div>

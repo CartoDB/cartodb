@@ -509,6 +509,10 @@
           "desc": "Change the visualization"
         }
       },
+      "style-toggle": {
+        "values": "VALUES",
+        "cartocss": "CARTOCSS"
+      },
       "messages": {
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",

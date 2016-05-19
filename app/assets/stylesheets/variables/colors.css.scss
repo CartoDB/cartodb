@@ -202,9 +202,9 @@ $button_shadow_transparent_bg_press: inset 0px 1px 0px rgba(0, 0, 0, 0.05);
 $color_disabled_text : $Grey7;
 
 // buttons
-$btn_background_normal: rgba(98, 98, 98, 0.65);
-$btn_background_hover: rgba(134, 134, 134, 0.65);
-$btn_background_press: rgba(77, 77, 77, 0.65);
+$btn_background_normal: #404040;
+$btn_background_hover: #575757;
+$btn_background_press: #2a2a2a;
 $btn_background_disabled: rgba(66, 66, 66, 0.80);
 $btn_background_selected: $Blue4;
 $btn_background_selected_hover: $SelectionBlue3;
@@ -251,7 +251,7 @@ $tabBgSelected: #0b3968;
 $tabBgHover:  rgba(134, 134, 134, 0.65);
 
 //dropdown 
-$dropdownBorder: 1px solid #cfcfcf;
+$dropdownBorder: 1px solid $Grey2;
 
 //end terminal color
 
@@ -261,8 +261,8 @@ $cTypography-paragraphs:          $Grey2;
 $cTypography-secondary:           $Grey7;
 $cTypography-help:                rgba(#CCC, 1); // Help text & tips
 $cTypography-headersOverBlack:    rgba(#FFF, 1);
-$cTypography-link:                $Teal4;
-$cTypography-linkHover:           $Teal3;
+$cTypography-link:                $Teal2;
+$cTypography-linkHover:           $Teal1;
 $cTypography-linkSelected:        rgba(#333, 1);
 $cTypography-labels:              rgba(#424242, 1);
 $cTypography-linkSecondary:       rgba(#979EA1, 1);

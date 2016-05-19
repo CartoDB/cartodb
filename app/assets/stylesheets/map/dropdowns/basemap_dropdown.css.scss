@@ -8,6 +8,7 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
+@import "../variables/colors";
 
 .option-button.basemap_dropdown {
 
@@ -28,20 +29,15 @@
     margin: 0 5px 0 0;
     @include position(6px, false, false, 6px);
     @include inline-block();
-    @include size(22px);
-    @include border-radius(2px);
+    @include size(22px);    
 
     background-size: 34px;
     background-color: rgba(0, 0, 0, 0);
-    background-position: 50% 50%;
-
-    @include box-shadow(0 0 1px rgba(#000, .9));
+    background-position: 50% 50%;    
 
     &:before {
       content: ' ';
-      @include position(0, 0, 0, 0);
-      @include border-radius(2px);
-      border: 1px solid rgba(0, 0,0, 0.15);
+      @include position(0, 0, 0, 0);      
     }
 
   } // thumb
@@ -73,14 +69,14 @@ div.dropdown.basemap {
     margin: 0 10px;
     padding: 10px 10px;
 
-    border-bottom: 1px solid rgba(204,204,204,0.35);
+    border-bottom: 1px solid $Black;
 
     & > li {
-
+      //thumb labels
       &:first-child {
         width: 60px;
-        margin: 2px 4px 0 0;
-        color: #CCCCCC;
+        margin: 5px 4px 0 0;
+        color: $Grey2;
       }
 
     }
@@ -101,7 +97,7 @@ div.dropdown.basemap {
   }
   .thumbs.gmaps > li { margin: 3px 10px 3px 0 }
 
-
+ //basemap thumb
   .custom ul li {
 
     margin: 0 10px 0 0;
@@ -174,12 +170,12 @@ div.dropdown.basemap {
         position:relative;
         float:left;
 
-        @include size(24px);
-        @include border-radius(2px);
+        @include size(24px);        
         @include text-indent();
 
         background-size: 34px 34px;
         background-position: 50% 50%;
+        border: 1px solid rgba(255,255,255,0.12);
         text-decoration:none;
 
         &:before {
@@ -221,7 +217,7 @@ div.dropdown.basemap {
 
         &:hover {
           cursor:pointer;
-          &:before { border: 1px solid rgba(0,0,0, 0.5); }
+          border: 1px solid $White;
         }
 
       }

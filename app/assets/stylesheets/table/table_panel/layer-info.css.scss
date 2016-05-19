@@ -20,13 +20,12 @@
 
 
   // Layer info, as name, order, ... etc
+  //bb_layer_header
   .layer-info {
     position:absolute;
     top:0; right:0; bottom:auto; left:0;
     line-height:62px;
     height:67px;
-    @include border-top-left-radius($corner_radius);
-    border-bottom:1px solid $DarkGrey6;
     z-index:0;
 
 
@@ -64,7 +63,7 @@
         @include text-overflow();
         overflow:hidden;
         margin-left:23px;
-        font:bold 17px;
+        font-size:17px;
         color:$Grey1;
         line-height:20px;
 
@@ -99,13 +98,14 @@
         line-height:15px;
 
         a { margin-left: 5px }
+        a:hover { color: $White }
       }
 
 
       &:hover {
         text-decoration:none;
         cursor:pointer;
-        .name {color:#666;}
+        .name {color:$White;}
         .order {background:#666;}
       }
     }

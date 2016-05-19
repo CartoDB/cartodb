@@ -44,7 +44,7 @@ $w: 780px;
 .ImportPanel-headerDescription--negative
 .ImportPanel-headerDescriptionLink {
   color: $cHighlight-negative;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover { color: $cHighlight-negative }
 }
 .ImportPanel-headerButton {

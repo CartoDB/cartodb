@@ -48,15 +48,16 @@
     // - Redo
     // - Apply
     // - ...etc
+    // bb_actions
     div.actions {
       position:absolute;
       bottom:0;
-      left:0;
+      left:37px;
       right:0;
-      padding:20px 20px 20px 56px;
+      padding:20px;
       display:block;
       height:38px;
-      border-top:1px solid rgba(#999999,0.25);
+      border-top:1px solid $DarkGrey6;
       z-index:1;
 
       a.next, a.back {

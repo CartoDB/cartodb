@@ -234,7 +234,7 @@ div.table {
               @include default-input();
 
               input {
-                @include border-radius(3px);
+                @include border-radius(2px);
                 margin:0;
                 padding:3px 4px;
                 border:1px solid #CCCCCC;
@@ -431,7 +431,7 @@ div.table {
                 position:absolute;
                 top:15px;
                 left:10px;
-                @include border-radius(3px);
+                @include border-radius(2px);
                 background:#FAFAFA;
                 @include background(linear-gradient(#FAFAFA,#E8E8E8));
                 display:none;

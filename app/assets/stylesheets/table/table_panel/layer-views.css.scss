@@ -17,30 +17,28 @@
 
 
   // LOCAL VARS
-  $corner_radius: 6px;
+  $corner_radius: 0px;
   
 
   // Layer actions view!
+  // bb_layer_view
   .layer-views {
     position:absolute;
-    top:60px;
+    top:68px;
     right:0;
     left:65px;
     bottom:0;
     @include inline-block();
-    background:$DarkGrey6;
-    @include border-top-left-radius($corner_radius);
-    border:1px solid $Black;
+    background:$DarkGrey3;
+    border: 1px solid $DarkGrey6;
     border-right:0;
-    border-bottom:0;
-    @include box-shadow(rgba(black, 0.07) 2px -1px 8px 0);
+    border-bottom:0; 
     letter-spacing:0;
     z-index:5;
 
 
     h3 {
       padding: 22px 0 21px 30px;
-      border-bottom:1px solid $DarkGrey9;
       font-size: 14px;
       font-weight: normal;
       line-height:normal;
@@ -115,8 +113,7 @@
         height:100%;
       }
       
-      &:after { background:rgba($cGray4,0.50); }
-      &:before { left:36px; background:rgba(#509DD7,0.25); }
+      &:before { left:36px; background:$DarkGrey6; }
 
       h3 { padding-left:22px }
       

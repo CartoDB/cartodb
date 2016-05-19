@@ -13,7 +13,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   display: block;
   width: 100%;
   height: $height;
-  background-color: $DarkGrey8;
+  background-color: $DarkGrey6;
   border-bottom: 1px solid $Black;
 }
 .Header-inner {
@@ -70,7 +70,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 
   &:hover {
     color: white;
-    text-decoration: underline;
+    text-decoration: none;
     &:after { border-top-color: white }
   }
   &.is-disabled {

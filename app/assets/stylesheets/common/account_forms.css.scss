@@ -445,7 +445,7 @@ $sLabel-width: 140px;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkHover;
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
   }
 }
@@ -460,7 +460,7 @@ $sLabel-width: 140px;
 .FormAccount-link {
   color: $cTypography-link;
   font-weight: normal;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
@@ -560,7 +560,7 @@ $sLabel-width: 140px;
 }
 .FormAccount-rowInfoText--error .FormAccount-link {
   color: #DD3B37;
-  text-decoration: underline;
+  text-decoration: none;
 }
 .FormAccount-footer {
   @include display-flex();
@@ -681,7 +681,7 @@ $sLabel-width: 140px;
   cursor: pointer;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 

@@ -59,7 +59,7 @@ $text-color: rgba(white, 0.5);
 
 .Navbar-textLink {
   color: $text-color;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover { color: white }
 }
 

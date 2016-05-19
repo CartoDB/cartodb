@@ -136,7 +136,7 @@
 
           em { font-style: italic; }
 
-          .link { text-decoration: underline; }
+          .link { text-decoration: none; }
 
           a {
             font-style:normal;
@@ -181,7 +181,7 @@
           height: 20px;
           background: rgba(#EEE, .8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
           @include simple-transition(all, 150ms);
-          @include border-radius(3px);
+          @include border-radius(2px);
 
           &.disabled {
             @include opacity(0.5);
@@ -214,7 +214,10 @@
           }
         }
 
-        &.dropdown { padding-right: 12px; }
+        &.dropdown { 
+          padding-right: 12px; 
+          @include bb_button_style; 
+        }
 
         &:after {
           position:absolute;

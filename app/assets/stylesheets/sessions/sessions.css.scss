@@ -69,7 +69,7 @@ $shadow-color: rgba(black, 0.1);
 
 .Sessions-description a {
   color: $text-color;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover { color: $text-link-color }
 }
 
@@ -152,7 +152,7 @@ $shadow-color: rgba(black, 0.1);
   color: $text-color;
 
   a {
-    text-decoration: underline;
+    text-decoration: none;
     color: $text-color;
     &:hover { color: $text-link-color }
   }

@@ -54,7 +54,7 @@
 .OrganizationUser-quotaInfoLink {
   color: $cTypography-link;
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
     color: $cTypography-linkHover;
   }
 }

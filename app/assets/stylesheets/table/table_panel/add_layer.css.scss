@@ -36,7 +36,7 @@
       margin:0 0 0 23px;
       line-height:16px;
       text-align:center;
-      color:$Teal4;
+      color:$Teal2;
       background:$DarkGrey2;
       @include text-indent();
       @include border-radius(2px);
@@ -46,7 +46,7 @@
     // (Add layer text)
     .action {
       @include inline-block();
-      color: $Teal4;
+      color: $Teal2;
       margin:0 0 0 27px;
       font:500 17px;
       line-height:20px;
@@ -58,6 +58,6 @@
       cursor:pointer;
 
       .add { @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:-16px) no-repeat); }
-      .action { color: $Teal3; }
+      .action { color: $Teal2; }
     }
   }

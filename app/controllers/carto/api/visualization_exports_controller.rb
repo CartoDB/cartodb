@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require_relative '../../../../lib/cartodb/event_tracker'
+
 module Carto
   module Api
     class VisualizationExportsController < ::Api::ApplicationController
@@ -43,6 +45,8 @@ module Carto
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id)
 
         render_jsonp(VisualizationExportPresenter.new(visualization_export).to_poro, 201)
+ 
+        track_export_event(user, @visualization)
       end
 
       def show
@@ -63,6 +67,21 @@ module Carto
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         export_user_id = @visualization_export.user_id
         raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_user.id
+      end
+
+      def track_export_event(user, vis)
+        begin
+          custom_properties = { privacy: vis.privacy,
+                                type: vis.type,
+                                vis_id: vis.id
+                              }
+          Cartodb::EventTracker.new.send_event(user, 'Exported map', custom_properties)
+        rescue => e
+          Rollbar.report_message('EventTracker: segment event tracking error', 'error', { user_id: user_id, 
+                                                                                          event: 'Exported map',
+                                                                                          properties: custom_properties, 
+                                                                                          error_message: e.inspect })
+        end
       end
     end
   end

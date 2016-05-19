@@ -13,43 +13,43 @@ module Carto
       def data
         return {} if @mobile_app.nil?
         data = {
-          :id => @mobile_app.id,
-          :name => @mobile_app.name,
-          :description => @mobile_app.description,
-          :icon_url => @mobile_app.icon_url,
-          :platform => @mobile_app.platform,
-          :app_id => @mobile_app.app_id,
-          :license_key => @mobile_app.license_key,
-          :monthly_users => @mobile_app.monthly_users
+          id: @mobile_app.id,
+          name: @mobile_app.name,
+          description: @mobile_app.description,
+          icon_url: @mobile_app.icon_url,
+          platform: @mobile_app.platform,
+          app_id: @mobile_app.app_id,
+          license_key: @mobile_app.license_key,
+          monthly_users: @mobile_app.monthly_users
         }
 
         if @options[:mobile_platforms].present?
           data[:mobile_platforms] = {
-            "android" => {
+            "android": {
               text: "Android",
               available: platform_available?('android', true),
               selected: platform_selected?('android'),
               legend: "Use package from AndroidManifest.xml. E.g: com.example.mycartoapp."
             },
-            "ios" => {
+            "ios": {
               text: "iOS",
               available: platform_available?('ios', true),
               selected: platform_selected?('ios'),
               legend: "Use Bundle identifier. You can find it in the project properties. E.g: com.example.mycartoapp."
             },
-            "xamarin-android" => {
+            "xamarin-android": {
               text: "Xamarin Android",
               available: platform_available?('xamarin-android', @current_user.mobile_xamarin),
               selected: platform_selected?('xamarin-android'),
               legend: "Use package from AndroidManifest.xml. E.g: com.example.mycartoapp."
               },
-            "xamarin-ios" => {
+            "xamarin-ios": {
               text: "Xamarin iOS",
               available: platform_available?('xamarin-ios', @current_user.mobile_xamarin),
               selected: platform_selected?('xamarin-ios'),
               legend: "Use Bundle identifier. You can find it in the project properties. E.g: com.example.mycartoapp."
               },
-            "windows-phone" => {
+            "windows-phone": {
               text: "Windows Phone",
               available: platform_available?('windows-phone', @current_user.mobile_xamarin),
               selected: platform_selected?('windows-phone'),
@@ -60,17 +60,17 @@ module Carto
 
         if @options[:app_types].present?
           data[:app_types] = {
-            "open" => {
+            "open": {
               text: "Limits based on your CartoDB plan. <a href='#'>Learn more</a>.",
               available: app_type_available?('open', @current_user.open_apps_enabled?),
               selected: app_type_selected?('open')
             },
-            "dev" => {
+            "dev": {
               text: "Limited to 5 users, unlimited feature-wise. <a href='#'>Learn more</a>.",
               available: app_type_available?('dev', true),
               selected: app_type_selected?('dev')
             },
-            "private" => {
+            "private": {
               text: "Only for enterprise. <a href='#'>Learn more</a>.",
               available: app_type_available?('private', @current_user.private_apps_enabled?),
               selected: app_type_selected?('private')

@@ -42,13 +42,13 @@ module Carto
               available: platform_available?('xamarin-android', @current_user.mobile_xamarin),
               selected: platform_selected?('xamarin-android'),
               legend: "Use package from AndroidManifest.xml. E.g: com.example.mycartoapp."
-              },
+            },
             "xamarin-ios": {
               text: "Xamarin iOS",
               available: platform_available?('xamarin-ios', @current_user.mobile_xamarin),
               selected: platform_selected?('xamarin-ios'),
               legend: "Use Bundle identifier. You can find it in the project properties. E.g: com.example.mycartoapp."
-              },
+            },
             "windows-phone": {
               text: "Windows Phone",
               available: platform_available?('windows-phone', @current_user.mobile_xamarin),
@@ -78,6 +78,8 @@ module Carto
           }
         end
 
+        data
+
       end
 
       private
@@ -97,7 +99,6 @@ module Carto
       def app_type_selected?(app_type)
         (@mobile_app.persisted? && @mobile_app.app_type == app_type) ? true : false
       end
-
     end
   end
 end

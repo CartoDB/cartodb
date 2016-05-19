@@ -202,11 +202,11 @@ describe Carto::Api::UserPresenter do
     if mobile_sdk_enabled
       new_data[:mobile_apps].keys.sort.should == old_data[:mobile_apps].keys.sort
 
-      new_data[:mobile_apps][:mobile_xamarin].should = new_data[:mobile_apps].mobile_xamarin,
-      new_data[:mobile_apps][:mobile_custom_watermark].should = new_data[:mobile_apps].mobile_custom_watermark,
-      new_data[:mobile_apps][:mobile_offline_maps].should = new_data[:mobile_apps].mobile_offline_maps,
-      new_data[:mobile_apps][:mobile_gis_extension].should = new_data[:mobile_apps].mobile_gis_extension,
-      new_data[:mobile_apps][:mobile_max_open_users].should = new_data[:mobile_apps].mobile_max_open_users,
+      new_data[:mobile_apps][:mobile_xamarin].should = new_data[:mobile_apps].mobile_xamarin
+      new_data[:mobile_apps][:mobile_custom_watermark].should = new_data[:mobile_apps].mobile_custom_watermark
+      new_data[:mobile_apps][:mobile_offline_maps].should = new_data[:mobile_apps].mobile_offline_maps
+      new_data[:mobile_apps][:mobile_gis_extension].should = new_data[:mobile_apps].mobile_gis_extension
+      new_data[:mobile_apps][:mobile_max_open_users].should = new_data[:mobile_apps].mobile_max_open_users
       new_data[:mobile_apps][:mobile_max_private_users].should = new_data[:mobile_apps].mobile_max_private_users
     end
 

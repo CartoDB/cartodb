@@ -27,7 +27,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   &:last-child {
     margin-bottom: 28px;
   }
-  &:not(:last-child) { 
+  &:not(:last-child) {
     border-bottom: 1px solid $cStructure-softLine;
   }
 }

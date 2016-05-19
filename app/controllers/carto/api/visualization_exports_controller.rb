@@ -77,10 +77,13 @@ module Carto
                               }
           Cartodb::EventTracker.new.send_event(user, 'Exported map', custom_properties)
         rescue => e
-          Rollbar.report_message('EventTracker: segment event tracking error', 'error', { user_id: user_id, 
-                                                                                          event: 'Exported map',
-                                                                                          properties: custom_properties, 
-                                                                                          error_message: e.inspect })
+          Rollbar.report_message('EventTracker: segment event tracking error', 
+                                 'error', 
+                                 { user_id: user_id, 
+                                   event: 'Exported map',
+                                   properties: custom_properties, 
+                                   error_message: e.inspect
+                                 })
         end
       end
     end

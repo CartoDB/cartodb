@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_relative 'file_system/sanitize'
+
 module Carto
   class DataExporter
     def initialize(http_client = Carto::Http::Client.get('data_exporter', log_requests: true))
@@ -67,9 +69,10 @@ module Carto
 
   module VisualizationExporter
     include ExporterConfig
-    DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
 
+    DEFAULT_EXPORT_FORMAT = 'gpkg'.freeze
     EXPORT_EXTENSION = '.carto.json'.freeze
+    CARTO_EXTENSION = '.carto'.freeze
 
     VISUALIZATION_EXTENSIONS = [Carto::VisualizationExporter::EXPORT_EXTENSION].freeze
 
@@ -94,16 +97,20 @@ module Carto
         tmp_dir,
         format,
         user_tables_ids: user_tables_ids)
+
       visualization_json = visualization_export_service.export_visualization_json_string(visualization_id, user)
       visualization_json_file = "#{tmp_dir}/#{visualization_id}#{EXPORT_EXTENSION}"
       File.open(visualization_json_file, 'w') { |file| file.write(visualization_json) }
 
-      zipfile = "#{visualization_id}.carto"
-      `cd #{export_dir}/ && zip -r #{zipfile} #{visualization_id} && cd -`
+      safe_vis_name = Carto::FileSystem::Sanitize.sanitize_identifier(visualization.name)
+
+      filename = "#{safe_vis_name} (#{Time.now.utc.strftime('on %Y-%m-%d at %H.%M.%S')})#{CARTO_EXTENSION}".freeze
+
+      `cd #{export_dir}/ && zip -r \"#{filename}\" #{visualization_id} && cd -`
 
       FileUtils.remove_dir(tmp_dir)
 
-      "#{export_dir}/#{zipfile}"
+      "#{export_dir}/#{filename}"
     end
   end
 end

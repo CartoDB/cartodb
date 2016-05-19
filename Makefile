@@ -187,6 +187,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
+	spec/lib/carto/file_system/sanitize_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why

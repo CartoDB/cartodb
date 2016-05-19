@@ -2,6 +2,9 @@
 @import 'cdb-variables/colors';
 
 .ScrollView {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
   margin-top: -19px;
 
   &,

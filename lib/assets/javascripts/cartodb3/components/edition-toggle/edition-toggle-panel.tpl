@@ -1,1 +1,1 @@
-<div class="js-content"></div>
+<div class="Editor-content js-content"></div>

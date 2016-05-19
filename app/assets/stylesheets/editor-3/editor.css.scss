@@ -30,6 +30,14 @@
   height: 100vh;
   padding: 18px 25px;
   box-sizing: border-box;
+
+  @include display-flex();
+  @include flex-direction(column);
+}
+.Editor-content {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
 }
 .Editor-panelWrapper {
   @include flex(0 0 344px);

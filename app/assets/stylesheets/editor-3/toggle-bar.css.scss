@@ -1,11 +1,13 @@
 @import 'cdb-variables/colors';
 
 .Toggle-bar {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 72px;
-  width: 344px;
+  // position: fixed;
+  // right: 0;
+  // bottom: 0;
+  // left: 72px;
+  // width: 344px;
+  margin-left: -25px;
+  margin-right: -25px;
   padding: 25px;
   background-color: $cWhite;
   box-sizing: border-box;

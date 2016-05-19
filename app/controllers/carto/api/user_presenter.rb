@@ -165,12 +165,14 @@ module Carto
         end
 
         if @user.mobile_sdk_enabled?
-          data[:mobile_apps] = { mobile_xamarin: @user.mobile_xamarin,
-                                 mobile_custom_watermark: @user.mobile_custom_watermark,
-                                 mobile_offline_maps: @user.mobile_offline_maps,
-                                 mobile_gis_extension: @user.mobile_gis_extension,
-                                 mobile_max_open_users: @user.mobile_max_open_users,
-                                 mobile_max_private_users: @user.mobile_max_private_users }
+          data[:mobile_apps] = {
+            mobile_xamarin: @user.mobile_xamarin,
+            mobile_custom_watermark: @user.mobile_custom_watermark,
+            mobile_offline_maps: @user.mobile_offline_maps,
+            mobile_gis_extension: @user.mobile_gis_extension,
+            mobile_max_open_users: @user.mobile_max_open_users,
+            mobile_max_private_users: @user.mobile_max_private_users
+          }
         end
 
         if options[:extended]

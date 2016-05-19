@@ -79,7 +79,6 @@ module Carto
         end
 
         data
-
       end
 
       private

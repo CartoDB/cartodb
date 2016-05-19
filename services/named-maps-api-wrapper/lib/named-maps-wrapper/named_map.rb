@@ -125,7 +125,8 @@ module CartoDB
           presenter_options = {
             full: false,
             user_name: parent.username,
-            viewer_user: ::User.where(username: parent.username).first
+            viewer_user: ::User.where(username: parent.username).first,
+            for_named_map: true
           }
 
           # Layers are zero-based on the client

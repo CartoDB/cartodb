@@ -74,11 +74,13 @@
                     </a>
                   </li>
 
-                  <li class="Navmenu-subItem">
-                    <a href="#" class="Navmenu-link js-Navmenu-link--download-map">
-                      <i class="CDB-IconFont CDB-IconFont-downloadCircle Navmenu-icon"></i>
-                    </a>
-                  </li>
+                  <% unless @visualization.is_privacy_private? %>
+                    <li class="Navmenu-subItem">
+                      <a href="#" class="Navmenu-link js-Navmenu-link--download-map">
+                        <i class="CDB-IconFont CDB-IconFont-downloadCircle Navmenu-icon"></i>
+                      </a>
+                    </li>
+                  <% end %>
                 </ul>
               </li>
 

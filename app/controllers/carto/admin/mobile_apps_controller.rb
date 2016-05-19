@@ -148,7 +148,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   def get_default_avatar
     if Cartodb.asset_path
-      "#{Cartodb.asset_path}/assets/images/avatars/mobile_app_default_avatar.png"
+      "#{Cartodb.asset_path}/assets/unversioned/images/avatars/mobile_app_default_avatar.png"
     else
       "#{relative_url_root}/images/avatars/mobile_app_default_avatar.png"
     end

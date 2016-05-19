@@ -18,7 +18,12 @@ module CartoDB
       @uploads_path
     end
 
-    def upload_file_to_storage(params, request, s3_config = nil, timestamp = Time.now)
+    def upload_file_to_storage(filename_param: nil,
+                               file_param: nil,
+                               request_body: nil,
+                               s3_config: nil,
+                               timestamp: Time.now,
+                               allow_spaces: false)
       results = {
         file_uri: nil,
         enqueue:  true
@@ -26,22 +31,22 @@ module CartoDB
 
       load_file_from_request_body = false
       case
-      when params[:filename].present? && request && request.body.present?
-        filename = params[:filename].original_filename rescue params[:filename].to_s
+      when filename_param.present? && request_body.present?
+        filename = filename_param.original_filename rescue filename_param.to_s
         begin
-          filepath = params[:filename].path
+          filepath = filename_param.path
         rescue
-          filepath = params[:filename].to_s
+          filepath = filename_param.to_s
           load_file_from_request_body = true
         end
-      when params[:file].present?
-        filename = params[:file].original_filename rescue params[:file].to_s
-        filepath = params[:file].path rescue ''
+      when file_param.present?
+        filename = file_param.original_filename rescue file_param.to_s
+        filepath = file_param.path rescue ''
       else
         return results
       end
 
-      filename = filename.gsub(/ /, '_')
+      filename = filename.tr(' ', '_') unless allow_spaces
 
       random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
 
@@ -50,7 +55,7 @@ module CartoDB
 
       file = nil
       if load_file_from_request_body
-        file = save_body_to_file(params, request, random_token, filename)
+        file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         filepath = file.path
       end
 
@@ -67,7 +72,7 @@ module CartoDB
         results[:file_uri] = file_url
       else
         unless load_file_from_request_body
-          file = save_body_to_file(params, request, random_token, filename)
+          file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         end
 
         if use_s3 && do_long_upload
@@ -94,17 +99,22 @@ module CartoDB
       o = s3_bucket.objects[path]
       o.write(Pathname.new(filepath), { acl: :authenticated_read })
 
-      o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      content_disposition = s3_config['content-disposition']
+      if content_disposition.present?
+        o.url_for(:get, expires: s3_config['url_ttl'], response_content_disposition: content_disposition).to_s
+      else
+        o.url_for(:get, expires: s3_config['url_ttl']).to_s
+      end
     end
 
     private
 
-    def save_body_to_file(params, request, random_token, filename)
+    def filedata_from_params(filename_param, file_param, request_body, random_token, filename)
       case
-      when params[:filename].present? && request && request.body.present?
-        filedata = params[:filename]
-      when params[:file].present?
-        filedata = params[:file]
+      when filename_param.present? && request_body.present?
+        filedata = filename_param
+      when file_param.present?
+        filedata = file_param
       else
         return
       end
@@ -117,7 +127,7 @@ module CartoDB
         begin
           data = filedata.read.force_encoding(FILE_ENCODING)
         rescue
-          data = request.body.read.force_encoding(FILE_ENCODING)
+          data = request_body.read.force_encoding(FILE_ENCODING)
         end
         save(data, random_token, filename)
       end

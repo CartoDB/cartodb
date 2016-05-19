@@ -172,11 +172,14 @@ describe Carto::Api::VizJSON3Presenter do
       layer.save
 
       # INFO: send :calculate_vizjson won't use cache
-      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send :calculate_vizjson
-      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send(:calculate_vizjson)
+      nm_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send(:calculate_vizjson, for_named_map: true)
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson)
 
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
+      nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
 
@@ -185,13 +188,24 @@ describe Carto::Api::VizJSON3Presenter do
       layer.save
       @visualization.reload
 
-      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send :calculate_vizjson
-      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v2_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send(:calculate_vizjson)
+      nm_vizjson = Carto::Api::VizJSONPresenter.new(@visualization, $tables_metadata).send(:calculate_vizjson, for_named_map: true)
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson)
 
-      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
-      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq(id: source)
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
+      v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
+      nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq(id: source)
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
+    end
+end
+  describe 'anonyous_vizjson' do
+    include_context 'full visualization'
+
+    it 'v3 should include sql_wrap' do
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
 

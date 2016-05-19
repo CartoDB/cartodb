@@ -39,8 +39,18 @@ module Carto
 
       logger.append('Uploading')
       update_attributes(state: STATE_UPLOADING, file: filepath)
-      upload_params = { file: CartoDB::FileUploadFile.new(filepath) }
-      results = file_upload_helper.upload_file_to_storage(upload_params, nil, Cartodb.config[:exporter]['s3'])
+
+      file = CartoDB::FileUploadFile.new(filepath)
+
+      s3_config = Cartodb.config[:exporter]['s3'] || {}
+      s3_config['content-disposition'] = "attachment;filename=#{file.original_filename}"
+
+      results = file_upload_helper.upload_file_to_storage(
+        file_param: file,
+        s3_config: s3_config,
+        allow_spaces: true
+      )
+
       url = results[:file_uri]
 
       logger.append('Deleting tmp file')
@@ -70,7 +80,7 @@ module Carto
     end
 
     def visualization_exportable_by_user?
-      errors.add(:user, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+      errors.add(:user, 'Must be viewable by the user') unless visualization.is_viewable_by_user?(user)
     end
 
     def user_tables_ids_valid?

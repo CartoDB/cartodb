@@ -90,6 +90,7 @@ defaults: &defaults
         create_map: ''
         export_table: ''
         export_map: ''
+        export_public_map: ''
         select_wms: ''
         color_basemap: ''
         pattern_basemap: ''
@@ -251,8 +252,8 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
-  app_assets:
-    asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
+  # app_assets:
+  #   asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
     gravatar_enabled: true
     base_url: 'example.com/avatars'

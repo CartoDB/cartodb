@@ -64,6 +64,7 @@
   @include align-items(center);
   @include justify-content(center);
   width: 40px;
+  min-width: 40px;
   height: 40px;
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;

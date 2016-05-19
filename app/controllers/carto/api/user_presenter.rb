@@ -108,6 +108,12 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_obs_snapshot_calls : @user.get_obs_snapshot_calls,
             hard_limit:  @user.hard_obs_snapshot_limit?
           },
+          obs_general: {
+            quota:       @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_general_block_price : @user.obs_general_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_general_calls : @user.get_obs_general_calls,
+            hard_limit:  @user.hard_obs_general_limit?
+          },
           twitter: {
             enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,

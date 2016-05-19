@@ -79,6 +79,7 @@ which should be fixed manually.
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 * Fix bug in import mail notifier that prevented to obtain the name of tables created by queries or duplications
 * Fix some import failures due to failling in finding suitable table names.
+* Exported map files now have comprehensive names.
 
 ## Security fixes
 

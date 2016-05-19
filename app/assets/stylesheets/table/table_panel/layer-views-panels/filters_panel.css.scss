@@ -25,6 +25,7 @@
     h3 { padding-left:30px; }
 
     & > .white-gradient-shadow {
+      display: none;
 
       pointer-events: none;
 
@@ -124,7 +125,7 @@
       a {
         float:right;
         font-size:13px;
-        text-decoration: underline;
+        text-decoration: none;
       }
     }
 
@@ -144,7 +145,7 @@
 
       .combo {
 
-        @include box-shadow(inset 0px 4px 4px #EDEDED);
+        
 
         display:none;
         @include box-sizing(border-box);
@@ -183,8 +184,7 @@
 
         padding: 15px 0 0 0;
 
-        border-bottom: 1px solid rgba(#999999, .25);
-        @include box-shadow(0px 4px 4px #EDEDED);
+        border-bottom: 1px solid $DarkGrey6;
 
         text-align:left;
 
@@ -301,9 +301,6 @@
         padding: 0;
         margin: 0 0 0 30px;
 
-        @include border-radius(4px);
-        border: 1px solid #B7B7B7;
-
         .apply {
           @include position(6px, 7px, false, false);
           padding: 6px 7px 6px 6px;
@@ -342,11 +339,13 @@
 
         input {
           @include box-sizing(border-box);
-          @include size(275px, 39px);
+          @include size(275px, 19px);
           max-width:100%;
           max-height:39px;
           padding: 11px;
-          border:none;
+          border:1px solid $Black;
+          background-color: $Amber1;
+          border-radius: 2px;
           font-family: $text-fonts;
           font-size:13px;
           background:none;
@@ -362,6 +361,7 @@
         .white-gradient-shadow {
 
           pointer-events: none;
+          display: none;
 
           &.top    { @include opacity(0); @include position(0, false, false, 0); @extend .white-gradient-shadow-top;    z-index: 10; }
           &.bottom { @include opacity(0); @include position(false, false, 0, 0); @extend .white-gradient-shadow-bottom; z-index: 10; }

@@ -385,7 +385,7 @@ $sLabel-width: 140px;
   color: $cTypography-link;
   &:hover {
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none;
     color: $cTypography-linkHover;
   }
 }
@@ -399,7 +399,7 @@ $sLabel-width: 140px;
 }
 .Form-link {
   color: $cTypography-link;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover {
     color: $cTypography-linkHover;
     cursor: pointer;
@@ -496,7 +496,7 @@ $sLabel-width: 140px;
 .Form-rowInfoText--error { color: #DD3B37 }
 .Form-rowInfoText--error .Form-link {
   color: #DD3B37;
-  text-decoration: underline;
+  text-decoration: none;
 }
 .Form-footer {
   @include display-flex();

@@ -41,9 +41,9 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
   -khtml-box-sizing: border-box;  /* konqueror */
   box-sizing: border-box;         /* css3 */
 }
-
+// fonts combobox
 .select2-container .select2-choice {
-    background-color: $btn_background_normal;
+    background-color: $Amber1;
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
@@ -55,12 +55,11 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     height: 19px;
     line-height: 19px;
     padding: 0 0 0 8px;
-    color: $Grey2;
+    color: $Black;
     text-decoration: none;
 }
 
 .select2-container.select2-drop-above .select2-choice {
-    background-color: $btn_background_press;
     @include border-radius(2px);
 }
 
@@ -124,12 +123,22 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 .select2-container .select2-choice div b {
     display: block;
-    width: 100%;
+    width: 14px;
     height: 100%;
+    background-color: $btn_background_normal;
+    border-left: 1px solid $Black;
+    position: absolute;
+    right: 0px;
+    &:hover {
+      background-color: $btn_background_hover;
+    }
+    &:active {
+       background-color: $btn_background_press;
+    }
     &:before,&:after {
       position:absolute;
       content:' ';
-      right:6px;
+      right:4px;
       width:0;
       height:0;
       border-left:3px solid transparent;
@@ -137,13 +146,8 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     }
 
     &:after {
-      bottom:4px;
+      bottom:7px;
       border-top:4px solid $Grey2;
-    }
-
-    &:before {
-      top:3px;
-      border-bottom:4px solid $Grey2;
     }
 }
 
@@ -191,7 +195,7 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
-    @include border-radius(3px);
+    @include border-radius(2px);
 
     &:focus {
       outline:none;
@@ -218,7 +222,6 @@ Version: 3.1 Timestamp: Tue Aug 14 09:05:17 PDT 2012
 
 .select2-dropdown-open .select2-choice {
   border: 1px solid $Black;
-  background-color: $btn_background_normal;
 }
 
 .select2-dropdown-open .select2-choice div {
@@ -403,7 +406,7 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-default {
-  color: #999 !important;
+  color: $Black !important;
 }
 
 .select2-container-multi .select2-choices .select2-search-choice {
@@ -485,7 +488,7 @@ disabled look for already selected choices in the results dropdown
 /* end multiselect */
 
 .select2-result-selectable .select2-match,
-.select2-result-unselectable .select2-result-selectable .select2-match { text-decoration: underline; }
+.select2-result-unselectable .select2-result-selectable .select2-match { text-decoration: none; }
 .select2-result-unselectable .select2-match { text-decoration: none; }
 
 .select2-offscreen { position: absolute; left: -10000px; }
@@ -591,6 +594,6 @@ disabled look for already selected choices in the results dropdown
   }
   .select2-result-label table {
     border:1px solid rgba(black,0.25);
-    @include border-radius(3px);
+    @include border-radius(2px);
   }
 }

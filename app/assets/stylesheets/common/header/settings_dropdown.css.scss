@@ -31,7 +31,7 @@
 
 .SettingsDropdown-itemLink:hover {
   text-decoration: none;
-  .SettingsDropdown-itemLinkText { text-decoration: underline }
+  .SettingsDropdown-itemLinkText { text-decoration: none }
 }
 
 .SettingsDropdown-itemLinkText { font-size: $sFontSize-normal }

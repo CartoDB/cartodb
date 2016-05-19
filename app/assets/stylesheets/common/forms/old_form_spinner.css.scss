@@ -55,7 +55,7 @@
     position:absolute;
     right:0;
     width:14px;
-    height:11px;
+    height:9px;
 
     &:before {
       content:' ';
@@ -69,23 +69,27 @@
 
     &.plus {
       top:0;
+      height: 10px;
       &:before {
-        top: 3px;
+        top: 2px;
         border-bottom:4px solid $Grey2;
       }
     }
     
     &.minus {
       bottom:0;
-      height: 12px;
       &:before {
-        top: 5px;
+        top: 3px;
         border-top:4px solid $Grey2;
       }
     }
 
     &:hover {
-	background-color: $DarkGrey1;
+	     background-color: $btn_background_hover;
+    }
+
+    &:active {
+      background-color: $btn_background_press;
     }
   }
 

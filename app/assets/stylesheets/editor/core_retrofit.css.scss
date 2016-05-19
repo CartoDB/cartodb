@@ -12,7 +12,7 @@ a {
   color: #2483B4;
   text-decoration: none;
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
     color: #333;
   }
   &.disabled {
@@ -83,7 +83,7 @@ strong { font-weight: bold }
 .small { font-size: 13px }
 .smaller { font-size: 11px }
 .tiny { font-size: 8px }
-.underline { text-decoration: underline }
+.underline { text-decoration: none }
 .red { color: #E95850 }
 .italic { font-style: italic }
 

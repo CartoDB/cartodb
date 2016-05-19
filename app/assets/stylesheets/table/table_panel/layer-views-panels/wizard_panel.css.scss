@@ -33,8 +33,7 @@
       left:0;
       right:0;
       height:149px;
-
-      background: image-url('layout/linen.png');
+      background: none;
 
       &.left_shadow:before {
         content:'';
@@ -109,10 +108,7 @@
       display:block;
       width:1050px;
       padding:0 30px;
-
       letter-spacing:-4px;
-      border-bottom:1px solid #E5E5E5;
-      @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
       li {
         position:relative;
@@ -129,7 +125,7 @@
           margin:30px 0;
 
           @include box-shadow(0 0 3px 4px rgba(black, 0.15));
-          @include border-radius(3px);
+          @include border-radius(2px);
 
           .name {
             position: absolute;
@@ -140,7 +136,7 @@
             background:#fff;
 
             border-top: 1px solid #ccc;
-            @include border-radius(0 0 3px 3px);
+            @include border-radius(0 0 2px 2px);
             text-transform: uppercase;
 
             text-align:center;
@@ -196,35 +192,12 @@
           }
 
           &.selected {
-            border-color:$cGray2;
+            border: 4px solid $SelectionBlue2;
 
-            @include opacity(1);
+            @include opacity(1); 
 
             .name {
               color: #333;
-            }
-
-            &:before, &:after {
-              @include size(0);
-              position:absolute;
-              bottom: 0;
-              content: '';
-              left:50%;
-              margin-left:-13px;
-              border-left:10px solid transparent;
-              border-right:10px solid transparent;
-              z-index:5;
-            }
-
-            &:before {
-              bottom:-30px;
-              border-bottom:10px solid $DarkGrey6;
-              z-index:10;
-            }
-
-            &:after {
-              bottom:-30px;
-              border-bottom:10px solid $cGray4;
             }
           }
 

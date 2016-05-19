@@ -11,7 +11,7 @@
 @import "../../table/table-sprite";
 @import "../variables/colors";
 
-$corner_radius: 6px;
+$corner_radius: 0px;
 
 .table_panel {
   position:fixed;
@@ -29,7 +29,7 @@ $corner_radius: 6px;
   @include border-top-left-radius($corner_radius);
   z-index:20;
 
-
+//bb_layer_panel
   .layer_panel {
     position:relative;
     width:100%;

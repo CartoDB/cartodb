@@ -14,6 +14,7 @@
     display:none;
     background: $DarkGrey7;
     border: $dropdownBorder;
+    padding: 12px 0px;
     z-index:50;
 
     &:before {
@@ -142,7 +143,7 @@
     &.tiny {
       width:105px!important;
     }
-
+//dropdown list item
     ul {
       position:relative;
       @include inline-block();
@@ -153,20 +154,18 @@
       overflow:visible;
 
       li {
-        display:block;
-	border-top: 1px solid transparent;
- 	border-bottom: 1px solid transparent;
+          display:block;
 
         a {
-	  color: $Amber1;
+	        color: $Amber1;
           display:block;
-          padding:13px 13px 15px 13px;
+          line-height: 19px;
+          padding: 0px 12px;
         }
 
 
         &:hover {
           background:$DarkGrey2;
-	  border-color: $DarkGrey9;
           a {text-decoration:none}
         }
 

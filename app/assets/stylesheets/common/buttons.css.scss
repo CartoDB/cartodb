@@ -110,11 +110,11 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   }
 }
 .Button--link {
-  color: $Teal4;
+  color: $Teal2;
   text-transform: inherit;
   &:hover {
     color: $Teal3;
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 // Use this instead of .Button--positive on header background

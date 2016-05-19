@@ -132,7 +132,7 @@
 }
 .ContentResult-textTitle {
   color: $cTypography-link;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover {
     color: $cTypography-linkHover;
   }

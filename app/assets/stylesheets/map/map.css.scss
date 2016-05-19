@@ -13,6 +13,7 @@
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
 @import "../variables/colors";
+@import "../variables/mixins";
 
 div.map {
   @include box-sizing(border-box);
@@ -155,11 +156,14 @@ div.map {
     }
   }
 
+//map toolbar
+
   div.map_toolbar {
     @include position(0, false, false, 0px);
     @include size(100%, 66px);
-    background-color: $DarkGrey6;
+    background-color: $DarkGrey8;
     border-bottom: 1px solid $Black;
+    padding: 3px 7px 4px;
     &.animated {
       overflow:hidden;
     }
@@ -173,13 +177,14 @@ div.map {
       top: 0;
       left: 0;
       @include inline-block();
+      padding-top:15px;
+      padding-left: 8px;
     }
   }
 
   .options {
     float: left;
     @include inline-block();
-    margin: 20px 0 0 45px;
 
     & > li.button {
 
@@ -189,6 +194,7 @@ div.map {
 
         & > .thumb {
           @include size(26px);
+          display: none; //remove_icons
         }
 
       }
@@ -246,14 +252,12 @@ div.map {
 
       }
 
-      @include inline-block();
+      @include inline-block();      
+      @include bb_button_style;
+      height: 40px;
+      margin: 0 1px 0 0;
+      padding: 0px 12px 0px 6px;
 
-      padding: 0 43px 0 0;
-      margin: 0 5px 0 0;
-
-      border-right: 1px solid $Black;
-
-      cursor: pointer;
 
       & > .thumb {
         position:relative;
@@ -277,9 +281,8 @@ div.map {
           position:relative;
           padding:0 12px 0 0;
           display:block;
-          font-family: "Helvetica", Arial;
           font-weight:normal;
-          line-height:12px;
+          line-height:15px;
         }
       }
 
@@ -292,19 +295,22 @@ div.map {
           color: $Grey1;
         }
 
+        //bb remove second line
+        .name {
+          display: none;
+        }
+
         h5 {
           position:relative;
           padding:0 12px 0 0;
           display:block;
-          font-family: $text-fonts2;
-          font-weight:normal;
-          line-height:12px;
+          line-height:35px;
 
           &:before {
             position:absolute;
             content:' ';
-            top:-3px;
-            right:-20px;
+            top:0px;
+            right:-5px;
             margin:16px 0 0 5px;
             border-left:4px solid transparent;
             border-right:4px solid transparent;
@@ -339,14 +345,14 @@ div.map {
     position:relative;
     box-sizing: border-box;
     @include inline-block();
+    @include bb_button_style;
     padding: 10px 14px 10px 37px;
     margin: 0 3px 0 0;
     height: auto;
     min-width: 70px;
-    background: rgba(#000, .7);
     color: #fff;
     font-size: 13px;
-    @include border-radius(3px);
+
 
     &:last-child {
       margin-right: 0;
@@ -390,7 +396,7 @@ div.map {
     &:after {
       background-color: #fff;
       @include box-shadow(0 0 1px rgba(#000, .9));
-      @include border-radius(3px);
+      @include border-radius(2px);
     }
   }
 
@@ -409,8 +415,7 @@ div.map {
 
   &.derived div.cartodb-map {
 
-    @include position(82px, 79px, 15px, 15px);
-    @include border-radius(3px);
+    @include position(74px, 64px, 0px, 0px);
     @include size(auto);
 
   }
@@ -422,7 +427,15 @@ div.map {
       right: 77px;
       float: right;
       position: absolute;
-    }
+
+      background-color: $Amber1;
+      border: 1px solid $Black;
+      input.text {
+        border:none;
+        color: $Black;
+      }
+    } 
+
 
     z-index:1;
 
@@ -433,13 +446,16 @@ div.map {
     margin: 0;
 
     z-index: 10001;
-
+    background-color: $DarkGrey2;
+    border:1px solid Black;
     div.cartodb-legend {
       display:none;
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
-
+      ul li {
+        color: $Amber1;
+      }
       &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
     }
   }
@@ -475,6 +491,48 @@ div.map {
     display:none;
     font-weight: normal;
     margin: 0;
+    @include bb_button_style;
+    border: 1px solid $Black;
+
+  }
+  div.cartodb-dropdown.border {
+    background-color: #1d1d1d;
+    border: 1px solid $Grey2;
+  }
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li {
+    border: none;
+    &:hover { 
+      background: none;
+      a.layer {
+        text-decoration: none;
+      }
+    }
+  }
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.layer {
+    color: $Amber1;
+    border: none;
+
+  }
+  div.cartodb-dropdown div.tail span.border {
+    top: 0px;
+  }
+
+  div.cartodb-layer-selector-box a.layers .count, &:hover{
+    background: none;
+  }
+
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.switch {
+    border: none;
+    &.enabled {
+      background-color: $Amber1
+    }
+    span.handle {
+      border: none;
+      top: 1px;
+    }
   }
 
   // Zoom
@@ -502,11 +560,19 @@ div.map {
     display:none;
     position:absolute;
     margin: 0;
+    a {
+      @include bb_button_style;
+      border: 1px solid $Black;
+    }
   }
 
   div.cartodb-share {
     margin: 0;
     position:absolute;
+     a {
+      @include bb_button_style;
+      border: 1px solid $Black;
+    }
   }
 
   // Search box in core map
@@ -528,7 +594,7 @@ div.map {
     border:1px solid #999999;
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
-    @include border-radius(3px);
+    @include border-radius(2px);
     z-index: 1000;
 
     a {

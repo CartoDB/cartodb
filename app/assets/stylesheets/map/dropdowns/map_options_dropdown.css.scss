@@ -8,6 +8,7 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
+@import "../variables/colors";
 
 div.dropdown.map_options_dropdown {
 
@@ -22,16 +23,17 @@ div.dropdown.map_options_dropdown {
       @include display-flex();
       @include justify-content(space-between, justify);
       @include align-items(center, center);
+      background-color: transparent;
       margin: 0;
       padding: 10px 0;
       border:none;
       font-size: 13px;
-      border-bottom: 1px solid rgba(204,204,204,0.35);
+      border-bottom: 1px solid $Black;
       cursor: default;
       position:relative;
 
       &:before {
-        content: '';
+        content: ''; 
         position:absolute;
         top: 14px;
         width: 10px;
@@ -105,11 +107,13 @@ div.dropdown.map_options_dropdown {
       }
 
 
-      p { margin-left: 17px; }
+      p { margin-left: 17px; color:$Amber1}
 
-      &.active, &.active p { color: #666666; }
-      &, p { 
-        color: #b9b9b9;
+      &.active, &.active p {  }
+      &:hover {
+        background-color: transparent;
+      }
+      &, p {         
         @include simple-transition(color, 100ms);
       }
 
@@ -124,8 +128,6 @@ div.dropdown.map_options_dropdown {
         }
 
       }
-
-      &:hover { background: #fff; }
 
       a {
         @include inline-block();

@@ -235,3 +235,17 @@
 	
 	}
 }
+
+//bloomberg theme
+//button 
+ @mixin bb_button_style {
+    background-color: $btn_background_normal;
+    border-radius: 2px;
+
+      &:hover {
+        background-color: $btn_background_hover;
+      }
+      &:active {
+        background-color: $btn_background_press;
+      }
+ }

@@ -159,10 +159,10 @@
 
 .Button--advancedExport {
   color: #FFF;
-  text-decoration: underline;
+  text-decoration: none;
   &:hover {
     color: $cTypography-linkHover;
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 

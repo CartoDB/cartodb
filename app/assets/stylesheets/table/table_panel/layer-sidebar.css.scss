@@ -15,6 +15,7 @@
   @import "../../variables/colors";
 
   // Layer actions sidebar
+  //bb_sidebar_tabs
   .layer-sidebar {
     position:absolute;
     top:68px;
@@ -101,9 +102,9 @@
         width:100%;
         height:60px;
         @include text-indent();
-        border-bottom:1px solid $DarkGrey6;
+        border-bottom:1px solid transparent;
+        border-top: 1px solid transparent;
         z-index:0;
-        @include opacity(0.75);
 
         &.sql_mod        { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
         &.filters_mod    { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
@@ -123,7 +124,7 @@
         &.merge_datasets {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
 
         &.add_feature {
-          border-top:1px solid rgba(#999999,0.25);
+          border-top:1px solid $Black;
           @include table-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
         }
 
@@ -134,37 +135,36 @@
 
         &.disabled {
           @include opacity(0.15);
-          border-color:#999;
         }
-
+ 
         &.selected {
           @include opacity(1);
+          background-color: $DarkGrey3;
+          border-color:$DarkGrey6;
+
 
           &:before {
-            position:absolute;
-            content:'';
-            right:-1px;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid $DarkGrey6;
-            z-index:1;
+            position: absolute;
+            content: '';
+            left: -4px;
+            width: 2px;
+            background-color: #fff;
+            border: 1px solid $DarkGrey6;
+            top: -1px;
+            bottom: -1px;
+            z-index: 1;
+            
           }
           &:after {
             position:absolute;
+            background-color: $DarkGrey3;
             content:'';
-            right:0;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid $Black;
+            bottom: 0px;
+            right:-1px;
+            top: 0px;
+            width:1px;            
             z-index:0;
+            
           }
         }
       }

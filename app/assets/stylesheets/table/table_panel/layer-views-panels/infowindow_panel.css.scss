@@ -297,7 +297,7 @@
           border:1px solid #999999;
           @include table-sprite(drag_points, $offset-y:23px, $offset-x:10px);
           background-color:white;
-          @include border-radius(3px);
+          @include border-radius(2px);
           cursor:all-scroll;
           & > span {color:#999999;}
         }

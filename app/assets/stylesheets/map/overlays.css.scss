@@ -9,6 +9,7 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
+@import "../variables/colors";
 
 /* Mobile */
 .cartodb-mobile .aside {
@@ -54,10 +55,10 @@
 }
 
 .overlay-properties ul li .field.double-field .btn:first-child {
-  @include border-radius(3px 0 0 3px);
+  @include border-radius(2px 0 0 2px);
 }
 .overlay-properties ul li .field.double-field .btn:last-child {
-  @include border-radius(0 3px 3px 0);
+  @include border-radius(0 2px 2px 0);
   border-left: none;
 }
 
@@ -67,18 +68,18 @@
   float: left;
   min-width: 25px;
   width: auto;
-  height: 20px;
+  height: 19px;
   margin: 0;
-  border: 1px solid #9E9E9E;
-  @include border-radius(3px);
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2));
-  background: -webkit-linear-gradient(#ffffff,#f2f2f2);
-  background: -moz-linear-gradient(#ffffff,#f2f2f2);
-  background: -o-linear-gradient(#ffffff,#f2f2f2);
-  background: linear-gradient(#ffffff,#f2f2f2);
+  border: 1px solid $Black;
+  @include border-radius(2px);
+  background-color: $btn_background_normal;
 
   &:hover {
-   @include background(linear-gradient(#F3F3F3, #FFF));
+   background-color: $btn_background_hover;
+  }
+
+  &:active {
+   background-color: $btn_background_press;
   }
 
   &:after {
@@ -137,7 +138,6 @@
     }
 
   .content > .text { 
-    font-family: 'Helvetica Neue', Helvetica, sans-serif; font-weight: 400;
     strong { font-weight: 700; }
   }
 
@@ -204,7 +204,7 @@
 .overlay-properties ul li {
   @include inline-block();
   padding: 0 10px;
-  border-right: 1px solid rgba(217,217,217,0.8);
+  border-right: 1px solid $Black;
 }
 .overlay-properties ul li:last-child {
   border-right: none;
@@ -219,7 +219,7 @@
   margin: 0 8px 0 0;
 }
 .overlay-properties ul li .field .form-view:hover span {
-  color: #333;
+  
 }
 .overlay-properties ul li .field .form-view:last-child {
   margin-right: 0;
@@ -230,7 +230,7 @@
 .overlay-properties ul li > span {
   margin: 0 0 5px 0;
   font-size: 13px;
-  color: #7A7A7A;
+  color: $Grey1;
   display:block;
   font-family: "Helvetica", Arial;
   font-weight:normal;
@@ -271,7 +271,7 @@
 
     a {
       color: inherit;
-      text-decoration: underline;
+      text-decoration: none;
       &:hover { color: #ccc; }
     }
 
@@ -290,7 +290,7 @@
   position: absolute!important; // !important required to work on IE10.
   background:rgba(#333, .5);
 
-  @include border-radius(3px);
+  @include border-radius(2px);
   @include simple-transition(background, .10s, ease-in-out);
 
   max-width: 800px;
@@ -374,7 +374,7 @@
 
     .content {
       position:relative;
-      @include border-radius(3px);
+      @include border-radius(2px);
     }
 
     &.error .loader {
@@ -508,8 +508,7 @@
     color: #fff;
     border: 1px solid #fff;
     background: #333;
-    font-size: 10px;
-    font-family: "helvetica neue", "helvetica", arial;
+    font-size: 10px;    
     text-align: center;
     text-transform: uppercase;
 
@@ -518,9 +517,11 @@
 
   }
 
+//overlay close button
+
   .close {
     top: -12px;
-    left: -15px;
+    right: -15px;
     height: 16px;
     width: 17px;
     padding: 3px;
@@ -590,7 +591,7 @@
 
     em, i { font-style: italic; } 
     strong { font-weight: bold; }
-    a { color: inherit; text-decoration: underline; }
+    a { color: inherit; text-decoration: none; }
 
      @include user-select(none); this breaks safari edition 
 
@@ -621,7 +622,7 @@
 div.cartodb-timeslider {
   z-index: 1000000;
 }
-
+// zoom level
 div.cartodb-zoom .info {
   position:absolute;
   display:block;
@@ -630,18 +631,33 @@ div.cartodb-zoom .info {
   padding: 8px 0 7px 0;
   font:normal 13px "Helvetica",Arial;
   line-height: normal;
-  color:#858585;
+  color:$White;
   text-align: center;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 4px 2px;
-  @include border-radius(4px);
-  border: 1px solid #999999;
-  background: white;
-
+  @include border-radius(2px);
+  border: 1px solid $Black;
+  background-color: $btn_background_normal;
   z-index: 5;
-
 }
+
+div.cartodb-zoom { 
+    border: 1px solid $Black;
+    box-shadow: none;
+
+  a.zoom_in, a.zoom_out {
+    background-color: $btn_background_normal;
+    color: $White;
+  }
+  a.zoom_in {
+    border-radius: 2px 2px 0px 0px;
+    border-bottom: 1px solid $Black;
+  }
+  a.zoom_out {
+    border-radius: 0px 0px 2px 2px;
+  }
+}
+
+
+
 
 div.rule {
   position:absolute;

@@ -29,13 +29,13 @@
     "moment": "2.10.6",
     "perfect-scrollbar": "0.6.7",
     "underscore": "1.8.3",
+    "cartocolor": "^1.1.0",
     "urijs": "^1.17.1"
   },
   "devDependencies": {
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "CartoDB/CartoAssets#master",
-    "cartocolor": "^1.1.0",
     "grunt": "0.4.5",
     "grunt-aws": "^0.4.0",
     "grunt-browserify": "5.0.0",

@@ -32,10 +32,7 @@ var TorqueLayer = LayerModelBase.extend({
     var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
-          if (this.previous('cartocss')) {
-            return this._torqueTimeAttributeCartoCSSPropChanged();
-          }
-          return false;
+          return this.previous('cartocss') && this._torqueTimeAttributeCartoCSSPropChanged();
         }
         return true;
       }

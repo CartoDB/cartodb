@@ -62,7 +62,7 @@ module Carto
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         export_user_id = @visualization_export.user_id
-        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_user.id
+        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_viewer.id
       end
     end
   end

@@ -21,7 +21,13 @@ var TorqueLayer = LayerModelBase.extend({
 
   ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
 
-  TORQUE_TIME_ATTRIBUTE_PROP: '-torque-time-attribute',
+  TORQUE_LAYER_CARTOCSS_PROPS: [
+    '-torque-frame-count',
+    '-torque-time-attribute',
+    '-torque-aggregation-function',
+    '-torque-data-aggregation',
+    '-torque-resolution'
+  ],
 
   LAYER_NAME_IN_CARTO_CSS: 'Map',
 
@@ -37,7 +43,7 @@ var TorqueLayer = LayerModelBase.extend({
     var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
-          return this.previous('cartocss') && this._torqueTimeAttributeCartoCSSPropChanged();
+          return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
         }
         return true;
       }
@@ -48,19 +54,29 @@ var TorqueLayer = LayerModelBase.extend({
     }
   },
 
-  _torqueTimeAttributeCartoCSSPropChanged: function () {
+  _torqueCartoCSSPropsChanged: function () {
     var currentCartoCSS = this.get('cartocss');
     var previousCartoCSS = this.previous('cartocss');
-    var currentValue = this._getPropertyValueFromCartoCSS(currentCartoCSS, this.TORQUE_TIME_ATTRIBUTE_PROP);
-    var previousValue = this._getPropertyValueFromCartoCSS(previousCartoCSS, this.TORQUE_TIME_ATTRIBUTE_PROP);
-    return currentValue !== previousValue;
+    var renderer = new carto.RendererJS();
+
+    return !_.isEqual(
+      this._getTorqueLayerCartoCSSProperties(renderer, currentCartoCSS),
+      this._getTorqueLayerCartoCSSProperties(renderer, previousCartoCSS)
+    );
   },
 
-  _getPropertyValueFromCartoCSS: function (cartoCSS, propertyName) {
-    var renderer = new carto.RendererJS();
+  _getTorqueLayerCartoCSSProperties: function (renderer, cartoCSS) {
     var shader = renderer.render(cartoCSS);
     var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
-    return  layer && layer.eval(propertyName);
+    var properties = {};
+    _.each(this.TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
+      var value = layer.eval(property);
+      if (value) {
+        properties[property] = value;
+      }
+    });
+
+    return properties;
   },
 
   _reloadMap: function () {

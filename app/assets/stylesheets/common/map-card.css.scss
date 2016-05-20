@@ -278,7 +278,7 @@ $sEditButtonSize: 50px;
   height: $sEditButtonSize;
   background: #0090d7;
   border-radius: $sEditButtonSize;
-  color: #fff;
+  color: $cWhite;
   text-decoration:none;
   text-align: center;
   line-height:$sEditButtonSize;
@@ -290,8 +290,13 @@ $sEditButtonSize: 50px;
   &:hover {
     background: #0082C2;
     text-decoration: none;
-    color:#fff;
+    color: $cWhite;
   }
+}
+.MapCard-editButton.CDB-IconFont {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
 }
 .MapCard:hover .MapCard-editButton {
   @include opacity(1);

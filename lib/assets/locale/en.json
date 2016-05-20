@@ -477,6 +477,7 @@
           "select-style": "Select style",
           "window-size": "Window size",
           "header-color": "Header color",
+          "none": "None",
           "light": "Light",
           "dark": "Dark",
           "color": "Color",

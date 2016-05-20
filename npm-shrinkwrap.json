@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.88-demo",
+  "version": "3.23.88",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1088,7 +1088,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#f7dc02bb8bc49347743f6c69d3f021813e559ea3",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#b640e3edd74d85c3386acf7cacebdb4c0bcc25c1",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1283,6 +1283,11 @@
           "version": "3.5.8",
           "from": "d3@3.5.8",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.8.tgz"
+        },
+        "cartocolor": {
+          "version": "1.1.0",
+          "from": "cartocolor@>=1.1.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
         },
         "urijs": {
           "version": "1.18.0",

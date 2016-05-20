@@ -16,6 +16,7 @@ class Carto::User < ActiveRecord::Base
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
+  OBS_GENERAL_BLOCK_SIZE = 1000
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
@@ -259,6 +260,15 @@ class Carto::User < ActiveRecord::Base
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_obs_general_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_obs_general_quota(options)
+    else
+      remaining = obs_general_quota - get_obs_general_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   def oauth_for_service(service)
     synchronization_oauths.where(service: service).first
   end
@@ -322,6 +332,12 @@ class Carto::User < ActiveRecord::Base
     get_user_obs_snapshot_data(self, date_from, date_to)
   end
 
+  def get_obs_general_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_obs_general_data(self, date_from, date_to)
+  end
+
   #TODO: Remove unused param `use_total`
   def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
     self.quota_in_bytes - db_size
@@ -372,6 +388,16 @@ class Carto::User < ActiveRecord::Base
     !self.soft_obs_snapshot_limit?
   end
   alias_method :hard_obs_snapshot_limit, :hard_obs_snapshot_limit?
+
+  def soft_obs_general_limit?
+    Carto::AccountType.new.soft_obs_general_limit?(self)
+  end
+  alias_method :soft_obs_general_limit, :soft_obs_general_limit?
+
+  def hard_obs_general_limit?
+    !self.soft_obs_general_limit?
+  end
+  alias_method :hard_obs_general_limit, :hard_obs_general_limit?
 
   def soft_twitter_datasource_limit?
     self.soft_twitter_datasource_limit  == true

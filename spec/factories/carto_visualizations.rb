@@ -1,19 +1,35 @@
 module Carto
   module Factories
     module Visualizations
+      def full_visualization_table(carto_user, map)
+        FactoryGirl.create(
+          :carto_user_table,
+          user_id: carto_user.id,
+          map_id: map.id,
+          privacy: Carto::UserTable::PRIVACY_PUBLIC
+        )
+      end
+
       # "Full visualization": with map, table... Metadata only (not actual user table).
-      def create_full_visualization(carto_user, map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id))
-        table = FactoryGirl.create(:carto_user_table, user_id: carto_user.id, map_id: map.id, privacy: Carto::UserTable::PRIVACY_PUBLIC)
+      # Table is bound to visualization, and to data_layer if it's not passed.
+      def create_full_visualization(
+        carto_user,
+        map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
+        table: full_visualization_table(carto_user, map),
+        data_layer: nil)
 
         table_visualization = FactoryGirl.create(
           :carto_visualization,
           user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
 
-        carto_layer = visualization.map.data_layers.first
-        carto_layer.options[:table_name] = table.name
-        carto_layer.options[:query] = "select * from #{table.name}"
-        carto_layer.save
+        unless data_layer.present?
+          data_layer = visualization.map.data_layers.first
+          data_layer.options[:table_name] = table.name
+          data_layer.options[:query] = "select * from #{table.name}"
+          data_layer.options[:sql_wrap] = "select * from (<%= sql %>) __wrap"
+          data_layer.save
+        end
 
         visualization.update_column(:active_layer_id, visualization.layers.first.id)
 

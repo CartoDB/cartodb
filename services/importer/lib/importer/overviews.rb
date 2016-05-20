@@ -49,7 +49,7 @@ module CartoDB
       end
 
       def create_overviews!(table_name)
-        # TODO: timing, exception handling, ...
+        CartoDB::Logger.info message: "Creating overviews", user: @user, table_name: table_name
         @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
           log("Will create overviews for #{table_name}")
           @importer_stats.timing('createviews') do

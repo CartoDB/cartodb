@@ -24,8 +24,16 @@
   border-style: dashed;
 }
 .BlockList-item:hover {
-  border: 1px solid $cBlue;
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
 }
+.BlockList-item.BlockList-item--noAction {
+  cursor: default;
+}
+.BlockList-item.BlockList-item--noAction:hover {
+  border: 1px solid $cSecondaryLine;
+}
+
 .BlockList-item.is-dashed.no-hover:hover {
   border: 1px dashed $cSecondaryLine;
   cursor: default;
@@ -56,6 +64,7 @@
   @include align-items(center);
   @include justify-content(center);
   width: 40px;
+  min-width: 40px;
   height: 40px;
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;
@@ -68,7 +77,7 @@
   @include display-flex();
   /* remove when add new scroll */
   max-width: 264px;
-  overflow: auto;
+  overflow: visible; /* for class with .has-error to be visible */
 }
 .HorizontalBlockList-item {
   @include display-flex();
@@ -106,14 +115,28 @@
   background: $cWhite;
 }
 .HorizontalBlockList-item.is-selected {
-  border: 1px solid #E27D61;
-  background: #E27D61;
   color: $cWhite;
+}
+.HorizontalBlockList-item.has-error {
+  position: relative;
+  &::after {
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
 }
 .HorizontalBlockList-item-actionBlock {
   width: 100%;
   height: 100%;
 }
+
 .HorizontalBlockList-item-text,
 .HorizontalBlockList-item-icon {
   @include inline-block();

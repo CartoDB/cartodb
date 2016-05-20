@@ -14,6 +14,12 @@ module Carto
     end
   end
 
+  module VisualizationsExportService2Validator
+    def check_valid_visualization(visualization)
+      raise "Only derived visualizations can be exported" unless visualization.derived?
+    end
+  end
+
   module VisualizationsExportService2Importer
     include VisualizationsExportService2Configuration
 
@@ -121,7 +127,7 @@ module Carto
     def build_analysis_from_hash(exported_analysis)
       return nil unless exported_analysis
 
-      Carto::Analysis.new(analysis_definition_json: exported_analysis[:analysis_definition])
+      Carto::Analysis.new(analysis_definition: exported_analysis[:analysis_definition])
     end
 
     def build_widgets_from_hash(exported_widgets, layer:)
@@ -140,37 +146,36 @@ module Carto
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
-        options_json: exported_widget[:options]
+        options: exported_widget[:options]
       )
     end
   end
 
   module VisualizationsExportService2Exporter
     include VisualizationsExportService2Configuration
+    include VisualizationsExportService2Validator
 
-    def export_visualization_json_string(visualization_id)
-      export_visualization_json_hash(visualization_id).to_json
+    def export_visualization_json_string(visualization_id, user)
+      export_visualization_json_hash(visualization_id, user).to_json
     end
 
-    def export_visualization_json_hash(visualization_id)
+    def export_visualization_json_hash(visualization_id, user)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id))
+        visualization: export(Carto::Visualization.find(visualization_id), user)
       }
     end
 
     private
 
-    def export(visualization)
+    def export(visualization, user)
       check_valid_visualization(visualization)
-      export_visualization(visualization)
+      export_visualization(visualization, user)
     end
 
-    def check_valid_visualization(visualization)
-      raise "Only derived visualizations can be exported" unless visualization.derived?
-    end
+    def export_visualization(visualization, user)
+      layers = visualization.layers_with_data_readable_by(user)
 
-    def export_visualization(visualization)
       {
         name: visualization.name,
         description: visualization.description,
@@ -185,7 +190,7 @@ module Carto
         bbox: visualization.bbox,
         display_name: visualization.display_name,
         map: export_map(visualization.map),
-        layers: visualization.layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) }
       }
@@ -229,7 +234,7 @@ module Carto
 
     def export_widget(widget)
       {
-        options: widget.options_json,
+        options: widget.options,
         type: widget.type,
         title: widget.title
       }
@@ -237,7 +242,7 @@ module Carto
 
     def exported_analysis(analysis)
       {
-        analysis_definition: analysis.analysis_definition_json
+        analysis_definition: analysis.analysis_definition
       }
     end
   end

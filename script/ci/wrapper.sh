@@ -5,7 +5,6 @@
 rm config/database_*
 rm config/redis_*
 #sudo killall redis-server
-truncate -s 0 *.log
 
 # Start redis servers
 port=6001
@@ -79,4 +78,3 @@ done
 touch specfailed.log
 touch specsuccess.log
 echo "# Wrapper finished"
-

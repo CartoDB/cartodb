@@ -29,7 +29,7 @@ module CartoDB
           @database_host,
           CartoDB::DataMover::Config[:user_dbport],
           @database_name
-        )} -Fc -f #{@filename} --serializable-deferrable -v")
+        )} -Z0 -Fc -f #{@filename} --serializable-deferrable -v")
       end
 
       def initialize(database_host, database_name, path, filename, database_schema = nil, logger = default_logger)
@@ -453,18 +453,19 @@ module CartoDB
         @logger = options[:logger] || default_logger
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
-        export_log = { 'job_uuid' => job_uuid,
-                       'id'                     => @options[:id] || @options[:organization_name] || nil,
-                       'type'                   => 'export',
-                       'path'                   => @options[:path],
-                       'start'                  => @start,
-                       'end'                    => nil,
-                       'server'                 => `hostname`.strip,
-                       'pid'                    => Process.pid,
-                       'db_source'              => nil,
-                       'db_size'                => nil,
-                       'status'                 => nil,
-                       'trace'                  => nil
+        export_log = { job_uuid:     job_uuid,
+                       id:           @options[:id] || @options[:organization_name] || nil,
+                       type:         'export',
+                       path:         @options[:path],
+                       start:        @start,
+                       end:          nil,
+                       elapsed_time: nil,
+                       server:       `hostname`.strip,
+                       pid:          Process.pid,
+                       db_source:    nil,
+                       db_size:      nil,
+                       status:       nil,
+                       trace:        nil
                      }
 
         begin
@@ -539,6 +540,7 @@ module CartoDB
           end
         rescue => e
           export_log[:end] = Time.now
+          export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil
           export_log[:status] = 'failure'
           export_log[:trace] = e.to_s
           if options[:organization_name]
@@ -549,6 +551,7 @@ module CartoDB
           raise
         else
           export_log[:end] = Time.now
+          export_log[:elapsed_time] = (export_log[:end] - export_log[:start]).ceil
           export_log[:status] = 'success'
         ensure
           exportjob_logger.info(export_log.to_json) unless options[:from_org]

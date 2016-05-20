@@ -2,8 +2,10 @@
 require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../../../../spec/helpers/file_server_helper'
 
 include CartoDB::Importer2
+include FileServerHelper
 
 describe Downloader do
   before do
@@ -43,9 +45,28 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL' do
-      stub_download(url: @file_url, filepath: @file_filepath)
+      stub_download(url: @file_url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@file_url)
+      downloader.run
+      downloader.source_file.name.should eq 'ne_110m_lakes'
+    end
+
+    it 'extracts the source_file name from the URL for S3 actual paths' do
+      url = 'http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv' +
+            '?AWSAccessKeyId=XXXXXXXXXXXXXXXXXXXX&Expires=1461934764&Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXM%3D'
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(url)
+      downloader.run
+      downloader.source_file.name.should eq 'ne_110m_lakes'
+    end
+
+    it 'extracts the source_file name from the URL for S3 paths without extra parameters' do
+      url = "http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv"
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(url)
       downloader.run
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
@@ -172,14 +193,16 @@ describe Downloader do
 
     it 'supports accented URLs' do
       [
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común'},
+        { url: 'spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común' },
         # TODO: move to master branch
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ'}
-      ].each { |url_and_name|
-        downloader = Downloader.new(url_and_name[:url])
-        downloader.run
-        downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
-      }
+        { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
+      ].each do |url_and_name|
+        serve_file url_and_name[:url] do |url|
+          downloader = Downloader.new(url)
+          downloader.run
+          downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
+        end
+      end
 
     end
 
@@ -242,15 +265,19 @@ describe Downloader do
     end
 
     it 'returns a source_file name' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.name.should eq 'ne_110m_lakes'
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.name.should eq 'ne_110m_lakes'
+      end
     end
 
     it 'returns a local filepath' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      end
     end
   end
 
@@ -309,12 +336,8 @@ describe Downloader do
     end
   end
 
-  def stub_download(options)
-    url       = options.fetch(:url)
-    filepath  = options.fetch(:filepath)
-    headers   = options.fetch(:headers, {})
-
-    Typhoeus.stub(url).and_return(response_for(filepath, headers))
+  def stub_download(url:, filepath:, headers: {}, content_disposition: true)
+    Typhoeus.stub(url).and_return(response_for(filepath, headers, content_disposition: content_disposition))
   end
 
   def stub_failed_download(options)
@@ -325,11 +348,11 @@ describe Downloader do
     Typhoeus.stub(url).and_return(failed_response_for(filepath, headers))
   end
 
-  def response_for(filepath, headers={})
+  def response_for(filepath, headers = {}, content_disposition: true)
      response = Typhoeus::Response.new(
         code:     200,
         body:     File.new(filepath).read.to_s,
-        headers:  headers.merge(headers_for(filepath))
+        headers:  headers.merge(headers_for(filepath, content_disposition: content_disposition))
      )
      response
   end
@@ -338,7 +361,8 @@ describe Downloader do
      Typhoeus::Response.new(code: 404, body: nil, headers: {})
   end
 
-  def headers_for(filepath)
+  def headers_for(filepath, content_disposition: true)
+    return {} unless content_disposition
     filename = filepath.split('/').last
     { "Content-Disposition" => "attachment; filename=#{filename}" }
   end
@@ -347,4 +371,3 @@ describe Downloader do
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
 end
-

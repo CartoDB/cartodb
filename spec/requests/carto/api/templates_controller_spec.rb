@@ -118,8 +118,8 @@ describe Carto::Api::TemplatesController do
       response.body[:code].should eq @template_1_data[:code]
       response.body[:min_supported_version].should eq @template_1_data[:min_supported_version]
       response.body[:max_supported_version].should eq @template_1_data[:max_supported_version]
-      response.body[:source_visualization]['id'].should eq @template_1_data[:source_visualization_id]
-      response.body[:organization]['id'].should eq @template_1_data[:organization_id]
+      response.body[:source_visualization][:id].should eq @template_1_data[:source_visualization_id]
+      response.body[:organization][:id].should eq @template_1_data[:organization_id]
       response.body[:required_tables].should eq @template_1_data[:required_tables]
     end
   end
@@ -133,8 +133,8 @@ describe Carto::Api::TemplatesController do
       response.body[:code].should eq @template_3_data[:code]
       response.body[:min_supported_version].should eq @template_3_data[:min_supported_version]
       response.body[:max_supported_version].should eq @template_3_data[:max_supported_version]
-      response.body[:source_visualization]['id'].should eq @template_3_data[:source_visualization_id]
-      response.body[:organization]['id'].should eq @template_3_data[:organization_id]
+      response.body[:source_visualization][:id].should eq @template_3_data[:source_visualization_id]
+      response.body[:organization][:id].should eq @template_3_data[:organization_id]
       response.body[:required_tables].should eq @template_3_data[:required_tables]
     end
 
@@ -186,8 +186,8 @@ describe Carto::Api::TemplatesController do
       response.body[:code].should eq new_fields[:code]
       response.body[:min_supported_version].should eq new_fields[:min_supported_version]
       response.body[:max_supported_version].should eq new_fields[:max_supported_version]
-      response.body[:source_visualization]['id'].should eq new_fields[:source_visualization_id]
-      response.body[:organization]['id'].should eq new_fields[:organization_id]
+      response.body[:source_visualization][:id].should eq new_fields[:source_visualization_id]
+      response.body[:organization][:id].should eq new_fields[:organization_id]
       response.body[:required_tables].should eq new_fields[:required_tables]
     end
     third_template = Carto::Template.where(id: third_template.id).first

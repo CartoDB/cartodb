@@ -2,13 +2,99 @@
 // --------------------------------------------------
 
 @import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
 
-.Editor-FormInner {
+.Editor-formInner {
   @include display-flex();
   @include align-items(center);
 }
-
-.Editor-FormInput {
+.Editor-formInput {
   @include flex(1);
+  position: relative;
+}
+.Editor-formInput:focus {
+  outline: none;
+}
+.Editor-formInner--nested {
+  position: relative;
+}
+.Editor-formInner--nested::before {
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: 8px;
+  width: 1px;
+  background: $cSecondaryLine;
+  content: '';
+}
+.Editor-formInner--nested .CDB-Legend {
+  position: relative;
+  width: 72px;
+  padding-left: 24px;
+}
+.Editor-formInner--nested .CDB-Legend::before {
+  position: absolute;
+  bottom: 3px;
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border: 1px solid $cMainLine;
+  border-radius: 50%;
+  background: $cWhite;
+  content: '';
+  box-sizing: border-box;
 }
 
+// TODO: temporary CSS for the Fill component
+
+.Editor-FormDialog {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 248px;
+  z-index: 100;
+}
+
+.Editor-FormDialog .CustomList {
+  display: block;
+  position: relative;
+  top: auto;
+  right: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.CDB-OptionInput-container { // TODO: fix this in CartoAsssets
+  height: 100%;
+}
+
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+.Form-InputFill.is-disabled {
+  border-color: #EEE;
+  background: #F9F9F9;
+  cursor: default;
+}
+
+.RampItem {
+  width: 100%;
+}
+
+.InputColor {
+  width: 100%;
+  padding: 7px 8px 6px;
+  background: #FFF;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.InputColor .InputColor-band {
+  min-width: 60px;
+  height: 5px;
+  border: 1px solid #DDD;
+  border-radius: 3px;
+}

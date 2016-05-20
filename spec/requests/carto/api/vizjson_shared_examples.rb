@@ -266,7 +266,7 @@ shared_examples_for 'vizjson generator' do
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
 
-        payload = { source_visualization_id: source_visualization.fetch('id'), privacy: 'PUBLIC' }
+        payload = { source_visualization_id: source_visualization.fetch(:id), privacy: 'PUBLIC' }
 
         post api_v1_visualizations_create_url(user_domain: @user_1.username, api_key: @api_key),
              payload.to_json, @headers
@@ -308,11 +308,11 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
         table1_visualization.update_attribute(:attributions, 'attribution1')
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
         table2_visualization.update_attribute(:attributions, 'attribution2')
-        table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
+        table3_visualization = Carto::Visualization.find(table3["table_visualization"][:id])
         table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
@@ -351,11 +351,11 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should eq 200
 
         # Set the attributions of the tables to check that they are included in the viz.json
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
         table1_visualization.update_attribute(:attributions, 'attribution1')
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
         table2_visualization.update_attribute(:attributions, 'attribution2')
-        table3_visualization = Carto::Visualization.find(table3["table_visualization"]["id"])
+        table3_visualization = Carto::Visualization.find(table3["table_visualization"][:id])
         table3_visualization.update_attribute(:attributions, '')
 
         visualization = JSON.parse(last_response.body)
@@ -398,9 +398,9 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 200
         visualization = JSON.parse(last_response.body)
 
-        table1_visualization = Carto::Visualization.find(table1["table_visualization"]["id"])
+        table1_visualization = Carto::Visualization.find(table1["table_visualization"][:id])
         table1_visualization.update_attribute(:attributions, table_1_attribution)
-        table2_visualization = Carto::Visualization.find(table2["table_visualization"]["id"])
+        table2_visualization = Carto::Visualization.find(table2["table_visualization"][:id])
         table2_visualization.update_attribute(:attributions, 'attribution 2')
 
         # Call to cache the vizjson after generating it
@@ -419,10 +419,10 @@ shared_examples_for 'vizjson generator' do
             @headers
         visualization = JSON.parse(last_response.body)
 
-        layer_group_layer = visualization["layers"][1]
-        layer_group_layer["type"].should == 'layergroup'
+        layer_group_layer = visualization['layers'][1]
+        layer_group_layer['type'].should eq 'layergroup'
         layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
-        layer_group_layer.size.should == 2
+        layer_group_layer.size.should eq 2
 
         layer_group_attributions.should include(table_1_attribution)
         layer_group_attributions.should include(modified_table_2_attribution)

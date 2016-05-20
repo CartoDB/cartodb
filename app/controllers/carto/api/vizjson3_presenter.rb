@@ -112,9 +112,12 @@ module Carto
           user:           user_info_vizjson(user)
         }
 
-        unless display_named_map?(@visualization, forced_privacy_version)
-          vizjson[:analyses] = @visualization.analyses.map(&:analysis_definition_json)
-        end
+        visualization_analyses = @visualization.analyses
+        vizjson[:analyses] = if display_named_map?(@visualization, forced_privacy_version)
+                               visualization_analyses.map { |a| named_map_analysis_json(a) }
+                             else
+                               visualization_analyses.map(&:analysis_definition)
+                             end
 
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
@@ -219,6 +222,19 @@ module Carto
             VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson
           end
         end
+      end
+
+      def named_map_analysis_json(analysis)
+        analysis_definition_without_sources(analysis.analysis_definition)
+      end
+
+      def analysis_definition_without_sources(analysis_definition)
+        if analysis_definition[:type] == 'source'
+          analysis_definition.delete(:params)
+        elsif analysis_definition[:params] && analysis_definition[:params][:source]
+          analysis_definition_without_sources(analysis_definition[:params][:source])
+        end
+        analysis_definition
       end
 
       def configuration
@@ -344,12 +360,17 @@ module Carto
       end
 
       def data_for_carto_layer(layer_vizjson)
+        layer_options = layer_vizjson[:options]
         data = {
           id: layer_vizjson[:id],
-          layer_name: layer_vizjson[:options][:layer_name],
-          interactivity: layer_vizjson[:options][:interactivity],
+          layer_name: layer_options[:layer_name],
+          interactivity: layer_options[:interactivity],
           visible: layer_vizjson[:visible]
         }
+
+        if layer_options && layer_options[:source]
+          data[:options] = { source: layer_options[:source] }
+        end
 
         infowindow = layer_vizjson[:infowindow]
         if infowindow && infowindow['fields'] && !infowindow['fields'].empty?
@@ -553,6 +574,12 @@ module Carto
           else
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
+
+          sql_wrap = @layer.options['sql_wrap']
+          if sql_wrap 
+            data[:sql_wrap] = sql_wrap 
+          end
+
           data = decorate_with_data(data, @decoration_data)
 
           data

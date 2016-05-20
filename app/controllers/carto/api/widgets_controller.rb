@@ -22,7 +22,8 @@ module Carto
           order: Carto::Widget.where(layer_id: @layer_id).count + 1,
           type: params[:type],
           title: params[:title],
-          options: params[:options].to_json)
+          options: params[:options],
+          source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue => e
@@ -31,8 +32,10 @@ module Carto
       end
 
       def update
-        @widget.update_attributes(params.slice(:order, :type, :title))
-        @widget.options = params[:options].to_json if params[:options]
+        update_params = params.slice(:order, :type, :title)
+        update_params[:source_id] = source_id_from_params if source_id_from_params
+        @widget.update_attributes(update_params)
+        @widget.options = params[:options]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
@@ -75,6 +78,10 @@ module Carto
         end
 
         true
+      end
+
+      def source_id_from_params
+        params[:source] ? params[:source][:id] : nil
       end
 
       def load_widget

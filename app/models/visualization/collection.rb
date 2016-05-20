@@ -397,11 +397,10 @@ module CartoDB
       end
 
       def lazy_order_by_mapviews(objects)
-        objects.sort! { |obj_a, obj_b|
-          # Stats have format [ date, value ]
-          # TODO: refactor with mapviews method at refactor
-          obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
-        }
+        # Stats have format [ date, value ]
+        maps_and_views = objects.map { |map| [map, map.stats.map { |o| o[1] }.reduce(0, :+)] }
+        maps_and_views.sort! { |mv_a, mv_b| mv_b[1] <=> mv_a[1] }
+        maps_and_views.map{ |mv| mv[0] }
       end
 
       def lazy_order_by_row_count(objects)

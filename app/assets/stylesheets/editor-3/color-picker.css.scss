@@ -1,7 +1,12 @@
 /* Temporary styles for new color picker */
 
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
 .ColorPicker-inputs {
-  display: flex;
+  @include display-flex();
+  margin: 0 -2px;
   text-align: center;
 }
 
@@ -11,9 +16,17 @@
 }
 
 .ColorPicker-inputLabel {
-  margin: 0 3px;
-  color: #CCC;
-  font-size: 10px;
+  color: #CBCED3;
+  font-size: 9px;
+}
+
+.ColorPicker-input {
+  width: 37px;
+  padding: 3px 4px;
+  text-align: center;
+}
+.ColorPicker-input.is-color {
+  width: 52px;
 }
 
 .ColorPicker-inputWrapper {
@@ -22,45 +35,121 @@
 }
 
 .ColorPicker .colorpicker-saturation {
-  width: 218px;
+  width: 216px;
   height: 105px;
+  border-radius: $halfBaseSize;
   background-image: image-url('layout/colorpicker/saturation.png');
 }
+.ColorPicker .colorpicker-saturation::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: $halfBaseSize;
+  pointer-events: none;
+  content: '';
+}
+
+.colorpicker.colorpicker-horizontal .colorpicker-saturation {
+  margin-bottom: $baseSize;
+}
+
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue {
-  width: 180px;
-  height: 9px;
+  width: 184px;
+  height: $baseSize;
+  margin-bottom: $baseSize;
+  border-radius: 2px;
   background-image: image-url('layout/colorpicker/hue-horizontal.png');
 }
+
+.ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-hue::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: 2px;
+  pointer-events: none;
+  content: '';
+}
+
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha {
-  width: 180px;
-  height: 6px;
+  width: 184px;
+  height: $baseSize;
+  margin-bottom: $baseSize;
+  border-radius: 2px;
   background-image: image-url('layout/colorpicker/alpha-horizontal.png');
-  border: 1px solid #aaa;
-  border-radius: 5px;
+}
+
+.ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: 2px;
+  pointer-events: none;
+  content: '';
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-color {
-  width: 22px;
-  height: 22px;
+  position: absolute;
+  right: 0;
+  bottom: $baseSize;
+  width: $baseSize * 3;
+  height: $baseSize * 3;
   border-radius: 2px;
+}
+
+.ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-color::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: 2px;
+  pointer-events: none;
+  content: '';
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal {
   width: 100%;
-  padding: 0;
-  margin: 0;
   min-width: 110px;
   height: auto;
+  margin: 0;
+  padding: 0;
   border-radius: 0;
 }
 
 .colorpicker.colorpicker-horizontal .colorpicker-hue i,
 .colorpicker.colorpicker-horizontal .colorpicker-alpha i {
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 1px 1px 1px #333;
-  height: 8px;
+  width: $baseSize;
+  height: $baseSize;
   margin-top: -1px;
   margin-left: -4px;
-  width: 8px;
+  border-radius: 50%;
+  background: $cWhite;
+  box-shadow: 1px 1px 1px #333;
+}
+
+.colorpicker-saturation i b {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid $cWhite;
+  border-radius: 50%;
+  box-sizing: border-box;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.colorpicker-saturation i {
+  width: auto;
+  height: auto;
+  margin: 0;
+  border: 0;
 }

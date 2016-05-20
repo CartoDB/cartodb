@@ -8,6 +8,7 @@
 .Editor-formInner {
   @include display-flex();
   @include align-items(center);
+  margin-top: $baseSize;
 }
 .Editor-formInput {
   @include flex(1);

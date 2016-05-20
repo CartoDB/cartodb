@@ -4,6 +4,7 @@
 @import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
+@import "compass/css3/border-radius";
 
 $selectedItemPaddingOnSides: $sMargin-element - 1px;
 
@@ -36,6 +37,15 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   height: 42px;
   margin-right: 20px;
 }
+.MobileAppsList-statusIcon--open {
+background-color: $cHighlight-positive;
+}
+.MobileAppsList-statusIcon--dev {
+background-color: $cHighlight-alert4;
+}
+.MobileAppsList-statusIcon--private {
+background-color: $cHighlight-negative;
+}
 .MobileAppsList-itemIcon--img {
   border: 0;
 }
@@ -65,22 +75,26 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   font-size: 13px;
   font-weight: 300;
 }
-.MobileAppsList-itemDetails {
+.MobileAppsList-details {
   @include display-flex();
   @include flex-direction(column);
   @include align-items(flex-end);
 }
-.MobileAppsList-itemDetails--paragraph {
+.MobileAppsList-details--paragraph {
   color: $cTypography-linkSecondary;
   font-size: 14px;
   font-weight: 300;
 }
-.MobileAppsList-itemDetails--paragraphIcon {
-  margin-right: 4px;
-  font-size: 10px;
+.MobileAppsList-detail:not(:last-child) { 
+  margin-right: 15px;
 }
-.MobileAppsList-paginator {
-  @include display-flex();
-  @include justify-content(flex-end, end);
-  padding: 30px 0;
+.MobileAppsList-details--icon {
+  margin-right: 2px;
+  font-size: 12px;
+}
+.MobileAppsList-statusIcon {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  @include border-radius(50%);
 }

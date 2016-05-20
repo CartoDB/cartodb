@@ -9,12 +9,16 @@
           <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, CartoDB.url(self, 'mobile_app', id: a.id) %></h3>
           <h4 class="MobileAppsList-itemInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
         </div>
-        <div class="MobileAppsList-itemDetails">
-          <p class="MobileAppsList-itemDetails--paragraph">
-          <i class="CDB-IconFont CDB-IconFont-mobile MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.app_type %>
-          <i class="CDB-IconFont CDB-IconFont-status MobileAppsList-itemDetails--paragraphIcon"></i> <%= a.data(current_user, mobile_platforms: true)[:mobile_platforms][a.platform.to_sym][:text] %>
+        <div class="MobileAppsList-details">
+          <p class="MobileAppsList-details--paragraph">
+            <span class="MobileAppsList-detail">
+              <i class="MobileAppsList-details--icon MobileAppsList-statusIcon MobileAppsList-statusIcon--<%= a.app_type %>"></i> <%= a.app_type %>
+            </span>
+            <span class="MobileAppsList-detail">
+              <i class="CDB-IconFont CDB-IconFont-mobile MobileAppsList-details--icon"></i> <%= a.data(current_user, mobile_platforms: true)[:mobile_platforms][a.platform.to_sym][:text] %>
+            </span>
           </p>
-          <p class="MobileAppsList-itemDetails--paragraph"><%= a.app_id %></p>
+          <p class="MobileAppsList-details--paragraph"><%= a.app_id %></p>
         </div>
       </div>
     </div>

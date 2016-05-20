@@ -93,16 +93,28 @@
 
     grunt.registerTask('invalidate', "invalidate cache", function() {
       var done = this.async();
-      var cmd = grunt.template.process("curl -H 'Fastly-Key: <%= aws.FASTLY_API_KEY %>' -X POST 'https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'");
-      console.log(cmd);
-      require("child_process").exec(cmd, function(error, stdout, stderr) {
-        if (!error) {
-          grunt.log.ok('CDN invalidated (fastly) -> ' + stdout);
+      var url = require('url');
+      var https = require('https');
+
+      var options = url.parse(grunt.template.process('https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'));
+      options['method'] = 'POST';
+      options['headers'] = {
+        'Fastly-Key': aws.FASTLY_API_KEY,
+        'Content-Length': '0' //Disables chunked encoding
+      };
+      console.log(options);
+
+      https.request(options, function(response) {
+        if(response.statusCode == 200) {
+          grunt.log.ok('CDN invalidated (fastly)');
         } else {
-          grunt.log.error('CDN not invalidated (fastly)');
+          grunt.log.error('CDN not invalidated (fastly), code: ' + response.statusCode)
         }
         done();
-      });
+      }).on('error', function(e) {
+        grunt.log.error('CDN not invalidated (fastly)');
+        done();
+      }).end();
     });
 
     grunt.registerTask('config', "generates assets config for current configuration", function() {

@@ -133,4 +133,15 @@ module.exports = function () {
       });
     });
   });
+
+  describe('when cartocss attr changes on model', function () {
+    beforeEach(function () {
+      spyOn(this.view, 'setCartoCSS');
+    });
+
+    it('should set the new cartoCSS on the torque layer', function () {
+      this.view.model.set('cartocss', 'some shiny new cartocss');
+      expect(this.view.setCartoCSS).toHaveBeenCalledWith('some shiny new cartocss');
+    });
+  });
 };

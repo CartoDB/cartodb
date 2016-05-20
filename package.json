@@ -36,7 +36,8 @@
     "mustache": "1.1.0",
     "perfect-scrollbar": "0.6.7",
     "torque.js": "2.15.1",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz"
   },
   "devDependencies": {
     "browserify": "13.0.0",

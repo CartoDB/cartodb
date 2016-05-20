@@ -19,7 +19,7 @@ module Carto
       rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        user = current_user ? Carto::User.find(current_user.id) : nil
+        user = current_viewer ? Carto::User.find(current_viewer.id) : nil
         visualization_export = Carto::VisualizationExport.new(
           visualization: @visualization,
           user: user,

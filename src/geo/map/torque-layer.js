@@ -70,7 +70,7 @@ var TorqueLayer = LayerModelBase.extend({
     var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
     var properties = {};
     _.each(this.TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
-      var value = layer.eval(property);
+      var value = layer && layer.eval(property);
       if (value) {
         properties[property] = value;
       }

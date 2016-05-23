@@ -1,31 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-
-var defaultInfowindowTemplate = [
-  '<div class="CDB-infowindow CDB-infowindow--light js-infowindow">',
-  '  <div class="CDB-infowindow-container">',
-  '    <div class="CDB-infowindow-bg">',
-  '      <div class="CDB-infowindow-inner">',
-  '        <ul class="CDB-infowindow-list js-content">',
-  '          {{#loading}}',
-  '            <div class="CDB-Loader js-loader is-visible"></div>',
-  '          {{/loading}}',
-  '          {{#content.fields}}',
-  '          <li class="CDB-infowindow-listItem">',
-  '            {{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}',
-  '            {{#value}}<h4 class="CDB-infowindow-title">{{{ value }}}</h4>{{/value}}',
-  '            {{^value}}<h4 class="CDB-infowindow-title">null</h4>{{/value}}',
-  '          </li>',
-  '          {{/content.fields}}',
-  '        </ul>',
-  '      </div>',
-  '    </div>',
-  '    <div class="CDB-hook">',
-  '      <div class="CDB-hook-inner"></div>',
-  '    </div>',
-  '  </div>',
-  '</div>'
-].join('\n');
+var defaultInfowindowTemplate = require('./default-infowindow-template.tpl');
 
 var InfowindowModel = Backbone.Model.extend({
   defaults: {

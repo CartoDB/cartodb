@@ -25,6 +25,10 @@ FactoryGirl.define do
 
     association :user, factory: :carto_user
     permission { FactoryGirl.create :carto_permission, owner: user }
+
+    factory :carto_private_visualization do
+      privacy Carto::Visualization::PRIVACY_PRIVATE
+    end
   end
 
 end

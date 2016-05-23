@@ -109,6 +109,7 @@ module.exports = cdb.core.View.extend({
       mdl.set('selected', true);
       filter.accept(clickedName);
     }
+    this.widgetModel.set('acceptedCategories', this.widgetModel._acceptedCategories().pluck('name'));
   },
 
   toggle: function () {

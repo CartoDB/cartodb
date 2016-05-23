@@ -19,7 +19,8 @@ module.exports = WidgetModel.extend({
 
   defaultState: _.extend(
     {
-      acceptedCategories: []
+      acceptedCategories: [],
+      locked: false
     },
     WidgetModel.prototype.defaultState
   ),

@@ -370,7 +370,12 @@ module Carto
       def generate_fill(wpp)
         fill = {}
 
-        merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_size(wpp))
+        merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_dimension_properties(wpp))
+
+        if @source_type == 'choropleth'
+          fill['size'] = { 'fixed' => 10 }.merge(fill['size'] || {})
+        end
+
         merge_into_if_present(fill, 'color', generate_color(wpp))
 
         fill
@@ -397,7 +402,7 @@ module Carto
         'qfunction' => 'quantification'
       }.freeze
 
-      def generate_size(wpp)
+      def generate_dimension_properties(wpp)
         size = {}
 
         radius_min = wpp['radius_min']

@@ -229,9 +229,14 @@ describe Carto::Api::LayerPresenter do
           layer = build_layer_with_wizard_properties(choropleth_wizard_properties)
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
           @fill_color = options['style_properties']['properties']['fill']['color']
+          @fill_size = options['style_properties']['properties']['fill']['size']
         end
 
         describe 'fill' do
+          it 'has fixed size 10 by default' do
+            expect(@fill_size).to include('fixed' => 10)
+          end
+
           it 'transform color ramp  to color array in range' do
             expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
           end

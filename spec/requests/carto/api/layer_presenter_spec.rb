@@ -165,29 +165,32 @@ describe Carto::Api::LayerPresenter do
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
           @properties = options['style_properties']['properties']
           @fill_color = @properties['fill']['color']
+          @fill_size = @properties['fill']['size']
         end
 
         it 'marker-comp-op becomes blending' do
           expect(@properties).to include('blending' => marker_comp_op)
         end
 
-        describe 'fill' do
-          it 'groups radius_min, radius_max into fill color range' do
-            expect(@fill_color).to include('range' => [radius_min, radius_max])
+        describe 'fill size' do
+          it 'groups radius_min, radius_max into fill size range' do
+            expect(@fill_size).to include('range' => [radius_min, radius_max])
           end
 
           it 'property becomes attribute' do
-            expect(@fill_color).to include('attribute' => property)
+            expect(@fill_size).to include('attribute' => property)
           end
 
           it 'bins is set to 10' do
-            expect(@fill_color).to include('bins' => 10)
+            expect(@fill_size).to include('bins' => 10)
           end
 
           it 'qfunction becomes quantification' do
-            expect(@fill_color).to include('quantification' => qfunction)
+            expect(@fill_size).to include('quantification' => qfunction)
           end
+        end
 
+        describe 'fill color' do
           it 'takes fixed color and opacity from marker-*' do
             expect(@fill_color).to include('fixed' => COLOR, 'opacity' => OPACITY)
           end

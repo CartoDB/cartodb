@@ -329,8 +329,12 @@ module Carto
         'torque_heat' => 'simple'
       }.freeze
 
-      def set_if_present(hash, key, value)
-        hash[key] = value if value.present?
+      def set_if_present(hash, key, string_value)
+        hash[key] = string_value if string_value.present?
+      end
+
+      def merge_into_if_present(hash, key, hash_value)
+        hash[key] = hash_value.merge!(hash[key] || {}) if hash_value.present?
       end
 
       def apply_direct_mapping(hash, original_hash, mapping)
@@ -356,9 +360,9 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        set_if_present(spp, 'fill', generate_fill(wpp))
+        merge_into_if_present(spp, 'fill', generate_fill(wpp))
 
-        set_if_present(spp, 'labels', generate_labels(wpp))
+        merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
         spp
       end
@@ -366,15 +370,11 @@ module Carto
       def generate_fill(wpp)
         fill = {}
 
-        set_if_present(fill, 'color', generate_color(wpp))
+        merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_size(wpp))
+        merge_into_if_present(fill, 'color', generate_color(wpp))
 
         fill
       end
-
-      COLOR_DIRECT_MAPPING = {
-        'property' => 'attribute',
-        'qfunction' => 'quantification'
-      }.freeze
 
       def generate_color(wpp)
         color = {}
@@ -389,24 +389,35 @@ module Carto
           apply_default_opacity(color)
         end
 
+        color
+      end
+
+      SIZE_DIRECT_MAPPING = {
+        'property' => 'attribute',
+        'qfunction' => 'quantification'
+      }.freeze
+
+      def generate_size(wpp)
+        size = {}
+
         radius_min = wpp['radius_min']
         radius_max = wpp['radius_max']
         if radius_min && radius_max
-          color['range'] = [radius_min, radius_max]
+          size['range'] = [radius_min, radius_max]
         end
 
-        apply_direct_mapping(color, wpp, COLOR_DIRECT_MAPPING)
+        apply_direct_mapping(size, wpp, SIZE_DIRECT_MAPPING)
 
         if @source_type == 'bubble'
-          color['bins'] = 10
+          size['bins'] = 10
         end
 
         if @source_type == 'choropleth'
-          color['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
-          color['bins'] = extract_bins_from_method(wpp['method']).to_i
+          size['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
+          size['bins'] = extract_bins_from_method(wpp['method']).to_i
         end
 
-        color
+        size
       end
 
       # Taken from `lib/assets/javascripts/cartodb/models/color_ramps.js`
@@ -460,8 +471,8 @@ module Carto
         apply_direct_mapping(labels, wpp, TEXT_DIRECT_MAPPING)
         labels['attribute'] = nil if labels['attribute'] == 'None'
 
-        set_if_present(labels, 'fill', generate_labels_fill(wpp))
-        set_if_present(labels, 'halo', generate_labels_halo(wpp))
+        merge_into_if_present(labels, 'fill', generate_labels_fill(wpp))
+        merge_into_if_present(labels, 'halo', generate_labels_halo(wpp))
 
         labels['enabled'] = true if labels.present?
 
@@ -471,8 +482,8 @@ module Carto
       def generate_labels_fill(wpp)
         labels_fill = {}
 
-        set_if_present(labels_fill, 'size', generate_labels_fill_size(wpp))
-        set_if_present(labels_fill, 'color', generate_labels_fill_color(wpp))
+        merge_into_if_present(labels_fill, 'size', generate_labels_fill_size(wpp))
+        merge_into_if_present(labels_fill, 'color', generate_labels_fill_color(wpp))
 
         labels_fill
       end
@@ -506,8 +517,8 @@ module Carto
       def generate_labels_halo(wpp)
         labels_halo = {}
 
-        set_if_present(labels_halo, 'size', generate_labels_halo_size(wpp))
-        set_if_present(labels_halo, 'color', generate_labels_halo_color(wpp))
+        merge_into_if_present(labels_halo, 'size', generate_labels_halo_size(wpp))
+        merge_into_if_present(labels_halo, 'color', generate_labels_halo_color(wpp))
 
         labels_halo
       end

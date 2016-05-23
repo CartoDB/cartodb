@@ -13,11 +13,11 @@ module MobileAppsHelper
 
   def progres_bar_width
     if @mobile_app.app_type == 'dev'
-      (@mobile_app.monthly_users*100) / @max_dev_users
+      (@mobile_app.monthly_users * 100) / @max_dev_users
     elsif @mobile_app.app_type == 'open'
-      (@mobile_app.monthly_users*100) / progress_bar_max_users
+      (@mobile_app.monthly_users * 100) / progress_bar_max_users
     elsif @mobile_app.app_type == 'private'
-      (@mobile_app.monthly_users*100) / progress_bar_max_users
+      (@mobile_app.monthly_users * 100) / progress_bar_max_users
     end
   end
 

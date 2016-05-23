@@ -42,11 +42,10 @@
   @include flex-direction(column);
 }
 .Editor-panelWrapper {
-  @include flex(0 0 344px);
   position: relative;
   width: 344px;
 }
-.Editor-panel.is-larger {
+.Editor-panelWrapper.is-larger {
   width: 488px;
 }
 .CDB-Dashboard-canvas {

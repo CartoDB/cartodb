@@ -401,13 +401,13 @@ module CartoDB
       end
 
       def lazy_order_by_row_count(objects)
-        viz_and_rows = objects.map { |obj| [obj, (obj.table.nil? ? 0 : obj.table.row_count_and_size.fetch(:row_count)) || 0] }
+        viz_and_rows = objects.map { |obj| [obj, (obj.table ? obj.table.row_count_and_size.fetch(:row_count, 0) : 0)] }
         viz_and_rows.sort! { |vr_a, vr_b| vr_b[1] <=> vr_a[1] }
         viz_and_rows.map { |vr| vr[0] }
       end
 
       def lazy_order_by_size(objects)
-        viz_and_size = objects.map { |obj| [obj, (obj.table.nil? ? 0 : obj.table.row_count_and_size.fetch(:size)) || 0] }
+        viz_and_size = objects.map { |obj| [obj, (obj.table ? obj.table.row_count_and_size.fetch(:size, 0) : 0)] }
         viz_and_size.sort! { |vs_a, vs_b| vs_b[1] <=> vs_a[1] }
         viz_and_size.map { |vs| vs[0] }
       end

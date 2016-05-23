@@ -17,6 +17,7 @@ describe Carto::Admin::MobileAppsController do
   }.freeze
 
   before(:all) do
+    Cartodb.config[:cartodb_central_api] = {} unless Cartodb.config[:cartodb_central_api]
     @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10000)
     @user = ::User[@carto_user.id]
   end

@@ -395,7 +395,7 @@ module Carto
 
         merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_dimension_properties(wpp))
 
-        if @source_type == 'choropleth'
+        if %w{ choropleth category }.include?(@source_type)
           fill['size'] = { 'fixed' => 10 }.merge(fill['size'] || {})
         end
 
@@ -414,10 +414,16 @@ module Carto
             set_if_present(color, 'opacity', wpp["#{prefix}-opacity"])
           end
 
+          color['range'] = generate_range_from_categories(wpp['categories']) if wpp['categories'].present?
+
           apply_default_opacity(color)
         end
 
         color
+      end
+
+      def generate_range_from_categories(categories)
+        categories.map { |c| c['color'] }
       end
 
       SIZE_DIRECT_MAPPING = {
@@ -435,7 +441,7 @@ module Carto
 
         apply_direct_mapping(size, wpp, SIZE_DIRECT_MAPPING)
 
-        if @source_type == 'bubble'
+        if %w{ bubble category }.include?(@source_type)
           size['bins'] = 10
         end
 

@@ -263,6 +263,75 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
+      describe 'category' do
+        let(:color_1) { "#FACADA" }
+        let(:color_2) { "#FABADA" }
+        let(:property) { "aforo" }
+        let(:opacity) { 0.456 }
+        let(:category_wizard_properties) do
+          {
+            "type" => "category",
+            "properties" => {
+              "property" => property,
+              "marker-width" => 10,
+              "marker-opacity" => opacity,
+              "marker-allow-overlap" => true,
+              "marker-placement" => "point",
+              "marker-type" => "ellipse",
+              "marker-line-width" => 1,
+              "marker-line-color" => "#FFF",
+              "marker-line-opacity" => 1,
+              "zoom" => "15",
+              "geometry_type" => "point",
+              "text-placement-type" => "simple",
+              "text-label-position-tolerance" => 10,
+              "categories" => [
+                {
+                  "title" => 100,
+                  "title_type" => "number",
+                  "color" => color_1,
+                  "value_type" => "color"
+                },
+                {
+                  "title" => 200,
+                  "title_type" => "number",
+                  "color" => color_2,
+                  "value_type" => "color"
+                }
+              ]
+            }
+          }
+        end
+
+        before(:each) do
+          layer = build_layer_with_wizard_properties(category_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @fill_color = options['style_properties']['properties']['fill']['color']
+          @fill_size = options['style_properties']['properties']['fill']['size']
+        end
+
+        it 'has fill size fixed 10' do
+          expect(@fill_size).to include('fixed' => 10)
+        end
+
+        it 'generates color range from categories colors' do
+          expect(@fill_color).to include('range' => [color_1, color_2])
+        end
+
+        it 'property becomes attribute' do
+          expect(@fill_color).to include('attribute' => property)
+          expect(@fill_size).not_to include('attribute' => property)
+        end
+
+        it 'marker-opacity becomes opacity' do
+          expect(@fill_color).to include('opacity' => opacity)
+        end
+
+        it 'bins defaults to 10' do
+          expect(@fill_color).to include('bins' => 10)
+        end
+      end
+
       shared_examples_for 'torque wizard family' do
         it 'torque-blend-mode becomes blending' do
           expect(@properties).to include('blending' => torque_blend_mode)

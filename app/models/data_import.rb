@@ -314,8 +314,7 @@ class DataImport < Sequel::Model
     end
     notify(results)
 
-    Cartodb::EventTracker.new.track_import(current_user, self.id, results, self.visualization_id, 
-                                           self.from_common_data?)
+    Cartodb::EventTracker.new.track_import(current_user, id, results, visualization_id, from_common_data?)
 
     self
   end

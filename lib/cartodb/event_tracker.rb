@@ -2,12 +2,12 @@ module Cartodb
   class EventTracker
 
     def track_exported_map(user, vis)
-      unless vis.nil?
+      if !vis.nil?
         custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id }
         send_event(user, 'Exported map', custom_properties)
       else
         report_error('Exported map', user, type: 'Null visualization')
-      end      
+      end
     end
 
     def track_import(user, import_id, results, visualization_id, from_common_data)
@@ -15,7 +15,7 @@ module Cartodb
       results.each do |result|
         begin
           if result.success?
-            if result.name != nil
+            if !result.name.nil?
               map = UserTable.where(data_import_id: import_id, name: result.name).first
               origin = from_common_data ? 'common-data' : 'import'
             else
@@ -23,7 +23,7 @@ module Cartodb
               origin = 'copy'
             end
             vis = Carto::Visualization.where(map_id: map.map_id).first
-            custom_properties = { privacy: vis.privacy, type: vis.type,  vis_id: vis.id, origin: origin }
+            custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: origin }
             send_event(user, 'Created dataset', custom_properties)
           end
         rescue => e
@@ -34,9 +34,9 @@ module Cartodb
       # Generate an event if a map is imported as well
       begin
         if visualization_id
-           vis = Carto::Visualization.where(id: visualization_id).first
-           custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
-           send_event(user, 'Created map', custom_properties)
+          vis = Carto::Visualization.where(id: visualization_id).first
+          custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
+          send_event(user, 'Created map', custom_properties)
         end
       rescue => e
         report_error('Created map', user, type: 'Invalid import result', error: e.inspect)
@@ -58,7 +58,7 @@ module Cartodb
 
     def generate_event_properties(user)
       {
-        username:  user.username,
+        username: user.username,
         email: user.email,
         plan: user.account_type,
         organization: user.organization_user? ? user.organization.name : nil,
@@ -82,7 +82,7 @@ module Cartodb
 
     def report_error(event, user, type: 'Unknown', properties: {}, error: nil)
       Rollbar.log('error',
-                  "EventTracker: #{type} error",    
+                  "EventTracker: #{type} error",
                   user_id: user.nil? ? nil : user.id,
                   event: event,
                   properties: properties,

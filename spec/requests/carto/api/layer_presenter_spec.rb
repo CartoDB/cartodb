@@ -519,6 +519,60 @@ describe Carto::Api::LayerPresenter do
       end
     end
 
+    describe 'density' do
+      let(:density_wizard_properties) do
+        {
+          "type" => "density",
+          "properties" =>
+            {
+              "geometry_type" => "point",
+              "method" => "5 Buckets",
+              "color_ramp" => "red",
+              "polygon-opacity" => 0.8,
+              "line-width" => 0.5,
+              "line-color" => "#FFF",
+              "line-opacity" => 1,
+              "polygon-size" => 15,
+              "polygon-comp-op" => "none",
+              "zoom" => 15
+            }
+        }
+      end
+
+      before(:each) do
+        layer = build_layer_with_wizard_properties(density_wizard_properties)
+        options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+
+        @style = options['style_properties']
+        @properties = @style['properties']
+        @aggregation = @properties['aggregation']
+      end
+
+      it 'maps point geometry_type to hexabins type' do
+        expect(@style).to include('type' => 'hexabins')
+      end
+
+      it 'maps Rectangles geometry_type to squares type' do
+        properties = density_wizard_properties
+        properties['properties']['geometry_type'] = 'Rectangles'
+        layer = build_layer_with_wizard_properties(properties)
+        options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+        expect(options['style_properties']).to include('type' => 'squares')
+      end
+
+      describe 'aggregation' do
+        it 'has defaults' do
+          expect(@aggregation).to include(
+            "size" => 100,
+            "value" => {
+              "operator" => 'COUNT',
+              "attribute" => ''
+            }
+          )
+        end
+      end
+    end
+
     describe 'labels' do
       describe 'without text-* properties' do
         let(:no_text_wizard_properties) do

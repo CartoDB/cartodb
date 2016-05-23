@@ -298,6 +298,7 @@ module Carto
       end
     end
 
+    # Used to migrate `wizard_properties` to `style_properties`
     class StylePropertiesGenerator
       def initialize(wizard_properties)
         @wizard_properties = wizard_properties
@@ -307,7 +308,11 @@ module Carto
       def generate
         return nil unless @wizard_properties.present?
 
-        type = STYLE_PROPERTIES_TYPE[@source_type]
+        type = if @source_type == 'density'
+                 @wizard_properties['properties']['geometry_type'] == 'Rectangles' ? 'squares' : 'hexabins'
+               else
+                 STYLE_PROPERTIES_TYPE[@source_type]
+               end
         return nil unless type
 
         {
@@ -367,6 +372,8 @@ module Carto
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
         merge_into_if_present(spp, 'animated', generate_animated(wpp))
+
+        merge_into_if_present(spp, 'aggregation', generate_aggregation(wpp))
 
         set_property(spp, wpp)
 
@@ -479,6 +486,19 @@ module Carto
         animated['enabled'] = true unless animated.empty?
 
         animated
+      end
+
+      AGGREGATION_SOURCE_TYPES = %{ density }.freeze
+
+      def generate_aggregation(wpp)
+        return {} unless AGGREGATION_SOURCE_TYPES.include?(@source_type)
+        {
+          "size" => 100,
+          "value" => {
+            "operator" => 'COUNT',
+            "attribute" => ''
+          }
+        }
       end
 
       # Taken from `lib/assets/javascripts/cartodb/models/color_ramps.js`

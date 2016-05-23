@@ -27,18 +27,23 @@ class Admin::ClientApplicationsController < Admin::AdminController
       CartoDB::StdoutLogger.info "Could not clear varnish cache", "#{e.inspect}"
       if Rails.env.development?
         current_user.set_map_key
-        error_flash_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."
+        error_message = "Your API key has been regenerated succesfully but the varnish cache has not been invalidated."
       else
         raise e
       end
-    rescue CartoDB::CentralCommunicationFailure => e
-      error_flash_message = "Your API key has been successfully generated, but there was an error updating the license keys of mobile apps"
+    rescue CartoDB::CentralCommunicationFailure
+      error_message = "Your API key has been successfully generated, " \
+                      "but there was an error updating the license keys of mobile apps"
     rescue => e
       raise e
     end
 
-    flash = error_flash_message.nil? ? { success: "Your API key has been regenerated successfully" } : { error: error_flash_message }
-    redirect_to CartoDB.url(self, 'api_key_credentials', {type: 'api_key'}, current_user), flash: flash
+    flash = if error_message
+              { error: error_message }
+            else
+              { success: "Your API key has been regenerated successfully" }
+            end
+    redirect_to CartoDB.url(self, 'api_key_credentials', { type: 'api_key' }, current_user), flash: flash
   end
 
   def regenerate_oauth

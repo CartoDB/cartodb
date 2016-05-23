@@ -43,13 +43,13 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   height: 8px;
 }
 .MobileAppsList-statusIcon--open {
- background-color: $cHighlight-positive;
+  background-color: $cHighlight-positive;
 }
 .MobileAppsList-statusIcon--dev {
- background-color: $cHighlight-alert4;
+  background-color: $cHighlight-alert4;
 }
 .MobileAppsList-statusIcon--private {
- background-color: $cHighlight-negative;
+  background-color: $cHighlight-negative;
 }
 .MobileAppsList-itemIcon--img {
   border: 0;

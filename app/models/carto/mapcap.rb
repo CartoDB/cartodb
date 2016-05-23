@@ -7,24 +7,24 @@ module Carto
     include Carto::VisualizationsExportService2Exporter
     include Carto::VisualizationsExportService2Importer
 
+    belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'vis_id'
+
     before_save :generate_export_vizjson
 
-    def generate_export_vizjson
-      self.export_vizjson = export_visualization_json_string(visualization.id, user)
-    end
+    def regenerate_visualization
+      return unless export_vizjson
 
-    def visualization
-      @visualization ||= if export_vizjson
-                           build_visualization_from_json_export(export_vizjson)
-                         else
-                           Carto::Visualization.find(vis_id)
-                         end
+      restored_visualization = build_visualization_from_json_export(export_vizjson)
+
+      restored_visualization.user_id = visualization.user.id
+
+      restored_visualization
     end
 
     private
 
-    def user
-      @user ||= Carto::User.find(user_id)
+    def generate_export_vizjson
+      self.export_vizjson = export_visualization_json_string(vis_id, visualization.user)
     end
   end
 end

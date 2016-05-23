@@ -21,6 +21,8 @@
 }
 .Editor-panel {
   @include transition(width, 300ms, ease-in-out);
+  @include display-flex();
+  @include flex-direction(column);
   position: absolute;
   top: 0;
   right: 0;
@@ -30,6 +32,14 @@
   height: 100vh;
   padding: 18px 25px;
   box-sizing: border-box;
+}
+.Editor-panel.is-dark {
+  background: $cMainBg;
+}
+.Editor-content {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
 }
 .Editor-panelWrapper {
   @include flex(0 0 344px);

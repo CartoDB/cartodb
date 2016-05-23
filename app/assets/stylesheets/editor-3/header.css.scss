@@ -64,3 +64,12 @@
   text-align: center;
   box-sizing: border-box;
 }
+
+.Editor-HeaderInfo.is-dark {
+  .Editor-HeaderInfo-titleText {
+    color: $cWhite;
+  }
+  .CDB-IconFont-arrowPrev {
+    color: $cWhite;
+  }
+}

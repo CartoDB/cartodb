@@ -26,4 +26,10 @@ describe('widgets/category/item-view', function () {
     this.view.render();
     expect(this.view.$('.CDB-Widget-progressState').hasClass('is-accepted')).toBeTruthy();
   });
+
+  it('should update the widget\'s state accordingly when selected', function () {
+    this.dataviewModel.filter.accept('USA');
+    this.view.render();
+    expect(this.widgetModel.getState().acceptedCategories[0]).toEqual('USA');
+  })
 });

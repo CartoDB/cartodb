@@ -23,7 +23,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   def index
     response = @cartodb_central_client.get_mobile_apps(current_user.username).deep_symbolize_keys
 
-    @mobile_apps = response[:mobile_apps].map { |a| MobileApp.new(a) }
+    @mobile_apps = response[:mobile_apps].map { |a| Carto::MobileApp.new(a) }
     @open_monthly_users = response[:monthly_users][:open]
     @private_monthly_users = response[:monthly_users][:private]
   rescue CartoDB::CentralCommunicationFailure => e
@@ -33,15 +33,15 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def show
-    @max_dev_users = MobileApp::MAX_DEV_USERS
+    @max_dev_users = Carto::MobileApp::MAX_DEV_USERS
   end
 
   def new
-    @mobile_app = MobileApp.new
+    @mobile_app = Carto::MobileApp.new
   end
 
   def create
-    @mobile_app = MobileApp.new(params[:mobile_app])
+    @mobile_app = Carto::MobileApp.new(params[:mobile_app])
     @mobile_app.icon_url = get_default_avatar if !@mobile_app.icon_url.present?
 
     unless @mobile_app.valid?
@@ -77,7 +77,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app.description = updated_attributes[:description]
 
     unless @mobile_app.valid?
-      @max_dev_users = MobileApp::MAX_DEV_USERS
+      @max_dev_users = Carto::MobileApp::MAX_DEV_USERS
       flash.now[:error] = @mobile_app.errors.full_messages.join(', ')
       render :show
       return
@@ -135,7 +135,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def load_mobile_app
-    @mobile_app = MobileApp.new(@cartodb_central_client.get_mobile_app(current_user.username, @app_id))
+    @mobile_app = Carto::MobileApp.new(@cartodb_central_client.get_mobile_app(current_user.username, @app_id))
 
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404

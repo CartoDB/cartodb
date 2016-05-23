@@ -1,4 +1,4 @@
-class MobileApp
+class Carto::MobileApp
   include ActiveModel::Validations
   include ActiveModel::Conversion
   extend ActiveModel::Naming

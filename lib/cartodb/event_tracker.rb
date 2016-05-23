@@ -12,23 +12,23 @@ module Cartodb
 
     def track_import(user, import_id, results, visualization_id, from_common_data)
       # Generate an event for every new imported dataset
-      results.each do |result|
-        begin
+      begin
+        results.each do |result|
           if result.success?
             if !result.name.nil?
-              map = UserTable.where(data_import_id: import_id, name: result.name).first
+              user_table = UserTable.where(data_import_id: import_id, name: result.name).first
               origin = from_common_data ? 'common-data' : 'import'
             else
-              map = UserTable.where(data_import_id: import_id).first
+              user_table = UserTable.where(data_import_id: import_id).first
               origin = 'copy'
             end
-            vis = Carto::Visualization.where(map_id: map.map_id).first
+            vis = Carto::Visualization.where(map_id: user_table.map_id).first
             custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: origin }
             send_event(user, 'Created dataset', custom_properties)
           end
-        rescue => e
-          report_error('Created dataset', user, type: 'Invalid import result', error: e.inspect)
         end
+      rescue => e
+        report_error('Created dataset', user, type: 'Invalid import result', error: e.inspect)
       end
 
       # Generate an event if a map is imported as well

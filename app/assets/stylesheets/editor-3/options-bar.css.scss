@@ -1,6 +1,8 @@
 @import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
 
 .Options-bar {
+  @include flex(0 0 auto);
   margin-right: -25px;
   margin-left: -25px;
   padding: 25px;

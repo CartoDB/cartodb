@@ -33,9 +33,11 @@ module Cartodb
 
       # Generate an event if a map is imported as well
       begin
-        vis = Carto::Visualization.where(id: visualization_id).first
-        custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
-        send_event(user, 'Created map', custom_properties)
+        if visualization_id
+           vis = Carto::Visualization.where(id: visualization_id).first
+           custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
+           send_event(user, 'Created map', custom_properties)
+        end
       rescue => e
         report_error('Created map', user, type: 'Invalid import result', error: e.inspect)
       end

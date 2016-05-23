@@ -99,6 +99,8 @@ describe Carto::Api::LayerPresenter do
 
     describe 'wizard migration' do
       COLOR = '#fabada'.freeze
+      COLOR_1 = "#FACADA".freeze
+      COLOR_2 = "#TACADA".freeze
       OPACITY = 0.3
 
       describe 'polygon' do
@@ -264,8 +266,6 @@ describe Carto::Api::LayerPresenter do
       end
 
       describe 'category' do
-        let(:color_1) { "#FACADA" }
-        let(:color_2) { "#FABADA" }
         let(:property) { "aforo" }
         let(:opacity) { 0.456 }
         let(:category_wizard_properties) do
@@ -289,13 +289,13 @@ describe Carto::Api::LayerPresenter do
                 {
                   "title" => 100,
                   "title_type" => "number",
-                  "color" => color_1,
+                  "color" => COLOR_1,
                   "value_type" => "color"
                 },
                 {
                   "title" => 200,
                   "title_type" => "number",
-                  "color" => color_2,
+                  "color" => COLOR_2,
                   "value_type" => "color"
                 }
               ]
@@ -316,7 +316,7 @@ describe Carto::Api::LayerPresenter do
           end
 
           it 'generates color range from categories colors' do
-            expect(@fill_color).to include('range' => [color_1, color_2])
+            expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
           end
 
           it 'property becomes attribute' do
@@ -349,7 +349,7 @@ describe Carto::Api::LayerPresenter do
           end
 
           it 'generates color range from categories colors' do
-            expect(@stroke_color).to include('range' => [color_1, color_2])
+            expect(@stroke_color).to include('range' => [COLOR_1, COLOR_2])
           end
 
           it 'property becomes attribute' do
@@ -491,7 +491,13 @@ describe Carto::Api::LayerPresenter do
                 {
                   "title" => 100,
                   "title_type" => "number",
-                  "color" => "#FABADA",
+                  "color" => COLOR_1,
+                  "value_type" => "color"
+                },
+                {
+                  "title" => 200,
+                  "title_type" => "number",
+                  "color" => COLOR_2,
                   "value_type" => "color"
                 }
               ]
@@ -508,6 +514,9 @@ describe Carto::Api::LayerPresenter do
         @fill_size = @properties['fill']['size']
       end
 
+      it 'generates color range from categories colors' do
+        expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
+      end
     end
 
     describe 'labels' do

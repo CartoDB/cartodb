@@ -420,10 +420,10 @@ module Carto
             set_if_present(color, 'opacity', wpp["#{prefix}-opacity"])
           end
 
-          color['range'] = generate_range_from_categories(wpp['categories']) if wpp['categories'].present?
-
           apply_default_opacity(color)
         end
+
+        color['range'] = generate_range_from_categories(wpp['categories']) if wpp['categories'].present?
 
         color
       end

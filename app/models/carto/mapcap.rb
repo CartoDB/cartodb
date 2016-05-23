@@ -17,15 +17,11 @@ module Carto
       @visualization ||= if export_vizjson
                            build_visualization_from_json_export(export_vizjson)
                          else
-                           map.visualizations.first
+                           Carto::Visualization.find(vis_id)
                          end
     end
 
     private
-
-    def map
-      @map ||= Carto::Map.find(map_id)
-    end
 
     def user
       @user ||= Carto::User.find(user_id)

@@ -9,6 +9,8 @@
   "form-components": {
     "editors": {
       "fill": {
+        "quantification": 'Quantification',
+        "bins": 'Buckets',
         "input-color": {
           "solid": "Solid",
           "value": "By value"

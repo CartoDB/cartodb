@@ -13,7 +13,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   @include justify-content(flex-start, start);
   @include flex-wrap(wrap);
   width: 100%;
-  margin-top: 1px; // makes the list not be overlapped by a .Filters block (so selected/hoevered item's border looks OK)
   padding-bottom: 30px;
 }
 .MobileAppsList-item {

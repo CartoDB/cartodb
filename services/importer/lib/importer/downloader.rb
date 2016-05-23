@@ -101,12 +101,12 @@ module CartoDB
       def self.supported_extensions_match
         @supported_extensions_match ||= supported_extensions.map { |ext|
           ext = ext.gsub('.', '\\.')
-          [/#{ext}$/, /#{ext}(?=\.)/, /#{ext}(?=\?)/, /#{ext}(?=&)/]
+          [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
         }.flatten
       end
 
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new("[[:word:]]+#{Regexp.union(supported_extensions_match)}+", true)
+        @url_filename_regex ||= Regexp.new("[[:word:]]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)

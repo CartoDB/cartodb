@@ -10,7 +10,11 @@
   position: absolute;
   top: 36px;
   right: 0;
+  width: 246px;
   z-index: 100;
+}
+.CustomList--small {
+  width: 215px;
 }
 .CustomList.is-visible {
   display: block;
@@ -24,7 +28,6 @@
 .CustomList-list {
   position: relative;
   width: 100%;
-  max-width: 246px;
   max-height: 185px;
   overflow: hidden;
 }
@@ -38,6 +41,3 @@
   background: rgba($cHighlight, 0.16);
   cursor: pointer;
 }
-
-
-

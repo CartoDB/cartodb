@@ -941,30 +941,4 @@ class DataImport < Sequel::Model
       datasource.set_audit_to_failed
     end
   end
-
-  def track_new_datasets(results)
-    return unless current_user
-
-    # Generate an event for every new imported dataset
-    results.each do |result|
-        if result.success?
-          if result.name != nil
-            map = UserTable.where(data_import_id: self.id, name: result.name).first
-            origin = self.from_common_data? ? 'common-data' : 'import'
-          else
-            map = UserTable.where(data_import_id: self.id).first
-            origin = 'copy'
-          end
-          vis = Carto::Visualization.where(map_id: map.map_id).first
-          custom_properties = { privacy: vis.privacy, type: vis.type,  vis_id: vis.id, origin: origin }
-          Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
-        end
-    end
-
-    unless self.visualization_id.nil?
-      vis = Carto::Visualization.where(id: self.visualization_id).first
-      custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
-      Cartodb::EventTracker.new.send_event(current_user, 'Created map', custom_properties)
-    end
-  end
 end

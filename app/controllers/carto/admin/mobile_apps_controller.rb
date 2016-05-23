@@ -77,6 +77,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app.description = updated_attributes[:description]
 
     unless @mobile_app.valid?
+      @max_dev_users = MobileApp::MAX_DEV_USERS
       flash.now[:error] = @mobile_app.errors.full_messages.join(', ')
       render :show
       return

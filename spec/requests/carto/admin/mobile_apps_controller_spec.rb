@@ -1,13 +1,13 @@
 # encoding: utf-8
 
-require_relative '../../spec_helper_min'
+require_relative '../../../spec_helper_min'
 
-describe Admin::MobileAppsController do
+describe Carto::Admin::MobileAppsController do
   include Warden::Test::Helpers
 
   TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
   MOBILE_APP = {
-    id: TEST_UUID,
+    id:           TEST_UUID,
     name:         'app_name',
     description:  'Description of the app',
     icon_url:     'http://icon.png',
@@ -17,7 +17,7 @@ describe Admin::MobileAppsController do
   }.freeze
 
   before(:all) do
-    @carto_user = FactoryGirl.create(:carto_user)
+    @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10000)
     @user = ::User[@carto_user.id]
   end
 
@@ -28,7 +28,7 @@ describe Admin::MobileAppsController do
   describe '#index' do
     it 'loads apps from Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_apps).returns([]).once
+      Cartodb::Central.any_instance.stubs(:get_mobile_apps).returns(mobile_apps: [], monthly_users: { open: 10000, private: 0 }).once
       login(@user)
       get mobile_apps_path
       response.status.should eq 200
@@ -50,7 +50,7 @@ describe Admin::MobileAppsController do
   describe '#show' do
     it 'loads app from Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns({}).once
+      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'dev').once
       login(@user)
       get mobile_app_path(id: TEST_UUID)
       response.status.should eq 200
@@ -118,8 +118,8 @@ describe Admin::MobileAppsController do
 
     it 'validates app before sending to Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns({}).once
-      Cartodb::Central.any_instance.stubs(:update_mobile_app).returns({}).never
+      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'dev').once
+      Cartodb::Central.any_instance.stubs(:update_mobile_app).returns(mobile_app: {}).never
       login(@user)
       put mobile_app_path(id: TEST_UUID), mobile_app: update_app.merge(name: '')
       response.status.should eq 200

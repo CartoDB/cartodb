@@ -1,6 +1,6 @@
 # coding: UTF-8
 
-require_relative '../spec_helper'
+require_relative '../../spec_helper_min'
 
 describe Carto::Api::MobileAppPresenter do
 
@@ -13,7 +13,7 @@ describe Carto::Api::MobileAppPresenter do
 
     compare_data(mobile_app.data(user, mobile_platforms_option), mobile_app.as_json, mobile_platforms_option) # Data should return mobile platforms data
     compare_data(mobile_app.data(user, app_types_option), mobile_app.as_json, app_types_option)               # Data shoudl return mobile app types data
-    compare_data(mobile_app.data(user), mobile_app.as_json, {})                                               # Data should return default mobile app data 
+    compare_data(mobile_app.data(user), mobile_app.as_json, {})                                               # Data should return default mobile app data
 
   end
 

@@ -1,4 +1,4 @@
-<div class="u-tSpace--m CDB-Text Editor-formInner">
+<div class="CDB-Text Editor-formInner">
   <% if (!hasNestedForm) { %>
     <label class="CDB-Legend u-upperCase CDB-Text is-semibold CDB-Size-small u-rSpace--m" for="<%- editorId %>">
       <%- title %>

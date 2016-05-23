@@ -82,6 +82,7 @@
 }
 
 .Editor-boxModalHeader {
+  border-bottom: 1px solid $cMainLine;
   background: $cSecondaryBackground;
 }
 
@@ -91,3 +92,24 @@
   padding: $baseSize + 4 $baseSize * 2;
   border-bottom: 1px solid $cMainLine;
 }
+
+.Editor-boxModalContent {
+  padding: $baseSize * 2;
+}
+
+.Editor-boxModal .Editor-formInner {
+  margin-top: 0;
+}
+.Editor-boxModal .UISlider {
+  width: 58px;
+}
+
+.Editor-boxList .Editor-formInner {
+  padding: 12px 16px;
+  border-bottom: 1px solid $cSecondaryBackground;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+

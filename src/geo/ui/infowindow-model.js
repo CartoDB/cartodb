@@ -1,31 +1,58 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
-/**
- * Usage:
- * var infowindowModel = new InfowindowModel({
- *   template_name: 'infowindow_light',
- *   latlng: [72, -45],
- *   offset: [100, 10]
- * });
- */
+var defaultInfowindowTemplate = [
+  '<div class="CDB-infowindow CDB-infowindow--light js-infowindow">',
+  '  <div class="CDB-infowindow-container">',
+  '    <div class="CDB-infowindow-bg">',
+  '      <div class="CDB-infowindow-inner">',
+  '        <ul class="CDB-infowindow-list js-content">',
+  '          {{#loading}}',
+  '            <div class="CDB-Loader js-loader is-visible"></div>',
+  '          {{/loading}}',
+  '          {{#content.fields}}',
+  '          <li class="CDB-infowindow-listItem">',
+  '            {{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}',
+  '            {{#value}}<h4 class="CDB-infowindow-title">{{{ value }}}</h4>{{/value}}',
+  '            {{^value}}<h4 class="CDB-infowindow-title">null</h4>{{/value}}',
+  '          </li>',
+  '          {{/content.fields}}',
+  '        </ul>',
+  '      </div>',
+  '    </div>',
+  '    <div class="CDB-hook">',
+  '      <div class="CDB-hook-inner"></div>',
+  '    </div>',
+  '  </div>',
+  '</div>'
+].join('\n');
+
 var InfowindowModel = Backbone.Model.extend({
   defaults: {
     offset: [28, 0], // offset of the tip calculated from the bottom left corner
     maxHeight: 180, // max height of the content, not the whole infowindow
     autoPan: true,
-    template: '',
-    template_name: 'infowindow_light',
     template_type: 'mustache',
     content: '',
     alternative_names: { }
   },
+
+  DEFAULT_TEMPLATE: defaultInfowindowTemplate,
 
   TEMPLATE_ATTRIBUTES: ['template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
   initialize: function (attrs) {
     this._fields = new Backbone.Collection(attrs.fields || []);
     this.unset('fields', { silent: true });
+
+    // Set a default template
+    if (!this._hasTemplate()) {
+      this.set('template', this.DEFAULT_TEMPLATE);
+    }
+  },
+
+  _hasTemplate: function () {
+    return (this.get('template') && this.get('template').trim && this.get('template').trim()) || this.get('template_name');
   },
 
   updateContent: function (attributes, options) {
@@ -70,7 +97,10 @@ var InfowindowModel = Backbone.Model.extend({
   },
 
   setInfowindowTemplate: function (infowindowTemplateModel) {
-    this.set(_.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES));
+    var attrs = _.pick(infowindowTemplateModel.toJSON(), this.TEMPLATE_ATTRIBUTES);
+    // Remove keys that have a falsy value
+    attrs = _.pick(attrs, _.identity);
+    this.set(_.clone(attrs));
     this._fields.reset(infowindowTemplateModel.fields.toJSON());
     this._infowindowTemplateModel = infowindowTemplateModel;
   },

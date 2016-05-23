@@ -169,7 +169,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'template_name': 'infowindow_light',
+      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -208,7 +208,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template2',
       'alternative_names': 'alternative_names2',
-      'template_name': 'infowindow_light',
+      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -376,7 +376,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'template_name': 'infowindow_light',
+      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -446,7 +446,7 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'template_name': 'infowindow_light',
+      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,

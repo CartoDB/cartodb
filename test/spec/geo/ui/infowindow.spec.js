@@ -36,7 +36,7 @@ describe('geo/ui/infowindow-view', function() {
   it("should add render when template changes", function() {
     spyOn(view, 'render');
     model.set('template', 'jaja');
-    expect(view.render).toHaveBeenCalled()
+    expect(view.render).toHaveBeenCalled();
   });
 
   it("should change width of the infowindow when width attribute changes", function() {
@@ -52,9 +52,14 @@ describe('geo/ui/infowindow-view', function() {
     spyOn(view, 'render');
     view.model.set({
       'template': '<div class="js-infowindow"></div>'
-    })
+    });
+    var previousWidth = view.$('.js-infowindow').css('width');
+
+    // Unset the width from the model
     view.model.unset('width');
-    expect(view.$('.js-infowindow').css('width')).toBe(undefined);
+
+    // Width hasn't changed
+    expect(view.$('.js-infowindow').css('width')).toBe(previousWidth);
   });
 
   it("should change maxHeight of the infowindow when maxHeight attribute changes", function() {
@@ -145,13 +150,6 @@ describe('geo/ui/infowindow-view', function() {
 
     expect(render_fields[0].value).toEqual("false");
     expect(render_fields[1].value).toEqual("true");
-  });
-
-  it("should be null when there isn't any field", function() {
-    spyOn(view, 'render');
-    model.set('fields', []);
-    expect(view.render).not.toHaveBeenCalled();
-    expect(view.$el.html()).toEqual('');
   });
 
   describe("custom template", function() {

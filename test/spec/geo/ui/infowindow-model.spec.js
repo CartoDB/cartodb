@@ -1,6 +1,38 @@
 var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
+var InfowindowTemplate = require('../../../../src/geo/map/infowindow-template');
 
 describe('geo/ui/infowindow-model', function () {
+  it('should set a default template if template and template_name are empty', function () {
+    var infowindowModel = new InfowindowModel({});
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+
+    infowindowModel = new InfowindowModel({ template: '' });
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+
+    infowindowModel = new InfowindowModel({ template: '', template_name: '' });
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+  });
+
+  it('should NOT set a default template if template or template_name are present', function () {
+    var infowindowModel = new InfowindowModel({ template: 'template' });
+
+    expect(infowindowModel.get('template')).toEqual('template');
+    expect(infowindowModel.get('template_name')).toBeUndefined();
+
+    infowindowModel = new InfowindowModel({ template_name: 'template_name' });
+
+    expect(infowindowModel.get('template')).toBeUndefined();
+    expect(infowindowModel.get('template_name')).toEqual('template_name');
+
+    infowindowModel = new InfowindowModel({ template: 'template', template_name: 'template_name' });
+
+    expect(infowindowModel.get('template')).toEqual('template');
+    expect(infowindowModel.get('template_name')).toEqual('template_name');
+  });
+
   describe('.setContent', function () {
     it('should NOT include empty fields', function () {
       var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }] });
@@ -113,6 +145,40 @@ describe('geo/ui/infowindow-model', function () {
         index: 0,
         type: 'empty'
       });
+    });
+  });
+
+  describe('.setInfowindowTemplate', function () {
+    it('should only pick and set specific attributes from the given template', function () {
+      var infowindowModel = new InfowindowModel({ template: 'template', template_name: 'template_name' });
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: 'new_template',
+        something: 'something'
+      }));
+
+      expect(infowindowModel.get('template')).toEqual('new_template');
+      expect(infowindowModel.get('something')).toBeUndefined();
+    });
+
+    it('should reject attributes from the template that have a falsy value', function () {
+      var infowindowModel = new InfowindowModel({ template: 'template', template_name: 'template_name' });
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: '',
+        template_name: undefined
+      }));
+
+      // Attributes have NOT changed
+      expect(infowindowModel.get('template')).toEqual('template');
+      expect(infowindowModel.get('template_name')).toEqual('template_name');
+
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: 'new_template',
+        template_name: 'new_template_name'
+      }));
+
+      // Atributtes have changed
+      expect(infowindowModel.get('template')).toEqual('new_template');
+      expect(infowindowModel.get('template_name')).toEqual('new_template_name');
     });
   });
 });

@@ -16,9 +16,10 @@ module Carto
 
       restored_visualization = build_visualization_from_json_export(export_vizjson)
 
-      restored_visualization.user_id = visualization.user.id
+      restored_visualization.created_at = visualization.created_at
+      restored_visualization.updated_at = visualization.updated_at
 
-      restored_visualization
+      Carto::VisualizationsExportPersistenceService.new.apply_user(visualization.user, restored_visualization)
     end
 
     private

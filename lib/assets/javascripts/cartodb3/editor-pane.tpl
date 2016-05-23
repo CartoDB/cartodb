@@ -8,5 +8,5 @@
   </a>
 </div>
 <div class="Editor-panelWrapper">
-  <div class="Editor-panel js-content"></div>
+  <div class="js-content"></div>
 </div>

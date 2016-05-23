@@ -57,7 +57,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
-      # TODO: Descriptive errors?
       if e.errors["app_id"].present?
         @mobile_app.errors["app_id"] = 'has already been taken'
         flash.now[:error] = "That application ID has already been taken. Please make sure that it is unique."
@@ -90,7 +89,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   rescue CartoDB::CentralCommunicationFailure => e
     if e.response_code == 422
-      # TODO: Descriptive errors?
       flash.now[:error] = e.errors
     else
       CartoDB::Logger.error(message: 'Error updating mobile_app in Central', exception: e)

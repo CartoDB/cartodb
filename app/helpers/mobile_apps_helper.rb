@@ -11,7 +11,7 @@ module MobileAppsHelper
     end
   end
 
-  def progres_bar_width
+  def progress_bar_width
     if @mobile_app.app_type == 'dev'
       (@mobile_app.monthly_users * 100) / @max_dev_users
     elsif @mobile_app.app_type == 'open'

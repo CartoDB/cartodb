@@ -111,7 +111,7 @@
     <div class="FormAccount-row">
       <div class="ProgressBar-container">
         <div class="ProgressBar">
-          <span class="ProgressBar-bar <%= progress_bar_range(progres_bar_width) %>" style="width: <%= progres_bar_width %>%"></span>
+          <span class="ProgressBar-bar <%= progress_bar_range(progress_bar_width) %>" style="width: <%= progress_bar_width %>%"></span>
         </div>
         <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><%- if @mobile_app.app_type == "dev" %>/<%= progress_bar_max_users %><% end %> monthly users</div>
       </div>

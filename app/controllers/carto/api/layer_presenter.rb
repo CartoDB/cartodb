@@ -362,7 +362,7 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        merge_into_if_present(spp, 'fill', generate_fill(wpp))
+        merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
@@ -373,14 +373,20 @@ module Carto
         spp
       end
 
+      def drawing_property(wpp)
+        wpp['geometry_type'] == 'line' ? 'stroke' : 'fill'
+      end
+
       def set_property(spp, wpp)
         return unless wpp['property']
 
+        drawing_property = drawing_property(wpp)
+
         destination = case @source_type
                       when 'bubble'
-                        spp['fill']['size']
+                        spp[drawing_property]['size']
                       when 'choropleth', 'category'
-                        spp['fill']['color']
+                        spp[drawing_property]['color']
                       when 'torque'
                         spp['animated']
                       when 'density'
@@ -390,7 +396,7 @@ module Carto
         destination['attribute'] = wpp['property']
       end
 
-      def generate_fill(wpp)
+      def generate_drawing_properties(wpp)
         fill = {}
 
         merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_dimension_properties(wpp))

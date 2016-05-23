@@ -282,7 +282,7 @@ describe Carto::Api::LayerPresenter do
               "marker-line-color" => "#FFF",
               "marker-line-opacity" => 1,
               "zoom" => "15",
-              "geometry_type" => "point",
+              "geometry_type" => 'point',
               "text-placement-type" => "simple",
               "text-label-position-tolerance" => 10,
               "categories" => [
@@ -303,32 +303,67 @@ describe Carto::Api::LayerPresenter do
           }
         end
 
-        before(:each) do
-          layer = build_layer_with_wizard_properties(category_wizard_properties)
-          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-          @fill_color = options['style_properties']['properties']['fill']['color']
-          @fill_size = options['style_properties']['properties']['fill']['size']
+        describe 'point geometry type' do
+          before(:each) do
+            layer = build_layer_with_wizard_properties(category_wizard_properties)
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+            @fill_color = options['style_properties']['properties']['fill']['color']
+            @fill_size = options['style_properties']['properties']['fill']['size']
+          end
+
+          it 'has fill size fixed 10' do
+            expect(@fill_size).to include('fixed' => 10)
+          end
+
+          it 'generates color range from categories colors' do
+            expect(@fill_color).to include('range' => [color_1, color_2])
+          end
+
+          it 'property becomes attribute' do
+            expect(@fill_color).to include('attribute' => property)
+            expect(@fill_size).not_to include('attribute' => property)
+          end
+
+          it 'marker-opacity becomes opacity' do
+            expect(@fill_color).to include('opacity' => opacity)
+          end
+
+          it 'bins defaults to 10' do
+            expect(@fill_color).to include('bins' => 10)
+          end
         end
 
-        it 'has fill size fixed 10' do
-          expect(@fill_size).to include('fixed' => 10)
-        end
+        describe 'line geometry type' do
+          before(:each) do
+            properties = category_wizard_properties
+            properties['properties']['geometry_type'] = 'line'
+            layer = build_layer_with_wizard_properties(properties)
 
-        it 'generates color range from categories colors' do
-          expect(@fill_color).to include('range' => [color_1, color_2])
-        end
+            options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+            @stroke_color = options['style_properties']['properties']['stroke']['color']
+            @stroke_size = options['style_properties']['properties']['stroke']['size']
+          end
 
-        it 'property becomes attribute' do
-          expect(@fill_color).to include('attribute' => property)
-          expect(@fill_size).not_to include('attribute' => property)
-        end
+          it 'has fill size fixed 10' do
+            expect(@stroke_size).to include('fixed' => 10)
+          end
 
-        it 'marker-opacity becomes opacity' do
-          expect(@fill_color).to include('opacity' => opacity)
-        end
+          it 'generates color range from categories colors' do
+            expect(@stroke_color).to include('range' => [color_1, color_2])
+          end
 
-        it 'bins defaults to 10' do
-          expect(@fill_color).to include('bins' => 10)
+          it 'property becomes attribute' do
+            expect(@stroke_color).to include('attribute' => property)
+            expect(@stroke_size).not_to include('attribute' => property)
+          end
+
+          it 'marker-opacity becomes opacity' do
+            expect(@stroke_color).to include('opacity' => opacity)
+          end
+
+          it 'bins defaults to 10' do
+            expect(@stroke_color).to include('bins' => 10)
+          end
         end
       end
 

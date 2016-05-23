@@ -6,10 +6,10 @@ module Carto
   class VisualizationsExportPersistenceService
     include Carto::UUIDHelper
 
-    def save_import(user, visualization)
-      apply_user_limits(user, visualization)
+    def save_import(user, visualization, visualization_id: nil)
+      apply_user_limits(user, visualization) unless visualization_id
       ActiveRecord::Base.transaction do
-        visualization.id = random_uuid
+        visualization.id = visualization_id ? visualization_id : random_uuid
         visualization.user = user
 
         visualization.layers.map do |layer|
@@ -24,7 +24,7 @@ module Carto
 
         map = visualization.map
         map.user = user
-        unless map.save
+        if !visualization_id && !map.save
           raise "Errors saving imported map: #{map.errors.full_messages}"
         end
 
@@ -35,11 +35,11 @@ module Carto
         # INFO: workaround for array saves not working
         tags = visualization.tags
         visualization.tags = nil
-        unless visualization.save
+        if !visualization_id && !visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
         end
 
-        visualization.update_attribute(:tags, tags)
+        visualization.update_attribute(:tags, tags) unless visualization_id
 
         visualization.layers.map do |layer|
           # Flag needed because `.changed?` won't realize about options hash changes
@@ -52,15 +52,15 @@ module Carto
             layer.options[:stat_tag] = visualization.id
             changed = true
           end
-          layer.save if changed
+          layer.save if changed && visualization_id
         end
       end
 
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
-      visualization_member.store
+      visualization_member.store unless visualization_id
 
-      visualization_member.map.layers.map(&:register_table_dependencies)
+      visualization_member.map.layers.map(&:register_table_dependencies) unless visualization_id
 
       visualization
     end

@@ -1,12 +1,13 @@
 <header class="vis">
   <div class="inner">
-    
+
     <div class="header_content">
 
       <div class="vis_navigation">
         <nav>
-          <%= link_to "Data view", "#/table", :class => "smaller strong tab selected" %>
-          <%= link_to "Map view",  "#/map",   :class => "smaller strong tab" %>
+          <%= link_to "Map",  "#/map",   :class => "smaller strong tab selected" %>
+          <%= link_to "Data", "#/table", :class => "smaller strong tab" %>
+
         </nav>
       </div>
 
@@ -20,7 +21,7 @@
           <p><a href="#/edit-metadata">Edit metadata…</a></p>
         </div>
       </div>
-      
+
       <div class="right">
         <ul class="options">
           <li><%= link_to "Edit", "#/options", :class => "dropdown options" %></li>

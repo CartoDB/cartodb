@@ -18,6 +18,7 @@ module Carto
           description: @mobile_app.description,
           icon_url: @mobile_app.icon_url,
           platform: @mobile_app.platform,
+          app_type: @mobile_app.app_type,
           app_id: @mobile_app.app_id,
           license_key: @mobile_app.license_key,
           monthly_users: @mobile_app.monthly_users

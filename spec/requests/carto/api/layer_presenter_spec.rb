@@ -188,6 +188,10 @@ describe Carto::Api::LayerPresenter do
           it 'qfunction becomes quantification' do
             expect(@fill_size).to include('quantification' => qfunction)
           end
+
+          it 'does not include animated' do
+            expect(@properties['animated']).to be_nil
+          end
         end
 
         describe 'fill color' do
@@ -237,7 +241,7 @@ describe Carto::Api::LayerPresenter do
             expect(@fill_size).to include('fixed' => 10)
           end
 
-          it 'transform color ramp  to color array in range' do
+          it 'transform color ramp to color array in range' do
             expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
           end
 
@@ -255,6 +259,89 @@ describe Carto::Api::LayerPresenter do
 
           it 'takes opacity from marker-* or polygon-*' do
             expect(@fill_color).to include('opacity' => OPACITY)
+          end
+        end
+      end
+
+      describe 'torque' do
+        let(:torque_blend_mode) { "lighter" }
+        let(:property) { "fecha_date" }
+        let(:torque_cumulative) { false }
+        let(:torque_duration) { 30 }
+        let(:torque_frame_count) { 256 }
+        let(:torque_resolution) { 2 }
+        let(:torque_trails) { 3 }
+        let(:torque_wizard_properties) do
+          {
+            "type" => "torque",
+            "properties" =>
+              {
+                "torque-cumulative" => torque_cumulative,
+                "property" => property,
+                "marker-type" => "ellipse",
+                "layer-type" => "torque",
+                "marker-width" => 6,
+                "marker-fill" => "#0F3B82",
+                "marker-opacity" => 0.9,
+                "marker-line-width" => 0,
+                "marker-line-color" => "#FFF",
+                "marker-line-opacity" => 1,
+                "torque-duration" => torque_duration,
+                "torque-frame-count" => torque_frame_count,
+                "torque-blend-mode" => torque_blend_mode,
+                "torque-trails" => torque_trails,
+                "torque-resolution" => torque_resolution,
+                "zoom" => 15,
+                "geometry_type" => "point"
+              }
+          }
+        end
+
+        before(:each) do
+          layer = build_layer_with_wizard_properties(torque_wizard_properties)
+          options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @properties = options['style_properties']['properties']
+          @animated = @properties['animated']
+          @fill_color = @properties['fill']['color']
+          @fill_size = @properties['fill']['size']
+        end
+
+        it 'torque-blend-mode becomes blending' do
+          expect(@properties).to include('blending' => torque_blend_mode)
+        end
+
+        describe 'animated' do
+          it 'is enabled if it contains any torque-related properties' do
+            expect(@animated).to include('enabled' => true)
+          end
+
+          it 'property becomes attribute' do
+            expect(@animated).to include('attribute' => property)
+          end
+
+          it 'property becomes attribute only at animated' do
+            expect(@fill_color).not_to include('attribute' => property)
+            expect(@fill_size).to be_nil
+          end
+
+          it 'torque-cumulative becomes overlap' do
+            expect(@animated).to include('overlap' => torque_cumulative)
+          end
+
+          it 'torque-duration becomes duration' do
+            expect(@animated).to include('duration' => torque_duration)
+          end
+
+          it 'torque-frame-count becomes steps' do
+            expect(@animated).to include('steps' => torque_frame_count)
+          end
+
+          it 'torque-resolution becomes resolution' do
+            expect(@animated).to include('resolution' => torque_resolution)
+          end
+
+          it 'torque-trails becomes trails' do
+            expect(@animated).to include('trails' => torque_trails)
           end
         end
       end

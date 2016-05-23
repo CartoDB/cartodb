@@ -329,8 +329,9 @@ module Carto
         'torque_heat' => 'simple'
       }.freeze
 
-      def set_if_present(hash, key, string_value)
-        hash[key] = string_value if string_value.present?
+      def set_if_present(hash, key, value)
+        # Dirty check because `false` is a valid `value`
+        hash[key] = value unless value.nil? || value == ''
       end
 
       def merge_into_if_present(hash, key, hash_value)
@@ -350,7 +351,8 @@ module Carto
       end
 
       PROPERTIES_DIRECT_MAPPING = {
-        "marker-comp-op" => "blending"
+        "marker-comp-op" => "blending",
+        "torque-blend-mode" => "blending"
       }.freeze
 
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
@@ -364,7 +366,28 @@ module Carto
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
+        merge_into_if_present(spp, 'animated', generate_animated(wpp))
+
+        set_property(spp, wpp)
+
         spp
+      end
+
+      def set_property(spp, wpp)
+        return unless wpp['property']
+
+        destination = case @source_type
+                      when 'bubble'
+                        spp['fill']['size']
+                      when 'choropleth', 'category'
+                        spp['fill']['color']
+                      when 'torque'
+                        spp['animated']
+                      when 'density'
+                        spp['aggregation']['value']
+                      end
+
+        destination['attribute'] = wpp['property']
       end
 
       def generate_fill(wpp)
@@ -398,7 +421,6 @@ module Carto
       end
 
       SIZE_DIRECT_MAPPING = {
-        'property' => 'attribute',
         'qfunction' => 'quantification'
       }.freeze
 
@@ -423,6 +445,28 @@ module Carto
         end
 
         size
+      end
+
+      ANIMATED_SOURCE_TYPES = %{ torque }.freeze
+
+      ANIMATED_DIRECT_MAPPING = {
+        'torque-cumulative' => 'overlap',
+        'torque-duration' => 'duration',
+        'torque-frame-count' => 'steps',
+        'torque-resolution' => 'resolution',
+        'torque-trails' => 'trails'
+      }.freeze
+
+      def generate_animated(wpp)
+        return {} unless ANIMATED_SOURCE_TYPES.include?(@source_type)
+
+        animated = {}
+
+        apply_direct_mapping(animated, wpp, ANIMATED_DIRECT_MAPPING)
+
+        animated['enabled'] = true unless animated.empty?
+
+        animated
       end
 
       # Taken from `lib/assets/javascripts/cartodb/models/color_ramps.js`

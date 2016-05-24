@@ -11,9 +11,12 @@ describe Carto::Api::MobileAppPresenter do
     mobile_platforms_option = { mobile_platforms: true }
     app_types_option = { app_types: true }
 
-    compare_data(mobile_app.data(user, mobile_platforms_option), mobile_app.as_json, mobile_platforms_option) # Data should return mobile platforms data
-    compare_data(mobile_app.data(user, app_types_option), mobile_app.as_json, app_types_option)               # Data shoudl return mobile app types data
-    compare_data(mobile_app.data(user), mobile_app.as_json, {})                                               # Data should return default mobile app data
+    # Data should return mobile platforms data
+    compare_data(mobile_app.data(user, mobile_platforms_option), mobile_app.as_json, mobile_platforms_option)
+    # Data should return mobile app types data
+    compare_data(mobile_app.data(user, app_types_option), mobile_app.as_json, app_types_option)
+    # Data should return default mobile app data
+    compare_data(mobile_app.data(user), mobile_app.as_json, {})
 
   end
 

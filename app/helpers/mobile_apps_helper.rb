@@ -9,25 +9,37 @@ module MobileAppsHelper
     else
       ''
     end
+  rescue
+    ''
   end
 
   def progress_bar_width
-    if @mobile_app.app_type == 'dev'
+    case @mobile_app.app_type
+    when 'dev'
       (@mobile_app.monthly_users * 100) / @max_dev_users
-    elsif @mobile_app.app_type == 'open'
+    when 'open'
       (@mobile_app.monthly_users * 100) / progress_bar_max_users
-    elsif @mobile_app.app_type == 'private'
+    when 'private'
       (@mobile_app.monthly_users * 100) / progress_bar_max_users
+    else
+      0
     end
+  rescue
+    0
   end
 
   def progress_bar_max_users
-    if @mobile_app.app_type == 'dev'
+    case @mobile_app.app_type
+    when 'dev'
       @max_dev_users
-    elsif @mobile_app.app_type == 'open'
+    when 'open'
       current_user.mobile_max_open_users
-    elsif @mobile_app.app_type == 'private'
+    when 'private'
       current_user.mobile_max_private_users
+    else
+      0
     end
+  rescue
+    0
   end
 end

@@ -42,7 +42,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
   def create
     @mobile_app = Carto::MobileApp.new(params[:mobile_app])
-    @mobile_app.icon_url = get_default_avatar if !@mobile_app.icon_url.present?
+    @mobile_app.icon_url = get_default_avatar unless @mobile_app.icon_url.present?
 
     unless @mobile_app.valid?
       flash.now[:error] = @mobile_app.errors.full_messages.join(', ')

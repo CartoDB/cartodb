@@ -47,7 +47,7 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <%- @mobile_app.data(current_user, mobile_platforms: true)[:mobile_platforms].each do |platform, values| %>
+      <%- @mobile_app.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms].each do |platform, values| %>
         <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
         <%- is_checked = values[:selected] === true ? 'checked' : '' %>
 
@@ -77,7 +77,7 @@
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">App type</label>
     </div>
-    <%- @mobile_app.data(current_user, app_types: true)[:app_types].each do |type, values| %>
+    <%- @mobile_app.data(current_user, fetch_app_types: true)[:app_types].each do |type, values| %>
       <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
       <%- is_checked = values[:selected] === true ? 'checked' : '' %>
 

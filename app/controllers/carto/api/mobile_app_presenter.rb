@@ -4,9 +4,9 @@ module Carto
   module Api
     class MobileAppPresenter
 
-      def initialize(mobile_app, current_user, options = {})
-        @mobile_app = mobile_app
-        @options = options
+      def initialize(mobile_app, current_user, fetching_options = {}) # Expected optional params `:fetch_mobile_platforms` and `:fetch_app_types`,
+        @mobile_app = mobile_app                                      # in case a list of those options is needed to make changes in the model.
+        @fetching_options = fetching_options
         @current_user = current_user
       end
 
@@ -24,7 +24,7 @@ module Carto
           monthly_users: @mobile_app.monthly_users
         }
 
-        if @options[:mobile_platforms].present?
+        if @fetching_options[:fetch_mobile_platforms].present?
           data[:mobile_platforms] = {
             "android": {
               text: "Android",
@@ -59,7 +59,7 @@ module Carto
           }
         end
 
-        if @options[:app_types].present?
+        if @fetching_options[:fetch_app_types].present?
           data[:app_types] = {
             "open": {
               text: "Limits based on your CartoDB plan. <a href='#'>Learn more</a>.",

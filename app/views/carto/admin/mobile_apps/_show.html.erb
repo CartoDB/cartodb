@@ -1,0 +1,26 @@
+<div class="MobileAppsList">
+  <% @mobile_apps.each do |a| %>
+    <div class="MobileAppsList-item">
+      <div class="MobileAppsList-itemIcon UserAvatar">
+        <img src="<%= a.icon_url %>" class="UserAvatar-img UserAvatar-img--medium-large MobileAppsList-userAvatar--img" />
+      </div>
+      <div class="MobileAppsList-itemInfo">
+        <div class="MobileAppsList-itemInfoName">
+          <h3 class="MobileAppsList-itemInfoTitle u-ellipsLongText"><%= link_to a.name, CartoDB.url(self, 'mobile_app', id: a.id) %></h3>
+          <h4 class="MobileAppsList-itemInfoSubtitle u-ellipsLongText"><%= a.description rescue nil %></h4>
+        </div>
+        <div class="MobileAppsList-details">
+          <p class="MobileAppsList-details--paragraph">
+            <span class="MobileAppsList-detail">
+              <i class="MobileAppsList-details--icon MobileAppsList-statusIcon MobileAppsList-statusIcon--<%= a.app_type %>"></i> <%= a.app_type %>
+            </span>
+            <span class="MobileAppsList-detail">
+              <i class="CDB-IconFont CDB-IconFont-mobile MobileAppsList-details--icon"></i> <%= a.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms][a.platform.to_sym][:text] %>
+            </span>
+          </p>
+          <p class="MobileAppsList-details--paragraph"><%= a.app_id %></p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

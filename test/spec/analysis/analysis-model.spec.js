@@ -54,6 +54,18 @@ describe('src/analysis/analysis-model.js', function () {
 
         expect(this.map.reload).not.toHaveBeenCalled();
       });
+
+      it('should be marked as failed if request to reload the map fails', function () {
+        this.analysisModel.set({
+          attribute1: 'newValue1',
+          status: AnalysisModel.STATUS.READY
+        });
+
+        // Request to the Maps API fails and error callback is invoked...
+        this.map.reload.calls.argsFor(0)[0].error('something bad just happened');
+
+        expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
+      });
     });
 
     describe('on type change', function () {

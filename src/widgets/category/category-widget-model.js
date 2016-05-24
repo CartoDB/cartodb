@@ -20,7 +20,8 @@ module.exports = WidgetModel.extend({
   defaultState: _.extend(
     {
       acceptedCategories: [],
-      locked: false
+      locked: false,
+      autoStyle: false
     },
     WidgetModel.prototype.defaultState
   ),
@@ -36,13 +37,17 @@ module.exports = WidgetModel.extend({
     this.dataviewModel.filter.on('change', function () {
       this.set('acceptedCategories', this._acceptedCategories().pluck('name'));
     }, this);
+    this.dataviewModel.once('change:allCategoryNames', function () {
+      if (this.get('autoStyle')) {
+        this.autoStyle();
+      }
+    }, this);
   },
 
   setupSearch: function () {
     this.dataviewModel.setupSearch();
     this.lockedCategories.addItems(this._acceptedCategories().toJSON());
     this.toggleSearch();
-    this.dataviewModel.filter.accept(this.get('acceptedCategories'));
   },
 
   toggleSearch: function () {

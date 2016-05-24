@@ -44,7 +44,7 @@ module Carto
 
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id)
 
-        Cartodb::EventTracker.new.track_exported_map(user, @visualization)
+        Cartodb::EventTracker.new.track_exported_map(current_user, @visualization)
 
         render_jsonp(VisualizationExportPresenter.new(visualization_export).to_poro, 201)
       end

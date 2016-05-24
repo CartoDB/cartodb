@@ -2,6 +2,9 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+.WidgetShape--big {
+  @include transform(scale(2, 1.2));
+}
 .HistogramShape {
   position: relative;
   width: 20px;
@@ -153,4 +156,3 @@
   top: 8px;
   right: 0;
 }
-

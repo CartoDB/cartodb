@@ -2,6 +2,9 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:each) do
@@ -16,27 +19,40 @@ shared_context 'layer hierarchy' do
     @visualization.destroy if @visualization
   end
 
-  def random_uuid
-    UUIDTools::UUID.random_create.to_s
-  end
-
   def response_widget_should_match_widget(response_widget, widget)
     response_widget[:id].should == widget.id
     response_widget[:order].should == widget.order
     response_widget[:type].should == widget.type
     response_widget[:title].should == widget.title
     response_widget[:layer_id].should == widget.layer.id
-    response_widget[:options].symbolize_keys.should == widget.options_json
+    response_widget[:options].should == widget.options.symbolize_keys
+    if widget.source_id.present?
+      response_widget[:source][:id].should eq widget.source_id
+    else
+      response_widget[:source].should be_nil
+    end
   end
 
   def response_widget_should_match_payload(response_widget, payload)
     response_widget[:layer_id].should == payload[:layer_id]
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
-    response_widget[:options].symbolize_keys.should == payload[:options].symbolize_keys
+    response_widget[:options].should == payload[:options].symbolize_keys
+    if payload[:source].present?
+      response_widget[:source][:id].should == payload[:source][:id]
+    else
+      response_widget[:source].should be_nil
+    end
   end
 
-  def widget_payload(layer_id: @layer.id, type: 'formula', title: 'the title', options: { 'a field' => 'first', 'another field' => 'second' }, order: nil)
+  def widget_payload(
+    layer_id: @layer.id,
+    type: 'formula',
+    title: 'the title',
+    options: { 'a field' => 'first', 'another field' => 'second' },
+    order: nil,
+    source: nil)
+
     payload = {
       layer_id: layer_id,
       type: type,
@@ -45,6 +61,7 @@ shared_context 'layer hierarchy' do
     }
 
     payload[:order] = order if order
+    payload[:source] = source if source
 
     payload
   end
@@ -135,6 +152,25 @@ describe Carto::Api::WidgetsController do
       end
     end
 
+    it 'creates a new widget with source_id' do
+      analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
+      payload = widget_payload.merge(source: { id: analysis.natural_id })
+      url = widgets_url(
+        user_domain: @user1.username,
+        map_id: @map.id,
+        map_layer_id: @widget.layer_id,
+        api_key: @user1.api_key)
+      post_json url, payload, http_json_headers do |response|
+        response.status.should eq 201
+        response_widget = response.body
+        response_widget[:source][:id].should eq analysis.natural_id
+        widget = Carto::Widget.find(response_widget[:id])
+        widget.source_id.should eq analysis.natural_id
+        widget.destroy
+      end
+      analysis.destroy
+    end
+
     it 'returns 404 for unknown map id' do
       post_json widgets_url(user_domain: @user1.username, map_id: random_uuid, map_layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload, http_json_headers do |response|
         response.status.should == 404
@@ -205,20 +241,35 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 200 and updates the model' do
+      analysis = FactoryGirl.create(:analysis, visualization: @public_visualization, user_id: @user1.id)
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
-      new_options = @widget.options_json.merge(new: 'whatever')
+      new_options = @widget.options.merge(new: 'whatever')
 
-      payload = widget_payload(order: new_order, type: new_type, title: new_title, options: new_options)
+      payload = widget_payload(
+        order: new_order,
+        type: new_type,
+        title: new_title,
+        options: new_options,
+        source: { id: analysis.natural_id }
+      )
 
-      put_json widget_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, id: @widget.id, api_key: @user1.api_key), payload, http_json_headers do |response|
-        response.status.should == 200
+      url = widget_url(
+        user_domain: @user1.username,
+        map_id: @map.id,
+        map_layer_id: @widget.layer_id,
+        id: @widget.id,
+        api_key: @user1.api_key)
+
+      put_json url, payload, http_json_headers do |response|
+        response.status.should eq 200
         response_widget_should_match_payload(response.body, payload)
 
         loaded_widget = Carto::Widget.find(response.body[:id])
         response_widget_should_match_widget(response.body, Carto::Widget.find(response.body[:id]))
       end
+      analysis.destroy
     end
   end
 
@@ -253,10 +304,12 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'contains widget data' do
-        vizjson3 = get_vizjson3(@visualization)
-        layer = vizjson3[:layers][0][:options][:layer_definition][:layers][0]
-        options = CartoDB::NamedMapsWrapper::NamedMap.options_for_layer(layer, 1, { placeholders: {} })
-        widget_options = options[:layer_options][:widgets]
+        parent_mock = mock
+        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
+        parent_mock.stubs(:username).returns(@user1.username)
+
+        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
+        widget_options = template[:layergroup][:layers][0][:options][:widgets]
         widget_options.should_not be_nil
         widget_options.length.should == 1
         widget_options.each do |k, v|
@@ -265,9 +318,30 @@ describe Carto::Api::WidgetsController do
 
           # aggregation_column is renamed aggregationColumn for the tiler
           aggregation_column = v[:options].delete(:aggregationColumn)
-          aggregation_column.should == @widget.options_json[:aggregation_column]
+          aggregation_column.should == @widget.options[:aggregation_column]
 
-          v[:options].should == @widget.options_json
+          v[:options].should == @widget.options
+        end
+      end
+
+      it 'layer options contains widget data for layer widgets' do
+        parent_mock = mock
+        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
+        parent_mock.stubs(:username).returns(@user1.username)
+
+        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
+        widget_options = template[:layergroup][:layers][0][:options][:widgets]
+        widget_options.should_not be_nil
+        widget_options.length.should == 1
+        widget_options.each do |k, v|
+          k.should == @widget.id
+          v[:type].should == @widget.type
+
+          # aggregation_column is renamed aggregationColumn for the tiler
+          aggregation_column = v[:options].delete(:aggregationColumn)
+          aggregation_column.should == @widget.options[:aggregation_column]
+
+          v[:options].should == @widget.options
         end
       end
     end

@@ -59,23 +59,18 @@ module Resque
     end
 
     module SyncTables
-
       module LinkGhostTables
         extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
-          u = ::User.where(id: user_id).first
-          u.link_ghost_tables
+          Carto::GhostTablesManager.new(user_id).link_ghost_tables_synchronously
         rescue => e
           CartoDB.notify_exception(e)
           raise e
         end
-
       end
-
     end
-
 
     module CommonData
       module LoadCommonData
@@ -87,7 +82,6 @@ module Resque
       end
 
     end
-
 
     module Mail
 

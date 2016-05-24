@@ -9,7 +9,7 @@ namespace :cartodb do
       ff = FeatureFlag[:name => args[:feature]]
       raise "[ERROR]  Feature '#{args[:feature]}' does not exist" if ff.nil?
 
-      :User.all.each do |user|
+      ::User.all.each do |user|
         if FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id].nil?
             FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
         end

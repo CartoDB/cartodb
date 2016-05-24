@@ -1,7 +1,6 @@
 # encoding: utf-8
 require 'json'
 require 'ostruct'
-require_relative '../overlay/presenter'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'
@@ -40,6 +39,7 @@ module CartoDB
           overlays:       overlays_for(visualization),
           # Fields specific for this export
           export_version: version,
+          # TODO: bug? @user is _viewer_user_, who might not be the owner
           owner:          { id: @user.id }
         }
       end
@@ -204,7 +204,7 @@ module CartoDB
 
       def overlays_for(visualization)
         ordered_overlays_for(visualization).map do |overlay|
-          Overlay::Presenter.new(overlay).to_poro
+          Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
       end
 
@@ -221,7 +221,8 @@ module CartoDB
           full: true,
           visualization_id: visualization.id,
           https_request: false,
-          attributions: visualization.attributions_from_derived_visualizations
+          attributions: visualization.attributions_from_derived_visualizations,
+          for_named_map: false
         }
       end
 

@@ -41,6 +41,8 @@ class Organization < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
+  DEFAULT_OBS_SNAPSHOT_QUOTA = 0
+  DEFAULT_OBS_GENERAL_QUOTA = 0
 
   def validate
     super
@@ -50,6 +52,9 @@ class Organization < Sequel::Model
     validates_integer  :default_quota_in_bytes, :allow_nil => true
     validates_integer :geocoding_quota, allow_nil: false, message: 'geocoding_quota cannot be nil'
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
+    validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
+    validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
+
 
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
@@ -74,6 +79,8 @@ class Organization < Sequel::Model
   def before_validation
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
+    self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
+    self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
   end
 
   # Just to make code more uniform with user.database_schema
@@ -85,6 +92,8 @@ class Organization < Sequel::Model
     super
     @geocoding_quota_modified = changed_columns.include?(:geocoding_quota)
     @here_isolines_quota_modified = changed_columns.include?(:here_isolines_quota)
+    @obs_snapshot_quota_modified = changed_columns.include?(:obs_snapshot_quota)
+    @obs_general_quota_modified = changed_columns.include?(:obs_general_quota)
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
   end
@@ -107,21 +116,12 @@ class Organization < Sequel::Model
   # organization destroy
   def destroy_cascade
     destroy_groups
-    destroy_permissions
     destroy_non_owner_users
     if self.owner
       self.owner.destroy
     else
       self.destroy
     end
-  end
-
-  def destroy_permissions
-    self.users.each { |user|
-      CartoDB::Permission.where(owner_id: user.id).each { |permission|
-        permission.destroy
-      }
-    }
   end
 
   def destroy_non_owner_users
@@ -135,26 +135,29 @@ class Organization < Sequel::Model
   end
 
   ##
-  # SLOW! Checks map views for every user in every organization
+  # SLOW! Checks redis data (geocoding and isolines) for every user in every organization
   # delta: get organizations who are also this percentage below their limit.
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
 
     Organization.all.select do |o|
-        limit = o.map_view_quota.to_i - (o.map_view_quota.to_i * delta)
-        over_map_views = o.get_api_calls(from: o.owner.last_billing_cycle, to: Date.today) > limit
-
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
 
         limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
         over_here_isolines = o.get_here_isolines_calls > limit
 
+        limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
+        over_obs_snapshot = o.get_obs_snapshot_calls > limit
+
+        limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
+        over_obs_general = o.get_obs_general_calls > limit
+
         limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
 
-        over_map_views || over_geocodings || over_twitter_imports || over_here_isolines
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
     end
   end
 
@@ -182,6 +185,16 @@ class Organization < Sequel::Model
     get_organization_here_isolines_data(self, date_from, date_to)
   end
 
+  def get_obs_snapshot_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_organization_obs_snapshot_data(self, date_from, date_to)
+  end
+
+  def get_obs_general_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_organization_obs_general_data(self, date_from, date_to)
+  end
+
   def get_twitter_imports_count(options = {})
     date_from, date_to = quota_dates(options)
 
@@ -195,6 +208,16 @@ class Organization < Sequel::Model
 
   def remaining_here_isolines_quota
     remaining = here_isolines_quota - get_here_isolines_calls
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_snapshot_quota
+    remaining = obs_snapshot_quota - get_obs_snapshot_calls
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_general_quota
+    remaining = obs_general_quota - get_obs_general_calls
     (remaining > 0 ? remaining : 0)
   end
 
@@ -233,12 +256,16 @@ class Organization < Sequel::Model
       :quota_in_bytes           => self.quota_in_bytes,
       :unassigned_quota         => self.unassigned_quota,
       :geocoding_quota          => self.geocoding_quota,
-      :here_isolines_quota      => self.here_isolines_quota,
       :map_view_quota           => self.map_view_quota,
       :twitter_datasource_quota => self.twitter_datasource_quota,
       :map_view_block_price     => self.map_view_block_price,
       :geocoding_block_price    => self.geocoding_block_price,
+      :here_isolines_quota      => self.here_isolines_quota,
       :here_isolines_block_price => self.here_isolines_block_price,
+      :obs_snapshot_quota       => self.obs_snapshot_quota,
+      :obs_snapshot_block_price => self.obs_snapshot_block_price,
+      :obs_general_quota        => self.obs_general_quota,
+      :obs_general_block_price  => self.obs_general_block_price,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :location                 => self.twitter_username,
@@ -335,6 +362,8 @@ class Organization < Sequel::Model
       'id', id,
       'geocoding_quota', geocoding_quota,
       'here_isolines_quota', here_isolines_quota,
+      'obs_snapshot_quota', obs_snapshot_quota,
+      'obs_general_quota', obs_general_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date

@@ -18,17 +18,7 @@ module CartoDB
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'
   SURROGATE_NAMESPACE_VIZJSON = 'rj'
 
-  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
-  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
-                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
-                                  CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
-                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
-                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
-                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
-                                  USING VERBOSE WHEN WHERE XMIN XMAX }
-
-  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid }
+  RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
@@ -163,20 +153,25 @@ module CartoDB
     base_url
   end
 
-  def self.domainless_base_url(subdomain, protocol_override=nil)
+  def self.domainless_base_url(subdomain, protocol_override = nil)
+    base_domain = domainless_base_domain(protocol_override)
+    if !subdomain.nil? && !subdomain.empty?
+      "#{base_domain}/user/#{subdomain}"
+    else
+      base_domain
+    end
+  end
+
+  def self.domainless_base_domain(protocol_override = nil)
     protocol = self.protocol(protocol_override)
-    port = protocol == 'http' ? self.http_port : self.https_port
+    port = protocol == 'http' ? http_port : https_port
     if ip?(request_host)
-      "#{protocol}://#{request_host}#{port}/user/#{subdomain}"
+      "#{protocol}://#{request_host}#{port}"
     else
       request_subdomain = request_host.sub(session_domain, '')
-      request_subdomain += '.' if request_subdomain.length > 0 && !request_subdomain.end_with?('.')
+      request_subdomain += '.' if !request_subdomain.empty? && !request_subdomain.end_with?('.')
 
-      if !subdomain.nil? && subdomain != ''
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
-      else
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
-      end
+      "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
     end
   end
 
@@ -253,4 +248,3 @@ module CartoDB
     end
   end
 end
-

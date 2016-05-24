@@ -46,7 +46,11 @@ class Api::Json::ImportsController < Api::ApplicationController
           options.merge!( { data_source: external_source.import_url.presence } )
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
-            results = file_upload_helper.upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
+            results = file_upload_helper.upload_file_to_storage(
+              filename_param: params[:filename],
+              file_param: params[:file],
+              request_body: request.body,
+              s3_config: Cartodb.config[:importer]['s3'])
             # Not queued import is set by skipping pending state and setting directly as already enqueued
             options.merge({
                               data_source: results[:file_uri].presence,
@@ -77,7 +81,7 @@ class Api::Json::ImportsController < Api::ApplicationController
                      }, 429)
       rescue => ex
         decrement_concurrent_imports_rate_limit
-        CartoDB::Logger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
+        CartoDB::StdoutLogger.info('Error: create', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -111,7 +115,7 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         render_jsonp({ success: true })
       rescue => ex
-        CartoDB::Logger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
+        CartoDB::StdoutLogger.info('Error: invalidate_service_token', "#{ex.message} #{ex.backtrace.inspect}")
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
@@ -191,7 +195,7 @@ class Api::Json::ImportsController < Api::ApplicationController
       concurrent_import_limit.decrement!
       concurrent_import_limit.peek  # return limit value
     rescue => sub_exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{sub_exception.message} #{sub_exception.backtrace.inspect}")
       nil
     end

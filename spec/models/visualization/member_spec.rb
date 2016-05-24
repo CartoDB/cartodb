@@ -3,9 +3,9 @@ require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../app/models/visualization/member'
 require_relative '../../../app/models/visualization/collection'
-require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../doubles/support_tables.rb'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 include CartoDB
 
@@ -15,7 +15,6 @@ describe Visualization::Member do
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    Overlay.repository        = DataRepository.new # In-memory storage
 
     @user = FactoryGirl.create(:valid_user)
   end
@@ -81,32 +80,17 @@ describe Visualization::Member do
     end
 
     it 'persists tags as an array if the backend supports it' do
-      relation_id = UUIDTools::UUID.timestamp_create.to_s
-
       Permission.any_instance.stubs(:update_shared_entities).returns(nil)
 
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db          = Sequel.postgres(
-                      host:     db_config.fetch('host'),
-                      port:     db_config.fetch('port'),
-                      database: db_config.fetch('database'),
-                      username: db_config.fetch('username')
-                    )
-      relation    = "visualizations_#{relation_id}".to_sym
-      repository  = DataRepository::Backend::Sequel.new(db, relation)
-      Visualization::Migrator.new(db).migrate(relation)
       attributes  = random_attributes_for_vis_member(user_id: @user_mock.id, tags: ['tag 1', 'tag 2'])
-      member      = Visualization::Member.new(attributes, repository)
+      member      = Visualization::Member.new(attributes)
       member.store
 
-      member      = Visualization::Member.new({ id: member.id }, repository)
+      member = Visualization::Member.new(id: member.id)
       member.fetch
       member.tags.should include('tag 1')
       member.tags.should include('tag 2')
-
-      Visualization::Migrator.new(db).drop(relation)
+      member.delete
     end
 
     it 'persists tags as JSON if the backend does not support arrays' do

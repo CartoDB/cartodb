@@ -8,5 +8,9 @@
   var layersData = <%= safe_js_object @layers_data.to_json %>
   var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
   var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+  var analysesData = <%= safe_js_object @analyses_data.to_json %>
+  var ACTIVE_LOCALE = 'en';
 </script>
+<%= javascript_include_tag 'vendor_editor3.js' %>
+<%= javascript_include_tag 'common_editor3.js' %>
 <%= javascript_include_tag 'editor3.js' %>

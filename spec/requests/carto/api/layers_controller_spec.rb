@@ -3,8 +3,10 @@
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/layers_controller'
 require_relative '../../../../spec/requests/api/json/layers_controller_shared_examples'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::LayersController do
+  include UniqueNamesHelper
   it_behaves_like 'layers controllers' do
   end
 
@@ -30,8 +32,8 @@ describe Carto::Api::LayersController do
       table_2_attribution = 'attribution 2'
       modified_table_2_attribution = 'modified attribution 2'
 
-      table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_1", user_id: @user.id)
-      table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: "table#{rand(9999)}_2", user_id: @user.id)
+      table1 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
+      table2 = create_table(privacy: UserTable::PRIVACY_PUBLIC, name: unique_name('table'), user_id: @user.id)
 
       payload = {
         name: 'new visualization',
@@ -66,9 +68,8 @@ describe Carto::Api::LayersController do
       data_layers.delete_if { |layer| layer['kind'] != 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, table_2_attribution]
 
       table2_visualization.attributions = modified_table_2_attribution
       table2_visualization.store
@@ -80,9 +81,8 @@ describe Carto::Api::LayersController do
       data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
       data_layers.count.should eq 2
 
-      # Rembember, layers by default added at top
-      data_layers[0]['options']['attribution'].should eq modified_table_2_attribution
-      data_layers[1]['options']['attribution'].should eq table_1_attribution
+      data_layers.map { |l| l['options']['attribution'] }.sort
+                 .should eq [table_1_attribution, modified_table_2_attribution]
     end
   end
 
@@ -101,7 +101,7 @@ describe Carto::Api::LayersController do
 
       def factory(user, attributes = {})
         {
-          name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+          name:                     attributes.fetch(:name, unique_name('viz')),
           tags:                     attributes.fetch(:tags, ['foo', 'bar']),
           map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),
           description:              attributes.fetch(:description, 'bogus'),
@@ -116,28 +116,28 @@ describe Carto::Api::LayersController do
       end
 
       user_1 = create_user(
-        username: "test#{rand(9999)}-1",
-        email: "client#{rand(9999)}@cartodb.com",
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       user_2 = create_user(
-        username: "test#{rand(9999)}-2",
-        email: "client#{rand(9999)}@cartodb.com",
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       user_3 = create_user(
-        username: "test#{rand(9999)}-3",
-        email: "client#{rand(9999)}@cartodb.com",
+        username: unique_name('user'),
+        email: unique_email,
         password: 'clientex',
         private_tables_enabled: false
       )
 
       organization = Organization.new
-      organization.name = "org#{rand(9999)}"
+      organization.name = unique_name('org')
       organization.quota_in_bytes = 1234567890
       organization.seats = 5
       organization.save
@@ -158,7 +158,7 @@ describe Carto::Api::LayersController do
 
       default_url_options[:host] = "#{user_2.subdomain}.localhost.lan"
 
-      table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "table#{rand(9999)}_1", user_id: user_1.id)
+      table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: unique_name('table'), user_id: user_1.id)
       u1_t_1_perm_id = table.table_visualization.permission.id
 
       put api_v1_permissions_update_url(user_domain: user_1.username, api_key: user_1.api_key, id: u1_t_1_perm_id),

@@ -4,6 +4,7 @@ require_relative '../lib/table_geocoder'
 require_relative 'factories/pg_connection'
 require 'set'
 require_relative '../../../spec/rspec_configuration'
+require_relative '../../../spec/spec_helper'
 
 describe CartoDB::TableGeocoder do
   let(:default_params) {{
@@ -17,6 +18,11 @@ describe CartoDB::TableGeocoder do
     @db           = conn.connection
     @pg_options   = conn.pg_options
     @table_name   = "ne_10m_populated_places_simple_#{rand.to_s[2..11]}"
+    @log = mock
+    @log.stubs(:append)
+    @log.stubs(:append_and_store)
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', 
+                                          formatter: '{street}', remote_id: 'dummy_request_id')
 
     # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
     filename = 'populated_places_short.csv'
@@ -46,10 +52,12 @@ describe CartoDB::TableGeocoder do
                                                             sequel_qualified_table_name: @table_name,
                                                             formatter:  "name, ', ', iso3",
                                                             connection: @db,
+                                                            log: @log,
+                                                            geocoding_model: @geocoding_model,
                                                             max_rows: 1000))
       geocoder = mock
       geocoder.stubs(:upload).returns(true)
-      geocoder.stubs(:request_id).returns('111')
+      geocoder.stubs(:request_id).returns('dummy_request_id')
       geocoder.stubs(:run).returns(true)
       geocoder.stubs(:status).returns('foo')
 
@@ -70,7 +78,7 @@ describe CartoDB::TableGeocoder do
     end
 
     it "assigns a remote_id" do
-      @tg.remote_id.should == '111'
+      @tg.remote_id.should == 'dummy_request_id'
     end
 
     it "holds a db connection with the specified statement timeout" do
@@ -86,6 +94,8 @@ describe CartoDB::TableGeocoder do
                                                             sequel_qualified_table_name: @table_name,
                                                             formatter:  "name, ', ', iso3",
                                                             connection: @db,
+                                                            log: @log,
+                                                            geocoding_model: @geocoding_model,
                                                             max_rows: 1000))
       @tg.send(:ensure_georef_status_colummn_valid)
     end
@@ -110,7 +120,8 @@ describe CartoDB::TableGeocoder do
 
   describe '#download_results' do
     it 'gets the geocoder results' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, usage_metrics: nil)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, 
+                                      usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       geocoder = mock
       geocoder.expects(:result).times(1).returns('a')
       tg.stubs(:geocoder).returns(geocoder)
@@ -123,7 +134,8 @@ describe CartoDB::TableGeocoder do
     it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
       tg = CartoDB::TableGeocoder.new(table_name: 'a',
-                                      connection: @db, working_dir: dir, max_rows: 1000, usage_metrics: nil)
+                                      connection: @db, working_dir: dir, max_rows: 1000, 
+                                      usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       expect { tg.send(:deflate_results) }.to_not raise_error
     end
 
@@ -131,7 +143,8 @@ describe CartoDB::TableGeocoder do
       dir = Dir.mktmpdir
       `cp #{path_to('kXYkQhuDfxnUSmWFP3dmq6TzTZAzwy4x.zip')} #{dir}`
       tg = CartoDB::TableGeocoder.new(table_name: 'a',
-                                      connection: @db, working_dir: dir, max_rows: 1000, usage_metrics: nil)
+                                      connection: @db, working_dir: dir, max_rows: 1000, 
+                                      usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       tg.send(:deflate_results)
       filename = 'result_20130919-04-55_6.2.46.1_out.txt'
       destfile = File.open(File.join(dir, filename))
@@ -141,7 +154,8 @@ describe CartoDB::TableGeocoder do
 
   describe '#create_temp_table' do
     it 'raises error if no remote_id' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, usage_metrics: nil)
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, 
+                                      usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       expect { tg.send(:create_temp_table) }.to raise_error(Sequel::DatabaseError)
     end
 
@@ -149,6 +163,8 @@ describe CartoDB::TableGeocoder do
       tg = CartoDB::TableGeocoder.new(table_name: 'a',
                                       connection: @db,
                                       remote_id: 'geo_HvyxzttLyFhaQ7JKmnrZxdCVySd8N0Ua',
+                                      log: @log,
+                                      geocoding_model: @geocoding_model,
                                       schema: 'public', max_rows: 1000, usage_metrics: nil)
       tg.send(:drop_temp_table)
       tg.send(:create_temp_table)
@@ -160,6 +176,8 @@ describe CartoDB::TableGeocoder do
     before do
       @tg = CartoDB::TableGeocoder.new(table_name: 'a',
                                        connection: @db,
+                                       log: @log,
+                                       geocoding_model: @geocoding_model,
                                        remote_id: 'temp_table', schema: 'public', max_rows: 1000, usage_metrics: nil)
       @tg.send(:create_temp_table)
     end
@@ -188,6 +206,8 @@ describe CartoDB::TableGeocoder do
                                        connection: @db,
                                        remote_id: 'wadus',
                                        max_rows: 1000,
+                                       log: @log,
+                                       geocoding_model: @geocoding_model,
                                        usage_metrics: nil)
     end
 
@@ -234,6 +254,8 @@ describe CartoDB::TableGeocoder do
                                                 formatter:  "name, ', ', iso3",
                                                 connection: @db,
                                                 schema:     'public',
+                                                log: @log,
+                                                geocoding_model: @geocoding_model,
                                                 max_rows: 1000))
     t.geocoder.stubs("use_batch_process?").returns(true)
 

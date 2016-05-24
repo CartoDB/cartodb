@@ -48,8 +48,6 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %w{ layergroup all public }.freeze
-
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1
   PRIVACY_LINK = 2
@@ -68,6 +66,7 @@ class UserTable < Sequel::Model
                         reciprocal: :user_tables
   one_to_one   :automatic_geocoding, key: :table_id
   one_to_many  :geocodings, key: :table_id
+  many_to_one  :data_import, key: :data_import_id
 
   plugin :association_dependencies, map:                  :destroy,
                                     layers:               :nullify,
@@ -106,6 +105,10 @@ class UserTable < Sequel::Model
   # Lazy initialization of service if not present
   def service
     @service ||= ::Table.new(user_table: self)
+  end
+
+  def sync_table_id
+    self.table_id = service.get_table_id
   end
 
   # Helper methods encapsulating queries. Move to query object?
@@ -162,7 +165,7 @@ class UserTable < Sequel::Model
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(name)
+    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -288,7 +291,4 @@ class UserTable < Sequel::Model
   def actual_row_count
     service.actual_row_count
   end
-
-  private
-
 end

@@ -12,7 +12,7 @@ require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
 require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 require_relative '../../helpers/embed_redis_cache'
-require_relative '../../helpers/redis_vizjson_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
 
 # Every table has always at least one visualization (the "canonical visualization"), of type 'table',
 # which shares the same privacy options as the table and gets synced.
@@ -44,15 +44,12 @@ module CartoDB
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
       PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
-      DEFAULT_URL_OPTIONS = 'title=true&description=true&search=false&shareable=true&cartodb_logo=true&layer_selector=false&legends=false&scrollwheel=true&fullscreen=true&sublayer_options=1&sql='
-
       AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
 
       DEFAULT_OPTIONS_VALUE = '{}'
 
       # Upon adding new attributes modify also:
-      # app/models/visualization/migrator.rb
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/support/helpers.rb -> random_attributes_for_vis_member
       # app/models/visualization/presenter.rb
@@ -73,7 +70,6 @@ module CartoDB
       attribute :updated_at,          Time
       attribute :encrypted_password,  String, default: nil
       attribute :password_salt,       String, default: nil
-      attribute :url_options,         String, default: DEFAULT_URL_OPTIONS
       attribute :user_id,             String
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
@@ -278,7 +274,7 @@ module CartoDB
         support_tables.delete_all
 
         invalidate_cache
-        overlays.destroy
+        overlays.map(&:destroy)
         layers(:base).map(&:destroy)
         layers(:cartodb).map(&:destroy)
         safe_sequel_delete {
@@ -293,9 +289,11 @@ module CartoDB
                                             child.fetch.delete
                                           }
         }
-        safe_sequel_delete { permission.destroy } if permission
+
+        safe_sequel_delete { permission.destroy_shared_entities } if permission
         safe_sequel_delete { repository.delete(id) }
-        self.attributes.keys.each { |key| self.send("#{key}=", nil) }
+        safe_sequel_delete { permission.destroy } if permission
+        attributes.keys.each { |key| send("#{key}=", nil) }
 
         self
       end
@@ -419,7 +417,15 @@ module CartoDB
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
         return is_owner?(user) if permission_id.nil?
-        is_owner?(user) || permission.is_permitted?(user, permission_type)
+        is_owner?(user) || permission.permitted?(user, permission_type)
+      end
+
+      def can_copy?(user)
+        !raster_kind? && has_permission?(user, PERMISSION_READONLY)
+      end
+
+      def raster_kind?
+        kind == KIND_RASTER
       end
 
       def users_with_permissions(permission_types)
@@ -747,18 +753,14 @@ module CartoDB
 
         set_timestamps
 
-        repository.store(id, attributes.to_hash)
-
-        # Careful to not call Permission.save until after persisted the vis
+        # Ensure a permission is set before saving the visualization
         if permission.nil?
           perm = CartoDB::Permission.new
           perm.owner = user
-          perm.entity = self
           perm.save
           @permission_id = perm.id
-          # Need to save again
-          repository.store(id, attributes.to_hash)
         end
+        repository.store(id, attributes.to_hash)
 
         begin
           save_named_map

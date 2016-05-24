@@ -40,17 +40,17 @@ feature "API 1.0 user layers management" do
 
     put_json api_v1_users_layers_update_url(params.merge(id: layer.id, user_id: @user.id)), opts do |response|
       response.status.should be_success
-      response.body[:id].should         eq layer.id
-      response.body[:options].should    == { 'opt1' => 'value' }
+      response.body[:id].should eq layer.id
+      response.body[:options].should eq opt1: 'value'
       response.body[:infowindow].should eq ['column1', 'column2']
-      response.body[:kind].should       eq 'carto'      
+      response.body[:kind].should eq 'carto'
     end
   end
 
   scenario "Drop a layer" do
     layer = Layer.create :kind => 'carto'
     @user.add_layer layer
-    
+
     delete_json api_v1_users_layers_destroy_url(params.merge(id: layer.id, user_id: @user.id)) do |response|
       response.status.should eq 204
       expect { layer.refresh }.to raise_error

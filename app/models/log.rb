@@ -19,10 +19,10 @@ module CartoDB
     HALF_OF_LOG_MARK = '===LOG HALF===\n'
     END_OF_LOG_MARK = '===LOG END==='
 
-    TYPE_DATA_IMPORT     = 'import'
-    TYPE_SYNCHRONIZATION = 'sync'
-    TYPE_USER_CREATION   = 'user_creation'
-    TYPE_GEOCODING       = 'geocoding'
+    TYPE_DATA_IMPORT     = 'import'.freeze
+    TYPE_SYNCHRONIZATION = 'sync'.freeze
+    TYPE_USER_CREATION   = 'user_creation'.freeze
+    TYPE_GEOCODING       = 'geocoding'.freeze
 
     SUPPORTED_TYPES = [
       TYPE_DATA_IMPORT,
@@ -103,13 +103,19 @@ module CartoDB
       end
     end
 
-    # INFO: Does not store log, only appens in-memory
+    # INFO: Does not store log, only appends in-memory
     def append(content, truncate = true, timestamp = Time.now.utc)
       @dirty = true
-
       content.slice!(MAX_ENTRY_LENGTH..-1) if truncate
-
       add_to_entries(ENTRY_FORMAT % [ timestamp, content ])
+    end
+
+    def append_and_store(content, truncate = true, timestamp = Time.now.utc)
+      refresh
+      # Sync content from other processes. Ie. geocoding cancel
+      rehydrate_entries_from_string(entries)
+      append(content, truncate, timestamp)
+      store
     end
 
     private

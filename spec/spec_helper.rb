@@ -1,6 +1,8 @@
 require_relative './simplecov_helper'
-require 'uuidtools'
 require_relative './rspec_configuration'
+require 'helpers/spec_helper_helpers'
+require 'helpers/named_maps_helper'
+require 'helpers/unique_names_helper'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -16,21 +18,14 @@ def stub_named_maps_calls
   CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
 end
 
-def random_uuid
-  UUIDTools::UUID.timestamp_create.to_s
-end
-
-def bypass_named_maps
-  CartoDB::Visualization::Member.any_instance.stubs(:has_named_map?).returns(false)
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
-end
-
 # Inline Resque for queue handling
 Resque.inline = true
 
 RSpec.configure do |config|
+  config.include SpecHelperHelpers
   config.include CartoDB::Factories
   config.include HelperMethods
+  config.include NamedMapsHelper
 
   unless ENV['PARALLEL']
     config.before(:suite) do
@@ -40,67 +35,18 @@ RSpec.configure do |config|
 
   config.before(:all) do
     unless ENV['PARALLEL']
-      $tables_metadata.flushdb
-      $api_credentials.flushdb
-      $users_metadata.flushdb
-
-      protected_tables = [:schema_migrations, :spatial_ref_sys]
-      Rails::Sequel.connection.tables.each do |t|
-        if !protected_tables.include?(t)
-          begin
-            Rails::Sequel.connection.run("TRUNCATE TABLE \"#{t}\" CASCADE")
-          rescue Sequel::DatabaseError => e
-            raise e unless e.message =~ /PG::Error: ERROR:  relation ".*" does not exist/
-          end
-        end
-      end
-
-      # To avoid Travis and connection leaks
-      $pool.close_connections!
-      Rails::Sequel.connection[
-        "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-      ].map(:datname).each { |user_database_name|
-        puts "Dropping leaked test database #{user_database_name}"
-        CartoDB::UserModule::DBService.terminate_database_connections(
-          user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-        )
-        Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
-      }
+      clean_redis_databases
+      clean_metadata_database
+      close_pool_connections
+      drop_leaked_test_user_databases
     end
-
-    $user_1 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true, name: 'User 1 Full Name')
-    $user_2 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
   end
 
   config.after(:all) do
     unless ENV['PARALLEL']
-      begin
-        stub_named_maps_calls
-        delete_user_data($user_1)
-        delete_user_data($user_2)
-        $user_1.destroy
-        $user_2.destroy
-      ensure
-        $pool.close_connections!
-        Rails::Sequel.connection[
-          "SELECT datname FROM pg_database WHERE datistemplate IS FALSE AND datallowconn IS TRUE AND datname like 'cartodb_test_user_%'"
-        ].map(:datname).each { |user_database_name|
-          puts "Dropping leaked test database #{user_database_name}"
-          CartoDB::UserModule::DBService.terminate_database_connections(
-            user_database_name, ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-          )
-          Rails::Sequel.connection.run("drop database \"#{user_database_name}\"")
-        }
-        Rails::Sequel.connection[
-          'SELECT u.usename FROM pg_catalog.pg_user u'
-        ].map { |r| r.values.first }.each { |username| Rails::Sequel.connection.run("drop user \"#{username}\"") if username =~ /^test_cartodb_user_/ }
-      end
-    else
-      stub_named_maps_calls
-      delete_user_data($user_1)
-      delete_user_data($user_2)
-      $user_1.destroy
-      $user_2.destroy
+      close_pool_connections
+      drop_leaked_test_user_databases
+      delete_database_test_users
     end
   end
 

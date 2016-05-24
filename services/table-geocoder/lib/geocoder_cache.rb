@@ -7,6 +7,8 @@ module CartoDB
 
     DEFAULT_BATCH_SIZE = 5000
     DEFAULT_MAX_ROWS   = 1000000
+    HTTP_CONNECT_TIMEOUT = 60
+    HTTP_DEFAULT_TIMEOUT = 600
 
     attr_reader :connection, :working_dir, :table_name, :hits, :misses,
                 :max_rows, :sql_api, :formatter, :cache_results
@@ -24,22 +26,27 @@ module CartoDB
       @batch_size = arguments[:batch_size] || DEFAULT_BATCH_SIZE
       @cache_results = File.join(working_dir, "#{temp_table_name}_results.csv")
       @usage_metrics = arguments.fetch(:usage_metrics)
+      @log = arguments.fetch(:log)
       init_rows_count
     end
 
     def run
+      @log.append_and_store "Started searching previous geocoded results in geocoder cache"
       get_cache_results
       create_temp_table
       load_results_to_temp_table
       @hits = connection.select.from(temp_table_name).where('longitude is not null and latitude is not null').count.to_i
       copy_results_to_table
+      @log.append_and_store "Finished geocoder cache job"
     rescue => e
+      @log.append_and_store "Error getting results from geocoder cache: #{e.inspect}"
       handle_cache_exception e
     ensure
       @usage_metrics.incr(:geocoder_cache, :total_requests, @total_rows)
       @usage_metrics.incr(:geocoder_cache, :success_responses, @hits)
       @usage_metrics.incr(:geocoder_cache, :empty_responses, (@total_rows - @hits - @failed_rows))
       @usage_metrics.incr(:geocoder_cache, :failed_responses, @failed_rows)
+      update_log_stats
     end
 
     def get_cache_results
@@ -133,11 +140,12 @@ module CartoDB
 
     def run_query(query, format = '')
       params = { q: query, api_key: sql_api[:api_key], format: format }
-      http_client = Carto::Http::Client.get('geocoder_cache')
-      response = http_client.post(
-        sql_api[:base_url],
-        body: URI.encode_www_form(params)
-      )
+      http_client = Carto::Http::Client.get('geocoder_cache',
+                                            log_requests: true)
+      response = http_client.post(sql_api[:base_url],
+                                  body: URI.encode_www_form(params),
+                                  connecttimeout: HTTP_CONNECT_TIMEOUT,
+                                  timeout: HTTP_DEFAULT_TIMEOUT)
       response.body
     end
 
@@ -159,6 +167,12 @@ module CartoDB
       @hits = 0
       @total_rows = 0
       @failed_rows = 0
+    end
+
+    def update_log_stats
+      @log.append_and_store "Geocoding cache stats update. "\
+        "Total rows: #{@total_rows} "\
+        "--- Hits: #{@hits} --- Failed: #{@failed_rows}"
     end
   end
 end

@@ -3,7 +3,7 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <a href="<%= root_url %>">
+          <a href="<%= CartoDB.url(self, 'root') %>">
             <span class="Logo Logo--avatar">
               <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
             </span>
@@ -30,7 +30,7 @@
       <ul class="Header-settingsList">
         <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem">
-          <a target="_blank" href="http://cartodb.com/gallery/" class="Header-settingsLink Header-settingsLink--dashboard">Gallery</a>
+          <a target="_blank" href="https://cartodb.com/gallery/" class="Header-settingsLink Header-settingsLink--dashboard">Gallery</a>
         </li>
         <li class="Header-settingsItem">
           <a target="_blank" href="http://docs.cartodb.com/" class="Header-settingsLink Header-settingsLink--dashboard">Documentation</a>

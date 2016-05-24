@@ -26,25 +26,25 @@ module CartoDB
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       MAX_REDIRECTS = 5
-      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
-      DEFAULT_FILENAME        = 'importer'
+      DEFAULT_FILENAME        = 'importer'.freeze
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
-                                  UrlTranslator::OSM2,
-                                  UrlTranslator::OSM,
-                                  UrlTranslator::FusionTables,
-                                  UrlTranslator::GitHub,
-                                  UrlTranslator::GoogleMaps,
-                                  UrlTranslator::GoogleDocs,
-                                  UrlTranslator::KimonoLabs
-                                ]
+        UrlTranslator::OSM2,
+        UrlTranslator::OSM,
+        UrlTranslator::FusionTables,
+        UrlTranslator::GitHub,
+        UrlTranslator::GoogleMaps,
+        UrlTranslator::GoogleDocs,
+        UrlTranslator::KimonoLabs
+      ].freeze
 
       CONTENT_TYPES_MAPPING = [
         {
           content_types: ['text/plain'],
-          extensions: ['txt', 'kml']
+          extensions: ['txt', 'kml', 'geojson']
         },
         {
           content_types: ['text/csv'],
@@ -80,17 +80,17 @@ module CartoDB
         },
         {
           content_types: ['application/zip'],
-          extensions: ['zip']
+          extensions: ['zip', 'carto']
         },
         {
           content_types: ['application/x-gzip'],
-          extensions: ['tgz','gz']
+          extensions: ['tgz', 'gz']
         },
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
           extensions: ['json']
         }
-      ]
+      ].freeze
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
@@ -98,10 +98,15 @@ module CartoDB
                                   .sort_by(&:length).reverse
       end
 
+      def self.supported_extensions_match
+        @supported_extensions_match ||= supported_extensions.map { |ext|
+          ext = ext.gsub('.', '\\.')
+          [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
+        }.flatten
+      end
+
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new(
-                                 "[[:word:]]+#{Regexp.union(supported_extensions)}+",
-                                 true)
+        @url_filename_regex ||= Regexp.new("[[:word:]]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
@@ -245,7 +250,7 @@ module CartoDB
         download_error = false
         error_response = nil
 
-        temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
+        temp_name = filepath(DEFAULT_FILENAME + '_' + random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)
@@ -299,6 +304,8 @@ module CartoDB
             raise UnauthorizedDownloadError.new(error_response.body)
           elsif error_response.code == 404
             raise NotFoundDownloadError.new(error_response.body)
+          elsif error_response.return_code == :partial_file
+            raise PartialDownloadError.new("DOWNLOAD ERROR: A file transfer was shorter or larger than expected")
           else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end
@@ -444,4 +451,3 @@ module CartoDB
     end
   end
 end
-

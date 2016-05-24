@@ -6,7 +6,6 @@ require_relative 'abstract_table_geocoder'
 
 module CartoDB
   module InternalGeocoder
-
     class Geocoder  < AbstractTableGeocoder
 
       SQLAPI_CALLS_TIMEOUT = 45
@@ -34,24 +33,25 @@ module CartoDB
         @geocoding_results = File.join(working_dir, "#{temp_table_name}_results.csv".gsub('"', ''))
         @query_generator = CartoDB::InternalGeocoder::QueryGeneratorFactory.get self
         @log = arguments[:log]
+        @geocoding_model = arguments[:geocoding_model]
         @usage_metrics = arguments.fetch(:usage_metrics)
-      end # initialize
+      end
 
       def set_log(log)
         @log = log
       end
 
       def run
-        log.append 'run()'
-        @state = 'processing'
+        log.append_and_store 'run()'
+        change_status('running')
         ensure_georef_status_colummn_valid
         download_results
         create_temp_table
         load_results_to_temp_table
         copy_results_to_table
-        @state = 'completed'
+        change_status('completed')
       rescue => e
-        @state = 'failed'
+        change_status('failed')
         raise e
       ensure
         drop_temp_table
@@ -59,7 +59,7 @@ module CartoDB
       end
 
       def download_results
-        log.append 'download_results()'
+        log.append_and_store 'download_results()'
         begin
           count = count + 1 rescue 0
           search_terms = get_search_terms(count)
@@ -87,7 +87,7 @@ module CartoDB
             @usage_metrics.incr(:geocoder_internal, :success_responses, success_responses)
             @usage_metrics.incr(:geocoder_internal, :empty_responses, empty_responses)
 
-            log.append "Saving results to #{geocoding_results}"
+            log.append_and_store "Saving results to #{geocoding_results}"
             File.open(geocoding_results, 'a') { |f| f.write(response.force_encoding("UTF-8")) } unless response.blank?
           end
         end while search_terms.size >= @batch_size
@@ -101,7 +101,7 @@ module CartoDB
       end # get_search_terms
 
       def create_temp_table
-        log.append 'create_temp_table()'
+        log.append_and_store 'create_temp_table()'
         connection.run(%Q{
           CREATE TABLE #{temp_table_name} (
             geocode_string text, country text, region text, the_geom geometry, cartodb_georef_status boolean
@@ -117,12 +117,12 @@ module CartoDB
       def cancel; end
 
       def load_results_to_temp_table
-        log.append 'load_results_to_temp_table()'
+        log.append_and_store 'load_results_to_temp_table()'
         connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
       end # load_results_to_temp_table
 
       def copy_results_to_table
-        log.append 'copy_results_to_table()'
+        log.append_and_store 'copy_results_to_table()'
         # 'InternalGeocoder::copy_results_to_table'
         CartoDB::Importer2::QueryBatcher.new(
             connection,
@@ -145,6 +145,12 @@ module CartoDB
 
       def name
         'internal'
+      end
+
+      def change_status(status)
+        @status = status
+        @geocoding_model.state = status
+        @geocoding_model.save
       end
     end
   end

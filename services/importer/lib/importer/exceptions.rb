@@ -48,6 +48,18 @@ module CartoDB
       end
     end
 
+    class CartoDBfyError < BaseImportError
+      def initialize(message="Error CartoDBFying table")
+        super(message, 2010)
+      end
+    end
+
+    class CartoDBfyInvalidID < BaseImportError
+      def initialize(message="Invalid cartodb_id")
+        super(message, 2011)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -78,6 +90,7 @@ module CartoDB
     class NotFoundDownloadError                 < DownloadError; end
     class UnauthorizedDownloadError             < DownloadError; end
     class CouldntResolveDownloadError           < DownloadError; end
+    class PartialDownloadError                  < DownloadError; end
 
     class TooManyNodesError                     < StandardError; end
     class NotAFileError                         < StandardError; end
@@ -103,6 +116,7 @@ module CartoDB
       NotFoundDownloadError                 => 1100,
       UnauthorizedDownloadError             => 1101,
       CouldntResolveDownloadError           => 1102,
+      PartialDownloadError                  => 1103,
 
       UnsupportedFormatError                => 1002,
       ExtractionError                       => 1003,

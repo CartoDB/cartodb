@@ -59,7 +59,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
           render_jsonp CartoDB::LayerModule::Presenter.new(@layer, viewer_user: current_user).to_poro
         else
-          CartoDB::Logger.info "Error on layers#create", @layer.errors.full_messages
+          CartoDB::StdoutLogger.info "Error on layers#create", @layer.errors.full_messages
           render_jsonp({ description: @layer.errors.full_messages,
                          stack: @layer.errors.full_messages
                         }, 400)

@@ -115,7 +115,7 @@ describe Carto::Api::UserPresenter do
     #new_data.should eq old_data
 
     # To detect deltas not migrated to new presenter
-    new_data.keys.should == old_data.keys
+    new_data.keys.sort.should == old_data.keys.sort
 
     new_data[:id].should == old_data[:id]
     new_data[:email].should == old_data[:email]
@@ -141,6 +141,8 @@ describe Carto::Api::UserPresenter do
     new_data[:api_calls_block_price].should == old_data[:api_calls_block_price]
     new_data[:geocoding].should == old_data[:geocoding]
     new_data[:here_isolines].should == old_data[:here_isolines]
+    new_data[:obs_snapshot].should == old_data[:obs_snapshot]
+    new_data[:obs_general].should == old_data[:obs_general]
     new_data[:twitter].should == old_data[:twitter]
     new_data[:billing_period].should == old_data[:billing_period]
     new_data[:max_layers].should == old_data[:max_layers]
@@ -158,7 +160,7 @@ describe Carto::Api::UserPresenter do
     new_data[:base_url].should == old_data[:base_url]
 
     if org_user
-      new_data[:organization].keys.should == old_data[:organization].keys
+      new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
 
       # This is an implicit test of OrganizationPresenter...
       # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
@@ -178,11 +180,15 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:quota_in_bytes].should == old_data[:organization][:quota_in_bytes]
       new_data[:organization][:geocoding_quota].should == old_data[:organization][:geocoding_quota]
       new_data[:organization][:here_isolines_quota].should == old_data[:organization][:here_isolines_quota]
+      new_data[:organization][:obs_snapshot_quota].should == old_data[:organization][:obs_snapshot_quota]
+      new_data[:organization][:obs_general_quota].should == old_data[:organization][:obs_general_quota]
       new_data[:organization][:map_view_quota].should == old_data[:organization][:map_view_quota]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
       new_data[:organization][:here_isolines_block_price].should == old_data[:organization][:here_isolines_block_price]
+      new_data[:organization][:obs_snapshot_block_price].should == old_data[:organization][:obs_snapshot_block_price]
+      new_data[:organization][:obs_general_block_price].should == old_data[:organization][:obs_general_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
       new_data[:organization][:location].should == old_data[:organization][:location]

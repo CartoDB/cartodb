@@ -8,13 +8,13 @@ require_relative 'exceptions'
 module Carto
   class TableGeocoderFactory
 
-    def self.get(user, cartodb_geocoder_config, table_service, params = {})
+    def self.get(user, geocoding_model, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
       user.db_service.reset_pooled_connections
       log = params.fetch(:log)
-      log.append 'TableGeocoderFactory.get()'
-      log.append "params: #{params.select{|k| k != :log}.to_s}"
+      log.append_and_store 'TableGeocoderFactory.get()'
+      log.append_and_store "params: #{params.select{ |k| k != :log }}"
 
       if user == table_service.owner
         user_connection = user.in_database
@@ -53,11 +53,13 @@ module Carto
         geocoder_class = CartoDB::InternalGeocoder::Geocoder
       end
 
-      instance_config.merge!(usage_metrics: get_geocoder_metrics_instance(user))
+      instance_config[:usage_metrics] = get_geocoder_metrics_instance(user)
+      instance_config[:log] = log
+      instance_config[:geocoding_model] = geocoding_model
 
-      log.append "geocoder_class = #{geocoder_class.to_s}"
+      log.append_and_store "geocoder_class = #{geocoder_class}"
       instance = geocoder_class.new(instance_config)
-      log.append "geocoder_type = #{instance.name}"
+      log.append_and_store "geocoder_type = #{instance.name}"
       instance
     end
 

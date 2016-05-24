@@ -23,8 +23,23 @@ module LoginHelper
     !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
   end
 
-  def login_org_avatar
-    @organization && @organization.name != "team" && !@organization.avatar_url.blank?
+  def render_organization_avatar
+    brand_path = image_path("layout/sessions/brand.png")
+
+    if @organization && @organization.name != 'team' && @organization.avatar_url.present?
+      avatar_url = @organization.avatar_url.sub(/^https?\:/, '')
+      "<picture class=\"Navbar-brand\">
+        <img src=\"#{avatar_url}\" alt=\"#{@organization.name}\" height=\"48\" />
+      </picture>
+      <sup>
+        <img src=\"#{brand_path}\" alt=\"CartoDB\" height=\"26\" width=\"26\">
+      </sup>".html_safe
+    else
+      "<picture class=\"Navbar-brand\">
+        <source type='image/svg+xml' srcset=\"#{brand_path}\">
+        <img src=\"#{brand_path}\" alt='CartoDB' height=\"48\" width=\"48\" />
+      </picture>".html_safe
+    end
   end
 
   def forget_password_url

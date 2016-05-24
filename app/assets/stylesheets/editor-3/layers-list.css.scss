@@ -1,0 +1,216 @@
+// Styles for Layer List
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-ListLayer-item {
+  width: auto;
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+  background: #FFF;
+}
+.Editor-ListLayer-item:hover {
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
+}
+.Editor-ListLayer-item.last-child {
+  margin-bottom: 0;
+}
+.Editor-ListLayer-item.is-active {
+  border: 1px solid rgb(106, 181, 227);
+}
+.Editor-ListLayer-item.ui-draggable {
+  cursor: move;
+}
+.Editor-ListLayer-item.ui-draggable-dragging:hover {
+  border: 1px solid rgba($cBlue, 0.48);
+  box-shadow: 0 8px 16px rgba(#000, 0.16);
+  cursor: move;
+  opacity: 0.8;
+  z-index: 1000;
+}
+.Editor-ListLayer-dragIcon {
+  @include transition(opacity, 200ms, ease-in);
+  position: absolute;
+  top: 28px;
+  left: -20px;
+  opacity: 0;
+}
+.Editor-ListLayer-item:hover .Editor-ListLayer-dragIcon {
+  opacity: 1;
+}
+
+.Editor-ListLayer-media {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 40px;
+  height: 40px;
+  border-radius: $baseSize / 2;
+}
+.Editor-ListLayer-media--basemap {
+  border: 1px solid $cMainLine;
+}
+
+.Editor-ListLayer-media.is-hide {
+  opacity: 0.24;
+}
+
+.Editor-ListLayer-title {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.Editor-ListLayer-titleText {
+  @include flex(1);
+  width: 0;
+  padding-right: $baseSize * 2;
+  cursor: pointer;
+}
+
+.Editor-ListAnalysis {
+  position: relative;
+  margin-top: 16px;
+}
+.Editor-ListAnalysis:empty {
+  display: none;
+}
+
+.Editor-ListAnalysis::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  width: 1px;
+  background: $cMainLine;
+  content: '';
+}
+
+.Editor-ListAnalysis-item {
+  @include display-flex();
+  @include align-items(center);
+  position: relative;
+  margin-bottom: 8px;
+  background: #FFF;
+}
+.Editor-ListAnalysis-item.has-error {
+  &::after {
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
+
+.Editor-ListAnalysis-item:last-child {
+  margin-bottom: 0;
+}
+.Editor-ListAnalysis-item.is-analysis {
+  display: block;
+  margin-right: 0;
+}
+.Editor-ListAnalysis-item.ui-draggable-dragging {
+  width: 100%;
+  cursor: move;
+  z-index: 1000;
+}
+
+.Editor-ListAnalysis-inner {
+  @include display-flex();
+  width: calc(100% + 8px);
+  margin: 0 -4px;
+}
+.Editor-ListAnalysis-inner .Editor-ListAnalysis-item {
+  @include flex(1);
+  max-width: calc(100% - 14px);
+}
+
+.Editor-ListAnalysis-innerItem {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+  margin: 0 $halfBaseSize;
+  background: $cWhite;
+}
+.Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
+  max-width: calc(50% - 8px);
+}
+
+.Editor-ListAnalysis-layer {
+  padding-right: 12px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+  &:hover {
+    @include transition(border, 200ms, ease-in);
+    border: 1px solid $cHoverLine;
+    cursor: pointer;
+  }
+}
+.Editor-ListAnalysis-layer.is-base {
+  background: $cThirdBackground;
+  &:hover {
+    border: 1px solid $cSecondaryLine;
+    cursor: default;
+  }
+}
+
+.Editor-ListAnalysis-itemInfo {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 40px;
+  min-width: 40px;
+  height: 32px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  border-top-left-radius: $halfBaseSize;
+  border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-title {
+  width: 100%;
+  padding-right: 12px;
+}
+
+.Editor-ListAnalysis-error {
+  width: 6px;
+  min-width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $cError;
+}
+
+.Editor-ListLayer-itemHeader {
+  @include display-flex();
+  @include flex(1);
+  @include align-items(center);
+}
+
+.Editor-ListLayer-inner {
+  @include flex(1);
+}
+
+.Editor-dropArea {
+  width: 100%;
+  height: 100px;
+  margin: 10px 0 0;
+  transition: opacity 200ms ease;
+  border-radius: $halfBaseSize;
+  opacity: 0;
+}
+
+.Editor-dropArea.is-active {
+  background: $cSecondaryBackground;
+  opacity: 1;
+}

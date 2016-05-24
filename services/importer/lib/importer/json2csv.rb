@@ -6,12 +6,12 @@ module CartoDB
     class Json2Csv
       def self.supported?(extension)
         extension == '.json'
-      end #self.supported?
+      end
 
       def initialize(filepath, job=nil, logger=nil)
         @filepath = filepath
         @job      = job || Job.new({logger: logger})
-      end #initialize
+      end
 
       def run
         data = parse(filepath)
@@ -19,28 +19,30 @@ module CartoDB
         File.open(converted_filepath, 'w') { |file| file.write csv_from(data) }
         job.log 'Converting JSON to CSV'
         self
-      end #run
+      rescue
+        raise InvalidGeoJSONError.new(@job.logger)
+      end
 
       def csv_from(data)
         [csv_header_from(data), csv_rows_from(data)].join("\n")
-      end #csv_for
+      end
 
       def csv_header_from(data)
         data.first.keys.join(',')
-      end #csv_header_from
+      end
 
       def csv_rows_from(data)
         data.map { |row| transform(row) }.join("\n")
-      end #csv_rows_from
+      end
 
       def transform(row)
         row.values.map { |value| value.to_s.gsub(/,/, '').gsub(/"/, "\"") }
           .join(',')
-      end #transform
+      end
 
       def complex?(data)
         data.first.is_a?(Array)
-      end #complex?
+      end
 
       def converted_filepath
         return filepath if complex?(parse(filepath))
@@ -48,7 +50,7 @@ module CartoDB
           File.dirname(filepath),
           File.basename(filepath, File.extname(filepath))
         ) + '.csv'
-      end #converted_filepath
+      end
 
       def parse(filepath)
         return {} unless File.exists?(filepath)
@@ -56,12 +58,12 @@ module CartoDB
         data  = ::JSON.parse(file.read.force_encoding('UTF-8'))
         file.close
         data
-      end #parse
+      end
 
       private
 
       attr_reader :filepath, :job
-    end # Json2Csv
-  end # Imporer2
-end # CartoDB
+    end
+  end
+end
 

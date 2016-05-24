@@ -4,7 +4,7 @@
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <% unless cartodb_com_hosted? %>
-      <li class="Footer-listItem"><a class="Footer-listLink" href="http://cartodb.com/gallery/">Gallery</a></li>
+      <li class="Footer-listItem"><a class="Footer-listLink" href="https://cartodb.com/gallery/">Gallery</a></li>
       <li class="Footer-listItem"><a class="Footer-listLink" href="http://docs.cartodb.com/tutorials.html">Getting started</a></li>
       <% end %>
       <% unless cartodb_onpremise_version.blank? %>
@@ -12,11 +12,11 @@
       <% end %>
     </ul>
     <% if cartodb_com_hosted? %>
-        <a class="Footer-logo Logo Logo--grey" href="<%= root_url %>">
+        <a class="Footer-logo Logo Logo--grey" href="<%= CartoDB.url(self, 'root') %>">
           <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
         </a>
     <% else %>
-        <a class="Footer-logo Logo Logo--grey" href="http://cartodb.com">
+        <a class="Footer-logo Logo Logo--grey" href="https://cartodb.com">
           <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
         </a>
     <% end %>

@@ -67,7 +67,9 @@ module Concerns
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
-          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price]
+          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
+          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+          :obs_general_block_price]
         when :update
           [:seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -75,24 +77,30 @@ module Concerns
           :twitter_datasource_enabled, :twitter_datasource_block_size,
           :twitter_datasource_block_price, :twitter_datasource_quota,
           :google_maps_key, :google_maps_private_key, :auth_username_password_enabled,
-          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price]
+          :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
+          :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
+          :obs_general_block_price]
         end
       elsif self.is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
-        :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
-        :geocoding_block_price, :geocoding_quota, :map_view_block_price,
-        :map_view_quota, :max_layers, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
-        :name, :notification, :organization_id,
-        :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
-        :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
-        :user_timeout, :username, :website, :soft_geocoding_limit,
-        :twitter_datasource_enabled, :twitter_datasource_block_size,
-        :twitter_datasource_block_price, :twitter_datasource_quota,
-        :soft_twitter_datasource_limit,
-        :google_sign_in, :last_password_change_date,
-        :google_maps_key, :google_maps_private_key,
-        :arcgis_datasource_enabled,
-        :private_maps_enabled, :here_isolines_quota, :here_isolines_block_price, :soft_here_isolines_limit]
+         :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
+         :geocoding_block_price, :geocoding_quota, :map_view_block_price,
+         :map_view_quota, :max_layers, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
+         :name, :notification, :organization_id,
+         :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
+         :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
+         :user_timeout, :username, :website, :soft_geocoding_limit,
+         :twitter_datasource_enabled, :twitter_datasource_block_size,
+         :twitter_datasource_block_price, :twitter_datasource_quota,
+         :soft_twitter_datasource_limit,
+         :google_sign_in, :last_password_change_date,
+         :google_maps_key, :google_maps_private_key,
+         :arcgis_datasource_enabled,
+         :private_maps_enabled, :here_isolines_quota, :here_isolines_block_price, :soft_here_isolines_limit,
+         :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
+         :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
+         :mobile_xamarin, :mobile_custom_watermark, :mobile_offline_maps,
+         :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users]
       end
     end
 
@@ -116,7 +124,8 @@ module Concerns
           :twitter_datasource_enabled, :soft_twitter_datasource_limit,
           :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date,
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
-          :soft_here_isolines_limit
+          :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
+          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit
         )
         case action
         when :create

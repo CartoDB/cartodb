@@ -5,7 +5,7 @@ defaults: &defaults
   #  https:            "https.cdn.host"
   http_client_logs: true
   ogr2ogr:
-    binary:           'which ogr2ogr2'
+    binary:           'which ogr2ogr2.1'
     csv_guessing:     false
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
@@ -58,8 +58,7 @@ defaults: &defaults
     primary:          ''
     embeds:           ''
     domain:           ''
-  rollbar:
-    token: ''
+  rollbar_api_key: ''
   tumblr:
     api_key: ''
   trackjs:
@@ -90,6 +89,8 @@ defaults: &defaults
         connect_dataset: ''
         create_map: ''
         export_table: ''
+        export_map: ''
+        export_public_map: ''
         select_wms: ''
         color_basemap: ''
         pattern_basemap: ''
@@ -171,6 +172,15 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+  exporter:
+    exporter_temporal_folder: '/tmp/exporter'
+    s3:
+      access_key_id: ''
+      secret_access_key: ''
+      bucket_name: ''
+      url_ttl: 7200
+      async_long_uploads: false
+    uploads_path: 'public/uploads'
   importer:
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding
@@ -245,6 +255,7 @@ defaults: &defaults
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
+    gravatar_enabled: true
     base_url: 'example.com/avatars'
     kinds: ['stars', 'mountains']
     colors: ['red', 'blue']
@@ -271,7 +282,7 @@ defaults: &defaults
       application_name:     ''
       client_id:            ''
       client_secret:        ''
-      callback_url:         'http://cartodb.com'
+      callback_url:         'https://cartodb.com'
     google_plus:
       client_id: ''
       cookie_policy: 'single_host_origin'
@@ -330,7 +341,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron'
         className: 'positron_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
       dark_matter_rainbow_labels:
@@ -340,7 +351,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter'
         className: 'dark_matter_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
       positron_rainbow:
@@ -350,7 +361,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (labels below)'
         className: 'positron_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
       dark_matter_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -358,7 +369,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (labels below)'
         className: 'dark_matter_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
       positron_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -366,7 +377,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (lite)'
         className: 'positron_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
       dark_matter_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -374,7 +385,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (lite)'
         className: 'dark_matter_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
       eco_cartodb:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -461,6 +472,7 @@ defaults: &defaults
   overviews:
     min_rows: 2000000
     statement_timeout: 1800000
+    tolerance_px: 1.0
 
 development:
   <<: *defaults

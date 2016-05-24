@@ -1,7 +1,7 @@
 # What is CartoDB?
 
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
-[![Build Status](http://travis-ci.org/CartoDB/cartodb.png)](http://travis-ci.org/CartoDB/cartodb)
+[![Build Status](http://travis-ci.org/CartoDB/cartodb.png?branch=master)](http://travis-ci.org/CartoDB/cartodb)
 
 CartoDB is an open source tool that allows for the storage and
 visualization of geospatial data on the web.
@@ -9,7 +9,7 @@ visualization of geospatial data on the web.
 It was built to make it easier for people to tell their stories by
 providing them with flexible and intuitive ways to create maps and design
 geospatial applications. CartoDB can be installed on your own server
-and we also offer a hosted service at [cartodb.com](http://cartodb.com).
+and we also offer a hosted service at [cartodb.com](https://cartodb.com).
 
 If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.

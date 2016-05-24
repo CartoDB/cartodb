@@ -9,6 +9,8 @@ module CartoDB
       organization.quota_in_bytes =   attributes[:quota_in_bytes] || 100.megabytes
       organization.geocoding_quota =  attributes[:geocoding_quota] || 1000
       organization.here_isolines_quota =    attributes[:here_isolines_quota] || 1000
+      organization.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
+      organization.obs_general_quota = attributes[:obs_general_quota] || 1000
       organization.map_view_quota =   attributes[:map_view_quota] || 100000
       organization.website =          attributes[:website] || 'cartodb.com'
       organization.description =      attributes[:description] || 'Lorem ipsum dolor sit amet'

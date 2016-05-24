@@ -21,14 +21,9 @@ class Api::Json::TablesController < Api::ApplicationController
       begin
         @table = ::Table.new
         @table.user_id = current_user.id
-        if params[:name]
-          @table.name = params[:name]
-        else
-          @table.name = ::Table.get_valid_table_name('', {
-              connection:       current_user.in_database,
-              database_schema:  current_user.database_schema
-          })
-        end
+
+        @table.name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(params[:name])
+
         @table.description    = params[:description]   if params[:description]
         @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
         @table.force_schema   = params[:schema]        if params[:schema]
@@ -42,13 +37,13 @@ class Api::Json::TablesController < Api::ApplicationController
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
 
-          custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                               'type' => @table.table_visualization.type,  
-                               'vis_id' => @table.table_visualization.id, 
-                               'origin' => 'blank'}
+          custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                                'type' => @table.table_visualization.type,
+                                'vis_id' => @table.table_visualization.id,
+                                'origin' => 'blank' }
           Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
         else
-          CartoDB::Logger.info 'Error on tables#create', @table.errors.full_messages
+          CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
           render_jsonp( { :description => @table.errors.full_messages,
                           :stack => @table.errors.full_messages
                         }, 400)
@@ -109,10 +104,10 @@ class Api::Json::TablesController < Api::ApplicationController
           render_jsonp({ :errors => @table.errors.full_messages}, 400)
         end
       rescue => e
-        CartoDB::Logger.info e.class.name, e.message
+        CartoDB::StdoutLogger.info e.class.name, e.message
         render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
+        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
         render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
       rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
         render_jsonp({ errors: { named_map: exception } }, 400)
@@ -131,9 +126,9 @@ class Api::Json::TablesController < Api::ApplicationController
           return head(403) unless @table.table_visualization.is_owner?(current_user)
         end
 
-        custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                             'type' => @table.table_visualization.type,  
-                             'vis_id' => @table.table_visualization.id}
+        custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                              'type' => @table.table_visualization.type,
+                              'vis_id' => @table.table_visualization.id }
 
         @stats_aggregator.timing('delete') do
           @table.destroy
@@ -143,7 +138,7 @@ class Api::Json::TablesController < Api::ApplicationController
 
         head :no_content
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::Logger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
+        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
         render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
       rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
         render_jsonp({ errors: { named_map: exception } }, 400)

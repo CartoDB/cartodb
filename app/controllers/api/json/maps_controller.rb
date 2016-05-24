@@ -3,6 +3,7 @@
 require_relative '../../../models/visualization/collection'
 
 class Api::Json::MapsController < Api::ApplicationController
+  include Carto::UUIDHelper
 
   ssl_required :update
 
@@ -20,12 +21,12 @@ class Api::Json::MapsController < Api::ApplicationController
         unless updated == false
           render_jsonp(@map.public_values)
         else
-          CartoDB::Logger.info "Error on maps#update", @map.errors.full_messages
+          CartoDB::StdoutLogger.info "Error on maps#update", @map.errors.full_messages
           render_jsonp({ :description => @map.errors.full_messages,
             :stack => @map.errors.full_messages}, 400)
         end
       rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::Logger.info("Communication error with tiler API. HTTP Code: #{exception.message}",
+        CartoDB::StdoutLogger.info("Communication error with tiler API. HTTP Code: #{exception.message}",
           exception.template_data)
         render_jsonp({ errors: {
             named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}"
@@ -42,12 +43,14 @@ class Api::Json::MapsController < Api::ApplicationController
   protected
 
   def load_map
+    raise RecordNotFound unless is_uuid?(params[:id])
+
     # User must be owner or have permissions for the map's visualization
     vis = CartoDB::Visualization::Collection.new.fetch(
         user_id:        current_user.id,
         map_id:         params[:id],
         exclude_raster: true
-    )
+    ).first
     raise RecordNotFound if vis.nil?
 
     @map = ::Map.filter(id: params[:id]).first

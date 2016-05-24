@@ -1,6 +1,9 @@
+require 'helpers/unique_names_helper'
+
 module CartoDB
   @default_test_user = nil
   module Factories
+    include UniqueNamesHelper
     def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
@@ -40,8 +43,8 @@ module CartoDB
 
       attributes = attributes.dup
       user = user_class.new
-      user.username              = attributes[:username] || String.random(5).downcase
-      user.email                 = attributes[:email]    || String.random(5).downcase + '@' + String.random(5).downcase + '.com'
+      user.username              = attributes[:username] || unique_name('user')
+      user.email                 = attributes[:email]    || unique_email
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
       user.admin                 = attributes[:admin] == false ? false : true
@@ -60,6 +63,10 @@ module CartoDB
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
       user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
+      user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
+      user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
+      user.obs_general_quota = attributes[:obs_general_quota] || 1000
+      user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       if attributes[:organization_id]
@@ -90,7 +97,7 @@ module CartoDB
     end
 
     def create_owner(organization)
-      org_user_owner = create_test_user("o#{random_username}")
+      org_user_owner = create_test_user(unique_name('user'))
       user_org = CartoDB::UserOrganization.new(organization.id, org_user_owner.id)
       user_org.promote_user_to_admin
       organization.reload
@@ -99,7 +106,7 @@ module CartoDB
     end
 
     def create_test_user(username = nil, organization = nil)
-      username ||= "test#{rand(999999)}-1"
+      username ||= unique_name('user')
       user = create_user(
         username: username,
         email: "#{username}@example.com",

@@ -8,6 +8,7 @@ require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
+require_dependency 'carto/ghost_tables_manager'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
@@ -68,7 +69,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
+    unless @visualization.has_write_permission?(current_user)
       if request.original_fullpath =~ %r{/tables/}
         return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
       else
@@ -99,7 +100,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     if @visualization.organization?
-      unless current_user and @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      unless current_user && @visualization.has_read_permission?(current_user)
         return(embed_forbidden)
       end
     end
@@ -122,7 +123,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @api_key = nil
     @can_copy = false
 
-    if current_user && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.has_read_permission?(current_user)
       if @visualization.organization?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
@@ -201,7 +202,7 @@ class Admin::VisualizationsController < Admin::AdminController
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
     if current_user && @visualization.organization? &&
-        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+       @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
     # Legacy redirect, now all public pages also with org. name
@@ -439,15 +440,11 @@ class Admin::VisualizationsController < Admin::AdminController
   private
 
   def link_ghost_tables
-    return true unless current_user.present?
+    return unless current_user.has_feature_flag?('ghost_tables')
 
-    if current_user.search_for_modified_table_names && current_user.has_feature_flag?('ghost_tables')
-      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
-      # test if there is a job already for this
-      if !current_user.link_ghost_tables_working
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
-      end
-    end
+    # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+    # or asynchronously otherwise.
+    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
   end
 
   def user_metadata_propagation
@@ -485,13 +482,13 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def org_user_has_map_permissions?(user, visualization)
     user && visualization && visualization.organization? &&
-      visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
+      visualization.has_read_permission?(user)
   end
 
   def resolve_visualization_and_table
     filters = { exclude_raster: true }
     @visualization, @table =
-      get_visualization_and_table(@table_id, @schema || CartoDB.extract_subdomain(request), filters)
+      get_visualization_and_table(@table_id, username_from_schema || CartoDB.extract_subdomain(request), filters)
     if @visualization && @visualization.user
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
@@ -539,6 +536,10 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
     url
+  end
+
+  def username_from_schema
+    (@schema && @schema != 'public') ? @schema : nil
   end
 
   def table_and_schema_from_params
@@ -615,9 +616,13 @@ class Admin::VisualizationsController < Admin::AdminController
   def get_visualization_and_table(table_id, schema, filter)
     user = Carto::User.where(username: schema).first
     # INFO: organization public visualizations
-    user_id = user ? user.id : nil
-
-    visualization = get_priority_visualization(table_id, user_id)
+    if user
+      visualization = get_priority_visualization(table_id, user_id: user.id)
+    else
+      organization = Carto::Organization.where(name: schema).first
+      organization_id = organization.id unless organization.nil?
+      visualization = get_priority_visualization(table_id, organization_id: organization_id)
+    end
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?
     render_pretty_404 if visualization.kind == CartoDB::Visualization::Member::KIND_RASTER

@@ -11,7 +11,6 @@ describe Carto::Widget do
       loaded_widget.title.should == widget.title
       loaded_widget.layer.should == widget.layer
       loaded_widget.options.should == widget.options
-      loaded_widget.options_json.should == JSON.parse(widget.options).symbolize_keys
       widget.destroy
     end
 
@@ -33,7 +32,7 @@ describe Carto::Widget do
       end
 
       it 'triggers notify_map_change on related map(s)' do
-        map = mock()
+        map = mock
         map.stubs(:id).returns(@map.id)
         map.expects(:notify_map_change).twice
         Map.stubs(:where).with(id: map.id).returns([map])
@@ -46,7 +45,7 @@ describe Carto::Widget do
 
   describe 'Format and validation' do
     before(:each) do
-      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' }.to_json)
+      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
     end
 
     it 'validates correct options format' do

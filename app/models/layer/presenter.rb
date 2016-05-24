@@ -19,6 +19,7 @@ module CartoDB
         torque-steps
         torque-blend-mode
         query
+        source
         tile_style
         named_map
         visible
@@ -195,14 +196,19 @@ module CartoDB
         if options[:full]
           decorate_with_data(layer.options, @decoration_data)
         else
-          sql = sql_from(layer.options)
           data = {
-            sql:                wrap(sql, layer.options),
             layer_name:         name_for(layer),
             cartocss:           css_from(layer.options),
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
+          source = layer.options['source']
+          if options[:for_named_map] && source
+            data[:source] = { id: source }
+          else
+            data[:sql] = wrap(sql_from(layer.options), layer.options)
+          end
+
           data = decorate_with_data(data, @decoration_data)
 
           viewer = options[:viewer_user]
@@ -248,8 +254,12 @@ module CartoDB
       def default_query_for(layer_options)
         if options[:viewer_user]
           unless layer_options['user_name'] == options[:viewer_user].username
-            name = layer_options['user_name'].include?('-') ?
-              "\"#{layer_options['user_name']}\"" : layer_options['user_name']
+            name = if layer_options['user_name'] && layer_options['user_name'].include?('-')
+                     "\"#{layer_options['user_name']}\""
+                   else
+                     layer_options['user_name']
+                   end
+
             return "select * from #{name}.#{layer_options['table_name']}"
           end
         end
@@ -269,4 +279,3 @@ module CartoDB
     end
   end
 end
-

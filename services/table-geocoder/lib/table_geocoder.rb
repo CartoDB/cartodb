@@ -22,32 +22,36 @@ module CartoDB
       @remote_id   = arguments[:remote_id]
       @max_rows    = arguments.fetch(:max_rows)
       @usage_metrics = arguments.fetch(:usage_metrics)
+      @log = arguments.fetch(:log)
+      @geocoding_model = arguments.fetch(:geocoding_model)
       @cache       = CartoDB::GeocoderCache.new(
         connection:  connection,
         formatter:   clean_formatter,
         sql_api:     arguments[:cache],
-        working_dir: working_dir,
+        working_dir: @working_dir,
         table_name:  table_name,
         qualified_table_name: @qualified_table_name,
         max_rows:    @max_rows,
-        usage_metrics: @usage_metrics
+        usage_metrics: @usage_metrics,
+        log: @log
       )
-    end # initialize
+    end
 
     def run
       ensure_georef_status_colummn_valid
+      @number_of_rows_pre_cache = calculate_number_of_rows
       cache.run unless cache_disabled?
       @csv_file = generate_csv()
       geocoder.run
-      self.remote_id = geocoder.request_id
-      process_results if geocoder.status == 'completed'
-      cache.store unless cache_disabled?
+      # Sync state because cancel is made synchronous
+      @geocoding_model.refresh
+      if not @geocoding_model.cancelled?
+        process_results if @geocoding_model.state == 'completed'
+        cache.store unless cache_disabled?
+      end
     ensure
-      total_requests = geocoder.successful_processed_rows + geocoder.empty_processed_rows + geocoder.failed_processed_rows
-      @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
-      @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
+      self.remote_id = @geocoding_model.remote_id
+      update_metrics unless @geocoding_model.cancelled?
     end
 
     # TODO: make the geocoders update status directly in the model
@@ -57,6 +61,9 @@ module CartoDB
     end
 
     def cancel
+      # We have to be sure the cartodb_georef_status column exists
+      ensure_georef_status_colummn_valid
+      @number_of_rows_pre_cache = calculate_number_of_rows
       geocoder.cancel
     end
 
@@ -91,16 +98,27 @@ module CartoDB
     private
 
     def geocoder
-      @geocoder ||= CartoDB::HiresGeocoderFactory.get(csv_file, working_dir)
+      @geocoder ||= CartoDB::HiresGeocoderFactory.get(@csv_file, @working_dir, @log, @geocoding_model,
+                                                      @number_of_rows_pre_cache)
     end
 
     def cache_disabled?
       GeocoderConfig.instance.get['disable_cache'] || false
     end
 
+    def calculate_number_of_rows
+      rows = connection.fetch(%Q{
+        SELECT count(DISTINCT(#{clean_formatter}))
+        FROM #{@qualified_table_name}
+        WHERE cartodb_georef_status IS NULL OR cartodb_georef_status IS FALSE
+        LIMIT #{@max_rows}
+      }).first
+      rows[:count]
+    end
+
     # Generate a csv input file from the geocodable rows
     def generate_csv
-      csv_file = File.join(working_dir, "wadus.csv")
+      csv_file = File.join(@working_dir, "wadus.csv")
       # INFO: we exclude inputs too short and "just digits" inputs, which will remain as georef_status = false
       query = %Q{
         WITH geocodable AS (
@@ -127,9 +145,9 @@ module CartoDB
 
     def deflate_results
       current_directory = Dir.pwd
-      Dir.chdir(working_dir)
+      Dir.chdir(@working_dir)
       out = `unp *.zip 2>&1`
-      out = `unp #{working_dir}/*_out.zip 2>&1`
+      out = `unp #{@working_dir}/*_out.zip 2>&1`
     ensure
       Dir.chdir(current_directory)
     end
@@ -176,8 +194,15 @@ module CartoDB
     end
 
     def deflated_results_path
-      Dir[File.join(working_dir, '*_out.txt')][0]
+      Dir[File.join(@working_dir, '*_out.txt')][0]
     end
 
-  end # Geocoder
-end # CartoDB
+    def update_metrics
+      total_requests = geocoder.successful_processed_rows + geocoder.empty_processed_rows + geocoder.failed_processed_rows
+      @usage_metrics.incr(:geocoder_here, :success_responses, geocoder.successful_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :empty_responses, geocoder.empty_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :failed_responses, geocoder.failed_processed_rows)
+      @usage_metrics.incr(:geocoder_here, :total_requests, total_requests)
+    end
+  end
+end

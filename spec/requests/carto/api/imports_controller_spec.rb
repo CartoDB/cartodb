@@ -3,8 +3,10 @@
 require_relative '../../../spec_helper'
 require_relative '../../api/json/imports_controller_shared_examples'
 require_relative '../../../../app/controllers/carto/api/imports_controller'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::ImportsController do
+  include UniqueNamesHelper
   it_behaves_like 'imports controllers' do
   end
 
@@ -252,7 +254,7 @@ describe Carto::Api::ImportsController do
   describe 'list_files_for_service' do
 
     def fake_item_data(datasource_name = 'fake_datasource')
-      id = rand(1000)
+      id = unique_integer
       {
         id:       id,
         title:    "title_#{id}",

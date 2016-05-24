@@ -22,22 +22,25 @@ module Carto
           order: Carto::Widget.where(layer_id: @layer_id).count + 1,
           type: params[:type],
           title: params[:title],
-          options: params[:options].to_json)
+          options: params[:options],
+          source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue => e
-        CartoDB.report_exception(e, "Error creating widget", { widget: (widget ? widget : 'not created'), request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500
       end
 
       def update
-        @widget.update_attributes(params.slice(:order, :type, :title))
-        @widget.options = params[:options].to_json if params[:options]
+        update_params = params.slice(:order, :type, :title)
+        update_params[:source_id] = source_id_from_params if source_id_from_params
+        @widget.update_attributes(update_params)
+        @widget.options = params[:options]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
-        CartoDB.report_exception(e, "Error updating widget", { widget: @widget, request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error updating widget", widget: @widget)
         render json: { errors: e.message }, status: 500
       end
 
@@ -45,7 +48,7 @@ module Carto
         @widget.destroy
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
-        CartoDB.report_exception(e, "Error destroying widget", { widget: @widget, request: request, user: current_user })
+        CartoDB::Logger.error(exception: e, message: "Error destroying widget", widget: @widget)
         render json: { errors: e.message }, status: 500
       end
 
@@ -75,6 +78,10 @@ module Carto
         end
 
         true
+      end
+
+      def source_id_from_params
+        params[:source] ? params[:source][:id] : nil
       end
 
       def load_widget

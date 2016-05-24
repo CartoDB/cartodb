@@ -22,13 +22,6 @@ module CartoDB
 
     def exists?(user, table_name)
       !table_klass.where(user_id: user.id, name: table_name).empty?
-    end 
-
-    def get_valid_table_name(table_name)
-      table_klass.get_valid_table_name(table_name, {
-          connection: user.in_database,
-          database_schema: user.database_schema
-        })
     end
 
     attr_reader :user, :table
@@ -56,4 +49,3 @@ module CartoDB
     end
   end # TableRegistrar
 end # CartoDB
-

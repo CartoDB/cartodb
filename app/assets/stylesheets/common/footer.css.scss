@@ -20,6 +20,9 @@
   padding: 0;
   box-shadow: none;
   overflow: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 .Footer-inner {
   margin-top: $sIcon-layout;
@@ -47,14 +50,24 @@
   text-align: center;
 }
 .Footer-columns {
-  padding-bottom: 60px;
+  padding-bottom: 20px;
   border-top: 1px solid #EEE;
+}
+.Footer-columns--footer {
+  padding-bottom: 60px;
+
+  @media (max-width: $sMedia-tablet) {
+    padding-bottom: 40px;
+  }
 }
 .Footer-columns--noBorder {
   border-top: 0;
 }
 .Footer-column {
-  padding-top: 60px;
+  padding-bottom: 40px;
+}
+.Footer-column--mobile {
+  border-top: 1px solid #EEE;
 }
 .Footer-columnTitle {
   margin-bottom: 12px;
@@ -66,8 +79,8 @@
 }
 .Footer-link {
   line-height: 28px;
-  color: #979EA1;
   transition: color 0.2s ease;
+  color: #3AA9E3;
 
   &:hover {
     color: #2E3C43;
@@ -102,10 +115,9 @@
 }
 .Newsletter {
   position: relative;
-  width: 85%;
 
   .hs-form {
-    margin-right: 0;
+    margin-right: 0 !important;
     padding-left: 0;
 
     .input {
@@ -114,33 +126,31 @@
     }
 
     .hs-input {
-      padding: 12px 80px 11px 16px;
-      border-radius: 23px;
+      padding-right: 88px;
     }
   }
 }
 .hs-newsletter {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  bottom: 3px;
-  width: 71px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100px;
   border: 0;
-  font: 400 12px Lato, sans-serif;
-  text-transform: uppercase;
-  background: #FFF;
-  color: #3AA9E3;
-  border-radius: 21px;
+  font: 400 13px Lato, sans-serif;
+  background: #3AA9E3;
+  color: #FFF;
+  border-radius: 0 4px 4px 0;
   transition: all .15s;
   cursor: pointer;
   outline: none;
+  text-transform: none;
 
   &:hover {
     background: darken(#3AA9E3, 5%);
     color: #FFF;
   }
 }
-
 @media only screen and (max-width: $sMedia-mobile) {
   .Footer-inner .Footer-logo {
     position: absolute;

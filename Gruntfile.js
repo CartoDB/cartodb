@@ -72,7 +72,9 @@
     grunt.loadNpmTasks('grunt-available-tasks');
 
     // Load Grunt tasks
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt, {
+      pattern: ['grunt-*', '@*/grunt-*', '!grunt-timer']
+    });
 
     require('./lib/build/tasks/manifest').register(grunt, ASSETS_DIR);
 
@@ -91,16 +93,28 @@
 
     grunt.registerTask('invalidate', "invalidate cache", function() {
       var done = this.async();
-      var cmd = grunt.template.process("curl -H 'Fastly-Key: <%= aws.FASTLY_API_KEY %>' -X POST 'https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'");
-      console.log(cmd);
-      require("child_process").exec(cmd, function(error, stdout, stderr) {
-        if (!error) {
-          grunt.log.ok('CDN invalidated (fastly) -> ' + stdout);
+      var url = require('url');
+      var https = require('https');
+
+      var options = url.parse(grunt.template.process('https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'));
+      options['method'] = 'POST';
+      options['headers'] = {
+        'Fastly-Key': aws.FASTLY_API_KEY,
+        'Content-Length': '0' //Disables chunked encoding
+      };
+      console.log(options);
+
+      https.request(options, function(response) {
+        if(response.statusCode == 200) {
+          grunt.log.ok('CDN invalidated (fastly)');
         } else {
-          grunt.log.error('CDN not invalidated (fastly)');
+          grunt.log.error('CDN not invalidated (fastly), code: ' + response.statusCode)
         }
         done();
-      });
+      }).on('error', function(e) {
+        grunt.log.error('CDN not invalidated (fastly)');
+        done();
+      }).end();
     });
 
     grunt.registerTask('config', "generates assets config for current configuration", function() {
@@ -172,7 +186,8 @@
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
-    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:deep_insights', 'copy:cartodbjs_v4']);
+    grunt.registerTask('editor3', ['browserify:vendor_editor3', 'browserify:common_editor3', 'browserify:editor3', 'browserify:public_editor3']);
+    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:colorpicker', 'copy:deep_insights', 'copy:cartodbjs_v4']);
     grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);

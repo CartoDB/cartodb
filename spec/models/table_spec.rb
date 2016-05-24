@@ -43,7 +43,6 @@ describe Table do
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    CartoDB::Overlay::Member.any_instance.stubs(:can_store).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
     stub_named_maps_calls
@@ -116,7 +115,7 @@ describe Table do
 
     it "should not allow to create tables using system names" do
       table = create_table(name: "cdb_tablemetadata", user_id: @user.id)
-      table.name.should == "cdb_tablemetadata_1"
+      table.name.should == "cdb_tablemetadata_t"
     end
 
     it 'propagates name changes to table visualization' do
@@ -203,7 +202,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
           }
         }
       }
@@ -236,7 +235,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[0].order.should == 0
 
       Cartodb.config[:basemaps] = old_basemap_config
@@ -256,7 +255,7 @@ describe Table do
             "maxZoom" => "18",
             "name" => "Waduson",
             "className" => "waduson",
-            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>",
+            "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>",
             "labels" => {
               "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
             }
@@ -278,7 +277,7 @@ describe Table do
       table.map.layers[0].options["maxZoom"].should == "18"
       table.map.layers[0].options["name"].should == "Waduson"
       table.map.layers[0].options["className"].should == "waduson"
-      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[0].order.should == 0
 
       table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
@@ -288,7 +287,7 @@ describe Table do
       table.map.layers[2].options["maxZoom"].should == "18"
       table.map.layers[2].options["name"].should == "Waduson Labels"
       table.map.layers[2].options["className"].should be_nil
-      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"http://cartodb.com/attributions#basemaps\">CartoDB</a>"
+      table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://cartodb.com/attributions\">CartoDB</a>"
       table.map.layers[2].options["type"].should == "Tiled"
       table.map.layers[2].options["labels"].should be_nil
       table.map.layers[2].order.should == 2
@@ -671,7 +670,7 @@ describe Table do
       }.should_not raise_error
     end
 
-    it "can create a table called using a reserved postgresql word as its name" do
+    it "can't create a table using a reserved postgresql word as its name" do
       delete_user_data @user
       @user.private_tables_enabled = false
       @user.save
@@ -679,14 +678,14 @@ describe Table do
       table = create_table(name: 'as', user_id: @user.id)
 
       @user.in_database do |user_database|
-        user_database.table_exists?(table.name.to_sym).should be_true
+        user_database.table_exists?('as_t'.to_sym).should be_true
       end
 
       table.name = 'where'
       table.save
       table.reload
       @user.in_database do |user_database|
-        user_database.table_exists?('where'.to_sym).should be_true
+        user_database.table_exists?('where_t'.to_sym).should be_true
       end
     end
 
@@ -985,7 +984,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.4")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.3")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -1000,7 +999,7 @@ describe Table do
       pk_row1 = table.insert_row!(:name => 'Fernando Blat', :age => "29")
       table.rows_counted.should == 1
 
-      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "25.0")
+      pk_row2 = table.insert_row!(:name => 'Javi Jam', :age => "30.0")
       table.rows_counted.should == 2
 
       table.schema(:cartodb_types => false).should include([:age, "double precision"])
@@ -1264,7 +1263,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table.new(user_table: UserTable[data_import.table_id])
+      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
       table.should_not be_nil, "Import failure: #{data_import.log}"
       update_data = {:upo___nombre_partido=>"PSOEE"}
       id = 5
@@ -1282,7 +1281,7 @@ describe Table do
                                        :data_source   => '/../spec/support/data/elecciones2008.csv')
       data_import.run_import!
 
-      table = Table.new(user_table: UserTable[data_import.table_id])
+      table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
       table.should_not be_nil, "Import failure: #{data_import.log}"
 
       pk = nil
@@ -1453,26 +1452,29 @@ describe Table do
       cartodb_id_schema[:allow_null].should == false
     end
 
-    it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
-      data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
+    # Legacy test commented: Invalid data on cartodb_id will provoke an import failure and this behavior
+    # is tested in the data_import specs.
+    #
+    # it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
+    #   data_import = DataImport.create( :user_id       => @user.id,
+    #                                    :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
 
-      data_import.run_import!
-      table = Table.new(user_table: UserTable[data_import.table_id])
-      table.should_not be_nil, "Import failure: #{data_import.log}"
+    #   data_import.run_import!
+    #   table = Table.new(user_table: UserTable[data_import.table_id])
+    #   table.should_not be_nil, "Import failure: #{data_import.log}"
 
-      table_schema = @user.in_database.schema(table.name)
+    #   table_schema = @user.in_database.schema(table.name)
 
-      cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
-      cartodb_id_schema.should be_present
-      cartodb_id_schema = cartodb_id_schema[1]
-      cartodb_id_schema[:db_type].should == 'bigint'
-      cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-      cartodb_id_schema[:primary_key].should == true
-      cartodb_id_schema[:allow_null].should == false
-      invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
-      invalid_cartodb_id_schema.should be_present
-    end
+    #   cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
+    #   cartodb_id_schema.should be_present
+    #   cartodb_id_schema = cartodb_id_schema[1]
+    #   cartodb_id_schema[:db_type].should == 'bigint'
+    #   cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
+    #   cartodb_id_schema[:primary_key].should == true
+    #   cartodb_id_schema[:allow_null].should == false
+    #   invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
+    #   invalid_cartodb_id_schema.should be_present
+    # end
 
     it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => @user.id,
@@ -1792,8 +1794,6 @@ describe Table do
 
   context "imports" do
     it "file twitters.csv" do
-      delete_user_data @user
-
       fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
       data_import = create_import(@user, fixture)
 
@@ -1802,8 +1802,6 @@ describe Table do
     end
 
     it "file SHP1.zip" do
-      delete_user_data @user
-
       fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
       data_import = create_import(@user, fixture)
 
@@ -1885,13 +1883,14 @@ describe Table do
 
   describe '#name=' do
     it 'does not change the name if it is equivalent to the current one' do
-      table = Table.new
-      table.name = 'new name'
+      table = new_table(user_id: @user.id, name: 'new name')
+
       table.name.should == 'new_name'
+
       table.name = 'new name'
       table.name.should == 'new_name'
     end
-  end #name=
+  end
 
   describe '#validation_for_link_privacy' do
     it 'checks that only users with private tables enabled can set LINK privacy' do
@@ -2165,9 +2164,8 @@ describe Table do
   describe 'Valid names for new table' do
     it 'Regression for CDB-3446' do
       new_name = 'table_'
-      Table.get_valid_table_name(new_name, {
-        name_candidates: %w(table_ table_1)
-      }).should_not == 'table_1'
+
+      Carto::ValidTableNameProposer.new(@user.id).propose_valid_table_name(new_name).should_not == 'table_1'
     end
   end
 
@@ -2415,5 +2413,4 @@ describe Table do
       [0, 1].should include(table.estimated_row_count)
     end
   end
-
 end

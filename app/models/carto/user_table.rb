@@ -68,15 +68,19 @@ module Carto
     end
 
     def private?
-      self.privacy == PRIVACY_PRIVATE
+      privacy == PRIVACY_PRIVATE
     end
 
     def public?
-      self.privacy == PRIVACY_PUBLIC
+      privacy == PRIVACY_PUBLIC
     end
 
     def public_with_link_only?
-      self.privacy == PRIVACY_LINK
+      privacy == PRIVACY_LINK
+    end
+
+    def readable_by?(user)
+      !private? || is_owner?(user)
     end
 
     def estimated_row_count
@@ -85,6 +89,10 @@ module Carto
 
     def actual_row_count
       service.actual_row_count
+    end
+
+    def sync_table_id
+      self.table_id = service.get_table_id
     end
 
     private

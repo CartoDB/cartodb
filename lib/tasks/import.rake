@@ -59,7 +59,7 @@ namespace :cartodb do
           puts "Errored #{data_import_item_id} : #{exception}"
           CartoDB::notify_error(
             exception,
-            request: 'cartodb:upload_to_s3 Rake',
+            task: 'cartodb:upload_to_s3 Rake',
             import_id: data_import_item_id,
             item: data_import_item.inspect
           )
@@ -76,7 +76,7 @@ namespace :cartodb do
 
         CartoDB::notify_error(
           exception,
-          request: 'cartodb:upload_to_s3 Rake',
+          task: 'cartodb:upload_to_s3 Rake',
           import_id: data_import_item_id,
           item: data_import_item.inspect
         )

@@ -10,6 +10,7 @@ module CartoDB
 
       DEFAULT_MIN_ROWS = 1000000
       DEFAULT_STATEMENT_TIMEOUT = 10 * 60 * 1000 # ms
+      DEFAULT_TOLERANCE_PX = 1.0 # px
 
       def initialize(runner, user, options = {})
         @runner            = runner
@@ -21,6 +22,9 @@ module CartoDB
         @statement_timeout = options[:statement_timeout] ||
                              Cartodb.get_config(:overviews, 'statement_timeout') ||
                              DEFAULT_STATEMENT_TIMEOUT
+        @tolerance_px      = options[:tolerance_px] ||
+                             Cartodb.get_config(:overviews, 'tolerance_px') ||
+                             DEFAULT_TOLERANCE_PX
         @importer_stats = CartoDB::Stats::Importer.instance # TODO: delegate to @runner?
       end
 
@@ -39,20 +43,20 @@ module CartoDB
         UserTable.find_by_identifier(@user.id, table_name).service
       end
 
-      def run_in_database(sql)
-        # TODO: timing, exception handling, ...
-        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
-          log("Will create overviews for #{@table_name}")
-          @importer_stats.timing('create-overviews') do
-            db.run sql
-          end
-          log("Overviews created for #{@table_name}")
-        end
-      end
-
       def can_create_overviews?
         @user.reload
         @user.has_feature_flag?('create_overviews')
+      end
+
+      def create_overviews!(table_name)
+        CartoDB::Logger.info message: "Creating overviews", user: @user, table_name: table_name
+        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
+          log("Will create overviews for #{table_name}")
+          @importer_stats.timing('createviews') do
+            Carto::OverviewsService.new(db).create_overviews(table_name, @tolerance_px)
+          end
+          log("Overviews created for #{table_name}")
+        end
       end
 
       # Dataset overview creation
@@ -72,10 +76,7 @@ module CartoDB
         end
 
         def create_overviews!
-          # TODO: metrics...
-          @service.run_in_database %{
-            SELECT cartodb.CDB_CreateOverviews('#{@table_name}'::REGCLASS);
-          }
+          @service.create_overviews! @table_name
         end
 
         private

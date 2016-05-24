@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative './stats'
 require_relative '../visualization/collection'
-require_relative '../overlay/collection'
 require_relative './support_tables'
 require_relative '../map'
 require_relative '../layer'
@@ -72,7 +71,7 @@ module CartoDB
       end
 
       def overlays
-        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
+        @overlays ||= Carto::Overlay.where(visualization_id: id).all
       end
 
       def map
@@ -102,7 +101,8 @@ module CartoDB
 
       def related_tables
         @related_tables ||= layers(:carto_and_torque)
-          .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
+                            .flat_map { |layer| layer.affected_tables.map(&:service) }
+                            .uniq(&:id)
       end
 
       def related_canonical_visualizations
@@ -177,4 +177,3 @@ module CartoDB
     end
   end
 end
-

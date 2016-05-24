@@ -32,7 +32,7 @@
     var use_https           = <%= @use_https =%>;
     var api_key             = <%= safe_js_object @api_key.to_json %>;
     var base_url            = '<%= @table.owner.public_url(nil, request.protocol == "https://" ? "https" : "http") %>';
-    var login_url           = "<%= login_url %>";
+    var login_url           = "<%= CartoDB.url(self, 'login') %>";
 
     var debug = false;
     <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
@@ -225,7 +225,7 @@
         <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-vis-id="<%= vis.id %>" data-vis-owner-name="<%= vis.user[:username] %>">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
               <div class="MapCard-content MapCard-content--compact">

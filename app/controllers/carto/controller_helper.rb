@@ -2,11 +2,12 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status
+    attr_reader :message, :status, :user_message
 
-    def initialize(message, status)
+    def initialize(message, status, user_message = message)
       @message = message
       @status = status
+      @user_message = user_message
     end
   end
 
@@ -53,6 +54,15 @@ module Carto
       respond_to do |format|
         format.html { render text: message, status: status }
         format.json { render json: { errors: message }, status: status }
+      end
+    end
+
+    def rescue_from_standard_error(error)
+      CartoDB::Logger.error(exception: error)
+      message = error.message
+      respond_to do |format|
+        format.html { render text: message, status: 500 }
+        format.json { render json: { errors: message }, status: 500 }
       end
     end
   end

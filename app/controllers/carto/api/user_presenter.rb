@@ -50,7 +50,8 @@ module Carto
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
-        if @options[:current_user] && @options[:current_user].organization_owner?
+        if @options[:current_user] && @options[:current_user].organization_owner? && @user.belongs_to_organization?(@options[:current_user].organization)
+          poro[:email] = @user.email
           poro[:table_count] = @user.table_count
           poro[:all_visualization_count] = @user.all_visualization_count
         end
@@ -100,6 +101,18 @@ module Carto
             block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
+          },
+          obs_snapshot: {
+            quota:       @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_snapshot_block_price : @user.obs_snapshot_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_snapshot_calls : @user.get_obs_snapshot_calls,
+            hard_limit:  @user.hard_obs_snapshot_limit?
+          },
+          obs_general: {
+            quota:       @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_general_block_price : @user.obs_general_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_general_calls : @user.get_obs_general_calls,
+            hard_limit:  @user.hard_obs_general_limit?
           },
           twitter: {
             enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,

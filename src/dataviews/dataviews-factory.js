@@ -43,7 +43,7 @@ module.exports = Model.extend({
     );
   },
 
-  createFormulaModel: function (layerModel, attrs) {
+  createFormulaModel: function (layerModel, attrs, state) {
     _checkProperties(attrs, ['column', 'operation']);
     attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
@@ -54,11 +54,11 @@ module.exports = Model.extend({
       new FormulaDataviewModel(attrs, {
         map: this._map,
         layer: layerModel
-      })
+      }, state)
     );
   },
 
-  createHistogramModel: function (layerModel, attrs) {
+  createHistogramModel: function (layerModel, attrs, state) {
     _checkProperties(attrs, ['column']);
     attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
@@ -74,7 +74,7 @@ module.exports = Model.extend({
         map: this._map,
         filter: rangeFilter,
         layer: layerModel
-      })
+      }, state)
     );
   },
 

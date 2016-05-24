@@ -36,7 +36,7 @@ module.exports = DataviewModelBase.extend({
     return params;
   },
 
-  initialize: function (attrs, opts) {
+  initialize: function (attrs, opts, state) {
     DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
@@ -62,6 +62,14 @@ module.exports = DataviewModelBase.extend({
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
+
+    if (state) {
+      for (var key in state) {
+        if (key === 'acceptedCategories') {
+          this.filter.accept(state.acceptedCategories);
+        }
+      }
+    }
   },
 
   _initBinds: function () {

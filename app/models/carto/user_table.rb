@@ -98,7 +98,7 @@ module Carto
     private
 
     def fully_qualified_name
-      "#{user.database_schema}.#{name}"
+      "\"#{user.database_schema}\".#{name}"
     end
 
     def is_owner?(user)

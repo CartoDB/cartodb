@@ -489,13 +489,9 @@ module Carto
 
         apply_direct_mapping(animated, wpp, ANIMATED_DIRECT_MAPPING)
 
-        if animated.empty?
-          animated = DEFAULT_ANIMATED.dup
-        else
-          animated['enabled'] = true
-        end
+        animated['enabled'] = true unless animated.empty?
 
-        animated
+        DEFAULT_ANIMATED.merge(animated)
       end
 
       AGGREGATION_SOURCE_TYPES = %{ density }.freeze
@@ -592,13 +588,9 @@ module Carto
         merge_into_if_present(labels, 'fill', generate_labels_fill(wpp))
         merge_into_if_present(labels, 'halo', generate_labels_halo(wpp))
 
-        if labels.empty?
-          labels = DEFAULT_LABELS.deep_dup
-        else
-          labels['enabled'] = true
-        end
-
-        labels
+        labels['enabled'] = true unless labels.empty?
+        
+        DEFAULT_LABELS.merge(labels)
       end
 
       def generate_labels_fill(wpp)

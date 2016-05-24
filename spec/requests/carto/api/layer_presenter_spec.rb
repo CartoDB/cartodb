@@ -134,6 +134,34 @@ describe Carto::Api::LayerPresenter do
         labels['overlap'].should eq true
         labels['placement'].should eq 'point'
       end
+
+      it 'defaults missing labels attributes' do
+        properties = {
+          "text-face-name" => "whatever"
+        }
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: properties ))
+        poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+        labels = poro_options['style_properties']['properties']['labels']
+        labels.should_not be_nil
+
+        labels['enabled'].should eq true
+        labels['font'].should eq 'whatever'
+
+        labels['attribute'].should be_nil
+        fill = labels['fill']
+        fill['size']['fixed'].should eq 10
+        fill_color = fill['color']
+        fill_color['fixed'].should eq '#000'
+        fill_color['opacity'].should eq 1
+        halo = labels['halo']
+        halo['size']['fixed'].should eq 1
+        halo_color = halo['color']
+        halo_color['fixed'].should eq '#111'
+        halo_color['opacity'].should eq 1
+        labels['offset'].should eq(-10)
+        labels['overlap'].should eq true
+        labels['placement'].should eq 'point'
+      end
     end
 
     describe 'wizard migration' do

@@ -21,7 +21,7 @@ module.exports = Model.extend({
     this._dataviewsCollection = opts.dataviewsCollection;
   },
 
-  createCategoryModel: function (layerModel, attrs) {
+  createCategoryModel: function (layerModel, attrs, state) {
     _checkProperties(attrs, ['column']);
     attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
@@ -39,7 +39,7 @@ module.exports = Model.extend({
         map: this._map,
         filter: categoryFilter,
         layer: layerModel
-      })
+      }, state)
     );
   },
 

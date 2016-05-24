@@ -29,7 +29,7 @@ module.exports = DataviewModelBase.extend({
     return params;
   },
 
-  initialize: function (attrs, opts) {
+  initialize: function (attrs, opts, state) {
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
 
     // Internal model for calculating total amount of values in the category
@@ -62,6 +62,14 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this._bindSearchModelEvents();
+    if (state) {
+      for (var key in state) {
+        if (key === 'acceptedCategories') {
+          this.filter.accept(state.acceptedCategories);
+        }
+      }
+    }
+      
   },
 
   _onMapBoundsChanged: function () {

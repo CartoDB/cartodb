@@ -466,8 +466,6 @@ module Carto
         size
       end
 
-      ANIMATED_SOURCE_TYPES = %{ torque }.freeze
-
       ANIMATED_DIRECT_MAPPING = {
         'torque-cumulative' => 'overlap',
         'torque-duration' => 'duration',
@@ -476,14 +474,26 @@ module Carto
         'torque-trails' => 'trails'
       }.freeze
 
-      def generate_animated(wpp)
-        return {} unless ANIMATED_SOURCE_TYPES.include?(@source_type)
+      DEFAULT_ANIMATED = {
+        'enabled' => false,
+        'attribute' => nil,
+        'overlap' => false,
+        'duration' => 30,
+        'steps' => 256,
+        'resolution' => 2,
+        'trails' => 2
+      }.freeze
 
+      def generate_animated(wpp)
         animated = {}
 
         apply_direct_mapping(animated, wpp, ANIMATED_DIRECT_MAPPING)
 
-        animated['enabled'] = true unless animated.empty?
+        if animated.empty?
+          animated = DEFAULT_ANIMATED.dup
+        else
+          animated['enabled'] = true
+        end
 
         animated
       end

@@ -95,6 +95,21 @@ describe Carto::Api::LayerPresenter do
           style_properties['type'].should eq 'simple'
         end
       end
+
+      it 'has defaults for animated' do
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: {}))
+        poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+        animated = poro_options['style_properties']['properties']['animated']
+        animated.should_not be_nil
+
+        animated['enabled'].should eq false
+        animated['attribute'].should be_nil
+        animated['overlap'].should eq false
+        animated['duration'].should eq 30
+        animated['steps'].should eq 256
+        animated['resolution'].should eq 2
+        animated['trails'].should eq 2
+      end
     end
 
     describe 'wizard migration' do
@@ -191,8 +206,8 @@ describe Carto::Api::LayerPresenter do
             expect(@fill_size).to include('quantification' => qfunction)
           end
 
-          it 'does not include animated' do
-            expect(@properties['animated']).to be_nil
+          it 'include animated disabled' do
+            expect(@properties['animated']['enabled']).to be_false
           end
         end
 

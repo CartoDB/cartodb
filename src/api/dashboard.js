@@ -27,13 +27,28 @@ Dashboard.prototype = {
 
   getState: function () {
     var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
-    var mapState = {}; // TODO
-    return _.extend(mapState, widgetsState);
+    var mapState = this.getMapState(); // TODO
+    var state = {};
+    if (!_.isEmpty(mapState)) state.map = mapState;
+    if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
+    return state;
+  },
+
+  getMapState: function () {
+    var initialState = this._dashboard.dashboardView.getInitialMapState();
+    var currentCenter = this._dashboard.vis.map.get('center');
+    var currentZoom = this._dashboard.vis.map.getZoom();
+    if (_.isEqual(currentCenter, initialState.center) && _.isEqual(currentZoom, initialState.zoom)) return {};
+    return {
+      center: currentCenter,
+      zoom: currentZoom
+    };
   },
 
   setState: function (state) {
     // todo: set map state
-    this._dashboard.widgets.setWidgetsState(state);
+    this._dashboard.widgets.setWidgetsState(state.widgets);
+    this._dashboard.vis.map.setView(state.map.center, state.map.zoom);
   },
 
   /**

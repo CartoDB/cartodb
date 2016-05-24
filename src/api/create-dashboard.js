@@ -4,6 +4,7 @@ var Dashboard = require('./dashboard');
 var DashboardView = require('../dashboard-view');
 var WidgetsCollection = require('../widgets/widgets-collection');
 var WidgetsService = require('../widgets-service');
+var URLHelper = require('./url-helper');
 
 /**
  * Translates a vizJSON v3 datastructure into a working dashboard which will be rendered in given selector.
@@ -27,6 +28,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     : true;
 
   var widgets = new WidgetsCollection();
+  var coords = JSON.parse(vizJSON.center);
 
   var model = new cdb.core.Model({
     title: vizJSON.title,
@@ -34,7 +36,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     updatedAt: vizJSON.updated_at,
     userName: vizJSON.user.fullname,
     userAvatarURL: vizJSON.user.avatar_url,
-    renderMenu: opts.renderMenu
+    renderMenu: opts.renderMenu,
+    initialPosition: {
+      center: coords,
+      zoom: vizJSON.zoom
+    }
   });
   var dashboardView = new DashboardView({
     el: dashboardEl,
@@ -76,7 +82,13 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     }
   });
 
-  widgetsService.setWidgetsState();
+  var stateFromURL = URLHelper.getStateFromCurrentURL();
+  if (!_.isEmpty(stateFromURL.widgets)) {
+    widgetsService.setWidgetsState(stateFromURL.widgets);
+  }
+  if (!_.isEmpty(stateFromURL.map)) {
+    vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+  }
 
   dashboardView.render();
 

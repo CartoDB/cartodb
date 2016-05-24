@@ -1,4 +1,4 @@
-<%= form_for @mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }) : CartoDB.url(self, 'mobile_apps')), :html => { :class => "js-MobileAppForm" } do |f| %>
+<%= form_for @mobile_app, as: :mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }) : CartoDB.url(self, 'mobile_apps')), :html => { :class => "js-MobileAppForm" } do |f| %>
   <%= csrf_meta_tags %>
 
   <span class="FormAccount-separator"></span>

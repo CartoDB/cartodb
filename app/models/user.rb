@@ -1529,7 +1529,7 @@ class User < Sequel::Model
       cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
     end
   rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e)
+    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
     raise e
   end
 

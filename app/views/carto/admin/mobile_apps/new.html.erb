@@ -5,7 +5,7 @@
   <script type="text/javascript">
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
-    var mobile_app_data = <%= safe_js_object @mobile_app.data(current_user, mobile_platforms: true).to_json %>;
+    var mobile_app_data = <%= safe_js_object @mobile_app.data(current_user, fetch_mobile_platforms: true).to_json %>;
     var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>

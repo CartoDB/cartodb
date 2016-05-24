@@ -1014,6 +1014,8 @@ class User < Sequel::Model
   end
 
   def remaining_twitter_quota
+    # HOTFIX block remaining quota for free users
+    return 0 if self.account_type == 'FREE'
     if organization.present?
       remaining = organization.remaining_twitter_quota
     else

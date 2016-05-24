@@ -16,7 +16,7 @@ module CartoDB
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
-        .gpx .sql .tab .tsv .txt
+        .gpx .tab .tsv .txt
       }
       SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 

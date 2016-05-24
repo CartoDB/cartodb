@@ -1,10 +1,11 @@
 # encoding: utf-8
 
-require_relative '../../services/carto/visualizations_export_service_2.rb'
+require_relative '../../services/carto/visualizations_export_service_2'
 
 module Carto
   class Mapcap < ActiveRecord::Base
     include Carto::VisualizationsExportService2Importer
+    include Carto::VisualizationsExportService2Exporter
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'vis_id'
 

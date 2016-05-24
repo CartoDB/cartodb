@@ -63,7 +63,7 @@ var Map = Model.extend({
     // in the tests that depend on this to work
     this.reload = _.debounce(function (options) {
       options = options || {};
-      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success');
+      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success', 'error');
       this._windshaftMap.createInstance(options);
     }.bind(this), this.RELOAD_DEBOUNCE_TIME);
   },

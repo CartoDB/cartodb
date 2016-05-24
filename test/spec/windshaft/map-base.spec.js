@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
+var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -53,14 +54,21 @@ describe('windshaft/map-base', function () {
       urlTemplate: 'http://{user}.wadus.com',
       userName: 'rambo'
     });
-    spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
-      options.success(this.windshaftMapInstance);
-    }.bind(this));
 
     this.cartoDBLayerGroup = new Model();
     this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' });
     this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' });
     this.torqueLayer = new TorqueLayer();
+
+    this.windshaftMap = new WindshaftMap({
+      statTag: 'stat_tag'
+    }, {
+      client: this.client,
+      modelUpdater: this.modelUpdater,
+      dataviewsCollection: this.dataviewsCollection,
+      layersCollection: this.layersCollection,
+      analysisCollection: this.analysisCollection
+    });
   });
 
   afterEach(function () {
@@ -69,16 +77,6 @@ describe('windshaft/map-base', function () {
 
   describe('createInstance', function () {
     beforeEach(function () {
-      this.windshaftMap = new WindshaftMap({
-        statTag: 'stat_tag'
-      }, {
-        client: this.client,
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
       this.map = new Map({
         view_bounds_sw: [],
         view_bounds_ne: []
@@ -103,210 +101,240 @@ describe('windshaft/map-base', function () {
       this.dataviewsCollection.add(this.dataview);
     });
 
-    it('should create an instance of the windshaft map', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
-
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
+    describe('when request succeeds', function () {
+      beforeEach(function () {
+        spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+          options.success(this.windshaftMapInstance);
+        }.bind(this));
       });
 
-      var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.mapDefinition).toEqual({ foo: 'bar' });
-      expect(args.params).toEqual({
-        stat_tag: 'stat_tag'
-      });
-    });
+      it('should create an instance of the windshaft map', function () {
+        this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+        spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
-    it('should invoke the given callback', function () {
-      var successCallback = jasmine.createSpy('success');
-      this.windshaftMap.createInstance({
-        success: successCallback
-      });
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
 
-      expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
-    });
-
-    it('should trigger the `instanceCreated` event', function () {
-      var instanceCreatedCallback = jasmine.createSpy('instanceCreatedCallback');
-      this.windshaftMap.bind('instanceCreated', instanceCreatedCallback);
-      this.windshaftMap.createInstance();
-
-      expect(instanceCreatedCallback).toHaveBeenCalled();
-    });
-
-    it('should serialize the active filters of dataviews in the URL', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
-
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
-      });
-      var args = this.client.instantiateMap.calls.mostRecent().args[0];
-
-      // Filters are empty because no filter is active yet
-      expect(args.params).toEqual({
-        stat_tag: 'stat_tag'
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
+        expect(args.mapDefinition).toEqual({ foo: 'bar' });
+        expect(args.params).toEqual({
+          stat_tag: 'stat_tag'
+        });
       });
 
-      this.filter.accept('category');
+      it('should invoke the given callback', function () {
+        var successCallback = jasmine.createSpy('success');
+        this.windshaftMap.createInstance({
+          success: successCallback
+        });
 
-      // Recreate the instance again
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
+        expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
       });
-      args = this.client.instantiateMap.calls.mostRecent().args[0];
 
-      expect(args.params).toEqual({
-        stat_tag: 'stat_tag',
-        filters: {
-          dataviews: {
-            dataviewId: {
-              accept: [ 'category' ]
+      it('should trigger the `instanceCreated` event', function () {
+        var instanceCreatedCallback = jasmine.createSpy('instanceCreatedCallback');
+        this.windshaftMap.bind('instanceCreated', instanceCreatedCallback);
+        this.windshaftMap.createInstance();
+
+        expect(instanceCreatedCallback).toHaveBeenCalled();
+      });
+
+      it('should serialize the active filters of dataviews in the URL', function () {
+        this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+        spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
+
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
+
+        // Filters are empty because no filter is active yet
+        expect(args.params).toEqual({
+          stat_tag: 'stat_tag'
+        });
+
+        this.filter.accept('category');
+
+        // Recreate the instance again
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
+        args = this.client.instantiateMap.calls.mostRecent().args[0];
+
+        expect(args.params).toEqual({
+          stat_tag: 'stat_tag',
+          filters: {
+            dataviews: {
+              dataviewId: {
+                accept: [ 'category' ]
+              }
             }
           }
+        });
+      });
+
+      it('should use the given API key when creating a new instance of the windshaft map', function () {
+        this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+        spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
+
+        this.windshaftMap = new WindshaftMap({
+          apiKey: 'API_KEY',
+          statTag: 'stat_tag'
+        }, { // eslint-disable-line
+          client: this.client,
+          modelUpdater: this.modelUpdater,
+          dataviewsCollection: this.dataviewsCollection,
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
+        });
+
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
+
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
+        expect(args.params).toEqual({
+          stat_tag: 'stat_tag',
+          api_key: 'API_KEY'
+        });
+      });
+
+      it('should set the attributes of the new instance', function () {
+        this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
+
+        expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
+        expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
+      });
+
+      it('should use the modelUpdater to update internal models', function () {
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId',
+          forceFetch: 'forceFetch'
+        });
+
+        expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', 'forceFetch');
+      });
+    });
+
+    describe('when request fails', function () {
+      beforeEach(function () {
+        spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+          options.error('something went wrong');
+        }.bind(this));
+        spyOn(log, 'error');
+        this.errorCallback = jasmine.createSpy('errorCallback');
+
+        this.windshaftMap.createInstance({
+          error: this.errorCallback
+        });
+      });
+
+      it('should log the error', function () {
+        expect(log.error).toHaveBeenCalledWith('Request to Maps API failed: something went wrong');
+      });
+
+      it('should invoke a given error callback', function () {
+        expect(this.errorCallback).toHaveBeenCalledWith('Request to Maps API failed: something went wrong');
+      });
+    });
+  });
+
+  describe('.getLayerMetadata', function () {
+    it('should return the metadata given an index', function () {
+      this.windshaftMap.set({
+        layergroupid: 'layergroupid',
+        metadata: {
+          layers: [
+            {
+              'type': 'mapnik',
+              'meta': 'cartodb-metadata',
+              'widgets': {
+                'dataviewId': {
+                  'url': {
+                    'http': 'http://example.com',
+                    'https': 'https://example.com'
+                  }
+                }
+              }
+            },
+            {
+              'type': 'torque',
+              'meta': 'torque-metadata'
+            }
+          ]
         }
       });
+
+      expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
+      expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
     });
 
-    it('should use the given API key when creating a new instance of the windshaft map', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
-
-      this.windshaftMap = new WindshaftMap({
-        apiKey: 'API_KEY',
-        statTag: 'stat_tag'
-      }, { // eslint-disable-line
-        client: this.client,
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
-      });
-
-      var args = this.client.instantiateMap.calls.mostRecent().args[0];
-      expect(args.params).toEqual({
-        stat_tag: 'stat_tag',
-        api_key: 'API_KEY'
-      });
-    });
-
-    it('should set the attributes of the new instance', function () {
-      this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId'
-      });
-
-      expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
-      expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
-    });
-
-    it('should use the modelUpdater to update internal models', function () {
-      this.windshaftMap.createInstance({
-        sourceLayerId: 'sourceLayerId',
-        forceFetch: 'forceFetch'
-      });
-
-      expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', 'forceFetch');
-    });
-
-    describe('.getLayerMetadata', function () {
-      it('should return the metadata given an index', function () {
-        this.windshaftMap.set({
-          layergroupid: 'layergroupid',
-          metadata: {
-            layers: [
-              {
-                'type': 'mapnik',
-                'meta': 'cartodb-metadata',
-                'widgets': {
-                  'dataviewId': {
-                    'url': {
-                      'http': 'http://example.com',
-                      'https': 'https://example.com'
-                    }
+    it('should ignore http layers present in the response', function () {
+      this.windshaftMap.set({
+        layergroupid: 'layergroupid',
+        metadata: {
+          layers: [
+            {
+              'type': 'http'
+            },
+            {
+              'type': 'mapnik',
+              'meta': 'cartodb-metadata',
+              'widgets': {
+                'dataviewId': {
+                  'url': {
+                    'http': 'http://example.com',
+                    'https': 'https://example.com'
                   }
                 }
-              },
-              {
-                'type': 'torque',
-                'meta': 'torque-metadata'
               }
-            ]
-          }
-        });
-
-        expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
-        expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
+            },
+            {
+              'type': 'torque',
+              'meta': 'torque-metadata'
+            }
+          ]
+        }
       });
 
-      it('should ignore http layers present in the response', function () {
-        this.windshaftMap.set({
-          layergroupid: 'layergroupid',
-          metadata: {
-            layers: [
-              {
-                'type': 'http'
-              },
-              {
-                'type': 'mapnik',
-                'meta': 'cartodb-metadata',
-                'widgets': {
-                  'dataviewId': {
-                    'url': {
-                      'http': 'http://example.com',
-                      'https': 'https://example.com'
-                    }
+      expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
+      expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
+    });
+
+    it('should ignore plain layers present in the response', function () {
+      this.windshaftMap.set({
+        layergroupid: 'layergroupid',
+        metadata: {
+          layers: [
+            {
+              'type': 'plain'
+            },
+            {
+              'type': 'mapnik',
+              'meta': 'cartodb-metadata',
+              'widgets': {
+                'dataviewId': {
+                  'url': {
+                    'http': 'http://example.com',
+                    'https': 'https://example.com'
                   }
                 }
-              },
-              {
-                'type': 'torque',
-                'meta': 'torque-metadata'
               }
-            ]
-          }
-        });
-
-        expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
-        expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
+            },
+            {
+              'type': 'torque',
+              'meta': 'torque-metadata'
+            }
+          ]
+        }
       });
 
-      it('should ignore plain layers present in the response', function () {
-        this.windshaftMap.set({
-          layergroupid: 'layergroupid',
-          metadata: {
-            layers: [
-              {
-                'type': 'plain'
-              },
-              {
-                'type': 'mapnik',
-                'meta': 'cartodb-metadata',
-                'widgets': {
-                  'dataviewId': {
-                    'url': {
-                      'http': 'http://example.com',
-                      'https': 'https://example.com'
-                    }
-                  }
-                }
-              },
-              {
-                'type': 'torque',
-                'meta': 'torque-metadata'
-              }
-            ]
-          }
-        });
-
-        expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
-        expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
-      });
+      expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
+      expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
     });
   });
 

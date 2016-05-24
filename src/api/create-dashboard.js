@@ -51,6 +51,9 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     skipMapInstantiation: true
   }));
 
+  var stateFromURL = URLHelper.getStateFromCurrentURL();
+  var widgetsState = stateFromURL.widgets || {};
+
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
   var widgetModelsMap = {
@@ -60,10 +63,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
     category: widgetsService.createCategoryModel.bind(widgetsService)
   };
-  vizJSON.widgets.forEach(function (d) {
+  vizJSON.widgets.forEach(function (d, index) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
     var attrs = _.extend({}, d, d.options);
     var newWidgetModel = widgetModelsMap[d.type];
+    var state = widgetsState[index];
 
     if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
@@ -76,16 +80,15 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
         layer = vis.map.layers.at(d.layerIndex);
       }
 
-      newWidgetModel(attrs, layer);
+      newWidgetModel(attrs, layer, state);
     } else {
       cdb.log.error('No widget found for type ' + d.type);
     }
   });
 
-  var stateFromURL = URLHelper.getStateFromCurrentURL();
-  if (!_.isEmpty(stateFromURL.widgets)) {
-    widgetsService.setWidgetsState(stateFromURL.widgets);
-  }
+  // if (!_.isEmpty(stateFromURL.widgets)) {
+  //   widgetsService.setWidgetsState(stateFromURL.widgets);
+  // }
   if (!_.isEmpty(stateFromURL.map)) {
     vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
   }

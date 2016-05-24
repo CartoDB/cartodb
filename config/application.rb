@@ -104,6 +104,10 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      mobile_apps.js
+      mobile_apps_templates.js
+      mobile_apps_deps.js
+
       explore_deps.js
       explore.js
 
@@ -143,6 +147,7 @@ module CartoDB
       cartod1b.css
       user_feed.css
       explore.css
+      mobile_apps.css
 
       plugins/tipsy.css
 
@@ -178,7 +183,7 @@ require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
 require 'cartodb/central'
-#require 'importer/lib/cartodb-importer'
+# require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new

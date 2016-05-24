@@ -35,6 +35,11 @@ FactoryGirl.define do
       enabled true
     end
 
+    trait :mobile do
+      mobile_max_open_users    100000
+      mobile_max_private_users 20000
+    end
+
     factory :user_with_private_tables, traits: [:enabled, :private_tables]
     factory :admin, traits: [:admin]
 

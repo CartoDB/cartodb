@@ -1,0 +1,141 @@
+<%= form_for @mobile_app, as: :mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }) : CartoDB.url(self, 'mobile_apps')), :html => { :class => "js-MobileAppForm" } do |f| %>
+  <%= csrf_meta_tags %>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row js-iconSelector">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">App icon</label>
+    </div>
+    <div class="FormAccount-rowData FormAccount-avatar">
+      <div class="FormAccount-avatarPreview">
+        <img src="" class="FormAccount-avatarPreviewImage" />
+      </div>
+      <div class="FormAccount-avatar--input">
+        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image", :required => "true" %>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Name</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :name, :placeholder => "Application name", :class => "FormAccount-input FormAccount-input--med", :required => "true" %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Description</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_area :description, :placeholder => "Application description", :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+    </div>
+    <div class="FormAccount-rowInfo">
+      <p class="FormAccount-rowInfoText"></p>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Platform</label>
+    </div>
+
+    <div class="FormAccount-rowData">
+      <%- @mobile_app.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms].each do |platform, values| %>
+        <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+        <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+        <div class="RadioButton u-rspace--20">
+          <input class="RadioButtonInput js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
+          <span class="RadioButtonInput-face"></span>
+          <label class="RadioButton-label <%= values[:available] === true ? 'dark-color' : '' %>"><%= values[:text] %></label>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">Aplication ID</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
+
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <p class="FormAccount-rowInfoText js-appPlatformsLegend"></p>
+      </div>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="FormAccount-label">App type</label>
+    </div>
+    <%- @mobile_app.data(current_user, fetch_app_types: true)[:app_types].each do |type, values| %>
+      <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+      <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+      <div class="FormAccount-rowData in-block u-vspace-s">
+        <div class="RadioButton">
+          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_disabled %> <%= is_checked %> required>
+          <span class="RadioButtonInput-face"></span>
+          <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= type.capitalize %></label>
+        </div>
+        <div class="FormAccount-rowInfo u-lspace-28">
+          <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="FormAccount-footer FormAccount-footer--noMarginBottom">
+    <p class="FormAccount-footerText"></p>
+    <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
+      <% content_tag(:span, 'Save') %>
+    <% end %>
+  </div>
+
+  <%- if @mobile_app.persisted? %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Application quota</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="ProgressBar-container">
+        <div class="ProgressBar">
+          <span class="ProgressBar-bar <%= progress_bar_range(progress_bar_width) %>" style="width: <%= progress_bar_width %>%"></span>
+        </div>
+        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><%- if @mobile_app.app_type == "dev" %>/<%= progress_bar_max_users %><% end %> monthly users</div>
+      </div>
+    </div>
+
+  <% end %>
+
+  <%- if @mobile_app.persisted? %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Delete application</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row FormAccount-row--wideMarginBottom">
+      <div class="FormAccount-rowLabel">
+        <label class="FormAccount-label">Are you sure?</label>
+      </div>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowData">
+          <span class="FormAccount-button--deleteAccount js-deleteMobileApp">Delete this application</span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+<% end %>

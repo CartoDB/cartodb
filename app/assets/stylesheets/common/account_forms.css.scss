@@ -155,7 +155,7 @@ $sLabel-width: 140px;
   @include flex-grow(1);
 }
 .FormAccount-rowPreview {
-  width: 735px;
+  width: 600px;
 }
 .FormAccount-separator {
   display: block;
@@ -174,7 +174,10 @@ $sLabel-width: 140px;
   @include align-items(center);
   position: relative;
 }
-
+.FormAccount-rowData.in-block {
+  @include flex-direction(column);
+  @include align-items(flex-start);
+}
 .FormAccount-planTag {
   padding: 5px 10px;
   border-radius: 4px;
@@ -275,7 +278,7 @@ $sLabel-width: 140px;
   width: 354px;
 }
 .FormAccount-input--med {
-  width: 274px;
+  min-width: 274px;
 }
 .FormAccount-input--short {
   width: 114px;
@@ -318,16 +321,24 @@ $sLabel-width: 140px;
   z-index: 2;
 }
 .FormAccount-inputIcon {
-  color: $cTypography-help;
-  font-size: $sFontSize-larger;
-
-  position: absolute;
   top: 12px;
   right: 14px;
+  position: absolute;
+  color: $cTypography-help;
+  font-size: $sFontSize-larger;
   z-index: 3;
 }
 .FormAccount-inputIcon--clock {
   top: 11px;
+}
+.FormAccount-inputIcon--noIcon {
+  width: 100%;
+  height: 100%;
+  color: $cTypography-help;
+  font-size: $sFontSize-normal;
+  line-height: 100px;
+  text-align: center;
+  text-transform: uppercase;
 }
 .FormAccount-inputError {
   @include transition(top, 200ms, ease-in-out);
@@ -367,6 +378,12 @@ $sLabel-width: 140px;
   min-height: 60px;
   max-height: 110px;
   padding: 9px 12px;
+}
+.FormAccount-textarea.no-resize {
+  resize: none;
+}
+.FormAccount-textarea--longHeight {
+  height: 90px;
 }
 .FormAccount-textarea.is-disabled {
   color: $cTypography-help;

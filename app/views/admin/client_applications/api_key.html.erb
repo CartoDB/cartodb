@@ -7,6 +7,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
+    var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>"
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>
@@ -21,20 +22,15 @@
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="FormAccount-Content">
-
-    <div class="FormAccount-title">
-      <p class="FormAccount-titleText">The simplest way to access your private data or perform writes and updates to your account</p>
-    </div>
-
-    <span class="FormAccount-separator"></span>
+    <%= render :partial => 'admin/shared/api_keys_subheader' %>
+    <div class="FormAccount-separator"></div>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="FormAccount-label">Your API Key</label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
-        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <input type="text" class="FormAccount-input FormAccount-input--long" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
           <a class="js-regenerateApiKey" href="#">Request a new API key</a>

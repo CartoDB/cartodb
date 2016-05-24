@@ -25,7 +25,7 @@ class Carto::MobileApp
     id.present?
   end
 
-  def data(current_user, options = {})
-    Carto::Api::MobileAppPresenter.new(self, current_user, options).data
+  def data(current_user, fetching_options = {})
+    Carto::Api::MobileAppPresenter.new(self, current_user, fetching_options).data
   end
 end

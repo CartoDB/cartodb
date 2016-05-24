@@ -15,7 +15,7 @@
               <i class="MobileAppsList-details--icon MobileAppsList-statusIcon MobileAppsList-statusIcon--<%= a.app_type %>"></i> <%= a.app_type %>
             </span>
             <span class="MobileAppsList-detail">
-              <i class="CDB-IconFont CDB-IconFont-mobile MobileAppsList-details--icon"></i> <%= a.data(current_user, mobile_platforms: true)[:mobile_platforms][a.platform.to_sym][:text] %>
+              <i class="CDB-IconFont CDB-IconFont-mobile MobileAppsList-details--icon"></i> <%= a.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms][a.platform.to_sym][:text] %>
             </span>
           </p>
           <p class="MobileAppsList-details--paragraph"><%= a.app_id %></p>

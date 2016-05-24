@@ -112,6 +112,34 @@ module Cartodb
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
-  end
+    ############################################################################
+    # Mobile apps
 
+    def get_mobile_apps(username)
+      send_request("api/users/#{username}/mobile_apps", nil, :get, [200])
+    end
+
+    def get_mobile_app(username, app_id)
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :get, [200])
+    end
+
+    def create_mobile_app(username, api_key, mobile_app_attributes)
+      body = { mobile_app: mobile_app_attributes, api_key: api_key }
+      send_request("api/users/#{username}/mobile_apps", body, :post, [201])
+    end
+
+    def update_mobile_app(username, app_id, mobile_app_attributes)
+      body = { mobile_app: mobile_app_attributes }
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", body, :put, [204])
+    end
+
+    def update_all_mobile_apps_api_key(username, api_key)
+      body = { api_key: api_key }
+      send_request("api/users/#{username}/mobile_apps", body, :put, [204])
+    end
+
+    def delete_mobile_app(username, app_id)
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :delete, [204])
+    end
+  end
 end

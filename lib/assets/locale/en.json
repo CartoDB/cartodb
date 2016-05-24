@@ -9,6 +9,8 @@
   "form-components": {
     "editors": {
       "fill": {
+        "quantification": "Quantification",
+        "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
           "value": "By value"
@@ -470,6 +472,7 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+        "apply-btn": "Apply"
       },
       "infowindow": {
         "style": {

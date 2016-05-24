@@ -1014,6 +1014,8 @@ class User < Sequel::Model
   end
 
   def remaining_twitter_quota
+    # HOTFIX block remaining quota for free users
+    return 0 if self.account_type == 'FREE'
     if organization.present?
       remaining = organization.remaining_twitter_quota
     else
@@ -1525,6 +1527,12 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
+    if sync_data_with_cartodb_central?
+      cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
+    end
+  rescue CartoDB::CentralCommunicationFailure => e
+    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
+    raise e
   end
 
   # This is set temporary on user creation with invitation,
@@ -1540,6 +1548,18 @@ class User < Sequel::Model
   def created_with_invitation?
     user_creation = get_user_creation
     user_creation && user_creation.invitation_token
+  end
+
+  def mobile_sdk_enabled?
+    private_apps_enabled? || open_apps_enabled?
+  end
+
+  def private_apps_enabled?
+    mobile_max_private_users > 0
+  end
+
+  def open_apps_enabled?
+    mobile_max_open_users > 0
   end
 
   private

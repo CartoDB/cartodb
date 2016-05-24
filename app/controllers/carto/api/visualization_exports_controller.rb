@@ -1,5 +1,7 @@
 # encoding: UTF-8
 
+require_relative '../../../../lib/cartodb/event_tracker'
+
 module Carto
   module Api
     class VisualizationExportsController < ::Api::ApplicationController
@@ -19,7 +21,7 @@ module Carto
       rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        user = current_user ? Carto::User.find(current_user.id) : nil
+        user = current_viewer ? Carto::User.find(current_viewer.id) : nil
         visualization_export = Carto::VisualizationExport.new(
           visualization: @visualization,
           user: user,
@@ -42,6 +44,8 @@ module Carto
 
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id)
 
+        Cartodb::EventTracker.new.track_exported_map(current_user, @visualization)
+
         render_jsonp(VisualizationExportPresenter.new(visualization_export).to_poro, 201)
       end
 
@@ -62,7 +66,7 @@ module Carto
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         export_user_id = @visualization_export.user_id
-        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_user.id
+        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_viewer.id
       end
     end
   end

@@ -29,7 +29,7 @@ module CartoDB
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
-        !(%w{ .tif .tiff .sql }.include?(extension))
+        !(%w{ .tif .tiff }.include?(extension))
       end
 
       def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)

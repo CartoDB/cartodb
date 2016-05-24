@@ -224,7 +224,7 @@ describe('windshaft/map-base', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
           options.error('something went wrong');
-        }.bind(this));
+        });
         spyOn(log, 'error');
         this.errorCallback = jasmine.createSpy('errorCallback');
 

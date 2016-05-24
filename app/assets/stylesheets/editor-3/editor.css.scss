@@ -48,10 +48,7 @@
 .Editor-panelWrapper.is-larger {
   width: 488px;
 }
-.CDB-Dashboard-canvas {
-  @include block-shadow();
-  @include flex(1);
-}
+
 .Editor-panel .ps-scrollbar-y-rail {
   right: 0 !Important;
   width: 2px !Important; // Resets standard scroll track color
@@ -70,4 +67,14 @@
 .Editor-panel .ps-scrollbar-x {
   height: 2px !Important; // Resets standard scroll bar color
   background: #AAA;
+}
+
+
+/* deep insights */
+.CDB-Dashboard-canvas {
+  @include block-shadow();
+  @include flex(1);
+}
+.CDB-Dashboard-canvas.is-dark {
+  background: #293A41;
 }

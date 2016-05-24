@@ -490,7 +490,7 @@ module Carto
 
       AGGREGATION_SOURCE_TYPES = %{ density }.freeze
 
-      def generate_aggregation(wpp)
+      def generate_aggregation(_)
         return {} unless AGGREGATION_SOURCE_TYPES.include?(@source_type)
         {
           "size" => 100,

@@ -472,6 +472,7 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+        "apply-btn": "Apply"
       },
       "infowindow": {
         "style": {

@@ -90,26 +90,26 @@ module Carto
         map = @visualization.map
 
         vizjson = {
-          id:             @visualization.id,
-          version:        VIZJSON_VERSION,
-          title:          @visualization.qualified_name(user),
-          likes:          @visualization.likes.count,
-          description:    html_safe(@visualization.description),
-          scrollwheel:    map.scrollwheel,
-          legends:        map.legends,
-          map_provider:   map.provider,
-          bounds:         bounds_from(map),
-          center:         map.center,
-          zoom:           map.zoom,
-          updated_at:     map.viz_updated_at,
-          layers:         layers_vizjson(options, forced_privacy_version),
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
-          prev:           @visualization.prev_id,
-          next:           @visualization.next_id,
+          id:                 @visualization.id,
+          version:            VIZJSON_VERSION,
+          title:              @visualization.qualified_name(user),
+          likes:              @visualization.likes.count,
+          description:        html_safe(@visualization.description),
+          scrollwheel:        map.scrollwheel,
+          legends:            map.legends,
+          map_provider:       map.provider,
+          bounds:             bounds_from(map),
+          center:             map.center,
+          zoom:               map.zoom,
+          updated_at:         map.viz_updated_at,
+          layers:             layers_vizjson(options, forced_privacy_version),
+          overlays:           @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
+          prev:               @visualization.prev_id,
+          next:               @visualization.next_id,
           transition_options: @visualization.transition_options,
-          widgets:        widgets_vizjson,
-          datasource:     datasource_vizjson(options, forced_privacy_version),
-          user:           user_info_vizjson(user)
+          widgets:            widgets_vizjson,
+          datasource:         datasource_vizjson(options, forced_privacy_version),
+          user:               user_info_vizjson(user)
         }
 
         visualization_analyses = @visualization.analyses
@@ -194,7 +194,7 @@ module Carto
       end
 
       def other_layers_vizjson(options, named_maps_presenter = nil)
-        layer_index = @visualization.data_layers.size
+        layer_index = @visualization.map.named_maps_layers.size
 
         @visualization.other_layers.map do |layer|
           decoration_data_to_apply = if named_maps_presenter
@@ -349,17 +349,22 @@ module Carto
 
       # Extract relevant information from layers
       def configure_layers_data
+        # Ordered list of layers in the named map template to lookup indexes
+        named_maps_layers = @visualization.map.named_maps_layers
+
         # Http/base layers don't appear at viz.json
         layers = @visualization.data_layers
         layers_data = Array.new
         layers.each do |layer|
+          layer_index = named_maps_layers.index(layer)
+
           layer_vizjson = VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson
-          layers_data.push(data_for_carto_layer(layer_vizjson))
+          layers_data.push(data_for_carto_layer(layer_vizjson, layer_index))
         end
         layers_data
       end
 
-      def data_for_carto_layer(layer_vizjson)
+      def data_for_carto_layer(layer_vizjson, layer_index)
         layer_options = layer_vizjson[:options]
         data = {
           id: layer_vizjson[:id],
@@ -367,6 +372,8 @@ module Carto
           interactivity: layer_options[:interactivity],
           visible: layer_vizjson[:visible]
         }
+
+        data[:layer_index] = layer_index
 
         if layer_options && layer_options[:source]
           data[:options] = { source: layer_options[:source] }
@@ -576,8 +583,8 @@ module Carto
           end
 
           sql_wrap = @layer.options['sql_wrap']
-          if sql_wrap 
-            data[:sql_wrap] = sql_wrap 
+          if sql_wrap
+            data[:sql_wrap] = sql_wrap
           end
 
           data = decorate_with_data(data, @decoration_data)

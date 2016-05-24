@@ -556,6 +556,33 @@ module Carto
         'text-placement-type' => 'placement'
       }.freeze
 
+      DEFAULT_LABELS = {
+        'enabled' => false,
+        'attribute' => nil,
+        'font' => 'DejaVu Sans Book',
+          'fill' => {
+            'size' => {
+              'fixed' => 10
+            },
+            'color' => {
+              'fixed' => '#000',
+              'opacity' => 1
+            }
+          },
+          'halo' => {
+            'size' => {
+              'fixed' => 1
+            },
+            'color' => {
+              'fixed' => '#111',
+              'opacity' => 1
+            }
+          },
+          'offset' => -10,
+          'overlap' => true,
+          'placement' => 'point'
+      }.freeze
+
       def generate_labels(wpp)
         labels = {}
 
@@ -565,7 +592,11 @@ module Carto
         merge_into_if_present(labels, 'fill', generate_labels_fill(wpp))
         merge_into_if_present(labels, 'halo', generate_labels_halo(wpp))
 
-        labels['enabled'] = true if labels.present?
+        if labels.empty?
+          labels = DEFAULT_LABELS.deep_dup
+        else
+          labels['enabled'] = true
+        end
 
         labels
       end

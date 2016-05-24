@@ -110,6 +110,30 @@ describe Carto::Api::LayerPresenter do
         animated['resolution'].should eq 2
         animated['trails'].should eq 2
       end
+
+      it 'has defaults for labels' do
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: {}))
+        poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+        labels = poro_options['style_properties']['properties']['labels']
+        labels.should_not be_nil
+
+        labels['enabled'].should eq false
+        labels['attribute'].should be_nil
+        labels['font'].should eq 'DejaVu Sans Book'
+        fill = labels['fill']
+        fill['size']['fixed'].should eq 10
+        fill_color = fill['color']
+        fill_color['fixed'].should eq '#000'
+        fill_color['opacity'].should eq 1
+        halo = labels['halo']
+        halo['size']['fixed'].should eq 1
+        halo_color = halo['color']
+        halo_color['fixed'].should eq '#111'
+        halo_color['opacity'].should eq 1
+        labels['offset'].should eq(-10)
+        labels['overlap'].should eq true
+        labels['placement'].should eq 'point'
+      end
     end
 
     describe 'wizard migration' do
@@ -597,10 +621,10 @@ describe Carto::Api::LayerPresenter do
           }
         end
 
-        it 'does not generate any label' do
+        it 'generates disabled labels' do
           layer = build_layer_with_wizard_properties(no_text_wizard_properties)
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
-          options['style_properties']['properties']['labels'].should be_nil
+          options['style_properties']['properties']['labels']['enabled'].should be_false
         end
       end
 

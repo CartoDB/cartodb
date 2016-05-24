@@ -42,6 +42,7 @@ module.exports = WidgetModel.extend({
     this.dataviewModel.setupSearch();
     this.lockedCategories.addItems(this._acceptedCategories().toJSON());
     this.toggleSearch();
+    this.dataviewModel.filter.accept(this.get('acceptedCategories'));
   },
 
   toggleSearch: function () {

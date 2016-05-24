@@ -12,7 +12,11 @@ module Carto
     before_save :generate_export_vizjson
 
     def regenerate_visualization
-      build_visualization_from_json_export(export_vizjson)
+      regenerated_visualization = build_visualization_from_json_export(export_vizjson)
+
+      regenerated_visualization.user = visualization.user
+
+      visualization
     end
 
     private

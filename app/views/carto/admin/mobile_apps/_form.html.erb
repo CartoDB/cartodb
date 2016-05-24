@@ -47,15 +47,25 @@
     </div>
 
     <div class="FormAccount-rowData">
-      <%- @mobile_app.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms].each do |platform, values| %>
-        <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
-        <%- is_checked = values[:selected] === true ? 'checked' : '' %>
-
+      <%- mobile_platforms = @mobile_app.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms] %>
+      <%- if @mobile_app.persisted? %>
+        <%- platform = mobile_platforms[@mobile_app.platform.to_sym] %>
         <div class="RadioButton u-rspace--20">
-          <input class="RadioButtonInput js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
+          <input class="RadioButtonInput js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" checked required>
           <span class="RadioButtonInput-face"></span>
-          <label class="RadioButton-label <%= values[:available] === true ? 'dark-color' : '' %>"><%= values[:text] %></label>
+          <label class="RadioButton-label dark-color"><%= platform[:text] %></label>
         </div>
+      <% else %>
+        <%- mobile_platforms.each do |platform, values| %>
+          <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+          <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+          <div class="RadioButton u-rspace--20">
+            <input class="RadioButtonInput js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
+            <span class="RadioButtonInput-face"></span>
+            <label class="RadioButton-label <%= values[:available] === true ? 'dark-color' : '' %>"><%= values[:text] %></label>
+          </div>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -77,20 +87,35 @@
     <div class="FormAccount-rowLabel">
       <label class="FormAccount-label">App type</label>
     </div>
-    <%- @mobile_app.data(current_user, fetch_app_types: true)[:app_types].each do |type, values| %>
-      <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
-      <%- is_checked = values[:selected] === true ? 'checked' : '' %>
-
+    <%- app_types = @mobile_app.data(current_user, fetch_app_types: true)[:app_types] %>
+    <%- if @mobile_app.persisted? %>
+      <%- app_type = app_types[@mobile_app.app_type.to_sym] %>
       <div class="FormAccount-rowData in-block u-vspace-s">
         <div class="RadioButton">
-          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_disabled %> <%= is_checked %> required>
+          <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" checked required>
           <span class="RadioButtonInput-face"></span>
-          <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= type.capitalize %></label>
+          <label class="RadioButton-label dark-color"><%= @mobile_app.app_type.capitalize %></label>
         </div>
         <div class="FormAccount-rowInfo u-lspace-28">
-          <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
+          <p class="FormAccount-rowInfoText"><%= app_type[:text].html_safe %></p>
         </div>
       </div>
+    <% else %>
+      <%- app_types.each do |type, values| %>
+        <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+        <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+        <div class="FormAccount-rowData in-block u-vspace-s" <%= is_disabled %>>
+          <div class="RadioButton">
+            <input class="RadioButtonInput" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_checked %> required>
+            <span class="RadioButtonInput-face"></span>
+            <label class="RadioButton-label <%= is_disabled == 'disabled' ? '' : 'dark-color' %>"><%= type.capitalize %></label>
+          </div>
+          <div class="FormAccount-rowInfo u-lspace-28">
+            <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
+          </div>
+        </div>
+      <% end %>
     <% end %>
   </div>
 

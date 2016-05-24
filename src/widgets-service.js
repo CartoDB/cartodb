@@ -30,10 +30,10 @@ WidgetsService.prototype.getList = function () {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
 
-  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
+  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs, state);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats'];
   var widgetAttrs = _.pick(attrs, attrsNames);
@@ -42,6 +42,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -55,7 +56,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
+WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
 
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
@@ -81,7 +82,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
+WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
 
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);

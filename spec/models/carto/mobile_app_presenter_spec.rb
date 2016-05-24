@@ -8,21 +8,18 @@ describe Carto::Api::MobileAppPresenter do
     user = FactoryGirl.build(:user, :mobile)
     mobile_app = FactoryGirl.build(:mobile_app)
 
-    mobile_platforms_option = { mobile_platforms: true }
-    app_types_option = { app_types: true }
-
     # Data should return mobile platforms data
-    compare_data(mobile_app.data(user, mobile_platforms_option), mobile_app.as_json, mobile_platforms_option)
+    compare_data(mobile_app.data(user, fetch_mobile_platforms: true), mobile_app.as_json, fetch_mobile_platforms: true)
     # Data should return mobile app types data
-    compare_data(mobile_app.data(user, app_types_option), mobile_app.as_json, app_types_option)
+    compare_data(mobile_app.data(user, fetch_app_types: true), mobile_app.as_json, fetch_app_types: true)
     # Data should return default mobile app data
-    compare_data(mobile_app.data(user), mobile_app.as_json, {})
+    compare_data(mobile_app.data(user), mobile_app.as_json)
 
   end
 
   protected
 
-  def compare_data(old_data, new_data, options)
+  def compare_data(old_data, new_data, fetch_mobile_platforms: false, fetch_app_types: false)
     new_data['id'].should == old_data[:id]
     new_data['name'].should == old_data[:name]
     new_data['description'].should == old_data[:description]
@@ -33,7 +30,9 @@ describe Carto::Api::MobileAppPresenter do
     new_data['license_key'].should == old_data[:license_key]
     new_data['monthly_users'].should == old_data[:monthly_users]
 
-    expect(old_data[:mobile_platforms]).to exist if options.include?('mobile_platforms')
-    expect(old_data[:app_types]).to exist if options.include?('app_types')
+    expect(old_data[:mobile_platforms]).to be_nil if fetch_mobile_platforms == false
+    expect(old_data[:app_types]).to be_nil if fetch_app_types == false
+    expect(old_data[:mobile_platforms]).not_to be_empty if fetch_mobile_platforms == true
+    expect(old_data[:app_types]).not_to be_empty if fetch_app_types == true
   end
 end

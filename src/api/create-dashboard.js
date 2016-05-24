@@ -47,12 +47,24 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     widgets: widgets,
     model: model
   });
+  var stateFromURL = URLHelper.getStateFromCurrentURL();
+  if (!_.isEmpty(stateFromURL.map)) {
+    vizJSON.center = stateFromURL.map.center;
+    vizJSON.bounds = null;
+    vizJSON.zoom = stateFromURL.map.zoom;
+  }
+
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {
     skipMapInstantiation: true
   }));
 
-  var stateFromURL = URLHelper.getStateFromCurrentURL();
+
+  if (!_.isEmpty(stateFromURL.map)) {
+    vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+  }
+
   var widgetsState = stateFromURL.widgets || {};
+
 
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
@@ -85,13 +97,6 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       cdb.log.error('No widget found for type ' + d.type);
     }
   });
-
-  // if (!_.isEmpty(stateFromURL.widgets)) {
-  //   widgetsService.setWidgetsState(stateFromURL.widgets);
-  // }
-  if (!_.isEmpty(stateFromURL.map)) {
-    vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
-  }
 
   dashboardView.render();
 

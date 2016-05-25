@@ -29,7 +29,6 @@ module.exports = View.extend({
   },
 
   render: function () {
-    this._disableBinds();
     var attributions = _.compact(this.map.get('attribution')).join(', ');
     var isGMaps = this.map.get('provider') !== 'leaflet';
     this.$el.html(

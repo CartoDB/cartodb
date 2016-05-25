@@ -2,7 +2,7 @@
 @import 'cdb-utilities/mixins';
 
 .Options-bar {
-  @include flex(0 0 auto);
+  @include align-items(center);
   margin-right: -25px;
   margin-left: -25px;
   padding: 25px;

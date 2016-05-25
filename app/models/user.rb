@@ -1527,7 +1527,7 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
-    if sync_data_with_cartodb_central?
+    if mobile_sdk_enabled? && sync_data_with_cartodb_central?
       cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
     end
   rescue CartoDB::CentralCommunicationFailure => e

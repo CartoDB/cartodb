@@ -14,12 +14,12 @@ var TilesLoader = require('../geo/ui/tiles-loader');
 var TooltipView = require('../geo/ui/tooltip-view');
 var Zoom = require('../geo/ui/zoom/zoom-view');
 var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
-var Attribution = require('../geo/ui/attribution/attribution-view');
+var AttributionView = require('../geo/ui/attribution/attribution-view');
 
 Overlay.register('logo', function (data, vis) {});
 
 Overlay.register('attribution', function (data, vis) {
-  var overlay = new Attribution({
+  var overlay = new AttributionView({
     map: data.map
   });
 

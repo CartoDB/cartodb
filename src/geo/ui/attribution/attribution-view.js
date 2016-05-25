@@ -10,7 +10,7 @@ var Sanitize = require('../../../core/sanitize');
  *
  */
 
-var Attribution = View.extend({
+module.exports = View.extend({
   className: 'CDB-Attribution',
 
   events: {
@@ -23,10 +23,9 @@ var Attribution = View.extend({
       visible: false
     });
     this.map = this.options.map;
-    this.model.bind('change:visible', function (mdl, isVisible) {
-      this[ isVisible ? '_showAttributions' : '_hideAttributions' ]();
-    }, this);
-    _.bindAll(this, '_onKeyDown', '_toggleAttributions');
+
+    this._onKeyDown = this._onKeyDown.bind(this);
+    this._toggleAttributions = this._toggleAttributions.bind(this);
   },
 
   render: function () {
@@ -43,15 +42,22 @@ var Attribution = View.extend({
   },
 
   _initBinds: function () {
-    $(document).bind('keydown', this._onKeyDown);
-    $(document).bind('click', this._toggleAttributions);
+    this.model.bind('change:visible', function (mdl, isVisible) {
+      this[ isVisible ? '_showAttributions' : '_hideAttributions' ]();
+    }, this);
+    this._enableDocumentBinds();
     this.map.bind('change:attribution', this.render, this);
+    this.add_related_model(this.map);
   },
 
-  _disableBinds: function () {
+  _enableDocumentBinds: function () {
+    $(document).bind('keydown', this._onKeyDown);
+    $(document).bind('click', this._toggleAttributions);
+  },
+
+  _disableDocumentBinds: function () {
     $(document).unbind('keydown', this._onKeyDown);
     $(document).unbind('click', this._toggleAttributions);
-    this.map.unbind(null, null, this);
   },
 
   _onKeyDown: function (e) {
@@ -62,12 +68,12 @@ var Attribution = View.extend({
 
   _showAttributions: function () {
     this.$el.addClass('is-active');
-    this._initBinds();
+    this._enableDocumentBinds();
   },
 
   _hideAttributions: function () {
     this.$el.removeClass('is-active');
-    this._disableBinds();
+    this._disableDocumentBinds();
   },
 
   _toggleAttributions: function (e) {
@@ -78,9 +84,7 @@ var Attribution = View.extend({
   },
 
   clean: function () {
-    this._disableBinds();
+    this._disableDocumentBinds();
     View.prototype.clean.call(this);
   }
 });
-
-module.exports = Attribution;

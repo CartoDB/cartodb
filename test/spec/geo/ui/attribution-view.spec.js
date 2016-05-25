@@ -30,18 +30,28 @@ describe('geo/ui/attribution', function () {
       expect(this.$text.length).toBe(1);
     });
 
-    it('should render when map attributions has changed', function () {
-      spyOn(this.view, 'render');
-      this.$button.click();
-      this.map.trigger('change:attribution');
-      expect(this.view.render).toHaveBeenCalled();
-    });
-
     it('should add GMaps properly when provider is not Leaflet', function () {
       expect(this.viewHasClass('CDB-Attribution--gmaps')).toBeFalsy();
       this.map.set('provider', 'gmaps');
       this.view.render();
       expect(this.viewHasClass('CDB-Attribution--gmaps')).toBeTruthy();
+    });
+  });
+
+  describe('attributions change', function () {
+    beforeEach(function () {
+      spyOn(this.view, 'render');
+    });
+
+    it('should render when it is visible', function () {
+      this.$button.click(); // Making it visible
+      this.map.trigger('change:attribution');
+      expect(this.view.render).toHaveBeenCalled();
+    });
+
+    it('should render when it is not visible', function () {
+      this.map.trigger('change:attribution');
+      expect(this.view.render).toHaveBeenCalled();
     });
   });
 

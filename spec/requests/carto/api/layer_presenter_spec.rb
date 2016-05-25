@@ -203,7 +203,7 @@ describe Carto::Api::LayerPresenter do
       describe 'cluster' do
         let(:query_wrapper) { "with meta ... <%= sql %> ..." }
         before(:each) do
-          properties = { "type" => "cluster", "properties" => {"method" => "3 Buckets", "marker-fill" => "#FD8D3C" } }
+          properties = { "type" => "cluster", "properties" => { "method" => "3 Buckets", "marker-fill" => "#FD8D3C" } }
           options = { 'query_wrapper' => query_wrapper, 'wizard_properties' => properties }
           layer = FactoryGirl.build(:carto_layer, options: options)
           @options = Carto::Api::LayerPresenter.new(layer).to_poro['options']

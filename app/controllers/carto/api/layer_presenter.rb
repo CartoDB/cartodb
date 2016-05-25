@@ -560,27 +560,27 @@ module Carto
         'enabled' => false,
         'attribute' => nil,
         'font' => 'DejaVu Sans Book',
-          'fill' => {
-            'size' => {
-              'fixed' => 10
-            },
-            'color' => {
-              'fixed' => '#000',
-              'opacity' => 1
-            }
+        'fill' => {
+          'size' => {
+            'fixed' => 10
           },
-          'halo' => {
-            'size' => {
-              'fixed' => 1
-            },
-            'color' => {
-              'fixed' => '#111',
-              'opacity' => 1
-            }
+          'color' => {
+            'fixed' => '#000',
+            'opacity' => 1
+          }
+        },
+        'halo' => {
+          'size' => {
+            'fixed' => 1
           },
-          'offset' => -10,
-          'overlap' => true,
-          'placement' => 'point'
+          'color' => {
+            'fixed' => '#111',
+            'opacity' => 1
+          }
+        },
+        'offset' => -10,
+        'overlap' => true,
+        'placement' => 'point'
       }.freeze
 
       def generate_labels(wpp)

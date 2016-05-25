@@ -72,6 +72,7 @@ which should be fixed manually.
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side
+* Fixed error duplicating datasets from the dashboard if the owner had hyphens in the name
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
 * Remove unused and broken tool for migration of the visualization table

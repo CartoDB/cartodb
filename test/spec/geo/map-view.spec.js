@@ -35,12 +35,19 @@ describe('core/geo/map-view', function () {
     spyOn(this.mapView, '_addLayerToMap');
   });
 
-  it('should be able to add a infowindow', function () {
-    var infow = new Infowindow({mapView: this.mapView, model: new Backbone.Model()});
-    this.mapView.addInfowindow(infow);
+  it('should be able to add an infowindow', function () {
+    var infowindowView = new Infowindow({
+      mapView: this.mapView,
+      model: new Backbone.Model({
+        content: {
+          fields: []
+        }
+      })
+    });
+    this.mapView.addInfowindow(infowindowView);
 
-    expect(this.mapView._subviews[infow.cid]).toBeTruthy();
-    expect(this.mapView._subviews[infow.cid] instanceof Infowindow).toBeTruthy();
+    expect(this.mapView._subviews[infowindowView.cid]).toBeTruthy();
+    expect(this.mapView._subviews[infowindowView.cid] instanceof Infowindow).toBeTruthy();
   });
 
   describe('bindings to map.layers', function () {

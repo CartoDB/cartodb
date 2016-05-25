@@ -6,7 +6,11 @@ namespace :cartodb do
 
       test_user     = ENV['TEST_USER']
       test_password = ENV['TEST_PASSWORD']
-      ldap = args.from_database ? Carto::Ldap::Configuration.first : ldap_configuration_from_environment
+      ldap = if args.from_database
+               Carto::Ldap::Configuration.first
+             else
+               ldap_configuration_from_environment(Carto::Organization.new)
+             end
 
       # Test configuration
       config_result = if ldap.valid?
@@ -73,62 +77,23 @@ namespace :cartodb do
         if ENV['ORGANIZATION_NAME'].blank?
           raise "Missing ORGANIZATION_ID and ORGANIZATION_NAME. Must provide one of both"
         else
-          organization_id = ::Organization.where(name: ENV['ORGANIZATION_NAME']).first.id
+          organization = Carto::Organization.where(name: ENV['ORGANIZATION_NAME']).first
         end
       else
-        organization_id = ENV['ORGANIZATION_ID']
+        organization = Carto::Organization.find(ENV['ORGANIZATION_ID'])
+      end
+      ldap = ldap_configuration_from_environment(organization)
+
+      unless ldap.valid?
+        missing = ldap.errors.keys.reject { |k| k == :domain_bases_list }
+        raise "Missing: " + missing.join(', ').upcase
       end
 
-      raise "Missing HOST" if ENV['HOST'].blank?
-      host = ENV['HOST']
-
-      raise "Missing PORT" if ENV['PORT'].blank?
-      port = ENV['PORT']
-
-      encryption = ENV['ENCRYPTION'].blank? ? nil : ENV['ENCRYPTION']
-
-      ssl_version = ENV['SSL_VERSION'].blank? ? nil : ENV['SSL_VERSION']
-
-      raise "Missing CONNECTION_USER" if ENV['CONNECTION_USER'].blank?
-      connection_user = ENV['CONNECTION_USER']
-
-      raise "Missing CONNECTION_PASSWORD" if ENV['CONNECTION_PASSWORD'].blank?
-      connection_password = ENV['CONNECTION_PASSWORD']
-
-      raise "Missing USER_ID_FIELD" if ENV['USER_ID_FIELD'].blank?
-      user_id_field = ENV['USER_ID_FIELD']
-
-      raise "Missing USERNAME_FIELD" if ENV['USERNAME_FIELD'].blank?
-      username_field = ENV['USERNAME_FIELD']
-
-      email_field = ENV['EMAIL_FIELD'].blank? ? nil : ENV['EMAIL_FIELD']
-
-      raise "Missing DOMAIN_BASES" if ENV['DOMAIN_BASES'].blank?
-      domain_bases = ENV['DOMAIN_BASES'].split(Carto::Ldap::Configuration::DOMAIN_BASES_SEPARATOR)
-
-      raise "Missing USER_OBJECT_CLASS" if ENV['USER_OBJECT_CLASS'].blank?
-      user_object_class = ENV['USER_OBJECT_CLASS']
-
-      raise "Missing GROUP_OBJECT_CLASS" if ENV['GROUP_OBJECT_CLASS'].blank?
-      group_object_class = ENV['GROUP_OBJECT_CLASS']
-
-      ldap = Carto::Ldap::Configuration.create(
-        organization_id:      organization_id,
-        host:                 host,
-        port:                 port,
-        encryption:           encryption,
-        ssl_version:          ssl_version,
-        connection_user:      connection_user,
-        connection_password:  connection_password,
-        user_id_field:        user_id_field,
-        username_field:       username_field,
-        email_field:          email_field,
-        domain_bases_list:    domain_bases,
-        user_object_class:    user_object_class,
-        group_object_class:   group_object_class
-      )
-
-      puts "LDAP configuration created with id: #{ldap.id}"
+      if ldap.save
+        puts "LDAP configuration created with id: #{ldap.id}"
+      else
+        puts "Error saving LDAP configuration"
+      end
     end
 
     desc "Deletes existing LDAP Configuration entries"
@@ -139,7 +104,7 @@ namespace :cartodb do
 
   private
 
-  def ldap_configuration_from_environment
+  def ldap_configuration_from_environment(organization)
     # Mandatory: connection parameters
     host = ENV['HOST']
     port = ENV['PORT']
@@ -159,7 +124,7 @@ namespace :cartodb do
     group_object_class = ENV['GROUP_OBJECT_CLASS']
 
     Carto::Ldap::Configuration.new(
-      organization:         Carto::Organization.new,
+      organization:         organization,
       host:                 host,
       port:                 port,
       encryption:           encryption,

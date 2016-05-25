@@ -69,6 +69,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;

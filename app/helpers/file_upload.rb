@@ -77,6 +77,8 @@ module CartoDB
           file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         end
 
+        results[:file_path] = file.path
+
         if use_s3 && do_long_upload
           results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]
           results[:enqueue] = false

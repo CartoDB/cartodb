@@ -131,6 +131,10 @@ namespace :cartodb do
       puts "LDAP configuration created with id: #{ldap.id}"
     end
 
+    desc "Deletes existing LDAP Configuration entries"
+    task :reset_ldap_configuration, [] => :environment do |_t, _args|
+      Carto::Ldap::Configuration.delete_all
+    end
   end
 
   private

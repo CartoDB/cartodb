@@ -149,8 +149,9 @@
 }
 .Filters-cleanSearch {
   position:absolute;
-  top:23px;
-  right:0;
+  margin-top: -8px;
+  top: 50%;
+  right: 0;
 }
 .Filters-cleanSearch.Filters-cleanSearch--short {
   right: -10px;

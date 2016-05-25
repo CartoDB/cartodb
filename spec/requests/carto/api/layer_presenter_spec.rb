@@ -139,7 +139,7 @@ describe Carto::Api::LayerPresenter do
         properties = {
           "text-face-name" => "whatever"
         }
-        layer = build_layer_with_wizard_properties(wizard_properties(properties: properties ))
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: properties))
         poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
         labels = poro_options['style_properties']['properties']['labels']
         labels.should_not be_nil

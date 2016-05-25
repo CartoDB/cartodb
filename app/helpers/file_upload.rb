@@ -9,9 +9,11 @@ module CartoDB
 
     def initialize(uploads_path = nil)
       @uploads_path = uploads_path || DEFAULT_UPLOADS_PATH
-      unless @uploads_path[0] == "/"
-        @uploads_path = Rails.root.join(@uploads_path)
-      end
+      @uploads_path = if @uploads_path[0] == "/"
+                        Pathname.new(@uploads_path)
+                      else
+                        Rails.root.join(@uploads_path)
+                      end
     end
 
     def get_uploads_path

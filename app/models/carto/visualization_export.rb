@@ -56,8 +56,8 @@ module Carto
       logger.append('Deleting tmp file')
       FileUtils.rm(filepath)
 
-      logger.append('Finishing')
       state = filepath.present? && url.present? ? STATE_COMPLETE : STATE_FAILURE
+      logger.append("Finishing. State: #{state}. Filepath: #{filepath}. URL: #{url}")
       update_attributes(state: state, file: filepath, url: url)
       true
     rescue => e

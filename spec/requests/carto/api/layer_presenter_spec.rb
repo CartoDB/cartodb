@@ -200,6 +200,25 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
+      describe 'cluster' do
+        let(:query_wrapper) { "with meta ... <%= sql %> ..." }
+        before(:each) do
+          properties = { "type" => "cluster", "properties" => {"method" => "3 Buckets", "marker-fill" => "#FD8D3C" } }
+          options = { 'query_wrapper' => query_wrapper, 'wizard_properties' => properties }
+          layer = FactoryGirl.build(:carto_layer, options: options)
+          @options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+          @properties = @options['style_properties']['properties']
+        end
+
+        it 'becomes custom' do
+          @options['style_properties']['type'].should eq 'custom'
+        end
+
+        it 'sets query_wrapper at sql_wrap' do
+          @options['sql_wrap'].should eq query_wrapper
+        end
+      end
+
       describe 'bubble' do
         let(:property) { "actor_foll" }
         let(:qfunction) { "Quantile" }

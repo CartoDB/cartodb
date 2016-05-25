@@ -1,8 +1,8 @@
 <button>
-  <i class="CDB-IconFont CDB-IconFont-undo Size-large u-actionTextColor js-undo <% if (!canUndo) { %>is-disabled<% } %>"></i>
+  <i class="CDB-IconFont CDB-IconFont-undo Size-large u-actionTextColor js-undo js-theme <% if (!canUndo) { %>is-disabled<% } %>"></i>
 </button>
 <button class="u-lSpace--xl">
-  <i class="CDB-IconFont CDB-IconFont-redo Size-large u-actionTextColor js-redo <% if (!canRedo) { %>is-disabled<% } %>"></i>
+  <i class="CDB-IconFont CDB-IconFont-redo Size-large u-actionTextColor js-redo js-theme <% if (!canRedo) { %>is-disabled<% } %>"></i>
 </button>
 <% if (canApply) { %>
 <button class="u-lSpace--xl CDB-Button CDB-Button--primary CDB-Button--small js-apply">

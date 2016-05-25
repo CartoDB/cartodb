@@ -5,12 +5,12 @@
 
 .CodeMirror {
   @include flex(1);
+  min-height: 300px;
   /* Set height, width, borders, and global font properties here */
   margin-bottom: 20px;
-  font-family: monospace;
-  color: black;
+  color: $cMainText;
+  font: 12px/16px Monaco, monospace;
   // TO BE FIXED
-  min-height: 300px;
 }
 
 /* PADDING */

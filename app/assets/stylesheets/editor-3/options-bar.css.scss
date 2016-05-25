@@ -3,6 +3,7 @@
 
 .Options-bar {
   @include align-items(center);
+  position: relative;
   margin-right: -25px;
   margin-left: -25px;
   padding: 25px;

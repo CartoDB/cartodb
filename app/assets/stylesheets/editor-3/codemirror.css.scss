@@ -152,7 +152,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  background: white;
 }
 
 .CodeMirror-scroll {
@@ -346,11 +345,11 @@ span.CodeMirror-selectedtext { background: none; }
 // Theme
 
 .cm-s-material {
-  background-color: #2B3C43;
+  background-color: #2E3C43;
   color: rgba(233, 237, 237, 1);
 }
 .cm-s-material .CodeMirror-gutters {
-  background: #2B3C43;
+  background: #2E3C43;
   color: rgb(83,127,126);
   border: none;
 }

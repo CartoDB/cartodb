@@ -50,6 +50,7 @@ which should be fixed manually.
   * `exporter.uploads_path` (`public/uploads`, for example).
   * `s3` (see `exporter.s3` at `app_config.yml.sample`).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
+* Disables data library when it is not configured (e.g: offline installations).
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
@@ -72,6 +73,7 @@ which should be fixed manually.
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side
+* Fixed error duplicating datasets from the dashboard if the owner had hyphens in the name
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
 * Remove unused and broken tool for migration of the visualization table

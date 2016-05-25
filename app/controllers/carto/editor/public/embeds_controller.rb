@@ -37,7 +37,7 @@ module Carto
         end
 
         def load_vis_for_vizjson
-          mapcap = Carto::Mapcap.where(vis_id: @visualization.id).first
+          mapcap = Carto::Mapcap.where(vis_id: @visualization.id).order(:created_at).first
 
           @vis_for_vizjson = mapcap ? mapcap.regenerate_visualization : @visualization
         end

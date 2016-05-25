@@ -50,6 +50,7 @@ which should be fixed manually.
   * `exporter.uploads_path` (`public/uploads`, for example).
   * `s3` (see `exporter.s3` at `app_config.yml.sample`).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
+* Disables data library when it is not configured (e.g: offline installations).
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes

@@ -541,7 +541,6 @@
             "overlay": "overlay"
           }
         },
-        "aggregation-resolution": "Resolution",
         "aggregation-value": "Value",
         "aggregation-size": {
           "label": "Size",

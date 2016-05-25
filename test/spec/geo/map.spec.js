@@ -45,7 +45,7 @@ describe('core/geo/map', function() {
     });
 
     it('should set the default center and zoom if no center and bounds are given', function () {
-      var map = new Map({}, { parse: true });
+      var map = new Map({});
 
       expect(map.get('center')).toEqual(map.defaults.center);
       expect(map.get('original_center')).toEqual(map.defaults.center);

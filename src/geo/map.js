@@ -32,6 +32,7 @@ var Map = Model.extend({
     if (typeof attrs.center === 'string') {
       attrs.center = JSON.parse(attrs.center);
     }
+    attrs.original_center = attrs.center;
 
     if (attrs.bounds) {
       attrs = _.extend(

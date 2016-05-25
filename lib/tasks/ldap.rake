@@ -67,7 +67,7 @@ namespace :cartodb do
 
     # INFO: Separate multiple domain names by commas
     desc "Creates an LDAP Configuration entry"
-    task :create_ldap_configuration, [] => :environment do |t, args|
+    task :create_ldap_configuration, [] => :environment do |_t, _args|
 
       if ENV['ORGANIZATION_ID'].blank?
         if ENV['ORGANIZATION_NAME'].blank?
@@ -75,9 +75,9 @@ namespace :cartodb do
         else
           organization_id = ::Organization.where(name: ENV['ORGANIZATION_NAME']).first.id
         end
-       else
+      else
         organization_id = ENV['ORGANIZATION_ID']
-       end
+      end
 
       raise "Missing HOST" if ENV['HOST'].blank?
       host = ENV['HOST']
@@ -112,21 +112,21 @@ namespace :cartodb do
       raise "Missing GROUP_OBJECT_CLASS" if ENV['GROUP_OBJECT_CLASS'].blank?
       group_object_class = ENV['GROUP_OBJECT_CLASS']
 
-      ldap = Carto::Ldap::Configuration.create({
-          organization_id:      organization_id,
-          host:                 host,
-          port:                 port,
-          encryption:           encryption,
-          ssl_version:          ssl_version,
-          connection_user:      connection_user,
-          connection_password:  connection_password,
-          user_id_field:        user_id_field,
-          username_field:       username_field,
-          email_field:          email_field,
-          domain_bases_list:    domain_bases,
-          user_object_class:    user_object_class,
-          group_object_class:   group_object_class
-        })
+      ldap = Carto::Ldap::Configuration.create(
+        organization_id:      organization_id,
+        host:                 host,
+        port:                 port,
+        encryption:           encryption,
+        ssl_version:          ssl_version,
+        connection_user:      connection_user,
+        connection_password:  connection_password,
+        user_id_field:        user_id_field,
+        username_field:       username_field,
+        email_field:          email_field,
+        domain_bases_list:    domain_bases,
+        user_object_class:    user_object_class,
+        group_object_class:   group_object_class
+      )
 
       puts "LDAP configuration created with id: #{ldap.id}"
     end

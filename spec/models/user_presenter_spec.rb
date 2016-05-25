@@ -60,7 +60,7 @@ describe Carto::Api::UserPresenter do
     user.set_relationships_from_central({ feature_flags: [ feature_flag1.id.to_s, feature_flag2.id.to_s ]})
     user.save
 
-    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false)
+    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false, false)
 
     # Now org user, organization and another member
 
@@ -107,7 +107,7 @@ describe Carto::Api::UserPresenter do
 
   protected
 
-  def compare_data(old_data, new_data, org_user = false)
+  def compare_data(old_data, new_data, org_user = false, mobile_sdk_enabled = false)
     # INFO: new organization presenter now doesn't contain users
     old_data[:organization].delete(:users) if old_data[:organization]
 
@@ -197,6 +197,17 @@ describe Carto::Api::UserPresenter do
       #owner is excluded from the users list
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
+    end
+
+    if mobile_sdk_enabled
+      new_data[:mobile_apps].keys.sort.should == old_data[:mobile_apps].keys.sort
+
+      new_data[:mobile_apps][:mobile_xamarin].should = new_data[:mobile_apps].mobile_xamarin
+      new_data[:mobile_apps][:mobile_custom_watermark].should = new_data[:mobile_apps].mobile_custom_watermark
+      new_data[:mobile_apps][:mobile_offline_maps].should = new_data[:mobile_apps].mobile_offline_maps
+      new_data[:mobile_apps][:mobile_gis_extension].should = new_data[:mobile_apps].mobile_gis_extension
+      new_data[:mobile_apps][:mobile_max_open_users].should = new_data[:mobile_apps].mobile_max_open_users
+      new_data[:mobile_apps][:mobile_max_private_users].should = new_data[:mobile_apps].mobile_max_private_users
     end
 
     # TODO: Pending migration and testing of :real_table_count & :last_active_time

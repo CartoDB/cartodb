@@ -9,6 +9,8 @@
   "form-components": {
     "editors": {
       "fill": {
+        "quantification": "Quantification",
+        "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
           "value": "By value"
@@ -470,12 +472,15 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+        "apply-btn": "Apply"
       },
       "infowindow": {
         "style": {
           "title-label": "Style",
-          "none": "None",
+          "select-style": "Select style",
           "window-size": "Window size",
+          "header-color": "Header color",
+          "none": "None",
           "light": "Light",
           "dark": "Dark",
           "color": "Color",
@@ -517,6 +522,7 @@
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
         "unavailable": "There was a problem getting schema, try to reload",
+        "none": "Your styles were reset, choose new styles for your layer, or get back to your previous style."
       },
       "components": {
         "fill": "Fill",

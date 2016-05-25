@@ -9,7 +9,6 @@ var sanitize = require('../core/sanitize');
 var LayersFactory = require('../vis/layers');
 
 var Map = Model.extend({
-
   defaults: {
     attribution: [config.get('cartodb_attributions')],
     center: [0, 0],
@@ -26,38 +25,41 @@ var Map = Model.extend({
 
   RELOAD_DEBOUNCE_TIME: 10,
 
+  parse: function (r) {
+    var attrs = r || {};
+
+    attrs.center = attrs.center || this.defaults.center;
+    if (typeof attrs.center === 'string') {
+      attrs.center = JSON.parse(attrs.center);
+    }
+
+    if (attrs.bounds) {
+      attrs = _.extend(
+        attrs,
+        {
+          view_bounds_sw: attrs.bounds[0],
+          view_bounds_ne: attrs.bounds[1],
+          original_view_bounds_sw: attrs.bounds[0],
+          original_view_bounds_ne: attrs.bounds[1]
+        }
+      );
+      delete attrs.bounds;
+    } else {
+      attrs.zoom = attrs.zoom || this.defaults.zoom;
+    }
+
+    return attrs;
+  },
+
   initialize: function (attrs, options) {
     options = options || {};
     this.layers = options.layersCollection || new Layers();
+    // Update attributions after layers instantiation
+    this._updateAttributions();
     this.geometries = new Backbone.Collection();
 
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
-
-    attrs = attrs || {};
-
-    var center = attrs.center || this.defaults.center;
-    if (typeof center === 'string') {
-      center = JSON.parse(center);
-    }
-    this.set({
-      center: center,
-      original_center: center
-    });
-
-    if (attrs.bounds) {
-      this.set({
-        view_bounds_sw: attrs.bounds[0],
-        view_bounds_ne: attrs.bounds[1],
-        original_view_bounds_sw: attrs.bounds[0],
-        original_view_bounds_ne: attrs.bounds[1]
-      });
-      this.unset('bounds');
-    } else {
-      this.set({
-        zoom: attrs.zoom || this.defaults.zoom
-      });
-    }
 
     // This method is declared here so that we can spyOn _.debounce
     // in the tests that depend on this to work
@@ -198,51 +200,51 @@ var Map = Model.extend({
     return this._windshaftMap;
   },
 
-  setView: function(latlng, zoom) {
+  setView: function (latlng, zoom) {
     this.set({
       center: latlng,
       zoom: zoom
     }, {
       silent: true
     });
-    this.trigger("set_view");
+    this.trigger('set_view');
   },
 
-  setZoom: function(z) {
+  setZoom: function (z) {
     this.set({
       zoom: z
     });
   },
 
-  enableKeyboard: function() {
+  enableKeyboard: function () {
     this.set({
       keyboard: true
     });
   },
 
-  disableKeyboard: function() {
+  disableKeyboard: function () {
     this.set({
       keyboard: false
     });
   },
 
-  enableScrollWheel: function() {
+  enableScrollWheel: function () {
     this.set({
       scrollwheel: true
     });
   },
 
-  disableScrollWheel: function() {
+  disableScrollWheel: function () {
     this.set({
       scrollwheel: false
     });
   },
 
-  getZoom: function() {
+  getZoom: function () {
     return this.get('zoom');
   },
 
-  setCenter: function(latlng) {
+  setCenter: function (latlng) {
     this.set({
       center: latlng
     });
@@ -252,8 +254,8 @@ var Map = Model.extend({
   * Change multiple options at the same time
   * @params {Object} New options object
   */
-  setOptions: function(options) {
-    if (typeof options != "object" || options.length) {
+  setOptions: function (options) {
+    if (typeof options !== 'object' || options.length) {
       if (this.options.debug) {
         throw (options + ' options has to be an object');
       } else {
@@ -268,8 +270,8 @@ var Map = Model.extend({
   /**
   * return getViewbounds if it is set
   */
-  getViewBounds: function() {
-    if(this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
+  getViewBounds: function () {
+    if (this.has('view_bounds_sw') && this.has('view_bounds_ne')) {
       return [
         this.get('view_bounds_sw'),
         this.get('view_bounds_ne')
@@ -278,7 +280,7 @@ var Map = Model.extend({
     return null;
   },
 
-  getLayerAt: function(i) {
+  getLayerAt: function (i) {
     return this.layers.at(i);
   },
 
@@ -286,71 +288,71 @@ var Map = Model.extend({
     return this.layers.get(id);
   },
 
-  getLayerViewByLayerCid: function(cid) {
+  getLayerViewByLayerCid: function (cid) {
     return this.layers.get(cid);
   },
 
-  _adjustZoomtoLayer: function(layer) {
+  _adjustZoomtoLayer: function (layer) {
     var maxZoom = parseInt(layer.get('maxZoom'), 10);
     var minZoom = parseInt(layer.get('minZoom'), 10);
 
     if (_.isNumber(maxZoom) && !_.isNaN(maxZoom)) {
-      if ( this.get("zoom") > maxZoom ) this.set({ zoom: maxZoom, maxZoom: maxZoom });
-      else this.set("maxZoom", maxZoom);
+      if (this.get('zoom') > maxZoom) this.set({ zoom: maxZoom, maxZoom: maxZoom });
+      else this.set('maxZoom', maxZoom);
     }
 
     if (_.isNumber(minZoom) && !_.isNaN(minZoom)) {
-      if ( this.get("zoom") < minZoom ) this.set({ minZoom: minZoom, zoom: minZoom });
-      else this.set("minZoom", minZoom);
+      if (this.get('zoom') < minZoom) this.set({ minZoom: minZoom, zoom: minZoom });
+      else this.set('minZoom', minZoom);
     }
   },
 
-  addLayer: function(layer, opts) {
-    if(this.layers.size() == 0) {
+  addLayer: function (layer, opts) {
+    if (this.layers.size() === 0) {
       this._adjustZoomtoLayer(layer);
     }
     this.layers.add(layer, opts);
     this.trigger('layerAdded');
-    if(this.layers.length === 1) {
+    if (this.layers.length === 1) {
       this.trigger('firstLayerAdded');
     }
     return layer.cid;
   },
 
-  removeLayer: function(layer) {
+  removeLayer: function (layer) {
     this.layers.remove(layer);
   },
 
-  removeLayerByCid: function(cid) {
+  removeLayerByCid: function (cid) {
     var layer = this.layers.get(cid);
 
     if (layer) this.removeLayer(layer);
-    else log.error("There's no layer with cid = " + cid + ".");
+    else log.error("There's no layer with cid = " + cid + '.');
   },
 
-  removeLayerAt: function(i) {
+  removeLayerAt: function (i) {
     var layer = this.layers.at(i);
 
     if (layer) this.removeLayer(layer);
     else log.error("There's no layer in that position.");
   },
 
-  clearLayers: function() {
+  clearLayers: function () {
     while (this.layers.length > 0) {
       this.removeLayer(this.layers.at(0));
     }
   },
 
   // by default the base layer is the layer at index 0
-  getBaseLayer: function() {
+  getBaseLayer: function () {
     return this.layers.at(0);
   },
 
   /**
   * Checks if the base layer is already in the map as base map
   */
-  isBaseLayerAdded: function(layer) {
-    var baselayer = this.getBaseLayer()
+  isBaseLayerAdded: function (layer) {
+    var baselayer = this.getBaseLayer();
     return baselayer && layer.isEqual(baselayer);
   },
 
@@ -358,18 +360,18 @@ var Map = Model.extend({
   * gets the url of the template of the tile layer
   * @method getLayerTemplate
   */
-  getLayerTemplate: function() {
+  getLayerTemplate: function () {
     var baseLayer = this.getBaseLayer();
-    if(baseLayer && baseLayer.get('options'))  {
+    if (baseLayer && baseLayer.get('options')) {
       return baseLayer.get('options').urlTemplate;
     }
   },
 
-  addGeometry: function(geom) {
+  addGeometry: function (geom) {
     this.geometries.add(geom);
   },
 
-  removeGeometry: function(geom) {
+  removeGeometry: function (geom) {
     this.geometries.remove(geom);
   },
 
@@ -387,7 +389,7 @@ var Map = Model.extend({
     }
   },
 
-  setBounds: function(b) {
+  setBounds: function (b) {
     this.attributes.view_bounds_sw = [
       b[0][0],
       b[0][1]
@@ -402,9 +404,9 @@ var Map = Model.extend({
   },
 
   // set center and zoom according to fit bounds
-  fitBounds: function(bounds, mapSize) {
+  fitBounds: function (bounds, mapSize) {
     var z = this.getBoundsZoom(bounds, mapSize);
-    if(z === null) {
+    if (z === null) {
       return;
     }
 
@@ -413,19 +415,19 @@ var Map = Model.extend({
     var nePoint = Map.latlngToMercator(bounds[1], z);
 
     var center = Map.mercatorToLatLng({
-      x: (swPoint[0] + nePoint[0])*0.5,
-      y: (swPoint[1] + nePoint[1])*0.5
+      x: (swPoint[0] + nePoint[0]) * 0.5,
+      y: (swPoint[1] + nePoint[1]) * 0.5
     }, z);
     this.set({
       center: center,
       zoom: z
-    })
+    });
   },
 
   // adapted from leaflat src
   // @return {Number, null} Calculated zoom from given bounds or the maxZoom if no appropriate zoom level could be found
   //   or null if given mapSize has no size.
-  getBoundsZoom: function(boundsSWNE, mapSize) {
+  getBoundsZoom: function (boundsSWNE, mapSize) {
     // sometimes the map reports size = 0 so return null
     if (mapSize.x === 0 || mapSize.y === 0) {
       return null;
@@ -456,15 +458,15 @@ var Map = Model.extend({
     return zoom - 1;
   }
 }, {
-  latlngToMercator: function(latlng, zoom) {
+  latlngToMercator: function (latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);
     return [pp.x, pp.y];
   },
 
-  mercatorToLatLng: function(point, zoom) {
+  mercatorToLatLng: function (point, zoom) {
     var ll = L.CRS.EPSG3857.pointToLatLng(point, zoom);
-    return [ll.lat, ll.lng]
+    return [ll.lat, ll.lng];
   }
 });
 

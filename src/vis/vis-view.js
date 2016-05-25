@@ -139,6 +139,7 @@ var Vis = View.extend({
     };
 
     this.map = new Map(mapConfig, {
+      parse: true,
       layersCollection: this._layersCollection,
       windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection

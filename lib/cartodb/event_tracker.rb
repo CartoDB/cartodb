@@ -81,7 +81,7 @@ module Cartodb
     end
 
     def report_error(event, user, type: 'Unknown', properties: {}, error: nil)
-      Rollbar.log('error',
+      Rollbar.log('warning',
                   "EventTracker: #{type} error",
                   user_id: user.nil? ? nil : user.id,
                   event: event,

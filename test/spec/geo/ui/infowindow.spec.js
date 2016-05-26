@@ -87,7 +87,6 @@ describe('geo/ui/infowindow-view', function() {
       content: {
         fields: [ { title:'test', value:true, position:0, index:0 } ]
       },
-      template_name:'infowindow_light',
       template: template
     });
 
@@ -102,54 +101,96 @@ describe('geo/ui/infowindow-view', function() {
           }, {
             title: 'jamon2', value: 1, index:1
           }]
-      },
-      template_name: 'jaja'
-    }, {silent: true});
+      }
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    view.render();
 
-    expect(render_fields[0].value).toEqual("0");
-    expect(render_fields[1].value).toEqual("1");
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('0');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon1');
+    var item2 = view.$el.find('.CDB-infowindow-listItem:nth-child(2)');
+    expect(item2.find('.CDB-infowindow-title').text()).toEqual('1');
+    expect(item2.find('.CDB-infowindow-subtitle').text()).toEqual('jamon2');
   });
 
-  it("should convert value to '' when it is undefined", function() {
+  it("should convert value to '' when it is undefined", function () {
     model.set({
-      content: { fields: [{ title: 'jamon', value: undefined}] },
-      template_name: 'jaja'
-    }, {silent: true});
+      content: {
+        fields: [{
+          title: 'jamon', value: undefined
+        }]
+      }
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-    expect(render_fields[0].value).toEqual('');
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon');
   });
 
-  it("should convert value to '' when it is null", function() {
-    model.set('content', { fields: [{ title: 'jamon', value: null}] }, {silent: true});
+  it("should convert value to '' when it is null", function () {
+    model.set('content', {
+      fields: [{
+        title: 'jamon',
+        value: null
+      }]
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-    expect(render_fields[0].value).toEqual('');
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon');
   });
 
-  it("shouldn't convert the value if it is empty", function() {
-    model.set('content', { fields: [{ title: 'jamon', value: ''}] }, {silent: true});
+  it("shouldn't convert the value if it is empty", function () {
+    model.set('content', {
+      fields: [{
+        title: 'jamon',
+        value: ''
+      }]
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-    expect(render_fields[0].value).toEqual('');
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon');
   });
 
-  it("should leave a string as it is", function() {
-    model.set('content', { fields: [{ title: 'jamon', value: "jamon is testing"}] }, {silent: true});
+  it("should leave a string as it is", function () {
+    model.set('content', {
+      fields: [{
+        title: 'jamon',
+        value: 'jamon is testing'
+      }]
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
-    expect(render_fields[0].value).toEqual("jamon is testing");
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('jamon is testing');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon');
   });
 
-  it("should convert value to string when it is a boolean", function() {
-    model.set('content', { fields: [{ title: 'jamon1', value: false}, { title: 'jamon2', value: true}] }, {silent: true});
+  it("should convert value to string when it is a boolean", function () {
+    model.set('content', {
+      fields: [
+        { title: 'jamon1', value: false },
+        { title: 'jamon2', value: true }
+      ]
+    }, { silent: true });
 
-    var render_fields = view._fieldsToString(model.attributes.content.fields, model.attributes.template_name);
+    view.render();
 
-    expect(render_fields[0].value).toEqual("false");
-    expect(render_fields[1].value).toEqual("true");
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('false');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon1');
+    var item2 = view.$el.find('.CDB-infowindow-listItem:nth-child(2)');
+    expect(item2.find('.CDB-infowindow-title').text()).toEqual('true');
+    expect(item2.find('.CDB-infowindow-subtitle').text()).toEqual('jamon2');
   });
 
   describe("custom template", function() {
@@ -380,7 +421,5 @@ describe('geo/ui/infowindow-view', function() {
       model.set('template', '<div class="js-infowindow"><div class="js-content"></div></div>');
       expect(view.$el.find(".has-fields").length).toEqual(1);
     });
-
-
   });
 });

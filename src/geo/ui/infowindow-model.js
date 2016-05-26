@@ -14,7 +14,7 @@ var InfowindowModel = Backbone.Model.extend({
 
   DEFAULT_TEMPLATE: defaultInfowindowTemplate,
 
-  TEMPLATE_ATTRIBUTES: ['template', 'template_name', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
+  TEMPLATE_ATTRIBUTES: ['template', 'template_type', 'alternative_names', 'width', 'maxHeight', 'offset'],
 
   initialize: function (attrs) {
     this._fields = new Backbone.Collection(attrs.fields || []);
@@ -27,7 +27,7 @@ var InfowindowModel = Backbone.Model.extend({
   },
 
   _hasTemplate: function () {
-    return (this.get('template') && this.get('template').trim && this.get('template').trim()) || this.get('template_name');
+    return this.get('template') && this.get('template').trim && this.get('template').trim();
   },
 
   updateContent: function (attributes, options) {

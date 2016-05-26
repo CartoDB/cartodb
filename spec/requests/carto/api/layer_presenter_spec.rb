@@ -86,7 +86,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'simple' do
       it 'is generated from several types' do
-        types_generating_simple = %w(polygon bubble choropleth category torque torque_cat torque_heat)
+        types_generating_simple = %w(polygon bubble choropleth category torque torque_cat)
         types_generating_simple.each do |type_generating_simple|
           layer = build_layer_with_wizard_properties('type' => type_generating_simple)
           poro_options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
@@ -465,10 +465,6 @@ describe Carto::Api::LayerPresenter do
       end
 
       shared_examples_for 'torque wizard family' do
-        it 'torque-blend-mode becomes blending' do
-          expect(@properties).to include('blending' => torque_blend_mode)
-        end
-
         describe 'animated' do
           it 'is enabled if it contains any torque-related properties' do
             expect(@animated).to include('enabled' => true)
@@ -479,8 +475,7 @@ describe Carto::Api::LayerPresenter do
           end
 
           it 'property becomes attribute only at animated' do
-            expect(@fill_color).not_to include('attribute' => property)
-            expect(@fill_size).to be_nil
+            expect(@fill['color']).not_to include('attribute' => property)
           end
 
           it 'torque-duration becomes duration' do
@@ -501,8 +496,17 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
+      shared_examples_for 'torque blend wizard family' do
+        describe 'torque-blend-mode' do
+          it 'becomes blending' do
+            expect(@properties).to include('blending' => torque_blend_mode)
+          end
+        end
+      end
+
       describe 'torque' do
         it_behaves_like 'torque wizard family'
+        it_behaves_like 'torque blend wizard family'
 
         let(:torque_blend_mode) { "lighter" }
         let(:property) { "fecha_date" }
@@ -542,8 +546,9 @@ describe Carto::Api::LayerPresenter do
           options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
           @properties = options['style_properties']['properties']
           @animated = @properties['animated']
-          @fill_color = @properties['fill']['color']
-          @fill_size = @properties['fill']['size']
+          @fill = @properties['fill']
+          @fill_color = @fill['color']
+          @fill_size = @fill['size']
         end
 
         it 'torque-cumulative becomes overlap' do
@@ -554,6 +559,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'torque cat' do
       it_behaves_like 'torque wizard family'
+      it_behaves_like 'torque blend wizard family'
 
       let(:torque_blend_mode) { "lighter" }
       let(:property) { "fecha_date" }
@@ -607,8 +613,9 @@ describe Carto::Api::LayerPresenter do
         options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
         @properties = options['style_properties']['properties']
         @animated = @properties['animated']
-        @fill_color = @properties['fill']['color']
-        @fill_size = @properties['fill']['size']
+        @fill = @properties['fill']
+        @fill_color = @fill['color']
+        @fill_size = @fill['size']
       end
 
       it 'generates color range from categories colors' do
@@ -641,8 +648,8 @@ describe Carto::Api::LayerPresenter do
         options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
 
         @style = options['style_properties']
+        @aggregation = @style['aggregation']
         @properties = @style['properties']
-        @aggregation = @properties['aggregation']
       end
 
       it 'maps point geometry_type to hexabins type' do
@@ -666,6 +673,95 @@ describe Carto::Api::LayerPresenter do
               "attribute" => ''
             }
           )
+        end
+      end
+    end
+
+    describe 'heatmap' do
+      it_behaves_like 'torque wizard family'
+
+      let(:torque_resolution) { 8 }
+      let(:marker_opacity) { 0.4 }
+      let(:torque_trails) { 2 }
+      let(:torque_frame_count) { 32 }
+      let(:torque_duration) { 10 }
+      let(:property) { "actor_post" }
+      let(:heatmap_wizard_properties) do
+        { "type" => "torque_heat",
+          "properties" =>
+            {
+              "marker-width" => 35,
+              "layer-type" => "torque",
+              "marker-file" => "url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png)",
+              "image-filters" => "colorize-alpha(blue, cyan, lightgreen, yellow , orange, red)",
+              "marker-opacity" => marker_opacity,
+              "heat-animated" => true,
+              "torque-cumulative" => false,
+              "property" => property,
+              "torque-duration" => torque_duration,
+              "torque-frame-count" => torque_frame_count,
+              "torque-trails" => torque_trails,
+              "torque-resolution" => torque_resolution,
+              "zoom" => 3,
+              "geometry_type" => "point",
+              "text-placement-type" => "simple",
+              "text-label-position-tolerance" => 10
+            }
+          }
+      end
+
+      before(:each) do
+        layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
+        options = Carto::Api::LayerPresenter.new(layer).to_poro['options']
+
+        @style = options['style_properties']
+        @properties = @style['properties']
+        @animated = @properties['animated']
+        @fill = @properties['fill']
+        @fill_color = @fill['color']
+        @fill_size = @fill['size']
+      end
+
+      it 'is generated from torque_heat' do
+        expect(@style).to include('type' => 'heatmap')
+      end
+
+      describe 'aggregation' do
+        before(:each) do
+          @aggregation = @style['aggregation']
+        end
+
+        it 'takes size from torque-resolution' do
+          expect(@aggregation).to include('size' => torque_resolution)
+        end
+
+        it 'has COUNT for value operator and empty string for attribute' do
+          expect(@aggregation['value']).to include('operator' => 'COUNT', 'attribute' => '')
+        end
+      end
+
+      describe 'properties' do
+        before(:each) do
+          @properties = @style['properties']
+        end
+
+        describe 'fill' do
+          it 'has size fixed 35' do
+            expect(@fill['size']).to include('fixed' => 35)
+          end
+
+          describe 'color' do
+            before(:each) do
+              @color = @fill['color']
+            end
+
+            it "has attribute: points_agg, default range color array, bins: 6 and opacity from marker_opacity" do
+              expect(@color).to include('attribute' => 'points_agg',
+                                        'range' => ['blue', 'cyan', 'lightgreen', 'yellow', 'orange', 'red'],
+                                        'bins' => 6,
+                                        'opacity' => marker_opacity)
+            end
+          end
         end
       end
     end

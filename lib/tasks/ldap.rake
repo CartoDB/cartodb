@@ -6,6 +6,7 @@ namespace :cartodb do
 
       test_user     = ENV['TEST_USER']
       test_password = ENV['TEST_PASSWORD']
+      test_search   = ENV['TEST_SEARCH']
       ldap = if args.from_database
                Carto::Ldap::Configuration.first
              else
@@ -29,11 +30,11 @@ namespace :cartodb do
       # Test connection
       result[:connection] = ldap.test_connection unless result[:connection]
 
-      CONNECTION_DEPENDENT_TESTS = [:login, :user_search, :group_search].freeze
+      CONNECTION_DEPENDENT_TESTS = [:login, :user_search, :group_search, :search].freeze
       if result[:connection][:success]
         result[:connection].delete(:connection)
-        if ldap.domain_bases
-          result[:login] = if ldap.user_id_field && test_user && test_password
+        if ldap.domain_bases.present?
+          result[:login] = if ldap.user_id_field.present? && test_user.present? && test_password.present?
                              if ldap.authenticate(test_user, test_password)
                                { success: true }
                              else
@@ -43,19 +44,26 @@ namespace :cartodb do
                              { success: false, error: 'Test credentials not provided' }
                            end
 
-          result[:user_search] = if ldap.user_object_class
+          result[:user_search] = if ldap.user_object_class.present?
                                    user_count = ldap.users.count
                                    { success: user_count > 0, count: user_count }
                                  else
                                    { success: false, error: 'User class not provided' }
                                  end
 
-          result[:group_search] = if ldap.group_object_class
+          result[:group_search] = if ldap.group_object_class.present?
                                     group_count = ldap.groups.count
                                     { success: group_count > 0, count: group_count }
                                   else
                                     { success: false, error: 'Group class not provided' }
                                   end
+
+          result[:search] = if test_search.present?
+                              object_count = ldap.send(:search_in_domain_bases, Net::LDAP::Filter.eq('objectClass', test_search)).count
+                              { success: true, count: object_count }
+                            else
+                              { success: false, error: 'Object class not provided' }
+                            end
         else
           CONNECTION_DEPENDENT_TESTS.each do |test|
             result[test] = { success: false, error: 'Domain bases not provided' }

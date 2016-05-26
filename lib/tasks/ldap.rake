@@ -34,12 +34,8 @@ namespace :cartodb do
       if result[:connection][:success]
         result[:connection].delete(:connection)
         if ldap.domain_bases.present?
-          result[:login] = if ldap.user_id_field.present? && test_user.present? && test_password.present?
-                             if ldap.authenticate(test_user, test_password)
-                               { success: true }
-                             else
-                               { success: false, error: 'Cannot log in with test credentials' }
-                             end
+          result[:login] = if test_user.present? && test_password.present?
+                            test_ldap_user(ldap, test_user, test_password)
                            else
                              { success: false, error: 'Test credentials not provided' }
                            end
@@ -146,5 +142,20 @@ namespace :cartodb do
       user_object_class:    user_object_class,
       group_object_class:   group_object_class
     )
+  end
+
+  def test_ldap_user(ldap, test_user, test_password)
+    unless ldap.user_id_field.present? && ldap.username_field.present? && ldap.email_field.present?
+      return { success: false, error: 'User id, username or email attribute names not specified.' }
+    end
+
+    entry = ldap.authenticate(test_user, test_password)
+    return { success: false, error: 'Cannot login with test credentials' } unless entry
+
+    if entry.email && entry.username
+      { success: true, email: entry.email, username: entry.username }
+    else
+      { success: false, error: 'Cannot retrieve user attributes. Check the email and username attribute names' }
+    end
   end
 end

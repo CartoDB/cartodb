@@ -59,7 +59,7 @@ module Carto
       def download
         filepath = params[:filepath]
         unless @visualization_export.file.gsub("#{Cartodb.get_config(:exporter, "uploads_path")}/", '') == filepath
-          raise Carto::LoadError("Visualization export #{@visualization_export.id} file doesn't match #{filepath}")
+          raise Carto::LoadError.new("Visualization export #{@visualization_export.id} file doesn't match #{filepath}")
         end
 
         send_file @visualization_export.file, type: "application/zip"
@@ -78,7 +78,7 @@ module Carto
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         export_user_id = @visualization_export.user_id
-        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_viewer.id
+        raise Carto::UnauthorizedError.new unless export_user_id.nil? || (current_viewer && export_user_id == current_viewer.id)
       end
     end
   end

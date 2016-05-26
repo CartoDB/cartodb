@@ -4,7 +4,7 @@ require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'support/helpers'
 
-describe Carto::Api::VisualizationExportsController do
+describe Carto::Api::VisualizationExportsController, type: :controller do
   include Carto::UUIDHelper
   include Carto::Factories::Visualizations
   include HelperMethods
@@ -86,7 +86,10 @@ describe Carto::Api::VisualizationExportsController do
       end
 
       it 'enqueues a job and returns the id' do
-        Resque.expects(:enqueue).with(Resque::ExporterJobs, anything).once
+        job_params = has_entries(
+          :download_path => regexp_matches(/download$/),
+          :job_id => regexp_matches(UUIDTools::UUID_REGEXP))
+        Resque.expects(:enqueue).with(Resque::ExporterJobs, job_params).once
         post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|
           response.status.should eq 201
           visualization_export_id = response.body[:id]
@@ -164,6 +167,55 @@ describe Carto::Api::VisualizationExportsController do
           visualization_export = response.body
           visualization_export[:id].should eq @anonymous_export.id
           visualization_export[:user_id].should be_nil
+        end
+      end
+    end
+
+    describe '#download' do
+      before(:all) do
+        @visualization = FactoryGirl.create(:carto_visualization, user: @user)
+        @export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: @user)
+        @anonymous_export = FactoryGirl.create(:visualization_export, visualization: @visualization, user: nil)
+      end
+
+      after(:all) do
+        @export.destroy
+        @visualization.destroy
+      end
+
+      def download_url(visualization_export_id, user = nil, filepath = nil)
+        visualization_export_download_url(
+          user_domain: user ? user.username : nil,
+          api_key: user ? user.api_key : nil,
+          visualization_export_id: visualization_export_id,
+          filepath: filepath
+        )
+      end
+
+      it 'returns 404 for nonexisting exports' do
+        get_json download_url(random_uuid, @user) do |response|
+          response.status.should eq 404
+        end
+      end
+
+      it 'returns 403 for exports from other user' do
+        get_json download_url(@export.id, @user2) do |response|
+          response.status.should eq 403
+        end
+      end
+
+      it 'returns 404 for exports with filepath mismatch' do
+        get_json download_url(@export.id, @user, @export.file + 'wadus') do |response|
+          response.status.should eq 404
+        end
+      end
+
+      it 'downloads the visualization export' do
+        Carto::Api::VisualizationExportsController.any_instance.expects(:send_file).
+          with(@export.file, type: 'application/zip')
+        Carto::Api::VisualizationExportsController.any_instance.stubs(:render)
+        get URI::encode("/u/#{@user.username}/#{@export.url}?api_key=#{@user.api_key}"), nil, nil do |response|
+          response.status.should eq 200
         end
       end
     end

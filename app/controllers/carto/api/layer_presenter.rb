@@ -438,7 +438,7 @@ module Carto
         'attribute' => 'points_agg',
         'range' => ['blue', 'cyan', 'lightgreen', 'yellow', 'orange', 'red'],
         'bins' => 6
-      }
+      }.freeze
 
       def generate_color(wpp)
         color = {}
@@ -525,13 +525,13 @@ module Carto
         return {} unless AGGREGATION_SOURCE_TYPES.include?(@source_type)
 
         size = case @source_type
-        when 'density'
-          100
-        when 'torque_heat'
-          wpp['torque-resolution']
-        else
-          raise "Unsupported source type for aggregation: #{@source_type}"
-        end
+               when 'density'
+                 100
+               when 'torque_heat'
+                 wpp['torque-resolution']
+               else
+                 raise "Unsupported source type for aggregation: #{@source_type}"
+               end
 
         {
           "size" => size,

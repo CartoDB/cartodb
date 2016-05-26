@@ -30,7 +30,6 @@ module Carto
 
       def generate_template
         stats_aggregator.timing('named-map.template-data') do
-          byebug
           {
             name: name,
             auth: auth,
@@ -49,7 +48,7 @@ module Carto
 
       def layers
         layers = []
-        index = 0
+        index = -1
 
         @visualization.map.named_maps_layers.each do |layer|
           type, options = if layer.data_layer?
@@ -76,7 +75,7 @@ module Carto
         end
 
         layer_infowindow = layer.infowindow
-        if layer_infowindow && !layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
+        if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
           layer_options[:attributes] = {
             id:       'cartodb_id',
             columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
@@ -217,7 +216,6 @@ module Carto
 
       #   vizjson_layers = @vizjson[:layers]
       #   vizjson_layers.reject { |layer| NON_OTHER_LAYER_KINDS.include?(layer[:kind]) }.each_with_index do |layer|
-      #     byebug
       #     layer_options = layer[:options]
 
       #     layer_data = {

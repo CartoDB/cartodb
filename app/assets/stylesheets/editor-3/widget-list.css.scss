@@ -39,13 +39,28 @@
 }
 .WidgetList-inner {
   @include display-flex;
+  @include flex-direction(column);
   flex-wrap: wrap;
   width: 100%;
 }
 .WidgetList-title {
   @include display-flex;
 }
-
+.Widget-selectorLayer {
+  position: relative;
+  background-color: #F9F9F9;
+  display: inline-block;
+  min-width: 200px;
+}
+.Widget-selectorLetter {
+  border-radius: 4px;
+  background-color: #F15743;
+  color: #fff;
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  display: inline-block;
+}
 .WidgetPlaceHolder {
   @include display-flex();
   @include flex(1);

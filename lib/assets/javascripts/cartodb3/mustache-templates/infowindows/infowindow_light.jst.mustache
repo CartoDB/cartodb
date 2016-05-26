@@ -2,10 +2,10 @@
   <div class="CDB-infowindow-container">
     <div class="CDB-infowindow-bg">
       <div class="CDB-infowindow-inner">
+        {{#loading}}
+          <div class="CDB-Loader js-loader is-visible"></div>
+        {{/loading}}
         <ul class="CDB-infowindow-list js-content">
-          {{#loading}}
-            <div class="CDB-Loader js-loader is-visible"></div>
-          {{/loading}}
           {{#content.fields}}
           <li class="CDB-infowindow-listItem">
             {{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}

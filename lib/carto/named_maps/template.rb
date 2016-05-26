@@ -5,13 +5,13 @@ require_dependency 'carto/api/vizjson3_presenter'
 module Carto
   module NamedMaps
     class Template
-      NAMED_MAPS_VERSION = '1.4.0'.freeze
+      NAMED_MAPS_VERSION = '0.0.1'.freeze
       CARTOCSS_VERSION = '2.0.1'.freeze
       NAME_PREFIX = 'tpl_'.freeze
       AUTH_TYPE_OPEN = 'open'.freeze
       AUTH_TYPE_SIGNED = 'token'.freeze
       EMPTY_CSS = '#dummy{}'.freeze
-      NON_OTHER_LAYER_KINDS = ['carto', 'tiled', 'background', 'gmapsbase', 'wms'].freeze
+      NAMED_MAP_LAYERS = ['tiled', 'background', 'gmapsbase', 'wms', 'carto'].freeze
 
       TILER_WIDGET_TYPES = {
         'category': 'aggregation',
@@ -30,10 +30,17 @@ module Carto
 
       def generate_template
         stats_aggregator.timing('named-map.template-data') do
+          byebug
           {
+            name: name,
+            auth: auth,
             version: NAMED_MAPS_VERSION,
-            layers: layers,
-            analyses: analyses
+            layergroup: {
+              layers: layers,
+              stat_tag: @visualization.id,
+              dataviews: dataviews,
+              analyses: analyses
+            }
           }
         end
       end
@@ -42,15 +49,71 @@ module Carto
 
       def layers
         layers = []
+        index = 0
 
-        @visualization.data_layers.each do |layer|
-          layers << {
-            type: 'cartodb',
-            options: options(layer)
-          }
+        @visualization.map.named_maps_layers.each do |layer|
+          type, options = if layer.data_layer?
+                            index += 1
+                            type_and_options_for_cartodb_layers(layer, index)
+                          elsif layer.basemap?
+                            type_and_options_for_basemap_layers(layer)
+                          end
+
+          layers.push(type: type, options: options)
         end
 
         layers
+      end
+
+      def type_and_options_for_cartodb_layers(layer, index)
+        layer_options = layer.options
+
+        layer_options.delete(:sql)
+
+        unless layer_options[:source]
+          layer_options[:sql] =
+            "SELECT * FROM (#{layer[:layer_options][:sql]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+        end
+
+        layer_infowindow = layer.infowindow
+        if layer_infowindow && !layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
+          layer_options[:attributes] = {
+            id:       'cartodb_id',
+            columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
+          }
+        end
+
+        ['cartodb', layer_options]
+      end
+
+      def type_and_options_for_basemap_layers(layer)
+        layer_options = layer.options
+
+        if layer_options['type'] == 'Plain'
+          type = 'plain'
+
+          layer_options = if layer_options['image'].empty?
+                            { color: layer_options['color'] }
+                          else
+                            { imageUrl: layer_options['image'] }
+                          end
+        else
+          type = 'http'
+
+          layer_options = if layer_options['urlTemplate'] && !layer_options['urlTemplate'].empty?
+                            options = {
+                              urlTemplate: layer_options['urlTemplate']
+                            }
+
+                            if layer_options.include?('subdomains')
+                              options[:subdomains] = layer_options['subdomains']
+                            end
+
+                            options
+                          end
+        end
+
+        [type, layer_options]
       end
 
       def options(layer)
@@ -64,33 +127,64 @@ module Carto
         }
       end
 
+      def dataviews
+        dataviews = []
+
+        @visualization.widgets.each do |widget|
+          dataviews << {
+            "#{widget.id}": dataview_data(widget)
+          }
+        end
+
+        dataviews
+      end
+
       def analyses
         @visualization.analyses.map(&:analysis_definition)
       end
 
-      # def name
-      #   (NAME_PREFIX + @visualization.id).gsub(/[^a-zA-Z0-9\-\_.]/, '').tr('-', '_')
-      # end
+      def stats_aggregator
+        @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
+      end
 
-      # def auth
-      #   method, valid_tokens = if @visualization.password_protected?
-      #                            [AUTH_TYPE_SIGNED, @visualization.get_auth_tokens]
-      #                          elsif @visualization.organization?
-      #                            auth_tokens = @visualization.all_users_with_read_permission
-      #                                                        .map(&:get_auth_tokens)
-      #                                                        .flatten
-      #                                                        .uniq
+      def dataview_data(widget)
+        options = widget.options
+        options[:aggregationColumn] = options[:aggregation_column]
+        options.delete(:aggregation_column)
 
-      #                            [AUTH_TYPE_SIGNED, auth_tokens]
-      #                          else
-      #                            [AUTH_TYPE_OPEN, nil]
-      #                          end
+        dataview_data = {
+          type: TILER_WIDGET_TYPES[widget.type],
+          options: options
+        }
 
-      #   auth = { method: method }
-      #   auth[:valid_tokens] = valid_tokens if valid_tokens
+        dataview_data[:source] = { id: widget.source_id } if widget.source_id.present?
 
-      #   auth
-      # end
+        dataview_data
+      end
+
+      def name
+        (NAME_PREFIX + @visualization.id).gsub(/[^a-zA-Z0-9\-\_.]/, '').tr('-', '_')
+      end
+
+      def auth
+        method, valid_tokens = if @visualization.password_protected?
+                                 [AUTH_TYPE_SIGNED, @visualization.get_auth_tokens]
+                               elsif @visualization.organization?
+                                 auth_tokens = @visualization.all_users_with_read_permission
+                                                             .map(&:get_auth_tokens)
+                                                             .flatten
+                                                             .uniq
+
+                                 [AUTH_TYPE_SIGNED, auth_tokens]
+                               else
+                                 [AUTH_TYPE_OPEN, nil]
+                               end
+
+        auth = { method: method }
+        auth[:valid_tokens] = valid_tokens if valid_tokens
+
+        auth
+      end
 
       # def placeholders
       #   placeholders = {}
@@ -218,10 +312,6 @@ module Carto
       #   options.fetch('tile_style').strip.empty? ? EMPTY_CSS : options.fetch('tile_style')
       # end
 
-      # def stats_aggregator
-      #   @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
-      # end
-
       # def options_for_cartodb_layer(layer, layer_num)
       #   layer_options = layer[:options].except [:sql, :interactivity]
 
@@ -246,21 +336,6 @@ module Carto
       #   }
 
       #   layer_options
-      # end
-
-      # def dataview_data(widget)
-      #   options = widget.options
-      #   options[:aggregationColumn] = options[:aggregation_column]
-      #   options.delete(:aggregation_column)
-
-      #   dataview_data = {
-      #     type: TILER_WIDGET_TYPES[widget.type],
-      #     options: options
-      #   }
-
-      #   dataview_data[:source] = { id: widget.source_id } if widget.source_id.present?
-
-      #   dataview_data
       # end
 
       # def options_for_basemap_layer(layer, layer_num)

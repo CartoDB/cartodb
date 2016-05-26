@@ -72,7 +72,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="FormAccount-label">Aplication ID</label>
+      <label class="FormAccount-label">Application ID</label>
     </div>
     <div class="FormAccount-rowData">
       <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>

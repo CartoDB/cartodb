@@ -24,7 +24,7 @@ module.exports = cdb.core.View.extend({
       throw new Error('target is not defined');
     }
 
-    this._$target = this.options.target;
+    this._target = this.options.target;
     this._$container = this.options.container;
 
     this._initBinds();
@@ -48,7 +48,7 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
     this.model.bind('change:pinned change:collapsed change:normalized', this.render, this);
 
-    this._$target.click(
+    this._$container.delegate(this._target, 'click',
       _.bind(this._toggleClick, this)
     );
   },
@@ -70,7 +70,8 @@ module.exports = cdb.core.View.extend({
   },
 
   _onGlobalClick: function (ev) {
-    if (this._$target.get(0) !== $(ev.target).closest(this._$target).get(0)) {
+    var target = this._$container.find(this._target);
+    if (target.get(0) !== $(ev.target).closest(target).get(0)) {
       this.model.set('widget_dropdown_open', false);
     }
   },
@@ -137,7 +138,7 @@ module.exports = cdb.core.View.extend({
     this.model.set('widget_dropdown_open', false);
     this._unbindESC();
     this._unbindGlobalClick();
-    this._$target.off('click');
+    this._$container.undelegate(this._target, 'click');
     cdb.core.View.prototype.clean.call(this);
   }
 });

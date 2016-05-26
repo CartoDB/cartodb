@@ -87,7 +87,7 @@ module.exports = cdb.core.View.extend({
   _initViews: function () {
     var dropdown = new DropdownView({
       model: this.model,
-      target: this.$('.js-actions'),
+      target: '.js-actions',
       container: this.$('.js-header')
     });
 

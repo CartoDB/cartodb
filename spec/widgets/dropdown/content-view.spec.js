@@ -7,12 +7,12 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
   });
 
   beforeEach(function () {
-    $('body').append('<div class="Widget"><button class="js-button"><div class="js-container"></div></button></div>');
+    $('body').append('<div class="Widget"><div class="js-container"><button class="js-button"></button></div></div>');
 
     this.model = new cdb.core.Model();
     this.view = new WidgetDropdownView({
       model: this.model,
-      target: $('body').find('.js-button'),
+      target: '.js-button',
       container: $('body').find('.js-container')
     });
   });

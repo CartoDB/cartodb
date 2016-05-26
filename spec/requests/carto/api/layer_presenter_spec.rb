@@ -84,6 +84,28 @@ describe Carto::Api::LayerPresenter do
       poro_options['style_properties'].should be_nil
     end
 
+    describe 'options migration' do
+      it 'migrates tile_style_custom to cartocss_custom (defaults to false)' do
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: {}))
+        layer.options.delete('tile_style_custom')
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq false
+        layer.options['tile_style_custom'] = true
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq true
+        layer.options['tile_style_custom'] = false
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq false
+      end
+
+      it 'migrates tile_style_history to cartocss_history (defaults to [])' do
+        layer = build_layer_with_wizard_properties(wizard_properties(properties: {}))
+        layer.options.delete('tile_style_history')
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_history'].should eq []
+        layer.options['tile_style_history'] = ['wadus', 'wadus2']
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_history'].should eq ['wadus', 'wadus2']
+        layer.options['tile_style_history'] = []
+        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_history'].should eq []
+      end
+    end
+
     describe 'simple' do
       it 'is generated from several types' do
         types_generating_simple = %w(polygon bubble choropleth category torque torque_cat)
@@ -94,16 +116,6 @@ describe Carto::Api::LayerPresenter do
           style_properties = poro_options['style_properties']
           style_properties['type'].should eq 'simple'
         end
-      end
-
-      it 'migrates tile_style_custom to cartocss_custom (defaults to false)' do
-        layer = build_layer_with_wizard_properties(wizard_properties(properties: {}))
-        layer.options.delete('tile_style_custom')
-        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq false
-        layer.options['tile_style_custom'] = true
-        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq true
-        layer.options['tile_style_custom'] = false
-        Carto::Api::LayerPresenter.new(layer).to_poro['options']['cartocss_custom'].should eq false
       end
 
       it 'has defaults for animated' do

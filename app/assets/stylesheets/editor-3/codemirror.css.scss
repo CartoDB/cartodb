@@ -5,12 +5,12 @@
 
 .CodeMirror {
   @include flex(1);
+  min-height: 300px;
   /* Set height, width, borders, and global font properties here */
   margin-bottom: 20px;
-  font-family: monospace;
-  color: black;
+  color: $cMainText;
+  font: 12px/16px Monaco, monospace;
   // TO BE FIXED
-  min-height: 300px;
 }
 
 /* PADDING */
@@ -19,7 +19,7 @@
   padding: 4px 0; /* Vertical padding around content */
 }
 .CodeMirror pre {
-  padding: 0 4px; /* Horizontal padding of content */
+  padding: 0 14px; /* Horizontal padding of content */
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
@@ -152,7 +152,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  background: white;
 }
 
 .CodeMirror-scroll {
@@ -346,11 +345,11 @@ span.CodeMirror-selectedtext { background: none; }
 // Theme
 
 .cm-s-material {
-  background-color: #263238;
+  background-color: #2E3C43;
   color: rgba(233, 237, 237, 1);
 }
 .cm-s-material .CodeMirror-gutters {
-  background: #263238;
+  background: #2E3C43;
   color: rgb(83,127,126);
   border: none;
 }

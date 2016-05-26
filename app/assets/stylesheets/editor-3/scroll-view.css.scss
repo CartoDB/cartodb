@@ -3,12 +3,12 @@
 
 .ScrollView {
   @include display-flex();
-  @include flex(1);
   @include flex-direction(column);
   margin-top: -19px;
 
   &,
   .ScrollView-wrapper {
+    @include flex(1);
     position: relative;
     margin-right: -10px;
     margin-left: -10px;
@@ -17,6 +17,7 @@
   }
 
   .ScrollView-content {
+    @include flex(1);
     padding: 18px 0;
   }
 }

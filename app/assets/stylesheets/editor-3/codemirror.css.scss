@@ -4,13 +4,31 @@
   position: relative;
 }
 
+.CodeMirror-console {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #3A484E;
+  border-bottom: 1px solid #3A484E;
+  color: #4F5B60;
+  font: 11px/24px Monaco, monospace;
+  text-align: center;
+}
+
+.CodeMirror-message {
+  border-top: 1px solid #3A484E;
+  background-color: #27333A;
+  text-align: left;
+  padding: 0 10px;
+}
+
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: monospace;
-  color: black;
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: 60px;
   width: 100%;
 }
 
@@ -20,7 +38,7 @@
   padding: 4px 0; /* Vertical padding around content */
 }
 .CodeMirror pre {
-  padding: 0 4px; /* Horizontal padding of content */
+  padding: 0 14px; /* Horizontal padding of content */
 }
 
 .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
@@ -347,11 +365,11 @@ span.CodeMirror-selectedtext { background: none; }
 // Theme
 
 .cm-s-material {
-  background-color: #2E3C43;
+  background-color: #2B3C43;
   color: rgba(233, 237, 237, 1);
 }
 .cm-s-material .CodeMirror-gutters {
-  background: #2E3C43;
+  background: #2B3C43;
   color: rgb(83,127,126);
   border: none;
 }

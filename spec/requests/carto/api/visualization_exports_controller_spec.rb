@@ -87,8 +87,8 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
 
       it 'enqueues a job and returns the id' do
         job_params = has_entries(
-          :download_path => regexp_matches(/download$/),
-          :job_id => regexp_matches(UUIDTools::UUID_REGEXP))
+          download_path: regexp_matches(/download$/),
+          job_id: regexp_matches(UUIDTools::UUID_REGEXP))
         Resque.expects(:enqueue).with(Resque::ExporterJobs, job_params).once
         post_json create_visualization_export_url(@user), visualization_id: @visualization.id do |response|
           response.status.should eq 201

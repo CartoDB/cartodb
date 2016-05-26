@@ -74,6 +74,10 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
         return feature.cartodb_id !== data.cartodb_id;
       }).hide();
     }
+
+    this._infowindowModel.once('change:visibility', function () {
+      layerView.tooltipView.setFilter(null);
+    }, this);
   }, this);
 };
 

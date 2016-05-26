@@ -523,6 +523,55 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(filterFunction({ cartodb_id: 0 })).toBeTruthy();
   });
 
+  it('should clear the filter on the tooltipView when the infowindow is hidden', function () {
+    // Simulate that the layerView has been added a tooltipView
+    var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
+    tooltipView.setFilter.and.returnValue(tooltipView);
+    this.layerView.tooltipView = tooltipView;
+
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer = new CartoDBLayer({
+      infowindow: {
+        template: 'template',
+        template_type: 'underscore',
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }],
+        alternative_names: 'alternative_names'
+      }
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer ]);
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+
+    this.layerView.model = {
+      fetchAttributes: jasmine.createSpy('fetchAttributes'),
+      getLayerAt: function (index) {
+        return layer;
+      },
+
+      getIndexOf: function (layerModel) {
+        return 0;
+      }
+    };
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    this.layerView.tooltipView.setFilter.calls.reset();
+
+    infowindowView.model.set('visibility', false);
+
+    expect(this.layerView.tooltipView.setFilter).toHaveBeenCalledWith(null);
+  });
+
   it('should reload the map when the infowindow template gets new fields', function () {
     spyOn(this.map, 'reload');
 

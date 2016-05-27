@@ -1,16 +1,35 @@
-@import 'cdb-utilities/mixins';
-@import 'cdb-variables/colors';
-
 /* BASICS */
 
+.CodeMirror-wrapper {
+  position: relative;
+}
+
+.CodeMirror-console {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #3A484E;
+  border-bottom: 1px solid #3A484E;
+  color: #4F5B60;
+  font: 11px/24px Monaco, monospace;
+  text-align: center;
+}
+
+.CodeMirror-message {
+  border-top: 1px solid #3A484E;
+  background-color: #27333A;
+  text-align: left;
+  padding: 0 10px;
+}
+
 .CodeMirror {
-  @include flex(1);
-  min-height: 300px;
   /* Set height, width, borders, and global font properties here */
-  margin-bottom: 20px;
-  color: $cMainText;
-  font: 12px/16px Monaco, monospace;
-  // TO BE FIXED
+  font-family: monospace;
+  position: absolute;
+  top: 0;
+  bottom: 60px;
+  width: 100%;
 }
 
 /* PADDING */
@@ -150,8 +169,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
    the editor. You probably shouldn't touch them. */
 
 .CodeMirror {
-  position: relative;
   overflow: hidden;
+  background: white;
 }
 
 .CodeMirror-scroll {
@@ -342,14 +361,15 @@ div.CodeMirror-dragcursors {
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext { background: none; }
 
+
 // Theme
 
 .cm-s-material {
-  background-color: #2E3C43;
+  background-color: #2B3C43;
   color: rgba(233, 237, 237, 1);
 }
 .cm-s-material .CodeMirror-gutters {
-  background: #2E3C43;
+  background: #2B3C43;
   color: rgb(83,127,126);
   border: none;
 }
@@ -387,4 +407,71 @@ span.CodeMirror-selectedtext { background: none; }
 .cm-s-material .CodeMirror-matchingbracket {
   text-decoration: underline;
   color: white !important;
+}
+
+
+.CodeMirror-simplescroll-horizontal div, .CodeMirror-simplescroll-vertical div {
+  position: absolute;
+  background: #636D72;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.CodeMirror-simplescroll-horizontal, .CodeMirror-simplescroll-vertical {
+  position: absolute;
+  z-index: 6;
+  background: #27333A;
+}
+
+.CodeMirror-simplescroll-horizontal {
+  bottom: 0; left: 0;
+  height: 2px;
+}
+.CodeMirror-simplescroll-horizontal div {
+  bottom: 0;
+  height: 100%;
+}
+
+.CodeMirror-simplescroll-vertical {
+  right: 0; top: 0;
+  width: 2px;
+}
+.CodeMirror-simplescroll-vertical div {
+  right: 0;
+  width: 100%;
+}
+
+
+.CodeMirror-overlayscroll .CodeMirror-scrollbar-filler, .CodeMirror-overlayscroll .CodeMirror-gutter-filler {
+  display: none;
+}
+
+.CodeMirror-overlayscroll-horizontal div, .CodeMirror-overlayscroll-vertical div {
+  position: absolute;
+  background: #bcd;
+  border-radius: 3px;
+}
+
+.CodeMirror-overlayscroll-horizontal, .CodeMirror-overlayscroll-vertical {
+  position: absolute;
+  z-index: 6;
+}
+
+.CodeMirror-overlayscroll-horizontal {
+  bottom: 0; left: 0;
+  height: 2px;
+}
+.CodeMirror-overlayscroll-horizontal div {
+  bottom: 0;
+  height: 100%;
+}
+
+.CodeMirror-overlayscroll-vertical {
+  right: 0; top: 0;
+  width: 2px;
+}
+.CodeMirror-overlayscroll-vertical div {
+  right: 0;
+  width: 100%;
 }

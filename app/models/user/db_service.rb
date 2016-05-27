@@ -1186,10 +1186,10 @@ module CartoDB
           db.transaction do
             db.run(build_aggregation_fdw_config_sql(config))
             db.run("SELECT cartodb._CDB_Setup_FDW('aggregation');")
-            db.run("CREATE FOREIGN TABLE agg_admin0 (cartodb_id integer,the_geom geometry(Geometry,4326), " \
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS agg_admin0 (cartodb_id integer,the_geom geometry(Geometry,4326), " \
                    "population double precision OPTIONS (column_name 'pop_est')) SERVER aggregation OPTIONS " \
                    "(table_name '#{config['tables']['admin0']}', updatable 'false');")
-            db.run("CREATE FOREIGN TABLE agg_admin1 (cartodb_id integer,the_geom geometry(Geometry,4326)) " \
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS agg_admin1 (cartodb_id integer,the_geom geometry(Geometry,4326)) " \
                    "SERVER aggregation OPTIONS (table_name '#{config['tables']['admin1']}', updatable 'false');")
             db.run("GRANT SELECT ON TABLE agg_admin0 TO \"#{@user.database_username}\";")
             db.run("GRANT SELECT ON TABLE agg_admin1 TO \"#{@user.database_username}\";")

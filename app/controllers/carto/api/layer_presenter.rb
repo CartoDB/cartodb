@@ -362,22 +362,30 @@ module Carto
       def set_if_present(hash, key, value)
         # Dirty check because `false` is a valid `value`
         hash[key] = value unless value.nil? || value == ''
+
+        hash
       end
 
       def merge_into_if_present(hash, key, hash_value)
         hash[key] = hash_value.merge!(hash[key] || {}) if hash_value.present?
+
+        hash
       end
 
       def apply_direct_mapping(hash, original_hash, mapping)
         mapping.each do |source, target|
           set_if_present(hash, target, original_hash[source])
         end
+
+        hash
       end
 
       def apply_default_opacity(hash)
         if hash['fixed'] && !hash['opacity']
           hash['opacity'] = 1
         end
+
+        hash
       end
 
       PROPERTIES_DIRECT_MAPPING = {
@@ -391,6 +399,10 @@ module Carto
         return spp unless wpp
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
+
+        unless wpp['geometry_type'] == 'line'
+          merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
+        end
 
         merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))
 
@@ -443,6 +455,24 @@ module Carto
         merge_into_if_present(fill, 'color', generate_color(wpp))
 
         fill
+      end
+
+      STROKE_SIZE_DIRECT_MAPPING = {
+        "marker-line-width" => 'fixed'
+      }
+
+      STROKE_COLOR_DIRECT_MAPPING = {
+        "marker-line-color" => 'fixed',
+        "marker-line-opacity" => 'opacity'
+      }
+
+      def generate_stroke(wpp)
+        stroke = {}
+
+        merge_into_if_present(stroke, 'size', apply_direct_mapping({}, wpp, STROKE_SIZE_DIRECT_MAPPING))
+        merge_into_if_present(stroke, 'color', apply_direct_mapping({}, wpp, STROKE_COLOR_DIRECT_MAPPING))
+
+        stroke
       end
 
       TORQUE_HEAT_COLOR_DEFAULTS = {

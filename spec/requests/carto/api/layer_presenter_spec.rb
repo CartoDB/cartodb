@@ -327,6 +327,7 @@ describe Carto::Api::LayerPresenter do
         let(:property) { "actor_foll" }
         let(:number_of_buckets) { 7 }
         let(:qfunction) { "Quantile" }
+        let(:color_ramp) { "red" }
         let(:choropleth_wizard_properties) do
           {
             "type" => "choropleth",
@@ -335,7 +336,7 @@ describe Carto::Api::LayerPresenter do
                 "property" => property,
                 "method" => "#{number_of_buckets} Buckets",
                 "qfunction" => qfunction,
-                "color_ramp" => "red",
+                "color_ramp" => color_ramp,
                 "marker-opacity" => OPACITY,
                 "marker-width" => 10,
                 "marker-allow-overlap" => true,
@@ -364,7 +365,9 @@ describe Carto::Api::LayerPresenter do
           end
 
           it 'transform color_ramp to color array in range' do
-            expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+            # Commented because this might change soon
+            # expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+            expect(@fill_color).to include('range' => color_ramp)
           end
 
           it 'property becomes attribute' do
@@ -388,6 +391,9 @@ describe Carto::Api::LayerPresenter do
       describe 'category' do
         let(:property) { "aforo" }
         let(:opacity) { 0.456 }
+        let(:marker_line_width) { 1 }
+        let(:marker_line_color) { "#FFF" }
+        let(:marker_line_opacity) { 0.7 }
         let(:category_wizard_properties) do
           {
             "type" => "category",
@@ -398,9 +404,9 @@ describe Carto::Api::LayerPresenter do
               "marker-allow-overlap" => true,
               "marker-placement" => "point",
               "marker-type" => "ellipse",
-              "marker-line-width" => 1,
-              "marker-line-color" => "#FFF",
-              "marker-line-opacity" => 1,
+              "marker-line-width" => marker_line_width,
+              "marker-line-color" => marker_line_color,
+              "marker-line-opacity" => marker_line_opacity,
               "zoom" => "15",
               "geometry_type" => 'point',
               "text-placement-type" => "simple",
@@ -429,27 +435,45 @@ describe Carto::Api::LayerPresenter do
             options = presenter_with_style_properties(layer).to_poro['options']
             @fill_color = options['style_properties']['properties']['fill']['color']
             @fill_size = options['style_properties']['properties']['fill']['size']
+            @stroke_color = options['style_properties']['properties']['stroke']['color']
+            @stroke_size = options['style_properties']['properties']['stroke']['size']
           end
 
-          it 'has fill size fixed 10' do
-            expect(@fill_size).to include('fixed' => 10)
+          describe 'fill' do
+            it 'has fill size fixed 10' do
+              expect(@fill_size).to include('fixed' => 10)
+            end
+
+            it 'generates color range from categories colors' do
+              expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
+            end
+
+            it 'property becomes attribute' do
+              expect(@fill_color).to include('attribute' => property)
+              expect(@fill_size).not_to include('attribute' => property)
+            end
+
+            it 'marker-opacity becomes opacity' do
+              expect(@fill_color).to include('opacity' => opacity)
+            end
+
+            it 'bins defaults to 10' do
+              expect(@fill_color).to include('bins' => 10)
+            end
           end
 
-          it 'generates color range from categories colors' do
-            expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
-          end
+          describe 'stroke' do
+            it 'marker-line-width becomes fixed stroke size' do
+              expect(@stroke_size).to include('fixed' => marker_line_width)
+            end
 
-          it 'property becomes attribute' do
-            expect(@fill_color).to include('attribute' => property)
-            expect(@fill_size).not_to include('attribute' => property)
-          end
+            it 'marker-line-color becomes fixed stroke color' do
+              expect(@stroke_color).to include('fixed' => marker_line_color)
+            end
 
-          it 'marker-opacity becomes opacity' do
-            expect(@fill_color).to include('opacity' => opacity)
-          end
-
-          it 'bins defaults to 10' do
-            expect(@fill_color).to include('bins' => 10)
+            it 'marker-line-opacity becomes opacity' do
+              expect(@stroke_color).to include('opacity' => marker_line_opacity)
+            end
           end
         end
 
@@ -648,6 +672,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'density' do
       let(:query_wrapper) { "with meta ... <%= sql %> ..." }
+      let(:color_ramp) { "red" }
       let(:density_wizard_properties) do
         {
           "type" => "density",
@@ -655,7 +680,7 @@ describe Carto::Api::LayerPresenter do
             {
               "geometry_type" => "point",
               "method" => "5 Buckets",
-              "color_ramp" => "red",
+              "color_ramp" => color_ramp,
               "polygon-opacity" => 0.8,
               "line-width" => 0.5,
               "line-color" => "#FFF",
@@ -707,8 +732,10 @@ describe Carto::Api::LayerPresenter do
       end
 
       describe 'fill' do
-        it 'transform color_ramp to color array in range' do
-          expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+        it 'transform color_ramp to color range' do
+          # Commented because it might change soon
+          # expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
+          expect(@fill_color).to include('range' => color_ramp)
         end
       end
     end

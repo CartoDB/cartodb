@@ -13,6 +13,9 @@
   border-radius: $halfBaseSize;
   background: #FFF;
 }
+.Editor-ListLayer-item--placeholder {
+  background: #F2F6F9;
+}
 .Editor-ListLayer-item:hover {
   @include transition(border, 200ms, ease-in);
   border: 1px solid $cHoverLine;

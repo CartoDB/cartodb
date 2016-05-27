@@ -49,15 +49,16 @@ module Carto
 
       def layers
         layers = []
-        index = -1
+        map = @visualization.map
 
-        @visualization.map.named_maps_layers.each do |layer|
-          type, options = if layer.data_layer?
-                            index += 1
-                            type_and_options_for_cartodb_layers(layer, index)
-                          elsif layer.basemap?
-                            type_and_options_for_basemap_layers(layer)
-                          end
+        map.named_maps_layers.map(&:basemap?).each do |layer|
+          type, options = type_and_options_for_basemap_layers(layer)
+
+          layers.push(type: type, options: options)
+        end
+
+        map.named_maps_layers.map(&:data_layer?).each_with_index do |layer, index|
+          type, options = type_and_options_for_cartodb_layers(layer, index)
 
           layers.push(type: type, options: options)
         end
@@ -79,7 +80,7 @@ module Carto
           options[:source] = { id: layer_options_source }
         else
           options[:sql] =
-            "SELECT * FROM (#{layer[:layer_options][:sql]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+            "SELECT * FROM (#{layer_options[:query]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
         end
 
         layer_infowindow = layer.infowindow

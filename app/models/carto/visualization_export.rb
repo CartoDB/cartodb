@@ -57,7 +57,7 @@ module Carto
         export_file = filepath
       else
         logger.append("Ad-hoc export download: #{results[:file_path]} (ignored: #{filepath})")
-        export_url = generate_export_url(results[:file_path], download_path)
+        export_url = download_path
         export_file = results[:file_path]
       end
 
@@ -104,10 +104,6 @@ module Carto
       check_valid_visualization(visualization)
     rescue => e
       errors.add(:visualization, e.message)
-    end
-
-    def generate_export_url(filepath, download_path)
-      download_path.to_s + filepath.gsub(Cartodb.get_config(:exporter, "uploads_path"), '')
     end
   end
 end

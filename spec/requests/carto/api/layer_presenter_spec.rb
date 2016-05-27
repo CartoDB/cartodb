@@ -363,7 +363,7 @@ describe Carto::Api::LayerPresenter do
             expect(@fill_size).to include('fixed' => 10)
           end
 
-          it 'transform color ramp to color array in range' do
+          it 'transform color_ramp to color array in range' do
             expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
           end
 
@@ -675,6 +675,7 @@ describe Carto::Api::LayerPresenter do
         @style = @options['style_properties']
         @aggregation = @style['aggregation']
         @properties = @style['properties']
+        @fill_color = @properties['fill']['color']
       end
 
       it 'sets query_wrapper at sql_wrap' do
@@ -702,6 +703,12 @@ describe Carto::Api::LayerPresenter do
               "attribute" => ''
             }
           )
+        end
+      end
+
+      describe 'fill' do
+        it 'transform color_ramp to color array in range' do
+          expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
         end
       end
     end

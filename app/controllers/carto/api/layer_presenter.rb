@@ -42,7 +42,7 @@ module Carto
 
         @viewer_user = options.fetch(:viewer_user, nil)
         @owner_user  = options.fetch(:user, nil)
-        @with_style_properties = true # options.fetch(:with_style_properties, false)
+        @with_style_properties = options.fetch(:with_style_properties, false)
       end
 
       def to_poro
@@ -417,7 +417,7 @@ module Carto
                         spp[drawing_property]['size']
                       when 'choropleth', 'category'
                         spp[drawing_property]['color']
-                      when 'torque', 'torque_heat'
+                      when 'torque', 'torque_heat', 'torque_cat'
                         spp['animated']
                       when 'density'
                         spp['aggregation']['value']
@@ -479,6 +479,7 @@ module Carto
         'qfunction' => 'quantification'
       }.freeze
 
+      COLOR_RANGE_SOURCE_TYPES = ['choropleth', 'density']
       def generate_dimension_properties(wpp)
         size = {}
 
@@ -494,8 +495,10 @@ module Carto
           size['bins'] = 10
         end
 
-        if @source_type == 'choropleth'
-          size['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
+        if COLOR_RANGE_SOURCE_TYPES.include?(@source_type)
+          # Commented because it might not be definitive
+          # size['range'] = colorbrewer_ramp_array_from_color_ramp(wpp['color_ramp'])
+          size['range'] = wpp['color_ramp']
           size['bins'] = extract_bins_from_method(wpp['method']).to_i
         end
 

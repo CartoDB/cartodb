@@ -13,7 +13,10 @@ module Carto
         stats_aggregator.timing('named-map.create') do
           template_data = Carto::NamedMaps::Template.new(visualization).generate_template
 
-          response = http_client.post(url(visualization.user.api_key), request_params(template_data))
+          user = visualization.user
+          username = user.username
+
+          response = http_client.post(url(user.api_key, username), request_params(template_data, username))
 
           if response.code == 409 && response.body =~ /reached limit on number of templates/
             raise "Reached limit on number of named map templates"
@@ -35,20 +38,15 @@ module Carto
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
       end
 
-      def url(api_key)
-        "#{host}/api/v1/map/named?api_key=#{api_key}"
+      def url(api_key, username)
+        user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ""
+
+        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named?api_key=#{api_key}"
       end
 
-      def headers
-        @headers ||= {
-          'content-type': 'application/json',
-          'host': domain
-        }
-      end
-
-      def request_params(template)
+      def request_params(template, username)
         {
-          headers: headers,
+          headers: headers(username),
           body: ::JSON.dump(template),
           ssl_verifypeer: ssl_verifypeer,
           ssl_verifyhost: ssl_verifyhost,
@@ -58,8 +56,19 @@ module Carto
         }
       end
 
-      def domain
-        @domain ||= Cartodb.config[:tiler]['internal']['domain']
+      def headers(username)
+        @headers ||= {
+          'content-type': 'application/json',
+          'host': domain(username)
+        }
+      end
+
+      def domain(username)
+        return @domain if @domain
+
+        config_domain = Cartodb.config[:tiler]['internal']['domain']
+
+        CartoDB.subdomainless_urls? ? config_domain : "#{username}.#{config_domain}"
       end
 
       def port
@@ -78,8 +87,12 @@ module Carto
         ssl_verifypeer ? 2 : 0
       end
 
-      def host
-        @host ||= Cartodb.config[:tiler]['internal']['host']
+      def host(username)
+        return @host if @host
+
+        config_host = Cartodb.config[:tiler]['internal']['host']
+
+        @host ||= config_host.blank? ? domain(username) : config_host
       end
 
       def http_client

@@ -489,7 +489,7 @@ CartoDB::Application.routes.draw do
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
-        get 'download(/:filepath)' => 'visualization_exports#download', as: :download, constraints: { filepath: /[^\n]+/ }
+        get 'download' => 'visualization_exports#download', as: :download
       end
     end
   end

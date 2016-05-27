@@ -183,12 +183,11 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
         @visualization.destroy
       end
 
-      def download_url(visualization_export_id, user = nil, filepath = nil)
+      def download_url(visualization_export_id, user = nil)
         visualization_export_download_url(
           user_domain: user ? user.username : nil,
           api_key: user ? user.api_key : nil,
-          visualization_export_id: visualization_export_id,
-          filepath: filepath
+          visualization_export_id: visualization_export_id
         )
       end
 
@@ -201,12 +200,6 @@ describe Carto::Api::VisualizationExportsController, type: :controller do
       it 'returns 403 for exports from other user' do
         get_json download_url(@export.id, @user2) do |response|
           response.status.should eq 403
-        end
-      end
-
-      it 'returns 404 for exports with filepath mismatch' do
-        get_json download_url(@export.id, @user, @export.file + 'wadus') do |response|
-          response.status.should eq 404
         end
       end
 

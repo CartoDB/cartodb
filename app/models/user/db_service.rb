@@ -1170,13 +1170,30 @@ module CartoDB
       def materialized_views(schema = @user.database_schema)
         Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
-      
+
       def get_database_version
         version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         if version_match.nil?
           return nil
         else
           return version_match[2]
+        end
+      end
+
+      def connect_to_aggregation_tables
+        config = Cartodb.get_config(:aggregation_tables)
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run(build_aggregation_fdw_config_sql(config))
+            db.run("SELECT cartodb._CDB_Setup_FDW('aggregation');")
+            db.run("CREATE FOREIGN TABLE agg_admin0 (cartodb_id integer,the_geom geometry(Geometry,4326), " \
+                   "population double precision OPTIONS (column_name 'pop_est')) SERVER aggregation OPTIONS " \
+                   "(table_name '#{config['tables']['admin0']}', updatable 'false');")
+            db.run("CREATE FOREIGN TABLE agg_admin1 (cartodb_id integer,the_geom geometry(Geometry,4326)) " \
+                   "SERVER aggregation OPTIONS (table_name '#{config['tables']['admin1']}', updatable 'false');")
+            db.run("GRANT SELECT ON TABLE agg_admin0 TO \"#{@user.database_username}\";")
+            db.run("GRANT SELECT ON TABLE agg_admin1 TO \"#{@user.database_username}\";")
+          end
         end
       end
 
@@ -1412,6 +1429,15 @@ module CartoDB
         }
       end
 
+      def build_aggregation_fdw_config_sql(config)
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('fdws',
+            '{"aggregation":{"server":{"extensions":"postgis", "dbname":"#{config['dbname']}",
+            "host":"#{config['host']}", "port":"#{config['port']}"}, "users":{"public":{"user":"#{config['username']}",
+            "password":""} } } }'::json
+          );
+        }
+      end
     end
   end
 end

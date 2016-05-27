@@ -65,9 +65,7 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
       visibility: true
     });
 
-    if (this._currentFeatureId !== data.cartodb_id) {
-      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
-    }
+    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
 
     if (layerView.tooltipView) {
       layerView.tooltipView.setFilter(function (feature) {

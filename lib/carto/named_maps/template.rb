@@ -67,22 +67,26 @@ module Carto
       def type_and_options_for_cartodb_layers(layer, index)
         layer_options = layer.options
 
-        layer_options.delete(:sql)
+        options = {
+          layer_name: layer_options[:table_name],
+          cartocss_version: '2.0.1',
+          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style')
+        }
 
         unless layer_options[:source]
-          layer_options[:sql] =
+          options[:sql] =
             "SELECT * FROM (#{layer[:layer_options][:sql]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
         end
 
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
-          layer_options[:attributes] = {
+          options[:attributes] = {
             id:       'cartodb_id',
             columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
           }
         end
 
-        ['cartodb', layer_options]
+        ['cartodb', options]
       end
 
       def type_and_options_for_basemap_layers(layer)

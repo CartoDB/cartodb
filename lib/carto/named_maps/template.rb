@@ -39,7 +39,8 @@ module Carto
               stat_tag: @visualization.id,
               dataviews: dataviews,
               analyses: analyses
-            }
+            },
+            view: view
           }
         end
       end
@@ -69,11 +70,15 @@ module Carto
 
         options = {
           layer_name: layer_options[:table_name],
+          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
           cartocss_version: '2.0.1',
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style')
+          interactivity: layer_options[:interactivity]
         }
 
-        unless layer_options[:source]
+        layer_options_source = layer_options[:source]
+        if layer_options_source
+          options[:source] = { id: layer_options_source }
+        else
           options[:sql] =
             "SELECT * FROM (#{layer[:layer_options][:sql]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
         end
@@ -189,6 +194,28 @@ module Carto
         auth
       end
 
+      def view
+        map = @visualization.map
+        center_data = map.center_data
+
+        data = {
+          zoom: map.zoom,
+          center: {
+            lng: center_data[1].to_f,
+            lat: center_data[0].to_f
+          }
+        }
+
+        bounds_data = map.view_bounds_data
+
+        # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
+        if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
+          data[:bounds] = bounds_data
+        end
+
+        data
+      end
+
       # def placeholders
       #   placeholders = {}
 
@@ -263,28 +290,6 @@ module Carto
       #   end
 
       #   layergroup
-      # end
-
-      # def view
-      #   map = @visualization.map
-      #   center_data = map.center_data
-
-      #   data = {
-      #     zoom: map.zoom,
-      #     center: {
-      #       lng: center_data[1].to_f,
-      #       lat: center_data[0].to_f
-      #     }
-      #   }
-
-      #   bounds_data = map.view_bounds_data
-
-      #   # INFO: Don't return 'bounds' if all points are 0 to avoid static map trying to go too small zoom level
-      #   if bounds_data[:west] != 0 || bounds_data[:south] != 0 || bounds_data[:east] != 0 || bounds_data[:north] != 0
-      #     data[:bounds] = bounds_data
-      #   end
-
-      #   data
       # end
 
       # def widgets_data_for_layer(layer)

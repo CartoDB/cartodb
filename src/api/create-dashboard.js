@@ -75,11 +75,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     'time-series': widgetsService.createTimeSeriesModel.bind(widgetsService),
     category: widgetsService.createCategoryModel.bind(widgetsService)
   };
-  vizJSON.widgets.forEach(function (d, index) {
+  vizJSON.widgets.forEach(function (d) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
     var attrs = _.extend({}, d, d.options);
     var newWidgetModel = widgetModelsMap[d.type];
-    var state = widgetsState[index];
+    var state = widgetsState[d.id];
 
     if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.

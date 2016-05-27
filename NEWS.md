@@ -47,7 +47,7 @@ which should be fixed manually.
   * Geopackage internal format.
 * Full visualization export API. Needed configuration changes:
   * New Resque queue: `exports`.
-  * `exporter.uploads_path` (`public/uploads`, for example).
+  * `exporter.uploads_path`. Set it to `public/uploads` to use Rails standard upload directory or an absolute path (such as `/tmp/export_uploads`) to make cleanup easier.
   * `s3` (see `exporter.s3` at `app_config.yml.sample`).
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
 * Disables data library when it is not configured (e.g: offline installations).

@@ -42,7 +42,7 @@ module Carto
 
         @viewer_user = options.fetch(:viewer_user, nil)
         @owner_user  = options.fetch(:user, nil)
-        @with_style_properties = options.fetch(:with_style_properties, false)
+        @with_style_properties = true # options.fetch(:with_style_properties, false)
       end
 
       def to_poro
@@ -335,8 +335,11 @@ module Carto
 
         merge_into_if_present(options['style_properties'], 'aggregation', generate_aggregation(wpp))
 
-        if @source_type == 'cluster'
+        if SOURCE_TYPES_WITH_SQL_WRAP.include?(@source_type)
           options['sql_wrap'] = options['query_wrapper']
+        end
+
+        if @source_type == 'cluster'
           options['cartocss_custom'] = true
         end
       end
@@ -353,6 +356,8 @@ module Carto
         'cluster' => 'simple',
         'torque_heat' => 'heatmap'
       }.freeze
+
+      SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density']
 
       def set_if_present(hash, key, value)
         # Dirty check because `false` is a valid `value`

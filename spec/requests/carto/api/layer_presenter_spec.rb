@@ -647,6 +647,7 @@ describe Carto::Api::LayerPresenter do
     end
 
     describe 'density' do
+      let(:query_wrapper) { "with meta ... <%= sql %> ..." }
       let(:density_wizard_properties) do
         {
           "type" => "density",
@@ -667,12 +668,17 @@ describe Carto::Api::LayerPresenter do
       end
 
       before(:each) do
-        layer = build_layer_with_wizard_properties(density_wizard_properties)
-        options = presenter_with_style_properties(layer).to_poro['options']
+        options = { 'query_wrapper' => query_wrapper, 'wizard_properties' => density_wizard_properties }
+        layer = FactoryGirl.build(:carto_layer, options: options)
+        @options = presenter_with_style_properties(layer).to_poro['options']
 
-        @style = options['style_properties']
+        @style = @options['style_properties']
         @aggregation = @style['aggregation']
         @properties = @style['properties']
+      end
+
+      it 'sets query_wrapper at sql_wrap' do
+        @options['sql_wrap'].should eq query_wrapper
       end
 
       it 'maps point geometry_type to hexabins type' do

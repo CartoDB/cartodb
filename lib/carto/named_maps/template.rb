@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require_dependency 'carto/api/vizjson3_presenter'
-
 module Carto
   module NamedMaps
     class Template
@@ -24,7 +22,6 @@ module Carto
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
 
         @visualization = visualization
-        @vizjson = Carto::Api::VizJSON3Presenter.new(visualization).to_named_map_vizjson
       end
 
       def generate_template

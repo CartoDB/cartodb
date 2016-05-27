@@ -34,6 +34,7 @@ module Carto
             name: name,
             auth: auth,
             version: NAMED_MAPS_VERSION,
+            placeholders: placeholders,
             layergroup: {
               layers: layers,
               stat_tag: @visualization.id,
@@ -47,17 +48,32 @@ module Carto
 
       private
 
+      def placeholders
+        placeholders = []
+
+        @visualization.map.named_maps_layers.select(&:data_layer?).each_with_index do |layer, index|
+          placeholders << {
+            "layer#{index}": {
+              type: 'number',
+              default: layer.options[:visible] ? 1 : 0
+            }
+          }
+        end
+
+        placeholders
+      end
+
       def layers
         layers = []
         map = @visualization.map
 
-        map.named_maps_layers.map(&:basemap?).each do |layer|
+        map.named_maps_layers.select(&:basemap?).each do |layer|
           type, options = type_and_options_for_basemap_layers(layer)
 
           layers.push(type: type, options: options)
         end
 
-        map.named_maps_layers.map(&:data_layer?).each_with_index do |layer, index|
+        map.named_maps_layers.select(&:data_layer?).each_with_index do |layer, index|
           type, options = type_and_options_for_cartodb_layers(layer, index)
 
           layers.push(type: type, options: options)

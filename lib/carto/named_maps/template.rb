@@ -90,8 +90,7 @@ module Carto
 
         options = {
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: '2.0.1',
-          interactivity: layer_options[:interactivity]
+          cartocss_version: '2.0.1'
         }
 
         layer_options_source = layer_options[:source]
@@ -103,6 +102,7 @@ module Carto
 
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
+          options[:interactivity] = layer_options[:interactivity]
           options[:attributes] = {
             id:       'cartodb_id',
             columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }

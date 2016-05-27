@@ -8,7 +8,7 @@
 <div>
   <div class="ModalBlockList-item-header u-bSpace">
     <h2 class="ModalBlockList-item-headerTitle CDB-Text CDB-Size-large u-rSpace--m u-ellipsis"><%- title %></h2>
-    <h3 class="ModalBlockList-item-headerSubTitle CDB-Text CDB-Size-small u-hintTextColor u-upperCase u-ellipsis"><%- sub_title %></h3>
+    <h3 class="ModalBlockList-item-headerSubTitle CDB-Text CDB-Size-small u-hintTextColor u-upperCase u-ellipsis"><%- type_group %></h3>
   </div>
   <div class="ModalBlockList-item-body">
     <p class="CDB-Text CDB-Size-small u-altTextColor"><%- desc %></p>

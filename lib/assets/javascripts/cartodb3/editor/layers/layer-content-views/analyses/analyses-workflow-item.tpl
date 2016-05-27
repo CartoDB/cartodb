@@ -3,7 +3,9 @@
     <span class="HorizontalBlockList-item-text">
       <%- nodeId %>
     </span>
-    <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium HorizontalBlockList-item-icon"></i>
+    <% if (!isNew) { %>
+      <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium HorizontalBlockList-item-icon"></i>
+    <% } %>
   </button>
 <% } else { %>
   <% if (isSelected) { %>

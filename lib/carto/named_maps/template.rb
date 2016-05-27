@@ -75,6 +75,16 @@ module Carto
         layers
       end
 
+      def sql(layer_options, index)
+        sql = if layer_options[:query].present?
+                layer_options[:query]
+              else
+                "#{@visualization.owner.sql_safe_database_schema}.#{layer_options['table_name']}"
+              end
+
+        "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      end
+
       def type_and_options_for_cartodb_layers(layer, index)
         layer_options = layer.options
 
@@ -88,8 +98,7 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] =
-            "SELECT * FROM (#{layer_options[:query]}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+          options[:sql] = sql(layer_options, index)
         end
 
         layer_infowindow = layer.infowindow

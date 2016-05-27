@@ -19,6 +19,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'.freeze
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
+      SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.5.0'.freeze
 
       def initialize(user)
@@ -1170,13 +1171,34 @@ module CartoDB
       def materialized_views(schema = @user.database_schema)
         Carto::Db::Database.build_with_user(@user).materialized_views(schema, @user.database_username)
       end
-      
+
       def get_database_version
         version_match = @user.in_database.fetch("SELECT version()").first[:version].match(/(PostgreSQL (([0-9]+\.?){2,3})).*/)
         if version_match.nil?
           return nil
         else
           return version_match[2]
+        end
+      end
+
+      def connect_to_aggregation_tables
+        config = Cartodb.get_config(:aggregation_tables)
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run(build_aggregation_fdw_config_sql(config))
+            db.run("SELECT cartodb._CDB_Setup_FDW('aggregation');")
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS #{SCHEMA_AGGREGATION_TABLES}.agg_admin0 " \
+                   "(cartodb_id integer, the_geom geometry(Geometry,4326), " \
+                   "the_geom_webmercator geometry(Geometry,3857), " \
+                   "population double precision OPTIONS (column_name 'pop_est')) SERVER aggregation OPTIONS " \
+                   "(schema_name 'public', table_name '#{config['tables']['admin0']}', updatable 'false');")
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS #{SCHEMA_AGGREGATION_TABLES}.agg_admin1 " \
+                   "(cartodb_id integer,the_geom geometry(Geometry,4326), " \
+                   "the_geom_webmercator geometry(Geometry,3857)) " \
+                   "SERVER aggregation OPTIONS (schema_name 'public', table_name '#{config['tables']['admin1']}', updatable 'false');")
+            db.run("GRANT SELECT ON TABLE #{SCHEMA_AGGREGATION_TABLES}.agg_admin0 TO \"#{@user.database_username}\";")
+            db.run("GRANT SELECT ON TABLE #{SCHEMA_AGGREGATION_TABLES}.agg_admin1 TO \"#{@user.database_username}\";")
+          end
         end
       end
 
@@ -1412,6 +1434,15 @@ module CartoDB
         }
       end
 
+      def build_aggregation_fdw_config_sql(config)
+        %{
+          SELECT cartodb.CDB_Conf_SetConf('fdws',
+            '{"aggregation":{"server":{"extensions":"postgis", "dbname":"#{config['dbname']}",
+            "host":"#{config['host']}", "port":"#{config['port']}"}, "users":{"public":{"user":"#{config['username']}",
+            "password":"#{config['password']}"} } } }'::json
+          );
+        }
+      end
     end
   end
 end

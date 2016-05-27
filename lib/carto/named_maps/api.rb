@@ -13,17 +13,7 @@ module Carto
         stats_aggregator.timing('named-map.create') do
           template_data = Carto::NamedMaps::Template.new(visualization).generate_template
 
-          params = {
-            headers: headers,
-            body: ::JSON.dump(template_data),
-            ssl_verifypeer: ssl_verifypeer,
-            ssl_verifyhost: ssl_verifyhost,
-            followlocation: true,
-            connecttimeout: HTTP_CONNECT_TIMEOUT_SECONDS,
-            timeout: HTTP_REQUEST_TIMEOUT_SECONDS
-          }
-
-          response = http_client.post(url(visualization.user.api_key), params)
+          response = http_client.post(url(visualization.user.api_key), request_params(template_data))
 
           if response.code == 409 && response.body =~ /reached limit on number of templates/
             raise "Reached limit on number of named map templates"
@@ -53,6 +43,18 @@ module Carto
         @headers ||= {
           'content-type': 'application/json',
           'host': domain
+        }
+      end
+
+      def request_params(template)
+        {
+          headers: headers,
+          body: ::JSON.dump(template),
+          ssl_verifypeer: ssl_verifypeer,
+          ssl_verifyhost: ssl_verifyhost,
+          followlocation: true,
+          connecttimeout: HTTP_CONNECT_TIMEOUT_SECONDS,
+          timeout: HTTP_REQUEST_TIMEOUT_SECONDS
         }
       end
 

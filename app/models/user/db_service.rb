@@ -1434,7 +1434,7 @@ module CartoDB
           SELECT cartodb.CDB_Conf_SetConf('fdws',
             '{"aggregation":{"server":{"extensions":"postgis", "dbname":"#{config['dbname']}",
             "host":"#{config['host']}", "port":"#{config['port']}"}, "users":{"public":{"user":"#{config['username']}",
-            "password":""} } } }'::json
+            "password":"#{config['password']}"} } } }'::json
           );
         }
       end

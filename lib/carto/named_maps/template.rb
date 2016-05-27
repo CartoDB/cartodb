@@ -90,7 +90,7 @@ module Carto
           }
         end
 
-        ['mapnik', options]
+        ['cartodb', options]
       end
 
       def type_and_options_for_basemap_layers(layer)

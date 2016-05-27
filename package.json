@@ -38,6 +38,8 @@
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
+    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+    "torque.js": "2.15.1",
     "cartoassets": "cartodb/CartoAssets#master",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",

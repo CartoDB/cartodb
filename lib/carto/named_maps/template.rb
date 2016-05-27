@@ -69,7 +69,6 @@ module Carto
         layer_options = layer.options
 
         options = {
-          layer_name: layer_options[:table_name],
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
           cartocss_version: '2.0.1',
           interactivity: layer_options[:interactivity]

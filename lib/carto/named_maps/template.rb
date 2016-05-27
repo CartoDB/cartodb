@@ -133,17 +133,6 @@ module Carto
         [type, layer_options]
       end
 
-      def options(layer)
-        layer_options = layer.options
-        {
-          source: {
-            id: layer_options[:source]
-          },
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: CARTOCSS_VERSION
-        }
-      end
-
       def dataviews
         dataviews = []
 

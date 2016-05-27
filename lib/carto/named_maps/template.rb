@@ -59,7 +59,7 @@ module Carto
 
       def layers
         layers = []
-        index = 0
+        index = -1 # forgive me for I have sinned
 
         @visualization.map.named_maps_layers.each do |layer|
           type, options = if layer.data_layer?
@@ -79,7 +79,7 @@ module Carto
         sql = if layer_options[:query].present?
                 layer_options[:query]
               else
-                "#{@visualization.owner.sql_safe_database_schema}.#{layer_options['table_name']}"
+                "#{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
               end
 
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"

@@ -45,14 +45,12 @@ module Carto
       private
 
       def placeholders
-        placeholders = []
+        placeholders = {}
 
         @visualization.map.named_maps_layers.select(&:data_layer?).each_with_index do |layer, index|
-          placeholders << {
-            "layer#{index}": {
-              type: 'number',
-              default: layer.options[:visible] ? 1 : 0
-            }
+          placeholders["layer#{index}".to_sym] = {
+            type: 'number',
+            default: layer.options[:visible] ? 1 : 0
           }
         end
 
@@ -61,16 +59,15 @@ module Carto
 
       def layers
         layers = []
-        map = @visualization.map
+        index = 0
 
-        map.named_maps_layers.select(&:basemap?).each do |layer|
-          type, options = type_and_options_for_basemap_layers(layer)
-
-          layers.push(type: type, options: options)
-        end
-
-        map.named_maps_layers.select(&:data_layer?).each_with_index do |layer, index|
-          type, options = type_and_options_for_cartodb_layers(layer, index)
+        @visualization.map.named_maps_layers.each do |layer|
+          type, options = if layer.data_layer?
+                            index += 1
+                            type_and_options_for_cartodb_layers(layer, index)
+                          else
+                            type_and_options_for_basemap_layers(layer)
+                          end
 
           layers.push(type: type, options: options)
         end

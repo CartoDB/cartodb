@@ -65,8 +65,8 @@ module.exports = DataviewModelBase.extend({
 
     if (state) {
       for (var key in state) {
-        if (key === 'acceptedCategories') {
-          this.filter.accept(state.acceptedCategories);
+        if (key === 'max' || key === 'min') {
+          this.filter.setRange(state.min, state.max);
         }
       }
     }

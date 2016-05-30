@@ -16,14 +16,14 @@ module Carto
       end
 
       def create
-        stats_aggregator.timing('named-map.create') do
-          params = request_params
-          params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
+        stats_aggregator.timing('carto-named-maps-api.create') do
+          request_params = request_params
+          request_params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
 
-          response = http_client.post(url, params)
+          response = http_client.post(url, request_params)
 
           case response.code
-          when 200
+          when /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           when 409
             if response.body =~ /reached limit on number of templates/
@@ -36,7 +36,7 @@ module Carto
       end
 
       def show
-        stats_aggregator.timing('named-maps.get') do
+        stats_aggregator.timing('carto-named-maps-api.get') do
           response = stats_aggregator.timing('call') do
 
             url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)
@@ -45,7 +45,7 @@ module Carto
           end
 
           case response.code
-          when 200
+          when /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           when 404
             nil
@@ -56,22 +56,37 @@ module Carto
       end
 
       def update(retry_allowed: true)
-        stats_aggregator.timing('named-map.update') do
+        stats_aggregator.timing('carto-named-maps-api.update') do
           template = Carto::NamedMaps::Template.new(@visualization)
 
-          params = request_params
-          params[:body] = template.to_json
+          request_params = request_params
+          request_params[:body] = template.to_json
 
-          response = http_client.put(url(template_name: template.name), params)
+          response = http_client.put(url(template_name: template.name), request_params)
 
           case response.code
-          when 200
+          when /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           when 400
             if response.body =~ /is locked/i && retry_allowed
               sleep(RETRY_TIME_SECONDS)
               update(retry: false)
             end
+          else
+            log_response(response, 'update')
+          end
+        end
+      end
+
+      def destroy
+        stats_aggregator.timing('carto-named-maps-api.destroy') do
+          url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)
+
+          response = http_client.delete(url, request_params)
+
+          case response.code
+          when /^2/
+            ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'update')
           end

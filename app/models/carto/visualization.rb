@@ -394,7 +394,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def get_related_visualizations_by_types(types)
-    Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: types).all
+    Carto::Visualization.where(map_id: related_tables.map(&:map_id), type: types).all
   end
 
   def has_write_permission?(user)

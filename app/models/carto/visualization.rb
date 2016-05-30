@@ -386,7 +386,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_related_tables
     return [] unless map
-    map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables}.uniq
+
+    map.carto_and_torque_layers.flat_map(&:affected_tables).uniq
   end
 
   def get_related_canonical_visualizations

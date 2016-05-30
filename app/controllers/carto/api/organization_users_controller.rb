@@ -74,10 +74,15 @@ module Carto
         password = params_to_update[:password]
         params_to_update[:password_confirmation] = password
 
+        model_validation_ok = @user.valid?
+        if password.present?
+          model_validation_ok &= @user.valid_password?(:password, password, password)
+        end
+
         # NOTE: Verify soft limits BEFORE updating the user
         unless soft_limits_validation(@user, params_to_update) &&
                @user.set_fields(params_to_update, params_to_update.keys) &&
-               @user.valid? && @user.valid_password?(:password, password, password)
+               model_validation_ok
           render_jsonp(@user.errors.full_messages, 410)
           return
         end

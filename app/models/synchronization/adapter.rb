@@ -211,7 +211,7 @@ module CartoDB
             SELECT a.attname, t.typname
             FROM pg_attribute a, pg_type t
             WHERE attrelid = '#{qualified_table_name}'::regclass
-            AND a.attname = 'ogc_fid' OR a.attname = 'gid'
+            AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
             AND a.atttypid = t.oid
             LIMIT 1
           }].first

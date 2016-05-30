@@ -17,12 +17,12 @@ module Carto
 
       def create
         stats_aggregator.timing('carto-named-maps-api.create') do
-          request_params = request_params
-          request_params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
+          params = request_params
+          params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
 
-          response = http_client.post(url, request_params)
+          response = http_client.post(url, params)
 
-          if response.code =~ /^2/
+          if response.code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'create')
@@ -39,11 +39,8 @@ module Carto
             response = http_client.get(url, request_params)
           end
 
-          case response.code
-          when /^2/
+          if response.code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          when 404
-            nil
           else
             log_response(response, 'show')
           end
@@ -54,15 +51,16 @@ module Carto
         stats_aggregator.timing('carto-named-maps-api.update') do
           template = Carto::NamedMaps::Template.new(@visualization)
 
-          request_params = request_params
-          request_params[:body] = template.to_json
+          params = request_params
+          params[:body] = template.to_json
 
-          response = http_client.put(url(template_name: template.name), request_params)
+          response = http_client.put(url(template_name: template.name), params)
 
-          case response.code
-          when /^2/
+          response_code = response.code.to_s
+
+          if response_code =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          when 400
+          elsif response_code == '400'
             if response.body =~ /is locked/i && retry_allowed
               sleep(RETRY_TIME_SECONDS)
               update(retry: false)
@@ -79,7 +77,7 @@ module Carto
 
           response = http_client.delete(url, request_params)
 
-          if response.code =~ /^2/
+          if response.code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'update')

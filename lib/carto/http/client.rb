@@ -53,7 +53,7 @@ module Carto
         request = request(url)
         request.on_headers do |response|
           if response.code != 200
-            raise "Request failed: #{response.code}. #{response.body}"
+            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
           end
         end
         request.on_body do |chunk|

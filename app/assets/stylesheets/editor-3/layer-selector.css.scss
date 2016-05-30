@@ -1,3 +1,7 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
 .SelectorLayer {
   position: relative;
   background-color: $cThirdBackground;

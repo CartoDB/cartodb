@@ -24,8 +24,8 @@ module Carto
         @visualization = visualization
       end
 
-      def generate_template
-        stats_aggregator.timing('named-map.template-data') do
+      def to_json
+        @template ||= stats_aggregator.timing('named-map.template-data') do
           {
             name: name,
             auth: auth,
@@ -38,8 +38,12 @@ module Carto
               analyses: analyses
             },
             view: view
-          }
+          }.to_json
         end
+      end
+
+      def name
+        (NAME_PREFIX + @visualization.id).gsub(/[^a-zA-Z0-9\-\_.]/, '').tr('-', '_')
       end
 
       private
@@ -175,10 +179,6 @@ module Carto
         dataview_data[:source] = { id: widget.source_id } if widget.source_id.present?
 
         dataview_data
-      end
-
-      def name
-        (NAME_PREFIX + @visualization.id).gsub(/[^a-zA-Z0-9\-\_.]/, '').tr('-', '_')
       end
 
       def auth

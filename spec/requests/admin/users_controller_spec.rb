@@ -65,6 +65,21 @@ describe Admin::UsersController do
         @user.reload
         @user.email.should_not start_with('fail-')
       end
+
+      it 'validates before updating in Central' do
+        ::User.any_instance.stubs(:update_in_central).never
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyx',
+          confirm_password: 'abc'
+        }
+
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 200
+        last_response.body.should   include("Error updating your account details")
+        last_response.body.should   include("match confirmation")
+      end
     end
 
     describe '#profile' do

@@ -116,6 +116,12 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
 
+    model_validation_ok = @user.valid?
+    if attributes[:password].present? || attributes[:password_confirmation].present?
+      model_validation_ok &= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
+    end
+    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
+
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.update_in_central

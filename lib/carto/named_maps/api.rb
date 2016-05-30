@@ -22,13 +22,8 @@ module Carto
 
           response = http_client.post(url, request_params)
 
-          case response.code
-          when /^2/
+          if response.code =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          when 409
-            if response.body =~ /reached limit on number of templates/
-              raise "Reached limit on number of named map templates"
-            end
           else
             log_response(response, 'create')
           end
@@ -84,8 +79,7 @@ module Carto
 
           response = http_client.delete(url, request_params)
 
-          case response.code
-          when /^2/
+          if response.code =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'update')

@@ -234,7 +234,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def organization?
-    privacy == PRIVACY_PRIVATE and permission.acl.size > 0
+    privacy == PRIVACY_PRIVATE && !permission.acl.empty?
   end
 
   def password_protected?

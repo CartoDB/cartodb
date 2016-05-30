@@ -1269,6 +1269,16 @@ namespace :cartodb do
       end
     end
 
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[username]
+    desc 'Connect aggregation tables through FDW to user'
+    task :connect_aggregation_fdw_tables, [:username] => [:environment] do |task, args|
+      args.with_defaults(:username => nil)
+      raise 'Not a valid username' if args[:username].blank?
+      user = ::User.find(username: args[:username])
+      user.db_service.connect_to_aggregation_tables
+    end
+
     def update_user_metadata(user)
       begin
         user.save_metadata

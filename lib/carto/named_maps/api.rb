@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_dependency 'lib/carto/http/client'
+require_relative '../http/client'
 require_relative 'template'
 
 module Carto

@@ -406,11 +406,6 @@ class Carto::Visualization < ActiveRecord::Base
     user_id == user.id
   end
 
-  def configuration
-    return {} unless defined?(Cartodb)
-    Cartodb.config
-  end
-
   def varnish_vizjson_key
     ".*#{id}:vizjson"
   end

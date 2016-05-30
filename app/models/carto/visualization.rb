@@ -377,11 +377,11 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def sorted_related_table_names
-    sorted_table_names = related_tables.map{ |table|
+    mapped_table_names = related_tables.map do |table|
       "#{user.database_schema}.#{table.name}"
-    }.sort { |i, j|
-      i <=> j
-    }.join(',')
+    end
+
+    mapped_table_names.sort { |i, j| i <=> j }.join(',')
   end
 
   def get_related_tables

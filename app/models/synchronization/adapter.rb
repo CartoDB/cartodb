@@ -149,6 +149,7 @@ module CartoDB
           WHERE attrelid = '#{qualified_table_name}'::regclass
           AND attname = '#{THE_GEOM}'
           AND a.atttypid = t.oid
+          AND a.attstattarget < 0
           LIMIT 1
         }].first
         return nil unless the_geom_data
@@ -213,6 +214,7 @@ module CartoDB
             WHERE attrelid = '#{qualified_table_name}'::regclass
             AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
             AND a.atttypid = t.oid
+            AND a.attstattarget < 0
             LIMIT 1
           }].first
           aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?

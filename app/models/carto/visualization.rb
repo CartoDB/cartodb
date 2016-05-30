@@ -1,23 +1,26 @@
 require 'active_record'
 require_relative '../visualization/stats'
+require_relative '../../helpers/embed_redis_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/named_maps/api'
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
 
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
+  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
-  TYPE_CANONICAL = 'table'
-  TYPE_DERIVED = 'derived'
-  TYPE_SLIDE = 'slide'
-  TYPE_REMOTE = 'remote'
+  TYPE_CANONICAL = 'table'.freeze
+  TYPE_DERIVED = 'derived'.freeze
+  TYPE_SLIDE = 'slide'.freeze
+  TYPE_REMOTE = 'remote'.freeze
 
-  KIND_GEOM   = 'geom'
-  KIND_RASTER = 'raster'
+  KIND_GEOM   = 'geom'.freeze
+  KIND_RASTER = 'raster'.freeze
 
-  PRIVACY_PUBLIC = 'public'
-  PRIVACY_PRIVATE = 'private'
-  PRIVACY_LINK = 'link'
-  PRIVACY_PROTECTED = 'password'
+  PRIVACY_PUBLIC = 'public'.freeze
+  PRIVACY_PRIVATE = 'private'.freeze
+  PRIVACY_LINK = 'link'.freeze
+  PRIVACY_PROTECTED = 'password'.freeze
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
@@ -326,12 +329,36 @@ class Carto::Visualization < ActiveRecord::Base
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
+  def get_named_map
+    return false if type == TYPE_REMOTE
+
+    named_maps_api.show
+  end
+
+  def save_named_map
+    return if type == TYPE_REMOTE
+
+    get_named_map ? named_maps_api.update : named_maps_api.create
+  end
+
+  def invalidate_cache
+    redis_vizjson_cache.invalidate(id)
+    embed_redis_cache.invalidate(id)
+    CartoDB::Varnish.new.purge(varnish_vizjson_key)
+  end
+
   private
 
-  def get_named_map
-    return nil if type == TYPE_REMOTE
-    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
-    data.nil? ? false : data
+  def named_maps_api
+    @named_maps_api ||= Carto::NamedMaps::Api.new(self)
+  end
+
+  def redis_vizjson_cache
+    @redis_vizjson_cache ||= CartoDB::Visualization::RedisVizjsonCache.new
+  end
+
+  def embed_redis_cache
+    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
   def named_maps(force_init = false)
@@ -408,4 +435,7 @@ class Carto::Visualization < ActiveRecord::Base
     Cartodb.config
   end
 
+  def varnish_vizjson_key
+    ".*#{id}:vizjson"
+  end
 end

@@ -23,6 +23,7 @@ module Carto
         @layers_data = @visualization.layers.map { |l| Carto::Api::LayerPresenter.new(l).to_poro }
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
+        @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
       end
 
       private

@@ -26,7 +26,6 @@
 
 .CodeMirror-bullet {
   @include transform(translateY(-50%));
-  background-color: $cError;
   position: absolute;
   left: -25px;
   top: 50%;
@@ -34,11 +33,20 @@
   width: $halfBaseSize;
   height: $halfBaseSize;
   border-radius: 50%;
+  background-color: $cError;
 }
 
 .CodeMirror-error,
 .CodeMirror-linenumber.has-error {
   color: $cError;
+}
+
+.CodeMirror-error a {
+  color: $cWhite;
+}
+
+.CodeMirror-error span {
+  color: #4F5B60;
 }
 
 .CodeMirror-errorMessage {

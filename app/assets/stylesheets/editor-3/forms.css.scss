@@ -74,6 +74,10 @@
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
   color: #CCC;
 }
+.CDB-OptionInput-item--categories .InputColor {
+  padding: 0;
+}
+
 .Form-InputFill.is-disabled {
   border-color: #EEE;
   background: #F9F9F9;
@@ -82,6 +86,13 @@
 
 .RampItem {
   width: 100%;
+}
+.RampItem-bar {
+  display: inline-block;
+  width: 50px;
+  margin: 0;
+  border-radius: 5px;
+  vertical-align: middle;
 }
 
 .InputColor {
@@ -94,8 +105,9 @@
 }
 
 .InputColor .InputColor-band {
-  min-width: 60px;
+  min-width: 10px;
   height: 5px;
   border: 1px solid #DDD;
   border-radius: 3px;
 }
+

@@ -361,7 +361,7 @@ module Carto
 
       def set_if_present(hash, key, value)
         # Dirty check because `false` is a valid `value`
-        hash[key] = value unless value.nil? || value == ''
+        hash[key] = value if value.present?
 
         hash
       end

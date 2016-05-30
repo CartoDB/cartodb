@@ -80,7 +80,7 @@ module Carto
     end
 
     def readable_by?(user)
-      !private? || is_owner?(user)
+      !private? || is_owner?(user) || visualization_readable_by?(user)
     end
 
     def estimated_row_count
@@ -129,6 +129,9 @@ module Carto
       Carto::Synchronization.where(user_id: user_id, name: name).first
     end
 
+    def visualization_readable_by?(user)
+      user && visualization && visualization.permission && visualization.permission.user_has_read_permission?(user)
+    end
   end
 
 end

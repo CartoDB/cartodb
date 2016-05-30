@@ -32,4 +32,17 @@ describe Carto::UserTable do
 
     @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
+
+  describe '#readable_by?' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'returns true for shared tables' do
+      @table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: "a_table_name", user_id: @org_user_1.id)
+      user_table = Carto::UserTable.find(@table.id)
+      share_table_with_user(@table, @org_user_2)
+
+      user_table.readable_by?(@carto_org_user_2).should be_true
+    end
+  end
 end

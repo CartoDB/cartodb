@@ -9,14 +9,17 @@ module Carto
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
 
-      def create(visualization)
+      def initialize(visualization)
+        @visualization = visualization
+        @user = @visualization.user
+      end
+
+      def create
         stats_aggregator.timing('named-map.create') do
-          template_data = Carto::NamedMaps::Template.new(visualization).generate_template
+          params = request_params
+          params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
 
-          user = visualization.user
-          username = user.username
-
-          response = http_client.post(url(user.api_key, username), request_params(template_data, username))
+          response = http_client.post(url, params)
 
           if response.code == 409 && response.body =~ /reached limit on number of templates/
             raise "Reached limit on number of named map templates"
@@ -32,22 +35,45 @@ module Carto
         end
       end
 
+      def show
+        stats_aggregator.timing('named-maps.get') do
+          response = stats_aggregator.timing('call') do
+
+            url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)
+
+            response = http_client.get(url, request_params)
+          end
+
+          response_code = response.code
+
+          if response_code == 200
+            template = ::JSON.parse(response.response_body)
+
+            template.class == Hash ? template.deep_symbolize_keys : template
+          elsif response_code == 404
+            nil
+          else
+            raise "GET:#{response_code} #{response.request.url} #{response.body}"
+          end
+        end
+      end
+
       private
 
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
       end
 
-      def url(api_key, username)
+      def url(template_name: '')
+        username = @user.username
         user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ""
 
-        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named?api_key=#{api_key}"
+        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named/#{template_name}?api_key=#{@user.api_key}"
       end
 
-      def request_params(template, username)
+      def request_params
         {
-          headers: headers(username),
-          body: ::JSON.dump(template),
+          headers: headers(@user.username),
           ssl_verifypeer: ssl_verifypeer,
           ssl_verifyhost: ssl_verifyhost,
           followlocation: true,

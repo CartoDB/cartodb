@@ -48,7 +48,8 @@ module Carto
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
         s3_config: s3_config,
-        allow_spaces: true
+        allow_spaces: true,
+        force_s3_upload: true
       )
 
       if results[:file_uri].present?

@@ -78,7 +78,7 @@ module Carto
           response = http_client.delete(url, request_params)
 
           if response.code.to_s =~ /^2/
-            ::JSON.parse(response.response_body).deep_symbolize_keys
+            response.response_body
           else
             log_response(response, 'update')
           end

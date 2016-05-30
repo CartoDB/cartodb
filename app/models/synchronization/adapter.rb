@@ -135,11 +135,12 @@ module CartoDB
         fix_oid(table_name)
       end
 
+      # From Table#get_the_geom_type!, adapted to unregistered tables
+      # returns type to run Table#get_the_geom_type! afterwards again, which
+      # saves the type in table metadata
       def fix_the_geom_type!(schema_name, table_name)
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
-        # Partial duplication of Table#set_the_geom_column! to be able to
-        # operate with non-registered tables.
         type = nil
         the_geom_data = user.in_database[%Q{
           SELECT a.attname, t.typname
@@ -196,10 +197,10 @@ module CartoDB
         type
       end
 
+      # From Table#import_cleanup, with column schema checks adapted to unregistered tables
       def import_cleanup(schema_name, table_name)
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
-        # From Table#import_cleanup, with column schema checks adapted to unregistered tables
         user.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
           # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
           # In that case:

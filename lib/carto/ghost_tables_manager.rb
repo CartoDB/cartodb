@@ -138,7 +138,7 @@ module Carto
                  count(column_name::text) cdb_columns_count
           FROM information_schema.columns c, pg_tables t, pg_trigger tg
           WHERE
-            t.tablename !~ 'importer_' AND
+            t.tablename !~ '^importer_' AND
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND

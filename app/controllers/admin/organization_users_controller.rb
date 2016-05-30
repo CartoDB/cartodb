@@ -57,6 +57,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
 
+    # Validate password first, so nicer errors are displayed
+    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
+
+    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)

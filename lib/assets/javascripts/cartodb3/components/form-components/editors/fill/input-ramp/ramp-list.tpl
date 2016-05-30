@@ -1,4 +1,8 @@
 <div class="js-content"></div>
 <% if (isCustomizable) { %>
-<button class="u-rSpace--xl u-actionTextColor js-customize">Custom color set…</button>
+  <div class="CustomList-item js-customize">
+    <button class="u-actionTextColor CDB-Text CDB-Size-medium CDB-ListDecoration-itemLink">
+      Custom color set…
+    </button>
+  </div>
 <% } %>

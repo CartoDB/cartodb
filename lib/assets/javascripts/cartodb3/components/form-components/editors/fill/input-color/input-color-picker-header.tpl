@@ -9,7 +9,7 @@
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="CDB-ColorBarContainer">
         <% _.each(ramp, function (color) { %>
-        <li class="CDB-ColorBar CDB-ColorBar--spaceless js-color" data-label="<%- color.title %>" data-color="<%- color.color %>" style="background-color: <%- color.color %>;"></li>
+        <li class="CDB-ColorBar is-link CDB-ColorBar--spaceless js-color" data-label="<%- color.title %>" data-color="<%- color.color %>" style="background-color: <%- color.color %>;"></li>
         <% }); %>
       </ul>
     </li>

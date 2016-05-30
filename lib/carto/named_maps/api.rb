@@ -8,6 +8,7 @@ module Carto
     class Api
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
+      RETRY_TIME_SECONDS = 5
 
       def initialize(visualization)
         @visualization = visualization
@@ -23,7 +24,7 @@ module Carto
 
           case response.code
           when 200
-            ::JSON.parse(response.response_body)
+            ::JSON.parse(response.response_body).deep_symbolize_keys
           when 409
             if response.body =~ /reached limit on number of templates/
               raise "Reached limit on number of named map templates"
@@ -45,13 +46,34 @@ module Carto
 
           case response.code
           when 200
-            template = ::JSON.parse(response.response_body)
-
-            template.class == Hash ? template.deep_symbolize_keys : template
+            ::JSON.parse(response.response_body).deep_symbolize_keys
           when 404
             nil
           else
             log_response(response, 'show')
+          end
+        end
+      end
+
+      def update(retry_allowed: true)
+        stats_aggregator.timing('named-map.update') do
+          template = Carto::NamedMaps::Template.new(@visualization)
+
+          params = request_params
+          params[:body] = template.to_json
+
+          response = http_client.put(url(template_name: template.name), params)
+
+          case response.code
+          when 200
+            ::JSON.parse(response.response_body).deep_symbolize_keys
+          when 400
+            if response.body =~ /is locked/i && retry_allowed
+              sleep(RETRY_TIME_SECONDS)
+              update(retry: false)
+            end
+          else
+            log_response(response, 'update')
           end
         end
       end
@@ -124,7 +146,7 @@ module Carto
       end
 
       def log_response(response, action)
-        CartoDB.Logger.error(
+        CartoDB::Logger.error(
           message: 'Named Maps Api',
           action: action,
           user: @user,

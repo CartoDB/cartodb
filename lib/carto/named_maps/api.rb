@@ -21,17 +21,16 @@ module Carto
 
           response = http_client.post(url, params)
 
-          if response.code == 409 && response.body =~ /reached limit on number of templates/
-            raise "Reached limit on number of named map templates"
+          case response.code
+          when 200
+            ::JSON.parse(response.response_body)
+          when 409
+            if response.body =~ /reached limit on number of templates/
+              raise "Reached limit on number of named map templates"
+            end
+          else
+            log_response(response, 'create')
           end
-
-          unless response.code == 200
-            raise "POST:#{response.code} #{response.request.url} #{response.body}"
-          end
-
-          body = ::JSON.parse(response.response_body)
-
-          raise "No template_id found in #{body}" unless body['template_id'].present?
         end
       end
 
@@ -44,16 +43,15 @@ module Carto
             response = http_client.get(url, request_params)
           end
 
-          response_code = response.code
-
-          if response_code == 200
+          case response.code
+          when 200
             template = ::JSON.parse(response.response_body)
 
             template.class == Hash ? template.deep_symbolize_keys : template
-          elsif response_code == 404
+          when 404
             nil
           else
-            raise "GET:#{response_code} #{response.request.url} #{response.body}"
+            log_response(response, 'show')
           end
         end
       end
@@ -123,6 +121,17 @@ module Carto
 
       def http_client
         @http_client ||= Carto::Http::Client.get('named_maps')
+      end
+
+      def log_response(response, action)
+        CartoDB.Logger.error(
+          message: 'Named Maps Api',
+          action: action,
+          user: @user,
+          response_code: response.code,
+          url: response.request.url,
+          body: response.body
+        )
       end
     end
   end

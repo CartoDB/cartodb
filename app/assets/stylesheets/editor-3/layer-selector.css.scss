@@ -1,9 +1,8 @@
 .SelectorLayer {
   position: relative;
-  background-color: #F9F9F9;
+  background-color: $cThirdBackground;
 }
 .SelectorLayer-letter {
   padding: 1px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
+  border-radius: $halfBaseSize;
 }

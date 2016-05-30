@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require_dependency 'lib/carto/named_maps/template'
 require_dependency 'lib/carto/http/client'
+require_relative 'template'
 
 module Carto
   module NamedMaps

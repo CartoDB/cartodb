@@ -394,6 +394,8 @@ describe Carto::Api::LayerPresenter do
         let(:marker_line_width) { 1 }
         let(:marker_line_color) { "#FFF" }
         let(:marker_line_opacity) { 0.7 }
+        let(:title_1) { 100 }
+        let(:title_2) { 200 }
         let(:category_wizard_properties) do
           {
             "type" => "category",
@@ -413,13 +415,13 @@ describe Carto::Api::LayerPresenter do
               "text-label-position-tolerance" => 10,
               "categories" => [
                 {
-                  "title" => 100,
+                  "title" => title_1,
                   "title_type" => "number",
                   "color" => COLOR_1,
                   "value_type" => "color"
                 },
                 {
-                  "title" => 200,
+                  "title" => title_2,
                   "title_type" => "number",
                   "color" => COLOR_2,
                   "value_type" => "color"
@@ -446,6 +448,10 @@ describe Carto::Api::LayerPresenter do
 
             it 'generates color range from categories colors' do
               expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
+            end
+
+            it 'generates domain from titles' do
+              expect(@fill_color).to include('domain' => [title_1, title_2])
             end
 
             it 'property becomes attribute' do

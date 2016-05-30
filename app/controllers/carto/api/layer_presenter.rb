@@ -494,15 +494,14 @@ module Carto
           apply_default_opacity(color)
         end
 
-        color['range'] = generate_range_from_categories(wpp['categories']) if wpp['categories'].present?
+        if wpp['categories'].present?
+          color['range'] = wpp['categories'].map { |c| c['color'] }
+          color['domain'] = wpp['categories'].map { |c| c['title'] }
+        end
 
         color.merge!(TORQUE_HEAT_COLOR_DEFAULTS) if @source_type == 'torque_heat'
 
         color
-      end
-
-      def generate_range_from_categories(categories)
-        categories.map { |c| c['color'] }
       end
 
       SIZE_DIRECT_MAPPING = {

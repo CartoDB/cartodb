@@ -112,8 +112,8 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
-    map = ::Map[id]
-    map.notify_map_change if map
+    visualizations.each(&:save_named_map)
+    visualizations.each(&:invalidate_cache)
   end
 
   private

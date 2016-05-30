@@ -42,6 +42,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         puts '=================='
+        raise exception
       end
 
       def overwrite(table_name, result)

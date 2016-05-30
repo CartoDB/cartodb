@@ -30,7 +30,7 @@ module Carto
       ensure_folder(exporter_config['exporter_temporal_folder'] || DEFAULT_EXPORTER_TMP_FOLDER)
     end
 
-    def run_export!(file_upload_helper: default_file_upload_helper)
+    def run_export!(file_upload_helper: default_file_upload_helper, download_path: nil)
       logger = Carto::Log.new(type: 'visualization_export')
 
       logger.append('Exporting')
@@ -48,17 +48,26 @@ module Carto
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
         s3_config: s3_config,
-        allow_spaces: true
+        allow_spaces: true,
+        force_s3_upload: true
       )
 
-      url = results[:file_uri]
+      if results[:file_uri].present?
+        logger.append("By file_upload_helper: #{results[:file_uri]}, #{filepath}, (ignored: #{results[:file_path]})")
+        export_url = results[:file_uri]
+        export_file = filepath
+      else
+        logger.append("Ad-hoc export download: #{results[:file_path]} (ignored: #{filepath})")
+        export_url = download_path
+        export_file = results[:file_path]
+      end
 
       logger.append('Deleting tmp file')
       FileUtils.rm(filepath)
 
-      logger.append('Finishing')
-      state = filepath.present? && url.present? ? STATE_COMPLETE : STATE_FAILURE
-      update_attributes(state: state, file: filepath, url: url)
+      state = export_url.present? && export_file.present? ? STATE_COMPLETE : STATE_FAILURE
+      logger.append("Finishing. State: #{state}. File: #{export_file}. URL: #{url}")
+      update_attributes(state: state, file: export_file, url: export_url)
       true
     rescue => e
       logger.append_exception('Exporting', exception: e)

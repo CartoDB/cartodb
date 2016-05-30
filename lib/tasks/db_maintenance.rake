@@ -1272,11 +1272,27 @@ namespace :cartodb do
     # usage:
     #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[username]
     desc 'Connect aggregation tables through FDW to user'
-    task :connect_aggregation_fdw_tables, [:username] => [:environment] do |task, args|
+    task :connect_aggregation_fdw_tables_to_user, [:username] => [:environment] do |task, args|
       args.with_defaults(:username => nil)
       raise 'Not a valid username' if args[:username].blank?
       user = ::User.find(username: args[:username])
       user.db_service.connect_to_aggregation_tables
+    end
+
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[orgname]
+    desc 'Connect aggregation tables through FDW to orgname'
+    task :connect_aggregation_fdw_tables_to_org, [:orgname] => [:environment] do |task, args|
+      args.with_defaults(:orgname => nil)
+      raise 'Not a valid orgname' if args[:orgname].blank?
+      org = ::Organization.find(name: args[:orgname])
+      org.users.each do |u|
+        begin
+          u.db_service.connect_to_aggregation_tables
+        rescue => e
+          puts "Error trying to connect  #{u.username}: #{e.message}"
+        end
+      end
     end
 
     def update_user_metadata(user)

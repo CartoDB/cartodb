@@ -19,6 +19,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'.freeze
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
+      SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.5.0'.freeze
 
       def initialize(user)
@@ -486,7 +487,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.16.3'
+          cdb_extension_target_version = '0.16.4'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1186,13 +1187,17 @@ module CartoDB
           db.transaction do
             db.run(build_aggregation_fdw_config_sql(config))
             db.run("SELECT cartodb._CDB_Setup_FDW('aggregation');")
-            db.run("CREATE FOREIGN TABLE agg_admin0 (cartodb_id integer,the_geom geometry(Geometry,4326), " \
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS #{SCHEMA_AGGREGATION_TABLES}.agg_admin0 " \
+                   "(cartodb_id integer, the_geom geometry(Geometry,4326), " \
+                   "the_geom_webmercator geometry(Geometry,3857), " \
                    "population double precision OPTIONS (column_name 'pop_est')) SERVER aggregation OPTIONS " \
-                   "(table_name '#{config['tables']['admin0']}', updatable 'false');")
-            db.run("CREATE FOREIGN TABLE agg_admin1 (cartodb_id integer,the_geom geometry(Geometry,4326)) " \
-                   "SERVER aggregation OPTIONS (table_name '#{config['tables']['admin1']}', updatable 'false');")
-            db.run("GRANT SELECT ON TABLE agg_admin0 TO \"#{@user.database_username}\";")
-            db.run("GRANT SELECT ON TABLE agg_admin1 TO \"#{@user.database_username}\";")
+                   "(schema_name 'public', table_name '#{config['tables']['admin0']}', updatable 'false');")
+            db.run("CREATE FOREIGN TABLE IF NOT EXISTS #{SCHEMA_AGGREGATION_TABLES}.agg_admin1 " \
+                   "(cartodb_id integer,the_geom geometry(Geometry,4326), " \
+                   "the_geom_webmercator geometry(Geometry,3857)) " \
+                   "SERVER aggregation OPTIONS (schema_name 'public', table_name '#{config['tables']['admin1']}', updatable 'false');")
+            db.run("GRANT SELECT ON TABLE #{SCHEMA_AGGREGATION_TABLES}.agg_admin0 TO \"#{@user.database_username}\";")
+            db.run("GRANT SELECT ON TABLE #{SCHEMA_AGGREGATION_TABLES}.agg_admin1 TO \"#{@user.database_username}\";")
           end
         end
       end

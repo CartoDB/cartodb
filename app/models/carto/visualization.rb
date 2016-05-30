@@ -277,8 +277,8 @@ class Carto::Visualization < ActiveRecord::Base
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end
 
-  def total_mapviews(user=nil)
-    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
+  def total_mapviews
+    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, nil).total_mapviews
   end
 
   def geometry_types

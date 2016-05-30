@@ -233,7 +233,7 @@ module CartoDB
 
       rescue => exception
         CartoDB.notify_exception(exception)
-        log.append exception.message, truncate = false
+        log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join('\n'), truncate = false
 
         if importer.nil?
@@ -349,7 +349,7 @@ module CartoDB
       end
 
       def set_success_state_from(importer)
-        log.append     '******** synchronization succeeded ********'
+        log.append_and_store     '******** synchronization succeeded ********'
         self.log_trace      = importer.runner_log_trace
         self.state          = STATE_SUCCESS
         self.etag           = importer.etag
@@ -368,7 +368,7 @@ module CartoDB
       end
 
       def set_failure_state_from(importer)
-        log.append     '******** synchronization failed ********'
+        log.append_and_store     '******** synchronization failed ********'
         self.log_trace      = importer.runner_log_trace
         log.append     "*** Runner log: #{self.log_trace} \n***" unless self.log_trace.nil?
         self.state          = STATE_FAILURE
@@ -389,7 +389,7 @@ module CartoDB
       end
 
       def set_general_failure_state_from(exception, error_code = 99999, error_message = 'Unknown error, please try again')
-        log.append     '******** synchronization raised exception ********'
+        log.append_and_store     '******** synchronization raised exception ********'
         self.log_trace      = exception.message + ' ' + exception.backtrace.join("\n")
         self.state          = STATE_FAILURE
         self.error_code     = error_code

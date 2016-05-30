@@ -1,14 +1,13 @@
+@import 'cdb-utilities/mixins';
+
 /* BASICS */
 
-.CodeMirror-wrapper {
+.CodeMirror-editor {
+  @include flex(1 1 auto);
   position: relative;
 }
 
 .CodeMirror-console {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   border-top: 1px solid #3A484E;
   border-bottom: 1px solid #3A484E;
   color: #4F5B60;
@@ -17,19 +16,19 @@
 }
 
 .CodeMirror-message {
+  padding: 0 10px;
   border-top: 1px solid #3A484E;
   background-color: #27333A;
   text-align: left;
-  padding: 0 10px;
 }
 
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
-  font-family: monospace;
   position: absolute;
   top: 0;
-  bottom: 60px;
+  bottom: 16px;
   width: 100%;
+  font-family: monospace;
 }
 
 /* PADDING */

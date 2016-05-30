@@ -9,9 +9,11 @@ module CartoDB
 
     def initialize(uploads_path = nil)
       @uploads_path = uploads_path || DEFAULT_UPLOADS_PATH
-      unless @uploads_path[0] == "/"
-        @uploads_path = Rails.root.join(@uploads_path)
-      end
+      @uploads_path = if @uploads_path[0] == "/"
+                        Pathname.new(@uploads_path)
+                      else
+                        Rails.root.join(@uploads_path)
+                      end
     end
 
     def get_uploads_path
@@ -74,6 +76,8 @@ module CartoDB
         unless load_file_from_request_body
           file = filedata_from_params(filename_param, file_param, request_body, random_token, filename)
         end
+
+        results[:file_path] = file.path
 
         if use_s3 && do_long_upload
           results[:file_uri] = file.path[/(\/uploads\/.*)/, 1]

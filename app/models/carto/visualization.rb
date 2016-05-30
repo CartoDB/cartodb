@@ -359,29 +359,6 @@ class Carto::Visualization < ActiveRecord::Base
     @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
-  def named_maps(force_init = false)
-    # TODO: read refactor skips all write complexity, check visualization/member for more details
-    if @named_maps.nil? || force_init
-      name_param = user.username
-      api_key_param = user.api_key
-      @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
-        {
-          name:     name_param,
-          api_key:  api_key_param
-        },
-        {
-          domain:     Cartodb.config[:tiler]['internal']['domain'],
-          port:       Cartodb.config[:tiler]['internal']['port'] || 443,
-          protocol:   Cartodb.config[:tiler]['internal']['protocol'],
-          verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true),
-          host:       (Cartodb.config[:tiler]['internal']['host'] rescue nil)
-        },
-        configuration
-      )
-    end
-    @named_maps
-  end
-
   def password_digest(password, salt)
     digest = AUTH_DIGEST
     10.times do

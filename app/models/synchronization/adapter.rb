@@ -30,7 +30,9 @@ module CartoDB
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
-          geo_type = cartodbfy(result.table_name)
+          geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
+          import_cleanup(user.database_schema, result.table_name)
+          cartodbfy(result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           run_index_statements(index_statements)
@@ -42,6 +44,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         puts '=================='
+        drop(result.table_name) if exists?(result.table_name)
         raise exception
       end
 
@@ -87,9 +90,6 @@ module CartoDB
         schema_name = user.database_schema
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
-        type = fix_the_geom_type!(schema_name, table_name)
-        import_cleanup(schema_name, table_name)
-
         user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
           user_conn.run(%Q{
             SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{qualified_table_name}'::REGCLASS);
@@ -103,7 +103,6 @@ module CartoDB
                               exception: exception,
                               user: user,
                               table: table_name)
-        drop(table_name) if exists?(table_name)
         raise exception
       end
 

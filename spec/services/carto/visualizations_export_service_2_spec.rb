@@ -575,11 +575,11 @@ describe Carto::VisualizationsExportService2 do
 
         query_1 = query(owner_user.username)
         layer_options = {
-                          table_name: @table.name,
-                          query: query_1,
-                          user_name: owner_user.username,
-                          query_history: [query_1]
-                         }
+          table_name: @table.name,
+          query: query_1,
+          user_name: owner_user.username,
+          query_history: [query_1]
+        }
         layer = FactoryGirl.create(:carto_layer, options: layer_options)
         layer.options['query'].should eq query_1
         layer.options['user_name'].should eq owner_user.username

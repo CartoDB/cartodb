@@ -95,9 +95,9 @@ module Carto
         # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
         query = options[:query]
         if query.present?
-          options[:query] = query.
-            gsub(" #{old_username}.", " #{new_username}.").
-            gsub(" \"#{old_username}\".", " \"#{new_username}\".")
+          options[:query] = query
+                            .gsub(" #{old_username}.", " #{new_username}.")
+                            .gsub(" \"#{old_username}\".", " \"#{new_username}\".")
         end
       end
     end

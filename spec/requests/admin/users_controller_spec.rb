@@ -17,6 +17,8 @@ describe Admin::UsersController do
   end
 
   before(:each) do
+    # Reload user, cannot use reload because it does not reload password fields
+    @user = ::User[@user.id]
     host! "#{@user.username}.localhost.lan"
     login_as(@user, scope: @user.username)
   end
@@ -64,6 +66,21 @@ describe Admin::UsersController do
         last_response.body.should   include('There was a problem while updating your data')
         @user.reload
         @user.email.should_not start_with('fail-')
+      end
+
+      it 'validates before updating in Central' do
+        ::User.any_instance.stubs(:update_in_central).never
+        params = {
+          old_password:     'abcdefgh',
+          new_password:     'zyx',
+          confirm_password: 'abc'
+        }
+
+        put account_update_user_url, user: params
+
+        last_response.status.should eq 200
+        last_response.body.should   include("Error updating your account details")
+        last_response.body.should   include("match confirmation")
       end
     end
 

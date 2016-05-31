@@ -44,8 +44,8 @@ module Carto
       end
 
       def create_table_visualization(carto_user, table)
-        FactoryGirl.create(:carto_visualization,
-            user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
+        FactoryGirl.create(
+          :carto_visualization, user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
       end
 
       # Helper method for `create_full_visualization` results cleanup

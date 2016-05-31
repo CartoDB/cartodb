@@ -94,7 +94,7 @@ module Carto
 
         options = {
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: '2.0.1'
+          cartocss_version: layer_options.fetch('style_version')
         }
 
         layer_options_source = layer_options[:source]

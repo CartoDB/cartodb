@@ -118,7 +118,7 @@ describe('core/geo/map', function() {
 
     var layer1 = new CartoDBLayer({ attribution: 'attribution1' });
     var layer2 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer3 = new CartoDBLayer({ attribution: 'testCase' });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' });
     var layer4 = new CartoDBLayer({ attribution: '' });
 
     map.layers.reset([ layer1, layer2, layer3, layer4 ]);
@@ -126,7 +126,7 @@ describe('core/geo/map', function() {
     // Attributions have been updated removing duplicated and empty attributions
     expect(map.get('attribution')).toEqual([
       "attribution1",
-      "testCase",
+      "wadus",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
@@ -137,7 +137,7 @@ describe('core/geo/map', function() {
     // The attribution of the new layer has been appended before the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
       "attribution1",
-      "testCase",
+      "wadus",
       "attribution2",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
@@ -147,7 +147,7 @@ describe('core/geo/map', function() {
     // The attribution of the layer has been updated in the map
     expect(map.get('attribution')).toEqual([
       "attribution1",
-      "testCase",
+      "wadus",
       "new attribution",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
@@ -156,7 +156,7 @@ describe('core/geo/map', function() {
 
     expect(map.get('attribution')).toEqual([
       "attribution1",
-      "testCase",
+      "wadus",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
 
@@ -168,7 +168,7 @@ describe('core/geo/map', function() {
     // Default CartoDB only appears once and it's the last one
     expect(map.get('attribution')).toEqual([
       "attribution1",
-      "testCase",
+      "wadus",
       "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
     ]);
   });

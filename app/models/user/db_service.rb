@@ -63,7 +63,8 @@ module CartoDB
 
       # All methods called inside should allow to be executed multiple times without errors
       def setup_organization_user_schema
-        reset_user_schema_permissions
+        # WIP
+        # reset_user_schema_permissions
         reset_schema_owner
         set_user_privileges_at_db
         set_user_as_organization_member

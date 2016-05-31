@@ -95,6 +95,9 @@ module CartoDB
 
         reset_database_permissions # Reset privileges
 
+        # WIP: CartoDB/cartodb-management#4467
+        # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
+        reset_user_schema_permissions
         configure_database
 
         revoke_cdb_conf_access
@@ -106,6 +109,11 @@ module CartoDB
           create_db_user
         end.join
         create_own_schema
+
+        # WIP: CartoDB/cartodb-management#4467
+        # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
+        reset_user_schema_permissions
+
         setup_organization_user_schema
         install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective

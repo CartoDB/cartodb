@@ -103,6 +103,7 @@ module CartoDB
                               exception: exception,
                               user: user,
                               table: table_name)
+        drop(table_name) if exists?(table_name)
         raise exception
       end
 

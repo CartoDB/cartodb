@@ -20,12 +20,14 @@ module CartoDB
       @uploads_path
     end
 
+    # force_s3_upload uploads file to S3 even if size is greater than `MAX_SYNC_UPLOAD_S3_FILE_SIZE`
     def upload_file_to_storage(filename_param: nil,
                                file_param: nil,
                                request_body: nil,
                                s3_config: nil,
                                timestamp: Time.now,
-                               allow_spaces: false)
+                               allow_spaces: false,
+                               force_s3_upload: false)
       results = {
         file_uri: nil,
         enqueue:  true
@@ -64,7 +66,7 @@ module CartoDB
       do_long_upload = s3_config && s3_config['async_long_uploads'].present? && s3_config['async_long_uploads'] &&
         File.size(filepath) > MAX_SYNC_UPLOAD_S3_FILE_SIZE
 
-      if use_s3 && !do_long_upload
+      if use_s3 && (!do_long_upload || force_s3_upload)
         file_url = upload_file_to_s3(filepath, filename, random_token, s3_config)
 
         if load_file_from_request_body

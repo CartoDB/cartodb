@@ -645,6 +645,17 @@ describe Carto::VisualizationsExportService2 do
         valid_queries.should include(transformed_query)
       end
 
+      it 'replaces owner name (without dash) with new user name (with dash) on import for user_name and query' do
+        source_user = @carto_org_user_1
+        target_user = @carto_org_user_with_dash_2
+        setup_visualization_with_layer_query(source_user, target_user)
+        source_user.username.should_not include('-')
+        target_user.username.should include('-')
+        transformed_query = check_username_replacement(source_user, target_user)
+        valid_queries = [query(target_user.username), query("\"#{target_user.username}\"")]
+        valid_queries.should include(transformed_query)
+      end
+
       it 'removes owner name from user_name and query importing into a non-organization account' do
         source_user = @carto_org_user_with_dash_1
         target_user = @carto_normal_user

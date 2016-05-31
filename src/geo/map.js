@@ -120,7 +120,8 @@ var Map = Model.extend({
     });
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {
-      silent: silent
+      silent: options.silent,
+      at: options.at
     });
 
     return layerModel;

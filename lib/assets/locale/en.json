@@ -474,7 +474,8 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
-        "apply-btn": "Apply"
+        "apply-btn": "Apply",
+        "create-btn": "Create"
       },
       "infowindow": {
         "style": {

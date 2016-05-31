@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Search = require('../../../../src/geo/ui/search/search');
-var NOKIA = require('../../../../src/geo/geocoder/nokia-geocoder');
+var MAPZEN = require('../../../../src/geo/geocoder/mapzen-geocoder');
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 
@@ -47,7 +47,7 @@ describe('geo/ui/search', function () {
         },
         type: undefined
       };
-      NOKIA.geocode = function (address, callback) {
+      MAPZEN.geocode = function (address, callback) {
         callback([ self.result ]);
       };
 
@@ -55,9 +55,9 @@ describe('geo/ui/search', function () {
     });
 
     it('should search with geocoder when form is submit', function () {
-      spyOn(NOKIA, 'geocode');
+      spyOn(MAPZEN, 'geocode');
       this.view.$('.js-form').submit();
-      expect(NOKIA.geocode).toHaveBeenCalled();
+      expect(MAPZEN.geocode).toHaveBeenCalled();
     });
 
     it('should change map center when geocoder returns any result', function () {
@@ -103,13 +103,93 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-      it('should zoom to 15 when search result is building type', function () {
+      it('should zoom to 15 when search result is postal-area type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
           type: 'postal-area'
         };
         this.view.$('.js-form').submit();
+        expect(this.map.get('zoom')).toBe(15);
+      });
+
+      it('should zoom to 18 when search result is venue type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'venue'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(18);
+      });
+
+      it('should zoom to 8 when search result is region type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'region'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(8);
+      });
+
+      it('should zoom to 5 when search result is country type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'country'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(5);
+      });
+
+      it('should zoom to 8 when search result is county type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'county'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(8);
+      });
+
+      it('should zoom to 18 when search result is address type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'address'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(18);
+      });
+
+      it('should zoom to 12 when search result is locality type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'locality'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(12);
+      });
+
+      it('should zoom to 11 when search result is localadmin type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'localadmin'
+        };
+        this.view.$('form').submit();
+        expect(this.map.get('zoom')).toBe(11);
+      });
+
+      it('should zoom to 15 when search result is neighbourhood type', function () {
+        this.result = {
+          lat: 43.0,
+          lon: -3.0,
+          type: 'neighbourhood'
+        };
+        this.view.$('form').submit();
         expect(this.map.get('zoom')).toBe(15);
       });
 

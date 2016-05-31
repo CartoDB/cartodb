@@ -1,10 +1,9 @@
-var $ = require('jquery');
 var MAPZEN = require('../../../../src/geo/geocoder/mapzen-geocoder');
 
 describe('geo/geocoder/mapzen-geocoder', function () {
   it("don't remove the spaces in the user-submitted addresses [MAPZEN]", function (done) {
     var regexp = new RegExp(/http:\/\/search.mapzen.com\/v1\/search\?text\=bn20%208qt/);
-    MAPZEN.geocode('bn20 8qt', function(d) {
+    MAPZEN.geocode('bn20 8qt', function (d) {
       expect(this.url).toMatch(regexp);
       done();
     });

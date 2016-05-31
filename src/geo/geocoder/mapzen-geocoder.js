@@ -21,7 +21,7 @@ var MAPZEN = {
       .replace(/ú/g, 'u');
 
     var protocol = '';
-    if (location.protocol.indexOf('http') === -1) {
+    if (window.location.protocol.indexOf('http') === -1) {
       protocol = 'http:';
     }
 
@@ -30,8 +30,8 @@ var MAPZEN = {
       if (data && data.features && data.features.length > 0) {
         var res = data.features;
         for (var i in res) {
-          var r = res[i],
-            position;
+          var r = res[i];
+          var position;
           position = {
             lat: r.geometry.coordinates[1],
             lon: r.geometry.coordinates[0]

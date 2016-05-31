@@ -499,12 +499,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
-        if data.nil?
-          false
-        else
-          data
-        end
+        Carto::NamedMaps::Api.new(carto_visualization).show
       end
 
       def password=(value)
@@ -664,16 +659,10 @@ module CartoDB
         embed_redis_cache.invalidate(self.id)
       end
 
-      # INFO: Handles doing nothing if instance is not eligible to have a named map
       def save_named_map
         return if type == TYPE_REMOTE
 
-        named_map = get_named_map
-        if named_map
-          update_named_map(named_map)
-        else
-          create_named_map
-        end
+        get_named_map ? create_named_map : update_named_map
       end
 
       def license_info
@@ -832,12 +821,11 @@ module CartoDB
       end
 
       def create_named_map
-        new_named_map = named_maps.create(self)
-        !new_named_map.nil?
+        Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
-      def update_named_map(named_map_instance)
-        named_map_instance.update(self)
+      def update_named_map
+        Carto::NamedMaps::Api.new(carto_visualization).update
       end
 
       def propagate_privacy_and_name_to(table)
@@ -955,6 +943,9 @@ module CartoDB
         CartoDB.notify_exception(exception)
       end
 
+      def carto_visualization
+        @carto_visualization ||= Carto::Visualization.where(id: id).first
+      end
     end
   end
 end

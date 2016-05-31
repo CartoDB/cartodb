@@ -29,7 +29,7 @@
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
-    "torque.js": "2.15.1",
+    "torque.js": "^2.15",
     "underscore": "1.8.3"
   },
   "devDependencies": {

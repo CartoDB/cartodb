@@ -1,0 +1,28 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.CDB-InfoBox {
+  &.is-rect {
+    border-radius: 0;
+  }
+
+  &.is-default {
+    background: $cThirdBackground;
+  }
+
+  &.is-wide {
+    margin-right: -25px;
+    margin-left: -25px;
+    padding: 25px;
+  }
+
+  &.is-error {
+    background: $cError;
+    color: $cWhite;
+  }
+
+  &.is-alert {
+    background: rgba($cHighlightYellow, 0.6);
+  }
+}

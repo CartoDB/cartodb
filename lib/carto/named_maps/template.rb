@@ -104,6 +104,8 @@ module Carto
           options[:sql] = sql(layer_options, index)
         end
 
+        options[:sql_wrap] = layer_options[:query_wrapper] if layer_options[:query_wrapper]
+
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
           options[:interactivity] = layer_options[:interactivity]

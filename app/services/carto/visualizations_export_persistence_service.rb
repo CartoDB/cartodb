@@ -12,12 +12,7 @@ module Carto
         visualization.id = random_uuid
         visualization.user = user
 
-        visualization.layers.map do |layer|
-          options = layer.options
-          if options.has_key?(:user_name)
-            options[:user_name] = user.username
-          end
-        end
+        visualization.layers.map { |layer| fix_layer_user_information(layer, user) }
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
@@ -87,6 +82,24 @@ module Carto
         end
       end
       visualization.map.layers = layers
+    end
+
+    def fix_layer_user_information(layer, new_user)
+      new_username = new_user.username
+
+      options = layer.options
+      if options.has_key?(:user_name)
+        old_username = options[:user_name]
+        options[:user_name] = new_username
+
+        # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
+        query = options[:query]
+        if query.present?
+          options[:query] = query.
+            gsub(" #{old_username}.", " #{new_username}.").
+            gsub(" \"#{old_username}\".", " \"#{new_username}\".")
+        end
+      end
     end
   end
 end

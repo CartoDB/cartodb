@@ -18,9 +18,10 @@ module Carto
         table: full_visualization_table(carto_user, map),
         data_layer: nil)
 
-        table_visualization = FactoryGirl.create(
-          :carto_visualization,
-          user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
+        # table_visualization = FactoryGirl.create(
+        #   :carto_visualization,
+        #   user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
+        table_visualization = table.visualization
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
 
         unless data_layer.present?

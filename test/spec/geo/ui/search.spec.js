@@ -113,7 +113,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(15);
       });
 
-      it('should zoom to 18 when search result is venue type', function() {
+      it('should zoom to 18 when search result is venue type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -123,7 +123,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-       it('should zoom to 8 when search result is region type', function() {
+      it('should zoom to 8 when search result is region type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -133,7 +133,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(8);
       });
 
-      it('should zoom to 5 when search result is country type', function() {
+      it('should zoom to 5 when search result is country type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -143,7 +143,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(5);
       });
 
-      it('should zoom to 8 when search result is county type', function() {
+      it('should zoom to 8 when search result is county type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -153,7 +153,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(8);
       });
 
-      it('should zoom to 18 when search result is address type', function() {
+      it('should zoom to 18 when search result is address type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -163,7 +163,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(18);
       });
 
-      it('should zoom to 12 when search result is locality type', function() {
+      it('should zoom to 12 when search result is locality type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -173,7 +173,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(12);
       });
 
-      it('should zoom to 11 when search result is localadmin type', function() {
+      it('should zoom to 11 when search result is localadmin type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,
@@ -183,7 +183,7 @@ describe('geo/ui/search', function () {
         expect(this.map.get('zoom')).toBe(11);
       });
 
-      it('should zoom to 15 when search result is neighbourhood type', function() {
+      it('should zoom to 15 when search result is neighbourhood type', function () {
         this.result = {
           lat: 43.0,
           lon: -3.0,

@@ -17,14 +17,14 @@ var Search = View.extend({
   _ZOOM_BY_CATEGORY: {
     'building': 18,
     'postal-area': 15,
-    'venue':18,
-    'region':8,
-    'address':18,
-    'country':5,
-    'county':8,
-    'locality':12,
-    'localadmin':11,
-    'neighbourhood':15,
+    'venue': 18,
+    'region': 8,
+    'address': 18,
+    'country': 5,
+    'county': 8,
+    'locality': 12,
+    'localadmin': 11,
+    'neighbourhood': 15,
     'default': 12
   },
 

@@ -19,6 +19,7 @@
     "backbone-model-file-upload": "^1.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.4.0",
+    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/cartodb.js#v4",
@@ -28,6 +29,7 @@
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
+    "torque.js": "2.15.1",
     "underscore": "1.8.3"
   },
   "devDependencies": {
@@ -38,8 +40,6 @@
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
-    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-    "torque.js": "2.15.1",
     "cartoassets": "cartodb/CartoAssets#master",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",

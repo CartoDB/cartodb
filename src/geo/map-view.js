@@ -17,6 +17,7 @@ var MapView = View.extend({
       throw new Error('you should specify a layerViewFactory');
     }
 
+    this._cartoDBLayerGroupView = null;
     this.map = this.options.map;
     this.add_related_model(this.map);
 
@@ -179,6 +180,7 @@ var MapView = View.extend({
     if (layerModel.get('type') === 'CartoDB') {
       if (this._cartoDBLayerGroup.layers.size() === 0) {
         layerView.remove();
+        this._cartoDBLayerGroupView = null;
       }
     } else {
       layerView.remove();

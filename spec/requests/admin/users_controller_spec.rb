@@ -17,6 +17,8 @@ describe Admin::UsersController do
   end
 
   before(:each) do
+    # Reload user, cannot use reload because it does not reload password fields
+    @user = ::User[@user.id]
     host! "#{@user.username}.localhost.lan"
     login_as(@user, scope: @user.username)
   end

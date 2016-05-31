@@ -72,6 +72,20 @@
 }
 
 
+.CDB-ColorBar.is-selected {
+  position: relative;
+}
+
+.CDB-ColorBar.is-selected:after {
+  position: absolute;
+  right: 0;
+  bottom: -14px;
+  left: 0;
+  height: 1px;
+  background: $cMainBg;
+  content: '';
+}
+
 /* deep insights */
 .CDB-Dashboard-canvas {
   @include block-shadow();

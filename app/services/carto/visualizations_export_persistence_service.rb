@@ -94,11 +94,17 @@ module Carto
 
         # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
         query = options[:query]
-        if query.present?
-          options[:query] = query
-                            .gsub(" #{old_username}.", " #{new_username}.")
-                            .gsub(" \"#{old_username}\".", " \"#{new_username}\".")
-        end
+
+        options[:query] = rewrite_query_for_new_user(query, old_username, new_user) if query.present?
+      end
+    end
+
+    def rewrite_query_for_new_user(query, old_username, new_user)
+      if new_user.username == new_user.database_schema
+        new_username = new_user.username
+        query.gsub(" #{old_username}.", " #{new_username}.").gsub(" \"#{old_username}\".", " \"#{new_username}\".")
+      else
+        query.gsub(" #{old_username}.", " ").gsub(" \"#{old_username}\".", " ")
       end
     end
   end

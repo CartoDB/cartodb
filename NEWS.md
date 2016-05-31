@@ -128,6 +128,7 @@ be exectuded daily
 * Removing Bitly shortener.
 * Several XSS fixes in organization accounts
 * API fixes that allows.
+* API fixes that allows 
 
 3.12.2 (2016-05-15)
 -------------------

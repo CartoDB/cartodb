@@ -98,6 +98,7 @@ module CartoDB
         # WIP: CartoDB/cartodb-management#4467
         # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
         reset_user_schema_permissions
+
         configure_database
 
         revoke_cdb_conf_access

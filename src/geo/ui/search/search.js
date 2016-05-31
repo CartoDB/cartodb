@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var View = require('../../../core/view');
-var NOKIA = require('../../../geo/geocoder/nokia-geocoder');
+var MAPZEN = require('../../../geo/geocoder/mapzen-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
 var Geometry = require('../../../geo/geometry');
@@ -17,6 +17,14 @@ var Search = View.extend({
   _ZOOM_BY_CATEGORY: {
     'building': 18,
     'postal-area': 15,
+    'venue':18,
+    'region':8,
+    'address':18,
+    'country':5,
+    'county':8,
+    'locality':12,
+    'localadmin':11,
+    'neighbourhood':15,
     'default': 12
   },
 
@@ -63,7 +71,7 @@ var Search = View.extend({
     // Remove previous pin without any timeout (0 represents the timeout for
     // the animation)
     this._destroySearchPin(0);
-    NOKIA.geocode(address, function (places) {
+    MAPZEN.geocode(address, function (places) {
       self._onResult(places);
     });
   },

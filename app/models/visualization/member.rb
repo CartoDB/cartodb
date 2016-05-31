@@ -662,7 +662,7 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        get_named_map ? create_named_map : update_named_map
+        get_named_map ? update_named_map : create_named_map
       end
 
       def license_info

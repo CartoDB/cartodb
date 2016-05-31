@@ -1,3 +1,9 @@
+3.14.0 (2016-XX-XX)
+-------------------
+
+### Bug Fixes
+* Incorrect error message when password validation failed
+
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE

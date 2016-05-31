@@ -6,7 +6,7 @@
     </div>
     <%- title %>
     <% if (help) { %>
-      <span class="js-help" data-tooltip="<%- help %>">-?-</span>
+      <span class="js-help is-underlined" data-tooltip="<%- help %>">?</span>
     <% } %>
   </label>
   <div class="CDB-Text CDB-Size-medium Editor-formInput js-editor"></div>

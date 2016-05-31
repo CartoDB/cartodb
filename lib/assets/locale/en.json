@@ -403,6 +403,9 @@
         "count-message": "If you select COUNT all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
+    },
+    "codemirror": {
+      "no-errors": "No errors"
     }
   },
   "data": {

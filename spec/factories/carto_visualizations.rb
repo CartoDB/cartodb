@@ -18,10 +18,7 @@ module Carto
         table: full_visualization_table(carto_user, map),
         data_layer: nil)
 
-        # table_visualization = FactoryGirl.create(
-        #   :carto_visualization,
-        #   user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
-        table_visualization = table.visualization
+        table_visualization = table.visualization || create_table_visualization(carto_user, table)
         visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
 
         unless data_layer.present?
@@ -44,6 +41,11 @@ module Carto
         visualization.reload
 
         return map, table, table_visualization, visualization
+      end
+
+      def create_table_visualization(carto_user, table)
+        FactoryGirl.create(:carto_visualization,
+            user: carto_user, type: 'table', name: table.name, map_id: table.map_id)
       end
 
       # Helper method for `create_full_visualization` results cleanup

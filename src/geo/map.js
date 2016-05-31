@@ -114,7 +114,6 @@ var Map = Model.extend({
 
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
-    var silent = options.silent;
     var layerModel = LayersFactory.create(type, attrs, {
       map: this
     });

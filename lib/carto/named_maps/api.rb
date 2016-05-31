@@ -9,6 +9,7 @@ module Carto
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
       RETRY_TIME_SECONDS = 5
+      MAX_RETRY_ATTEMPTS = 3
 
       def initialize(visualization)
         @visualization = visualization
@@ -47,7 +48,7 @@ module Carto
         end
       end
 
-      def update(retry_allowed: true)
+      def update(retires: 0)
         stats_aggregator.timing('carto-named-maps-api.update') do
           template = Carto::NamedMaps::Template.new(@visualization)
 
@@ -61,9 +62,9 @@ module Carto
           if response_code =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           elsif response_code == '400'
-            if response.body =~ /is locked/i && retry_allowed
-              sleep(RETRY_TIME_SECONDS)
-              update(retry: false)
+            if response.body =~ /is locked/i && retires < MAX_RETRY_ATTEMPTS
+              sleep(RETRY_TIME_SECONDS**retries)
+              update(retries: retries + 1)
             end
           else
             log_response(response, 'update')

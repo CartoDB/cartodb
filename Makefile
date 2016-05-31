@@ -316,7 +316,6 @@ update_cdb:
 	cd $(CDB_PATH); make cartodb dist/cartodb.css
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
-	cp $(CDB_PATH)/dist/cartodb.mod.odyssey.uncompressed.js vendor/assets/javascripts
 	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
 
 

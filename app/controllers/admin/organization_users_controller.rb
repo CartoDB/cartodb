@@ -122,7 +122,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     model_validation_ok = @user.valid?
     if attributes[:password].present? || attributes[:password_confirmation].present?
-      model_validation_ok &= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
+      model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
     raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
 

@@ -76,7 +76,7 @@ module Carto
 
         model_validation_ok = @user.valid?
         if password.present?
-          model_validation_ok &= @user.valid_password?(:password, password, password)
+          model_validation_ok &&= @user.valid_password?(:password, password, password)
         end
 
         # NOTE: Verify soft limits BEFORE updating the user

@@ -23,7 +23,7 @@ module Carto
         @visualization = visualization
       end
 
-      def to_json
+      def to_hash
         @template ||= stats_aggregator.timing('named-map.template-data') do
           {
             name: name,
@@ -37,8 +37,12 @@ module Carto
               analyses: analyses
             },
             view: view
-          }.to_json
+          }
         end
+      end
+
+      def to_json
+        to_hash.to_json
       end
 
       def name
@@ -103,7 +107,7 @@ module Carto
           options[:sql] = sql(layer_options, index)
         end
 
-        options[:sql_wrap] = layer_options[:query_wrapper] if layer_options[:query_wrapper]
+        options[:sql_wrap] = layer_options[:sql_wrap] if layer_options[:sql_wrap]
 
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?

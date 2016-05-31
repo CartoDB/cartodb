@@ -64,6 +64,7 @@ module CartoDB
       # All methods called inside should allow to be executed multiple times without errors
       def setup_organization_user_schema
         # WIP: CartoDB/cartodb-management#4467
+        # Avoid mover reseting permissions. It's been moved to callers. Look for "WIP: CartoDB/cartodb-management#4467"
         # reset_user_schema_permissions
         reset_schema_owner
         set_user_privileges_at_db

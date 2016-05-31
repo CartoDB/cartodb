@@ -232,4 +232,19 @@ module CartoDB
     Cartodb.config[:data_library] && Cartodb.config[:data_library]['path']
   end
 
+  def self.python_path
+    if Cartodb.config[:importer]['python_path'].blank?
+      ""
+    else
+      Cartodb.config[:importer]['python_path']
+    end
+  end
+
+  def self.python_bin_path
+    if Cartodb.config[:importer]['python_bin_path'].blank?
+      `which python`.strip
+    else
+      Cartodb.config[:importer]['python_bin_path']
+    end
+  end
 end

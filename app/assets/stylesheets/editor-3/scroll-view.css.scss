@@ -3,20 +3,21 @@
 
 .ScrollView {
   @include display-flex();
-  @include flex(1);
   @include flex-direction(column);
   margin-top: -19px;
 
   &,
   .ScrollView-wrapper {
+    @include flex(1);
     position: relative;
-    margin-right: -10px;
-    margin-left: -10px;
-    padding-right: 10px;
-    padding-left: 10px;
+    margin-right: -24px;
+    margin-left: -24px;
+    padding-right: 24px;
+    padding-left: 24px;
   }
 
   .ScrollView-content {
+    @include flex(1);
     padding: 18px 0;
   }
 }

@@ -1139,6 +1139,12 @@ describe User do
     expect { @user.save }.to_not change { @user.api_key }
   end
 
+  it "should not try to update mobile api_keys if the user has it disabled" do
+    @user.stubs(:mobile_sdk_enabled?).returns(false)
+    @user.stubs(:cartodb_central_client).never
+    @user.regenerate_api_key
+  end
+
   it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s

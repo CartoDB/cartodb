@@ -180,7 +180,7 @@ defaults: &defaults
       bucket_name: ''
       url_ttl: 7200
       async_long_uploads: false
-    uploads_path: 'public/uploads'
+    uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
   importer:
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding

@@ -291,7 +291,7 @@ module CartoDB
 
       def move_to_schema(result, schema=DESTINATION_SCHEMA)
         # The new table to sync is moved to user schema to allow CartoDBfication.
-        # This temporal table should not be registered (check ghost_tables_manager.rb)
+        # This temporary table should not be registered (check ghost_tables_manager.rb)
         return self if schema == result.schema
         database.execute(%Q{
           ALTER TABLE "#{result.schema}"."#{result.table_name}"

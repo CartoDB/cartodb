@@ -93,6 +93,18 @@ describe Admin::OrganizationUsersController do
           @existing_user.reload
           @existing_user.quota_in_bytes.should_not eq new_quota
         end
+
+        it 'validates before updating in Central' do
+          ::User.any_instance.stubs(:update_in_central).never
+          params = {
+            password:         'zyx',
+            confirm_password: 'abc'
+          }
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: params
+          last_response.body.should include('match confirmation')
+        end
       end
 
       describe '#destroy' do

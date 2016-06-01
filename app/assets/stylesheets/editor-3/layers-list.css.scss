@@ -12,6 +12,7 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
+  position:relative;
 }
 .Editor-ListLayer-item:hover {
   @include transition(border, 200ms, ease-in);

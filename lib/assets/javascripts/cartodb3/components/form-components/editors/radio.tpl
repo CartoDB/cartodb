@@ -4,7 +4,7 @@
         name="<%- item.name %>" value="<%- item.value %>" id="<%- item.id %>"
         <% if (item.selected) { %>
           selected="selected"
-        <% } else if (disabled) { %>
+        <% } else if (item.disabled) { %>
           disabled="disabled"
         <% } %>
       />

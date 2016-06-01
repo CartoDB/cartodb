@@ -44,7 +44,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         puts '=================='
-        drop(result.table_name) if exists?(result.table_name)
+        drop(result.table_name) if result && exists?(result.table_name)
         raise exception
       end
 

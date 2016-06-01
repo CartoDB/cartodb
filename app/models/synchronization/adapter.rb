@@ -44,7 +44,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         puts '=================='
-        drop(result.table_name) if exists?(result.table_name)
+        drop(result.table_name) if result && exists?(result.table_name)
         raise exception
       end
 
@@ -97,7 +97,6 @@ module CartoDB
         end
 
         update_table_pg_stats(qualified_table_name)
-        return type
       rescue => exception
         CartoDB::Logger.error(message: 'Error in sync cartodbfy',
                               exception: exception,

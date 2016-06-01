@@ -10,11 +10,8 @@ module.exports = WidgetModel.extend({
     {
       autoStyle: false,
       normalized: false,
-      lo_index: null,
-      hi_index: null,
-      zoomed: false,
-      zoomed_lo_index: null,
-      zoomed_hi_index: null
+      min: null,
+      max: null
     },
     WidgetModel.prototype.defaultState
   ),

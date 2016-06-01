@@ -44,7 +44,7 @@ module CartoDB
         puts exception.to_s
         puts exception.backtrace
         puts '=================='
-        drop(result.table_name) if exists?(result.table_name)
+        drop(result.table_name) if result && exists?(result.table_name)
         raise exception
       end
 
@@ -62,8 +62,8 @@ module CartoDB
           drop(temporary_name) if exists?(temporary_name)
           rename(result.table_name, table_name)
         end
-        update_cdb_tablemetadata(table_name)
         fix_oid(table_name)
+        update_cdb_tablemetadata(table_name)
       rescue => exception
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 

@@ -390,7 +390,8 @@ module Carto
 
       PROPERTIES_DIRECT_MAPPING = {
         "marker-comp-op" => "blending",
-        "torque-blend-mode" => "blending"
+        "torque-blend-mode" => "blending",
+        "line-comp-op" => "blending"
       }.freeze
 
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
@@ -400,9 +401,8 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        unless wpp['geometry_type'] == 'line'
-          merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
-        end
+        stroke_mapping = wpp['geometry_type'] == 'line' ? STROKE_FROM_LINE_MAPPING : STROKE_FROM_POLIGON_MAPPING
+        merge_into_if_present(spp, 'stroke', generate_stroke(wpp, stroke_mapping))
 
         merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))
 
@@ -457,20 +457,31 @@ module Carto
         fill
       end
 
-      STROKE_SIZE_DIRECT_MAPPING = {
-        "marker-line-width" => 'fixed'
+      STROKE_FROM_POLIGON_MAPPING = {
+        'size' => {
+          "marker-line-width" => 'fixed'
+        },
+        'color' => {
+          "marker-line-color" => 'fixed',
+          "marker-line-opacity" => 'opacity'
+        }
       }.freeze
 
-      STROKE_COLOR_DIRECT_MAPPING = {
-        "marker-line-color" => 'fixed',
-        "marker-line-opacity" => 'opacity'
+      STROKE_FROM_LINE_MAPPING = {
+        'size' => {
+          "line-width" => 'fixed'
+        },
+        'color' => {
+          "line-color" => 'fixed',
+          "line-opacity" => 'opacity'
+        }
       }.freeze
 
-      def generate_stroke(wpp)
+      def generate_stroke(wpp, stroke_mapping)
         stroke = {}
 
-        merge_into_if_present(stroke, 'size', apply_direct_mapping({}, wpp, STROKE_SIZE_DIRECT_MAPPING))
-        merge_into_if_present(stroke, 'color', apply_direct_mapping({}, wpp, STROKE_COLOR_DIRECT_MAPPING))
+        merge_into_if_present(stroke, 'size', apply_direct_mapping({}, wpp, stroke_mapping['size']))
+        merge_into_if_present(stroke, 'color', apply_direct_mapping({}, wpp, stroke_mapping['color']))
 
         stroke
       end

@@ -514,6 +514,42 @@ describe Carto::Api::LayerPresenter do
           it 'bins defaults to 10' do
             expect(@stroke_color).to include('bins' => 10)
           end
+
+          describe 'stroke' do
+            let(:line_width) { 6 }
+            let(:line_color) { "#0F3B82" }
+            let(:line_opacity) { 0.7 }
+            let(:line_comp_op) { "none" }
+            let(:simple_line_wizard_properties) do
+              {
+                "type" => "polygon",
+                "properties" =>
+                  {
+                    "line-width" => line_width,
+                    "line-color" => line_color,
+                    "line-opacity" => line_opacity,
+                    "line-comp-op" => line_comp_op,
+                    "geometry_type" => "line"
+                  }
+              }
+            end
+
+            before(:each) do
+              layer = build_layer_with_wizard_properties(simple_line_wizard_properties)
+              options = presenter_with_style_properties(layer).to_poro['options']
+              @properties = options['style_properties']['properties']
+              @stroke = @properties['stroke']
+              @stroke_color = @stroke['color']
+              @stroke_size = @stroke['size']
+            end
+
+            it 'generates stroke' do
+              expect(@stroke_size).to include('fixed' => line_width)
+              expect(@stroke_color).to include('fixed' => line_color)
+              expect(@stroke_color).to include('opacity' => line_opacity)
+              expect(@properties).to include('blending' => line_comp_op)
+            end
+          end
         end
       end
 

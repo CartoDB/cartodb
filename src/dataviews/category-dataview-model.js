@@ -69,7 +69,6 @@ module.exports = DataviewModelBase.extend({
         }
       }
     }
-      
   },
 
   _onMapBoundsChanged: function () {

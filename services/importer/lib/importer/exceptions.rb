@@ -153,7 +153,7 @@ module CartoDB
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,
-      CartoDB::Datasources::AuthError                             => 1011,
+      CartoDB::Datasources::AuthError                             => 1012,
       CartoDB::Datasources::TokenExpiredOrInvalidError            => 1012,
       CartoDB::Datasources::InvalidServiceError                   => 1012,
       CartoDB::Datasources::DataDownloadError                     => 1011,

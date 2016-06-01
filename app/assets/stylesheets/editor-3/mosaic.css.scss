@@ -1,0 +1,46 @@
+// Mosaic styles
+// ----------------------------------------------
+
+/* SG
+# Mosaic
+```
+<ul class="Mosaic">
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+</ul>
+```
+*/
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.Mosaic {
+  position: relative;
+}
+.Mosaic-list {
+  position: relative;
+  padding-bottom: 10px;
+}
+.Mosaic-item {
+  @include inline-block();
+  width: 56px;
+  height: 56px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  box-sizing: border-box;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
+}
+.Mosaic-item.is-selected {
+  border: 2px solid $cBlue;
+}

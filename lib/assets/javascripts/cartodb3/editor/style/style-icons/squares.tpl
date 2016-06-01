@@ -1,6 +1,6 @@
 <svg width="58px" height="28px" viewBox="0 0 58 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Aggregation-/-Squares" transform="translate(-15.000000, -14.000000)" fill="#AAAAAA">
+        <g id="Aggregation-/-Squares" transform="translate(-15.000000, -14.000000)" class="Style-fill">
             <g id="squares">
                 <g transform="translate(15.000000, 14.000000)">
                     <rect id="Rectangle-847-Copy-2" x="10" y="0" width="8" height="8" rx="1"></rect>

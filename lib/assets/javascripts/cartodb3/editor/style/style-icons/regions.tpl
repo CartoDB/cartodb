@@ -1,6 +1,6 @@
 <svg width="56px" height="24px" viewBox="0 0 56 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Aggregation-/-Admin-Regions" transform="translate(-16.000000, -16.000000)" fill="#AAAAAA">
+        <g id="Aggregation-/-Admin-Regions" transform="translate(-16.000000, -16.000000)" class="Style-fill">
             <g id="regions">
                 <g transform="translate(16.000000, 16.000000)">
                     <polygon id="Rectangle-649" points="9 8 1 0 27 0 27 17 36 17 36.0065918 23.9934082 25 24 9 16"></polygon>

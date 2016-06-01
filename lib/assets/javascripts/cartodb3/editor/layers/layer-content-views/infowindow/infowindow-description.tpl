@@ -1,4 +1,4 @@
-<div class="CDB-Widget-filter CDB-Widget-contentSpaced CDB-Widget-contentSpaced--sideMargins">
+<div class="u-flex u-justifySpace u-alignCenter">
   <p class="CDB-Text is-semibold CDB-Size-small u-upperCase js-textInfo">
     <% if (noneSelected) { %>
       None selected
@@ -7,7 +7,5 @@
     <% }%>
   </p>
  
-  <div class="CDB-Widget-filterButtons">
-    <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor CDB-Widget-link CDB-Widget-filterButton js-toggle"><% if (allSelected) { %>none<% } else { %>all<% } %></button>
-  </div>
+  <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor js-toggle"><% if (allSelected) { %>none<% } else { %>all<% } %></button>
 </div>

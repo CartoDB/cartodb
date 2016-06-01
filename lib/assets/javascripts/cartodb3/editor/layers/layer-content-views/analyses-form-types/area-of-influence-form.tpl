@@ -6,9 +6,9 @@
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.area-of-influence') %></h2>
       </div>
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.reference-layer-pluralize', { smart_count: 1 }) %></p>
-      <div class="u-tSpace-xl CDB-Text">
+      <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
         <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.input') %></p>
-        <div class="CDB-Text CDB-Size-medium u-iBlock" data-editors="source"></div>
+        <div class="Editor-formInput" data-editors="source"></div>
       </div>
     </div>
   </div>

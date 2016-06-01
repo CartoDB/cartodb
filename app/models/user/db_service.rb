@@ -807,7 +807,7 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
           drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
+            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
               AS sql
             FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
             WHERE ns.nspname = '#{schema_name}'

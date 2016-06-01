@@ -423,8 +423,7 @@
     "button_add": "Add",
     "tab-pane": {
       "layers": {
-        "title-label": "Layers",
-        "basemap": "Basemap"
+        "title-label": "Layers"
       },
       "elements": {
         "title-label": "Elements"
@@ -439,6 +438,14 @@
         "add-analysis": "Add analysis",
         "add-layer": "Add layer",
         "delete": "Delete"
+      },
+      "basemap": {
+        "title-label": "Basemap",
+        "source": {
+          "title-label": "Source",
+          "style": "Style",
+          "select-style": "Select style"
+        }
       },
       "menu-tab-pane-labels": {
         "data": "Data",

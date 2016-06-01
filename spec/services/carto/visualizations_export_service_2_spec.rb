@@ -563,13 +563,9 @@ describe Carto::VisualizationsExportService2 do
 
       let(:table_name) { 'a_shared_table' }
 
-      def query(username = nil)
-        if username.present?
-          if username.include?('-')
-            "SELECT * FROM \"#{username}\".#{@table.name}"
-          else
-            "SELECT * FROM #{username}.#{@table.name}"
-          end
+      def query(user = nil)
+        if user.present?
+          "SELECT * FROM #{user.sql_safe_database_schema}.#{@table.name}"
         else
           "SELECT * FROM #{@table.name}"
         end
@@ -580,7 +576,7 @@ describe Carto::VisualizationsExportService2 do
         user_table = Carto::UserTable.find(@table.id)
         share_table_with_user(@table, shared_user)
 
-        query_1 = query(owner_user.username)
+        query_1 = query(owner_user)
         layer_options = {
           table_name: @table.name,
           query: query_1,
@@ -607,7 +603,7 @@ describe Carto::VisualizationsExportService2 do
       let(:export_service) { Carto::VisualizationsExportService2.new }
 
       def check_username_replacement(source_user, target_user)
-        query_1 = query(source_user.username)
+        query_1 = query(source_user)
         exported = export_service.export_visualization_json_hash(@visualization.id, target_user)
         layers = exported[:visualization][:layers]
         layers.should_not be_nil
@@ -630,9 +626,7 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_org_user_2
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
-        transformed_query = check_username_replacement(source_user, target_user)
-        valid_queries = [query(target_user.username), query("\"#{target_user.username}\"")]
-        valid_queries.should include(transformed_query)
+        check_username_replacement(source_user, target_user).should eq query(target_user)
       end
 
       it 'replaces owner name (with dash) with new user name on import for user_name and query' do
@@ -640,9 +634,7 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_org_user_with_dash_2
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
-        transformed_query = check_username_replacement(source_user, target_user)
-        valid_queries = [query(target_user.username), query("\"#{target_user.username}\"")]
-        valid_queries.should include(transformed_query)
+        check_username_replacement(source_user, target_user).should eq query(target_user)
       end
 
       it 'replaces owner name (without dash) with new user name (with dash) on import for user_name and query' do
@@ -651,9 +643,7 @@ describe Carto::VisualizationsExportService2 do
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should_not include('-')
         target_user.username.should include('-')
-        transformed_query = check_username_replacement(source_user, target_user)
-        valid_queries = [query(target_user.username), query("\"#{target_user.username}\"")]
-        valid_queries.should include(transformed_query)
+        check_username_replacement(source_user, target_user).should eq query(target_user)
       end
 
       it 'removes owner name from user_name and query importing into a non-organization account' do
@@ -661,8 +651,7 @@ describe Carto::VisualizationsExportService2 do
         target_user = @carto_normal_user
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
-        transformed_query = check_username_replacement(source_user, target_user)
-        transformed_query.should eq query
+        check_username_replacement(source_user, target_user).should eq query
       end
     end
   end

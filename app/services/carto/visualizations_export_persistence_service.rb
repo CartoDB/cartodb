@@ -102,7 +102,7 @@ module Carto
     def rewrite_query_for_new_user(query, old_username, new_user)
       if new_user.username == new_user.database_schema
         new_schema = new_user.sql_safe_database_schema
-        query.gsub(" #{old_username}.", " #{new_schema}.").gsub(" \"#{old_username}\".", " \"#{new_schema}\".")
+        query.gsub(" #{old_username}.", " #{new_schema}.").gsub(" \"#{old_username}\".", " #{new_schema}.")
       else
         query.gsub(" #{old_username}.", " ").gsub(" \"#{old_username}\".", " ")
       end

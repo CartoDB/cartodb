@@ -64,10 +64,8 @@ module.exports = DataviewModelBase.extend({
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
 
     if (state) {
-      for (var key in state) {
-        if (key === 'max' || key === 'min') {
-          this.filter.setRange(state.min, state.max);
-        }
+      if (_.isNumber(state.min) || _.isNumber(state.max)) {
+        this.filter.setRange(state.min, state.max);
       }
     }
   },

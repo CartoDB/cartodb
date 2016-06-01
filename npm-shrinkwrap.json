@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.24.10",
+  "version": "3.24.11",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -804,7 +804,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <2.0.0",
+              "from": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -819,7 +819,7 @@
                   "dependencies": {
                     "acorn": {
                       "version": "1.2.2",
-                      "from": "acorn@>=1.0.3 <2.0.0",
+                      "from": "https://registry.npmjs.org/acorn/-/acorn-1.2.2.tgz",
                       "resolved": "https://registry.npmjs.org/acorn/-/acorn-1.2.2.tgz"
                     },
                     "defined": {
@@ -854,12 +854,12 @@
                           "dependencies": {
                             "prelude-ls": {
                               "version": "1.1.2",
-                              "from": "prelude-ls@>=1.1.1 <1.2.0",
+                              "from": "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.1.2.tgz",
                               "resolved": "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.1.2.tgz"
                             },
                             "deep-is": {
                               "version": "0.1.3",
-                              "from": "deep-is@>=0.1.3 <0.2.0",
+                              "from": "https://registry.npmjs.org/deep-is/-/deep-is-0.1.3.tgz",
                               "resolved": "https://registry.npmjs.org/deep-is/-/deep-is-0.1.3.tgz"
                             },
                             "wordwrap": {
@@ -869,7 +869,7 @@
                             },
                             "type-check": {
                               "version": "0.3.2",
-                              "from": "type-check@>=0.3.1 <0.4.0",
+                              "from": "https://registry.npmjs.org/type-check/-/type-check-0.3.2.tgz",
                               "resolved": "https://registry.npmjs.org/type-check/-/type-check-0.3.2.tgz"
                             },
                             "levn": {
@@ -1088,6 +1088,35 @@
       "from": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz",
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.4.0.tgz"
     },
+    "carto": {
+      "version": "0.15.1-cdb1",
+      "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+      "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+      "dependencies": {
+        "mapnik-reference": {
+          "version": "6.0.5",
+          "from": "mapnik-reference@>=6.0.2 <6.1.0",
+          "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
+        },
+        "optimist": {
+          "version": "0.6.1",
+          "from": "optimist@>=0.6.0 <0.7.0",
+          "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+          "dependencies": {
+            "wordwrap": {
+              "version": "0.0.3",
+              "from": "wordwrap@>=0.0.2 <0.1.0",
+              "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
+            },
+            "minimist": {
+              "version": "0.0.10",
+              "from": "minimist@>=0.0.1 <0.1.0",
+              "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
+            }
+          }
+        }
+      }
+    },
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
@@ -1096,7 +1125,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#e993c3096508853b087dc797ef6a13fc239cdb0a",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#092128bdd52e17071905e1b1502bed3bb33e6d22",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1199,40 +1228,6 @@
               "version": "1.1.0",
               "from": "mustache@1.1.0",
               "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
-            },
-            "torque.js": {
-              "version": "2.15.1",
-              "from": "torque.js@>=2.15.0 <3.0.0",
-              "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
-            },
-            "carto": {
-              "version": "0.15.1-cdb1",
-              "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-              "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-              "dependencies": {
-                "mapnik-reference": {
-                  "version": "6.0.5",
-                  "from": "mapnik-reference@>=6.0.2 <6.1.0",
-                  "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
-                },
-                "optimist": {
-                  "version": "0.6.1",
-                  "from": "optimist@>=0.6.0 <0.7.0",
-                  "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
-                  "dependencies": {
-                    "wordwrap": {
-                      "version": "0.0.3",
-                      "from": "wordwrap@>=0.0.2 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
-                    },
-                    "minimist": {
-                      "version": "0.0.10",
-                      "from": "minimist@>=0.0.1 <0.1.0",
-                      "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
-                    }
-                  }
-                }
-              }
             }
           }
         },
@@ -1261,7 +1256,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#e993c3096508853b087dc797ef6a13fc239cdb0a",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#092128bdd52e17071905e1b1502bed3bb33e6d22",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1374,40 +1369,6 @@
           "version": "1.1.0",
           "from": "mustache@1.1.0",
           "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
-        },
-        "torque.js": {
-          "version": "2.15.1",
-          "from": "torque.js@>=2.15.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
-        },
-        "carto": {
-          "version": "0.15.1-cdb1",
-          "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-          "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-          "dependencies": {
-            "mapnik-reference": {
-              "version": "6.0.5",
-              "from": "mapnik-reference@>=6.0.2 <6.1.0",
-              "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
-            },
-            "optimist": {
-              "version": "0.6.1",
-              "from": "optimist@>=0.6.0 <0.7.0",
-              "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
-              "dependencies": {
-                "wordwrap": {
-                  "version": "0.0.3",
-                  "from": "wordwrap@>=0.0.2 <0.1.0",
-                  "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
-                },
-                "minimist": {
-                  "version": "0.0.10",
-                  "from": "minimist@>=0.0.1 <0.1.0",
-                  "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
-                }
-              }
-            }
-          }
         }
       }
     },
@@ -1440,6 +1401,11 @@
       "version": "1.2.1",
       "from": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz",
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
+    },
+    "torque.js": {
+      "version": "2.15.1",
+      "from": "torque.js@2.15.1",
+      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
     },
     "underscore": {
       "version": "1.8.3",

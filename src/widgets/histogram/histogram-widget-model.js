@@ -1,5 +1,6 @@
 var WidgetModel = require('../widget-model');
 var AutoStylerFactory = require('../auto-style/factory');
+var _ = require('underscore');
 
 /**
  * Model for a histogram widget

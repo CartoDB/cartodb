@@ -58,13 +58,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     skipMapInstantiation: true
   }));
 
-
   if (!_.isEmpty(stateFromURL.map)) {
     vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
   }
 
   var widgetsState = stateFromURL.widgets || {};
-
 
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);

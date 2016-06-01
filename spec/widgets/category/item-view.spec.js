@@ -31,5 +31,5 @@ describe('widgets/category/item-view', function () {
     this.dataviewModel.filter.accept('USA');
     this.view.render();
     expect(this.widgetModel.getState().acceptedCategories[0]).toEqual('USA');
-  })
+  });
 });

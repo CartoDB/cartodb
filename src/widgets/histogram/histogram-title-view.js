@@ -2,7 +2,6 @@ var $ = require('jquery');
 var cdb = require('cartodb.js');
 var TooltipView = require('../widget-tooltip-view');
 var template = require('./histogram-title-template.tpl');
-var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  *  Show title + show if histogram sizes are applied or not

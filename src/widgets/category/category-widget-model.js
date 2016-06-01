@@ -26,7 +26,6 @@ module.exports = WidgetModel.extend({
     WidgetModel.prototype.defaultState
   ),
 
-
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();

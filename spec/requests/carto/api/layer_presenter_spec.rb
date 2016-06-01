@@ -679,6 +679,7 @@ describe Carto::Api::LayerPresenter do
     describe 'density' do
       let(:query_wrapper) { "with meta ... <%= sql %> ..." }
       let(:color_ramp) { "red" }
+      let(:polygon_size) { 15 }
       let(:density_wizard_properties) do
         {
           "type" => "density",
@@ -691,7 +692,7 @@ describe Carto::Api::LayerPresenter do
               "line-width" => 0.5,
               "line-color" => "#FFF",
               "line-opacity" => 1,
-              "polygon-size" => 15,
+              "polygon-size" => polygon_size,
               "polygon-comp-op" => "none",
               "zoom" => 15
             }
@@ -728,12 +729,15 @@ describe Carto::Api::LayerPresenter do
       describe 'aggregation' do
         it 'has defaults' do
           expect(@aggregation).to include(
-            "size" => 100,
             "value" => {
               "operator" => 'COUNT',
               "attribute" => ''
             }
           )
+        end
+
+        it 'takes size from polygon-size' do
+          expect(@aggregation).to include("size" => polygon_size)
         end
       end
 

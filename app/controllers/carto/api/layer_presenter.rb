@@ -570,7 +570,7 @@ module Carto
 
         size = case @source_type
                when 'density'
-                 100
+                 wpp['polygon-size'] || 100
                when 'torque_heat'
                  wpp['torque-resolution']
                else

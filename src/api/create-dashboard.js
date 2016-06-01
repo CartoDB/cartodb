@@ -130,7 +130,13 @@ module.exports = function (selector, vizJSON, opts, callback) {
       if (error) {
         throw new Error('Error creating dashboard: ' + error);
       }
-      callback && callback(null, new Dashboard(dashboard));
+      var dash = new Dashboard(dashboard);
+      if (opts.share_urls) {
+        dash.onStateChanged(function (state, url) {
+          window.history.pushState('Object', 'Title', url);
+        })
+      }
+      callback && callback(null, dash);
     });
   }
 

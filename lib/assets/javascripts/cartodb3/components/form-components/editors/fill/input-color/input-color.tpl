@@ -1,3 +1,9 @@
+<% if (columnType === 'string') { %>
+<% _.each(value, function (color) { %>
+<div class="CDB-ColorBar CDB-ColorBar--spaceMedium" style="background-color: <%- color %>">
+</div>
+<% }); %>
+<% } else { %>
 <button type="button" class="Editor-fillContainer">
   <ul class="CDB-ColorBarContainer">
     <% if (_.isArray(value)) { %>
@@ -7,3 +13,4 @@
     <% } %>
   </ul>
 </button>
+<% } %>

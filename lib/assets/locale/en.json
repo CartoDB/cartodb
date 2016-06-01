@@ -21,6 +21,9 @@
         },
         "input-ramp": {
           "buckets": "bucket |||| buckets"
+        },
+        "input-categories": {
+          "others": "Others"
         }
       }
     }

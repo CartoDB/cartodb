@@ -3,10 +3,10 @@
 @import 'cdb-variables/sizes';
 
 .Infobox .CDB-InfoBox {
-  border-radius: 0;
   margin-right: -25px;
   margin-left: -25px;
   padding: 25px;
+  border-radius: 0;
 
   &.is-default {
     background: $cThirdBackground;

@@ -209,8 +209,8 @@ module CartoDB
             data[:sql] = wrap(sql_from(layer.options), layer.options)
           end
 
-          query_wrapper = layer.options['query_wrapper']
-          data[:sql_wrap] = query_wrapper if query_wrapper.present?
+          sql_wrap = layer.options['sql_wrap'] || layer.options['query_wrapper']
+          data['sql_wrap'] = sql_wrap if sql_wrap.present?
 
           data = decorate_with_data(data, @decoration_data)
 

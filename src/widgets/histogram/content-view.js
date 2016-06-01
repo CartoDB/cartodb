@@ -8,6 +8,7 @@ var template = require('./content.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
+var d3 = require('d3');
 
 /**
  * Widget content view for a histogram
@@ -169,6 +170,15 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
+    this.histogramChartView.model.once('change:data', function () {
+      if (_.isNumber(this.model.get('min')) || _.isNumber(this.model.get('max'))) {
+        var scale = d3.scale.linear().domain([this._dataviewModel.get('start'), this._dataviewModel.get('end')]).range([0, this._dataviewModel.get('bins')])
+        var lo = Math.round(scale(this.model.get('min')));
+        var hi = Math.round(scale(this.model.get('max')));
+        this.histogramChartView.selectRange(lo,hi);
+        this.model.set('filter_enabled', true);
+      }
+    }, this);
 
     this._updateStats();
   },

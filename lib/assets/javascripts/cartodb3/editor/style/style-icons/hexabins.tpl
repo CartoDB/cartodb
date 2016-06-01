@@ -1,6 +1,6 @@
 <svg width="52px" height="23px" viewBox="0 0 52 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Aggregation-/-Hexabins" transform="translate(-15.000000, -17.000000)" fill="#AAAAAA">
+        <g id="Aggregation-/-Hexabins" transform="translate(-15.000000, -17.000000)" class="Style-fill">
             <g id="Hexabins">
                 <g transform="translate(15.000000, 17.000000)">
                     <polygon id="Polygon-1-Copy-4" points="23 11 28 14 28 20 23 23 18 20 18 14"></polygon>

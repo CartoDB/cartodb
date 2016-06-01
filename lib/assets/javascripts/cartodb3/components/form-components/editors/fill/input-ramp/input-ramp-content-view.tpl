@@ -6,7 +6,6 @@
       </button>
       <%- attribute %>
     </li>
-    <% if (columnType !== 'string') { %>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">
         <li class="u-flex">
@@ -31,7 +30,6 @@
         </li>
       </ul>
     </li>
-    <% } %>
   </ul>
 </div>
 <div class="js-content"></div>

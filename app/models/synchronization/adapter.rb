@@ -97,7 +97,6 @@ module CartoDB
         end
 
         update_table_pg_stats(qualified_table_name)
-        return type
       rescue => exception
         CartoDB::Logger.error(message: 'Error in sync cartodbfy',
                               exception: exception,

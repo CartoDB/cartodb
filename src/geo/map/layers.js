@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var LayerModelBase = require('./layer-model-base');
 
@@ -27,27 +28,25 @@ var Layers = Backbone.Collection.extend({
       this.at(0).set({ order: 0 });
 
       if (this.size() > 1) {
-        var layersByType = {};
-        var i;
-        for (i = 1; i < this.size(); ++i) {
-          var layer = this.at(i);
-          var layerType = layer.get('type');
-          layersByType[layerType] = layersByType[layerType] || [];
-          layersByType[layerType].push(layer);
-        }
+        var layersByType = this.reduce(function (layersByType, layerModel, index) {
+          var type = layerModel.get('type');
+          if (index === 0 && type === TILED_LAYER_TYPE) { return layersByType; }
+          layersByType[type] = layersByType[type] || [];
+          layersByType[type].push(layerModel);
+          return layersByType;
+        }, {});
 
-        var lastOrder = 0;
+        var lastOrder = 1;
         var sortedTypes = [CARTODB_LAYER_TYPE, TORQUE_LAYER_TYPE, TILED_LAYER_TYPE];
-        for (i = 0; i < sortedTypes.length; ++i) {
-          var type = sortedTypes[i];
-          var layers = layersByType[type] || [];
-          for (var j = 0; j < layers.length; ++j) {
-            layer = layers[j];
-            layer.set({
-              order: ++lastOrder
+        _.each(sortedTypes, function (layerType) {
+          var layers = layersByType[layerType] || [];
+          _.each(layers, function (layerModel) {
+            layerModel.set({
+              order: lastOrder
             });
-          }
-        }
+            lastOrder += 1;
+          });
+        });
       }
     }
 

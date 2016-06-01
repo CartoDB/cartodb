@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
+var carto = require('carto');
 
 /**
  * Model for a Torque Layer
@@ -18,12 +19,64 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  initialize: function(attrs, options) {
+  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+
+  TORQUE_LAYER_CARTOCSS_PROPS: [
+    '-torque-frame-count',
+    '-torque-time-attribute',
+    '-torque-aggregation-function',
+    '-torque-data-aggregation',
+    '-torque-resolution'
+  ],
+
+  LAYER_NAME_IN_CARTO_CSS: 'Map',
+
+  initialize: function (attrs, options) {
     LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
     this._map = options.map;
-    this.bind('change:visible change:sql change:cartocss change:source', this._reloadMap, this);
+    this.bind('change', this._onAttributeChanged, this);
+  },
+
+  _onAttributeChanged: function () {
+    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+      if (this.hasChanged(attr)) {
+        if (attr === 'cartocss') {
+          return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
+        }
+        return true;
+      }
+    }, this);
+
+    if (reloadMap) {
+      this._reloadMap();
+    }
+  },
+
+  _torqueCartoCSSPropsChanged: function () {
+    var currentCartoCSS = this.get('cartocss');
+    var previousCartoCSS = this.previous('cartocss');
+    var renderer = new carto.RendererJS();
+
+    return !_.isEqual(
+      this._getTorqueLayerCartoCSSProperties(renderer, currentCartoCSS),
+      this._getTorqueLayerCartoCSSProperties(renderer, previousCartoCSS)
+    );
+  },
+
+  _getTorqueLayerCartoCSSProperties: function (renderer, cartoCSS) {
+    var shader = renderer.render(cartoCSS);
+    var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
+    var properties = {};
+    _.each(this.TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
+      var value = layer && layer.eval(property);
+      if (value) {
+        properties[property] = value;
+      }
+    });
+
+    return properties;
   },
 
   _reloadMap: function () {

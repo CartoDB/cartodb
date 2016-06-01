@@ -2,7 +2,6 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Ps = require('perfect-scrollbar');
 require('clip-path');
-var templates = require('cdb.templates');
 var sanitize = require('../../core/sanitize');
 var Template = require('../../core/template');
 var View = require('../../core/view');
@@ -49,14 +48,7 @@ var Infowindow = View.extend({
   initialize: function () {
     this.mapView = this.options.mapView;
 
-    // Set template view variable and
-    // compile it if it is necessary
-    if (this.model.get('template')) {
-      this._compileTemplate();
-    } else {
-      this._setTemplate();
-    }
-
+    this._compileTemplate();
     this._initBinds();
 
     // Hide the element
@@ -115,14 +107,8 @@ var Infowindow = View.extend({
 
       var data = this.model.get('content') ? this.model.get('content').data : {};
 
-      // If a custom template is not applied, let's sanitized
-      // fields for the template rendering
-      if (this.model.get('template_name')) {
-        var template_name = _.clone(this.model.attributes.template_name);
-
-        // Sanitized them
-        fields = this._fieldsToString(fields, template_name);
-      }
+      // Sanitized fields
+      fields = _.map(fields, this._sanitizeField, this);
 
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
@@ -168,7 +154,6 @@ var Infowindow = View.extend({
     _.bindAll(this, '_onKeyUp', '_onLoadImage', '_onLoadImageError');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
-    this.model.bind('change:template_name', this._setTemplate, this);
     this.model.bind('change:latlng', this._update, this);
     this.model.bind('change:visibility', this.toggle, this);
     this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
@@ -229,25 +214,11 @@ var Infowindow = View.extend({
     });
   },
 
-  _getModelTemplate: function () {
-    return this.model.get('template_name');
-  },
-
-  /**
-   *  Change template of the infowindow
-   */
-  _setTemplate: function () {
-    if (this.model.get('template_name')) {
-      this.template = templates.getTemplate(this._getModelTemplate());
-      this.render();
-    }
-  },
-
   /**
    *  Compile template of the infowindow
    */
   _compileTemplate: function () {
-    var template = this.model.get('template') ? this.model.get('template') : templates.getTemplate(this._getModelTemplate());
+    var template = this.model.get('template');
 
     if (typeof (template) !== 'function') {
       this.template = new Template({
@@ -275,30 +246,7 @@ var Infowindow = View.extend({
     }
   },
 
-  /**
-   *  Convert values to string unless value is NULL
-   */
-  _fieldsToString: function (fields, template_name) {
-    var fields_sanitized = [];
-    if (fields && fields.length > 0) {
-      var self = this;
-      fields_sanitized = _.map(fields, function (field, i) {
-        // Return whole attribute sanitized
-        return self._sanitizeField(field, template_name, field.index || i);
-      });
-    }
-    return fields_sanitized;
-  },
-
-  /**
-   *  Sanitize fields, what does it mean?
-   *  - If value is null, transform to string
-   *  - If value is an url, add it as an attribute
-   *  - Cut off title if it is very long (in header or image templates).
-   *  - If the value is a valid url, let's make it a link.
-   *  - More to come...
-   */
-  _sanitizeField: function (attr, template_name, pos) {
+  _sanitizeField: function (attr) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value === null || attr.value === undefined) {
       attr.value = '';
@@ -315,31 +263,8 @@ var Infowindow = View.extend({
       attr.title = attr.title.replace(/_/g, ' ');
     }
 
-    // Cast all values to string due to problems with Mustache 0 number rendering
-    var new_value = attr.value.toString();
-
-    // If it is index 0, not any field type, header template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos === 0 && attr.value.length > 35 && template_name && template_name.search('_header_') !== -1) {
-      new_value = attr.value.substr(0, 32) + '...';
-    }
-
-    // If it is index 1, not any field type, header image template type and length bigger than 30... cut off the text!
-    if (!attr.type && pos === 1 && attr.value.length > 35 && template_name && template_name.search('_header_with_image') !== -1) {
-      new_value = attr.value.substr(0, 32) + '...';
-    }
-
-    // Is it the value a link?
-    if (this._isValidURL(attr.value)) {
-      new_value = "<a href='" + attr.value + "' target='_blank' class='CDB-infowindow-link'>" + new_value + '</a>';
-    }
-
-    // If it is index 0, not any field type, header image template type... don't cut off the text or add any link!!
-    if (pos === 0 && template_name.search('_header_with_image') !== -1) {
-      new_value = attr.value;
-    }
-
     // Save new sanitized value
-    attr.value = new_value;
+    attr.value = attr.value.toString();
 
     return attr;
   },

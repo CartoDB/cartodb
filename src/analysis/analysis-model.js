@@ -50,7 +50,12 @@ module.exports = Model.extend({
 
   _reloadMap: function (opts) {
     opts = opts || {};
+    opts.error = this._onMapReloadError.bind(this);
     this._map.reload(opts);
+  },
+
+  _onMapReloadError: function () {
+    this.set('status', STATUS.FAILED);
   },
 
   remove: function () {

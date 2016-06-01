@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+var log = require('cdb.log');
 
 var TILE_EXTENSIONS_BY_LAYER_TYPE = {
   'mapnik': '.png',
@@ -77,7 +78,9 @@ var WindshaftMap = Backbone.Model.extend({
         options.success && options.success(this);
       }.bind(this),
       error: function (error) {
-        console.log('Error creating the map instance on Windshaft: ' + error);
+        var errorMsg = 'Request to Maps API failed: ' + error;
+        log.error(errorMsg);
+        options.error && options.error(errorMsg);
       }
     });
 

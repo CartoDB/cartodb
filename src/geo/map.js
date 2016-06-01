@@ -63,7 +63,7 @@ var Map = Model.extend({
     // in the tests that depend on this to work
     this.reload = _.debounce(function (options) {
       options = options || {};
-      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success');
+      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success', 'error');
       this._windshaftMap.createInstance(options);
     }.bind(this), this.RELOAD_DEBOUNCE_TIME);
   },
@@ -114,13 +114,13 @@ var Map = Model.extend({
 
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
-    var silent = options.silent;
     var layerModel = LayersFactory.create(type, attrs, {
       map: this
     });
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {
-      silent: silent
+      silent: options.silent,
+      at: options.at
     });
 
     return layerModel;

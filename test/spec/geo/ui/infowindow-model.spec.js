@@ -1,6 +1,27 @@
 var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
+var InfowindowTemplate = require('../../../../src/geo/map/infowindow-template');
 
 describe('geo/ui/infowindow-model', function () {
+  it('should set a default template if template is empty', function () {
+    var infowindowModel = new InfowindowModel({});
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+
+    infowindowModel = new InfowindowModel({ template: '' });
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+
+    infowindowModel = new InfowindowModel({ template: ' ' });
+
+    expect(infowindowModel.get('template')).toEqual(infowindowModel.DEFAULT_TEMPLATE);
+  });
+
+  it('should NOT set a default template if template is present', function () {
+    var infowindowModel = new InfowindowModel({ template: 'template' });
+
+    expect(infowindowModel.get('template')).toEqual('template');
+  });
+
   describe('.setContent', function () {
     it('should NOT include empty fields', function () {
       var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }] });
@@ -113,6 +134,36 @@ describe('geo/ui/infowindow-model', function () {
         index: 0,
         type: 'empty'
       });
+    });
+  });
+
+  describe('.setInfowindowTemplate', function () {
+    it('should only pick and set specific attributes from the given template', function () {
+      var infowindowModel = new InfowindowModel({ template: 'template' });
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: 'new_template',
+        something: 'something'
+      }));
+
+      expect(infowindowModel.get('template')).toEqual('new_template');
+      expect(infowindowModel.get('something')).toBeUndefined();
+    });
+
+    it('should reject attributes from the template that have a falsy value', function () {
+      var infowindowModel = new InfowindowModel({ template: 'template' });
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: ''
+      }));
+
+      // Attributes have NOT changed
+      expect(infowindowModel.get('template')).toEqual('template');
+
+      infowindowModel.setInfowindowTemplate(new InfowindowTemplate({
+        template: 'new_template'
+      }));
+
+      // Atributtes have changed
+      expect(infowindowModel.get('template')).toEqual('new_template');
     });
   });
 });

@@ -35,12 +35,19 @@ describe('core/geo/map-view', function () {
     spyOn(this.mapView, '_addLayerToMap');
   });
 
-  it('should be able to add a infowindow', function () {
-    var infow = new Infowindow({mapView: this.mapView, model: new Backbone.Model()});
-    this.mapView.addInfowindow(infow);
+  it('should be able to add an infowindow', function () {
+    var infowindowView = new Infowindow({
+      mapView: this.mapView,
+      model: new Backbone.Model({
+        content: {
+          fields: []
+        }
+      })
+    });
+    this.mapView.addInfowindow(infowindowView);
 
-    expect(this.mapView._subviews[infow.cid]).toBeTruthy();
-    expect(this.mapView._subviews[infow.cid] instanceof Infowindow).toBeTruthy();
+    expect(this.mapView._subviews[infowindowView.cid]).toBeTruthy();
+    expect(this.mapView._subviews[infowindowView.cid] instanceof Infowindow).toBeTruthy();
   });
 
   describe('bindings to map.layers', function () {
@@ -163,6 +170,29 @@ describe('core/geo/map-view', function () {
         // There's one more CartoDBLayer so the layer view has not been removed
         expect(cartoDBLayerGroupView.remove).toHaveBeenCalled();
         expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).not.toBeDefined();
+      });
+
+      it('should be able to add a layer after removing it', function () {
+        this.layerViewFactory.createLayerView.and.callFake(function () {
+          return jasmine.createSpyObj('layerView', ['remove']);
+        });
+        var cartoDBLayer = new CartoDBLayer();
+
+        this.map.layers.reset([cartoDBLayer]);
+
+        var cartodbLayerView = this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid);
+        expect(cartodbLayerView).toBeDefined();
+        expect(this.layerViewFactory.createLayerView.calls.count()).toBe(1);
+
+        this.map.layers.remove(cartoDBLayer);
+
+        // View for the cartodbLayer has been removed
+        expect(cartodbLayerView.remove).toHaveBeenCalled();
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid)).not.toBeDefined();
+
+        this.map.layers.add(cartoDBLayer);
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid)).toBeDefined();
+        expect(this.layerViewFactory.createLayerView.calls.count()).toBe(2);
       });
     });
   });

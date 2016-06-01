@@ -15,8 +15,8 @@
   position:relative;
 }
 .Editor-ListLayer-item--placeholder {
-  background: $cSecondaryBackground;
   border-color: $cSecondaryBackground;
+  background: $cSecondaryBackground;
 }
 .Editor-ListLayer-item:hover {
   @include transition(border, 200ms, ease-in);

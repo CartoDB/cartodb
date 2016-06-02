@@ -54,8 +54,10 @@ module Carto
       def placeholders
         placeholders = {}
 
+        layers = @visualization.map.layers
+
         index = -1
-        @visualization.map.named_maps_layers.select(&:data_layer?).each do |layer|
+        layers.select(&:data_layer?).each do |layer|
           index += 1
           placeholders["layer#{index}".to_sym] = {
             type: 'number',
@@ -63,7 +65,7 @@ module Carto
           }
         end
 
-        @visualization.map.layers.select(&:torque?).each do |layer|
+        layers.select(&:torque?).each do |layer|
           index += 1
           placeholders["layer#{index}".to_sym] = {
             type: 'number',

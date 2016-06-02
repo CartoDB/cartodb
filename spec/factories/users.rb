@@ -6,7 +6,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
 
-  factory :user do
+  factory :user, class: ::User do
 
     username               { unique_name('user') }
     email                  { unique_email }

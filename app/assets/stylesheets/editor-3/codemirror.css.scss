@@ -1,3 +1,5 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
 @import 'cdb-utilities/mixins';
 
 /* BASICS */
@@ -20,6 +22,35 @@
   border-top: 1px solid #3A484E;
   background-color: #27333A;
   text-align: left;
+}
+
+.CodeMirror-bullet {
+  @include transform(translateY(-50%));
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  z-index: 5;
+  width: $halfBaseSize;
+  height: $halfBaseSize;
+  border-radius: 50%;
+  background-color: $cError;
+}
+
+.CodeMirror-error,
+.CodeMirror-linenumber.has-error {
+  color: $cError;
+}
+
+.CodeMirror-error a {
+  color: $cWhite;
+}
+
+.CodeMirror-error span {
+  color: #4F5B60;
+}
+
+.CodeMirror-errorMessage {
+  list-style-type: disc;
 }
 
 .CodeMirror {
@@ -373,6 +404,9 @@ span.CodeMirror-selectedtext { background: none; }
   border: none;
 }
 .cm-s-material .CodeMirror-guttermarker, .cm-s-material .CodeMirror-guttermarker-subtle, .cm-s-material .CodeMirror-linenumber { color: rgb(83,127,126); }
+.cm-s-material .CodeMirror-linenumber.has-error {
+  color: $cError;
+}
 .cm-s-material .CodeMirror-cursor { border-left: 1px solid #f8f8f0; }
 .cm-s-material div.CodeMirror-selected { background: rgba(255, 255, 255, 0.15); }
 .cm-s-material.CodeMirror-focused div.CodeMirror-selected { background: rgba(255, 255, 255, 0.10); }

@@ -20,7 +20,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.5.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.7.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -63,7 +63,9 @@ module CartoDB
 
       # All methods called inside should allow to be executed multiple times without errors
       def setup_organization_user_schema
-        reset_user_schema_permissions
+        # WIP: CartoDB/cartodb-management#4467
+        # Avoid mover reseting permissions. It's been moved to callers. Look for "WIP: CartoDB/cartodb-management#4467"
+        # reset_user_schema_permissions
         reset_schema_owner
         set_user_privileges_at_db
         set_user_as_organization_member
@@ -94,6 +96,10 @@ module CartoDB
 
         reset_database_permissions # Reset privileges
 
+        # WIP: CartoDB/cartodb-management#4467
+        # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
+        reset_user_schema_permissions
+
         configure_database
 
         revoke_cdb_conf_access
@@ -105,6 +111,11 @@ module CartoDB
           create_db_user
         end.join
         create_own_schema
+
+        # WIP: CartoDB/cartodb-management#4467
+        # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
+        reset_user_schema_permissions
+
         setup_organization_user_schema
         install_and_configure_geocoder_api_extension
         # We reset the connections to this database to be sure the change in default search_path is effective
@@ -796,7 +807,7 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
           drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
+            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
               AS sql
             FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
             WHERE ns.nspname = '#{schema_name}'

@@ -261,7 +261,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function () {
     return {
       type: 'aggregation',
-      source: { id: this._getSourceId() },
+      source: { id: this.getSourceId() },
       options: {
         column: this.get('column'),
         aggregation: this.get('aggregation'),

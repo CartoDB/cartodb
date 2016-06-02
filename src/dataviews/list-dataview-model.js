@@ -37,7 +37,7 @@ module.exports = DataviewModelBase.extend({
   toJSON: function () {
     return {
       type: 'list',
-      source: { id: this._getSourceId() },
+      source: { id: this.getSourceId() },
       options: {
         columns: this.get('columns')
       }

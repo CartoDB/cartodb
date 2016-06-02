@@ -415,39 +415,8 @@ describe('dataviews/dataview-model-base', function () {
     });
   });
 
-  describe('_getSourceId', function () {
-    it('should return the layer ID', function () {
-      var layer = new Backbone.Model({
-        id: 'layerId'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase(null, { // eslint-disable-line
-        map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: layer
-      });
-
-      expect(dataview._getSourceId()).toEqual('layerId');
-    });
-
-    it("should return the ID of the layer's source", function () {
-      var layer = new Backbone.Model({
-        id: 'layerId',
-        source: 'a1'
-      });
-      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
-
-      var dataview = new DataviewModelBase(null, { // eslint-disable-line
-        map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: layer
-      });
-
-      expect(dataview._getSourceId()).toEqual('a1');
-    });
-
-    it('should return the sourceId', function () {
+  describe('getSourceId', function () {
+    it('should return the id of the source', function () {
       var layer = new Backbone.Model({
         id: 'layerId',
         source: 'a1'
@@ -455,14 +424,16 @@ describe('dataviews/dataview-model-base', function () {
       layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
 
       var dataview = new DataviewModelBase({
-        sourceId: 'THE_SOURCE_ID'
+        source: {
+          id: 'THE_SOURCE_ID'
+        }
       }, { // eslint-disable-line
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: layer
       });
 
-      expect(dataview._getSourceId()).toEqual('THE_SOURCE_ID');
+      expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
     });
   });
 });

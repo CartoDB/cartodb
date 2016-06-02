@@ -275,7 +275,7 @@ var Vis = View.extend({
       return layerModel.get('source') === analysisModel.get('id');
     });
     var isAnalysisLinkedToDataview = this._dataviewsCollection.any(function (dataviewModel) {
-      var sourceId = dataviewModel.get('sourceId') || dataviewModel.layer.get('source');
+      var sourceId = dataviewModel.getSourceId();
       return analysisModel.get('id') === sourceId;
     });
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;

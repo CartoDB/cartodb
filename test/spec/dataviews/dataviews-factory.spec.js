@@ -20,10 +20,10 @@ describe('dataviews/dataviews-factory', function () {
   });
 
   var FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES = [
-    ['createCategoryModel', ['column']],
-    ['createFormulaModel', ['column', 'operation']],
-    ['createHistogramModel', ['column']],
-    ['createListModel', ['columns']]
+    ['createCategoryModel', ['column', 'source']],
+    ['createFormulaModel', ['column', 'operation', 'source']],
+    ['createHistogramModel', ['column', 'source']],
+    ['createListModel', ['columns', 'source']]
   ];
 
   _.each(FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES, function (element) {

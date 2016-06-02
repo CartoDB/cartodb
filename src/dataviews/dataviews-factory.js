@@ -2,7 +2,7 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var CategoryFilter = require('../windshaft/filters/category');
 var RangeFilter = require('../windshaft/filters/range');
-var CategorDataviewModel = require('./category-dataview-model');
+var CategoryDataviewModel = require('./category-dataview-model');
 var FormulaDataviewModel = require('./formula-dataview-model');
 var HistogramDataviewModel = require('./histogram-dataview-model');
 var ListDataviewModel = require('./list-dataview-model');
@@ -22,8 +22,8 @@ module.exports = Model.extend({
   },
 
   createCategoryModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column']);
-    attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
+    _checkProperties(attrs, ['column', 'source']);
+    attrs = _.pick(attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
     if (this.get('apiKey')) {
@@ -35,7 +35,7 @@ module.exports = Model.extend({
     });
 
     return this._newModel(
-      new CategorDataviewModel(attrs, {
+      new CategoryDataviewModel(attrs, {
         map: this._map,
         filter: categoryFilter,
         layer: layerModel
@@ -44,7 +44,7 @@ module.exports = Model.extend({
   },
 
   createFormulaModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column', 'operation']);
+    _checkProperties(attrs, ['column', 'operation', 'source']);
     attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
@@ -59,7 +59,7 @@ module.exports = Model.extend({
   },
 
   createHistogramModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column']);
+    _checkProperties(attrs, ['column', 'source']);
     attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
@@ -79,7 +79,7 @@ module.exports = Model.extend({
   },
 
   createListModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['columns']);
+    _checkProperties(attrs, ['columns', 'source']);
     attrs = _.pick(attrs, ListDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');

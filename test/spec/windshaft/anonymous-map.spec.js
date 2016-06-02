@@ -14,7 +14,7 @@ var createFakeAnalysis = function (attrs) {
 };
 
 var createFakeDataview = function (attrs, windshaftMap, layer) {
-  if (!attrs.id) { throw new Error('id is required'); };
+  if (!attrs.id) { throw new Error('id is required'); }
   attrs = _.defaults(attrs, {
     column: 'column1',
     bins: 5,

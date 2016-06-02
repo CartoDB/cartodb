@@ -47,7 +47,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     widgets: widgets,
     model: model
   });
-  var stateFromURL = URLHelper.getStateFromCurrentURL();
+  var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
   if (!_.isEmpty(stateFromURL.map)) {
     vizJSON.center = stateFromURL.map.center;
     vizJSON.bounds = null;

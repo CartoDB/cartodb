@@ -16,6 +16,20 @@ module Carto
         @user = @visualization.user
       end
 
+      def index
+        stats_aggregator.timing('carto-named-maps-api.index') do
+          response = stats_aggregator.timing('call') do
+            response = http_client.get(url, request_params)
+          end
+
+          if response.code.to_s =~ /^2/
+            ::JSON.parse(response.response_body).deep_symbolize_keys
+          else
+            log_response(response, 'index')
+          end
+        end
+      end
+
       def create
         stats_aggregator.timing('carto-named-maps-api.create') do
           params = request_params
@@ -32,7 +46,7 @@ module Carto
       end
 
       def show
-        stats_aggregator.timing('carto-named-maps-api.get') do
+        stats_aggregator.timing('carto-named-maps-api.show') do
           response = stats_aggregator.timing('call') do
 
             url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)

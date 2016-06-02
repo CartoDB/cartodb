@@ -61,7 +61,7 @@ describe CartoDB::LayerModule::Presenter do
       )
 
       vizjson = CartoDB::LayerModule::Presenter.new(layer).to_vizjson_v2
-      vizjson[:options].should include(sql_wrap: query_wrapper)
+      vizjson[:options]['sql_wrap'].should eq query_wrapper
     end
 
     it 'keeps the visible attribute when rendering' do

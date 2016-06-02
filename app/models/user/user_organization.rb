@@ -27,6 +27,11 @@ module CartoDB
       @organization.admin_email = @owner.email
       @organization.save
       @owner.organization = @organization
+
+      # WIP: CartoDB/cartodb-management#4467
+      # Added after commenting it in setup_organization_user_schema to avoid configure_database to reset permissions
+      @owner.db_service.reset_user_schema_permissions
+
       @owner.db_service.setup_organization_user_schema
       @owner.save
       @owner.db_service.monitor_user_notification

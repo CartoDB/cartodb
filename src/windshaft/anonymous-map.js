@@ -14,40 +14,46 @@ var AnonymousMap = MapBase.extend({
 
   _calculateLayersSection: function () {
     return _.chain(this._getLayers())
-      .map(function (layerModel) {
-        if (layerModel.isVisible()) {
-          var layerConfig = {
-            type: layerModel.get('type').toLowerCase(),
-            options: {
-              cartocss: layerModel.get('cartocss'),
-              cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
-              interactivity: layerModel.getInteractiveColumnNames()
-            }
-          };
-
-          var layerSourceId = layerModel.get('source');
-          if (layerSourceId) {
-            layerConfig.options.source = { id: layerSourceId };
-          } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
-            layerConfig.options.sql = layerModel.get('sql');
-          }
-
-          if (layerModel.get('sql_wrap')) {
-            layerConfig.options.sql_wrap = layerModel.get('sql_wrap');
-          }
-
-          if (layerModel.infowindow && layerModel.infowindow.hasFields()) {
-            layerConfig.options.attributes = {
-              id: 'cartodb_id',
-              columns: layerModel.infowindow.getFieldNames()
-            };
-          }
-
-          return layerConfig;
-        }
-      }, this)
+      .map(this._calculateLayerJSON, this)
       .compact()
       .value();
+  },
+
+  _calculateLayerJSON: function (layerModel) {
+    if (layerModel.isVisible()) {
+      return {
+        type: layerModel.get('type').toLowerCase(),
+        options: this._calculateLayerOptions(layerModel)
+      };
+    }
+  },
+
+  _calculateLayerOptions: function (layerModel) {
+    var options = {
+      cartocss: layerModel.get('cartocss'),
+      cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
+      interactivity: layerModel.getInteractiveColumnNames()
+    };
+
+    var layerSourceId = layerModel.get('source');
+    if (layerSourceId) {
+      options.source = { id: layerSourceId };
+    } else if (layerModel.get('sql')) { // Layer has some SQL that needs to be converted into a "source" analysis
+      options.sql = layerModel.get('sql');
+    }
+
+    if (layerModel.get('sql_wrap')) {
+      options.sql_wrap = layerModel.get('sql_wrap');
+    }
+
+    if (layerModel.infowindow && layerModel.infowindow.hasFields()) {
+      options.attributes = {
+        id: 'cartodb_id',
+        columns: layerModel.infowindow.getFieldNames()
+      };
+    }
+
+    return options;
   },
 
   _calculateDataviewsSection: function () {

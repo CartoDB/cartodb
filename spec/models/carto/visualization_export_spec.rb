@@ -46,7 +46,8 @@ describe Carto::VisualizationExport do
       @touched_files = []
     end
 
-    def get_file(url, exported_file)
+    # Mock needs not url nor Typhoeus options
+    def get_file(_, exported_file, _)
       @touched_files << exported_file
       touch(exported_file)
     end

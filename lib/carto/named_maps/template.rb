@@ -72,9 +72,15 @@ module Carto
           type, options = if layer.data_layer?
                             index += 1
                             type_and_options_for_cartodb_layers(layer, index)
-                          else
+                          elsif layer.basemap?
                             type_and_options_for_basemap_layers(layer)
                           end
+
+          layers.push(type: type, options: options)
+        end
+
+        @visualization.map.layers.select(&:torque?).each do |layer|
+          type, options = type_and_options_for_torque_layers(layer)
 
           layers.push(type: type, options: options)
         end
@@ -119,6 +125,33 @@ module Carto
         end
 
         ['cartodb', options]
+      end
+
+      def type_and_options_for_torque_layers(layer)
+        layer_options = layer.options
+
+        options = {
+          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
+          cartocss_version: layer_options.fetch('style_version')
+        }
+
+        layer_options_source = layer_options[:source]
+        if layer_options_source
+          options[:source] = { id: layer_options_source }
+        else
+          options[:sql] = "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
+        end
+
+        layer_infowindow = layer.infowindow
+        if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
+          options[:interactivity] = layer_options[:interactivity]
+          options[:attributes] = {
+            id:       'cartodb_id',
+            columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
+          }
+        end
+
+        ['torque', options]
       end
 
       def type_and_options_for_basemap_layers(layer)
@@ -188,7 +221,7 @@ module Carto
 
       def auth
         method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, @visualization.get_auth_tokens]
+                                 [AUTH_TYPE_SIGNED, generate_auth_token]
                                elsif @visualization.organization?
                                  auth_tokens = @visualization.all_users_with_read_permission
                                                              .map(&:get_auth_tokens)
@@ -226,6 +259,10 @@ module Carto
         end
 
         data
+      end
+
+      def generate_auth_token
+        SecureRandom.urlsafe_base64(nil, false)
       end
     end
   end

@@ -32,8 +32,8 @@ WidgetsService.prototype.getList = function () {
  */
 WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
-  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs, state);
+  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats'];
   var widgetAttrs = _.pick(attrs, attrsNames);
@@ -58,8 +58,8 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
-  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs, state);
+  var dataAttrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized'];
   var widgetAttrs = _.pick(attrs, attrsNames);
@@ -85,8 +85,8 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
  */
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
-  var dataviewModel = this._dataviews.createFormulaModel(layer, attrs, state);
+  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
   var widgetAttrs = _.pick(attrs, attrsNames);

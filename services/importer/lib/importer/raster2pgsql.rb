@@ -13,8 +13,9 @@ module CartoDB
       SQL_FILENAME                  = '%s%s.sql'
       OVERLAY_TABLENAME             = 'o_%s_%s'
       RASTER_COLUMN_NAME            = 'the_raster_webmercator'
+      GDALWARP_COMMON_OPTIONS       = '-co "COMPRESS=LZW" -co "BIGTIFF=IF_SAFER"'
 
-      def initialize(table_name, filepath, pg_options)
+      def initialize(table_name, filepath, pg_options, db)
         self.filepath             = filepath
         self.basepath             = filepath.slice(0, filepath.rindex('/')+1)
         self.webmercator_filepath = WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
@@ -24,6 +25,8 @@ module CartoDB
         self.exit_code            = nil
         self.command_output       = ''
         self.additional_tables    = []
+        self.db                   = db
+        self.base_table_fqtn      = SCHEMA + '.' + table_name
       end
 
       attr_reader   :exit_code, :command_output
@@ -41,6 +44,9 @@ module CartoDB
 
         run_raster2pgsql(overviews_list)
 
+        add_raster_base_overview_for_tiler
+        import_original_raster
+
         self
       end
 
@@ -54,10 +60,10 @@ module CartoDB
 
       attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, \
-                    :basepath, :additional_tables
+                    :basepath, :additional_tables, :db, :base_table_fqtn
 
       def align_raster(scale)
-        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
+        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -67,7 +73,7 @@ module CartoDB
       end
 
       def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} -co "COMPRESS=LZW" -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+        gdalwarp_command = %Q(#{gdalwarp_path} -ot Byte #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -166,6 +172,45 @@ module CartoDB
       def raster2pgsql_command(overviews_list)
         %Q(#{raster2pgsql_path} -s #{PROJECTION} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} ) +
         %Q(-l #{overviews_list} #{aligned_filepath} #{SCHEMA}.#{table_name})
+      end
+
+      # We add an overview for the tiler with factor = 1,
+      # using the reprojected and adjusted base table. This is done so that the
+      # tiler will always use those overviews and never the base table that
+      # should be imported without any transformation to avoid
+      # reprojection/resampling artifacts in analysis.
+      def add_raster_base_overview_for_tiler
+        overview_name = OVERLAY_TABLENAME % [1, table_name]
+        overview_fqtn = SCHEMA + '.' + overview_name
+        db.run %{CREATE TABLE #{overview_fqtn} AS SELECT * FROM #{base_table_fqtn}}
+        db.run %{CREATE INDEX ON "#{SCHEMA}"."#{overview_name}" USING gist (st_convexhull("#{RASTER_COLUMN_NAME}"))}
+        db.run %{SELECT AddRasterConstraints('#{SCHEMA}', '#{overview_name}','#{RASTER_COLUMN_NAME}',TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,FALSE)}
+        db.run %{SELECT AddOverviewConstraints('#{SCHEMA}', '#{overview_name}'::name, '#{RASTER_COLUMN_NAME}'::name, '#{SCHEMA}', '#{table_name}'::name, '#{RASTER_COLUMN_NAME}'::name, 1)}
+        @additional_tables = [1] + @additional_tables
+      end
+
+      # Import the original raster file without reprojections, adjusting or scales.
+      # NOTE: the name of the column the_raster_webmercator is maintained for compatibility.
+      def import_original_raster
+        db.run %{DROP TABLE #{base_table_fqtn}}
+        raster_import_command =
+          %{#{raster2pgsql_path} -t #{BLOCKSIZE} -C -x -Y -I -f #{RASTER_COLUMN_NAME} } +
+          %{#{filepath} #{SCHEMA}.#{table_name}}
+        # TODO refactor with run_raster2pgsql
+        command = %Q(#{raster_import_command} | #{psql_base_command})
+        stdout, stderr, status  = Open3.capture3(command)
+        output = stdout + stderr
+        output_message = "(#{status}) |#{output}| Command: #{command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
+
+        if output =~ /canceling statement due to statement timeout/i
+          raise StatementTimeoutError.new(output_message, ERRORS_MAP[StatementTimeoutError])
+        end
+
+        raise UnknownSridError.new(output_message)          if output =~ /invalid srid/i
+        raise TiffToSqlConversionError.new(output_message)  if status.to_i != 0
+        raise TiffToSqlConversionError.new(output_message)  if output =~ /failure/i
       end
 
       def psql_inline_command(query)

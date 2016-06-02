@@ -54,7 +54,17 @@ module Carto
       def placeholders
         placeholders = {}
 
-        @visualization.map.named_maps_layers.select(&:data_layer?).each_with_index do |layer, index|
+        index = -1
+        @visualization.map.named_maps_layers.select(&:data_layer?).each do |layer|
+          index += 1
+          placeholders["layer#{index}".to_sym] = {
+            type: 'number',
+            default: layer.options[:visible] ? 1 : 0
+          }
+        end
+
+        @visualization.map.layers.select(&:torque?).each do |layer|
+          index += 1
           placeholders["layer#{index}".to_sym] = {
             type: 'number',
             default: layer.options[:visible] ? 1 : 0
@@ -80,7 +90,8 @@ module Carto
         end
 
         @visualization.map.layers.select(&:torque?).each do |layer|
-          type, options = type_and_options_for_torque_layers(layer)
+          index += 1
+          type, options = type_and_options_for_torque_layers(layer, index)
 
           layers.push(type: type, options: options)
         end
@@ -92,7 +103,7 @@ module Carto
         sql = if layer_options[:query].present?
                 layer_options[:query]
               else
-                "#{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
+                "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
               end
 
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
@@ -127,20 +138,15 @@ module Carto
         ['cartodb', options]
       end
 
-      def type_and_options_for_torque_layers(layer)
+      def type_and_options_for_torque_layers(layer, index)
         layer_options = layer.options
 
         options = {
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: layer_options.fetch('style_version')
+          cartocss_version: layer_options.fetch('style_version'),
         }
 
-        layer_options_source = layer_options[:source]
-        if layer_options_source
-          options[:source] = { id: layer_options_source }
-        else
-          options[:sql] = "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
-        end
+        options[:sql] = sql(layer_options, index)
 
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?

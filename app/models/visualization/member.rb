@@ -259,7 +259,7 @@ module CartoDB
 
         # Named map must be deleted before the map, or we lose the reference to it
         begin
-          Carto::NamedMaps::Api.new(carto_visualization).destroy
+          Carto::NamedMaps::Api.new(carto_visualization).destroy if carto_visualization
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -497,7 +497,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        Carto::NamedMaps::Api.new(carto_visualization).show
+        Carto::NamedMaps::Api.new(carto_visualization).show if carto_visualization
       end
 
       def password=(value)
@@ -819,11 +819,11 @@ module CartoDB
       end
 
       def create_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).create
+        Carto::NamedMaps::Api.new(carto_visualization).create if carto_visualization
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update
+        Carto::NamedMaps::Api.new(carto_visualization).update if carto_visualization
       end
 
       def propagate_privacy_and_name_to(table)
@@ -943,6 +943,14 @@ module CartoDB
 
       def carto_visualization
         @carto_visualization ||= Carto::Visualization.where(id: id).first
+      end
+
+      def widgets
+        
+      end
+
+      def analyses
+        
       end
     end
   end

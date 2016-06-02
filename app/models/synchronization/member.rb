@@ -232,7 +232,7 @@ module CartoDB
         notify
 
       rescue => exception
-        CartoDB.notify_exception(exception)
+        CartoDB::Logger.error(exception: exception, sync_id: id)
         log.append_and_store exception.message, truncate = false
         log.append exception.backtrace.join('\n'), truncate = false
 

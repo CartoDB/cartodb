@@ -176,7 +176,7 @@ module.exports = cdb.core.View.extend({
         var scale = d3.scale.linear().domain([this._dataviewModel.get('start'), this._dataviewModel.get('end')]).range([0, this._dataviewModel.get('bins')]);
         var lo = Math.round(scale(this.model.get('min')));
         var hi = Math.round(scale(this.model.get('max')));
-        if (lo != 0 && hi != this._dataviewModel.get('bins')-1){
+        if (lo !== 0 && hi !== this._dataviewModel.get('bins') - 1) {
           this.histogramChartView.selectRange(lo, hi);
           this.model.set('filter_enabled', true);
         }

@@ -57,7 +57,7 @@ Dashboard.prototype = {
     }, this);
     this._dashboard.vis.map.bind('change', function () {
       callback(this.getState(), this.getDashboardURL());
-    }, this)
+    }, this);
   },
 
   /**

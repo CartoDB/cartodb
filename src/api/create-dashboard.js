@@ -134,7 +134,7 @@ module.exports = function (selector, vizJSON, opts, callback) {
       if (opts.share_urls) {
         dash.onStateChanged(function (state, url) {
           window.history.pushState('Object', 'Title', url);
-        })
+        });
       }
       callback && callback(null, dash);
     });

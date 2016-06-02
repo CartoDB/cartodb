@@ -36,7 +36,7 @@ module.exports = DataviewModelBase.extend({
     return params;
   },
 
-  initialize: function (attrs, opts, state) {
+  initialize: function (attrs, opts) {
     DataviewModelBase.prototype.initialize.apply(this, arguments);
     this._data = new Backbone.Collection(this.get('data'));
 
@@ -62,11 +62,8 @@ module.exports = DataviewModelBase.extend({
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
-
-    if (state) {
-      if (_.isNumber(state.min) || _.isNumber(state.max)) {
-        this.filter.setRange(state.min, state.max);
-      }
+    if (attrs.min || attrs.max) {
+      this.filter.setRange(this.get('min'), this.get('max'));
     }
   },
 
@@ -207,7 +204,9 @@ module.exports = DataviewModelBase.extend({
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
       'column_type',
-      'bins'
+      'bins',
+      'min',
+      'max'
     ])
   }
 );

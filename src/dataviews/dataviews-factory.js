@@ -21,7 +21,7 @@ module.exports = Model.extend({
     this._dataviewsCollection = opts.dataviewsCollection;
   },
 
-  createCategoryModel: function (layerModel, attrs, state) {
+  createCategoryModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
     attrs = _.pick(attrs, CategorDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
@@ -39,11 +39,11 @@ module.exports = Model.extend({
         map: this._map,
         filter: categoryFilter,
         layer: layerModel
-      }, state)
+      })
     );
   },
 
-  createFormulaModel: function (layerModel, attrs, state) {
+  createFormulaModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column', 'operation']);
     attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
@@ -54,11 +54,11 @@ module.exports = Model.extend({
       new FormulaDataviewModel(attrs, {
         map: this._map,
         layer: layerModel
-      }, state)
+      })
     );
   },
 
-  createHistogramModel: function (layerModel, attrs, state) {
+  createHistogramModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
     attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
     if (this.get('apiKey')) {
@@ -74,7 +74,7 @@ module.exports = Model.extend({
         map: this._map,
         filter: rangeFilter,
         layer: layerModel
-      }, state)
+      })
     );
   },
 

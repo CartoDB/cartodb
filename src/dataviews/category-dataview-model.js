@@ -29,7 +29,7 @@ module.exports = DataviewModelBase.extend({
     return params;
   },
 
-  initialize: function (attrs, opts, state) {
+  initialize: function (attrs, opts) {
     DataviewModelBase.prototype.initialize.call(this, attrs, opts);
 
     // Internal model for calculating total amount of values in the category
@@ -62,12 +62,8 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this._bindSearchModelEvents();
-    if (state) {
-      for (var key in state) {
-        if (key === 'acceptedCategories') {
-          this.filter.accept(state.acceptedCategories);
-        }
-      }
+    if (attrs.acceptedCategories) {
+      this.filter.accept(attrs.acceptedCategories);
     }
   },
 
@@ -285,7 +281,8 @@ module.exports = DataviewModelBase.extend({
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
       'aggregation',
-      'aggregation_column'
+      'aggregation_column',
+      'acceptedCategories'
     ])
   }
 );

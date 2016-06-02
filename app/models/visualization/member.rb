@@ -259,9 +259,7 @@ module CartoDB
 
         # Named map must be deleted before the map, or we lose the reference to it
         begin
-          named_map = get_named_map
-          # non-existing named map is not a critical failure, keep deleting even if not found
-          named_map.delete if named_map
+          Carto::NamedMaps::Api.new(carto_visualization).destroy
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion

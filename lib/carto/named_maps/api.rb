@@ -62,7 +62,7 @@ module Carto
         end
       end
 
-      def update(retries: 0)
+      def update
         stats_aggregator.timing('carto-named-maps-api.update') do
           template = Carto::NamedMaps::Template.new(@visualization)
 
@@ -71,15 +71,8 @@ module Carto
 
           response = http_client.put(url(template_name: template.name), params)
 
-          response_code = response.code.to_s
-
-          if response_code =~ /^2/
+          if response.code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          elsif response_code == '400'
-            if response.body =~ /is locked/i && retries < MAX_RETRY_ATTEMPTS
-              sleep(RETRY_TIME_SECONDS**retries)
-              update(retries: retries + 1)
-            end
           else
             log_response(response, 'update')
           end

@@ -82,12 +82,34 @@ var AnonymousMap = MapBase.extend({
     var sourceIds = _.uniq(sourceIdsFromLayers.concat(sourceIdsFromDataviews));
     _.each(sourceIds, function (sourceId) {
       var sourceAnalysis = this._analysisCollection.findWhere({ id: sourceId });
-      if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
-        analyses.push(sourceAnalysis.toJSON());
+      if (sourceAnalysis) {
+        if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
+          analyses.push(sourceAnalysis.toJSON());
+        }
+      } else {
+        if (this._getLayerById(sourceId)) {
+          analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
+        }
       }
     }, this);
 
     return analyses;
+  },
+
+  _getLayerById: function (layerId) {
+    return _.find(this._getLayers(), function (layerModel) {
+      return layerModel.id === layerId;
+    });
+  },
+
+  _getSourceAnalysisForLayer: function (layerModel) {
+    return {
+      id: layerModel.id,
+      type: 'source',
+      params: {
+        query: layerModel.get('sql')
+      }
+    };
   },
 
   _isAnalysisPartOfOtherAnalyses: function (analysisModel) {

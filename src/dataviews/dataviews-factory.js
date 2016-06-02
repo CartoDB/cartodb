@@ -22,10 +22,12 @@ module.exports = Model.extend({
   },
 
   createCategoryModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column', 'source']);
+    _checkProperties(attrs, ['column']);
+
     attrs = _.pick(attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
+    attrs.source = attrs.source || { id: layerModel.id };
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }
@@ -44,8 +46,9 @@ module.exports = Model.extend({
   },
 
   createFormulaModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column', 'operation', 'source']);
+    _checkProperties(attrs, ['column', 'operation']);
     attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
+    attrs.source = attrs.source || { id: layerModel.id };
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }
@@ -59,8 +62,9 @@ module.exports = Model.extend({
   },
 
   createHistogramModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['column', 'source']);
+    _checkProperties(attrs, ['column']);
     attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
+    attrs.source = attrs.source || { id: layerModel.id };
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }
@@ -79,8 +83,9 @@ module.exports = Model.extend({
   },
 
   createListModel: function (layerModel, attrs) {
-    _checkProperties(attrs, ['columns', 'source']);
+    _checkProperties(attrs, ['columns']);
     attrs = _.pick(attrs, ListDataviewModel.ATTRS_NAMES);
+    attrs.source = attrs.source || { id: layerModel.id };
     if (this.get('apiKey')) {
       attrs.apiKey = this.get('apiKey');
     }

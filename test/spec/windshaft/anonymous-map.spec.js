@@ -330,6 +330,27 @@ describe('windshaft/anonymous-map', function () {
         expect(this.map.toJSON().analyses).toEqual([ analysis ]);
       });
 
+      it('should include a source analysis for dataviews whose source is a layer', function () {
+        var dataview = createFakeDataview({
+          id: 'dataviewId1',
+          source: {
+            id: this.cartoDBLayer1.id
+          }
+        }, this.map, this.cartoDBLayer1);
+
+        this.dataviewsCollection.add(dataview);
+
+        expect(this.map.toJSON().analyses).toEqual([
+          {
+            id: this.cartoDBLayer1.id,
+            type: 'source',
+            params: {
+              query: this.cartoDBLayer1.get('sql')
+            }
+          }
+        ]);
+      });
+
       it("should NOT include an analysis if it's part of the analysis of another layer", function () {
         var analysis1 = this.analysisFactory.analyse({
           id: 'c1',

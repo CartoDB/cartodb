@@ -20,10 +20,10 @@ describe('dataviews/dataviews-factory', function () {
   });
 
   var FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES = [
-    ['createCategoryModel', ['column', 'source']],
-    ['createFormulaModel', ['column', 'operation', 'source']],
-    ['createHistogramModel', ['column', 'source']],
-    ['createListModel', ['columns', 'source']]
+    ['createCategoryModel', ['column']],
+    ['createFormulaModel', ['column', 'operation']],
+    ['createHistogramModel', ['column']],
+    ['createListModel', ['columns']]
   ];
 
   _.each(FACTORY_METHODS_AND_REQUIRED_ATTRIBUTES, function (element) {
@@ -56,6 +56,26 @@ describe('dataviews/dataviews-factory', function () {
       var model = this.factory[factoryMethod](layer, attributes);
 
       expect(model.get('apiKey')).toEqual('THE_API_KEY');
+    });
+
+    it(factoryMethod + " should set a default source using the layer's id when not given one", function () {
+      this.factory = new DataviewsFactory({
+        apiKey: 'THE_API_KEY'
+      }, {
+        dataviewsCollection: this.dataviewsCollection,
+        map: {}
+      });
+
+      var layer = jasmine.createSpyObj('layer', ['getDataProvider']);
+
+      // Set fake attributes
+      var attributes = _.reduce(requiredAttributes, function (object, attributeName) {
+        object[attributeName] = 'something';
+        return object;
+      }, {});
+      var model = this.factory[factoryMethod](layer, attributes);
+
+      expect(model.get('source')).toEqual({ id: layer.id });
     });
   }, this);
 });

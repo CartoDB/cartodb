@@ -9,7 +9,7 @@ module Carto
     GEOCODER_TIMED_OUT_WHAT_ABOUT = %q{
       Your geocoding request timed out.
       Please <a href='mailto:support@cartob.com?subject=The geocoder timed out'>contact us</a>
-      and we'll try to fix it quickly.
+      if you need further help.
     }.squish
 
     class AdditionalInfo
@@ -65,7 +65,16 @@ module Carto
       GeocoderBaseError.get_info(error_code)
     end
 
-
+    class OverStorageQuotaError < GeocoderBaseError
+      register_additional_info(
+        1801,
+        'Over account storage limit',
+        %q{Over account storage limit: The geocoding process was not able to finish because you ran out of quota.
+          To upgrade your account, go to your Dashboard and click Settings. Click
+          'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.}.squish,
+        AdditionalInfo::SOURCE_USER
+        )
+    end
 
     class MisconfiguredGmeGeocoderError < GeocoderBaseError
       register_additional_info(
@@ -73,7 +82,7 @@ module Carto
         'Google for Work account misconfigured',
         %q{Your Google for Work account seems to be incorrectly configured.
            Please <a href='mailto:sales@cartob.com?subject=Google for Work account misconfigured'>contact us</a>
-           and we'll try to fix it quickly.}.squish,
+           for further assistance.}.squish,
         AdditionalInfo::SOURCE_USER
         )
     end

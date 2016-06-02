@@ -51,7 +51,6 @@ module CartoDB
         copy_results_to_table
         change_status('completed')
       rescue => e
-        change_status('failed')
         raise e
       ensure
         drop_temp_table
@@ -133,6 +132,10 @@ module CartoDB
             @query_generator.copy_results_to_table_query,
             @table_schema, @table_name
           )
+      rescue => e
+        if e.is_a?(Sequel::DatabaseError) && e.message =~ /.*quota exceeded.*/i
+          raise Carto::GeocoderErrors::OverStorageQuotaError
+        end
       end
 
       def drop_temp_table

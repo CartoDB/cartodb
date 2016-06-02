@@ -19,7 +19,7 @@
   background: $cSecondaryBackground;
 }
 .Editor-ListLayer-item:hover {
-  @include transition(border, 200ms, ease-in);
+  @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
 }
 .Editor-ListLayer-item.last-child {
@@ -39,7 +39,7 @@
   z-index: 1000;
 }
 .Editor-ListLayer-dragIcon {
-  @include transition(opacity, 200ms, ease-in);
+  @include transition(opacity 200ms ease-in);
   position: absolute;
   top: 28px;
   left: -20px;
@@ -156,7 +156,7 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   &:hover {
-    @include transition(border, 200ms, ease-in);
+    @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
     cursor: pointer;
   }

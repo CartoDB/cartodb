@@ -5,7 +5,7 @@
       <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-second"></div>
       <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-third"></div>
     </div>
-  </div> 
+  </div>
 </div>
 <div class="Editor-ListLayer-itemHeader">
   <div class="Editor-ListLayer-media u-rSpace--m" style="background: #E27D61; color: #fff">
@@ -27,7 +27,7 @@
         </li>
       </ul>
     </div>
-    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis">
+    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
       <%- _t('editor.layers.layer.add-analysis') %>
     </button>
   </div>

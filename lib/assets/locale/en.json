@@ -411,8 +411,10 @@
   "data": {
     "analysis-definition-node-model": {
       "validation": {
+        "missing-required": "required",
         "invalid-source": "invalid source",
-        "required-param": "required"
+        "invalid-value": "required",
+        "invalid-enum": "invalid value, must be any of %{expectedValues}"
       }
     }
   },
@@ -482,7 +484,8 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
-        "apply-btn": "Apply"
+        "apply-btn": "Apply",
+        "create-btn": "Create"
       },
       "infowindow": {
         "style": {

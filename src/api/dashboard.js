@@ -8,6 +8,13 @@ function Dashboard (dashboard) {
 Dashboard.prototype = {
 
   /**
+   * @return {View} used in the dashboard
+   */
+  getView: function () {
+    return this._dashboard.dashboardView;
+  },
+
+  /**
    * @return {Map} the map used in the dashboard
    */
   getMap: function () {

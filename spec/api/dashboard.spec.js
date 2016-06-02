@@ -1,4 +1,6 @@
+var Backbone = require('backbone');
 var Dashboard = require('../../src/api/dashboard');
+var DashboardView = require('../../src/dashboard-view');
 var URLHelper = require('../../src/api/url-helper');
 describe('dashboard', function () {
   beforeEach(function () {
@@ -22,5 +24,17 @@ describe('dashboard', function () {
     spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
     var correctState = { 1: { collapsed: true }, 3: { collapsed: true }, 5: { autoStyle: true } };
     expect(URLHelper.getStateFromCurrentURL()).toEqual(correctState);
+  });
+
+  it('should return dashboard view', function () {
+    var view = new DashboardView({
+      widgets: new Backbone.Collection(),
+      model: new cdb.core.Model({
+        renderMenu: true
+      })
+    });
+    spyOn(this.dashboard, 'getView').and.returnValue(view);
+    expect(this.dashboard.getView().render().el).toBeDefined();
+    expect(this.dashboard.getView().render().$('.js-map-wrapper').length).toBe(1);
   });
 });

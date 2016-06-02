@@ -88,6 +88,22 @@ describe Carto::Api::VizJSON3Presenter do
       vizjson_b[:vector].should eq false
     end
 
+    it 'to_vizjson enables vector if visualization has less than 10k features without overriding the parameter' do
+      @visualization.stubs(:number_of_features).returns(10)
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
+      v3_presenter.to_vizjson[:vector].should eq true
+      v3_presenter.to_vizjson(vector: true)[:vector].should eq true
+      v3_presenter.to_vizjson(vector: false)[:vector].should eq false
+    end
+
+    it 'to_vizjson disables vector if visualization has equal or more than 10k features without overriding the parameter' do
+      @visualization.stubs(:number_of_features).returns(10000)
+      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
+      v3_presenter.to_vizjson[:vector].should eq false
+      v3_presenter.to_vizjson(vector: true)[:vector].should eq true
+      v3_presenter.to_vizjson(vector: false)[:vector].should eq false
+    end
+
     it 'to_named_map_vizjson uses the redis vizjson cache' do
       fake_vizjson = { fake: 'sure!', layers: [] }
 

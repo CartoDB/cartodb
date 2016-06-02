@@ -326,6 +326,13 @@ class Carto::Visualization < ActiveRecord::Base
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
+  # TODO: improve performance not counting beyond limit
+  def number_of_features
+    # WIP
+    # layers.number_of_features
+    10
+  end
+
   private
 
   def get_named_map

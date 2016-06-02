@@ -100,8 +100,7 @@ module Carto
     end
 
     def number_of_features
-      # WIP
-      10
+      affected_tables.map(&:estimated_row_count).reduce(0, :+)
     end
 
     private

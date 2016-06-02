@@ -34,7 +34,6 @@
 }
 
 .Infobox-button {
-  @include flex(1);
 
   &.Infobox-button--right {
     margin-left: auto;

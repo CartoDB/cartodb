@@ -328,9 +328,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # TODO: improve performance not counting beyond limit
   def number_of_features
-    # WIP
-    # layers.number_of_features
-    10
+    layers.map(&:number_of_features).reduce(0, :+)
   end
 
   private

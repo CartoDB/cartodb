@@ -135,4 +135,21 @@ describe Carto::Visualization do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
   end
+
+  describe 'number_of_features' do
+    include Carto::Factories::Visualizations
+
+    it 'returns the sum of number of rows of its layers' do
+      L1_FEATURES = 111
+      L2_FEATURES = 222
+      layer_1 = FactoryGirl.create(:carto_layer)
+      layer_1.stubs(:number_of_features).returns(L1_FEATURES)
+      layer_2 =  FactoryGirl.create(:carto_layer)
+      layer_2.stubs(:number_of_features).returns(L2_FEATURES)
+
+      map = FactoryGirl.create(:carto_map, layers: [layer_1, layer_2], user: @carto_user)
+      _, _, _, visualization = create_full_visualization(@carto_user, map: map)
+      visualization.number_of_features.should eq L1_FEATURES + L2_FEATURES
+    end
+  end
 end

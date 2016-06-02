@@ -99,6 +99,11 @@ module Carto
       basemap? && options["labels"] && options["labels"]["url"]
     end
 
+    def number_of_features
+      # WIP
+      10
+    end
+
     private
 
     def tables_from_query_option

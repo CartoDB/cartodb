@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -5,6 +6,29 @@ var WindshaftClient = require('../../../src/windshaft/client');
 var AnonymousMap = require('../../../src/windshaft/anonymous-map');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+
+var createFakeAnalysis = function (attrs) {
+  var fakeAnalysis = new Backbone.Model(attrs);
+  fakeAnalysis.findAnalysisById = jasmine.createSpy('findAnalysisById').and.returnValue(undefined);
+  return fakeAnalysis;
+};
+
+var createFakeDataview = function (attrs, windshaftMap, layer) {
+  if (!attrs.id) { throw new Error('id is required'); };
+  attrs = _.defaults(attrs, {
+    column: 'column1',
+    bins: 5,
+    source: {
+      id: 'a0'
+    }
+  });
+
+  return new HistogramDataviewModel(attrs, {
+    map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+    windshaftMap: windshaftMap,
+    layer: layer
+  });
+};
 
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
@@ -196,10 +220,18 @@ describe('windshaft/anonymous-map', function () {
     });
 
     it('should include dataviews', function () {
+      this.analysisCollection.reset([
+        createFakeAnalysis({ id: 'a0' }),
+        createFakeAnalysis({ id: 'a1' })
+      ]);
+
       var dataview1 = new HistogramDataviewModel({
         id: 'dataviewId1',
         column: 'column1',
-        bins: 5
+        bins: 5,
+        source: {
+          id: 'a0'
+        }
       }, {
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
@@ -209,7 +241,10 @@ describe('windshaft/anonymous-map', function () {
       var dataview2 = new HistogramDataviewModel({
         id: 'dataviewId2',
         column: 'column2',
-        bins: 5
+        bins: 5,
+        source: {
+          id: 'a1'
+        }
       }, {
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
@@ -224,7 +259,7 @@ describe('windshaft/anonymous-map', function () {
         'dataviewId1': {
           'type': 'histogram',
           'source': {
-            'id': 'layer1'
+            'id': 'a0'
           },
           'options': {
             'column': 'column1',
@@ -234,7 +269,7 @@ describe('windshaft/anonymous-map', function () {
         'dataviewId2': {
           'type': 'histogram',
           'source': {
-            'id': 'layer2'
+            'id': 'a1'
           },
           'options': {
             'column': 'column2',
@@ -283,109 +318,19 @@ describe('windshaft/anonymous-map', function () {
         });
       });
 
-      it('should include analyses', function () {
-        this.analysisFactory.analyse({
-          id: 'c1',
-          type: 'union',
-          params: {
-            join_on: 'cartodb_id',
-            source: {
-              id: 'a2',
-              type: 'estimated-population',
-              params: {
-                columnName: 'estimated_people',
-                source: {
-                  id: 'a1',
-                  type: 'trade-area',
-                  params: {
-                    kind: 'walk',
-                    time: 300,
-                    source: {
-                      id: 'b0',
-                      type: 'source',
-                      params: {
-                        query: 'select * from subway_stops'
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        });
+      it('should include an analysis for layers that have a source', function () {
+        var analysis = { id: 'c1' };
+        this.analysisCollection.add(analysis);
+
         this.cartoDBLayer1.update({
           source: 'c1',
           cartocss: '#trade_area { ... }'
         }, { silent: true });
 
-        expect(this.map.toJSON()).toEqual({
-          'layers': [
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': '#trade_area { ... }',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'source': {
-                  'id': 'c1'
-                }
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS2',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'sql': 'sql2'
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS3',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'sql': 'sql3'
-              }
-            }
-          ],
-          'dataviews': {},
-          'analyses': [
-            {
-              'id': 'c1',
-              'type': 'union',
-              'params': {
-                'join_on': 'cartodb_id',
-                'source': {
-                  'id': 'a2',
-                  'type': 'estimated-population',
-                  'params': {
-                    'columnName': 'estimated_people',
-                    'source': {
-                      'id': 'a1',
-                      'type': 'trade-area',
-                      'params': {
-                        'kind': 'walk',
-                        'time': 300,
-                        'source': {
-                          'id': 'b0',
-                          'type': 'source',
-                          'params': {
-                            'query': 'select * from subway_stops'
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        });
+        expect(this.map.toJSON().analyses).toEqual([ analysis ]);
       });
 
-      it("should not include an analysis if it's part of the analysis of another layer", function () {
+      it("should NOT include an analysis if it's part of the analysis of another layer", function () {
         var analysis1 = this.analysisFactory.analyse({
           id: 'c1',
           type: 'union',
@@ -448,64 +393,28 @@ describe('windshaft/anonymous-map', function () {
           cartocss: '#union { ... }'
         }, { silent: true });
 
-        expect(this.map.toJSON()).toEqual({
-          'layers': [
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': '#union { ... }',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'source': {
-                  'id': 'c1'
-                }
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': '#union { ... }',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'source': {
-                  'id': 'a2'
-                }
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS3',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'sql': 'sql3'
-              }
-            }
-          ],
-          'dataviews': {},
-          'analyses': [
-            {
-              'id': 'c1',
-              'type': 'union',
-              'params': {
-                'join_on': 'cartodb_id',
-                'source': {
-                  'id': 'a2',
-                  'type': 'estimated-population',
-                  'params': {
-                    'columnName': 'estimated_people',
-                    'source': {
-                      'id': 'a1',
-                      'type': 'trade-area',
-                      'params': {
-                        'kind': 'walk',
-                        'time': 300,
-                        'source': {
-                          'id': 'b0',
-                          'type': 'source',
-                          'params': {
-                            'query': 'select * from subway_stops'
-                          }
+        expect(this.map.toJSON().analyses).toEqual([
+          {
+            'id': 'c1',
+            'type': 'union',
+            'params': {
+              'join_on': 'cartodb_id',
+              'source': {
+                'id': 'a2',
+                'type': 'estimated-population',
+                'params': {
+                  'columnName': 'estimated_people',
+                  'source': {
+                    'id': 'a1',
+                    'type': 'trade-area',
+                    'params': {
+                      'kind': 'walk',
+                      'time': 300,
+                      'source': {
+                        'id': 'b0',
+                        'type': 'source',
+                        'params': {
+                          'query': 'select * from subway_stops'
                         }
                       }
                     }
@@ -513,75 +422,40 @@ describe('windshaft/anonymous-map', function () {
                 }
               }
             }
-          ]
-        });
+          }
+        ]);
       });
 
-      it('should include a source analysis if a dataview is linked to the layer', function () {
-        var dataview1 = new HistogramDataviewModel({
+      it('should only include an analysis once', function () {
+        var analysis = { id: 'a0' };
+        this.analysisCollection.add(analysis);
+
+        // Layer has a0 as it's source
+        this.cartoDBLayer1.update({
+          source: 'a0',
+          cartocss: '#trade_area { ... }'
+        }, { silent: true });
+
+        // This datativew also has a0 as it's source
+        var dataview1 = createFakeDataview({
           id: 'dataviewId1',
-          column: 'column1',
-          bins: 5
-        }, {
-          map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
-          windshaftMap: this.map,
-          layer: this.cartoDBLayer1
-        });
+          source: {
+            id: 'a0'
+          }
+        }, this.map, this.cartoDBLayer1);
 
-        this.dataviewsCollection.reset([ dataview1 ]);
+        // This dataview also has a0 as it's source
+        var dataview2 = createFakeDataview({
+          id: 'dataviewId1',
+          source: {
+            id: 'a0'
+          }
+        }, this.map, this.cartoDBLayer1);
 
-        expect(this.map.toJSON()).toEqual({
-          'layers': [
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS1',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'source': {
-                  'id': 'layer1'
-                }
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS2',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'sql': 'sql2'
-              }
-            },
-            {
-              'type': 'cartodb',
-              'options': {
-                'cartocss': 'cartoCSS3',
-                'cartocss_version': '2.0',
-                'interactivity': [],
-                'sql': 'sql3'
-              }
-            }
-          ],
-          'dataviews': {
-            'dataviewId1': {
-              'type': 'histogram',
-              'source': {
-                'id': 'layer1'
-              },
-              'options': {
-                'column': 'column1',
-                'bins': 5
-              }
-            }
-          },
-          'analyses': [{
-            id: 'layer1',
-            type: 'source',
-            params: {
-              query: 'sql1'
-            }
-          }]
-        });
+        this.dataviewsCollection.reset([ dataview1, dataview2 ]);
+
+        // The analysis is only included once
+        expect(this.map.toJSON().analyses).toEqual([ analysis ]);
       });
     });
   });

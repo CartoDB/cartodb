@@ -221,8 +221,8 @@ module.exports = Model.extend({
     throw new Error('toJSON should be defined for each dataview');
   },
 
-  _getSourceId: function () {
-    return this.get('sourceId') || this.layer.get('source') || this.layer.get('id');
+  getSourceId: function () {
+    return this.get('source').id;
   },
 
   remove: function () {
@@ -241,7 +241,7 @@ module.exports = Model.extend({
       'sync_on_data_change',
       'sync_on_bbox_change',
       'enabled',
-      'sourceId'
+      'source'
     ]
   }
 );

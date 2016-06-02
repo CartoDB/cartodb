@@ -1,0 +1,3 @@
+<button>
+  <%= template %>
+</button>

@@ -177,7 +177,7 @@ describe Carto::Api::LayerPresenter do
         labels = poro_options['style_properties']['properties']['labels']
         labels.should_not be_nil
 
-        labels['enabled'].should eq true
+        labels['enabled'].should eq false
         labels['font'].should eq 'whatever'
 
         labels['attribute'].should be_nil
@@ -886,6 +886,25 @@ describe Carto::Api::LayerPresenter do
 
         it 'generates disabled labels' do
           layer = build_layer_with_wizard_properties(no_text_wizard_properties)
+          options = presenter_with_style_properties(layer).to_poro['options']
+          options['style_properties']['properties']['labels']['enabled'].should be_false
+        end
+      end
+
+      describe 'with text-name `None`' do
+        let(:none_text_name_wizard_properties) do
+          {
+            "type" => "choropleth",
+            "properties" =>
+              {
+                "text-name" => 'None',
+                "text-face-name" => 'something'
+              }
+          }
+        end
+
+        it 'generates disabled labels' do
+          layer = build_layer_with_wizard_properties(none_text_name_wizard_properties)
           options = presenter_with_style_properties(layer).to_poro['options']
           options['style_properties']['properties']['labels']['enabled'].should be_false
         end

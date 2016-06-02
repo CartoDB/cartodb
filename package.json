@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.24.18",
+  "version": "3.25.0",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "backbone-forms": "^0.14.0",
     "backbone-model-file-upload": "^1.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.4.0",
+    "camshaft-reference": "0.7.0",
     "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",

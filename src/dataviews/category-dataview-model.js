@@ -62,7 +62,7 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this._bindSearchModelEvents();
-    if (attrs.acceptedCategories) {
+    if (attrs && attrs.acceptedCategories) {
       this.filter.accept(attrs.acceptedCategories);
     }
   },

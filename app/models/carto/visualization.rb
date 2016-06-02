@@ -347,7 +347,7 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def named_maps_api
-    @named_maps_api ||= Carto::NamedMaps::Api.new(self)
+    Carto::NamedMaps::Api.new(self)
   end
 
   def redis_vizjson_cache

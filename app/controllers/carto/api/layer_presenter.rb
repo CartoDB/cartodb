@@ -673,12 +673,12 @@ module Carto
         labels = {}
 
         apply_direct_mapping(labels, wpp, TEXT_DIRECT_MAPPING)
-        labels['attribute'] = nil if labels['attribute'] == 'None'
+        labels['attribute'] = nil if labels['attribute'].to_s.downcase == 'none'
 
         merge_into_if_present(labels, 'fill', generate_labels_fill(wpp))
         merge_into_if_present(labels, 'halo', generate_labels_halo(wpp))
 
-        labels['enabled'] = true unless labels.empty?
+        labels['enabled'] = labels['attribute'].present?
 
         DEFAULT_LABELS.merge(labels)
       end

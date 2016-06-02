@@ -1,0 +1,42 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Infobox {
+  margin-right: -25px;
+  margin-left: -25px;
+  padding: 25px;
+  background: $cThirdBackground;
+  font-family: 'Open sans';
+
+  &.is-error {
+    background: $cError;
+    color: $cWhite;
+  }
+
+  &.is-alert {
+    background: rgba($cHighlightYellow, 0.6);
+  }
+}
+
+.Infobox-title {
+  font-size: $sFontSize-small;
+  line-height: $sLineHeight-small;
+}
+
+.Infobox-body {
+  font-size: $sFontSize-medium;
+  line-height: $sLineHeight-medium;
+}
+
+.Infobox-buttons {
+  @include display-flex();
+}
+
+.Infobox-button {
+  @include flex(1);
+
+  &.Infobox-button--right {
+    margin-left: auto;
+  }
+}

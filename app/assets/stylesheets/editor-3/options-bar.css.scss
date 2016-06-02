@@ -4,11 +4,10 @@
 .Options-bar {
   @include align-items(center);
   @include flex(0 0 auto);
-  height: 75px;
   position: relative;
   margin-right: -25px;
   margin-left: -25px;
-  padding: 25px;
+  padding: 0 25px;
   box-sizing: border-box;
 }
 .Options-bar.is-dark {

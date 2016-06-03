@@ -15,6 +15,16 @@ module Carto
         _, _, _, @visualization = create_full_visualization(@user)
       end
 
+      describe '#name' do
+        it 'should generate the template name correctly' do
+          template = Carto::NamedMaps::Template.new(@visualization)
+          template_name = template.to_hash[:name]
+
+          template_name.should match("^#{Carto::NamedMaps::Template::NAME_PREFIX}")
+          template_name.should_not match(/[^a-zA-Z0-9\-\_.]/)
+        end
+      end
+
       describe '#auth' do
         it 'should generate open auth for public, link and private visualizations' do
           @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC

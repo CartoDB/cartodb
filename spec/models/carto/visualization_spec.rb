@@ -136,7 +136,7 @@ describe Carto::Visualization do
     end
   end
 
-  describe 'number_of_features' do
+  describe '#number_of_features' do
     include Carto::Factories::Visualizations
 
     it 'returns the sum of number of rows of its layers' do
@@ -163,10 +163,34 @@ describe Carto::Visualization do
       visualization.number_of_features.should eq features.reduce(0, :+)
     end
 
+    L1_FEATURES = 101
+    L2_FEATURES = 204
+    L3_FEATURES = 309
+
     it 'returns the sum of number of rows of its layers up to a max' do
-      L1_FEATURES = 101
-      L2_FEATURES = 204
-      L3_FEATURES = 309
+      layer_1 = FactoryGirl.create(:carto_layer)
+      layer_1.stubs(:number_of_features).returns(L1_FEATURES)
+      layer_2 = FactoryGirl.create(:carto_layer)
+      layer_2.stubs(:number_of_features).returns(L2_FEATURES)
+      layer_3 = FactoryGirl.create(:carto_layer)
+      layer_3.stubs(:number_of_features).returns(L3_FEATURES)
+
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
+      visualization.stubs(:layers).returns([layer_1, layer_2, layer_3])
+
+      total = L1_FEATURES + L2_FEATURES + L3_FEATURES
+      visualization.number_of_features(total + 1).should eq total
+
+      max = L1_FEATURES + L2_FEATURES
+      visualization.number_of_features(max).should eq max
+
+      max2 = L1_FEATURES + (L2_FEATURES / 2)
+      visualization.number_of_features(max2).should eq max
+
+      visualization.number_of_features(1).should eq L1_FEATURES
+    end
+
+    it 'only calls the needed layer#number_of_features' do
       layer_1 = FactoryGirl.create(:carto_layer)
       layer_1.stubs(:number_of_features).once.returns(L1_FEATURES)
       layer_2 = FactoryGirl.create(:carto_layer)
@@ -176,8 +200,8 @@ describe Carto::Visualization do
 
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
       visualization.stubs(:layers).returns([layer_1, layer_2, layer_3])
-      max = L1_FEATURES + L2_FEATURES
-      visualization.number_of_features(max).should eq max
+
+      visualization.number_of_features(L1_FEATURES + L2_FEATURES)
     end
   end
 end

@@ -30,9 +30,9 @@ WidgetsService.prototype.getList = function () {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
+  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats'];
@@ -42,6 +42,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -55,10 +56,10 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
+WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
-  var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
+  var dataAttrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized'];
   var widgetAttrs = _.pick(attrs, attrsNames);
@@ -68,6 +69,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -81,9 +83,9 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
+WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-
+  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
   var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
@@ -94,6 +96,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer) {
   var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;

@@ -58,6 +58,15 @@ Dashboard.prototype = {
     this._dashboard.vis.map.setView(state.map.center, state.map.zoom);
   },
 
+  onStateChanged: function (callback) {
+    this._dashboard.widgets._widgetsCollection.bind('change', function () {
+      callback(this.getState(), this.getDashboardURL());
+    }, this);
+    this._dashboard.vis.map.bind('change', function () {
+      callback(this.getState(), this.getDashboardURL());
+    }, this);
+  },
+
   /**
    * @param {Integer} id - widget id
    * @return a widget object

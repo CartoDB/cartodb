@@ -47,9 +47,22 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     widgets: widgets,
     model: model
   });
+  var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
+  if (!_.isEmpty(stateFromURL.map)) {
+    vizJSON.center = stateFromURL.map.center;
+    vizJSON.bounds = null;
+    vizJSON.zoom = stateFromURL.map.zoom;
+  }
+
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {
     skipMapInstantiation: true
   }));
+
+  if (!_.isEmpty(stateFromURL.map)) {
+    vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+  }
+
+  var widgetsState = stateFromURL.widgets || {};
 
   // Create widgets
   var widgetsService = new WidgetsService(widgets, vis.dataviews);
@@ -64,6 +77,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
     var attrs = _.extend({}, d, d.options);
     var newWidgetModel = widgetModelsMap[d.type];
+    var state = widgetsState[d.id];
 
     if (_.isFunction(newWidgetModel)) {
       // Find the Layer that the Widget should be created for.
@@ -76,19 +90,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
         layer = vis.map.layers.at(d.layerIndex);
       }
 
-      newWidgetModel(attrs, layer);
+      newWidgetModel(attrs, layer, state);
     } else {
       cdb.log.error('No widget found for type ' + d.type);
     }
   });
-
-  var stateFromURL = URLHelper.getStateFromCurrentURL();
-  if (!_.isEmpty(stateFromURL.widgets)) {
-    widgetsService.setWidgetsState(stateFromURL.widgets);
-  }
-  if (!_.isEmpty(stateFromURL.map)) {
-    vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
-  }
 
   dashboardView.render();
 
@@ -124,7 +130,13 @@ module.exports = function (selector, vizJSON, opts, callback) {
       if (error) {
         throw new Error('Error creating dashboard: ' + error);
       }
-      callback && callback(null, new Dashboard(dashboard));
+      var dash = new Dashboard(dashboard);
+      if (opts.share_urls) {
+        dash.onStateChanged(_.debounce(function (state, url) {
+          window.history.replaceState('Object', 'Title', url);
+        }, 500));
+      }
+      callback && callback(null, dash);
     });
   }
 

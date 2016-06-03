@@ -326,9 +326,13 @@ class Carto::Visualization < ActiveRecord::Base
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
-  # TODO: improve performance not counting beyond limit
-  def number_of_features
-    layers.map(&:number_of_features).reduce(0, :+)
+  def number_of_features(max = nil)
+    n = 0
+    layers.each do |layer|
+      n += layer.number_of_features
+      break if max.present? && n >= max
+    end
+    n
   end
 
   private

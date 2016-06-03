@@ -140,16 +140,44 @@ describe Carto::Visualization do
     include Carto::Factories::Visualizations
 
     it 'returns the sum of number of rows of its layers' do
-      L1_FEATURES = 111
-      L2_FEATURES = 222
-      layer_1 = FactoryGirl.create(:carto_layer)
-      layer_1.stubs(:number_of_features).returns(L1_FEATURES)
-      layer_2 =  FactoryGirl.create(:carto_layer)
-      layer_2.stubs(:number_of_features).returns(L2_FEATURES)
+      features = [111, 222]
 
-      map = FactoryGirl.create(:carto_map, layers: [layer_1, layer_2], user: @carto_user)
-      _, _, _, visualization = create_full_visualization(@carto_user, map: map)
-      visualization.number_of_features.should eq L1_FEATURES + L2_FEATURES
+      layers = features.map do |feature_n|
+        table_name = "table_#{feature_n}"
+        table = create_table(name: table_name, user_id: @carto_user.id)
+        FactoryGirl.create(:carto_user_table, table_id: table.get_table_id, user: @carto_user)
+        (1..feature_n).each do |i|
+          table.insert_row!(id: i, description: 'desc', name: "row #{i}")
+        end
+
+        User[@carto_user.id].in_database["vacuum analyze #{table.name}"].first
+
+        FactoryGirl.create(:carto_layer, options: { table_name: table.name, query: "select * from #{table.name}" })
+      end
+
+      map = FactoryGirl.create(:carto_map, layers: layers, user: @carto_user)
+      data_layer = layers.first
+      table = data_layer.affected_tables.first
+      _, _, _, visualization = create_full_visualization(@carto_user, map: map, table: table, data_layer: data_layer)
+
+      visualization.number_of_features.should eq features.reduce(0, :+)
+    end
+
+    it 'returns the sum of number of rows of its layers up to a max' do
+      L1_FEATURES = 101
+      L2_FEATURES = 204
+      L3_FEATURES = 309
+      layer_1 = FactoryGirl.create(:carto_layer)
+      layer_1.stubs(:number_of_features).once.returns(L1_FEATURES)
+      layer_2 = FactoryGirl.create(:carto_layer)
+      layer_2.stubs(:number_of_features).once.returns(L2_FEATURES)
+      layer_3 = FactoryGirl.create(:carto_layer)
+      layer_3.expects(:number_of_features).never
+
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user)
+      visualization.stubs(:layers).returns([layer_1, layer_2, layer_3])
+      max = L1_FEATURES + L2_FEATURES
+      visualization.number_of_features(max).should eq max
     end
   end
 end

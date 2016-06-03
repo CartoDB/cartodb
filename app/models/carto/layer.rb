@@ -100,7 +100,7 @@ module Carto
     end
 
     def number_of_features
-      affected_tables.map(&:estimated_row_count).reduce(0, :+)
+      affected_tables.map(&:estimated_row_count).map(&:to_i).reduce(0, :+)
     end
 
     private

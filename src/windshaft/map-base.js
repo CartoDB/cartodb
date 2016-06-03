@@ -3,6 +3,8 @@ var _ = require('underscore');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 var log = require('cdb.log');
+var Request = require('./request');
+var RequestTracker = require('./request-tracker');
 
 var TILE_EXTENSIONS_BY_LAYER_TYPE = {
   'mapnik': '.png',
@@ -13,6 +15,9 @@ var LAYER_TYPES = [
   'CartoDB',
   'torque'
 ];
+
+/* The max number of times the same map can be instantiated */
+var MAP_INSTANTIATION_LIMIT = 3;
 
 var WindshaftMap = Backbone.Model.extend({
   initialize: function (attrs, options) {
@@ -43,6 +48,8 @@ var WindshaftMap = Backbone.Model.extend({
     this._dataviewsCollection = options.dataviewsCollection;
     this._analysisCollection = options.analysisCollection;
     this._modelUpdater = options.modelUpdater;
+
+    this._requestTracker = new RequestTracker(MAP_INSTANTIATION_LIMIT);
   },
 
   toJSON: function () {
@@ -52,9 +59,49 @@ var WindshaftMap = Backbone.Model.extend({
   createInstance: function (options) {
     options = options || {};
 
-    var sourceLayerId = options.sourceLayerId;
-    var forceFetch = options.forceFetch;
+    var payload = this.toJSON();
+    var params = this._getParams();
 
+    var request = new Request(payload, params, options);
+    if (this._canPerformRequest(request)) {
+      this._trackRequest(request);
+      this._performRequest(request);
+    }
+
+    return this;
+  },
+
+  _canPerformRequest: function (request) {
+    return !this._requestTracker.maxNumberOfRequestsReached();
+  },
+
+  _trackRequest: function (request) {
+    this._requestTracker.track(request);
+  },
+
+  _performRequest: function (request) {
+    var payload = request.payload;
+    var params = request.params;
+    var options = request.options;
+
+    this.client.instantiateMap({
+      mapDefinition: payload,
+      params: params,
+      success: function (mapInstance) {
+        this.set(mapInstance);
+        this._modelUpdater.updateModels(this, options.sourceLayerId, options.forceFetch);
+        this.trigger('instanceCreated');
+        options.success && options.success(this);
+      }.bind(this),
+      error: function (error) {
+        var errorMsg = 'Request to Maps API failed: ' + error;
+        log.error(errorMsg);
+        options.error && options.error(errorMsg);
+      }
+    });
+  },
+
+  _getParams: function () {
     var params = {
       stat_tag: this.get('statTag')
     };
@@ -68,23 +115,7 @@ var WindshaftMap = Backbone.Model.extend({
       params.filters = filters;
     }
 
-    this.client.instantiateMap({
-      mapDefinition: this.toJSON(),
-      params: params,
-      success: function (mapInstance) {
-        this.set(mapInstance);
-        this._modelUpdater.updateModels(this, sourceLayerId, forceFetch);
-        this.trigger('instanceCreated');
-        options.success && options.success(this);
-      }.bind(this),
-      error: function (error) {
-        var errorMsg = 'Request to Maps API failed: ' + error;
-        log.error(errorMsg);
-        options.error && options.error(errorMsg);
-      }
-    });
-
-    return this;
+    return params;
   },
 
   _getFilterParamFromDataviews: function () {

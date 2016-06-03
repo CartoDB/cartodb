@@ -101,6 +101,57 @@ describe('windshaft/map-base', function () {
       this.dataviewsCollection.add(this.dataview);
     });
 
+    describe('request limit', function () {
+      beforeEach(function () {
+        this.options = { some: 'options' };
+      });
+
+      it('should not make the same request more than 3 times nothing has changed', function () {
+        spyOn(this.client, 'instantiateMap');
+        for (var i = 0; i < 3; i++) {
+          this.windshaftMap.createInstance(this.options);
+
+          expect(this.client.instantiateMap).toHaveBeenCalled();
+          this.client.instantiateMap.calls.reset();
+        }
+
+        this.windshaftMap.createInstance(this.options);
+
+        expect(this.client.instantiateMap).not.toHaveBeenCalled();
+      });
+
+      describe('when max number of same request have been reached', function () {
+        beforeEach(function () {
+          for (var i = 0; i < 3; i++) {
+            this.windshaftMap.createInstance(this.options);
+          }
+          spyOn(this.client, 'instantiateMap');
+        });
+
+        it('should make a request if payload has changed', function () {
+          spyOn(this.windshaftMap, 'toJSON').and.returnValue({ something: 'different' });
+
+          this.windshaftMap.createInstance(this.options);
+
+          expect(this.client.instantiateMap).toHaveBeenCalled();
+        });
+
+        it('should make a request if options are different', function () {
+          this.windshaftMap.createInstance({ different: 'options' });
+
+          expect(this.client.instantiateMap).toHaveBeenCalled();
+        });
+
+        it('should make a request if filters have changed', function () {
+          this.filter.accept('something');
+
+          this.windshaftMap.createInstance(this.options);
+
+          expect(this.client.instantiateMap).toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('when request succeeds', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {

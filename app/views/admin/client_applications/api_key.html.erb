@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <% if current_user.has_feature_flag?('google_maps') %>
+    <% if current_user.google_maps_geocoder_enabled? %>
       <div class="FormAccount-title">
         <p class="FormAccount-titleText">Configure API keys from external providers</p>
       </div>

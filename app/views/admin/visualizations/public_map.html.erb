@@ -335,6 +335,22 @@
     var belong_organization = <%= @visualization.user.has_organization? %>;
     var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
+
+    // fix header title and description in overlay viz JSON for cartodb.js
+    vizdata.overlays.forEach(function(overlay) {
+      if (overlay.type === 'header') {
+        if (overlay.options && overlay.options.extra) {
+          if (overlay.options.extra.headerType === 'title') {
+            overlay.options.extra.title = overlay.options.extra.text;
+            overlay.options.extra.show_title = true;
+          } else if (overlay.options.extra.headerType === 'description') {
+            overlay.options.extra.description = overlay.options.extra.text;
+            overlay.options.extra.show_description = true;
+          }
+        }
+      }
+    });
+
     var login_url = "<%= login_url %>";
 
     // Generating map options
@@ -375,10 +391,6 @@
       map_options.no_cdn = true;
     <% end %>
 
-    // Description and title should be hidden
-    // because we already have that info
-    map_options.description = false;
-    map_options.title = false;
     // Logo MUST be hidden in this view
     map_options.cartodb_logo  = false;
     // Fullscreen button should be hidden

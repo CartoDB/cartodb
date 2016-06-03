@@ -62,6 +62,9 @@ module.exports = DataviewModelBase.extend({
     }, this);
 
     this._bindSearchModelEvents();
+    if (attrs && attrs.acceptedCategories) {
+      this.filter.accept(attrs.acceptedCategories);
+    }
   },
 
   _onMapBoundsChanged: function () {
@@ -278,7 +281,8 @@ module.exports = DataviewModelBase.extend({
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
       'aggregation',
-      'aggregation_column'
+      'aggregation_column',
+      'acceptedCategories'
     ])
   }
 );

@@ -62,6 +62,9 @@ module.exports = DataviewModelBase.extend({
     this.listenTo(this.layer, 'change:meta', this._onChangeLayerMeta);
     this.on('change:column', this._reloadMapAndForceFetch, this);
     this.on('change:bins change:start change:end', this._fetchAndResetFilter, this);
+    if (attrs && (attrs.min || attrs.max)) {
+      this.filter.setRange(this.get('min'), this.get('max'));
+    }
   },
 
   _initBinds: function () {
@@ -201,7 +204,9 @@ module.exports = DataviewModelBase.extend({
     ATTRS_NAMES: DataviewModelBase.ATTRS_NAMES.concat([
       'column',
       'column_type',
-      'bins'
+      'bins',
+      'min',
+      'max'
     ])
   }
 );

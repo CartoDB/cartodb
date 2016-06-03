@@ -449,6 +449,9 @@ class Carto::User < ActiveRecord::Base
     mobile_max_open_users > 0 || mobile_max_private_users > 0
   end
 
-  private
+  def get_auth_tokens
+    tokens = [SecureRandom.urlsafe_base64(nil, false)]
 
+    tokens << organization.get_auth_token if has_organization?
+  end
 end

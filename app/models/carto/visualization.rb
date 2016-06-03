@@ -344,6 +344,10 @@ class Carto::Visualization < ActiveRecord::Base
     CartoDB::Varnish.new.purge(varnish_vizjson_key)
   end
 
+  def all_users_with_read_permission
+    permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
+  end
+
   private
 
   def named_maps_api

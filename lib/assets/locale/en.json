@@ -9,7 +9,15 @@
   "form-components": {
     "editors": {
       "fill": {
-        "quantification": "Quantification",
+        "quantification": {
+          "title": "Quantification",
+          "methods": {
+            "jenks": "Jenks",
+            "equal": "Equal Interval",
+            "headtails": "Heads/Tails",
+            "quantiles": "Quantiles"
+          }
+        },
         "bins": "Buckets",
         "input-color": {
           "solid": "Solid",

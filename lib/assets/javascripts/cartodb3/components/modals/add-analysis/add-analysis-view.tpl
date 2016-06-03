@@ -6,16 +6,7 @@
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-analysis.modal-desc') %></h3>
 </div>
 
-<div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder">
-  <div class="Modal-body">
-    <div class="Modal-body-inner">
-      <div class="Modal-body-header">
-        <h2 class="CDB-Text CDB-Size-medium u-upperCase is-semibold">Data Transformation</h2>
-      </div>
-      <ul class="ModalBlockList js-body">
-      </ul>
-    </div>
-  </div>
+<div class="Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder js-body">
 </div>
 
 <div class="Dialog-footer Dialog-footer--expanded CreateDialog-footer">

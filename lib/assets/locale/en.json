@@ -6,6 +6,10 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon"
   },
+  "analysis-category": {
+    "data-transformation": "Data transformation",
+    "relationship-analysis":"Relationship Analysis"
+  },
   "form-components": {
     "editors": {
       "fill": {

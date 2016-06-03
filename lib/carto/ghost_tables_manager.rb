@@ -5,7 +5,7 @@ require_relative 'bolt.rb'
 module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
-    MUTEX_TTL_MS = 60000
+    MUTEX_TTL_MS = 600000
 
     def initialize(user_id)
       @user_id = user_id

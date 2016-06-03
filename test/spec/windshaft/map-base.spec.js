@@ -101,53 +101,85 @@ describe('windshaft/map-base', function () {
       this.dataviewsCollection.add(this.dataview);
     });
 
-    describe('request limit', function () {
-      beforeEach(function () {
-        this.options = { some: 'options' };
-      });
+    var MAX_NUMBER_OF_EQUAL_REQUESTS = 3;
 
-      it('should not make the same request more than 3 times nothing has changed', function () {
-        spyOn(this.client, 'instantiateMap');
-        for (var i = 0; i < 3; i++) {
-          this.windshaftMap.createInstance(this.options);
-
-          expect(this.client.instantiateMap).toHaveBeenCalled();
-          this.client.instantiateMap.calls.reset();
-        }
-
-        this.windshaftMap.createInstance(this.options);
-
-        expect(this.client.instantiateMap).not.toHaveBeenCalled();
-      });
-
-      describe('when max number of same request have been reached', function () {
+    _.each(['success', 'error'], function (result) {
+      describe('request limit (' + result + ')', function () {
         beforeEach(function () {
-          for (var i = 0; i < 3; i++) {
+          this.options = { some: 'options' };
+        });
+
+        it('should not make the same request more than 3 times if nothing has changed and response is the same', function () {
+          spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+            options[result]({ a: 'b' });
+          });
+
+          for (var i = 0; i < MAX_NUMBER_OF_EQUAL_REQUESTS; i++) {
             this.windshaftMap.createInstance(this.options);
+
+            expect(this.client.instantiateMap).toHaveBeenCalled();
+            this.client.instantiateMap.calls.reset();
           }
-          spyOn(this.client, 'instantiateMap');
+
+          this.windshaftMap.createInstance(this.options);
+
+          expect(this.client.instantiateMap).not.toHaveBeenCalled();
         });
 
-        it('should make a request if payload has changed', function () {
-          spyOn(this.windshaftMap, 'toJSON').and.returnValue({ something: 'different' });
+        it('should make the request if request was done 3 times and response was different the last time', function () {
+          var numberOfRequest = 0;
+          spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+            numberOfRequest += 1;
+            var response = { a: 'b' };
+            if (numberOfRequest === MAX_NUMBER_OF_EQUAL_REQUESTS) {
+              response = { a: 'something different' };
+            }
+            options[result](response);
+          });
+
+          for (var i = 0; i < MAX_NUMBER_OF_EQUAL_REQUESTS; i++) {
+            this.windshaftMap.createInstance(this.options);
+
+            expect(this.client.instantiateMap).toHaveBeenCalled();
+            this.client.instantiateMap.calls.reset();
+          }
 
           this.windshaftMap.createInstance(this.options);
 
           expect(this.client.instantiateMap).toHaveBeenCalled();
         });
 
-        it('should make a request if options are different', function () {
-          this.windshaftMap.createInstance({ different: 'options' });
+        describe('when max number of subsecuent identical requests (with identical responses) have been performed', function () {
+          beforeEach(function () {
+            for (var i = 0; i < 3; i++) {
+              this.windshaftMap.createInstance(this.options);
+            }
+            spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
+              options[result]({ a: 'b' });
+            });
+          });
 
-          expect(this.client.instantiateMap).toHaveBeenCalled();
-        });
+          it('should make a request if payload has changed', function () {
+            spyOn(this.windshaftMap, 'toJSON').and.returnValue({ something: 'different' });
 
-        it('should make a request if filters have changed', function () {
-          this.filter.accept('something');
+            this.windshaftMap.createInstance(this.options);
 
-          this.windshaftMap.createInstance(this.options);
+            expect(this.client.instantiateMap).toHaveBeenCalled();
+          });
 
-          expect(this.client.instantiateMap).toHaveBeenCalled();
+          it('should make a request if options are different', function () {
+            this.windshaftMap.createInstance({ different: 'options' });
+
+            expect(this.client.instantiateMap).toHaveBeenCalled();
+          });
+
+          it('should make a request if filters have changed', function () {
+            this.filter.accept('something');
+
+            this.windshaftMap.createInstance(this.options);
+
+            expect(this.client.instantiateMap).toHaveBeenCalled();
+          });
         });
       });
     });

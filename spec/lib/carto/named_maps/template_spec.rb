@@ -27,8 +27,6 @@ module Carto
 
       describe '#placeholders' do
         it 'should not generate placeholders if map has no layers' do
-          byebug
-
           template = Carto::NamedMaps::Template.new(@visualization)
           placeholders = template.to_hash[:placeholders]
 

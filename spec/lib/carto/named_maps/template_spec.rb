@@ -12,7 +12,7 @@ module Carto
         bypass_named_maps
         @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
 
-        _, _, _, @visualization = create_full_visualization(@user)
+        @map, _, _, @visualization = create_full_visualization(@user)
       end
 
       describe '#name' do
@@ -22,6 +22,17 @@ module Carto
 
           template_name.should match("^#{Carto::NamedMaps::Template::NAME_PREFIX}")
           template_name.should_not match(/[^a-zA-Z0-9\-\_.]/)
+        end
+      end
+
+      describe '#placeholders' do
+        it 'should not generate placeholders if map has no layers' do
+          byebug
+
+          template = Carto::NamedMaps::Template.new(@visualization)
+          placeholders = template.to_hash[:placeholders]
+
+          placeholders.length.should be 0
         end
       end
 

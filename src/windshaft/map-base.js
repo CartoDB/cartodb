@@ -64,7 +64,6 @@ var WindshaftMap = Backbone.Model.extend({
 
     var request = new Request(payload, params, options);
     if (this._canPerformRequest(request)) {
-      this._trackRequest(request);
       this._performRequest(request);
     }
 
@@ -80,6 +79,8 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _performRequest: function (request) {
+    this._trackRequest(request);
+
     var payload = request.payload;
     var params = request.params;
     var options = request.options;

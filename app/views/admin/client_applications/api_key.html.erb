@@ -76,7 +76,7 @@
           <label class="FormAccount-label">Google Maps</label>
         </div>
         <div class="FormAccount-rowData">
-          <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_key : current_user.google_maps_key %>" class="FormAccount-input FormAccount-input--long is-disabled" readonly />
+          <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_private_key : current_user.google_maps_private_key %>" class="FormAccount-input FormAccount-input--long is-disabled" readonly />
         </div>
         <div class="FormAccount-rowInfo">
           <% if !current_user.organization.present? %>

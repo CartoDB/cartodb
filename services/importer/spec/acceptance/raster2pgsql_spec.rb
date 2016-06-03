@@ -111,6 +111,7 @@ describe 'raster2pgsql acceptance tests' do
   end
 
   it 'keeps the original table unaltered regardless of overviews' do
+    pending "Fix for multiple CI configs #7645"
     TOLERANCE = 1e-6
 
     filepath    = path_to('raster_simple.tif')

@@ -62,6 +62,7 @@ which should be fixed manually.
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
+* Sharing tables with groups fix for name collision.
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)

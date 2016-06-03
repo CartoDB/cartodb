@@ -24,8 +24,10 @@ module.exports = View.extend({
     });
     this.map = this.options.map;
 
-    this._onKeyDown = this._onKeyDown.bind(this);
-    this._toggleAttributions = this._toggleAttributions.bind(this);
+    this._onDocumentClick = this._onDocumentClick.bind(this);
+    this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
+
+    this._initBinds();
   },
 
   render: function () {
@@ -44,23 +46,22 @@ module.exports = View.extend({
     this.model.bind('change:visible', function (mdl, isVisible) {
       this[ isVisible ? '_showAttributions' : '_hideAttributions' ]();
     }, this);
-    this._enableDocumentBinds();
     this.map.bind('change:attribution', this.render, this);
     this.add_related_model(this.map);
   },
 
   _enableDocumentBinds: function () {
-    $(document).bind('keydown', this._onKeyDown);
-    $(document).bind('click', this._toggleAttributions);
+    $(document).bind('keydown', this._onDocumentKeyDown);
+    $(document).bind('click', this._onDocumentClick);
   },
 
   _disableDocumentBinds: function () {
-    $(document).unbind('keydown', this._onKeyDown);
-    $(document).unbind('click', this._toggleAttributions);
+    $(document).unbind('keydown', this._onDocumentKeyDown);
+    $(document).unbind('click', this._onDocumentClick);
   },
 
-  _onKeyDown: function (e) {
-    if (e && e.keyCode === 27) {
+  _onDocumentKeyDown: function (ev) {
+    if (ev && ev.keyCode === 27) {
       this._toggleAttributions();
     }
   },
@@ -75,11 +76,14 @@ module.exports = View.extend({
     this._disableDocumentBinds();
   },
 
-  _toggleAttributions: function (e) {
-    if (e && e.stopPropagation) {
-      this.killEvent(e);
-    }
+  _toggleAttributions: function () {
     this.model.set('visible', !this.model.get('visible'));
+  },
+
+  _onDocumentClick: function (ev) {
+    if (!$(ev.target).closest(this.el).length) {
+      this._toggleAttributions();
+    }
   },
 
   clean: function () {

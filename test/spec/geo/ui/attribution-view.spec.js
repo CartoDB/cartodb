@@ -1,9 +1,13 @@
 var $ = require('jquery');
-var Attribution = require('../../../../src/geo/ui/attribution/attribution-view');
+var _ = require('underscore');
+var AttributionView = require('../../../../src/geo/ui/attribution/attribution-view');
 var Map = require('../../../../src/geo/map');
 
 describe('geo/ui/attribution', function () {
   beforeEach(function () {
+    // Disable defer
+    spyOn(_, 'delay').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
     this.keyEsc = function () {
       var e = $.Event('keydown');
       e.keyCode = 27; // ESC
@@ -12,8 +16,9 @@ describe('geo/ui/attribution', function () {
 
     this.map = new Map();
     spyOn(this.map, 'bind').and.callThrough();
+    spyOn(AttributionView.prototype, 'render').and.callThrough();
 
-    this.view = new Attribution({
+    this.view = new AttributionView({
       map: this.map
     });
     this.view.render();
@@ -39,19 +44,15 @@ describe('geo/ui/attribution', function () {
   });
 
   describe('attributions change', function () {
-    beforeEach(function () {
-      spyOn(this.view, 'render');
-    });
-
     it('should render when it is visible', function () {
       this.$button.click(); // Making it visible
       this.map.trigger('change:attribution');
-      expect(this.view.render).toHaveBeenCalled();
+      expect(AttributionView.prototype.render).toHaveBeenCalled();
     });
 
     it('should render when it is not visible', function () {
       this.map.trigger('change:attribution');
-      expect(this.view.render).toHaveBeenCalled();
+      expect(AttributionView.prototype.render).toHaveBeenCalled();
     });
   });
 

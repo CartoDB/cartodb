@@ -112,6 +112,7 @@ module CartoDB
         email: "#{username}@example.com",
         password: username,
         private_tables_enabled: true,
+        database_schema: organization.nil? ? 'public' : username,
         organization: organization
       )
       user.save.reload

@@ -7,8 +7,8 @@
 }
 .BlockList-item {
   @include display-flex();
-  @include transition(border, 200ms, ease-in);
-  @include transition(box-shadow, 300ms, ease-in);
+  @include transition(border 200ms ease-in);
+  @include transition(box-shadow 300ms ease-in);
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   border: 1px solid $cSecondaryLine;
@@ -24,7 +24,7 @@
   border-style: dashed;
 }
 .BlockList-item:hover {
-  @include transition(border, 200ms, ease-in);
+  @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
 }
 .BlockList-item.BlockList-item--noAction {

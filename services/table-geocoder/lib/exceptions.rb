@@ -72,7 +72,8 @@ module Carto
         %{Over account storage limit: The geocoding process was not able to finish because you ran out of quota.
           To upgrade your account, go to your Dashboard and click Settings. Click
           'Upgrade your server'. Follow the directions for choosing a larger size
-          and setting up your payment information.}.squish,
+          and setting up your payment information.
+        }.squish,
         AdditionalInfo::SOURCE_USER
       )
     end
@@ -83,7 +84,8 @@ module Carto
         'Google for Work account misconfigured',
         %{Your Google for Work account seems to be incorrectly configured.
            Please <a href='mailto:sales@cartob.com?subject=Google for Work account misconfigured'>contact us</a>
-           for further assistance.}.squish,
+           for further assistance.
+        }.squish,
         AdditionalInfo::SOURCE_USER
       )
     end
@@ -95,7 +97,8 @@ module Carto
         %{Your geocoding request timed out after several attempts.
            Please check your quota usage in the <a href='https://console.developers.google.com/'>Google Developers Console</a>
            and <a href='mailto:support@cartodb.com?subject=Google geocoder timed out'>contact us</a>
-           if you are within the usage limits.}.squish,
+           if you are within the usage limits.
+        }.squish,
         AdditionalInfo::SOURCE_USER
       )
     end

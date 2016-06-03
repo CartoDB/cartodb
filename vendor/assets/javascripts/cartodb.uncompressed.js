@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: ea0290f51d64a2772c69af6ef67dfa7e9af7a9d0
+// sha: 4176c03f6e04488d6c3cb7647f37d40099a77831
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -34562,12 +34562,13 @@ cdb.geo.LeafLetPlainLayerView = LeafLetPlainLayerView;
 
 (function() {
 
-if(typeof(L) == "undefined") 
+if(typeof(L) == "undefined")
   return;
 
 var LeafLetTiledLayerView = L.TileLayer.extend({
   initialize: function(layerModel, leafletMap) {
-    L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
+
+    var tmpLayer = {
       tms:          layerModel.get('tms'),
       attribution:  layerModel.get('attribution'),
       minZoom:      layerModel.get('minZoom'),
@@ -34575,7 +34576,17 @@ var LeafLetTiledLayerView = L.TileLayer.extend({
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
-    });
+    };
+
+    if ( layerModel.get('tileSize') ) {
+      tmpLayer.tileSize = layerModel.get('tileSize');
+    }
+
+    if ( layerModel.get('zoomOffset') ) {
+      tmpLayer.zoomOffset = layerModel.get('zoomOffset');
+    }
+
+    L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), tmpLayer);
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }
 
@@ -34670,7 +34681,7 @@ if(typeof(L) == "undefined")
 var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
   initialize: function(layerModel, leafletMap) {
 
-    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
+    var tmpLayer = {
       attribution:  layerModel.get('attribution'),
       layers:       layerModel.get('layers'),
       format:       layerModel.get('format'),
@@ -34680,7 +34691,17 @@ var LeafLetWMSLayerView = L.TileLayer.WMS.extend({
       subdomains:   layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
       opacity:      layerModel.get('opacity')
-    });
+    };
+
+    if ( layerModel.get('tileSize') ) {
+      tmpLayer.tileSize = layerModel.get('tileSize');
+    }
+
+    if ( layerModel.get('zoomOffset') ) {
+      tmpLayer.zoomOffset = layerModel.get('zoomOffset');
+    }
+
+    L.TileLayer.WMS.prototype.initialize.call(this, layerModel.get('urlTemplate'), tmpLayer);
 
     cdb.geo.LeafLetLayerView.call(this, layerModel, this, leafletMap);
   }

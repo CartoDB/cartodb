@@ -11,37 +11,36 @@
 @import "../variables/colors";
 
 div.dropdown.map_options_dropdown {
+  padding: 0px;
 
   ul {
 
     box-sizing: border-box;
     margin: 0;
-    width: 204px;
-    padding: 12px 15px;
+    width: 204px;    
 
     li {
       @include display-flex();
       @include justify-content(space-between, justify);
       @include align-items(center, center);
       background-color: transparent;
-      margin: 0;
-      padding: 10px 0;
+      margin: 0;      
       border:none;
       font-size: 13px;
       border-bottom: 1px solid $Black;
       cursor: default;
+      padding: 0px 12px;
       position:relative;
 
       &:before {
         content: ''; 
         position:absolute;
-        top: 14px;
+        top: 15px;
         width: 10px;
         height: 10px;
       }
 
       &.title:before {
-        top: 12px;
         width: 10px; height: 11px;
         @include map-sprite(map_options_title);
       }
@@ -75,8 +74,6 @@ div.dropdown.map_options_dropdown {
       }
 
       &.scrollwheel:before {
-        top: 10px;
-        left: 2px;
         width: 11px; height: 16px;
         @include map-sprite(map_options_scrollwheel);
       }
@@ -98,7 +95,6 @@ div.dropdown.map_options_dropdown {
 
       &:first-child { 
         padding-top: 0;
-        &:before { top: 2px; }
       }
 
       &:last-child { 

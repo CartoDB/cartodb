@@ -131,11 +131,6 @@ $corner_radius: 0px;
   // due to it is not possible drag layers in table view.
   &.ui-sortable .layer_panel.active .layer-info .info:hover {
     cursor:move;
-    .order {
-      @include table-sprite(layer_move_icon);
-      background-color:none;
-      text-indent:-9999px;
-    }
   }
 
 }

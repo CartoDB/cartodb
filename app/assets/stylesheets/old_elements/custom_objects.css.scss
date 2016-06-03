@@ -569,7 +569,7 @@
     @include text-indent();
     vertical-align:middle;
     width:29px;
-    height:15px;
+    height:14px;
     @include border-radius(12px);
     @include transform-style("linear");
     @include transition-property("background");
@@ -634,7 +634,7 @@
 
       span.handle {
         position:absolute;
-        top:0px;
+        top:1px;
         left:11px;
         width:10px;
         height:10px;

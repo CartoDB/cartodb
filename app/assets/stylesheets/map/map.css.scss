@@ -156,7 +156,7 @@ div.map {
     }
   }
 
-//map toolbar
+//bb_toolbar
 
   div.map_toolbar {
     @include position(0, false, false, 0px);
@@ -200,10 +200,27 @@ div.map {
       }
 
       &.canvas_setup  > .thumb { @include map-sprite(setup_canvas); }
-      &.add_overlay   > .thumb { @include map-sprite(add_element);  }
-      &.export_image  > .thumb { @include map-sprite(export_image); }
+      &.add_overlay {
+          position: relative;
+          padding-right: 18px;
+          > .thumb { @include map-sprite(add_element);  }
+          &:after {
+            content: "";
+            position: absolute;
+            border: 3px solid transparent;
+            border-top: 5px solid $Grey2;
+            right: 6px;
+            top: 18px;
+          }
+      }
+      &.export_image   {
+        padding-right: 8px;
+       > .thumb { @include map-sprite(export_image); }
+      }
+
       &.toggle_slides > .thumb { @include map-sprite(toggle_slides); }
       &.toggle_slides.active > .thumb { @include map-sprite(toggle_slides_active); }
+
 
     }
 
@@ -257,6 +274,9 @@ div.map {
       height: 40px;
       margin: 0 1px 0 0;
       padding: 0px 12px 0px 6px;
+      cursor: default;
+      -webkit-user-select: none;
+
 
 
       & > .thumb {
@@ -288,7 +308,7 @@ div.map {
 
       .info {
         @include inline-block();
-        padding-top:2px;
+        line-height: 38px;
 
         h5, .name {
           font-size: 13px;
@@ -297,7 +317,6 @@ div.map {
 
         //bb remove second line
         .name {
-          display: none;
         }
 
         h5 {
@@ -817,8 +836,8 @@ div.cartodb-edit-buttons {
     &.add_point {@include edit-bottom-states(-80, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
     &.add_annotation {@include edit-bottom-states(-110, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
 
-    &:first-child {@include border-left-radius(3px);}
-    &:last-child {@include border-right-radius(3px); border-right:1px solid #B0B0B0;}
+    &:first-child {@include border-left-radius(2px);}
+    &:last-child {@include border-right-radius(2px); border-right:1px solid #B0B0B0;}
   }
 }
 

@@ -47,13 +47,12 @@
       // Order element
       .order {
         width:16px;
-        padding:1px 0;
-        line-height:16px;
+        padding-top: 5px;
+        height: 14px;
         text-align:center;
-        font:bold 11px $text-fonts;
-        color:#ECECEC;
+        font:11px $text-fonts;
+        color:$Grey1;
         background:#A9A9A9;
-        @include border-radius(2px);
       }
 
       // Layer name

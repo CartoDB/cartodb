@@ -9,6 +9,7 @@ require_relative '../doubles/log'
 require_relative 'cdb_importer_context'
 require_relative 'acceptance_helpers'
 require_relative 'no_stats_context'
+require 'active_support'
 
 include CartoDB::Importer2
 
@@ -34,7 +35,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests extracting size from a tif' do
     expected_size = [2052, 1780]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     size = rasterizer.send(:extract_raster_size)
     size.should eq expected_size
@@ -54,7 +55,7 @@ describe 'raster2pgsql acceptance tests' do
                                      "o_32_raster_test", "o_64_raster_test", "o_128_raster_test", \
                                      "o_256_raster_test", "o_512_raster_test" ]
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     overviews = rasterizer.send(:calculate_raster_overviews, raster_1_size)
     overviews.should eq expected_overviews_1
@@ -72,7 +73,7 @@ describe 'raster2pgsql acceptance tests' do
   it 'tests calculating raster scale' do
     pixel_size = 3667.822831377844
 
-    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {})
+    rasterizer = Raster2Pgsql.new(@table_name, @filepath, {}, @user.db)
 
     scale = rasterizer.send(:calculate_raster_scale, pixel_size)
     expected_scale = 2445.7403258239747
@@ -109,5 +110,41 @@ describe 'raster2pgsql acceptance tests' do
       raster_tables.should be 0
   end
 
-end
+  it 'keeps the original table unaltered regardless of overviews' do
+    TOLERANCE = 1e-6
 
+    filepath    = path_to('raster_simple.tif')
+    downloader  = CartoDB::Importer2::Downloader.new(filepath)
+    log         = CartoDB::Importer2::Doubles::Log.new(@user)
+    job         = Job.new({ logger: log, pg_options: @user.db_service.db_configuration_for.with_indifferent_access })
+    runner      = CartoDB::Importer2::Runner.new({
+        pg: @user.db_service.db_configuration_for,
+        downloader: downloader,
+        log: CartoDB::Importer2::Doubles::Log.new(@user),
+        user: @user,
+        job: job
+      })
+
+    runner.run
+
+    # Values taken from `gdalinfo -stats services/importer/spec/fixtures/raster_simple.tif`
+    metadata = @user.in_database.fetch(%{
+        SELECT * FROM raster_columns
+        WHERE r_table_schema = '#{job.schema}' AND r_table_name = '#{job.table_name}'
+      }).first
+    metadata[:srid].should eq 4326
+    metadata[:scale_x].should be_within(TOLERANCE).of +0.148148148148133
+    metadata[:scale_y].should be_within(TOLERANCE).of -0.148148148148133
+
+    stats = @user.in_database.fetch(%{
+        WITH foo AS (
+          SELECT the_raster_webmercator rast FROM #{job.schema}.#{job.table_name}
+        ) SELECT (stats).* FROM (SELECT ST_summarystatsagg(rast, TRUE, 1) stats FROM foo) bar;
+      }).first
+    stats[:count].should eq 2430 * 1215
+    stats[:mean].should be_within(TOLERANCE).of 204.51453640197
+    stats[:stddev].should be_within(TOLERANCE).of 11.11767348697
+    stats[:min].should be_within(TOLERANCE).of 58
+    stats[:max].should be_within(TOLERANCE).of 253
+  end
+end

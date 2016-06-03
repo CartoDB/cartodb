@@ -132,9 +132,9 @@ module.exports = function (selector, vizJSON, opts, callback) {
       }
       var dash = new Dashboard(dashboard);
       if (opts.share_urls) {
-        dash.onStateChanged(function (state, url) {
+        dash.onStateChanged(_.debounce(function (state, url) {
           window.history.replaceState('Object', 'Title', url);
-        });
+        }, 500));
       }
       callback && callback(null, dash);
     });

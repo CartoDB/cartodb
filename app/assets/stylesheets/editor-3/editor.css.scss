@@ -83,7 +83,7 @@
   position: relative;
 }
 
-.CDB-ColorBar.is-selected:after {
+.CDB-ColorBar.is-selected::after {
   position: absolute;
   right: 0;
   bottom: -14px;

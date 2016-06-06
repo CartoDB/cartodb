@@ -28,11 +28,11 @@ describe Carto::Editor::Public::EmbedsController do
       response.body.include?(@visualization.name).should be true
     end
 
-    it 'defaults to generate vizjson with vector=false' do
+    it 'defaults to generate vizjson with vector (default true for this fake visualization with 0 features)' do
       get editor_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
-      response.body.should include('\"vector\":false')
+      response.body.should include('\"vector\":true')
     end
 
     it 'generates vizjson with vector=true with flag' do
@@ -40,6 +40,13 @@ describe Carto::Editor::Public::EmbedsController do
 
       response.status.should == 200
       response.body.should include('\"vector\":true')
+    end
+
+    it 'generates vizjson with vector=false with flag' do
+      get editor_visualization_public_embed_url(visualization_id: @visualization.id, vector: false)
+
+      response.status.should == 200
+      response.body.should include('\"vector\":false')
     end
 
     it 'does not embed private visualizations' do

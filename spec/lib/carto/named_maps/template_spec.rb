@@ -26,11 +26,30 @@ module Carto
       end
 
       describe '#placeholders' do
-        it 'should not generate placeholders if map has no layers' do
+        it 'should only generate placeholders for non-basemaps layers' do
+          template = Carto::NamedMaps::Template.new(@visualization)
+          placeholders = template.to_hash[:placeholders]
+          placeholders.length.should be @map.layers.reject(&:basemap?).count
+        end
+
+        it 'should generate placeholders for data layers' do
+          FactoryGirl.create(:carto_layer, maps: [@map])
+          @map.save
+
           template = Carto::NamedMaps::Template.new(@visualization)
           placeholders = template.to_hash[:placeholders]
 
-          placeholders.length.should be 0
+          placeholders.length.should be @map.layers.reject(&:basemap?).count
+        end
+
+        it 'should generate placeholders for torque layers' do
+          FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+          @map.save
+
+          template = Carto::NamedMaps::Template.new(@visualization)
+          placeholders = template.to_hash[:placeholders]
+
+          placeholders.length.should be @map.layers.reject(&:basemap?).count
         end
       end
 

@@ -329,7 +329,7 @@ class Carto::Visualization < ActiveRecord::Base
   def number_of_features(max = nil)
     n = 0
     layers.each do |layer|
-      n += layer.number_of_features
+      n += layer.number_of_features(max)
       break if max.present? && n >= max
     end
     n

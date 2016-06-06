@@ -42,10 +42,10 @@ module Carto
 
       private
 
-      MAX_FEATURES_LIMIT_FOR_VECTOR = 10000
+      MAX_FEATURES_FOR_VECTOR = 10000
 
       def enable_vector?(visualization, vector)
-        vector.nil? ? visualization.number_of_features < MAX_FEATURES_LIMIT_FOR_VECTOR : vector
+        vector.nil? ? visualization.number_of_features(MAX_FEATURES_FOR_VECTOR) < MAX_FEATURES_FOR_VECTOR : vector
       end
 
       def generate_vizjson(https_request:, vector: nil, forced_privacy_version:)

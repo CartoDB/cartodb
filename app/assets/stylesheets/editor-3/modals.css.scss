@@ -155,3 +155,31 @@
   border-radius: 2px;
 }
 
+.Editor-navButtons {
+  @include display-flex();
+  @include justify-content(center);
+  margin: $baseSize * 4 0;
+}
+.Editor-navButtonsItem {
+  margin-right: $baseSize;
+}
+.Editor-navButtonsItem:last-child {
+  margin-right: 0;
+}
+
+.Editor-navButtonsItemLink {
+  min-width: 136px;
+  padding: 10px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: $halfBaseSize;
+  color: $cSecondaryText;
+  text-align: left;
+}
+
+.Editor-navButtonsItem.is-selected .Editor-navButtonsItemLink {
+  border: 2px solid $cBlue;
+  background: $cWhite;
+  color: $cMainBg;
+}
+
+

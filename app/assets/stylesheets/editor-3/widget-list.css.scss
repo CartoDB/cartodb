@@ -10,12 +10,6 @@
 .WidgetList-fakeInner { // TODO: REMOVE ME
   width: 940px;
   margin: auto;
-  .CDB-NavMenu-item {
-    margin-right: 10px;
-  }
-  .CDB-NavMenu-link {
-    padding: 32px 0;
-  }
 }
 
 .WidgetList-option {
@@ -32,10 +26,6 @@
   border: 1px solid transparent;
   border-radius: $baseSize / 2;
   background: $cWhite;
-}
-.WidgetList-item:hover {
-  border: 1px solid $cBlue;
-  background: #F5FAFE;
 }
 .WidgetList-inner {
   width: 100%;
@@ -69,4 +59,6 @@
   border-radius: 2px;
   background: $cThirdBackground;
 }
+
+
 

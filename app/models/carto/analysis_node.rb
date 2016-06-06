@@ -10,22 +10,26 @@ class Carto::AnalysisNode
   attr_reader :analysis, :definition, :parent
 
   def id
-    @definition[:id]
+    definition[:id]
   end
 
   def type
-    @definition[:type]
+    definition[:type]
   end
 
   def params
-    @definition[:params]
+    definition[:params]
   end
 
   def options
-    @definition[:options]
+    definition[:options]
   end
 
   def children
+    children_and_location.values
+  end
+
+  def children_and_location
     @children ||= get_children(@definition)
   end
 
@@ -41,16 +45,17 @@ class Carto::AnalysisNode
   private
 
   MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze
-  def get_children(definition)
-    children = definition.map do |_, v|
+  def get_children(definition, path = [])
+    children = definition.map do |k, v|
       if v.is_a?(Hash)
+        this_path = path + [k]
         if (MANDATORY_KEYS_FOR_ANALYSIS_NODE - v.keys).empty?
-          Carto::AnalysisNode.new(analysis, v, parent: self)
+          { this_path => Carto::AnalysisNode.new(analysis, v, parent: self) }
         else
-          get_children(v)
+          get_children(v, this_path)
         end
       end
     end
-    children.flatten.compact
+    children.flatten.compact.reduce({}, :merge)
   end
 end

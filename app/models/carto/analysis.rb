@@ -26,7 +26,7 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   def analysis_definition_for_api
-    filter_valid_properties(analysis_definition)
+    filter_valid_properties(analysis_node)
   end
 
   def natural_id
@@ -50,10 +50,11 @@ class Carto::Analysis < ActiveRecord::Base
   # This methods extract the needed ones.
   VALID_ANALYSIS_PROPERTIES = [:id, :type, :params].freeze
 
-  def filter_valid_properties(definition)
-    valid = definition.select { |property, _| VALID_ANALYSIS_PROPERTIES.include?(property) }
-    if valid[:params] && valid[:params][:source]
-      valid[:params][:source] = filter_valid_properties(valid[:params][:source])
+  def filter_valid_properties(node)
+    valid = node.definition.select { |property, _| VALID_ANALYSIS_PROPERTIES.include?(property) }
+    node.children_and_location.each do |location, child|
+      child_in_hash = location.reduce(valid, :[])
+      child_in_hash.replace(filter_valid_properties(child))
     end
     valid
   end

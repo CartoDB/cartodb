@@ -18,7 +18,7 @@
       <span class="ColorPicker-inputLabel u-upperCase">B</span>
     </div>
     <div class="ColorPicker-inputWrapper">
-      <input type="text" class="CDB-InputText ColorPicker-input js-a" value="<%- opacity %>" <% if (opacityDisabled) { %>disabled<% } %> />
+      <input type="text" class="CDB-InputText ColorPicker-input js-a<% if (opacityDisabled) { %> is-disabled<% } %>" value="<%- opacity %>" <% if (opacityDisabled) { %>disabled<% } %> />
       <span class="ColorPicker-inputLabel u-upperCase">A</span>
     </div>
   </div>

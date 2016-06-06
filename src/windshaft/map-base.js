@@ -65,6 +65,8 @@ var WindshaftMap = Backbone.Model.extend({
     var request = new Request(payload, params, options);
     if (this._canPerformRequest(request)) {
       this._performRequest(request);
+    } else {
+      log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
     }
 
     return this;
@@ -95,7 +97,6 @@ var WindshaftMap = Backbone.Model.extend({
       }.bind(this),
       error: function (error) {
         this._trackRequest(request, error);
-
         var errorMsg = 'Request to Maps API failed: ' + error;
         log.error(errorMsg);
         options.error && options.error(errorMsg);

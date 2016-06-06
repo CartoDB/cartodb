@@ -110,6 +110,7 @@ describe('windshaft/map-base', function () {
         });
 
         it('should not make the same request more than 3 times if nothing has changed and response is the same', function () {
+          spyOn(log, 'error');
           spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
             options[result]({ a: 'b' });
           });
@@ -124,6 +125,8 @@ describe('windshaft/map-base', function () {
           this.windshaftMap.createInstance(this.options);
 
           expect(this.client.instantiateMap).not.toHaveBeenCalled();
+
+          expect(log.error).toHaveBeenCalledWith('Maximum number of subsequent equal requests to the Maps API reached (3):', this.windshaftMap.toJSON(), { stat_tag: 'stat_tag' });
         });
 
         it('should make the request if request was done 3 times and response was different the last time', function () {

@@ -259,6 +259,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
+	spec/services/carto/user_table_index_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \

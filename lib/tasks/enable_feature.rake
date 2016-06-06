@@ -142,7 +142,7 @@ namespace :cartodb do
 
         puts "[INFO]\tFeature flag '#{args[:feature]}' restricted set to '#{restricted}'"
       else
-        raise "[ERROR]\tFeature '#{args[:feature]}' doesn't exists"
+        raise "[ERROR]\tFeature '#{args[:feature]}' doesn't exist"
       end
     end
 

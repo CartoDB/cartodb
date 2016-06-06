@@ -95,6 +95,10 @@ module Carto
       !base?
     end
 
+    def carto_layer?
+      kind == 'carto'
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end

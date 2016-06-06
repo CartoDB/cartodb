@@ -1,3 +1,4 @@
+
 # encoding: utf-8
 require 'virtus'
 require_relative 'adapter'
@@ -379,7 +380,7 @@ module CartoDB
           default_message = CartoDB::IMPORTER_ERROR_CODES.fetch(self.error_code, {})
           self.error_message = default_message.fetch(:title, '')
         end
-        if self.retried_times < MAX_RETRIES - 1
+        if self.retried_times < MAX_RETRIES
           self.retried_times  += 1
           self.run_at         = Time.now + interval
         else
@@ -394,8 +395,7 @@ module CartoDB
         self.state          = STATE_FAILURE
         self.error_code     = error_code
         self.error_message  = error_message
-        self.retried_times  += 1 unless self.retried_times >= MAX_RETRIES
-        if self.retried_times < MAX_RETRIES - 1
+        if self.retried_times < MAX_RETRIES
           self.retried_times  += 1
           self.run_at         = Time.now + interval
         else

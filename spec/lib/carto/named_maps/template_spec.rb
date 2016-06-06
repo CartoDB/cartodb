@@ -26,13 +26,13 @@ module Carto
       end
 
       describe '#placeholders' do
-        it 'should only generate placeholders for non-basemaps layers' do
+        it 'should only generate placeholders for carto and torque layers' do
           template = Carto::NamedMaps::Template.new(@visualization)
           placeholders = template.to_hash[:placeholders]
           placeholders.length.should be @map.layers.reject(&:basemap?).count
         end
 
-        it 'should generate placeholders for data layers' do
+        it 'should generate placeholders for carto layers' do
           FactoryGirl.create(:carto_layer, maps: [@map])
           @map.save
 
@@ -97,7 +97,12 @@ module Carto
           end
 
           it 'should add dataviews if widgets are present' do
-            widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
+            layer = @map.data_layers.first
+
+            widget = FactoryGirl.create(:widget, layer: layer)
+            layer.widgets << widget
+            layer.save
+
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
             dataviews = template_hash[:layergroup][:dataviews]

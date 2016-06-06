@@ -1,31 +1,8 @@
-3.13.0 (2016-XX-XX)
+3.13.0 (2016-06-06)
 -------------------
-### NOTICE
-For the analysis catalog feature existing users require to run `rake cartodb:db:set_user_privileges_in_cartodb_schema['$USERNAME']`.
-
-### NOTICE
-This release introduces a different method of doing cache invalidations, using Surrogate Keys instead of the older X-Cache-Channel header.
-See [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki for more information about this change.
-
-All invalidations done from newly created CartoDB accounts/databases from this release will invalidate using the new method.
-Due to this, if you use Varnish or any alternate caching methods, you need to update to a version of the APIs which provides a Surrogate-Keys header on all the cacheable responses:
-  * Windshaft-cartodb >= 2.27.0
-  * CartoDB-SQL-API >= 1.26.0
-
-After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain
-the Surrogate-Keys header, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
-
-For backwards compatibility with unupgraded trigger versions, those API versions still emit both X-Cache-Channel and Surrogate-Key headers.
-However, this will be deprecated on a future release.
-
-### NOTICE
-This release changes how visualization permissions are stored in the database. To ensure that the database state is consistent,
-it is highly recommended to run the following rake task BEFORE MIGRATING the database schema: `rake cartodb:permissions:fill_missing_permissions`.
-
-The task will report visualization that could not be automatically fixed, where multiple permissions exists for a given visualization,
-which should be fixed manually.
 
 ### Features
+
 * Update CartoDB PostgreSQL extension to 0.16.3:
   * Support for analysis catalog (0.16.0)
   * Schema quoting bugfix for overviews (0.16.3)
@@ -56,6 +33,7 @@ which should be fixed manually.
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
+
 * Sharing tables with groups fix for name collision.
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
@@ -86,7 +64,33 @@ which should be fixed manually.
 * Fix some import failures due to failling in finding suitable table names.
 * Exported map files now have comprehensive names.
 
-## Security fixes
+### Release notes
+
+For the analysis catalog feature existing users require to run `rake cartodb:db:set_user_privileges_in_cartodb_schema['$USERNAME']`.
+
+--
+
+This release introduces a different method of doing cache invalidations, using Surrogate Keys instead of the older X-Cache-Channel header.
+See [CartoDB Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys) on the wiki for more information about this change.
+
+All invalidations done from newly created CartoDB accounts/databases from this release will invalidate using the new method.
+Due to this, if you use Varnish or any alternate caching methods, you need to update to a version of the APIs which provides a Surrogate-Keys header on all the cacheable responses:
+  * Windshaft-cartodb >= 2.27.0
+  * CartoDB-SQL-API >= 1.26.0
+
+After ensuring those applications are updated, you should restart Varnish (or purge all its objects) to ensure all new objects will contain
+the Surrogate-Keys header, and then reload the invalidation trigger installed on the user databases to be upgraded with the Rake task: `rake cartodb:db:load_varnish_trigger`.
+
+For backwards compatibility with unupgraded trigger versions, those API versions still emit both X-Cache-Channel and Surrogate-Key headers.
+However, this will be deprecated on a future release.
+
+--
+
+This release changes how visualization permissions are stored in the database. To ensure that the database state is consistent,
+it is highly recommended to run the following rake task BEFORE MIGRATING the database schema: `rake cartodb:permissions:fill_missing_permissions`.
+
+The task will report visualization that could not be automatically fixed, where multiple permissions exists for a given visualization,
+which should be fixed manually.
 
 3.12.4 (2016-03-09)
 -------------------

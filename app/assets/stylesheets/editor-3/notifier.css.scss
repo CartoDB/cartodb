@@ -5,13 +5,23 @@
 .Notifier {
   margin: 0 -25px;
   padding: 0 $baseSize * 3;
-  border-top: 1px solid $cMainLine;
+  border-top: 1px solid $cSecondaryLine;
+
+  &.is-dark {
+    border-color: #3A484E;
+  }
 }
 
 
 .Notifier-inner {
+  position: relative;
   padding: $baseSize + 4 0;
-  border-top: 1px solid $cMainLine;
+  border-top: 1px solid $cSecondaryLine;
+
+  &.is-dark {
+    border-color: #3A484E;
+  }
+
   &:first-child {
     border-top: 0;
   }

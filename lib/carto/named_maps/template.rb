@@ -57,7 +57,7 @@ module Carto
         layers = @visualization.map.layers
 
         index = -1
-        layers.select(&:data_layer?).each do |layer|
+        layers.select(&:carto_layer?).each do |layer|
           index += 1
           placeholders["layer#{index}".to_sym] = {
             type: 'number',
@@ -149,7 +149,7 @@ module Carto
 
         options = {
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: layer_options.fetch('style_version'),
+          cartocss_version: layer_options.fetch('style_version')
         }
 
         options[:sql] = sql(layer_options, index)

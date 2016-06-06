@@ -118,14 +118,9 @@ namespace :cartodb do
         ff.id = FeatureFlag.order(:id).last.id + 1
         ff.save
 
-        puts "[INFO]\tFeature flag '#{args[:feature]}' created and restricted set to '#{restricted}'"
-      elsif ff.restricted != restricted
-        ff.restricted = restricted
-        ff.save
-
-        puts "[INFO]\tFeature flag '#{args[:feature]}' already existed, its restricted is now '#{restricted}'"
+        puts "[INFO]\tFeature flag '#{args[:feature]}' created and restricted set to '#{ff.restricted}'"
       else
-        puts "[INFO]\tFeature '#{args[:feature]}' already exists and is set to '#{restricted}'"
+        raise "[ERROR]\tFeature '#{args[:feature]}' already exists and its restricted set to '#{ff.restricted}'"
       end
     end
 

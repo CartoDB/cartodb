@@ -42,6 +42,15 @@ class Carto::AnalysisNode
     nil
   end
 
+  def source?
+    type == 'source'
+  end
+
+  def table_source?(table_name)
+    # Maybe check params[:query]
+    source? && options && options[:table_name] == table_name
+  end
+
   private
 
   MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze

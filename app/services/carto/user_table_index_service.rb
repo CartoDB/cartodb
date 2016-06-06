@@ -6,12 +6,15 @@ module Carto
 
     private
 
-    def widgets
-      @user_table.layers.map(&:widgets).flatten
+    def table_widgets
+      widgets.select do |w|
+        node = w.analysis_node
+        node && node.table_source?(@user_table.name)
+      end
     end
 
-    def visualizations
-      @user_table.layers.map(&:maps).flatten.map(&:visualizations).map(&:first)
+    def widgets
+      @user_table.layers.map(&:widgets).flatten
     end
   end
 end

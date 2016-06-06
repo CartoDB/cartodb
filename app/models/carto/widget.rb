@@ -41,6 +41,19 @@ class Carto::Widget < ActiveRecord::Base
     layer.maps { |l| l.writable_by_user?(user) }.select { |writable| !writable }.empty?
   end
 
+  def visualization
+    layer.maps.first.visualizations.first
+  end
+
+  def analysis_node
+    return nil unless source_id
+    visualization.analyses.map(&:analysis_node).each do |node|
+      found = node.find_by_id(source_id)
+      return found if found
+    end
+    nil
+  end
+
   private
 
   def notify_maps_change

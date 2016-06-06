@@ -87,6 +87,28 @@ module Carto
           template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
         end
       end
+
+      describe '#view' do
+        before(:each) do
+          @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+        end
+
+        it 'should contain map zoom' do
+          @template_hash[:view][:zoom].should eq @map.zoom
+        end
+
+        it 'should contain center' do
+          map_center_data = @map.center_data
+          template_center = @template_hash[:view][:center]
+
+          template_center[:lat].should eq map_center_data[0].to_f
+          template_center[:lng].should eq map_center_data[1].to_f
+        end
+
+        it 'should contain bounds' do
+          @template_hash[:view][:bounds].should eq @map.view_bounds_data
+        end
+      end
     end
   end
 end

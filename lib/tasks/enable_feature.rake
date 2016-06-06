@@ -108,7 +108,7 @@ namespace :cartodb do
 
     # WARNING: For use only at development, opensource and custom installs.
     # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
-    desc "add feature flag"
+    desc "add feature flag and optionally set restricted (default is true)"
     task :add_feature_flag, [:feature, :restricted] => :environment do |_task, args|
       restricted = args[:restricted] ? args[:restricted].casecmp('false') != 0 : true
 

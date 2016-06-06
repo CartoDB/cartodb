@@ -14,8 +14,15 @@ FactoryGirl.define do
   }.freeze
 
   factory :source_analysis, class: Carto::Analysis do
+    ignore do
+      source_table 'subway_stops'
+    end
 
-    analysis_definition { SOURCE_ANALYSIS_DEFINITION }
+    analysis_definition do
+      SOURCE_ANALYSIS_DEFINITION.merge(
+        params: { query: "select * from #{source_table}" }
+      )
+    end
 
     factory :analysis, class: Carto::Analysis do
       created_at { Time.now }
@@ -24,12 +31,18 @@ FactoryGirl.define do
   end
 
   factory :analysis_with_source, class: Carto::Analysis do
+    ignore do
+      source_table 'subway_stops'
+    end
+
     analysis_definition do
       {
         id: unique_string,
         type: "buffer",
         params: {
-          source: SOURCE_ANALYSIS_DEFINITION
+          source: SOURCE_ANALYSIS_DEFINITION.merge(
+            params: { query: "select * from #{source_table}" }
+          )
         }
       }
     end

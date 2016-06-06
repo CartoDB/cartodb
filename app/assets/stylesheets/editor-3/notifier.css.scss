@@ -3,6 +3,7 @@
 @import 'cdb-variables/sizes';
 
 .Notifier {
+  margin: 0 -25px;
   padding: 0 $baseSize * 3;
   border-top: 1px solid $cMainLine;
 }

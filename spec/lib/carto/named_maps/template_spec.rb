@@ -112,6 +112,24 @@ module Carto
             template_widget[:options].should eq widget.options.merge(aggregationColumn: nil)
           end
         end
+
+        describe '#analyses' do
+          it 'should not add any analysis if no analyses are present' do
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+            template_hash[:layergroup][:analyses].should be_empty
+          end
+
+          it 'should add analyses if analyses are present' do
+            analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+            @visualization.analyses << analysis
+            @visualization.save
+
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+            template_hash[:layergroup][:analyses].first.should eq analysis.analysis_definition
+          end
+        end
       end
 
       describe '#view' do

@@ -458,7 +458,7 @@
       },
       "basemap": {
         "title-label": "Basemap",
-        "source": {
+        "category": {
           "title-label": "Source",
           "style": "Style",
           "select-style": "Select style"

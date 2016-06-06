@@ -135,7 +135,7 @@ namespace :cartodb do
         ff.restricted = restricted
         ff.save
 
-        puts "[INFO]\tFeature flag '#{args[:feature]}' restricted set to '#{restricted}'"
+        puts "[INFO]\tFeature flag '#{args[:feature]}' restricted set to '#{ff.restricted}'"
       else
         raise "[ERROR]\tFeature '#{args[:feature]}' doesn't exist"
       end

@@ -88,6 +88,32 @@ module Carto
         end
       end
 
+      describe '#layergroup' do
+        describe 'dataviews' do
+          it 'should not add any dataview if no widgets are present' do
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+            template_hash[:layergroup][:dataviews].should be_empty
+          end
+
+          it 'should add dataviews if widgets are present' do
+            widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+            dataviews = template_hash[:layergroup][:dataviews]
+
+            dataviews.should_not be_empty
+
+            template_widget = dataviews.first[widget.id.to_sym]
+            template_widget.should_not be_nil
+
+            template_widget[:type].should eq Carto::NamedMaps::Template::TILER_WIDGET_TYPES[widget.type]
+
+            template_widget[:options].should eq widget.options.merge(aggregationColumn: nil)
+          end
+        end
+      end
+
       describe '#view' do
         before(:each) do
           @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash

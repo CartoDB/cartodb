@@ -5,7 +5,7 @@
   <%- attribute %>
 </div>
 <div class="CDB-Box-modalHeaderItem">
-  <%- quantification %>
+  <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
   <button class="CDB-Shape u-lSpace js-quantification">
     <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
       <div class="CDB-Shape-threePointsItem"></div>

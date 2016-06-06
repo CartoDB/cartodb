@@ -204,6 +204,52 @@ describe Carto::Api::LayerPresenter do
       OPACITY = 0.3
 
       describe 'polygon' do
+        describe 'polygon' do
+          let(:marker_width) { 10 }
+          let(:polygon_wizard_properties) do
+            {
+              "type" => "polygon",
+              "properties" =>
+                {
+                  "marker-width" => marker_width,
+                  "marker-fill" => "#FF6600",
+                  "marker-opacity" => 0.9,
+                  "marker-allow-overlap" => true,
+                  "marker-placement" => "point",
+                  "marker-type" => "ellipse",
+                  "marker-line-width" => 1,
+                  "marker-line-color" => "#FFF",
+                  "marker-line-opacity" => 1,
+                  "marker-comp-op" => "none",
+                  "text-name" => "None",
+                  "text-face-name" => "DejaVu Sans Book",
+                  "text-size" => 10,
+                  "text-fill" => "#000",
+                  "text-halo-fill" => "#FFF",
+                  "text-halo-radius" => 1,
+                  "text-dy" => -10,
+                  "text-allow-overlap" => true,
+                  "text-placement-type" => "dummy",
+                  "text-label-position-tolerance" => 0,
+                  "text-placement" => "point",
+                  "geometry_type" => "point"
+                }
+            }
+          end
+
+          before(:each) do
+            layer = build_layer_with_wizard_properties(polygon_wizard_properties)
+            options = presenter_with_style_properties(layer).to_poro['options']
+            @properties = options['style_properties']['properties']
+            @fill_color = @properties['fill']['color']
+            @fill_size = @properties['fill']['size']
+          end
+
+          it 'sets fill size from marker-width' do
+            @fill_size['fixed'].should eq marker_width
+          end
+        end
+
         describe 'polygon-fill, marker-fill become "color fill" structure' do
           it 'setting opacity 1 if unknown' do
             %w(polygon-fill marker-fill).each do |property|

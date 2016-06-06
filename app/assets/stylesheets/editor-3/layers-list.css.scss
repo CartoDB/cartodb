@@ -12,9 +12,14 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
+  position:relative;
+}
+.Editor-ListLayer-item--placeholder {
+  border-color: $cSecondaryBackground;
+  background: $cSecondaryBackground;
 }
 .Editor-ListLayer-item:hover {
-  @include transition(border, 200ms, ease-in);
+  @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
 }
 .Editor-ListLayer-item.last-child {
@@ -34,7 +39,7 @@
   z-index: 1000;
 }
 .Editor-ListLayer-dragIcon {
-  @include transition(opacity, 200ms, ease-in);
+  @include transition(opacity 200ms ease-in);
   position: absolute;
   top: 28px;
   left: -20px;
@@ -97,6 +102,20 @@
   margin-bottom: 8px;
   background: #FFF;
 }
+.Editor-ListAnalysis-item.has-error {
+  &::after {
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
 
 .Editor-ListAnalysis-item:last-child {
   margin-bottom: 0;
@@ -127,7 +146,9 @@
   @include align-items(center);
   margin: 0 $halfBaseSize;
   background: $cWhite;
-  overflow: hidden;
+}
+.Editor-ListAnalysis-item .Editor-ListAnalysis-innerItem {
+  max-width: calc(50% - 8px);
 }
 
 .Editor-ListAnalysis-layer {
@@ -135,7 +156,7 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   &:hover {
-    @include transition(border, 200ms, ease-in);
+    @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
     cursor: pointer;
   }

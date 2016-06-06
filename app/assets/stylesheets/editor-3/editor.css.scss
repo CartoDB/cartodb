@@ -13,7 +13,9 @@
   position: relative;
   width: 100vw;
   height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
+
 .Editor-wrapper {
   @include display-flex();
   position: relative;
@@ -21,6 +23,8 @@
 }
 .Editor-panel {
   @include transition(width, 300ms, ease-in-out);
+  @include display-flex();
+  @include flex-direction(column);
   position: absolute;
   top: 0;
   right: 0;
@@ -28,22 +32,25 @@
   left: 0;
   width: 100%;
   height: 100vh;
-  padding: 25px;
+  padding: 18px 25px 0;
   box-sizing: border-box;
+}
+.Editor-panel.is-dark {
+  background: $cMainBg;
+}
+.Editor-content {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
 }
 .Editor-panelWrapper {
   position: relative;
   width: 344px;
 }
-.Editor-panel.is-larger {
+.Editor-panelWrapper.is-larger {
   width: 488px;
 }
-.Editor-content .CDB-HeaderInfo {
-  margin: 0 0 32px;
-}
-.CDB-Dashboard-canvas {
-  @include block-shadow();
-}
+
 .Editor-panel .ps-scrollbar-y-rail {
   right: 0 !Important;
   width: 2px !Important; // Resets standard scroll track color
@@ -62,4 +69,35 @@
 .Editor-panel .ps-scrollbar-x {
   height: 2px !Important; // Resets standard scroll bar color
   background: #AAA;
+}
+
+.CDB-ColorBarContainer {
+  border-radius: 6px;
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0.08)),
+  linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0.08));
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+.CDB-ColorBar.is-selected {
+  position: relative;
+}
+
+.CDB-ColorBar.is-selected::after {
+  position: absolute;
+  right: 0;
+  bottom: -14px;
+  left: 0;
+  height: 1px;
+  background: $cMainBg;
+  content: '';
+}
+
+/* deep insights */
+.CDB-Dashboard-canvas {
+  @include block-shadow();
+  @include flex(1);
+}
+.CDB-Dashboard-canvas.is-dark {
+  background: #293A41;
 }

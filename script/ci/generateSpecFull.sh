@@ -1,6 +1,8 @@
 #!/bin/bash
 # Jesus Vazquez
 
+truncate -s 0 *.log
+
 # The following tests are disabled in a parallel environment and are run afterwards, sequentially
 DISABLED_TESTS=(
   'spec/models/asset_spec.rb' # Hangs sometimes when serving files
@@ -14,7 +16,7 @@ DISABLED_TEST_REGEX=''
 truncate -s0 specfailed.txt
 for spec in ${DISABLED_TESTS[@]}
 do
-  echo $spec >> specfailed.txt
+  echo $spec >> specfailed.log
   if [[ $first -eq 0 ]]
   then
     DISABLED_TEST_REGEX="$DISABLED_TEST_REGEX\\|$spec"

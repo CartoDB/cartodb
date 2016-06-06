@@ -1,6 +1,7 @@
 require_relative '../spec_helper'
 
 require 'fake_net_ldap'
+require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
   describe 'login with LDAP' do
@@ -60,11 +61,12 @@ describe SessionsController do
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
+        :dn => normal_user_cn,
         @user_id_field => [normal_user_username],
         @user_email_field => [normal_user_email]
       }
       FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
 
       errors = {
         errors: {
@@ -88,11 +90,12 @@ describe SessionsController do
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
+        :dn => admin_user_cn,
         @user_id_field => [admin_user_username],
         @user_email_field => [admin_user_email]
       }
       FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(TrueClass)).returns(true)
@@ -127,11 +130,12 @@ describe SessionsController do
       normal_user_email = "ldap-user@test.com"
       normal_user_cn = "cn=#{normal_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
+        :dn => normal_user_cn,
         @user_id_field => [normal_user_username],
         @user_email_field => [normal_user_email]
       }
       FakeNetLdap.register_user(username: normal_user_cn, password: normal_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), ldap_entry_data)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', normal_user_username), [ldap_entry_data])
 
       ::Resque.expects(:enqueue).with(::Resque::UserJobs::Signup::NewUser,
                                       instance_of(String), anything, instance_of(FalseClass)).returns(true)
@@ -152,11 +156,12 @@ describe SessionsController do
       admin_user_email = "#{@organization.name}-admin@test.com"
       admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
       ldap_entry_data = {
+        :dn => admin_user_cn,
         @user_id_field => [admin_user_username],
         @user_email_field => [admin_user_email]
       }
       FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), ldap_entry_data)
+      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
 
       @admin_user = create_user(
         username: admin_user_username,

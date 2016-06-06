@@ -187,6 +187,7 @@ WORKING_SPECS_5 = \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/valid_table_name_proposer_spec.rb \
 	spec/lib/carto/db/sanitize_spec.rb \
+	spec/lib/carto/file_system/sanitize_spec.rb \
 	$(NULL)
 
 # TODO: This block also breaks if run alongside other specs, needs checking why
@@ -246,12 +247,15 @@ WORKING_SPECS_9 = \
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
+	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
+	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
@@ -312,7 +316,6 @@ update_cdb:
 	cd $(CDB_PATH); make cartodb dist/cartodb.css
 	cp $(CDB_PATH)/dist/cartodb.full.uncompressed.js vendor/assets/javascripts/cartodb.uncompressed.js
 	cp $(CDB_PATH)/dist/cartodb.mod.torque.uncompressed.js vendor/assets/javascripts
-	cp $(CDB_PATH)/dist/cartodb.mod.odyssey.uncompressed.js vendor/assets/javascripts
 	cp $(CDB_PATH)/dist/cartodb.css vendor/assets/stylesheets/cartodb.css
 
 

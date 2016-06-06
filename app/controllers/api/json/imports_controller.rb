@@ -46,7 +46,11 @@ class Api::Json::ImportsController < Api::ApplicationController
           options.merge!( { data_source: external_source.import_url.presence } )
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
-            results = file_upload_helper.upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
+            results = file_upload_helper.upload_file_to_storage(
+              filename_param: params[:filename],
+              file_param: params[:file],
+              request_body: request.body,
+              s3_config: Cartodb.config[:importer]['s3'])
             # Not queued import is set by skipping pending state and setting directly as already enqueued
             options.merge({
                               data_source: results[:file_uri].presence,

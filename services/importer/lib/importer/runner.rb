@@ -10,7 +10,7 @@ require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
 
 require_relative '../../../../lib/cartodb/stats/importer'
-require_relative '../../../../app/models/carto/visualization_export'
+require_relative '../../../../lib/carto/visualization_exporter'
 
 module CartoDB
   module Importer2

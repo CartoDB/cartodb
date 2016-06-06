@@ -13,7 +13,7 @@ module Carto
 
         {
           id: @analysis.id,
-          analysis_definition: @analysis.analysis_definition_json
+          analysis_definition: @analysis.analysis_definition
         }
       end
 

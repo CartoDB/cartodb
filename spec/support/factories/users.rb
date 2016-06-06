@@ -65,6 +65,8 @@ module CartoDB
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
       user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
       user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
+      user.obs_general_quota = attributes[:obs_general_quota] || 1000
+      user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       if attributes[:organization_id]
@@ -110,6 +112,7 @@ module CartoDB
         email: "#{username}@example.com",
         password: username,
         private_tables_enabled: true,
+        database_schema: organization.nil? ? 'public' : username,
         organization: organization
       )
       user.save.reload

@@ -9,6 +9,7 @@ shared_context 'users helper' do
     @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
     @carto_user1 = Carto::User.find(@user1.id)
     @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @carto_user2 = Carto::User.find(@user2.id)
   end
 
   before(:each) do

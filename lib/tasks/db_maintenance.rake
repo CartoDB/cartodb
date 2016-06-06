@@ -1269,6 +1269,60 @@ namespace :cartodb do
       end
     end
 
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[username]
+    desc 'Connect aggregation tables through FDW to user'
+    task :connect_aggregation_fdw_tables_to_user, [:username] => [:environment] do |task, args|
+      args.with_defaults(:username => nil)
+      raise 'Not a valid username' if args[:username].blank?
+      user = ::User.find(username: args[:username])
+      user.db_service.connect_to_aggregation_tables
+    end
+
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[orgname]
+    desc 'Connect aggregation tables through FDW to orgname'
+    task :connect_aggregation_fdw_tables_to_org, [:orgname] => [:environment] do |task, args|
+      args.with_defaults(:orgname => nil)
+      raise 'Not a valid orgname' if args[:orgname].blank?
+      org = ::Organization.find(name: args[:orgname])
+      org.users.each do |u|
+        begin
+          u.db_service.connect_to_aggregation_tables
+        rescue => e
+          puts "Error trying to connect  #{u.username}: #{e.message}"
+        end
+      end
+    end
+    
+    # usage:
+    #   bundle exec rake cartodb:db:obs_quota_enterprise[1000]
+    desc 'Give data observatory quota to all the enterprise users'
+    task :obs_quota_enterprise, [:quota] => [:environment] do |task, args|
+      args.with_defaults(:quota => 1000)
+      raise 'Not a valid quota' if args[:quota].blank?
+      do_quota = args[:quota]
+      users = User.where("account_type ilike 'enterprise%' or account_type ilike 'partner'").all
+      puts "Number of enterprise users to process: #{users.size}"
+      users.each do |u|
+        begin
+          if u.organization_owner? && !u.organization.nil?
+            u.organization.obs_general_quota = do_quota
+            u.organization.obs_snapshot_quota = do_quota
+            u.organization.save
+            puts "Organization #{u.organization.name} processed OK"
+          else
+            u.obs_general_quota = do_quota
+            u.obs_snapshot_quota = do_quota
+            u.save
+            puts "User #{u.username} processed OK"
+          end
+        rescue => e
+          puts "Error trying to give DO quota to #{u.username}: #{e.message}"
+        end
+      end
+    end
+
     def update_user_metadata(user)
       begin
         user.save_metadata

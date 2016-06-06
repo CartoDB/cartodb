@@ -221,7 +221,8 @@ module CartoDB
           full: true,
           visualization_id: visualization.id,
           https_request: false,
-          attributions: visualization.attributions_from_derived_visualizations
+          attributions: visualization.attributions_from_derived_visualizations,
+          for_named_map: false
         }
       end
 

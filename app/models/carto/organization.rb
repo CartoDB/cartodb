@@ -53,6 +53,12 @@ module Carto
       get_organization_obs_snapshot_data(self, date_from, date_to)
     end
 
+    def get_obs_general_calls(options = {})
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      get_organization_obs_general_data(self, date_from, date_to)
+    end
+
     def twitter_imports_count(options = {})
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
@@ -75,6 +81,11 @@ module Carto
 
     def remaining_obs_snapshot_quota(options = {})
       remaining = obs_snapshot_quota.to_i - get_obs_snapshot_calls(options)
+      (remaining > 0 ? remaining : 0)
+    end
+
+    def remaining_obs_general_quota(options = {})
+      remaining = obs_general_quota.to_i - get_obs_general_calls(options)
       (remaining > 0 ? remaining : 0)
     end
 

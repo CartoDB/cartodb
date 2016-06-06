@@ -44,5 +44,9 @@ module Carto
     def soft_obs_snapshot_limit?(user)
       !!user[:soft_obs_snapshot_limit]
     end
+
+    def soft_obs_general_limit?(user)
+      !!user[:soft_obs_general_limit]
+    end
   end
 end

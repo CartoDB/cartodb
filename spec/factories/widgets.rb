@@ -6,13 +6,11 @@ FactoryGirl.define do
     type 'formula'
     title 'The Title'
     options {
-      %Q(
-          {
-            "type": "formula",
-            "column": "pop_max",
-            "operation": "min"
-          }
-      )
+      {
+        type: "formula",
+        column: "pop_max",
+        operation: "min"
+      }
     }
     created_at { Time.now }
     updated_at { Time.now }

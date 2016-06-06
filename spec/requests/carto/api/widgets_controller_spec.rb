@@ -25,7 +25,7 @@ shared_context 'layer hierarchy' do
     response_widget[:type].should == widget.type
     response_widget[:title].should == widget.title
     response_widget[:layer_id].should == widget.layer.id
-    response_widget[:options].symbolize_keys.should == widget.options_json
+    response_widget[:options].should == widget.options.symbolize_keys
     if widget.source_id.present?
       response_widget[:source][:id].should eq widget.source_id
     else
@@ -37,7 +37,7 @@ shared_context 'layer hierarchy' do
     response_widget[:layer_id].should == payload[:layer_id]
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
-    response_widget[:options].symbolize_keys.should == payload[:options].symbolize_keys
+    response_widget[:options].should == payload[:options].symbolize_keys
     if payload[:source].present?
       response_widget[:source][:id].should == payload[:source][:id]
     else
@@ -245,7 +245,7 @@ describe Carto::Api::WidgetsController do
       new_order = @widget.order + 1
       new_type = "new #{@widget.type}"
       new_title = "new #{@widget.title}"
-      new_options = @widget.options_json.merge(new: 'whatever')
+      new_options = @widget.options.merge(new: 'whatever')
 
       payload = widget_payload(
         order: new_order,
@@ -318,9 +318,9 @@ describe Carto::Api::WidgetsController do
 
           # aggregation_column is renamed aggregationColumn for the tiler
           aggregation_column = v[:options].delete(:aggregationColumn)
-          aggregation_column.should == @widget.options_json[:aggregation_column]
+          aggregation_column.should == @widget.options[:aggregation_column]
 
-          v[:options].should == @widget.options_json
+          v[:options].should == @widget.options
         end
       end
 
@@ -339,9 +339,9 @@ describe Carto::Api::WidgetsController do
 
           # aggregation_column is renamed aggregationColumn for the tiler
           aggregation_column = v[:options].delete(:aggregationColumn)
-          aggregation_column.should == @widget.options_json[:aggregation_column]
+          aggregation_column.should == @widget.options[:aggregation_column]
 
-          v[:options].should == @widget.options_json
+          v[:options].should == @widget.options
         end
       end
     end

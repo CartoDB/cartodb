@@ -50,6 +50,12 @@ module CartoDB
           monthly_use: organization_user? ? organization.get_obs_snapshot_calls : get_obs_snapshot_calls,
           hard_limit:  hard_obs_snapshot_limit?
         },
+        obs_general: {
+          quota:       organization_user? ? organization.obs_general_quota : obs_general_quota,
+          block_price: organization_user? ? organization.obs_general_block_price : obs_general_block_price,
+          monthly_use: organization_user? ? organization.get_obs_general_calls : get_obs_general_calls,
+          hard_limit:  hard_obs_general_limit?
+        },
         twitter: {
           enabled:     self.organization_user? ? self.organization.twitter_datasource_enabled         : self.twitter_datasource_enabled,
           quota:       self.organization_user? ? self.organization.twitter_datasource_quota           :  self.twitter_datasource_quota,

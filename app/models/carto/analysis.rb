@@ -1,7 +1,12 @@
 # encoding: UTF-8
+
 require 'json'
+require_relative './carto_json_serializer'
 
 class Carto::Analysis < ActiveRecord::Base
+  serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
+  validates :analysis_definition, carto_json_symbolizer: true
+
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
@@ -20,21 +25,12 @@ class Carto::Analysis < ActiveRecord::Base
     analysis
   end
 
-  def analysis_definition_json
-    return nil unless analysis_definition
-    JSON.parse(analysis_definition).deep_symbolize_keys
-  end
-
   def analysis_definition_for_api
-    filter_valid_properties(analysis_definition_json)
-  end
-
-  def analysis_definition_json=(analysis_definition)
-    self.analysis_definition = analysis_definition.to_json
+    filter_valid_properties(analysis_definition)
   end
 
   def natural_id
-    pj = analysis_definition_json
+    pj = analysis_definition
     return nil unless pj
     pj[:id]
   end

@@ -1,3 +1,9 @@
+3.14.0 (2016-XX-XX)
+-------------------
+
+### Bug Fixes
+* Incorrect error message when password validation failed
+
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE
@@ -26,7 +32,9 @@ The task will report visualization that could not be automatically fixed, where 
 which should be fixed manually.
 
 ### Features
-* Update CartoDB PostgreSQL extension to 0.16.0 to support analysis catalog.
+* Update CartoDB PostgreSQL extension to 0.16.3:
+  * Support for analysis catalog (0.16.0)
+  * Schema quoting bugfix for overviews (0.16.3)
 * Change Varnish table-related invalidations and tagging to use [Surrogate Keys](https://github.com/CartoDB/cartodb/wiki/CartoDB-Surrogate-Keys)
 * Remove Varnish table invalidations from Rails and replaced them with CDB_TableMetadataTouch calls (delegating invalidation responsibility to the database)
 * Adds optional strong passwords for organization signups
@@ -42,10 +50,19 @@ which should be fixed manually.
 * Experimental support for [visualization metadata export](https://github.com/CartoDB/cartodb/pull/7114).
 * Full visualization export (metadata + data). Example: `bundle exec rake cartodb:vizs:export_full_visualization['5478433b-b791-419c-91d9-d934c56f2053']` (replace the id with the visualization that you want to export).
   * New configuration parameter: `exporter.exporter_temporal_folder`. Default value: `/tmp/exporter`. See `app_config.yml.sample`.
+  * Geopackage internal format.
+* Full visualization export API. Needed configuration changes:
+  * New Resque queue: `exports`.
+  * `exporter.uploads_path`. Set it to `public/uploads` to use Rails standard upload directory or an absolute path (such as `/tmp/export/downloads`) to make cleanup easier.
+  * `s3` (see `exporter.s3` at `app_config.yml.sample`).
+  * Enabled `config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'` for nginx direct download if you''re not using S3. Needs [ngnix configuration](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel). `uploads_path` configuration path is used.
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
+* Disables data library when it is not configured (e.g: offline installations).
+* Disables external file services when not configured (e.g: offline installations).
 * Update dataservices-api client to version 0.3.0 (routing functions)
 
 ## Bug Fixes
+* Sharing tables with groups fix for name collision.
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
@@ -65,6 +82,7 @@ which should be fixed manually.
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side
+* Fixed error duplicating datasets from the dashboard if the owner had hyphens in the name
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
 * Remove unused and broken tool for migration of the visualization table
@@ -72,6 +90,7 @@ which should be fixed manually.
 * Change deprecated PostGIS function `ST_Force_2D` for the new `ST_Force2D`
 * Fix bug in import mail notifier that prevented to obtain the name of tables created by queries or duplications
 * Fix some import failures due to failling in finding suitable table names.
+* Exported map files now have comprehensive names.
 
 ## Security fixes
 

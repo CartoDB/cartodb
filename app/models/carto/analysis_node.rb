@@ -9,8 +9,33 @@ class Carto::AnalysisNode
 
   attr_reader :analysis, :definition, :parent
 
+  def id
+    @definition[:id]
+  end
+
+  def type
+    @definition[:type]
+  end
+
+  def params
+    @definition[:params]
+  end
+
+  def options
+    @definition[:options]
+  end
+
   def children
     @children ||= get_children(@definition)
+  end
+
+  def find_by_id(node_id)
+    return self if node_id == id
+    children.each do |child|
+      found = child.find_by_id(node_id)
+      return found unless found.nil?
+    end
+    nil
   end
 
   private

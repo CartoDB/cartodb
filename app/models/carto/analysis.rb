@@ -40,6 +40,10 @@ class Carto::Analysis < ActiveRecord::Base
     visualization.map
   end
 
+  def analysis_node
+    Carto::AnalysisNode(self, analysis_definition)
+  end
+
   private
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).

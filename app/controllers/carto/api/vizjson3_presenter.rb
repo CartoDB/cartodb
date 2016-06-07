@@ -249,7 +249,7 @@ module Carto
         }
 
         if display_named_map?(@visualization, forced_privacy_version)
-          ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          ds[:template_name] = Carto::NamedMaps::Template.new(@visualization).name
         end
 
         ds
@@ -284,18 +284,16 @@ module Carto
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
         @visualization    = visualization
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+        @named_map_name   = Carto::NamedMaps::Template.new(@visualization).name
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
-      # @throws NamedMapsPresenterError
       def to_vizjson
         return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
@@ -323,7 +321,6 @@ module Carto
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 

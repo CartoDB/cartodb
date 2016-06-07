@@ -167,6 +167,7 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
+
         self
       end
 
@@ -259,7 +260,7 @@ module CartoDB
 
         # Named map must be deleted before the map, or we lose the reference to it
         begin
-          Carto::NamedMaps::Api.new(carto_visualization).destroy if carto_visualization
+          Carto::NamedMaps::Api.new(carto_visualization).destroy
         rescue NamedMapsWrapper::HTTPResponseError => exception
           # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
           unless from_table_deletion
@@ -497,7 +498,7 @@ module CartoDB
       def get_named_map
         return false if type == TYPE_REMOTE
 
-        Carto::NamedMaps::Api.new(carto_visualization).show if carto_visualization
+        Carto::NamedMaps::Api.new(carto_visualization).show
       end
 
       def password=(value)
@@ -709,6 +710,10 @@ module CartoDB
           old_next = other_vis.next_list_item
         end
 
+        Rails::Sequel.connection.after_commit do
+          save_named_map
+        end
+
         # First close gap left by other_vis
         unless old_prev.nil?
           old_prev.next_id = old_next.nil? ? nil : old_next.id
@@ -749,20 +754,14 @@ module CartoDB
         end
         repository.store(id, attributes.to_hash)
 
-        begin
-          save_named_map
-        rescue => exception
-          CartoDB.notify_exception(exception, user: user, message: "Error saving visualization named map")
-          restore_previous_privacy
-          raise exception
-        end
-
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           propagate_name_to(table) if table and propagate_changes
         end
+
+
       end
 
       def restore_previous_privacy
@@ -819,11 +818,11 @@ module CartoDB
       end
 
       def create_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).create if carto_visualization
+        Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update if carto_visualization
+        Carto::NamedMaps::Api.new(carto_visualization).update
       end
 
       def propagate_privacy_and_name_to(table)
@@ -942,15 +941,7 @@ module CartoDB
       end
 
       def carto_visualization
-        @carto_visualization ||= Carto::Visualization.where(id: id).first
-      end
-
-      def widgets
-        
-      end
-
-      def analyses
-        
+        Carto::Visualization.find(id)
       end
     end
   end

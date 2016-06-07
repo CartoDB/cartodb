@@ -29,8 +29,10 @@
 
 .Notifier-item {
   @include display-flex();
+  @include align-items(center);
   padding: $baseSize 0;
   color: $cSecondaryText;
+
   &.is-working {
     color: $cAltText;
   }

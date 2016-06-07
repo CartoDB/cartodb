@@ -9,7 +9,6 @@ require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
-require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 require_relative '../../../../lib/static_maps_url_helper'
 require_relative '../../../../lib/cartodb/event_tracker'
 

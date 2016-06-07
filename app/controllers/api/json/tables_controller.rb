@@ -2,7 +2,6 @@
 
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
-require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 require_relative '../../../../lib/cartodb/event_tracker'
 
 class Api::Json::TablesController < Api::ApplicationController

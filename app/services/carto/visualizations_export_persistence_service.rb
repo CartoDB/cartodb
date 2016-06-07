@@ -12,6 +12,8 @@ module Carto
         visualization.id = random_uuid
         visualization.user = user
 
+        ensure_unique_name(user, visualization)
+
         visualization.layers.map { |layer| fix_layer_user_information(layer, user) }
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
@@ -61,6 +63,21 @@ module Carto
     end
 
     private
+
+    def ensure_unique_name(user, visualization)
+      existing_names = Carto::Visualization.uniq
+                                           .where(user_id: user.id)
+                                           .where("name ~ '#{visualization.name}( Import)?( \d*)?$'")
+                                           .pluck(:name)
+      if existing_names.include?(visualization.name)
+        import_name = "#{visualization.name} Import"
+        i = 1
+        while existing_names.include?(import_name)
+          import_name = "#{visualization.name} Import #{i += 1}"
+        end
+        visualization.name = import_name
+      end
+    end
 
     def apply_user_limits(user, visualization)
       visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled

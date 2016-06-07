@@ -276,7 +276,7 @@ describe Organization do
 
   describe '#org_shared_vis' do
     it "checks fetching all shared visualizations of an organization's members " do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)

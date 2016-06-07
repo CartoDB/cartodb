@@ -15,7 +15,7 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 
 # TODO: deprecate and use bypass_named_maps (or viceversa)
 def stub_named_maps_calls
-  CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+  Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 end
 
 # Inline Resque for queue handling

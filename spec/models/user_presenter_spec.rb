@@ -9,7 +9,7 @@ describe Carto::Api::UserPresenter do
   end
 
   it "Compares old and new ways of 'presenting' user data" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
     # Non-org user
     user = create_user({

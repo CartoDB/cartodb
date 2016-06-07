@@ -361,7 +361,7 @@ describe Table do
         @user, table.table_visualization
       ).copy
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
       derived_vis.store
       table.reload
 
@@ -392,7 +392,7 @@ describe Table do
           @user, table.table_visualization
       ).copy
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
       derived_vis.store
       table.reload
 
@@ -707,7 +707,7 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
     @user.private_tables_enabled = true
     @user.save
@@ -726,7 +726,7 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
@@ -735,7 +735,7 @@ describe Table do
     end
 
     before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
     end
 
     it "should remove the automatic_geocoding" do
@@ -770,7 +770,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
@@ -2268,7 +2268,7 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store
@@ -2293,7 +2293,7 @@ describe Table do
       table = create_table(user_id: @user.id, privacy: UserTable::PRIVACY_PUBLIC)
       table.save
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
       source = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store

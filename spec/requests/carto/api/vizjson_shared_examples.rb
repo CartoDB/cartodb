@@ -20,7 +20,7 @@ shared_examples_for 'vizjson generator' do
     TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @api_key = @user_1.api_key
@@ -41,7 +41,7 @@ shared_examples_for 'vizjson generator' do
     end
 
     it 'tests privacy of vizjsons' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
@@ -213,7 +213,7 @@ shared_examples_for 'vizjson generator' do
 
     describe 'get vizjson' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
       end
 
@@ -262,7 +262,7 @@ shared_examples_for 'vizjson generator' do
       end
 
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+        Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
 

@@ -15,7 +15,7 @@ describe Carto::Api::LayersController do
     include Warden::Test::Helpers
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -95,7 +95,7 @@ describe Carto::Api::LayersController do
 
     it 'fetches layers from shared visualizations' do
       # TODO: refactor this with helpers (pending to merge)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 

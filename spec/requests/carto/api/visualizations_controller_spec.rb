@@ -99,7 +99,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @table1 = create_random_table(@user_1)
@@ -234,7 +234,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
     end
@@ -309,7 +309,7 @@ describe Carto::Api::VisualizationsController do
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
@@ -336,7 +336,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'tests exclude_shared and only_shared filters' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       user_1 = create_user(
         username: unique_name('user'),
@@ -557,7 +557,7 @@ describe Carto::Api::VisualizationsController do
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         vis_1_id = create_visualization(@user_1).id
 
@@ -624,7 +624,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
 
       it 'tests totals calculations' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         # user 1 will have 1 table and 1 vis
         # user 2 will have 2 of each
@@ -794,7 +794,7 @@ describe Carto::Api::VisualizationsController do
     describe 'index endpoint' do
 
       it 'tests normal users authenticated and unauthenticated calls' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         collection = CartoDB::Visualization::Collection.new.fetch(user_id: @user_2.id)
         collection.map(&:delete)
@@ -842,7 +842,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'tests organization users authenticated and unauthenticated calls' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         organization = test_organization.save
 
@@ -917,7 +917,7 @@ describe Carto::Api::VisualizationsController do
 
     describe 'GET /api/v1/viz' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
       end
 
@@ -1024,7 +1024,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'creates a visualization from a list of tables' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         table1 = table_factory
         table2 = table_factory
         table3 = table_factory
@@ -1068,7 +1068,7 @@ describe Carto::Api::VisualizationsController do
     describe 'GET /api/v1/viz/:id' do
 
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
       end
 
@@ -1394,12 +1394,12 @@ describe Carto::Api::VisualizationsController do
 
     describe 'tests visualization listing filters' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
         delete_user_data(@user_1)
       end
 
       it 'uses locked filter' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
 
         post api_v1_visualizations_create_url(api_key: @api_key), factory(@user_1, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
@@ -1474,7 +1474,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns an empty array if no other user is watching' do
         CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         login(@user_1_1)
         post api_v1_visualizations_create_url(api_key: @user_1_1.api_key), factory(@user_1_1, locked: true).to_json, @headers

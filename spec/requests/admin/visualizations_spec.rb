@@ -34,7 +34,7 @@ describe Admin::VisualizationsController do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
   end
@@ -363,7 +363,7 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       Table.any_instance.stubs(perform_cartodb_function: nil,
                                update_cdb_tablemetadata: nil,
@@ -460,7 +460,7 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
       Table.any_instance.stubs(
         perform_cartodb_function: nil,
         update_cdb_tablemetadata: nil,

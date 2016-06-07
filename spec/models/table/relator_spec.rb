@@ -19,7 +19,7 @@ describe CartoDB::TableRelator do
     end
 
     before do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
     end
 
     it 'checks row_count_and_size relator method' do
@@ -41,7 +41,7 @@ describe CartoDB::TableRelator do
 
   describe '.serialize_dependent_visualizations' do
     before :each do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       table = mock('Table')
       table.stubs(:id).returns(2)
@@ -70,7 +70,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are at least one dependent visualization' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         CartoDB::Visualization::Member.any_instance.stubs(:dependent?).returns(true, false, true)
         @dependents = @table_relator.serialize_dependent_visualizations
@@ -94,7 +94,7 @@ describe CartoDB::TableRelator do
 
   describe '.serialize_non_dependent_visualizations' do
     before :each do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
       table = mock('Table')
       table.stubs(:id).returns(2)
@@ -114,7 +114,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are no dependent visualizations' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         @non_dependents = @table_relator.serialize_non_dependent_visualizations
       end
@@ -126,7 +126,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are at least one non_dependent visualization' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
 
         CartoDB::Visualization::Member.any_instance.stubs(:non_dependent?).returns(true, false, false)
         @non_dependents = @table_relator.serialize_non_dependent_visualizations

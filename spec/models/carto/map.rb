@@ -11,7 +11,7 @@ describe Carto::Map do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
     delete_user_data(@user)
   end
 

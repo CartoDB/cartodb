@@ -2,7 +2,15 @@
   <div class="CDB-infowindow-container">
     <div class="CDB-infowindow-bg">
       <div class="CDB-infowindow-inner">
-        olakase
+        {{#loading}}
+          <div class="CDB-Loader js-loader is-visible"></div>
+        {{/loading}}
+        <ul class="CDB-infowindow-list">
+          <li class="CDB-infowindow-listItem">
+            <h5 class="CDB-infowindow-subtitle">Select fields</h5>
+            <h4 class="CDB-infowindow-title">You haven’t selected any fields to be shown in the infowindow.</h4>
+          </li>
+        </ul>
       </div>
     </div>
     <div class="CDB-hook">

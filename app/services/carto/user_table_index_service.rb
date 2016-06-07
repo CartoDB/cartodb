@@ -24,7 +24,7 @@ module Carto
 
       indexed_columns = indices.map { |i| i[:column] }
       create_index_on = columns_to_index - indexed_columns
-      create_index_on.each { |col| @table.create_index(col, AUTO_INDEX_PREFIX) }
+      create_index_on.each { |col| @table.create_index(col, AUTO_INDEX_PREFIX, concurrent: true) }
 
       auto_indexed_columns = auto_indices.map { |i| i[:column] }
       drop_index_on = auto_indexed_columns - columns_to_index

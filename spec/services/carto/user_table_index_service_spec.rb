@@ -270,7 +270,7 @@ describe Carto::UserTableIndexService do
   end
 
   def stub_create_index(column)
-    @table1.service.stubs(:create_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX)
+    @table1.service.stubs(:create_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
   end
 
   def stub_drop_index(column)

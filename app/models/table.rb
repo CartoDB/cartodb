@@ -1118,8 +1118,9 @@ class Table
     }).all
   end
 
-  def create_index(column, prefix = '')
-    owner.in_database[%{CREATE INDEX "#{index_name(column, prefix)}" ON "#{name}"("#{column}")}]
+  def create_index(column, prefix = '', concurrent: false)
+    concurrently = concurrent ? 'CONCURRENTLY' : ''
+    owner.in_database[%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")}]
   end
 
   def drop_index(column, prefix = '')

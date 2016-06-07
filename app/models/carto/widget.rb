@@ -13,8 +13,8 @@ class Carto::Widget < ActiveRecord::Base
 
   validates :layer, :order, :type, :options, presence: true
 
-  after_save :notify_maps_change
-  after_destroy :notify_maps_change
+  after_save    :notify_maps_change, :auto_generate_indices
+  after_destroy :notify_maps_change, :auto_generate_indices
 
   def self.from_visualization_id(visualization_id)
     visualization = Carto::Visualization.where(id: visualization_id).first
@@ -64,6 +64,12 @@ class Carto::Widget < ActiveRecord::Base
     layer.maps.each do |m|
       map = Map.where(id: m.id).first
       map.notify_map_change if map
+    end
+  end
+
+  def auto_generate_indices
+    layer.user_tables.each do |ut|
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end
   end
 end

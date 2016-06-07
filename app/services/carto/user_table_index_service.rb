@@ -11,7 +11,7 @@ module Carto
     end
 
     def update_auto_indices
-      bolt = Carto::Bolt.new("user_table:#{user_table.id}:auto_index", ttl_ms: AUTO_INDEX_TTL_MS)
+      bolt = Carto::Bolt.new("user_table:#{@user_table.id}:auto_index", ttl_ms: AUTO_INDEX_TTL_MS)
 
       bolt.run_locked { generate_indices }
     end

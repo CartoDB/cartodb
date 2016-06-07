@@ -1105,7 +1105,7 @@ class Table
   def pg_indexes
     owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname as column, i.relname as name,
+        a.attname as column, i.relname as name
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a
       WHERE

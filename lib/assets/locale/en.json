@@ -682,6 +682,13 @@
           "description": "Description",
           "yes": "Yes",
           "no": "No"
+        },
+        "aggregation-options": {
+          "count": "Count",
+          "sum": "Sum",
+          "avg": "Avg",
+          "min": "Min",
+          "max": "Max"
         }
       }
     }

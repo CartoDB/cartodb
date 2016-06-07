@@ -1,8 +1,14 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+
 .InputColorCategory-content.is-hidden {
   display: none;
 }
 .InputColorCategory-loader {
-  padding: 10px;
+  @include display-flex();
+  @include justify-content(center);
+  padding: $baseSize * 2;
+
 }
 .InputColorCategory-loader.is-hidden {
   display: none;

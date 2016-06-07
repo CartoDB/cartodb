@@ -19,15 +19,26 @@ namespace :cartodb do
       raise "User #{username} not found" if not user
       raise "No datasets found to import" if common_data.datasets.size == 0
       datasets = common_data.datasets
+      failed_imports = 0
       datasets.each do |dataset|
-        data_import = DataImport.create(:user_id => user.id, :data_source => dataset["url"])
-        data_import.run_import!
-        if not data_import.success
-          puts "Dataset '#{dataset['name']}' failed to import"
+        begin
+            data_import = DataImport.create(:user_id => user.id, :data_source => dataset["url"])
+            data_import.run_import!
+            if not data_import.success
+              puts "Dataset '#{dataset['name']}' failed to import"
+              failed_imports += 1
+            end
+        rescue => exception
+            puts "Error importing dataset '#{dataset['name']}' : #{exception}"
+            failed_imports += 1
         end
       end
       # unset base URL when done
       Cartodb.config[:common_data].delete("base_url")
+      if failed_imports > 0
+        puts "Failed to import #{failed_imports} of #{datasets.size} common datasets."
+        raise "Failed to import any common datasets" if failed_imports == datasets.size
+      end
     end
 
   end

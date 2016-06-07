@@ -106,7 +106,7 @@ module Carto
         stats.map { |s| { s[:attname] => s } }.reduce(:merge)
       else
         CartoDB::Logger.warning(message: 'Error retrieving stats for table', table: @user_table)
-        nil
+        {}
       end
     end
   end

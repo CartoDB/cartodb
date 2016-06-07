@@ -1120,11 +1120,11 @@ class Table
 
   def create_index(column, prefix = '', concurrent: false)
     concurrently = concurrent ? 'CONCURRENTLY' : ''
-    owner.in_database[%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")}]
+    owner.in_database.execute(%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")})
   end
 
   def drop_index(column, prefix = '')
-    owner.in_database[%{DROP INDEX "#{index_name(column, prefix)}"}]
+    owner.in_database.execute(%{DROP INDEX "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy

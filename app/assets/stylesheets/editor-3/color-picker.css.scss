@@ -25,6 +25,11 @@
   padding: 3px 4px;
   text-align: center;
 }
+
+.ColorPicker-input.is-disabled {
+  opacity: 0.5;
+}
+
 .ColorPicker-input.is-color {
   width: 52px;
 }
@@ -82,6 +87,10 @@
   margin-bottom: $baseSize;
   border-radius: 2px;
   background-image: image-url('layout/colorpicker/alpha-horizontal.png');
+}
+
+.ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha.is-hidden {
+  visibility: hidden;
 }
 
 .ColorPicker.colorpicker.colorpicker-horizontal .colorpicker-alpha::before {

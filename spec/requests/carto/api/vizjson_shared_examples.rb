@@ -245,22 +245,6 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 404
       end
 
-      it 'returns children (slides) vizjson' do
-        parent = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
-        child = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_SLIDE, parent_id: parent.id })
-
-        get api_vx_visualizations_vizjson_url(id: parent.id, api_key: @api_key), {}, @headers
-
-        last_response.status.should eq 200
-        response = JSON.parse(last_response.body)
-        slides = response.fetch('slides')
-        slides.count.should eq 1
-        slide = slides[0]
-        slide['id'].should eq child.id
-        slide['title'].should eq child.name
-        slide['version'].should eq vizjson_vx_version
-      end
-
       it "comes with proper surrogate-key" do
         CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)

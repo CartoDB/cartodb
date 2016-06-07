@@ -24,13 +24,19 @@ module Carto
 
       indexed_columns = indices.map { |i| i[:column] }
       create_index_on = columns_to_index - indexed_columns
-      create_index_on.each { |col| @table.create_index(col, AUTO_INDEX_PREFIX, concurrent: true) }
+      create_index_on.each do |col|
+        CartoDB::Logger.debug(message: 'Auto index', action: 'create', table: @user_table, column: col)
+        @table.create_index(col, AUTO_INDEX_PREFIX, concurrent: true)
+      end
 
       auto_indexed_columns = auto_indices.map { |i| i[:column] }
       drop_index_on = auto_indexed_columns - columns_to_index
-      drop_index_on.each { |col| @table.drop_index(col, AUTO_INDEX_PREFIX) }
+      drop_index_on.each do |col|
+        CartoDB::Logger.debug(message: 'Auto index', action: 'drop', table: @user_table, column: col)
+        @table.drop_index(col, AUTO_INDEX_PREFIX)
+      end
     rescue => e
-      CartoDB::Logger.error(exception: e, message: 'Error auto-indexing table', table: user_table)
+      CartoDB::Logger.error(exception: e, message: 'Error auto-indexing table', table: @user_table)
     end
 
     def indexable_column?(column)
@@ -99,7 +105,7 @@ module Carto
       if stats && !stats.empty?
         stats.map { |s| { s[:attname] => s } }.reduce(:merge)
       else
-        CartoDB::Logger.warning(message: 'Error retrieving stats for table', table: user_table)
+        CartoDB::Logger.warning(message: 'Error retrieving stats for table', table: @user_table)
         nil
       end
     end

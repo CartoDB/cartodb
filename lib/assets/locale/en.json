@@ -535,14 +535,7 @@
         },
         "aggregation": {
           "title-label": "Aggregation Options",
-          "desc": "Configure how the aggregation works",
-          "options": {
-            "count": "Count",
-            "sum": "Sum",
-            "avg": "Average",
-            "min": "Minimum",
-            "max": "Maximum"
-          }
+          "desc": "Configure how the aggregation works"
         },
         "properties": {
           "title-label": "Style",
@@ -679,6 +672,13 @@
           "description": "Description",
           "yes": "Yes",
           "no": "No"
+        },
+        "aggregation-options": {
+          "count": "Count",
+          "sum": "Sum",
+          "avg": "Avg",
+          "min": "Min",
+          "max": "Max"
         }
       }
     }

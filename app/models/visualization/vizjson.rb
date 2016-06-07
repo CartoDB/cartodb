@@ -3,6 +3,8 @@ require 'json'
 require 'ostruct'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
+require_relative '../named_map/presenter'
+require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
 module CartoDB
   module Visualization
@@ -147,7 +149,10 @@ module CartoDB
             viewer_user: @user,
             owner: visualization.user
           }
-          layers_data.push(Carto::NamedMaps::Template.new(visualization).to_hash)
+          named_maps_presenter = CartoDB::NamedMapsWrapper::Presenter.new(
+            visualization, layer_group_for_named_map(visualization), presenter_options, configuration
+          )
+          layers_data.push(named_maps_presenter.to_poro)
         else
           named_maps_presenter = nil
           layers_data.push(layer_group_for(visualization))

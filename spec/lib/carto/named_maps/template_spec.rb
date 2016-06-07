@@ -8,8 +8,11 @@ module Carto
     describe Template do
       include Carto::Factories::Visualizations
 
-      before(:all) do
+      before(:each) do
         bypass_named_maps
+      end
+
+      before(:all) do
         @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
 
         @map, _, _, @visualization = create_full_visualization(@user)
@@ -100,8 +103,7 @@ module Carto
             layer = @map.data_layers.first
 
             widget = FactoryGirl.create(:widget, layer: layer)
-            layer.widgets << widget
-            layer.save
+            @visualization.reload
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
@@ -127,8 +129,7 @@ module Carto
 
           it 'should add analyses if analyses are present' do
             analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
-            @visualization.analyses << analysis
-            @visualization.save
+            @visualization.reload
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 

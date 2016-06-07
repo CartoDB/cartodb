@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.25.6",
+  "version": "3.25.7",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -69,6 +69,8 @@
     "open": "0.0.5",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
+    "tap-summary": "^2.1.1",
+    "tape": "^4.5.1",
     "uglify-js": "2.4.x",
     "watchify": "3.1.1"
   },
@@ -145,7 +147,12 @@
       "/vendor"
     ]
   },
+  "config": {
+    "tapeTests": "lib/assets/test/tape/**/*-test.js"
+  },
   "scripts": {
+    "test": "tape $npm_package_config_tapeTests | tap-summary",
+    "test-debug": "node debug --",
     "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }
 }

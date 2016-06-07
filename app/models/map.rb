@@ -75,7 +75,8 @@ class Map < Sequel::Model
   def after_save
     super
     update_map_on_associated_entities
-    notify_map_change
+
+    Rails::Sequel.connection.after_commit { notify_map_change }
   end
 
   def notify_map_change

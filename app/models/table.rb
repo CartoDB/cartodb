@@ -1099,7 +1099,7 @@ class Table
   end
 
   def has_index?(column_name)
-    pg_indexes.map { |i| i[:column] }.include? column_name
+    pg_indexes.any? { |i| i[:column] == column_name }
   end
 
   def pg_indexes

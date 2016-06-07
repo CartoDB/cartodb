@@ -58,7 +58,6 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/table_blender_spec.rb \
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
-	spec/models/named_maps_spec.rb \
 	spec/models/data_import_spec.rb \
 	spec/models/geocoding_spec.rb \
 	spec/models/common_data_spec.rb \

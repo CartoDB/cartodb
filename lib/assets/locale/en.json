@@ -426,10 +426,10 @@
   "data": {
     "analysis-definition-node-model": {
       "validation": {
-        "missing-required": "required",
-        "invalid-source": "invalid source",
-        "invalid-value": "required",
-        "invalid-enum": "invalid value, must be any of %{expectedValues}"
+        "missing-required": "Required",
+        "invalid-source": "Invalid source",
+        "invalid-value": "Invalid value",
+        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
       }
     }
   },
@@ -458,9 +458,13 @@
       },
       "basemap": {
         "title-label": "Basemap",
-        "source": {
+        "by": "by",
+        "category": {
           "title-label": "Source",
-          "style": "Style",
+          "select-category": "Select source"
+        },
+        "style": {
+          "title-label": "Style",
           "select-style": "Select style"
         }
       },
@@ -678,6 +682,13 @@
           "description": "Description",
           "yes": "Yes",
           "no": "No"
+        },
+        "aggregation-options": {
+          "count": "Count",
+          "sum": "Sum",
+          "avg": "Avg",
+          "min": "Min",
+          "max": "Max"
         }
       }
     }

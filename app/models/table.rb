@@ -1322,6 +1322,11 @@ class Table
     sequel.count
   end
 
+  def pg_stats
+    owner.in_database.fetch('SELECT * FROM pg_stats where schemaname = ? AND tablename = ?',
+                            owner.database_schema, name).all
+  end
+
   def beautify_name(name)
     return name unless name
     name.tr('_', ' ').split.map(&:capitalize).join(' ')

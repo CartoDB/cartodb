@@ -85,6 +85,7 @@ describe Carto::UserTableIndexService do
       bypass_named_maps
       Carto::Widget.all.map(&:destroy)
       @table1.reload
+      Carto::UserTableIndexService.any_instance.stubs(:indexable_column?).returns(true)
     end
 
     it 'creates indices for all widgets' do
@@ -164,6 +165,96 @@ describe Carto::UserTableIndexService do
 
       @table1.service.stubs(:drop_index).never
       Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+  end
+
+  describe '#indexable_column?' do
+    before(:all) do
+      @service = Carto::UserTableIndexService.new(@table1)
+    end
+
+    it 'returns true for a random numbers column' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: -1,
+          most_common_vals: [],
+          most_common_freqs: [],
+          histogram_bounds: [4, 10, 20, 50, 100],
+          correlation: 0.4
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_true
+    end
+
+    it 'returns true for a column with several categories' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: 20,
+          most_common_vals: ['a', 'b', 'c', 'd', 'e', 'f'],
+          most_common_freqs: [0.2, 0.1, 0.1, 0.05, 0.05, 0.02],
+          histogram_bounds: ['a', 'c', 'e', 'f'],
+          correlation: 0.4
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_true
+    end
+
+    it 'returns true for a column with several and no histogram' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: 20,
+          most_common_vals: nil,
+          most_common_freqs: nil,
+          histogram_bounds: nil,
+          correlation: 0.4
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_true
+    end
+
+    it 'returns false for a balance boolean column' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: 2,
+          most_common_vals: [true, false],
+          most_common_freqs: [0.51, 0.49],
+          histogram_bounds: nil,
+          correlation: 0.502
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_false
+    end
+
+    it 'returns true for an unbalance boolean column' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: 2,
+          most_common_vals: [true, false],
+          most_common_freqs: [0.89, 0.11],
+          histogram_bounds: nil,
+          correlation: 0.602
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_true
+    end
+
+    it 'returns true for a boolean column used as cluster (table sorted by it)' do
+      @service.stubs(:pg_stats_by_column).returns(
+        'col' => {
+          null_frac: 0,
+          n_distinct: 2,
+          most_common_vals: [true, false],
+          most_common_freqs: [0.51, 0.49],
+          histogram_bounds: nil,
+          correlation: -1
+        }
+      )
+      @service.send(:indexable_column?, 'col').should be_true
     end
   end
 

@@ -17,6 +17,22 @@ module CartoDB
         @named_map_name   = Carto::NamedMaps::Template.new(Carto::Visualization.find(@visualization.id)).name
       end
 
+      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
+      # - Parameters set inside as nil will remove the field itself from the layer data
+      # @throws NamedMapsPresenterError
+      def get_decoration_for_layer(layer_type, layer_index)
+        return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
+
+        {
+          'named_map' =>  {
+            'name' =>         @named_map_name,
+            'layer_index' =>  layer_index,
+            'params' =>       placeholders_data
+          },
+          'query' => nil  #do not expose SQL query on Torque layers with named maps
+        }
+      end
+
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
@@ -37,7 +53,7 @@ module CartoDB
               sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
               # tiler_* and sql_api_* are kept for backwards compatibility
               tiler_protocol:   @visualization.password_protected? ?
-                                  @configuration[:tiler]['private']['protocol'] : 
+                                  @configuration[:tiler]['private']['protocol'] :
                                   @configuration[:tiler]['public']['protocol'],
               tiler_domain:     @visualization.password_protected? ?
                                   @configuration[:tiler]['private']['domain'] :

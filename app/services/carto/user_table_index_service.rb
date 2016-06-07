@@ -36,13 +36,17 @@ module Carto
       return false unless stats
 
       # Accept columns with several different values
+      # Checks common values and accepts cases with several value
+      # or with few but unbalanced values (e.g: boolean with 80/20 distribution)
       common_freqs = stats[:most_common_freqs] || stats[:most_common_elem_freqs]
       if common_freqs.present?
-        if common_freqs.last < 0.25
+        check_common_freq = common_freqs[4] || common_freqs.last
+        if check_common_freq < 0.25
           return true
         end
       else
-        # No histrogram, rely on distinct values
+        # No histogram, rely on distinct values. Note: Values < 0 represent a proportion over the number of rows.
+        # They are generated when the analyzer gives up counting or identifies the value as a continuous magnitude
         distinct = stats[:n_distinct]
         return true if distinct < 0 || distinct > 4
       end

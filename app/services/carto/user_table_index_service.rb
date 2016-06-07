@@ -1,5 +1,6 @@
 module Carto
   class UserTableIndexService
+    AUTO_INDEX_TTL_MS = 600000
     AUTO_INDEX_PREFIX = '_auto_idx_'.freeze
     MINIMUM_ROW_COUNT_TO_INDEX = 10000
     INDEXABLE_WIDGET_TYPES = %w(histogram category time-series).freeze
@@ -9,21 +10,26 @@ module Carto
       @table = user_table.service
     end
 
+    def update_auto_indices
+      bolt = Carto::Bolt.new("user_table:#{user_table.id}:auto_index", ttl_ms: AUTO_INDEX_TTL_MS)
+
+      bolt.run_locked { generate_indices }
+    end
+
+    private
+
     def generate_indices
       widget_columns = (@table.estimated_row_count > MINIMUM_ROW_COUNT_TO_INDEX) ? columns_with_widgets : []
       columns_to_index = widget_columns.select { |c| indexable_column?(c) }
 
-      auto_indexed_columns = auto_indices.map { |i| i[:column] }
       indexed_columns = indices.map { |i| i[:column] }
-
       create_index_on = columns_to_index - indexed_columns
       create_index_on.each { |col| @table.create_index(col, AUTO_INDEX_PREFIX) }
 
+      auto_indexed_columns = auto_indices.map { |i| i[:column] }
       drop_index_on = auto_indexed_columns - columns_to_index
       drop_index_on.each { |col| @table.drop_index(col, AUTO_INDEX_PREFIX) }
     end
-
-    private
 
     def indexable_column?(column)
       stats = pg_stats_by_column[column]

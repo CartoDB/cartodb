@@ -96,7 +96,7 @@ describe Carto::UserTableIndexService do
 
       stub_create_index('number').once
       stub_create_index('date').once
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'does not create indices for small tables' do
@@ -107,7 +107,7 @@ describe Carto::UserTableIndexService do
 
       stub_create_index('number').never
       stub_create_index('date').never
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'does not create indices for formula widgets' do
@@ -116,7 +116,7 @@ describe Carto::UserTableIndexService do
       create_widget(@analysis1, column: 'number', type: 'formula')
 
       stub_create_index('number').never
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'does not create indices for indexed columns' do
@@ -127,7 +127,7 @@ describe Carto::UserTableIndexService do
 
       stub_create_index('number').never
       stub_create_index('date').once
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'does not create indices for indexed columns (in multi-column indexes)' do
@@ -138,7 +138,7 @@ describe Carto::UserTableIndexService do
 
       stub_create_index('number').never
       stub_create_index('date').never
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'drops unneeded indices' do
@@ -146,7 +146,7 @@ describe Carto::UserTableIndexService do
       @table1.service.stubs(:estimated_row_count).returns(100000)
 
       stub_drop_index('number').once
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'drops indices for small tables' do
@@ -155,7 +155,7 @@ describe Carto::UserTableIndexService do
       create_widget(@analysis1, column: 'number')
 
       stub_drop_index('number').once
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
 
     it 'does not drop manual indices' do
@@ -164,7 +164,7 @@ describe Carto::UserTableIndexService do
       create_widget(@analysis1, column: 'number')
 
       @table1.service.stubs(:drop_index).never
-      Carto::UserTableIndexService.new(@table1).generate_indices
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
   end
 

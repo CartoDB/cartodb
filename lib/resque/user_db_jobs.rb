@@ -23,7 +23,7 @@ module Resque
 
         def self.perform(user_table_id)
           user_table = Carto::UserTable.where(id: user_table_id).first
-          Carto::UserTableIndexService(Carto::UserTable.find(user_table_id)).generate_indices if user_table
+          Carto::UserTableIndexService(Carto::UserTable.find(user_table_id)).update_auto_indices if user_table
         rescue => e
           CartoDB::Logger.error(message: 'Error auto-indexing table', exception: e, user_table_id: user_table_id)
         end

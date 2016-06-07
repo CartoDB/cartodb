@@ -1098,18 +1098,14 @@ class Table
              :trigger_name => trigger_name).count > 0
   end
 
-  def get_index_name(prefix)
-    "#{prefix}_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
-  end # get_index_name
-
   def has_index?(column_name)
-    pg_indexes.include? column_name
+    pg_indexes.map { |i| i[:column] }.include? column_name
   end
 
   def pg_indexes
-    owner.in_database(:as => :superuser).fetch(%Q{
+    owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname
+        a.attname as column, i.relname as name,
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a
       WHERE
@@ -1118,8 +1114,16 @@ class Table
         AND a.attrelid = t.oid
         AND a.attnum = ANY(ix.indkey)
         AND t.relkind = 'r'
-        AND t.relname = '#{self.name}';
-    }).all.map { |t| t[:attname] }
+        AND t.relname = '#{name}';
+    }).all
+  end
+
+  def create_index(column, prefix = '')
+    owner.in_database[%{CREATE INDEX "#{index_name(column, prefix)}" ON "#{name}"("#{column}")}]
+  end
+
+  def drop_index(column, prefix = '')
+    owner.in_database[%{DROP INDEX "#{index_name(column, prefix)}"}]
   end
 
   def cartodbfy
@@ -1335,6 +1339,10 @@ class Table
   end
 
   private
+
+  def index_name(column, prefix)
+    "#{prefix}#{name}_#{column}"
+  end
 
   def external_source_visualization
     @user_table.

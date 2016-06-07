@@ -14,23 +14,7 @@ module CartoDB
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = NamedMap.template_name(@visualization.id)
-      end
-
-      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
-      # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
-      def get_decoration_for_layer(layer_type, layer_index)
-        return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
-
-        {
-          'named_map' =>  {
-            'name' =>         @named_map_name,
-            'layer_index' =>  layer_index,
-            'params' =>       placeholders_data
-          },
-          'query' => nil  #do not expose SQL query on Torque layers with named maps
-        }
+        @named_map_name   = Carto::NamedMaps::Template.new(Carto::Visualization.find(@visualization.id)).name
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
@@ -121,34 +105,6 @@ module CartoDB
         end
         data
       end
-
-      # Loads the data of a given named map
-      # It completes/overrides data from the children if visualization has a parent_id
-      def load_named_map_data
-        named_maps = NamedMaps.new(
-            {
-              name:     @options.fetch(:user_name),
-              api_key:  @options.fetch(:api_key)
-            },
-            {
-              protocol:   @configuration[:tiler]['internal']['protocol'],
-              domain:     @configuration[:tiler]['internal']['domain'],
-              port:       @configuration[:tiler]['internal']['port'],
-              verifycert: (@configuration[:tiler]['internal']['verifycert'] rescue true)
-            }
-          )
-        @named_map = named_maps.get(NamedMap.template_name(@visualization.id))
-        unless @named_map.nil?
-          if @visualization.parent_id.nil?
-            @named_map_template = @named_map.template.fetch(:template)
-          else
-            parent_named_map = named_maps.get(NamedMap.template_name(@visualization.parent_id))
-            @named_map_template = parent_named_map.template.fetch(:template).merge(@named_map.template.fetch(:template))
-          end
-        end
-        @loaded = true
-      end
-
     end
   end
 end

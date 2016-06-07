@@ -9,4 +9,13 @@
   </ul>
 </div>
 
-<div class="js-content"></div>
+<div class="InputColorCategory-loader js-loader is-hidden">
+  <div class="CDB-LoaderIcon">
+    <div class="CDB-LoaderIcon-item">
+      <span class="CDB-LoaderIcon-itemClose"></span>
+      <span class="CDB-LoaderIcon-itemCircle"></span>
+    </div>
+  </div>
+</div>
+
+<div class="InputColorCategory-content js-content"></div>

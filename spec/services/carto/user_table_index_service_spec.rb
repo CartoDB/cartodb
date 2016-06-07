@@ -256,6 +256,11 @@ describe Carto::UserTableIndexService do
       )
       @service.send(:indexable_column?, 'col').should be_true
     end
+
+    it 'returns false if no stats can be gathered' do
+      @service.stubs(:pg_stats_by_column).returns({})
+      @service.send(:indexable_column?, 'col').should be_false
+    end
   end
 
   private

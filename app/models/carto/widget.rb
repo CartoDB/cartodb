@@ -54,6 +54,10 @@ class Carto::Widget < ActiveRecord::Base
     nil
   end
 
+  def column
+    options[:column]
+  end
+
   private
 
   def notify_maps_change

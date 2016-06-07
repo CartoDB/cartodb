@@ -80,9 +80,108 @@ describe Carto::UserTableIndexService do
     end
   end
 
+  describe '#generate_indices' do
+    before(:each) do
+      bypass_named_maps
+      Carto::Widget.all.map(&:destroy)
+      @table1.reload
+    end
+
+    it 'creates indices for all widgets' do
+      @table1.service.stubs(:pg_indexes).returns([])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number')
+      create_widget(@analysis12_1, column: 'date', type: 'time-series')
+
+      stub_create_index('number').once
+      stub_create_index('date').once
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'does not create indices for small tables' do
+      @table1.service.stubs(:pg_indexes).returns([])
+      @table1.service.stubs(:estimated_row_count).returns(100)
+      create_widget(@analysis1, column: 'number')
+      create_widget(@analysis12_1, column: 'date', type: 'time-series')
+
+      stub_create_index('number').never
+      stub_create_index('date').never
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'does not create indices for formula widgets' do
+      @table1.service.stubs(:pg_indexes).returns([])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number', type: 'formula')
+
+      stub_create_index('number').never
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'does not create indices for indexed columns' do
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number' }])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number')
+      create_widget(@analysis12_1, column: 'date', type: 'time-series')
+
+      stub_create_index('number').never
+      stub_create_index('date').once
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'does not create indices for indexed columns (in multi-column indexes)' do
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number')
+      create_widget(@analysis12_1, column: 'date', type: 'time-series')
+
+      stub_create_index('number').never
+      stub_create_index('date').never
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'drops unneeded indices' do
+      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number')])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+
+      stub_drop_index('number').once
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'drops indices for small tables' do
+      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number')])
+      @table1.service.stubs(:estimated_row_count).returns(100)
+      create_widget(@analysis1, column: 'number')
+
+      stub_drop_index('number').once
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+
+    it 'does not drop manual indices' do
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:estimated_row_count).returns(100)
+      create_widget(@analysis1, column: 'number')
+
+      @table1.service.stubs(:drop_index).never
+      Carto::UserTableIndexService.new(@table1).generate_indices
+    end
+  end
+
   private
 
-  def create_widget(analysis, child = false)
+  def automatic_index_record(table, column)
+    { name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX), column: column }
+  end
+
+  def stub_create_index(column)
+    @table1.service.stubs(:create_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX)
+  end
+
+  def stub_drop_index(column)
+    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX)
+  end
+
+  def create_widget(analysis, child: false, column: 'col', type: 'histogram')
     root_node = analysis.analysis_node
     child_node = root_node.children.first
     widget_node = child ? child_node : root_node
@@ -93,6 +192,6 @@ describe Carto::UserTableIndexService do
       l.user_tables.any? { |t| t.name == source_node.options[:table_name] }
     end
 
-    FactoryGirl.create(:widget, layer: layer, source_id: widget_node.id)
+    FactoryGirl.create(:widget, layer: layer, source_id: widget_node.id, column_name: column, type: type)
   end
 end

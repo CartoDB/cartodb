@@ -653,7 +653,7 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        get_named_map ? update_named_map : create_named_map
+        Rails::Sequel.connection.after_commit { get_named_map ? update_named_map : create_named_map }
       end
 
       def license_info
@@ -702,10 +702,6 @@ module CartoDB
           old_next = other_vis.next_list_item
         end
 
-        Rails::Sequel.connection.after_commit do
-          save_named_map
-        end
-
         # First close gap left by other_vis
         unless old_prev.nil?
           old_prev.next_id = old_next.nil? ? nil : old_next.id
@@ -746,14 +742,14 @@ module CartoDB
         end
         repository.store(id, attributes.to_hash)
 
+        save_named_map
+
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
           propagate_privacy_and_name_to(table) if table and propagate_changes
         else
           propagate_name_to(table) if table and propagate_changes
         end
-
-
       end
 
       def restore_previous_privacy

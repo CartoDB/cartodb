@@ -168,5 +168,23 @@ DESC
         end
       end
     end
+
+    desc "Remove table quota for user in the USER_NAME environment variable"
+    task :remove_table_quota => :environment do
+      raise "Set USER_NAME environment variable" if ENV['USER_NAME'].blank?
+      users = ::User.filter(:username => ENV['USER_NAME']).all
+      if users.empty?
+        raise "User doesn't exist"
+      else
+        u = users.first
+        u.update(:table_quota => nil)
+        if !u.save
+          rais u.errors.inspect
+        else
+          puts "#{u.username} table quota limit removed"
+        end
+      end
+    end
+
   end
 end

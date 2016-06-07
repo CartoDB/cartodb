@@ -17,8 +17,11 @@ namespace :cartodb do
       username = Cartodb.config[:common_data]["username"]
       user = User.find(:username=>username)
       raise "User #{username} not found" if not user
-      raise "No datasets found to import" if common_data.datasets.size == 0
       datasets = common_data.datasets
+      raise "No datasets found to import" if datasets.size == 0
+      if user.table_quota and user.table_quota < datasets.size
+        raise "Common data user #{username} has a table quota too low to import all common datasets"
+      end
       failed_imports = 0
       datasets.each do |dataset|
         begin
@@ -32,6 +35,7 @@ namespace :cartodb do
             puts "Error importing dataset '#{dataset['name']}' : #{exception}"
             failed_imports += 1
         end
+        ActiveRecord::Base.connection.close
       end
       # unset base URL when done
       Cartodb.config[:common_data].delete("base_url")

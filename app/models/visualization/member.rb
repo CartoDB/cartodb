@@ -10,7 +10,6 @@ require_relative './relator'
 require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
-require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 
@@ -259,14 +258,7 @@ module CartoDB
         end
 
         # Named map must be deleted before the map, or we lose the reference to it
-        begin
-          Carto::NamedMaps::Api.new(carto_visualization).destroy
-        rescue NamedMapsWrapper::HTTPResponseError => exception
-          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
-          unless from_table_deletion
-            CartoDB.notify_exception(exception, user: user)
-          end
-        end
+        Carto::NamedMaps::Api.new(carto_visualization).destroy
 
         unlink_self_from_list!
 
@@ -788,33 +780,6 @@ module CartoDB
             affected_vis.invalidate_cache
           end
         end
-      end
-
-      def named_maps(force_init = false)
-        if @named_maps.nil? || force_init
-          if user.nil?
-            name_param = @user_data.nil? ? '' : @user_data[:name]
-            api_key_param = @user_data.nil? ? '' : @user_data[:api_key]
-          else
-            name_param = user.username
-            api_key_param = user.api_key
-          end
-          @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
-            {
-              name:     name_param,
-              api_key:  api_key_param
-            },
-            {
-              domain:     Cartodb.config[:tiler]['internal']['domain'],
-              port:       Cartodb.config[:tiler]['internal']['port'] || 443,
-              protocol:   Cartodb.config[:tiler]['internal']['protocol'],
-              verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true),
-              host:       (Cartodb.config[:tiler]['internal']['host'] rescue nil)
-            },
-            configuration
-          )
-        end
-        @named_maps
       end
 
       def create_named_map

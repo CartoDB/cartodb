@@ -29,6 +29,8 @@ module Carto
       auto_indexed_columns = auto_indices.map { |i| i[:column] }
       drop_index_on = auto_indexed_columns - columns_to_index
       drop_index_on.each { |col| @table.drop_index(col, AUTO_INDEX_PREFIX) }
+    rescue => e
+      CartoDB::Logger.error(exception: e, message: 'Error auto-indexing table', table: user_table)
     end
 
     def indexable_column?(column)
@@ -94,7 +96,12 @@ module Carto
     def get_pg_stats_by_column
       @table.update_table_pg_stats
       stats = @table.pg_stats
-      stats.map { |s| { s[:attname] => s } }.reduce(:merge)
+      if stats && !stats.empty?
+        stats.map { |s| { s[:attname] => s } }.reduce(:merge)
+      else
+        CartoDB::Logger.warning(message: 'Error retrieving stats for table', table: user_table)
+        nil
+      end
     end
   end
 end

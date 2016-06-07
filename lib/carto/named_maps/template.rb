@@ -101,12 +101,19 @@ module Carto
         layers
       end
 
-      def sql(layer_options, index)
-        sql = if layer_options[:query].present?
-                layer_options[:query]
+      def sql(layer, index)
+        layer_options = layer.options
+        query = layer_options[:query]
+
+        sql = if query.present?
+                query
               else
                 "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
               end
+
+        query_wrapper = layer_options[:query_wrapper]
+
+        sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper && layer.torque?
 
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
       end
@@ -123,7 +130,7 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = sql(layer_options, index)
+          options[:sql] = sql(layer, index)
         end
 
         options[:sql_wrap] = if layer_options[:sql_wrap]
@@ -152,7 +159,7 @@ module Carto
           cartocss_version: layer_options.fetch('style_version')
         }
 
-        options[:sql] = sql(layer_options, index)
+        options[:sql] = sql(layer, index)
 
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?

@@ -91,16 +91,20 @@ module VisualizationsControllerHelper
 
   def generate_vizjson3(visualization, params)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_vizjson(https_request: is_https?, vector: param_to_boolean(params[:vector]))
   end
 
   def generate_named_map_vizjson3(visualization, params)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_named_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_named_map_vizjson(https_request: is_https?, vector: param_to_boolean(params[:vector]))
   end
 
   def generate_anonymous_map_vizjson3(visualization, params)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: param_to_boolean(params[:vector]))
+  end
+
+  def param_to_boolean(param)
+    param.nil? ? nil : param == 'true'
   end
 end

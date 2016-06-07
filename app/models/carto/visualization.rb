@@ -326,6 +326,15 @@ class Carto::Visualization < ActiveRecord::Base
     related_canonical_visualizations.map(&:attributions).reject(&:blank?)
   end
 
+  def number_of_features(max = nil)
+    n = 0
+    layers.each do |layer|
+      n += layer.number_of_features(max)
+      break if max.present? && n >= max
+    end
+    n
+  end
+
   private
 
   def get_named_map

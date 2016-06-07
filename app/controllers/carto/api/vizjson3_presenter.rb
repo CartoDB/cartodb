@@ -28,23 +28,29 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
-      def to_vizjson(https_request: false, vector: false)
+      def to_vizjson(https_request: false, vector: nil)
         generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: nil)
       end
 
-      def to_named_map_vizjson(https_request: false, vector: false)
+      def to_named_map_vizjson(https_request: false, vector: nil)
         generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_named)
       end
 
-      def to_anonymous_map_vizjson(https_request: false, vector: false)
+      def to_anonymous_map_vizjson(https_request: false, vector: nil)
         generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_anonymous)
       end
 
       private
 
-      def generate_vizjson(https_request:, vector:, forced_privacy_version:)
+      MAX_FEATURES_FOR_VECTOR = 10000
+
+      def enable_vector?(visualization, vector)
+        vector.nil? ? visualization.number_of_features(MAX_FEATURES_FOR_VECTOR) < MAX_FEATURES_FOR_VECTOR : vector
+      end
+
+      def generate_vizjson(https_request:, vector: nil, forced_privacy_version:)
         https_request ||= false
-        vector ||= false
+        vector = enable_vector?(@visualization, vector)
         version = case forced_privacy_version
                   when :force_named
                     '3n'

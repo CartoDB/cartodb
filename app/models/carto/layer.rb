@@ -99,6 +99,15 @@ module Carto
       basemap? && options["labels"] && options["labels"]["url"]
     end
 
+    def number_of_features(max = nil)
+      n = 0
+      affected_tables.each do |at|
+        n += at.estimated_row_count.to_i
+        break if max.present? && n >= max
+      end
+      n
+    end
+
     private
 
     def tables_from_query_option

@@ -43,7 +43,7 @@ module Carto
     end
 
     def service
-      @service ||= ::Table.new(user_table: self)
+      table
     end
 
     def set_service(table)

@@ -1101,7 +1101,7 @@ describe Carto::Api::VisualizationsController do
 
       def get_vizjson3_url(user, visualization, vector: nil)
         args = { user_domain: user.username, id: visualization.id, api_key: user.api_key }
-        args[:vector] = vector if vector
+        args[:vector] = vector unless vector.nil?
         api_v3_visualizations_vizjson_url(args)
       end
 
@@ -1357,11 +1357,11 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'includes vector flag (default false)' do
+      it 'includes vector flag (default true for this fake visualization with 0 features)' do
         get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
           response.status.should == 200
           vizjson3 = response.body
-          vizjson3[:vector].should == false
+          vizjson3[:vector].should == true
         end
       end
 
@@ -1370,6 +1370,14 @@ describe Carto::Api::VisualizationsController do
           response.status.should == 200
           vizjson3 = response.body
           vizjson3[:vector].should == true
+        end
+      end
+
+      it 'includes vector flag (false if requested)' do
+        get_json get_vizjson3_url(@user_1, @visualization, vector: false), @headers do |response|
+          response.status.should == 200
+          vizjson3 = response.body
+          vizjson3[:vector].should == false
         end
       end
 

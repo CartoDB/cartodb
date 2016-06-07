@@ -106,46 +106,27 @@ class Api::Json::TablesController < Api::ApplicationController
       rescue => e
         CartoDB::StdoutLogger.info e.class.name, e.message
         render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-
     end
   end
 
   def destroy
     @stats_aggregator.timing('tables.destroy') do
-
-      begin
-        @stats_aggregator.timing('ownership-check') do
-          return head(403) unless @table.table_visualization.is_owner?(current_user)
-        end
-
-        custom_properties = { 'privacy' => @table.table_visualization.privacy,
-                              'type' => @table.table_visualization.type,
-                              'vis_id' => @table.table_visualization.id }
-
-        @stats_aggregator.timing('delete') do
-          @table.destroy
-        end
-
-        Cartodb::EventTracker.new.send_event(current_user, 'Deleted dataset', custom_properties)
-
-        head :no_content
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
+      @stats_aggregator.timing('ownership-check') do
+        return head(403) unless @table.table_visualization.is_owner?(current_user)
       end
 
+      custom_properties = { 'privacy' => @table.table_visualization.privacy,
+                            'type' => @table.table_visualization.type,
+                            'vis_id' => @table.table_visualization.id }
+
+      @stats_aggregator.timing('delete') do
+        @table.destroy
+      end
+
+      Cartodb::EventTracker.new.send_event(current_user, 'Deleted dataset', custom_properties)
+
+      head :no_content
     end
   end
 

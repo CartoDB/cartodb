@@ -485,12 +485,6 @@ module CartoDB
         password_protected? || has_private_tables?
       end
 
-      def get_named_map
-        return false if type == TYPE_REMOTE
-
-        Carto::NamedMaps::Api.new(carto_visualization).show
-      end
-
       def password=(value)
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
@@ -651,7 +645,15 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        Rails::Sequel.connection.after_commit { get_named_map ? update_named_map : create_named_map }
+        if carto_visualization
+          Rails::Sequel.connection.after_commit { get_named_map ? update_named_map : create_named_map }
+        end
+      end
+
+      def get_named_map
+        return false if type == TYPE_REMOTE
+
+        Carto::NamedMaps::Api.new(carto_visualization).show if carto_visualization
       end
 
       def license_info
@@ -900,7 +902,7 @@ module CartoDB
       end
 
       def carto_visualization
-        Carto::Visualization.find(id)
+        Carto::Visualization.where(id: id).first
       end
     end
   end

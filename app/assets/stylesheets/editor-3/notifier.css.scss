@@ -42,3 +42,9 @@
   @include flex(1);
   padding-right: $baseSize * 2;
 }
+
+.Notifier-actions {
+  & + & {
+    margin-left: $baseSize * 3;
+  }
+}

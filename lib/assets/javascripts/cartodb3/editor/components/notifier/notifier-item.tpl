@@ -30,6 +30,10 @@
   </div>
 
   <% if (isActionable) { %>
-    <div class="Notifier-actions js-actions"></div>
+    <div class="Notifier-actions js-actionButton"></div>
+  <% } %>
+
+  <% if (isClosable) { %>
+    <div class="Notifier-actions js-closeButton"></div>
   <% } %>
 </li>

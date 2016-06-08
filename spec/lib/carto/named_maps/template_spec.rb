@@ -51,14 +51,19 @@ module Carto
 
           describe 'with analyses' do
             before(:all) do
+              @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
               @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
               @visualization.reload
+
+              @carto_layer.options[:source] = @analysis.natural_id
+              @carto_layer.save
 
               @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
 
             after(:all) do
               @analysis.destroy
+              @carto_layer.destroy
               @visualization.reload
               @template_hash = nil
             end
@@ -68,7 +73,7 @@ module Carto
             end
 
             it 'should contain source' do
-              @template_hash[:layergroup][:layers].second[:options][:source].should eq @anlyse.id
+              @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
             end
           end
 
@@ -230,6 +235,7 @@ module Carto
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
+            template_hash[:layergroup][:analyses].first.should_not be_nil
             template_hash[:layergroup][:analyses].first.should eq analysis.analysis_definition
           end
         end

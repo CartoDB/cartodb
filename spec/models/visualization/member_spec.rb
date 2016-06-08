@@ -183,6 +183,19 @@ describe Visualization::Member do
   end
 
   describe '#delete' do
+    it 'fails for viewer users' do
+      CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
+
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id)).store
+      member.fetch
+
+      @user_mock.stubs(:viewer).returns(true)
+
+      expect { member.delete }.to raise_error(CartoDB::InvalidMember, /Viewer users can't delete visualizations/)
+
+      @user_mock.stubs(:viewer).returns(false)
+    end
+
     it 'deletes this member data from the data repository' do
       CartoDB::Visualization::Relator.any_instance.stubs(:children).returns([])
 

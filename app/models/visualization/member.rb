@@ -248,6 +248,8 @@ module CartoDB
       end
 
       def delete(from_table_deletion = false)
+        raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
+
         # from_table_deletion would be enough for canonical viz-based deletes,
         # but common data loading also calls this delete without the flag to true, causing a call without a Map
         begin

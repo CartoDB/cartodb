@@ -8,7 +8,7 @@
   z-index: 2;
 }
 
-.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer:before {
+.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer::before {
   position: absolute;
   top: -6px;
   right: -6px;

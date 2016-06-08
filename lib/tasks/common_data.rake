@@ -43,6 +43,16 @@ namespace :cartodb do
         puts "Failed to import #{failed_imports} of #{datasets.size} common datasets."
         raise "Failed to import any common datasets" if failed_imports == datasets.size
       end
+
+      # (re-)load common datasets for all users
+      CommonDataRedisCache.new.invalidate
+      cds = CartoDB::Visualization::CommonDataService.new
+      url = CartoDB.base_url(username) + "/api/v1/viz?type=table&privacy=public"
+      User.each do |u|
+        u.update(:last_common_data_update_date=>nil)
+        u.save
+        cds.load_common_data_for_user(u, url)
+      end
     end
 
   end

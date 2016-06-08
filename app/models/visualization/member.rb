@@ -91,7 +91,6 @@ module CartoDB
         self.id         ||= @repository.next_id
         @name_checker   = name_checker
         @validator      = MinimalValidator::Validator.new
-        @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
@@ -297,7 +296,6 @@ module CartoDB
 
       def user_data=(user_data)
         @user_data = user_data
-        named_maps(true)
       end
 
       def name=(name)

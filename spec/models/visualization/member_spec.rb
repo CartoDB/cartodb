@@ -34,8 +34,8 @@ describe Visualization::Member do
     @user_mock.stubs(:id).returns(user_id)
     @user_mock.stubs(:username).returns(user_name)
     @user_mock.stubs(:api_key).returns(user_apikey)
-    @user_mock.stubs(:has_feature_flag?)
-      .returns(false)
+    @user_mock.stubs(:viewer).returns(false)
+    @user_mock.stubs(:has_feature_flag?).returns(false)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -59,6 +59,27 @@ describe Visualization::Member do
       expect {
         member.store
       }.to raise_exception CartoDB::InvalidMember
+    end
+
+    it 'should fail for new visualizations and viewer users' do
+      @user_mock.stubs(:viewer).returns(true)
+      attributes = random_attributes_for_vis_member(user_id: @user_mock.id)
+      member = Visualization::Member.new(attributes)
+      expect { member.store }.to raise_exception CartoDB::InvalidMember
+
+      @user_mock.stubs(:viewer).returns(false)
+    end
+
+    it 'should fail for existing visualizations if user is now a viewer' do
+      member = Visualization::Member.new(random_attributes_for_vis_member(user_id: @user_mock.id))
+      member.store
+
+      member = Visualization::Member.new(id: member.id).fetch
+      @user_mock.stubs(:viewer).returns(true)
+      member.name = 'changed'
+      expect { member.store }.to raise_exception CartoDB::InvalidMember
+
+      @user_mock.stubs(:viewer).returns(false)
     end
 
     it 'persists attributes to the data repository' do
@@ -148,7 +169,7 @@ describe Visualization::Member do
       member.description = 'changed description'
       member.store
     end
-  end #store
+  end
 
   describe '#fetch' do
     it 'fetches attributes from the data repository' do
@@ -159,7 +180,7 @@ describe Visualization::Member do
       member.fetch
       member.name.should == attributes.fetch(:name)
     end
-  end #fetch
+  end
 
   describe '#delete' do
     it 'deletes this member data from the data repository' do
@@ -183,7 +204,7 @@ describe Visualization::Member do
       member.expects(:invalidate_cache)
       member.delete
     end
-  end #delete
+  end
 
   describe '#unlink_from' do
     it 'invalidates varnish cache' do
@@ -192,7 +213,7 @@ describe Visualization::Member do
       member.expects(:remove_layers_from)
       member.unlink_from(Object.new)
     end
-  end #unlink_from
+  end
 
   describe '#public?' do
     it 'returns true if privacy set to public' do
@@ -205,7 +226,7 @@ describe Visualization::Member do
       visualization.privacy = Visualization::Member::PRIVACY_PUBLIC
       visualization.public?.should == true
     end
-  end #public?
+  end
 
   describe '#permissions' do
     it 'checks is_owner? permissions' do
@@ -308,13 +329,9 @@ describe Visualization::Member do
         visualization.valid?.should == false
         visualization.errors.fetch(:privacy).should_not be_nil
       end
-    end # privacy
+    end
 
     describe '#name' do
-      it 'must be available for the user (uniqueness)' do
-        pending
-      end
-
       it 'downcases names for table_visualizations' do
         visualization = Visualization::Member.new(type: 'table')
         visualization.name = 'visualization_1'
@@ -326,7 +343,7 @@ describe Visualization::Member do
         visualization.name = 'Visualization 1'
         visualization.name.should == 'Visualization 1'
       end
-    end #name
+    end
 
     describe '#full_errors' do
       it 'returns full error messages' do
@@ -338,7 +355,7 @@ describe Visualization::Member do
         visualization.full_errors.join("\n").should =~ /name/
       end
     end
-  end # validations
+  end
 
   describe '#derived?' do
     it 'returns true if type is derived' do
@@ -415,7 +432,7 @@ describe Visualization::Member do
         visualization.password_valid?(password_value)
       }.should raise_error CartoDB::InvalidMember
     end
-  end #password
+  end
 
   describe '#privacy_and_exceptions' do
     it 'checks different privacy options to make sure exceptions are raised when they should' do
@@ -480,6 +497,7 @@ describe Visualization::Member do
 
       # Careful, do a user mock after touching user_data as it does some checks about user too
       user_mock = mock
+      user_mock.stubs(:viewer).returns(false)
       user_mock.stubs(:private_tables_enabled).returns(true)
       user_mock.stubs(:id).returns(user_id)
       Visualization::Member.any_instance.stubs(:user).returns(user_mock)

@@ -188,6 +188,8 @@ module CartoDB
       end
 
       def valid?
+        validator.errors.store(:user, "Viewer users can't store visualizations") if user.viewer
+
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         # do not validate names for slides, it's never used

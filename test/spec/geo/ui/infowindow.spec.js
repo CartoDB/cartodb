@@ -6,7 +6,7 @@ var InfowindowModel = require('../../../../src/geo/ui/infowindow-model');
 var Infowindow = require('../../../../src/geo/ui/infowindow-view');
 
 describe('geo/ui/infowindow-view', function() {
-  var model, view;
+  var model, view, mapView;
 
   beforeEach(function() {
     var container = $('<div>').css('height', '200px');
@@ -191,6 +191,27 @@ describe('geo/ui/infowindow-view', function() {
     var item2 = view.$el.find('.CDB-infowindow-listItem:nth-child(2)');
     expect(item2.find('.CDB-infowindow-title').text()).toEqual('true');
     expect(item2.find('.CDB-infowindow-subtitle').text()).toEqual('jamon2');
+  });
+
+  it('should close the infowindow when user clicks close button', function () {
+    model.set({
+      template: '<div><button class="js-close">X</button></div>'
+    });
+    view = new Infowindow({
+      model: model,
+      mapView: mapView
+    });
+
+    view.render();
+
+    // Infowindow is visible
+    model.set('visibility', true, { silent: true });
+    expect(model.get('visibility')).toBe(true);
+
+    view.$('.js-close').click();
+
+    // Infowindow has been closed
+    expect(model.get('visibility')).toBe(false);
   });
 
   describe("custom template", function() {

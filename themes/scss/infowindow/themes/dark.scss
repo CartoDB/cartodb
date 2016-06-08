@@ -3,14 +3,14 @@
 
 $sBg-dark: #2E3C43;
 
-.CDB-infowindow--dark {
+.CDB-infowindow.CDB-infowindow--dark {
   background: $sBg-dark;
   color: #FFF;
   .CDB-infowindow-title {
     color: #FFF;
   }
   .CDB-infowindow-subtitle {
-    color: rgba(255, 255, 255, 0.32);
+    color: rgba(255, 255, 255, 0.64);
   }
   .CDB-hook-inner {
     background: $sBg-dark;

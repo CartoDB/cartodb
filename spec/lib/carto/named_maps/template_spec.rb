@@ -20,8 +20,8 @@ module Carto
 
       describe '#name' do
         it 'should generate the template name correctly' do
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template_name = template.to_hash[:name]
+          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          template_name = template_hash[:name]
 
           template_name.should match("^#{Carto::NamedMaps::Template::NAME_PREFIX}")
           template_name.should_not match(/[^a-zA-Z0-9\-\_.]/)
@@ -30,64 +30,75 @@ module Carto
 
       describe '#placeholders' do
         it 'should only generate placeholders for carto and torque layers' do
-          template = Carto::NamedMaps::Template.new(@visualization)
-          placeholders = template.to_hash[:placeholders]
-          placeholders.length.should be @map.layers.reject(&:basemap?).count
+          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+          template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
         end
 
         it 'should generate placeholders for carto layers' do
-          FactoryGirl.create(:carto_layer, maps: [@map])
-          @map.save
+          layer = FactoryGirl.create(:carto_layer, maps: [@map])
+          @map.reload
 
-          template = Carto::NamedMaps::Template.new(@visualization)
-          placeholders = template.to_hash[:placeholders]
+          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
-          placeholders.length.should be @map.layers.reject(&:basemap?).count
+          template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+
+          layer.destroy
+          @map.reload
         end
 
         it 'should generate placeholders for torque layers' do
-          FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
-          @map.save
+          layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+          @map.reload
 
           template = Carto::NamedMaps::Template.new(@visualization)
           placeholders = template.to_hash[:placeholders]
 
           placeholders.length.should be @map.layers.reject(&:basemap?).count
+
+          layer.destroy
+          @map.reload
         end
       end
 
       describe '#auth' do
-        it 'should generate open auth for public, link and private visualizations' do
-          @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        describe 'should be open' do
+          after(:each) do
+            @visualization.save
 
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_OPEN
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_OPEN
+          end
 
-          @visualization.privacy = Carto::Visualization::PRIVACY_LINK
+          it 'for public visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+          end
 
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_OPEN
+          it 'for private visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          end
 
-          @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_OPEN
+          it 'for link visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_LINK
+          end
         end
 
-        it 'should use signed auth for password protected visualizations' do
-          @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        describe 'should be signed' do
+          after(:each) do
+            @visualization.save
 
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
-        end
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
+          end
 
-        it 'should use signed auth for organization private visualizations' do
-          @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          it 'for password protected visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+          end
 
-          @visualization.stubs(:organization?).returns(true)
-
-          template = Carto::NamedMaps::Template.new(@visualization)
-          template.to_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
+          it 'for organization private visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+            @visualization.stubs(:organization?).returns(true)
+          end
         end
       end
 
@@ -117,6 +128,9 @@ module Carto
             template_widget[:type].should eq Carto::NamedMaps::Template::TILER_WIDGET_TYPES[widget.type]
 
             template_widget[:options].should eq widget.options.merge(aggregationColumn: nil)
+
+            widget.destroy
+            @visualization.reload
           end
         end
 

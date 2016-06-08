@@ -421,6 +421,22 @@
     },
     "codemirror": {
       "no-errors": "No errors"
+    },
+    "table": {
+      "columns": {
+        "create": {
+          "loading": "Adding new column...",
+          "error": "Error adding %{column_name} column: %{error}",
+          "success": "Column %{column_name} added"
+        }
+      },
+      "rows": {
+        "create": {
+          "loading": "Adding new row...",
+          "error": "Error adding new row: %{error}",
+          "success": "New row added"
+        }
+      }
     }
   },
   "data": {

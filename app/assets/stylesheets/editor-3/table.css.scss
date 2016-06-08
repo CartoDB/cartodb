@@ -1,0 +1,84 @@
+// Table styles
+// ----------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+$elementWidth: 180px;
+$elementPadding: 10px;
+$tableBorderColor: $cSecondaryLine;
+
+.Table {
+  @include display-flex();
+  @include flex-direction(column);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  border-radius: 4px;
+  background: #FFF;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.Table-head {
+  @include display-flex();
+  @include justify-content(flex-start);
+  border: 1px solid $tableBorderColor;
+  background: $cMainLine;
+}
+.Table-headItem {
+  border-right: 1px solid $tableBorderColor;
+  background: $cMainLine;
+}
+.Table-headItemWrapper {
+  width: $elementWidth;
+  padding: $elementPadding;
+  box-sizing: content-box;
+}
+.Table-body {
+  @include display-flex();
+  @include justify-content(flex-start);
+  @include flex(1);
+  @include flex-direction(column);
+  height: 100%;
+}
+.Table-body table {
+  height: 100%;
+}
+.Table-body tbody {
+  @include display-flex();
+  @include flex-direction(column);
+  width: 100%;
+  height: 100%;
+  padding-bottom: 200px;
+  overflow-y: scroll;
+}
+.Table-row {
+  border-bottom: 1px solid $tableBorderColor;
+  border-left: 1px solid $tableBorderColor;
+  background: none;
+  &:hover {
+    background: rgba($cHighlight, 0.1);
+  }
+}
+.Table-cell {
+  box-sizing: content-box;
+  width: $elementWidth;
+  height: 16px;
+  padding: $elementPadding;
+  border-right: 1px solid $tableBorderColor;
+  &:hover {
+    background: rgba($cHighlight, 0.2);
+  }
+}
+.Table-cell.is-number {
+  color: $cHighlight;
+}
+.Table-cell.is-null {
+  color: $cAltText;
+  font-style: italic;
+}
+.Table-cell.is-disabled {
+  color: $cAltText;
+}

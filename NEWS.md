@@ -1,6 +1,13 @@
 3.14.0 (2016-XX-XX)
 -------------------
 
+### NOTICE
+This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
+ghost tables, importing common data and automatic index creation.
+
+### Features
+* Automatic creation of indexes on columns affected by a widget
+
 ### Bug Fixes
 * Incorrect error message when password validation failed
 

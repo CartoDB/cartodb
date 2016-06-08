@@ -39,7 +39,6 @@ describe Api::Json::VisualizationsController do
     include TableSharing
 
     it 'correctly creates a visualization from two dataset of different users' do
-      @headers = {'CONTENT_TYPE'  => 'application/json'}
       table1 = create_table(user_id: @org_user_1.id)
       table2 = create_table(user_id: @org_user_2.id)
       share_table_with_user(table1, @org_user_2)

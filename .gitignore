@@ -53,7 +53,7 @@ vendor/bundle/*
 vendor/cache/*
 .vagrant
 Vagrantfile
-node_modules
+/node_modules
 .grunt/*
 vendor/assets/javascripts/cartodb.*
 vendor/assets/stylesheets/cartodb.*

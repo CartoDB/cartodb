@@ -1,4 +1,4 @@
-<% if (columnType === 'string') { %>
+<% if (showCategories) { %>
 <% _.each(value, function (color) { %>
 <div class="ColorBar ColorBar--spaceMedium" style="background-color: <%- color %>">
 </div>

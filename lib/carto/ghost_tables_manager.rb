@@ -19,7 +19,7 @@ module Carto
       return if user_tables_synced_with_db?
 
       if safe_async?
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user_id)
+        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
       else
         link_ghost_tables_synchronously
       end

@@ -162,7 +162,7 @@ DESC
         u.password = password
         u.password_confirmation = password
         if !u.save
-          rais u.errors.inspect
+          raise u.errors.inspect
         else
           puts "Password changed"
         end
@@ -179,7 +179,7 @@ DESC
         u = users.first
         u.update(:table_quota => nil)
         if !u.save
-          rais u.errors.inspect
+          raise u.errors.inspect
         else
           puts "#{u.username} table quota limit removed"
         end

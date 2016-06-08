@@ -49,6 +49,25 @@ module Carto
             template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
           end
 
+          describe 'with aggregations' do
+            before(:all) do
+              @carto_layer.options[:query_wrapper] = 'voodo in the (<%= sql %>)'
+              @carto_layer.save
+
+              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            end
+
+            after(:all) do
+              @carto_layer.options[:query_wrapper] = nil
+              @carto_layer.save
+              @template_hash = nil
+            end
+
+            it 'should contain sql wrap' do
+              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should_not be_nil
+            end
+          end
+
           describe 'with analyses' do
             before(:all) do
               @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
@@ -111,6 +130,29 @@ module Carto
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
             template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          end
+
+          describe 'with aggregations' do
+            before(:all) do
+              @torque_layer.options[:query_wrapper] = 'voodo in the (<%= sql %>)'
+              @torque_layer.save
+
+              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            end
+
+            after(:all) do
+              @torque_layer.options[:query_wrapper] = nil
+              @torque_layer.save
+              @template_hash = nil
+            end
+
+            it 'should not contain sql wrap' do
+              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should be_nil
+            end
+
+            it 'should wrap sql' do
+              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should be_nil
+            end
           end
         end
 

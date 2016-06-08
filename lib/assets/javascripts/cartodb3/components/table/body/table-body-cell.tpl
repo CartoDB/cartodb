@@ -1,9 +1,11 @@
 <td>
   <div class="
     Table-cell
+    CDB-Text CDB-Size-medium
+    u-ellipsis
     <%- type === 'number' && columnName !== 'cartodb_id' ? 'is-number' : '' %>
     <%- value === null ? 'is-null' : '' %>
-  ">
+  " title="<%- value %>">
     <% if (type === 'geometry') { %>
       <%- value ? geometry : 'null' %>
     <% } else { %>

@@ -54,10 +54,11 @@ module Carto
             response = http_client.get(url, request_params)
           end
 
-          if response.code.to_s =~ /^2/
+          response_code = response.code
+          if response_code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
-            log_response(response, 'show')
+            log_response(response, 'show') unless response_code == 404
           end
         end
       end

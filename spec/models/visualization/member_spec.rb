@@ -65,7 +65,7 @@ describe Visualization::Member do
       @user_mock.stubs(:viewer).returns(true)
       attributes = random_attributes_for_vis_member(user_id: @user_mock.id)
       member = Visualization::Member.new(attributes)
-      expect { member.store }.to raise_exception CartoDB::InvalidMember
+      expect { member.store }.to raise_error(CartoDB::InvalidMember, /Viewer users can't store visualizations/)
 
       @user_mock.stubs(:viewer).returns(false)
     end
@@ -77,7 +77,7 @@ describe Visualization::Member do
       member = Visualization::Member.new(id: member.id).fetch
       @user_mock.stubs(:viewer).returns(true)
       member.name = 'changed'
-      expect { member.store }.to raise_exception CartoDB::InvalidMember
+      expect { member.store }.to raise_error(CartoDB::InvalidMember, /Viewer users can't store visualizations/)
 
       @user_mock.stubs(:viewer).returns(false)
     end

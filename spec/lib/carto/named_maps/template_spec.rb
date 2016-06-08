@@ -16,6 +16,9 @@ module Carto
         @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
 
         @map, _, _, @visualization = create_full_visualization(@user)
+
+        @map.layers.reject(&:basemap?).each(&:destroy)
+        @map.reload
       end
 
       describe '#name' do
@@ -28,36 +31,108 @@ module Carto
         end
       end
 
-      describe '#placeholders' do
-        it 'should only generate placeholders for carto and torque layers' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+      describe '#layers' do
+        describe 'carto layers' do
+          before(:all) do
+            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @visualization.reload
+          end
 
-          template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          after(:all) do
+            @carto_layer.destroy
+            @visualization.reload
+          end
+
+          it 'should generate placeholders' do
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+            template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          end
+
+          describe 'with widgets' do
+            before(:all) do
+              @widget = FactoryGirl.create(:widget, source_id: 'manolo_node', layer: @carto_layer)
+              @visualization.reload
+
+              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            end
+
+            after(:all) do
+              @widget.destroy
+              @visualization.reload
+              @template_hash = nil
+            end
+
+            it 'should not contain sql' do
+              @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+            end
+
+            it 'should contain source' do
+              @template_hash[:layergroup][:layers].second[:options][:source].should eq @widget.source_id
+            end
+          end
+
+          describe 'with no widgets' do
+            before(:all) do
+              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            end
+
+            after(:all) do
+              @template_hash = nil
+            end
+
+            it 'should contain sql' do
+              @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+            end
+
+            it 'should not contain source' do
+              @template_hash[:layergroup][:layers].second[:options][:source].should be_nil
+            end
+          end
         end
 
-        it 'should generate placeholders for carto layers' do
-          layer = FactoryGirl.create(:carto_layer, maps: [@map])
-          @map.reload
+        describe 'torque layers' do
+          before(:all) do
+            @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+            @visualization.reload
+          end
 
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          after(:all) do
+            @torque_layer.destroy
+            @visualization.reload
+          end
 
-          template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          it 'should generate placeholders' do
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
-          layer.destroy
-          @map.reload
+            template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          end
         end
 
-        it 'should generate placeholders for torque layers' do
-          layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
-          @map.reload
+        describe 'basemap layers' do
+          before(:all) do
+            @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          end
 
-          template = Carto::NamedMaps::Template.new(@visualization)
-          placeholders = template.to_hash[:placeholders]
+          after(:all) do
+            @template_hash = nil
+          end
 
-          placeholders.length.should be @map.layers.reject(&:basemap?).count
+          it 'should not generate placeholders' do
+            @template_hash[:placeholders].length.should be 0
+          end
 
-          layer.destroy
-          @map.reload
+          it 'should not have sql' do
+            @template_hash[:layergroup][:layers].first[:options][:sql].should be_nil
+          end
+
+          it 'should not have sql wrap' do
+            @template_hash[:layergroup][:layers].first[:options][:sql_wrap].should be_nil
+          end
+
+          it 'should not have source' do
+            @template_hash[:layergroup][:layers].first[:options][:source].should be_nil
+          end
         end
       end
 

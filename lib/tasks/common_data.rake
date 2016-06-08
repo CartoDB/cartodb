@@ -28,7 +28,7 @@ namespace :cartodb do
             data_import = DataImport.create(:user_id => user.id, :data_source => dataset["url"])
             data_import.run_import!
             if not data_import.success
-              puts "Dataset '#{dataset['name']}' failed to import"
+              puts "Dataset '#{dataset['name']}' failed to import. Error code: #{data_import.error_code}"
               failed_imports += 1
             end
         rescue => exception

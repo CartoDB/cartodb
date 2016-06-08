@@ -1,4 +1,5 @@
 <div class="CDB-infowindow CDB-infowindow--light js-infowindow">
+  <div class="CDB-infowindow-close js-close"></div>
   <div class="CDB-infowindow-container">
     <% if (typeof loading !== 'undefined' && loading) { %>
       <div class="CDB-Loader js-loader is-visible"></div>

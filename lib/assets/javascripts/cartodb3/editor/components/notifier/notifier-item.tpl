@@ -26,7 +26,7 @@
   <% } %>
 
   <div class="Notifier-info">
-    <p class="CDB-Text CDB-Size-medium"><%- info %></p>
+    <p class="CDB-Text CDB-Size-medium"><%= info %></p>
   </div>
 
   <% if (isActionable) { %>

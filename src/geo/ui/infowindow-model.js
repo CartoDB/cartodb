@@ -22,7 +22,10 @@ var InfowindowModel = Backbone.Model.extend({
 
     // Set a default template
     if (!this._hasTemplate()) {
-      this.set('template', this.DEFAULT_TEMPLATE);
+      this.set({
+        template: this.DEFAULT_TEMPLATE,
+        template_type: 'underscore'
+      });
     }
   },
 

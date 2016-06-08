@@ -29,9 +29,9 @@ var Infowindow = View.extend({
 
   events: {
     // Close bindings
-    'click .close': '_closeInfowindow',
-    'touchstart .close': '_closeInfowindow',
-    'MSPointerDown .close': '_closeInfowindow',
+    'click .js-close': '_closeInfowindow',
+    'touchstart .js-close': '_closeInfowindow',
+    'MSPointerDown .js-close': '_closeInfowindow',
     // Rest infowindow bindings
     'dragstart': '_checkOrigin',
     'mousedown': '_checkOrigin',

@@ -5,6 +5,7 @@
     u-ellipsis
     <%- type === 'number' && columnName !== 'cartodb_id' ? 'is-number' : '' %>
     <%- value === null ? 'is-null' : '' %>
+    <%- columnName === 'cartodb_id' ? 'is-disabled' : '' %>
   " title="<%- value %>">
     <% if (type === 'geometry') { %>
       <%- value ? geometry : 'null' %>

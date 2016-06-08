@@ -99,6 +99,14 @@ module Carto
       basemap? && options["labels"] && options["labels"]["url"]
     end
 
+    def map
+      maps.first
+    end
+
+    def visualization
+      map.visualization
+    end
+
     private
 
     def tables_from_query_option

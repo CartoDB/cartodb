@@ -42,7 +42,7 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   def visualization
-    layer.maps.first.visualizations.first
+    layer.visualization
   end
 
   def analysis_node

@@ -12,6 +12,7 @@
   transform: translateY(-24px) translateX(4px); /* remove when fix the position */
   font-family: 'Open Sans';
   cursor: default;
+  -webkit-font-smoothing: antialiased;
 }
 .CDB-infowindow-container {
   border-radius: 4px;
@@ -37,15 +38,16 @@
   margin: -20px -24px 18px;
 }
 .CDB-infowindow-subtitle {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: $sFontWeight-lighter;
   line-height: $sLineHeight-small;
   text-transform: uppercase;
+  margin-bottom: 2px;
 }
 .CDB-infowindow-title {
-  font-size: $sFontSize-small;
-  font-weight: $sFontWeight-lighter;
-  line-height: $sLineHeight-small;
+  font-size: $sFontSize-medium;
+  font-weight: $sFontWeight-semibold;
+  line-height: $sLineHeight-medium;
 }
 .CDB-infowindow-link {
   display: inline-block;
@@ -69,8 +71,7 @@
 }
 
 .CDB-infowindow-listItem {
-  margin-top: 8px;
-  word-break: break-all;
+  margin-top: 12px;
 }
 .CDB-infowindow-listItem:first-child {
   margin-top: 0;
@@ -179,9 +180,14 @@
   display: none;
   width: 100%;
   transition: opacity 150ms ease-in-out;
-  border-radius: 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   opacity: 1;
 }
+.has-header .CDB-infowindow-media-item {
+  border-radius: 0;
+}
+
 .CDB-hook {
   position: absolute;
   bottom: 1px;
@@ -273,6 +279,7 @@
   width: auto;
   padding: 21px 24px 0;
   font-size: 10px;
+  font-weight: 600;
   line-height: 14px;
   overflow: hidden;
 }
@@ -377,4 +384,34 @@ img[data-clipPath]{
 }
 .CDB-infowindow-mask image {
   visibility: visible;
+}
+
+.CDB-infowindow-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  z-index: 2;
+  cursor: pointer;
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  justify-content: center;
+}
+
+.CDB-infowindow-closePath {
+  stroke: #3AA9E3;
 }

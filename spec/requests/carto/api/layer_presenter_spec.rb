@@ -442,19 +442,14 @@ describe Carto::Api::LayerPresenter do
         let(:marker_line_opacity) { 0.7 }
         let(:title_1) { 100 }
         let(:title_2) { 200 }
+        let(:line_width) { 0.43 }
+        let(:line_color) { "#FFA" }
+        let(:line_opacity) { 0.91 }
         let(:category_wizard_properties) do
           {
             "type" => "category",
             "properties" => {
               "property" => property,
-              "marker-width" => 10,
-              "marker-opacity" => opacity,
-              "marker-allow-overlap" => true,
-              "marker-placement" => "point",
-              "marker-type" => "ellipse",
-              "marker-line-width" => marker_line_width,
-              "marker-line-color" => marker_line_color,
-              "marker-line-opacity" => marker_line_opacity,
               "zoom" => "15",
               "geometry_type" => 'point',
               "text-placement-type" => "simple",
@@ -477,9 +472,58 @@ describe Carto::Api::LayerPresenter do
           }
         end
 
+        let(:marker_category_properties) do
+          {
+            "marker-width" => 10,
+            "marker-opacity" => opacity,
+            "marker-allow-overlap" => true,
+            "marker-placement" => "point",
+            "marker-type" => "ellipse",
+            "marker-line-width" => marker_line_width,
+            "marker-line-color" => marker_line_color,
+            "marker-line-opacity" => marker_line_opacity
+          }
+        end
+
+        let(:line_category_properties) do
+          {
+            "line-width" => line_width,
+            "line-color" => line_color,
+            "line-opacity" => line_opacity
+          }
+        end
+
+        describe 'polygon geometry type' do
+          before(:each) do
+            properties = category_wizard_properties
+            properties['properties']['geometry_type'] = 'polygon'
+            properties['properties'].merge!(line_category_properties)
+            layer = build_layer_with_wizard_properties(properties)
+            options = presenter_with_style_properties(layer).to_poro['options']
+            @fill_color = options['style_properties']['properties']['fill']['color']
+            @fill_size = options['style_properties']['properties']['fill']['size']
+            @stroke_color = options['style_properties']['properties']['stroke']['color']
+            @stroke_size = options['style_properties']['properties']['stroke']['size']
+          end
+
+          it 'line-width becomes fixed stroke size' do
+            expect(@stroke_size).to include('fixed' => line_width)
+          end
+
+          it 'line-color becomes fixed stroke color' do
+            expect(@stroke_color).to include('fixed' => line_color)
+          end
+
+          it 'line-opacity becomes opacity' do
+            expect(@stroke_color).to include('opacity' => line_opacity)
+          end
+        end
+
         describe 'point geometry type' do
           before(:each) do
-            layer = build_layer_with_wizard_properties(category_wizard_properties)
+            properties = category_wizard_properties
+            properties['properties'].merge!(marker_category_properties)
+            layer = build_layer_with_wizard_properties(properties)
             options = presenter_with_style_properties(layer).to_poro['options']
             @fill_color = options['style_properties']['properties']['fill']['color']
             @fill_size = options['style_properties']['properties']['fill']['size']
@@ -492,7 +536,8 @@ describe Carto::Api::LayerPresenter do
               expect(@fill_size).to include('fixed' => 10)
             end
 
-            it 'generates color range from categories colors' do
+            it 'generates not fixed color but range from categories colors' do
+              expect(@fill_color).not_to include('fixed' => anything)
               expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
             end
 
@@ -532,6 +577,7 @@ describe Carto::Api::LayerPresenter do
         describe 'line geometry type' do
           before(:each) do
             properties = category_wizard_properties
+            properties['properties'].merge!(line_category_properties)
             properties['properties']['geometry_type'] = 'line'
             layer = build_layer_with_wizard_properties(properties)
 
@@ -540,8 +586,8 @@ describe Carto::Api::LayerPresenter do
             @stroke_size = options['style_properties']['properties']['stroke']['size']
           end
 
-          it 'has fill size fixed 10' do
-            expect(@stroke_size).to include('fixed' => 10)
+          it 'generates fixed size from line_width' do
+            expect(@stroke_size).to include('fixed' => line_width)
           end
 
           it 'generates color range from categories colors' do
@@ -553,8 +599,16 @@ describe Carto::Api::LayerPresenter do
             expect(@stroke_size).not_to include('attribute' => property)
           end
 
-          it 'marker-opacity becomes opacity' do
-            expect(@stroke_color).to include('opacity' => opacity)
+          it 'line-width becomes fixed stroke size' do
+            expect(@stroke_size).to include('fixed' => line_width)
+          end
+
+          it 'line-color becomes fixed stroke color' do
+            expect(@stroke_color).to include('fixed' => line_color)
+          end
+
+          it 'line-opacity becomes opacity' do
+            expect(@stroke_color).to include('opacity' => line_opacity)
           end
 
           it 'bins defaults to 10' do
@@ -569,6 +623,7 @@ describe Carto::Api::LayerPresenter do
             let(:simple_line_wizard_properties) do
               {
                 "type" => "polygon",
+                "geometry_type" => "line",
                 "properties" =>
                   {
                     "line-width" => line_width,

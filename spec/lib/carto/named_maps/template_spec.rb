@@ -49,16 +49,16 @@ module Carto
             template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
           end
 
-          describe 'with widgets' do
+          describe 'with analyses' do
             before(:all) do
-              @widget = FactoryGirl.create(:widget, source_id: 'manolo_node', layer: @carto_layer)
+              @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
               @visualization.reload
 
               @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
 
             after(:all) do
-              @widget.destroy
+              @analysis.destroy
               @visualization.reload
               @template_hash = nil
             end
@@ -68,11 +68,11 @@ module Carto
             end
 
             it 'should contain source' do
-              @template_hash[:layergroup][:layers].second[:options][:source].should eq @widget.source_id
+              @template_hash[:layergroup][:layers].second[:options][:source].should eq @anlyse.id
             end
           end
 
-          describe 'with no widgets' do
+          describe 'with no analyses' do
             before(:all) do
               @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
@@ -179,6 +179,16 @@ module Carto
 
       describe '#layergroup' do
         describe 'dataviews' do
+          before(:all) do
+            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @visualization.reload
+          end
+
+          after(:all) do
+            @carto_layer.destroy
+            @visualization.reload
+          end
+
           it 'should not add any dataview if no widgets are present' do
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
@@ -186,9 +196,7 @@ module Carto
           end
 
           it 'should add dataviews if widgets are present' do
-            layer = @map.data_layers.first
-
-            widget = FactoryGirl.create(:widget, layer: layer)
+            widget = FactoryGirl.create(:widget, layer: @carto_layer)
             @visualization.reload
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash

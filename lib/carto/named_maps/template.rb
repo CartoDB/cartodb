@@ -91,6 +91,7 @@ module Carto
           layers.push(type: type, options: options)
         end
 
+
         @visualization.map.layers.select(&:torque?).each do |layer|
           index += 1
           type, options = type_and_options_for_torque_layers(layer, index)
@@ -119,6 +120,26 @@ module Carto
       end
 
       def type_and_options_for_cartodb_layers(layer, index)
+        options = common_options_for_non_basemap_layers(layer, index)
+
+        layer_options = layer.options
+        layer_options_sql_wrap = layer_options[:sql_wrap]
+        layer_options_query_wrapper = layer_options[:query_wrapper]
+
+        options[:sql_wrap] = if layer_options_sql_wrap
+                               layer_options_sql_wrap
+                             elsif layer_options_query_wrapper
+                               layer_options_query_wrapper
+                             end
+
+        ['cartodb', options]
+      end
+
+      def type_and_options_for_torque_layers(layer, index)
+        ['torque', common_options_for_non_basemap_layers(layer, index)]
+      end
+
+      def common_options_for_non_basemap_layers(layer, index)
         layer_options = layer.options
 
         options = {
@@ -133,12 +154,6 @@ module Carto
           options[:sql] = sql(layer, index)
         end
 
-        options[:sql_wrap] = if layer_options[:sql_wrap]
-                               layer_options[:sql_wrap]
-                             elsif layer_options[:query_wrapper]
-                               layer_options[:query_wrapper]
-                             end
-
         layer_infowindow = layer.infowindow
         if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
           options[:interactivity] = layer_options[:interactivity]
@@ -148,29 +163,7 @@ module Carto
           }
         end
 
-        ['cartodb', options]
-      end
-
-      def type_and_options_for_torque_layers(layer, index)
-        layer_options = layer.options
-
-        options = {
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: layer_options.fetch('style_version')
-        }
-
-        options[:sql] = sql(layer, index)
-
-        layer_infowindow = layer.infowindow
-        if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
-          options[:interactivity] = layer_options[:interactivity]
-          options[:attributes] = {
-            id:       'cartodb_id',
-            columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
-          }
-        end
-
-        ['torque', options]
+        options
       end
 
       def type_and_options_for_basemap_layers(layer)

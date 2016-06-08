@@ -47,11 +47,8 @@ class Carto::Widget < ActiveRecord::Base
 
   def analysis_node
     return nil unless source_id
-    visualization.analyses.map(&:analysis_node).each do |node|
-      found = node.find_by_id(source_id)
-      return found if found
-    end
-    nil
+    analysis_nodes = visualization.analyses.map(&:analysis_node)
+    analysis_nodes.lazy.map { |node| node.find_by_id(source_id) }.find { |node| node }
   end
 
   def column

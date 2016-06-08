@@ -33,11 +33,7 @@ class Carto::AnalysisNode
 
   def find_by_id(node_id)
     return self if node_id == id
-    children.each do |child|
-      found = child.find_by_id(node_id)
-      return found unless found.nil?
-    end
-    nil
+    children.lazy.map { |child| child.find_by_id(node_id) }.find { |child| child }
   end
 
   def source?

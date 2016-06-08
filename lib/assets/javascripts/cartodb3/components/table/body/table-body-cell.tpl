@@ -1,7 +1,7 @@
 <td>
   <div class="
     Table-cell
-    <%- type === 'number' ? 'is-number' : '' %>
+    <%- type === 'number' && columnName !== 'cartodb_id' ? 'is-number' : '' %>
     <%- value === null ? 'is-null' : '' %>
   ">
     <% if (type === 'geometry') { %>

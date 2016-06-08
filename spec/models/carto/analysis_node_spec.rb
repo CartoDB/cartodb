@@ -36,7 +36,7 @@ describe Carto::AnalysisNode do
   end
 
   before(:each) do
-    @node = Carto::AnalysisNode.new(nil, analysis_definition)
+    @node = Carto::AnalysisNode.new(analysis_definition)
   end
 
   it 'returns definition values from accessors' do
@@ -53,10 +53,6 @@ describe Carto::AnalysisNode do
       @node.children[1].id.should eq 'a1'
     end
 
-    it 'returns nodes with parent set' do
-      @node.children.each { |n| n.parent.should eq @node }
-    end
-
     it 'returns an empty list when no childrens are found' do
       @node.definition.delete(:params)
       @node.children.should eq []
@@ -71,13 +67,11 @@ describe Carto::AnalysisNode do
     it 'finds direct children' do
       found = @node.find_by_id('a1')
       found.should be
-      found.parent.should eq @node
     end
 
     it 'finds indirect descendants' do
       found = @node.find_by_id('a0')
       found.should be
-      found.parent.parent.should eq @node
     end
 
     it 'returns nil if not found' do

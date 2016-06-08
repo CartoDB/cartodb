@@ -1,13 +1,11 @@
 # encoding: UTF-8
 
 class Carto::AnalysisNode
-  def initialize(analysis, definition, parent: nil)
-    @analysis = analysis
+  def initialize(definition)
     @definition = definition
-    @parent = parent
   end
 
-  attr_reader :analysis, :definition, :parent
+  attr_reader :definition
 
   def id
     definition[:id]
@@ -59,7 +57,7 @@ class Carto::AnalysisNode
       if v.is_a?(Hash)
         this_path = path + [k]
         if (MANDATORY_KEYS_FOR_ANALYSIS_NODE - v.keys).empty?
-          { this_path => Carto::AnalysisNode.new(analysis, v, parent: self) }
+          { this_path => Carto::AnalysisNode.new(v) }
         else
           get_children(v, this_path)
         end

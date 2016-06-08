@@ -83,25 +83,22 @@ describe Carto::Analysis do
   end
 
   describe '#analysis_node' do
-    it 'returns an analysis node with analysis set' do
+    it 'returns an analysis node with the definition of the analysis' do
       analysis = Carto::Analysis.new(analysis_definition: definition_with_options)
       node = analysis.analysis_node
-      node.analysis.should eq analysis
-      node.parent.should be_nil
+      node.definition.should eq analysis.analysis_definition
       node.children.should be_empty
     end
 
-    it 'returns an analysis tree with analysis set' do
+    it 'returns an analysis tree' do
       analysis = Carto::Analysis.new(analysis_definition: nested_definition_with_options)
       root = analysis.analysis_node
-      root.analysis.should eq analysis
-      root.parent.should be_nil
+      root.definition.should eq analysis.analysis_definition
 
       children = root.children
       children.should_not be_empty
-      children[0].parent.should eq root
-      children[0].analysis.should eq analysis
       children[0].children.should be_empty
+      children[0].definition.should eq definition_with_options
     end
   end
 

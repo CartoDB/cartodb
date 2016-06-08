@@ -41,7 +41,7 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   def analysis_node
-    Carto::AnalysisNode.new(self, analysis_definition)
+    Carto::AnalysisNode.new(analysis_definition)
   end
 
   private

@@ -116,6 +116,10 @@ class Carto::Map < ActiveRecord::Base
     map.notify_map_change if map
   end
 
+  def visualization
+    visualizations.first
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

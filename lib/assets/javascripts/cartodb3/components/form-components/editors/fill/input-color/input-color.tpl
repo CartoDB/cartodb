@@ -1,4 +1,4 @@
-<% if (columnType === 'string') { %>
+<% if (showCategories) { %>
 <% _.each(value, function (color) { %>
 <div class="CDB-ColorBar CDB-ColorBar--spaceMedium" style="background-color: <%- color %>">
 </div>

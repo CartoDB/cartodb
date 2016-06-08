@@ -17,7 +17,7 @@
   </div>
   <% } %>
 
-  <% if (status === 'error') { %>
+  <% if (status === 'error' || status === 'warning') { %>
   <div class="Notifier-icon CDB-Shape u-rSpace--m">
     <div class="CDB-Shape-CircleItem is-red">
       <div class="CDB-Shape-close is-medium is-red"></div>

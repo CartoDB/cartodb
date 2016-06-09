@@ -2,6 +2,9 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
+.CustomRamp-list {
+  border-top: 1px solid #DDD;
+}
 .CustomRamp {
   display: flex;
 }
@@ -10,6 +13,6 @@
   flex: 1;
 }
 .CustomRamp-clear {
-  color: $cLink;
+  color: $cBlue;
 }
 

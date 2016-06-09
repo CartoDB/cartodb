@@ -28,10 +28,8 @@
   background: $cWhite;
 }
 .WidgetList-inner {
-  width: 100%;
-}
-.WidgetList-title {
-  @include display-flex;
+  @include flex(1);
+  overflow: hidden;
 }
 .WidgetPlaceHolder {
   @include display-flex();

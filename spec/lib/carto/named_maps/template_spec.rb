@@ -51,7 +51,7 @@ module Carto
 
           describe 'with aggregations' do
             before(:all) do
-              @carto_layer.options[:query_wrapper] = 'voodo in the (<%= sql %>)'
+              @carto_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'
               @carto_layer.save
               @visualization.reload
 
@@ -136,8 +136,9 @@ module Carto
 
           describe 'with aggregations' do
             before(:all) do
-              @torque_layer.options[:query_wrapper] = 'voodo in the (<%= sql %>)'
+              @torque_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'
               @torque_layer.save
+              @visualization.reload
 
               @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
@@ -145,6 +146,7 @@ module Carto
             after(:all) do
               @torque_layer.options[:query_wrapper] = nil
               @torque_layer.save
+              @visualization.reload
               @template_hash = nil
             end
 
@@ -153,7 +155,7 @@ module Carto
             end
 
             it 'should wrap sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should be_nil
+              @template_hash[:layergroup][:layers].second[:options][:sql].should =~ /SELECT manolo FROM/
             end
           end
         end

@@ -221,7 +221,7 @@ module Carto
         options.delete(:aggregation_column)
 
         dataview_data = {
-          type: TILER_WIDGET_TYPES[widget.type],
+          type: TILER_WIDGET_TYPES[widget.type.to_sym],
           options: options
         }
 

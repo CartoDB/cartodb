@@ -140,7 +140,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   private
 
   def set_external_source
-    @external_source = params[:remote_visualization_id].present? ? 
+    @external_source = params[:remote_visualization_id].present? ?
                                                 get_external_source(params[:remote_visualization_id]) : nil
   end
 
@@ -171,6 +171,13 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         } )
     end
 
+    if params[:odbc].present?
+      member_attributes.merge!(
+        service_name: 'connector',
+        service_item_id: "ODBC:#{params[:odbc]}"
+      )
+    end
+
     member_attributes
   end
 
@@ -197,6 +204,11 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     if params[:remote_visualization_id].present?
       external_source = get_external_source(params[:remote_visualization_id])
       options.merge!( { data_source: external_source.import_url.presence } )
+    elsif params[:odbc].present?
+      options.merge!(
+        service_name: 'connector',
+        service_item_id: "ODBC:#{params[:odbc]}"
+      )
     else
       url = params[:url]
       validate_url!(url) unless Rails.env.development? || Rails.env.test? || url.nil? || url.empty?
@@ -225,4 +237,3 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     external_source
   end
 end
-

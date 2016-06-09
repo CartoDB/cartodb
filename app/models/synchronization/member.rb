@@ -179,40 +179,11 @@ module CartoDB
           raise CartoDB::Datasources::AuthError.new('User is not authorized to sync tables')
         end
 
-        downloader    = get_downloader
-
-        post_import_handler = CartoDB::Importer2::PostImportHandler.new
-        unless downloader.datasource.nil?
-          case downloader.datasource.class::DATASOURCE_NAME
-            when Url::ArcGIS::DATASOURCE_NAME
-              post_import_handler.add_fix_geometries_task
-            when Search::Twitter::DATASOURCE_NAME
-              post_import_handler.add_transform_geojson_geom_column
-          end
+        if service_name == 'connector'
+          runner = get_connector
+        else
+          runner = get_runner
         end
-
-        runner = CartoDB::Importer2::Runner.new({
-                                                  pg: pg_options,
-                                                  downloader: downloader,
-                                                  log: log,
-                                                  user: user,
-                                                  unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
-                                                  post_import_handler: post_import_handler,
-                                                  importer_config: Cartodb.config[:importer]
-                                                })
-        runner.loader_options = ogr2ogr_options.merge content_guessing_options
-
-        runner.include_additional_errors_mapping(
-          {
-              AuthError                   => 1011,
-              DataDownloadError           => 1011,
-              TokenExpiredOrInvalidError  => 1012,
-              DatasourceBaseError         => 1012,
-              InvalidServiceError         => 1012,
-              MissingConfigurationError   => 1012,
-              UninitializedError          => 1012
-          }
-        )
 
         database = user.in_database
         importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
@@ -267,6 +238,54 @@ module CartoDB
         CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount.new({
               user: user, redis: { db: $users_metadata }
             }).decrement!
+      end
+
+      def get_runner
+        downloader    = get_downloader
+
+        post_import_handler = CartoDB::Importer2::PostImportHandler.new
+        unless downloader.datasource.nil?
+          case downloader.datasource.class::DATASOURCE_NAME
+            when Url::ArcGIS::DATASOURCE_NAME
+              post_import_handler.add_fix_geometries_task
+            when Search::Twitter::DATASOURCE_NAME
+              post_import_handler.add_transform_geojson_geom_column
+          end
+        end
+
+        runner = CartoDB::Importer2::Runner.new({
+                                                  pg: pg_options,
+                                                  downloader: downloader,
+                                                  log: log,
+                                                  user: user,
+                                                  unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+                                                  post_import_handler: post_import_handler,
+                                                  importer_config: Cartodb.config[:importer]
+                                                })
+        runner.loader_options = ogr2ogr_options.merge content_guessing_options
+
+        runner.include_additional_errors_mapping(
+          {
+              AuthError                   => 1011,
+              DataDownloadError           => 1011,
+              TokenExpiredOrInvalidError  => 1012,
+              DatasourceBaseError         => 1012,
+              InvalidServiceError         => 1012,
+              MissingConfigurationError   => 1012,
+              UninitializedError          => 1012
+          }
+        )
+
+        runner
+      end
+
+      def get_connector
+        CartoDB::Importer2::Connector.new(
+          service_item_id,
+          user: user,
+          pg: pg_options,
+          log: log
+        )
       end
 
       def notify
@@ -542,4 +561,3 @@ module CartoDB
     end
   end
 end
-

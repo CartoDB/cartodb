@@ -139,6 +139,21 @@ module CartoDB
       what_about: "The resource you are trying to reach is accessible but the file transfer was shorter or larger than expected. This happens when the server first reports an expected transfer size, and then delivers data that doesn't match the previously given size. Please, try again.",
       source: ERROR_SOURCE_USER
     },
+    1500 => {
+      title: 'Connector error',
+      what_about: "The connector used to fetch the resourced failed.",
+      source: ERROR_SOURCE_USER
+    },
+    1501 => {
+      title: 'Connector invalid channel',
+      what_about: "Type of connector you were trying to use is invalid or unsupported",
+      source: ERROR_SOURCE_USER
+    },
+    1502 => {
+      title: 'Connector invalid parameters',
+      what_about: "The connector couldn't be configure because the parameters were not valid.",
+      source: ERROR_SOURCE_USER
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",

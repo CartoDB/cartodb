@@ -24,6 +24,7 @@ require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../lib/cartodb/event_tracker'
+require_relative '../../services/importer/lib/importer/connector'
 
 require_dependency 'carto/valid_table_name_proposer'
 
@@ -267,14 +268,14 @@ class DataImport < Sequel::Model
   def data_source=(data_source)
     path = Rails.root.join("public#{data_source}").to_s
     if data_source.nil?
-      self.values[:data_type] = TYPE_DATASOURCE
-      self.values[:data_source] = ''
+      values[:data_type] = TYPE_DATASOURCE
+      values[:data_source] = ''
     elsif File.exist?(path) && !File.directory?(path)
-      self.values[:data_type] = TYPE_FILE
-      self.values[:data_source] = path
+      values[:data_type] = TYPE_FILE
+      values[:data_source] = path
     elsif Addressable::URI.parse(data_source).host.present?
-      self.values[:data_type] = TYPE_URL
-      self.values[:data_source] = data_source
+      values[:data_type] = TYPE_URL
+      values[:data_source] = data_source
     end
 
     self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
@@ -391,6 +392,7 @@ class DataImport < Sequel::Model
     self.state = STATE_UPLOADING
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
+    return new_connector      if service_name == 'connector'
     new_importer
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
@@ -671,6 +673,41 @@ class DataImport < Sequel::Model
     importer.nil? ? false : importer.success?
   end
 
+  def new_connector
+    tracker = lambda do |state|
+      self.state = state
+      save
+    end
+    database_options = pg_options
+
+    self.host = database_options[:host]
+
+    connector = CartoDB::Importer2::Connector.new(
+      service_item_id,
+      user: current_user,
+      pg: database_options,
+      log: log
+    )
+
+    registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
+    quota_checker = CartoDB::QuotaChecker.new(current_user)
+    database      = current_user.in_database
+    destination_schema = current_user.database_schema
+    public_user_roles = current_user.db_service.public_user_roles
+    overviews_creator = CartoDB::Importer2::Overviews.new(connector, current_user)
+    importer = CartoDB::Connector::Importer.new(
+      connector, registrar, quota_checker, database, id,
+      overviews_creator,
+      destination_schema, public_user_roles
+    )
+    log.append 'Before importer run'
+    importer.run(tracker)
+    log.append 'After importer run'
+
+    store_results(importer, connector)
+    importer.nil? ? false : importer.success?
+  end
+
   # Note: Assumes that if importer is nil an error happened
   # @param importer CartoDB::Connector::Importer|nil
   # @param runner CartoDB::Importer2::Runner|nil
@@ -686,7 +723,7 @@ class DataImport < Sequel::Model
       self.runner_warnings = runner.warnings.to_json if !runner.warnings.empty?
 
       # http_response_code is only relevant if a direct download is performed
-      if !runner.nil? && datasource_provider.providers_download_url?
+      if runner && datasource_provider && datasource_provider.providers_download_url?
         self.http_response_code = runner.downloader.http_response_code
       end
 
@@ -744,6 +781,7 @@ class DataImport < Sequel::Model
   end
 
   def get_datasource_provider
+    return nil if service_name == 'connector'
     datasource_name = (service_name.nil? || service_name.size == 0) ? Url::PublicUrl::DATASOURCE_NAME : service_name
     if service_item_id.nil? || service_item_id.size == 0
       self.service_item_id = data_source
@@ -849,7 +887,7 @@ class DataImport < Sequel::Model
     if data_import.success && data_import.table_id && data_import.migrate_table.nil? && data_import.from_query.nil? &&
        data_import.table_copy.nil?
       datasource = get_datasource_provider
-      if datasource.persists_state_via_data_import?
+      if datasource && datasource.persists_state_via_data_import?
         decoration = datasource.get_audit_stats
       end
     end
@@ -928,14 +966,14 @@ class DataImport < Sequel::Model
   end
 
   def set_datasource_audit_to_complete(datasource, table_id = nil)
-    if datasource.persists_state_via_data_import?
+    if datasource && datasource.persists_state_via_data_import?
       datasource.data_import_item = self
       datasource.set_audit_to_completed(table_id)
     end
   end
 
   def set_datasource_audit_to_failed(datasource)
-    if datasource.persists_state_via_data_import?
+    if datasource && datasource.persists_state_via_data_import?
       datasource.data_import_item = self
       datasource.set_audit_to_failed
     end

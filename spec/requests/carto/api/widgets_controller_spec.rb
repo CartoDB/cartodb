@@ -304,11 +304,8 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'contains widget data' do
-        parent_mock = mock
-        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
-        parent_mock.stubs(:username).returns(@user1.username)
+        template = Carto::NamedMaps::Template.new(@visualization).to_hash
 
-        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
         widget_options = template[:layergroup][:layers][0][:options][:widgets]
         widget_options.should_not be_nil
         widget_options.length.should == 1
@@ -325,11 +322,8 @@ describe Carto::Api::WidgetsController do
       end
 
       it 'layer options contains widget data for layer widgets' do
-        parent_mock = mock
-        parent_mock.stubs(:vizjson_config).returns(tiler: { filter: '' })
-        parent_mock.stubs(:username).returns(@user1.username)
+        template = Carto::NamedMaps::Template.new(@visualization).to_hash
 
-        template = CartoDB::NamedMapsWrapper::NamedMap.get_template_data(@visualization, parent_mock)
         widget_options = template[:layergroup][:layers][0][:options][:widgets]
         widget_options.should_not be_nil
         widget_options.length.should == 1

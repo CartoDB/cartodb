@@ -46,8 +46,8 @@ describe Api::Json::VisualizationsController do
       table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
       Carto::NamedMaps::Api.any_instance
-                                          .stubs(:create)
-                                          .raises(CartoDB::NamedMapsWrapper::HTTPResponseError)
+                           .stubs(:create)
+                           .raises('manolos')
 
       put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
       {

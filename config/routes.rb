@@ -47,7 +47,7 @@ CartoDB::Application.routes.draw do
 
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
-    scope '/builder', module: :editor do
+    scope '/builder', module: :editor, as: :editor do
       # Visualizations
       resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
         namespace :public, path: '/' do

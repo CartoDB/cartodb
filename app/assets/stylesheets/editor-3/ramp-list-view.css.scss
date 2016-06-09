@@ -1,0 +1,15 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.CustomRamp {
+  display: flex;
+}
+
+.CustomRamp > div {
+  flex: 1;
+}
+.CustomRamp-clear {
+  color: $cLink;
+}
+

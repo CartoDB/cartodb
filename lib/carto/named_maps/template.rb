@@ -17,7 +17,7 @@ module Carto
         'time-series': 'histogram'
       }.freeze
 
-      WIDGET_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column].freeze
+      DATAVIEW_TEMPLATE_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column].freeze
 
       def initialize(visualization)
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
@@ -216,7 +216,7 @@ module Carto
       end
 
       def dataview_data(widget)
-        options = widget.options.select { |k, _v| WIDGET_OPTIONS.include?(k) }
+        options = widget.options.select { |k, _v| DATAVIEW_TEMPLATE_OPTIONS.include?(k) }
         options[:aggregationColumn] = options[:aggregation_column]
         options.delete(:aggregation_column)
 

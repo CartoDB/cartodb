@@ -27,7 +27,7 @@ class SamlController < ApplicationController
 
     logger.info "uuid after calling Saml " + scope
 
-    user = authenticate!(:saml_header, {}, :scope => scope) unless authenticated?(scope)
+    user = authenticate!(:saml_header, {}, :scope => scope)
 
     if user == nil
       @organization = BBOrganization.new

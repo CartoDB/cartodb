@@ -1,6 +1,6 @@
 # encoding utf-8
 
-require_relative '../../../spec_helper_min.rb'
+require_relative '../../../spec_helper_min'
 require_relative '../../../../lib/carto/named_maps/template'
 
 module Carto
@@ -229,60 +229,76 @@ module Carto
       end
 
       describe '#layergroup' do
+        it 'should not have any dataview if no widgets are present' do
+          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+          template_hash[:layergroup][:dataviews].should be_empty
+        end
+
+        it 'should not have any analysis if no analyses are present' do
+          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+          template_hash[:layergroup][:analyses].should be_empty
+        end
+
         describe 'dataviews' do
           before(:all) do
             @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @widget = FactoryGirl.create(:widget, layer: @carto_layer)
             @visualization.reload
+
+            @dataview_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:dataviews]
+            @template_widget = @dataview_hash[@widget.id]
           end
 
           after(:all) do
             @carto_layer.destroy
+            @widget.destroy
             @visualization.reload
-          end
 
-          it 'should not add any dataview if no widgets are present' do
-            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-
-            template_hash[:layergroup][:dataviews].should be_empty
+            @dataview_hash = nil
+            @template_widget = nil
           end
 
           it 'should add dataviews if widgets are present' do
-            widget = FactoryGirl.create(:widget, layer: @carto_layer)
-            @visualization.reload
+            @dataview_hash.should_not be_empty
+            @template_widget.should_not be_nil
+          end
 
-            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          it 'should add type correctly' do
+            @template_widget[:type].should eq Carto::NamedMaps::Template::TILER_WIDGET_TYPES[@widget.type.to_sym]
+          end
 
-            dataviews = template_hash[:layergroup][:dataviews]
+          it 'should have only required options' do
+            expected_options = @widget.options.merge(aggregationColumn: nil).select do |k, _v|
+              Carto::NamedMaps::Template::DATAVIEW_TEMPLATE_OPTIONS.include?(k)
+            end
 
-            dataviews.should_not be_empty
-
-            template_widget = dataviews.first[widget.id.to_sym]
-            template_widget.should_not be_nil
-
-            template_widget[:type].should eq Carto::NamedMaps::Template::TILER_WIDGET_TYPES[widget.type]
-
-            template_widget[:options].should eq widget.options.merge(aggregationColumn: nil)
-
-            widget.destroy
-            @visualization.reload
+            @template_widget[:options].should eq expected_options
           end
         end
 
         describe '#analyses' do
-          it 'should not add any analysis if no analyses are present' do
-            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          before(:all) do
+            @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+            @visualization.reload
 
-            template_hash[:layergroup][:analyses].should be_empty
+            @analysis_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:analyses].first
+          end
+
+          after(:all) do
+            @analysis.destroy
+            @visualization.reload
+
+            @analysis_hash = nil
           end
 
           it 'should add analyses if analyses are present' do
-            analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
-            @visualization.reload
+            @analysis_hash.should_not be_nil
+          end
 
-            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-
-            template_hash[:layergroup][:analyses].first.should_not be_nil
-            template_hash[:layergroup][:analyses].first.should eq analysis.analysis_definition
+          it 'should have the right definition' do
+            @analysis_hash.should eq @analysis.analysis_definition
           end
         end
       end

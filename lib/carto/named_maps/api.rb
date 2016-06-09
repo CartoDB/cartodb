@@ -63,7 +63,7 @@ module Carto
         end
       end
 
-      def update
+      def update(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.update') do
           template = Carto::NamedMaps::Template.new(@visualization)
 
@@ -75,6 +75,9 @@ module Carto
           response_code_string = response.code.to_s
           if response_code_string =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
+          elsif retries < MAX_RETRY_ATTEMPTS
+            sleep(RETRY_TIME_SECONDS**retries)
+            update(retries: retries + 1)
           else
             log_response(response, 'update')
             raise "Carto::NamedMaps::Api: Could not update named map (code: #{response_code_string})"

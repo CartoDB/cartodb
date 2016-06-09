@@ -2334,7 +2334,7 @@ describe Table do
       table.privacy = UserTable::PRIVACY_PRIVATE
       expect do
         table.save
-      end.to raise 'Manolo is a nice guy, this test is not.'
+      end.to raise_error 'Manolo is a nice guy, this test is not.'
 
       @restore_called.should eq true
 
@@ -2352,14 +2352,14 @@ describe Table do
           @restore_called = true
           true
         else
-          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing affected visualization named map update")
+          raise 'Manolo is a nice guy, this test is not.'
         end
       end
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       expect do
         table.save
-      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+      end.to raise_error 'Manolo is a nice guy, this test is not.'
 
       table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 

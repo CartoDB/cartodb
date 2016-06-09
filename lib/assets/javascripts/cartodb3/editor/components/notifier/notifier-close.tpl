@@ -1,0 +1,1 @@
+<div class="CDB-Shape-close is-blue is-large js-theme"></div>

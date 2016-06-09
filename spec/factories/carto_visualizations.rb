@@ -19,7 +19,7 @@ module Carto
         data_layer: nil)
 
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
-        visualization = FactoryGirl.create(:carto_visualization, user_id: carto_user.id, map: map)
+        visualization = FactoryGirl.create(:carto_visualization, user: carto_user, map: map)
 
         unless data_layer.present?
           data_layer = visualization.map.data_layers.first

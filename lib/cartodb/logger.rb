@@ -64,7 +64,8 @@ module CartoDB
         error_msg += "#{k}: #{v}\n"
       end
 
-      ::Logger.new(STDOUT).error(error_msg)
+      rails_level = level == 'warning' ? :warn : level.to_sym
+      Rails.logger.send(rails_level, error_msg)
     end
     private_class_method :report_error_to_console
   end

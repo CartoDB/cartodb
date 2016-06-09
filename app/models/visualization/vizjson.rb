@@ -70,8 +70,6 @@ module CartoDB
         auth_tokens = auth_tokens_for(visualization)
         poro_data.merge!(auth_tokens: auth_tokens) if auth_tokens.length > 0
 
-        children = children_for(visualization)
-        poro_data.merge!(slides: children) if children.length > 0
         unless visualization.parent_id.nil?
           poro_data[:title] = visualization.parent.qualified_name(@user)
           poro_data[:description] = visualization.parent.description_html_safe
@@ -205,10 +203,6 @@ module CartoDB
         ordered_overlays_for(visualization).map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_vizjson_poro
         end
-      end
-
-      def children_for(visualization)
-        visualization.children.map(&:to_vizjson)
       end
 
       def ordered_overlays_for(visualization)

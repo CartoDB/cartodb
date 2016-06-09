@@ -367,7 +367,7 @@ module Carto
       end
 
       def merge_into_if_present(hash, key, hash_value)
-        hash[key] = hash_value.merge!(hash[key] || {}) if hash_value.present?
+        hash[key] = hash_value.deep_merge!(hash[key] || {}) if hash_value.present?
 
         hash
       end
@@ -401,8 +401,7 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        stroke_mapping = wpp['geometry_type'] == 'line' ? STROKE_FROM_LINE_MAPPING : STROKE_FROM_POLIGON_MAPPING
-        merge_into_if_present(spp, 'stroke', generate_stroke(wpp, stroke_mapping))
+        merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 
         merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))
 
@@ -446,6 +445,8 @@ module Carto
         merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_dimension_properties(wpp))
 
         case @source_type
+        when 'polygon'
+          fill['size'] = { 'fixed' => wpp['marker-width'] }.merge(fill['size'] || {})
         when 'choropleth', 'category'
           fill['size'] = { 'fixed' => 10 }.merge(fill['size'] || {})
         when 'torque_heat'
@@ -457,7 +458,7 @@ module Carto
         fill
       end
 
-      STROKE_FROM_POLIGON_MAPPING = {
+      STROKE_FROM_POINT_MAPPING = {
         'size' => {
           "marker-line-width" => 'fixed'
         },
@@ -467,7 +468,7 @@ module Carto
         }
       }.freeze
 
-      STROKE_FROM_LINE_MAPPING = {
+      STROKE_FROM_NON_POINT_MAPPING = {
         'size' => {
           "line-width" => 'fixed'
         },
@@ -477,7 +478,9 @@ module Carto
         }
       }.freeze
 
-      def generate_stroke(wpp, stroke_mapping)
+      def generate_stroke(wpp)
+        stroke_mapping = wpp['geometry_type'] == 'point' ? STROKE_FROM_POINT_MAPPING : STROKE_FROM_NON_POINT_MAPPING
+
         stroke = {}
 
         merge_into_if_present(stroke, 'size', apply_direct_mapping({}, wpp, stroke_mapping['size']))

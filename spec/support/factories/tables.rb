@@ -32,7 +32,7 @@ module CartoDB
 
     def create_visualization(user, attributes = {})
       headers = {'CONTENT_TYPE'  => 'application/json'}
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
       post_json api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), visualization_template(user, attributes) do |response|
         id = response.body[:id]
         CartoDB::Visualization::Member.new(id: id).fetch

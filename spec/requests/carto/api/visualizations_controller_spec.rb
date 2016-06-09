@@ -557,7 +557,7 @@ describe Carto::Api::VisualizationsController do
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         vis_1_id = create_visualization(@user_1).id
 
@@ -624,7 +624,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
 
       it 'tests totals calculations' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         # user 1 will have 1 table and 1 vis
         # user 2 will have 2 of each
@@ -794,7 +794,7 @@ describe Carto::Api::VisualizationsController do
     describe 'index endpoint' do
 
       it 'tests normal users authenticated and unauthenticated calls' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         collection = CartoDB::Visualization::Collection.new.fetch(user_id: @user_2.id)
         collection.map(&:delete)
@@ -842,7 +842,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'tests organization users authenticated and unauthenticated calls' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         organization = test_organization.save
 
@@ -917,7 +917,7 @@ describe Carto::Api::VisualizationsController do
 
     describe 'GET /api/v1/viz' do
       before(:each) do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
@@ -1024,7 +1024,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'creates a visualization from a list of tables' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         table1 = table_factory
         table2 = table_factory
         table3 = table_factory
@@ -1068,7 +1068,7 @@ describe Carto::Api::VisualizationsController do
     describe 'GET /api/v1/viz/:id' do
 
       before(:each) do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
@@ -1394,12 +1394,12 @@ describe Carto::Api::VisualizationsController do
 
     describe 'tests visualization listing filters' do
       before(:each) do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
       it 'uses locked filter' do
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         post api_v1_visualizations_create_url(api_key: @api_key), factory(@user_1, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')

@@ -7,7 +7,7 @@ require_relative '../../app/helpers/bounding_box_helper'
 describe Map do
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    bypass_named_maps
 
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
     @table = create_table(user_id: @user.id)

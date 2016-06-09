@@ -417,7 +417,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 
@@ -577,7 +577,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#source_visualization_id_and_hierarchy' do
     it 'checks proper working of parent_id' do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 

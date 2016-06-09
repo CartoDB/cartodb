@@ -201,7 +201,7 @@ module Carto
         dataviews = {}
 
         @visualization.widgets.each do |widget|
-          dataviews["#{widget.id}"] = dataview_data(widget)
+          dataviews[widget.id.to_s] = dataview_data(widget)
         end
 
         dataviews

@@ -72,10 +72,12 @@ module Carto
 
           response = http_client.put(url(template_name: template.name), params)
 
-          if response.code.to_s =~ /^2/
+          response_code_string = response.code.to_s
+          if response_code_string =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
           else
             log_response(response, 'update')
+            raise "Carto::NamedMaps::Api: Could not update named map (code: #{response_code_string})"
           end
         end
       end

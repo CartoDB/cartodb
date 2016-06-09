@@ -91,7 +91,6 @@ module Carto
           layers.push(type: type, options: options)
         end
 
-
         @visualization.map.layers.select(&:torque?).each do |layer|
           index += 1
           type, options = type_and_options_for_torque_layers(layer, index)
@@ -120,7 +119,7 @@ module Carto
       end
 
       def type_and_options_for_cartodb_layers(layer, index)
-        options = common_options_for_non_basemap_layers(layer, index)
+        options = common_options_for_carto_and_torque_layers(layer, index)
 
         layer_options = layer.options
         layer_options_sql_wrap = layer_options[:sql_wrap]
@@ -136,10 +135,10 @@ module Carto
       end
 
       def type_and_options_for_torque_layers(layer, index)
-        ['torque', common_options_for_non_basemap_layers(layer, index)]
+        ['torque', common_options_for_carto_and_torque_layers(layer, index)]
       end
 
-      def common_options_for_non_basemap_layers(layer, index)
+      def common_options_for_carto_and_torque_layers(layer, index)
         layer_options = layer.options
 
         options = {

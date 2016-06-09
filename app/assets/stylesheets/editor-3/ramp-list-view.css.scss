@@ -2,17 +2,16 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
-.CustomRamp-list {
-  border-top: 1px solid #DDD;
-}
 .CustomRamp {
   display: flex;
 }
-
-.CustomRamp > div {
+.CustomRamp .CustomRamp-list {
   flex: 1;
 }
+.CustomRamp-list {
+  border-top: 1px solid #DDD;
+}
 .CustomRamp-clear {
+  padding: 12px 12px 12px 0;
   color: $cBlue;
 }
-

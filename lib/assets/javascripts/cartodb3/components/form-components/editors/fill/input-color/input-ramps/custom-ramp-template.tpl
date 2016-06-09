@@ -1,6 +1,6 @@
 <% if (customRamp && customRamp.length) { %>
 <li class="CDB-ListDecoration-item CustomList-item CustomRamp js-customRampItem">
-  <div class="CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-customRamp js-listItemLink is-selected">
+  <div class="CustomRamp-list CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-customRamp js-listItemLink is-selected">
     <ul class="ColorBarContainer">
       <% _.each(customRamp, function (color) { %>
       <li class="ColorBar ColorBar--spaceless" style="background-color: <%- color %>;"></li>

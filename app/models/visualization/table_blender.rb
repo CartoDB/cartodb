@@ -15,6 +15,9 @@ module CartoDB
 
         copier.copy_base_layer(maps.first, destination_map)
         maps.each { |map| copier.copy_data_layers(map, destination_map) }
+
+        destination_map.user = user
+        destination_map.save
         destination_map
       end
 
@@ -30,4 +33,3 @@ module CartoDB
     end
   end
 end
-

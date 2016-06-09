@@ -426,7 +426,7 @@
       "columns": {
         "create": {
           "loading": "Adding new column...",
-          "error": "Error adding %{column_name} column: %{error}",
+          "error": "Error adding new column: %{error}",
           "success": "Column %{column_name} added"
         }
       },

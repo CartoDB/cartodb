@@ -8,7 +8,7 @@ RSpec.configure do |c|
 end
 describe CartoDB::DataMover::ExportJob do
   before :each do
-    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true, delete: true)
+    bypass_named_maps
     @tmp_path = Dir.mktmpdir("mover-test") + '/'
   end
 

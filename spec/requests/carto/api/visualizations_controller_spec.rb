@@ -129,7 +129,7 @@ describe Carto::Api::VisualizationsController do
         height: height), @headers
       last_response.status.should == 302
 
-      tpl_id = Carto::NamedMaps::Template.new(@table1.table_visualization).name
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
@@ -149,7 +149,7 @@ describe Carto::Api::VisualizationsController do
       ), @headers
       last_response.status.should == 302
 
-      tpl_id = Carto::NamedMaps::Template.new(@table1.table_visualization).name
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://cdn.local.lan/#{@user_1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
@@ -181,7 +181,7 @@ describe Carto::Api::VisualizationsController do
         height: height
       ), @headers
       last_response.status.should == 302
-      tpl_id = Carto::NamedMaps::Template.new(@table1.table_visualization).name
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
 
       get api_v2_visualizations_static_map_url(
@@ -200,7 +200,7 @@ describe Carto::Api::VisualizationsController do
         height: height
       ), @headers
       last_response.status.should == 302
-      tpl_id = Carto::NamedMaps::Template.new(@table1.table_visualization).name
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 

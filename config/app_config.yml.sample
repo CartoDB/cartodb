@@ -410,6 +410,14 @@ defaults: &defaults
         name: 'CartoDB World Midnight Commander'
         className: 'midnight_cartodb'
         attribution: ''
+      antique_cartodb:
+        url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
+        subdomains: 'abcd'
+        minZoom: 0
+        maxZoom: 10
+        name: 'CartoDB World Antique'
+        className: 'antique_cartodb'
+        attribution: ''
     Stamen:
       toner_stamen_labels:
         url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png'

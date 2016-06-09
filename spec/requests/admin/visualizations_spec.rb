@@ -580,7 +580,8 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside user with public schema' do
-      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" },
+                        @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url

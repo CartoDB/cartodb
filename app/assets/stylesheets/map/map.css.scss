@@ -163,6 +163,7 @@ div.map {
     @include size(100%, 66px);
     background-color: $DarkGrey8;
     border-bottom: 1px solid $Black;
+    box-sizing: border-box;
     padding: 3px 7px 4px;
     &.animated {
       overflow:hidden;
@@ -434,7 +435,7 @@ div.map {
 
   &.derived div.cartodb-map {
 
-    @include position(74px, 64px, 0px, 0px);
+    @include position(66px, 64px, 0, 0);
     @include size(auto);
 
   }

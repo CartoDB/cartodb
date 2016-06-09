@@ -44,3 +44,9 @@
 .Mosaic-item.is-selected {
   border: 2px solid $cBlue;
 }
+.Mosaic-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background-size: 100%;
+}

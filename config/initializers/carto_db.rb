@@ -28,15 +28,22 @@ module CartoDB
   # @param params Hash Parameters to send to the url (Optional)
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
   def self.url(context, path, params={}, user = nil)
+    # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
+    CartoDB.base_url_from_request(context.request, user) + context.polymorphic_path(path, params.merge({user_domain:nil}))
+  end
+
+  # Helper method to encapsulate Rails base URL generation compatible with our subdomainless mode
+  # @param request A request to extract subdomain and parameters from
+  # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
+  def self.base_url_from_request(request, user = nil)
     if user.nil?
-      subdomain = self.extract_subdomain(context.request)
+      subdomain = self.extract_subdomain(request)
       org_username = nil
     else
       subdomain = user.subdomain
       org_username = user.organization_username
     end
-    # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
-    CartoDB.base_url(subdomain, org_username) + context.polymorphic_path(path, params.merge({user_domain:nil}))
+    CartoDB.base_url(subdomain, org_username)
   end
 
   # Helper method to encapsulate Rails URL path generation compatible with our subdomainless mode

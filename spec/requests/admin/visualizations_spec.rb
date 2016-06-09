@@ -414,35 +414,35 @@ describe Admin::VisualizationsController do
 
       login_host(user_b, org)
 
-      get CartoDB.url(@mock_context, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should be(404)
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(@mock_context, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(403), "#{forbidden_endpoint} is #{last_response.status}"
-      }
+      end
 
       perm = vis.permission
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      get CartoDB.url(@mock_context, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
       url = CartoDB.base_url(org.name, user_b.username) +
-        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
+            CartoDB.path(self, 'public_visualizations_show', id: "#{user_a.username}.#{vis.name}") + "?redirected=true"
       last_response.location.should eq url
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(@mock_context, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
         last_response.length.should >= 100
-      }
+      end
       org.destroy
     end
 

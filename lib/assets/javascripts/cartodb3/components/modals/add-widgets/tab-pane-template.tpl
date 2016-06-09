@@ -1,4 +1,4 @@
-<div class="WidgetList-fakeInner">
-  <ul class="Editor-navButtons js-menu"></ul>
+<ul class="WidgetList-nav js-menu"></ul>
+<div class="u-inner">
   <div class="js-content"></div>
 </div>

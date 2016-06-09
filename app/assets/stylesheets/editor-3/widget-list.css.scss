@@ -5,11 +5,7 @@
 .WidgetList {
   @include display-flex;
   flex-wrap: wrap;
-}
-
-.WidgetList-fakeInner { // TODO: REMOVE ME
-  width: 940px;
-  margin: auto;
+  padding-top: 105px;
 }
 
 .WidgetList-option {
@@ -57,6 +53,12 @@
   border-radius: 2px;
   background: $cThirdBackground;
 }
-
-
-
+.WidgetList-nav {
+  @include display-flex();
+  @include justify-content(center);
+  padding: $baseSize * 4 0;
+  width: 100%;
+  position: fixed;
+  background-color: $cThirdBackground;
+  z-index: 1;
+}

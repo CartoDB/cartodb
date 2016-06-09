@@ -4,18 +4,24 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 
-FactoryGirl.define do
-  SOURCE_ANALYSIS_DEFINITION = {
-    id: unique_string,
-    type: "source",
-    params: {
-      query: "select * from subway_stops"
+module AnalysisFactoryHelper
+  def self.source_analysis_for_table(table_name)
+    {
+      id:      unique_string,
+      type:    'source',
+      params:  { query: "select * from #{table_name}" },
+      options: { table_name: table_name }
     }
-  }.freeze
+  end
+end
 
+FactoryGirl.define do
   factory :source_analysis, class: Carto::Analysis do
+    ignore do
+      source_table 'subway_stops'
+    end
 
-    analysis_definition { SOURCE_ANALYSIS_DEFINITION }
+    analysis_definition { AnalysisFactoryHelper.source_analysis_for_table(source_table) }
 
     factory :analysis, class: Carto::Analysis do
       created_at { Time.now }
@@ -24,12 +30,16 @@ FactoryGirl.define do
   end
 
   factory :analysis_with_source, class: Carto::Analysis do
+    ignore do
+      source_table 'subway_stops'
+    end
+
     analysis_definition do
       {
         id: unique_string,
         type: "buffer",
         params: {
-          source: SOURCE_ANALYSIS_DEFINITION
+          source: AnalysisFactoryHelper.source_analysis_for_table(source_table)
         }
       }
     end

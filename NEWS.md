@@ -1,6 +1,13 @@
 3.14.0 (2016-XX-XX)
 -------------------
 
+### NOTICE
+This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
+ghost tables, importing common data and automatic index creation.
+
+### Features
+* Automatic creation of indexes on columns affected by a widget
+
 ### Bug Fixes
 * Incorrect error message when password validation failed
 
@@ -59,7 +66,8 @@ which should be fixed manually.
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
 * Disables data library when it is not configured (e.g: offline installations).
 * Disables external file services when not configured (e.g: offline installations).
-* Update dataservices-api client to version 0.3.0 (routing functions)
+* Update dataservices-api client to version 0.3.0 (routing functions).
+* Migration from wizard properties to style properties.
 
 ## Bug Fixes
 * Sharing tables with groups fix for name collision.

@@ -53,6 +53,7 @@ module Carto
             before(:all) do
               @carto_layer.options[:query_wrapper] = 'voodo in the (<%= sql %>)'
               @carto_layer.save
+              @visualization.reload
 
               @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
@@ -60,6 +61,7 @@ module Carto
             after(:all) do
               @carto_layer.options[:query_wrapper] = nil
               @carto_layer.save
+              @visualization.reload
               @template_hash = nil
             end
 

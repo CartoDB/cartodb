@@ -45,7 +45,7 @@ describe Table do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do

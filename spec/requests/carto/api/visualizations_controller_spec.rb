@@ -1712,7 +1712,7 @@ describe Carto::Api::VisualizationsController do
 
     describe 'normal user urls' do
       before(:all) do
-        stub_named_maps_calls
+        bypass_named_maps
         @vis_owner = FactoryGirl.create(:valid_user, private_tables_enabled: true)
         @other_user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
@@ -1792,7 +1792,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
 
       before(:each) do
-        stub_named_maps_calls
+        bypass_named_maps
 
         @vis_owner = @org_user_1
         @shared_vis = FactoryGirl.build(:derived_visualization,

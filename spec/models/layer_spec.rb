@@ -9,14 +9,14 @@ describe Layer do
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   before(:each) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     @table = Table.new
     @table.user_id = @user.id

@@ -17,19 +17,19 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
   # let(:params) { { api_key: @user.api_key } }
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     host! "#{@user.username}.localhost.lan"
   end
 
   after(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data @user
   end
 

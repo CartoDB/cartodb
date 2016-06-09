@@ -35,7 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     begin
       delete_user_data @user
@@ -51,7 +51,7 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 

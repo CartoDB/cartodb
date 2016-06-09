@@ -20,7 +20,7 @@ shared_examples_for 'vizjson generator' do
     TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     before(:all) do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @api_key = @user_1.api_key

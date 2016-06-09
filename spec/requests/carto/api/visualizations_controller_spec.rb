@@ -1474,7 +1474,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns an empty array if no other user is watching' do
         CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
-        Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+        bypass_named_maps
 
         login(@user_1_1)
         post api_v1_visualizations_create_url(api_key: @user_1_1.api_key), factory(@user_1_1, locked: true).to_json, @headers

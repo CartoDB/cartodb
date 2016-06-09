@@ -361,7 +361,7 @@ describe Table do
         @user, table.table_visualization
       ).copy
 
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       derived_vis.store
       table.reload
 
@@ -392,7 +392,7 @@ describe Table do
           @user, table.table_visualization
       ).copy
 
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       derived_vis.store
       table.reload
 
@@ -726,7 +726,7 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
@@ -735,7 +735,7 @@ describe Table do
     end
 
     before(:each) do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
     end
 
     it "should remove the automatic_geocoding" do
@@ -770,7 +770,7 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
-      Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       table   = create_table(name: 'bogus_name', user_id: @user.id)
       source  = table.table_visualization
       derived = CartoDB::Visualization::Copier.new(@user, source).copy

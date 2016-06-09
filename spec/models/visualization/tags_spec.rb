@@ -15,7 +15,7 @@ describe Visualization::Tags do
     @db = Rails::Sequel.connection
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s

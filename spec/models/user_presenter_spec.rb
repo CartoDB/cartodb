@@ -9,7 +9,7 @@ describe Carto::Api::UserPresenter do
   end
 
   it "Compares old and new ways of 'presenting' user data" do
-    Carto::NamedMaps::Api.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     # Non-org user
     user = create_user({

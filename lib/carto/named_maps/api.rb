@@ -8,7 +8,7 @@ module Carto
     class Api
       HTTP_CONNECT_TIMEOUT_SECONDS = 45
       HTTP_REQUEST_TIMEOUT_SECONDS = 60
-      RETRY_TIME_SECONDS = 5
+      RETRY_TIME_SECONDS = 2
       MAX_RETRY_ATTEMPTS = 3
 
       def initialize(visualization)

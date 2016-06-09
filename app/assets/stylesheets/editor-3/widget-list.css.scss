@@ -25,7 +25,7 @@
 }
 .WidgetList-inner {
   @include flex(1);
-  overflow: hidden;
+  min-width: 0;
 }
 .WidgetPlaceHolder {
   @include display-flex();

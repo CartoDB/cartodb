@@ -263,6 +263,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
 	spec/lib/carto/named_maps/template_spec.rb \
+	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

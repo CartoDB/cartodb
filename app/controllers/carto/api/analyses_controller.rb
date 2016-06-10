@@ -1,6 +1,6 @@
 # encoding: utf-8
 require_dependency 'carto/uuidhelper'
-require_relative '../editor/editor_users_module'
+require_relative '../builder/builder_users_module'
 
 module Carto
   module Api

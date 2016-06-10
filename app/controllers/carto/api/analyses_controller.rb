@@ -11,7 +11,7 @@ module Carto
 
       ssl_required :show, :create, :update, :destroy
 
-      before_filter :editor_users_only
+      before_filter :builder_users_only
       before_filter :load_visualization
       before_filter :check_user_can_add_analysis, only: [:show, :create, :update, :destroy]
       before_filter :load_analysis, only: [:show, :update, :destroy]

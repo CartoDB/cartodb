@@ -13,6 +13,10 @@
   "form-components": {
     "editors": {
       "fill": {
+        "switch": {
+          "to-categories": "Switch to categories",
+          "to-ramps": "Switch to ramps"
+        },
         "customize": "Custom color set",
         "quantification": {
           "title": "Quantification",

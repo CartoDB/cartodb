@@ -111,6 +111,7 @@ defaults: &defaults
       table_name: ''
   exporter:
     exporter_temporal_folder: '/tmp/exporter'
+    uploads_path: '/tmp/new_exports'
   importer:
     s3:
       access_key_id:

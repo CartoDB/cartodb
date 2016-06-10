@@ -122,12 +122,6 @@ module Carto
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
 
-        children_vizjson = @visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @redis_vizjson_cache)
-                           .to_vizjson(https_request: options[:https_request], vector: options[:vector])
-        end
-        vizjson[:slides] = children_vizjson unless children_vizjson.empty?
-
         parent = @visualization.parent
         if parent
           vizjson[:title] = parent.qualified_name(user)
@@ -575,10 +569,8 @@ module Carto
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
 
-          sql_wrap = @layer.options['sql_wrap']
-          if sql_wrap 
-            data[:sql_wrap] = sql_wrap 
-          end
+          sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+          data[:sql_wrap] = sql_wrap if sql_wrap
 
           data = decorate_with_data(data, @decoration_data)
 

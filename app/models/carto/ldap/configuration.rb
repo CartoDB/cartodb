@@ -45,16 +45,16 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   attr_readonly :user_id_field
 
   validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field,
-  :email_field, :user_object_class, :group_object_class, :presence => true
+            :email_field, :user_object_class, :group_object_class, presence: true
 
-  validates :ca_file, :length => { :minimum => 0, :allow_nil => true }
+  validates :ca_file, length: { minimum: 0, allow_nil: true }
 
-  validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
-  validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
+  validates :encryption,  inclusion: { in: [ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS], allow_nil: true }
+  validates :ssl_version, inclusion: { in: [ENCRYPTION_SSL_VERSION_TLSV1_1], allow_nil: true }
   validate :domain_bases_not_empty
 
   def domain_bases_list
-    self.domain_bases.split(DOMAIN_BASES_SEPARATOR)
+    domain_bases.split(DOMAIN_BASES_SEPARATOR) if domain_bases
   end
 
   def domain_bases_list=(list)
@@ -121,8 +121,8 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   private
 
   def domain_bases_not_empty
-    errors.add(:domain_bases, "No domain bases set") if self.domain_bases.to_s.length == 0
-    errors.add(:domain_bases_list, "Domain bases list empty") if domain_bases_list.length < 1
+    errors.add(:domain_bases, "No domain bases set") unless domain_bases.present?
+    errors.add(:domain_bases_list, "Domain bases list empty") unless domain_bases_list.present?
   end
 
   def search_in_domain_bases(filter)

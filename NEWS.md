@@ -1,3 +1,16 @@
+3.14.0 (2016-XX-XX)
+-------------------
+
+### NOTICE
+This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
+ghost tables, importing common data and automatic index creation.
+
+### Features
+* Automatic creation of indexes on columns affected by a widget
+
+### Bug Fixes
+* Incorrect error message when password validation failed
+
 3.13.0 (2016-XX-XX)
 -------------------
 ### NOTICE
@@ -47,12 +60,17 @@ which should be fixed manually.
   * Geopackage internal format.
 * Full visualization export API. Needed configuration changes:
   * New Resque queue: `exports`.
-  * `exporter.uploads_path` (`public/uploads`, for example).
+  * `exporter.uploads_path`. Set it to `public/uploads` to use Rails standard upload directory or an absolute path (such as `/tmp/export/downloads`) to make cleanup easier.
   * `s3` (see `exporter.s3` at `app_config.yml.sample`).
+  * Enabled `config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'` for nginx direct download if you''re not using S3. Needs [ngnix configuration](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel). `uploads_path` configuration path is used.
 * Update CartoDB PostgreSQL extension to 0.15.1 to support overviews.
-* Update dataservices-api client to version 0.3.0 (routing functions)
+* Disables data library when it is not configured (e.g: offline installations).
+* Disables external file services when not configured (e.g: offline installations).
+* Update dataservices-api client to version 0.3.0 (routing functions).
+* Migration from wizard properties to style properties.
 
 ## Bug Fixes
+* Sharing tables with groups fix for name collision.
 * Updating CartoDB.js submodule with last changes sanitizing attribution.
 * Fixes a problem with select2 arrow icon.
 * Disable `PROMOTE_TO_MULTI` ogr2ogr option for CSV imports with guessing enabled to avoid MultiPoint imports. (https://github.com/CartoDB/cartodb/pull/6793)
@@ -72,6 +90,7 @@ which should be fixed manually.
 * Fix broken syncs after setting sync options to "Never"
 * Fix broken visualizations due to invalid permissions
 * Check layer limits server-side
+* Fixed error duplicating datasets from the dashboard if the owner had hyphens in the name
 * Fix URL generations in some views, to correctly include the subdomain
 * Make `layers.kind` not null. Run `bundle exec rake db:migrate` to update your database
 * Remove unused and broken tool for migration of the visualization table

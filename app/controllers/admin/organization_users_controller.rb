@@ -57,12 +57,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
 
+    # Validate password first, so nicer errors are displayed
+    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
+
+    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
     @user.create_in_central
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, common_data_url)
+    ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
@@ -115,6 +119,12 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+
+    model_validation_ok = @user.valid?
+    if attributes[:password].present? || attributes[:password_confirmation].present?
+      model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
+    end
+    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 

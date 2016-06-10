@@ -80,20 +80,16 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
     it 'Tests to_poro()' do
       table_name = 'test_table'
 
-      layer_1 = Layer.create({
-          kind: 'tiled'
-        })
-      layer_1 = instance_of_tested_model(layer_1)
-      layer_2 = Layer.create({
-          kind: 'carto',
-          order: 13,
-          options: {
-            'fake' => 'value',
-            'table_name' => table_name
-            },
-          infowindow: { 'fake2' => 'val2' },
-          tooltip: { 'fake3' => 'val3' }
-        })
+      layer_2 = Layer.create(
+        kind: 'carto',
+        order: 13,
+        options: {
+          'fake' => 'value',
+          'table_name' => table_name
+        },
+        infowindow: { 'fake2' => 'val2' },
+        tooltip: { 'fake3' => 'val3' }
+      )
       layer_2 = instance_of_tested_model(layer_2)
 
       expected_poro = {
@@ -101,42 +97,49 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'kind' => 'carto',
         'order' => 13,
         'options' => {
-            'fake' => 'value',
-            'table_name' => table_name
-          },
+          'fake' => 'value',
+          'table_name' => table_name
+        },
         'infowindow' => {
-            'fake2' => 'val2'
-          },
+          'fake2' => 'val2'
+        },
         'tooltip' => {
-            'fake3' => 'val3'
-          }
+          'fake3' => 'val3'
+        }
       }
+      expected_options = expected_poro.delete('options')
 
       poro = instance_of_tested_class(layer_2).to_poro
-      poro.should == expected_poro
+      poro_options = poro.delete('options')
+
+      expect(poro).to include(expected_poro)
+      expect(poro_options).to include(expected_options)
 
       # Now add presenter options to change table_name (new way)
-      expected_poro['options']['table_name'] = "#{@user_1.database_schema}.#{table_name}"
+      expected_options['table_name'] = "#{@user_1.database_schema}.#{table_name}"
 
-      presenter_options =  {
-          viewer_user: @user_2,
-          # New presenter way of sending a viewer that's different from the owner
-          user: @user_1
-        }
+      presenter_options = {
+        viewer_user: @user_2,
+        # New presenter way of sending a viewer that's different from the owner
+        user: @user_1
+      }
 
       poro = instance_of_tested_class(layer_2, presenter_options).to_poro
-      poro.should == expected_poro
+      poro_options = poro.delete('options')
+
+      expect(poro).to include(expected_poro)
+      expect(poro_options).to include(expected_options)
 
       # old way
 
       # change state always with old model to be sure
-      layer_2 = ::Layer.where(id:layer_2.id).first
+      layer_2 = ::Layer.where(id: layer_2.id).first
       layer_2.options = {
-            'fake' => 'value',
-            'table_name' => table_name,
-            # Old presenter way of sending a viewer
-            'user_name' => @user_1.username
-            }
+        'fake' => 'value',
+        'table_name' => table_name,
+        # Old presenter way of sending a viewer
+        'user_name' => @user_1.username
+      }
       layer_2.save
       layer_2 = instance_of_tested_model(layer_2)
 
@@ -145,42 +148,47 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'kind' => 'carto',
         'order' => 13,
         'options' => {
-            'fake' => 'value',
-            'table_name' => "#{@user_1.username}.#{table_name}",
-            'user_name' => "#{@user_1.username}"
-          },
+          'fake' => 'value',
+          'table_name' => "#{@user_1.username}.#{table_name}",
+          'user_name' => @user_1.username
+        },
         'infowindow' => {
-            'fake2' => 'val2'
-          },
+          'fake2' => 'val2'
+        },
         'tooltip' => {
-            'fake3' => 'val3'
-          }
+          'fake3' => 'val3'
+        }
       }
 
-      presenter_options =  {
-          viewer_user: @user_2
-        }
+      presenter_options = {
+        viewer_user: @user_2
+      }
 
       poro = instance_of_tested_class(layer_2, presenter_options).to_poro
       # Already changed to fully qualified expected table name, so no need to do it again
-      poro.should == expected_poro
+      poro_options = poro.delete('options')
+      expected_options = expected_poro.delete('options')
+      expect(poro).to include(expected_poro)
+      expect(poro_options).to include(expected_options)
 
       # Finally, don't change if already has a fully qualified table_name
 
-      layer_2 = ::Layer.where(id:layer_2.id).first
+      layer_2 = ::Layer.where(id: layer_2.id).first
       layer_2.options = {
-            'fake' => 'value',
-            'table_name' => "fake.#{table_name}",
-            # Old presenter way of sending a viewer
-            'user_name' => @user_1.username
-            }
+        'fake' => 'value',
+        'table_name' => "fake.#{table_name}",
+        # Old presenter way of sending a viewer
+        'user_name' => @user_1.username
+      }
       layer_2.save
       layer_2 = instance_of_tested_model(layer_2)
 
-      expected_poro['options']['table_name'] =  "fake.#{table_name}"
+      expected_options['table_name'] = "fake.#{table_name}"
 
       poro = instance_of_tested_class(layer_2, presenter_options).to_poro
-      poro.should == expected_poro
+      poro_options = poro.delete('options')
+      expect(poro).to include(expected_poro)
+      expect(poro_options).to include(expected_options)
     end
 
     it 'Tests to_vizjson_v1()' do

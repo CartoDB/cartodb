@@ -1,0 +1,1 @@
+<div class="Disable-overlay <%- visible %>"></div>

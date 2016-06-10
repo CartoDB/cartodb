@@ -445,6 +445,10 @@ class Carto::User < ActiveRecord::Base
     organization && organization.owner_id == id
   end
 
+  def mobile_sdk_enabled?
+    mobile_max_open_users > 0 || mobile_max_private_users > 0
+  end
+
   private
 
 end

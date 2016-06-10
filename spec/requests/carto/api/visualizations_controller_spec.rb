@@ -767,7 +767,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
-        body['visualizations'][0]['table']['name'].should == "#{@org_user_2.database_schema}.#{u2_t_2.name}"
+        body['visualizations'][0]['table']['name'].should == "\"#{@org_user_2.database_schema}\".#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
 

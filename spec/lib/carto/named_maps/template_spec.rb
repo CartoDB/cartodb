@@ -214,6 +214,38 @@ module Carto
           it 'should not have source' do
             @template_hash[:layergroup][:layers].first[:options][:source].should be_nil
           end
+
+          describe 'when background' do
+            before(:all) do
+              @background_layer = @visualization.layers.first
+
+              @background_layer.options[:type] = 'plain'
+
+              @background_layer.save
+              @visualization.reload
+
+              @background_layer_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:layers][0]
+            end
+
+            after(:all) do
+              @background_layer = @visualization.layers.first
+
+              @background_layer.options[:type] = 'plain'
+
+              @background_layer.save
+              @visualization.reload
+
+              @background_layer_hash = nil
+            end
+
+            it 'should have options' do
+              @background_layer_hash[:options].should_not be_nil
+            end
+
+            it 'should be http type' do
+              @background_layer_hash[:type].should eq 'http'
+            end
+          end
         end
       end
 

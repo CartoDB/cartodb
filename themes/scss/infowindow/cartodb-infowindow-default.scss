@@ -17,6 +17,7 @@
 .CDB-infowindow-container {
   border-radius: 4px;
   overflow: hidden;
+  word-wrap: break-word;
 }
 .CDB-infowindow.is-loading .CDB-infowindow-inner {
   min-height: 104px;

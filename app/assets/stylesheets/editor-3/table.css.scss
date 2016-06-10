@@ -5,7 +5,8 @@
 @import 'cdb-variables/colors';
 
 $elementWidth: 180px;
-$elementPadding: 10px;
+$elementWidthShort: 95px;
+$elementPadding: 12px 15px;
 $tableBorderColor: $cSecondaryLine;
 
 .Table {
@@ -34,8 +35,11 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-headItemWrapper {
   width: $elementWidth;
-  padding: $elementPadding;
+  padding: 12px 15px;
   box-sizing: content-box;
+}
+.Table-headItemWrapper--short {
+  width: $elementWidthShort;
 }
 .Table-body {
   @include display-flex();
@@ -60,26 +64,43 @@ $tableBorderColor: $cSecondaryLine;
   border-left: 1px solid $tableBorderColor;
   background: none;
   &:hover {
-    background: rgba($cHighlight, 0.1);
+    background: rgba($cHighlight, 0.16);
   }
 }
 .Table-cell {
+  @include align-items(center);
   box-sizing: content-box;
   width: $elementWidth;
   height: 16px;
   padding: $elementPadding;
   border-right: 1px solid $tableBorderColor;
-  &:hover {
-    background: rgba($cHighlight, 0.2);
+}
+.Table-cell .CDB-Shape-threePoints {
+  display: none;
+}
+.Table-cell .CDB-Text {
+  @include flex(2);
+}
+.Table-cell:hover {
+  background: rgba($cHighlight, 0.32);
+  .CDB-Shape-threePoints {
+    display: block;
   }
 }
-.Table-cell.is-number {
-  color: $cHighlight;
+.Table-cell--short {
+  width: $elementWidthShort;
 }
-.Table-cell.is-null {
-  color: $cAltText;
+.Table-cell .CDB-Text.is-number {
+  color: #6BC981;
+}
+.Table-cell .CDB-Text.is-null {
+  color: #BEC5C9;
   font-style: italic;
 }
-.Table-cell.is-disabled {
+.Table-cell .CDB-Text.is-cartodbId {
+  color: $cAltText;
+  text-align: right;
+}
+.Table-cell .CDB-Text.is-disabled {
   color: $cAltText;
 }

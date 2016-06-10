@@ -18,6 +18,46 @@ describe Map do
     @user.destroy
   end
 
+  describe 'viewer role support' do
+    describe '#save' do
+      it 'should fail for viewer users' do
+        @user.stubs(:viewer).returns(true)
+        new_map = Map.new(user: @user, table_id: @table.id)
+
+        new_map.save.should eq nil
+        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        @user.stubs(:viewer).returns(false)
+      end
+    end
+
+    describe '#update' do
+      it 'should fail for existing maps and viewer users' do
+        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map.user.stubs(:viewer).returns(true)
+
+        new_map.save.should eq nil
+        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        new_map.user.stubs(:viewer).returns(false)
+        new_map.destroy
+      end
+    end
+
+    describe '#destroy' do
+      it 'should fail for existing maps and viewer users' do
+        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map.user.stubs(:viewer).returns(true)
+byebug
+        new_map.destroy
+        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        new_map.user.stubs(:viewer).returns(false)
+        new_map.destroy
+      end
+    end
+  end
+
   describe '#bounds' do
     it 'checks max-min bounds' do
       new_map = Map.create(user_id: @user.id, table_id: @table.id)

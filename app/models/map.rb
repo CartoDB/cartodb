@@ -95,6 +95,7 @@ class Map < Sequel::Model
   def validate
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
+    errors.add(:user, "Viewer users can't save maps") if user.viewer
   end
 
   def recalculate_bounds!

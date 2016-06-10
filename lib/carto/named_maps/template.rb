@@ -155,17 +155,10 @@ module Carto
           options[:sql] = sql(layer, index)
         end
 
-        layer_options_interactivity = layer_options[:interactivity]
-        options[:interactivity] = layer_options_interactivity if layer_options_interactivity
+        interactivity, attributes = infowindow_options(layer)
 
-        layer_infowindow = layer.infowindow
-        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
-        if layer_infowindow_fields && !layer_infowindow_fields.empty?
-          options[:attributes] = {
-            id:       'cartodb_id',
-            columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
-          }
-        end
+        options[:interactivity] = interactivity if interactivity
+        options[:attributes] = attributes if attributes
 
         options
       end
@@ -216,6 +209,22 @@ module Carto
 
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
+      end
+
+      def infowindow_options(layer)
+        layer_options_interactivity = layer.options[:interactivity]
+        interactivity = layer_options_interactivity if layer_options_interactivity
+
+        layer_infowindow = layer.infowindow
+        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
+        attributes = if layer_infowindow_fields && !layer_infowindow_fields.empty?
+                       {
+                         id:       'cartodb_id',
+                         columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
+                       }
+                     end
+
+        [interactivity, attributes]
       end
 
       def dataview_data(widget)

@@ -7,7 +7,7 @@ module Carto
     class AnalysesController < ::Api::ApplicationController
       include Carto::ControllerHelper
       include Carto::UUIDHelper
-      include Carto::Editor::EditorUsersModule
+      include Carto::Builder::BuilderUsersModule
 
       ssl_required :show, :create, :update, :destroy
 

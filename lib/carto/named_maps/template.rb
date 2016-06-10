@@ -86,7 +86,7 @@ module Carto
           type, options = if layer.data_layer?
                             index += 1
                             type_and_options_for_cartodb_layers(layer, index)
-                          elsif layer.basemap?
+                          elsif layer.base?
                             type_and_options_for_basemap_layers(layer)
                           end
 

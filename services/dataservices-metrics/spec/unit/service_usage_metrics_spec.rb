@@ -30,9 +30,8 @@ describe CartoDB::ServiceUsageMetrics do
     end
 
     it "does not request redis twice when there's no need" do
-      @redis_mock.zincrby('org:team:here_isolines:isolines_generated:201606', 3141592, '20')
+      @redis_mock.expects(:zscore).once.with('org:team:here_isolines:isolines_generated:201606', '20').returns(3141592)
       @usage_metrics.get('here_isolines', 'isolines_generated', Date.new(2016, 6, 20)).should eq 3141592
-      pending 'check that only one zscore request is made to redis'
     end
 
     it "returns zero when there's no consumption" do

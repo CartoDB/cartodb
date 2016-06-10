@@ -36,17 +36,27 @@ module Carto
           before(:all) do
             @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
             @visualization.reload
+
+            @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
           end
 
           after(:all) do
             @carto_layer.destroy
             @visualization.reload
+
+            @template_hash = nil
           end
 
           it 'should generate placeholders' do
-            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            @template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          end
 
-            template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          it 'should have options' do
+            @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+          end
+
+          it 'should be cartodb type' do
+            @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
           end
 
           describe 'with aggregations' do
@@ -121,17 +131,29 @@ module Carto
           before(:all) do
             @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
             @visualization.reload
+
+            @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
           end
 
           after(:all) do
             @torque_layer.destroy
             @visualization.reload
+
+            @template_hash = nil
           end
 
           it 'should generate placeholders' do
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
 
             template_hash[:placeholders].length.should be @map.layers.reject(&:basemap?).count
+          end
+
+          it 'should have options' do
+            @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+          end
+
+          it 'should be torque type' do
+            @template_hash[:layergroup][:layers].second[:type].should eq 'torque'
           end
 
           describe 'with aggregations' do
@@ -171,6 +193,14 @@ module Carto
 
           it 'should not generate placeholders' do
             @template_hash[:placeholders].length.should be 0
+          end
+
+          it 'should have options' do
+            @template_hash[:layergroup][:layers].first[:options].should_not be_nil
+          end
+
+          it 'should be http type' do
+            @template_hash[:layergroup][:layers].first[:type].should eq 'http'
           end
 
           it 'should not have sql' do

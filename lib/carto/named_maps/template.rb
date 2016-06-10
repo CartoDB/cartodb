@@ -155,10 +155,12 @@ module Carto
           options[:sql] = sql(layer, index)
         end
 
+        layer_options_interactivity = layer_options[:interactivity]
+        options[:interactivity] = layer_options_interactivity if layer_options_interactivity
+
         layer_infowindow = layer.infowindow
         layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
         if layer_infowindow_fields && !layer_infowindow_fields.empty?
-          options[:interactivity] = layer_options[:interactivity]
           options[:attributes] = {
             id:       'cartodb_id',
             columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }

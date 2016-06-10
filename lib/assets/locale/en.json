@@ -4,7 +4,8 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon"
+    "point-in-polygon": "Point in polygon",
+    "filter": "Filter"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -214,6 +215,14 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "intersection": {
+            "title": "Intersection",
+            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+          },
+          "filter": {
+            "title": "Filter",
+            "desc": "Transform your data into coordinates"
           }
         }
       },
@@ -499,12 +508,16 @@
         "polygons_source": "Polygon source",
         "points_source": "Point source",
         "radius": "Radius",
+        "select-column": "Select a column",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
         "apply-btn": "Apply",
-        "create-btn": "Create"
+        "create-btn": "Create",
+        "top-range": "Top range",
+        "result": "Result",
+        "filter": "Filter"
       },
       "infowindow": {
         "style": {
@@ -522,6 +535,13 @@
           "title-label": "Show items",
           "description": "Add items"
         }
+      },
+      "filter-options": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "is-equal-to": "Is equal to",
+        "is-greater-than": "Is greater than",
+        "is-less-than": "Is less than"
       }
     },
     "style": {

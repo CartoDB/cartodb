@@ -153,57 +153,6 @@ describe Carto::Api::VisualizationsController do
       last_response.location.should == "http://cdn.local.lan/#{@user_1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
-    it 'tests privacy of static_maps calls' do
-      # As privacy is equal to other visualizations controller methods, no need to test every option, just generally
-
-      width = 123
-      height = 456
-
-      # By default no private tables so all are created public
-      @user_1.private_tables_enabled = true
-      @user_1.save
-
-      private_table = create_random_table(@user_1)
-
-      @user_1.private_tables_enabled = false
-      @user_1.save
-
-      Carto::StaticMapsURLHelper.any_instance
-                                .stubs(:get_cdn_config)
-                                .returns(nil)
-      ApplicationHelper.stubs(:maps_api_template)
-                       .returns("http://#{@user_1.username}.localhost.lan:8181")
-
-      get api_v2_visualizations_static_map_url(
-        user_domain: @user_1.username,
-        id: @table1.table_visualization.id,
-        width: width,
-        height: height
-      ), @headers
-      last_response.status.should == 302
-      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
-      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
-
-      get api_v2_visualizations_static_map_url(
-        user_domain: @user_1.username,
-        id: private_table.table_visualization.id,
-        width: width,
-        height: height
-      ), @headers
-      last_response.status.should == 403
-
-      get api_v2_visualizations_static_map_url(
-        user_domain: @user_1.username,
-        api_key: @user_1.api_key,
-        id: private_table.table_visualization.id,
-        width: width,
-        height: height
-      ), @headers
-      last_response.status.should == 302
-      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
-      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
-    end
-
     it 'tests varnish keys' do
       width = 123
       height = 456

@@ -57,7 +57,6 @@ $tableBorderColor: $cSecondaryLine;
   @include flex-direction(column);
   width: 100%;
   height: 100%;
-  padding-bottom: 200px;
   overflow-y: scroll;
 }
 .Table-row {

@@ -6,7 +6,7 @@
 
 $elementWidth: 180px;
 $elementWidthShort: 95px;
-$elementPadding: 12px 15px;
+$elementPadding: 12px 12px 12px 15px;
 $tableBorderColor: $cSecondaryLine;
 
 .Table {
@@ -27,15 +27,16 @@ $tableBorderColor: $cSecondaryLine;
   @include display-flex();
   @include justify-content(flex-start);
   border: 1px solid $tableBorderColor;
-  background: $cMainLine;
+  border-bottom-color: #CBCED0;
+  background: $cThirdBackground;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
-  background: $cMainLine;
+  background: $cThirdBackground;
 }
 .Table-headItemWrapper {
   width: $elementWidth;
-  padding: 12px 15px;
+  padding: $elementPadding;
   box-sizing: content-box;
 }
 .Table-headItemWrapper--short {

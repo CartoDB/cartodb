@@ -16,7 +16,7 @@
         <%- value === null ? 'null' : value %>
       <% } %>
     </span>
-    
+
     <% if (columnName !== 'cartodb_id') { %>
       <button class="CDB-Shape-threePoints is-blue is-small js-options">
         <div class="CDB-Shape-threePointsItem"></div>

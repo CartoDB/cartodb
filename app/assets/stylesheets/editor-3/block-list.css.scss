@@ -71,6 +71,10 @@
   background: $cThirdBackground;
   box-sizing: border-box;
 }
+.BlockList-mediaImg {
+  @include flex(1);
+  width: 100%;
+}
 
 
 .HorizontalBlockList {

@@ -468,6 +468,9 @@
           "select-style": "Select style"
         }
       },
+      "labels": {
+        "title-label": "Labels"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",

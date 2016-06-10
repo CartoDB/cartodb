@@ -156,7 +156,8 @@ module Carto
         end
 
         layer_infowindow = layer.infowindow
-        if layer_infowindow && layer_infowindow.fetch('fields') && !layer_infowindow.fetch('fields').empty?
+        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
+        if layer_infowindow_fields && !layer_infowindow_fields.empty?
           options[:interactivity] = layer_options[:interactivity]
           options[:attributes] = {
             id:       'cartodb_id',

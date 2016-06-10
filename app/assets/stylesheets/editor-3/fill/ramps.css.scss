@@ -1,0 +1,20 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.CustomRamp {
+  @include display-flex();
+}
+.CustomRamp .CustomRamp-list {
+  @include flex(1);
+}
+.CustomRamp-list {
+  border-top: 1px solid #DDD;
+}
+.CustomRamp-clear {
+  $padding: $baseSize + 4;
+  padding: $padding $padding $padding 0;
+  color: $cBlue;
+}
+.RampItem-bar {
+  width: 50px;
+}

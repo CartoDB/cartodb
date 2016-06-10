@@ -59,6 +59,86 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
           end
 
+          describe 'with infowindows' do
+            before(:all) do
+              @carto_layer.options[:interactivity] = 'cartodb_id,manolo_status'
+              @carto_layer.save
+
+              @visualization.reload
+            end
+
+            after(:all) do
+              @carto_layer.options[:interactivity] = nil
+              @carto_layer.save
+
+              @visualization.reload
+            end
+
+            describe 'triggered on hover' do
+              it 'interactivity should be present' do
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+
+                layer_options_hash[:interactivity].should be_present
+              end
+
+              it 'interactivity should not be correct' do
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+
+                layer_options_hash[:interactivity].should eq @carto_layer.options[:interactivity]
+              end
+            end
+
+            describe 'triggered onclick' do
+              let(:dummy_infowindow) do
+                {
+                  "fields" => [
+                    {
+                      "name" => "manolo_status",
+                      "title" => true,
+                      "position" => 8
+                    }],
+                  "template_name" => "table/views/infowindow_light",
+                  "template" => "",
+                  "alternative_names" => {},
+                  "width" => 226,
+                  "maxHeight" => 180
+                }
+              end
+
+              before(:all) do
+                @carto_layer.infowindow = dummy_infowindow
+                @carto_layer.save
+
+                @visualization.reload
+              end
+
+              after(:all) do
+                @carto_layer.infowindow = nil
+                @carto_layer.save
+
+                @visualization.reload
+              end
+
+              it 'attributes should be present' do
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+
+                layer_options_hash[:attributes].should be_present
+              end
+
+              it 'attributes should not be correct' do
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+
+                expected_attributes = { id: 'cartodb_id', columns: ['manolo_status'] }
+
+                layer_options_hash[:attributes].should eq expected_attributes
+              end
+            end
+          end
+
           describe 'with aggregations' do
             before(:all) do
               @carto_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'

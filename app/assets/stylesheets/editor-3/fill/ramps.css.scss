@@ -5,11 +5,11 @@
 .CustomRamp {
   @include display-flex();
 }
-.CustomRamp .CustomRamp-list {
-  @include flex(1);
-}
 .CustomRamp-list {
   border-top: 1px solid #DDD;
+}
+.CustomRamp .CustomRamp-listOptions {
+  @include flex(1);
 }
 .CustomRamp-clear {
   $padding: $baseSize + 4;

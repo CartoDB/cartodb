@@ -28,11 +28,20 @@ module CartoDB
     def get(service, metric, date = DateTime.current)
       check_valid_data(service, metric)
 
+      total = 0
       if !@orgname.nil?
-        @redis.zscore("#{org_key_prefix(service, metric, date)}", "#{date_day(date)}")
+        total += @redis.zscore(org_key_prefix(service, metric, date), date_day(date)) || 0
+        if date_day(date) != date_day_no_zero_padding(date)
+          total += @redis.zscore(org_key_prefix(service, metric, date), date_day_no_zero_padding(date)) || 0
+        end
       else
-        @redis.zscore("#{user_key_prefix(service, metric, date)}", "#{date_day(date)}")
+        total += @redis.zscore(user_key_prefix(service, metric, date), date_day(date)) || 0
+        if date_day(date) != date_day_no_zero_padding(date)
+          total += @redis.zscore(user_key_prefix(service, metric, date), date_day_no_zero_padding(date)) || 0
+        end
       end
+
+      total
     end
 
     protected
@@ -53,6 +62,10 @@ module CartoDB
 
     def date_day(date)
       date.strftime('%d')
+    end
+
+    def date_day_no_zero_padding(date)
+      date.day.to_s
     end
 
     def date_year_month(date)

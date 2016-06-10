@@ -5,4 +5,5 @@
 
 <div class="WidgetList-inner js-inner">
   <h3 class="WidgetList-title CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
+  <div class="u-bSpace--xl" id='Category-bar'></div>
 </div>

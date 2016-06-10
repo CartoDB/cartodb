@@ -524,6 +524,15 @@
         }
       }
     },
+    "data": {
+      "data-toggle": {
+        "values": "VALUES",
+        "cartocss": "SQL"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your query."
+      },
+    },
     "style": {
       "types": {
         "none": "none",
@@ -545,6 +554,9 @@
           "title-label": "Style",
           "desc": "Change the visualization"
         }
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your styles."
       },
       "style-toggle": {
         "values": "VALUES",

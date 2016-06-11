@@ -21,6 +21,8 @@
       throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
     }
 
+    env.tape_tests = 'lib/assets/test/tape/**/*-test.js';
+
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
       aws = grunt.file.readJSON('./lib/build/grunt-aws.json');
@@ -159,10 +161,8 @@
       grunt.config.set(name, val);
     });
 
-    grunt.registerTask('jasmine-server', function () {
-      grunt.log.writeln('Deprecated, just use `grunt dev`, open http://localhost:8089 (if not opened automatically)');
-    });
-
+    // still have to use this custom task because registerCmdTask outputs tons of warnings like:
+    // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
     grunt.registerTask('lint', 'lint source files', function () {
       var done = this.async();
       require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
@@ -181,11 +181,14 @@
       });
     });
 
+    registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
+    registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
+
     // Order in terms of task dependencies
     grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
-    'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
+    'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);
     grunt.registerTask('editor3', ['browserify:vendor_editor3', 'browserify:common_editor3', 'browserify:editor3', 'browserify:public_editor3']);
     grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:colorpicker', 'copy:deep_insights', 'copy:cartodbjs_v4']);
     grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
@@ -203,4 +206,30 @@
       ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
+
+    /**
+     * Delegate task to commandline.
+     * @param {String} name - If taskname starts with npm it's run a npm script (i.e. `npm run foobar`
+     * @param {Object} d - d as in data
+     * @param {Array} d.args - arguments to pass to the d.cmd
+     * @param {String} [d.cmd = process.execPath]
+     * @param {String} [d.desc = ''] - description
+     * @param {...string} args space-separated arguments passed to the cmd
+     */
+    function registerCmdTask (name, opts) {
+      opts = _.extend({
+        cmd: process.execPath,
+        desc: '',
+        args: []
+      }, opts);
+      grunt.registerTask(name, opts.desc, function () {
+        // adapted from http://stackoverflow.com/a/24796749
+        var done = this.async();
+        grunt.util.spawn({
+          cmd: opts.cmd,
+          args: opts.args,
+          opts: { stdio: 'inherit' }
+        }, done);
+      });
+    }
   };

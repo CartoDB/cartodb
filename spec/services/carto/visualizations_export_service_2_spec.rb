@@ -659,8 +659,11 @@ describe Carto::VisualizationsExportService2 do
   describe 'exporting + importing' do
     include Carto::Factories::Visualizations
 
-    def verify_visualizations_match(imported_visualization, original_visualization, importing_user: nil)
-      imported_visualization.name.should eq original_visualization.name
+    def verify_visualizations_match(imported_visualization,
+                                    original_visualization,
+                                    importing_user: nil,
+                                    imported_name: original_visualization.name)
+      imported_visualization.name.should eq imported_name
       imported_visualization.description.should eq original_visualization.description
       imported_visualization.type.should eq original_visualization.type
       imported_visualization.tags.should eq original_visualization.tags
@@ -833,7 +836,27 @@ describe Carto::VisualizationsExportService2 do
       imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
-      verify_visualizations_match(imported_viz, @visualization, importing_user: @user)
+      verify_visualizations_match(imported_viz,
+                                  @visualization,
+                                  importing_user: @user,
+                                  imported_name: "#{@visualization.name} Import")
+
+      imported_viz.destroy
+    end
+
+    it 'importing an exported visualization several times should change imported name' do
+      exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+
+      built_viz = export_service.build_visualization_from_json_export(exported_string)
+      imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+      imported_viz.name.should eq "#{@visualization.name} Import"
+
+      built_viz = export_service.build_visualization_from_json_export(exported_string)
+      imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+      imported_viz2.name.should eq "#{@visualization.name} Import 2"
+
+      imported_viz.destroy
+      imported_viz2.destroy
     end
 
     it 'importing an exported visualization into another account should change layer user_name option' do
@@ -843,6 +866,8 @@ describe Carto::VisualizationsExportService2 do
 
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
+
+      imported_viz.destroy
     end
   end
 end

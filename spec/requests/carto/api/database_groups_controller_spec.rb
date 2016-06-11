@@ -78,6 +78,19 @@ describe Carto::Api::DatabaseGroupsController do
       response.status.should == 409
     end
 
+    it '#update_permission returns 404 for visualizations' do
+      v = FactoryGirl.create(:carto_visualization, user: @carto_org_user_1)
+
+      group = Carto::Group.where(organization_id: @carto_organization.id).first
+      permission = { 'access' => 'r' }
+      put api_v1_databases_group_update_permission_url(
+        database_name: group.database_name,
+        name: group.name,
+        username: @org_user_1.username,
+        table_name: v.name), permission.to_json, org_metadata_api_headers
+      response.status.should == 404
+    end
+
     it '#update_permission granting read to a table' do
       bypass_named_maps
       @table_user_2 = create_table_with_options(@org_user_2)

@@ -75,7 +75,7 @@ module Carto
           response_code_string = response.code.to_s
           if response_code_string =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          elsif retries < MAX_RETRY_ATTEMPTS
+          elsif response_code_string =~ /^5/ && retries < MAX_RETRY_ATTEMPTS
             sleep(RETRY_TIME_SECONDS**retries)
             update(retries: retries + 1)
           else

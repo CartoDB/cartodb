@@ -4,8 +4,8 @@ require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 
 module Carto
-  module Editor
-    class VisualizationsController < EditorController
+  module Builder
+    class VisualizationsController < BuilderController
       include VisualizationsControllerHelper
 
       ssl_required :show
@@ -16,7 +16,7 @@ module Carto
 
       after_filter :update_user_last_activity, only: [:show]
 
-      layout 'application_editor3'
+      layout 'application_builder'
 
       def show
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro

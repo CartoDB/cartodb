@@ -1,1 +1,1 @@
-<span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%- button %></span>
+<span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small js-action" data-action="<%- button %>"><%- button %></span>

@@ -44,7 +44,10 @@
 }
 
 .Notifier-actions {
-  & + & {
-    margin-left: $baseSize * 3;
+  margin-left: $baseSize * 3;
+
+  &:first-of-type {
+    margin-left: 0;
   }
 }
+

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 3415ddd07ee8b6c04237025cc8a1d164192ae5a8
+// sha: a2b8834622f2b4d3b849a7e810cff998d982844d
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -11708,6 +11708,329 @@ L.Map.include({
 
 
 }(window, document));
+// Following https://github.com/Leaflet/Leaflet/blob/master/PLUGIN-GUIDE.md
+(function (factory, window) {
+
+	// define an AMD module that relies on 'leaflet'
+	if (typeof define === 'function' && define.amd) {
+		define(['leaflet'], factory);
+
+	// define a Common JS module that relies on 'leaflet'
+	} else if (typeof exports === 'object') {
+		module.exports = factory(require('leaflet'));
+	}
+
+	// attach your plugin to the global 'L' variable
+	if (typeof window !== 'undefined' && window.L) {
+		window.L.Control.MiniMap = factory(L);
+		window.L.control.minimap = function (layer, options) {
+			return new window.L.Control.MiniMap(layer, options);
+		};
+	}
+}(function (L) {
+
+	var MiniMap = L.Control.extend({
+		options: {
+			position: 'bottomright',
+			toggleDisplay: false,
+			zoomLevelOffset: -5,
+			zoomLevelFixed: false,
+			centerFixed: false,
+			zoomAnimation: false,
+			autoToggleDisplay: false,
+			width: 150,
+			height: 150,
+			collapsedWidth: 19,
+			collapsedHeight: 19,
+			aimingRectOptions: {color: '#ff7800', weight: 1, clickable: false},
+			shadowRectOptions: {color: '#000000', weight: 1, clickable: false, opacity: 0, fillOpacity: 0},
+			strings: {hideText: 'Hide MiniMap', showText: 'Show MiniMap'},
+			mapOptions: {}  // Allows definition / override of Leaflet map options.
+		},
+
+		// layer is the map layer to be shown in the minimap
+		initialize: function (layer, options) {
+			L.Util.setOptions(this, options);
+			// Make sure the aiming rects are non-clickable even if the user tries to set them clickable (most likely by forgetting to specify them false)
+			this.options.aimingRectOptions.clickable = false;
+			this.options.shadowRectOptions.clickable = false;
+			this._layer = layer;
+		},
+
+		onAdd: function (map) {
+
+			this._mainMap = map;
+
+			// Creating the container and stopping events from spilling through to the main map.
+			this._container = L.DomUtil.create('div', 'leaflet-control-minimap');
+			this._container.style.width = this.options.width + 'px';
+			this._container.style.height = this.options.height + 'px';
+			L.DomEvent.disableClickPropagation(this._container);
+			L.DomEvent.on(this._container, 'mousewheel', L.DomEvent.stopPropagation);
+
+			var mapOptions = {
+				attributionControl: false,
+				dragging: !this.options.centerFixed,
+				zoomControl: false,
+				zoomAnimation: this.options.zoomAnimation,
+				autoToggleDisplay: this.options.autoToggleDisplay,
+				touchZoom: this.options.centerFixed ? 'center' : !this._isZoomLevelFixed(),
+				scrollWheelZoom: this.options.centerFixed ? 'center' : !this._isZoomLevelFixed(),
+				doubleClickZoom: this.options.centerFixed ? 'center' : !this._isZoomLevelFixed(),
+				boxZoom: !this._isZoomLevelFixed(),
+				crs: map.options.crs
+			};
+			mapOptions = L.Util.extend(this.options.mapOptions, mapOptions);  // merge with priority of the local mapOptions object.
+
+			this._miniMap = new L.Map(this._container, mapOptions);
+
+			this._miniMap.addLayer(this._layer);
+
+			// These bools are used to prevent infinite loops of the two maps notifying each other that they've moved.
+			this._mainMapMoving = false;
+			this._miniMapMoving = false;
+
+			// Keep a record of this to prevent auto toggling when the user explicitly doesn't want it.
+			this._userToggledDisplay = false;
+			this._minimized = false;
+
+			if (this.options.toggleDisplay) {
+				this._addToggleButton();
+			}
+
+			this._miniMap.whenReady(L.Util.bind(function () {
+				this._aimingRect = L.rectangle(this._mainMap.getBounds(), this.options.aimingRectOptions).addTo(this._miniMap);
+				this._shadowRect = L.rectangle(this._mainMap.getBounds(), this.options.shadowRectOptions).addTo(this._miniMap);
+				this._mainMap.on('moveend', this._onMainMapMoved, this);
+				this._mainMap.on('move', this._onMainMapMoving, this);
+				this._miniMap.on('movestart', this._onMiniMapMoveStarted, this);
+				this._miniMap.on('move', this._onMiniMapMoving, this);
+				this._miniMap.on('moveend', this._onMiniMapMoved, this);
+			}, this));
+
+			return this._container;
+		},
+
+		addTo: function (map) {
+			L.Control.prototype.addTo.call(this, map);
+
+			var center = this.options.centerFixed || this._mainMap.getCenter();
+			this._miniMap.setView(center, this._decideZoom(true));
+			this._setDisplay(this._decideMinimized());
+			return this;
+		},
+
+		onRemove: function (map) {
+			this._mainMap.off('moveend', this._onMainMapMoved, this);
+			this._mainMap.off('move', this._onMainMapMoving, this);
+			this._miniMap.off('moveend', this._onMiniMapMoved, this);
+
+			this._miniMap.removeLayer(this._layer);
+		},
+
+		changeLayer: function (layer) {
+			this._miniMap.removeLayer(this._layer);
+			this._layer = layer;
+			this._miniMap.addLayer(this._layer);
+		},
+
+		_addToggleButton: function () {
+			this._toggleDisplayButton = this.options.toggleDisplay ? this._createButton(
+				'', this.options.strings.hideText, ('leaflet-control-minimap-toggle-display leaflet-control-minimap-toggle-display-' +
+				this.options.position), this._container, this._toggleDisplayButtonClicked, this) : undefined;
+
+			this._toggleDisplayButton.style.width = this.options.collapsedWidth + 'px';
+			this._toggleDisplayButton.style.height = this.options.collapsedHeight + 'px';
+		},
+
+		_createButton: function (html, title, className, container, fn, context) {
+			var link = L.DomUtil.create('a', className, container);
+			link.innerHTML = html;
+			link.href = '#';
+			link.title = title;
+
+			var stop = L.DomEvent.stopPropagation;
+
+			L.DomEvent
+				.on(link, 'click', stop)
+				.on(link, 'mousedown', stop)
+				.on(link, 'dblclick', stop)
+				.on(link, 'click', L.DomEvent.preventDefault)
+				.on(link, 'click', fn, context);
+
+			return link;
+		},
+
+		_toggleDisplayButtonClicked: function () {
+			this._userToggledDisplay = true;
+			if (!this._minimized) {
+				this._minimize();
+				this._toggleDisplayButton.title = this.options.strings.showText;
+			} else {
+				this._restore();
+				this._toggleDisplayButton.title = this.options.strings.hideText;
+			}
+		},
+
+		_setDisplay: function (minimize) {
+			if (minimize !== this._minimized) {
+				if (!this._minimized) {
+					this._minimize();
+				} else {
+					this._restore();
+				}
+			}
+		},
+
+		_minimize: function () {
+			// hide the minimap
+			if (this.options.toggleDisplay) {
+				this._container.style.width = this.options.collapsedWidth + 'px';
+				this._container.style.height = this.options.collapsedHeight + 'px';
+				this._toggleDisplayButton.className += (' minimized-' + this.options.position);
+			} else {
+				this._container.style.display = 'none';
+			}
+			this._minimized = true;
+		},
+
+		_restore: function () {
+			if (this.options.toggleDisplay) {
+				this._container.style.width = this.options.width + 'px';
+				this._container.style.height = this.options.height + 'px';
+				this._toggleDisplayButton.className = this._toggleDisplayButton.className
+					.replace('minimized-'	+ this.options.position, '');
+			} else {
+				this._container.style.display = 'block';
+			}
+			this._minimized = false;
+		},
+
+		_onMainMapMoved: function (e) {
+			if (!this._miniMapMoving) {
+				var center = this.options.centerFixed || this._mainMap.getCenter();
+
+				this._mainMapMoving = true;
+				this._miniMap.setView(center, this._decideZoom(true));
+				this._setDisplay(this._decideMinimized());
+			} else {
+				this._miniMapMoving = false;
+			}
+			this._aimingRect.setBounds(this._mainMap.getBounds());
+		},
+
+		_onMainMapMoving: function (e) {
+			this._aimingRect.setBounds(this._mainMap.getBounds());
+		},
+
+		_onMiniMapMoveStarted: function (e) {
+			if (!this.options.centerFixed) {
+				var lastAimingRect = this._aimingRect.getBounds();
+				var sw = this._miniMap.latLngToContainerPoint(lastAimingRect.getSouthWest());
+				var ne = this._miniMap.latLngToContainerPoint(lastAimingRect.getNorthEast());
+				this._lastAimingRectPosition = {sw: sw, ne: ne};
+			}
+		},
+
+		_onMiniMapMoving: function (e) {
+			if (!this.options.centerFixed) {
+				if (!this._mainMapMoving && this._lastAimingRectPosition) {
+					this._shadowRect.setBounds(new L.LatLngBounds(this._miniMap.containerPointToLatLng(this._lastAimingRectPosition.sw), this._miniMap.containerPointToLatLng(this._lastAimingRectPosition.ne)));
+					this._shadowRect.setStyle({opacity: 1, fillOpacity: 0.3});
+				}
+			}
+		},
+
+		_onMiniMapMoved: function (e) {
+			if (!this._mainMapMoving) {
+				this._miniMapMoving = true;
+				this._mainMap.setView(this._miniMap.getCenter(), this._decideZoom(false));
+				this._miniMap.setView(this._miniMap.getCenter(), this._decideZoom(true));
+				this._shadowRect.setStyle({opacity: 0, fillOpacity: 0});
+			} else {
+				this._mainMapMoving = false;
+			}
+		},
+
+		_isZoomLevelFixed: function () {
+			var zoomLevelFixed = this.options.zoomLevelFixed;
+			return this._isDefined(zoomLevelFixed) && this._isInteger(zoomLevelFixed);
+		},
+
+		_decideZoom: function (fromMaintoMini) {
+			if (!this._isZoomLevelFixed()) {
+				if (fromMaintoMini) {
+					return this._mainMap.getZoom() + this.options.zoomLevelOffset;
+				} else {
+					var currentDiff = this._miniMap.getZoom() - this._mainMap.getZoom();
+					var proposedZoom = this._miniMap.getZoom() - this.options.zoomLevelOffset;
+					var toRet;
+
+					if (currentDiff > this.options.zoomLevelOffset && this._mainMap.getZoom() < this._miniMap.getMinZoom() - this.options.zoomLevelOffset) {
+						// This means the miniMap is zoomed out to the minimum zoom level and can't zoom any more.
+						if (this._miniMap.getZoom() > this._lastMiniMapZoom) {
+							// This means the user is trying to zoom in by using the minimap, zoom the main map.
+							toRet = this._mainMap.getZoom() + 1;
+							// Also we cheat and zoom the minimap out again to keep it visually consistent.
+							this._miniMap.setZoom(this._miniMap.getZoom() - 1);
+						} else {
+							// Either the user is trying to zoom out past the mini map's min zoom or has just panned using it, we can't tell the difference.
+							// Therefore, we ignore it!
+							toRet = this._mainMap.getZoom();
+						}
+					} else {
+						// This is what happens in the majority of cases, and always if you configure the min levels + offset in a sane fashion.
+						toRet = proposedZoom;
+					}
+					this._lastMiniMapZoom = this._miniMap.getZoom();
+					return toRet;
+				}
+			} else {
+				if (fromMaintoMini) {
+					return this.options.zoomLevelFixed;
+				} else {
+					return this._mainMap.getZoom();
+				}
+			}
+		},
+
+		_decideMinimized: function () {
+			if (this._userToggledDisplay) {
+				return this._minimized;
+			}
+
+			if (this.options.autoToggleDisplay) {
+				if (this._mainMap.getBounds().contains(this._miniMap.getBounds())) {
+					return true;
+				}
+				return false;
+			}
+
+			return this._minimized;
+		},
+
+		_isInteger: function (value) {
+			return typeof value === 'number';
+		},
+
+		_isDefined: function (value) {
+			return typeof value !== 'undefined';
+		}
+	});
+
+	L.Map.mergeOptions({
+		miniMapControl: false
+	});
+
+	L.Map.addInitHook(function () {
+		if (this.options.miniMapControl) {
+			this.miniMapControl = (new MiniMap()).addTo(this);
+		}
+	});
+
+	return MiniMap;
+
+}, window));
 /* wax - 7.0.1 - v6.0.4-181-ga34788e */
 
 
@@ -25693,6 +26016,7 @@ if (typeof window !== 'undefined') {
         "../vendor/mustache.js",
 
         "../vendor/leaflet.js",
+        "../vendor/Control.MiniMap.js",
         "../vendor/wax.cartodb.js",
         "../vendor/GeoJSON.js", //geojson gmaps lib
 
@@ -25735,6 +26059,7 @@ if (typeof window !== 'undefined') {
         'geo/ui/infobox.js',
         'geo/ui/tooltip.js',
         'geo/ui/fullscreen.js',
+        'geo/ui/inset_map.js',
 
         'geo/sublayer.js',
         'geo/layer_definition.js',
@@ -32985,6 +33310,224 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
       return window.self !== window.top;
     } catch (e) {
       return true;
+    }
+  }
+
+});
+/* global $:false, _:false, L:false */
+
+cdb.geo.ui.InsetMap = cdb.core.View.extend({
+
+  ANIMATION_DURATION_MS: 150,
+
+  AIMING_RECT_OPTIONS: {
+    color: '#000000',
+    weight: 1,
+    clickable: false
+  },
+
+  tagName: 'div',
+  className: 'cartodb-inset-map-box',
+
+  default_options: {
+    timeout: 0,
+    msg: ''
+  },
+
+  initialize: function () {
+    this.map = this.options.mapView.map;
+    this.mapView = this.options.mapView;
+    this._leafletMap = this.mapView.getNativeMap();
+
+    this.add_related_model(this.mapView);
+
+    this.map = this.options.map;
+
+    _.defaults(this.options, this.default_options);
+
+    this._setupModels();
+    this._addMiniMapControl();
+    this._setupEvents();
+  },
+
+  show: function () {
+    if (this.$control) {
+      this.$control.show();
+      this.miniMapControl._miniMap.invalidateSize();
+    }
+  },
+
+  hide: function () {
+    if (this.$control) {
+      this.$control.hide();
+    }
+  },
+
+  _addMiniMapControl: function () {
+    if (this.map.get('provider') !== 'leaflet') {
+      if (console && console.error) {
+        console.error('CartoDB InsetMap overlay requires a leaflet basemap');
+      }
+      // Do nothing
+      // TODO: Better handle this
+      return;
+    }
+
+    var miniMapConfig = {
+      position: this._getLeafletPosition(),
+      aimingRectOptions: this.AIMING_RECT_OPTIONS,
+      zoomLevelOffset: -6
+    };
+    this.miniMapControl = new L.Control.MiniMap(this._getMiniMapLayer(), miniMapConfig)
+                          .addTo(this._leafletMap);
+  },
+
+  // Setup the internal and custom model
+  _setupModels: function () {
+    this.model = this.options.model;
+    var options = this.model.get('options');
+    this.model.set(options);
+
+    if (!this.model.get('xPosition')) {
+      this.model.set('xPosition', 'left');
+    }
+    if (!this.model.get('yPosition')) {
+      this.model.set('yPosition', 'top');
+    }
+
+    this.model.on('change:display', this._onChangeDisplay, this);
+    this.model.on('change:y', this._onChangeY, this);
+    this.model.on('change:x', this._onChangeX, this);
+    this.model.on('change:xPosition', this._onChangePosition, this);
+    this.model.on('change:yPosition', this._onChangePosition, this);
+
+    this.model.on('destroy', this._onDestroy, this);
+  },
+
+  _setupEvents: function () {
+    $(window).on('resize', $.proxy(this._onWindowResize, this));
+    this.map.on('savingLayersFinish', this._onBaseLayerChanged, this);
+  },
+
+  _getMiniMapLayer: function () {
+    var baseLayer = this.map.getBaseLayer();
+    // Default to showing the first layer in the CartoDB default basemaps (currently Positron)
+    // TODO: No access to DEFAULT_BASEMAPS in cartodb.js. Used a static url for now,
+    // consider other options, or maybe we can just remove this fallback?
+    // var positron = cdb.admin.DEFAULT_BASEMAPS.CartoDB[0];
+    var positron = {url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'};
+    var url = baseLayer.get('url') || baseLayer.get('urlTemplate') || positron.url;
+    var config = _.extend({}, positron, baseLayer);
+    return new L.TileLayer(url, config);
+  },
+
+  _getLeafletPosition: function () {
+    var xPos = this.model.get('xPosition');
+    var yPos = this.model.get('yPosition');
+    return xPos === undefined || yPos === undefined ? 'topleft' : yPos + xPos;
+  },
+
+  _onWindowResize: function () {
+    if (this.miniMapControl) {
+      this.miniMapControl._miniMap.invalidateSize();
+    }
+  },
+
+  _onChangeDisplay: function () {
+    if (this.model.get('display')) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  },
+
+  _onChangeX: function () {
+    if (!this.$control) {
+      return;
+    }
+
+    var x = this.model.get('x');
+    var position = this.model.get('xPosition');
+    if (position === 'left') {
+      this.$control.animate({ left: x }, this.ANIMATION_DURATION_MS);
+    } else {
+      this.$control.animate({ right: x }, this.ANIMATION_DURATION_MS);
+    }
+
+    this.trigger('change_x', this);
+  },
+
+  _onChangeY: function () {
+    if (!this.$control) {
+      return;
+    }
+
+    var y = this.model.get('y');
+    var position = this.model.get('yPosition');
+    if (position === 'top') {
+      this.$control.animate({ top: y }, this.ANIMATION_DURATION_MS);
+    } else {
+      this.$control.animate({ bottom: y }, this.ANIMATION_DURATION_MS);
+    }
+
+    this.trigger('change_y', this);
+  },
+
+  _onChangePosition: function () {
+    var controlPosition = this.miniMapControl.getPosition();
+    var position = this._getLeafletPosition();
+    if (position !== controlPosition) {
+      this.hide();
+      this.miniMapControl.setPosition(position);
+      // Re-render because the control is destroyed on a setPosition call
+      this.trigger('reposition', this);
+      this.model.save();
+      this.render();
+    }
+  },
+
+  _onBaseLayerChanged: function () {
+    this.renderBackgroundColor();
+    this.miniMapControl.changeLayer(this._getMiniMapLayer());
+  },
+
+  _onDestroy: function () {
+    $(window).off('resize', $.proxy(this._onWindowResize, this));
+    this.map.off('savingLayersFinish', this._onBaseLayerChanged);
+    this._leafletMap.removeControl(this.miniMapControl);
+  },
+
+  _getMap: function () {
+    return this.mapView.getNativeMap();
+  },
+
+  render: function () {
+    // Don't attach to this.$el because then the inset map element ends up outside the
+    // leaflet-controls container which causes trouble
+
+    if (!this.miniMapControl) {
+      return this;
+    }
+
+    var css = {};
+    css[this.model.get('xPosition')] = this.model.get('x');
+    css[this.model.get('yPosition')] = this.model.get('y');
+    this.$control = $(this.miniMapControl.getContainer());
+    this.$control.css(css);
+
+    this.renderBackgroundColor();
+    if (this.model.get('display')) {
+      this.show();
+    }
+
+    return this;
+  },
+
+  renderBackgroundColor: function () {
+    var layer = this.map.getBaseLayer();
+    var color = layer.get('color') || '';
+    if (this.$control) {
+      this.$control.css({ 'background': color });
     }
   }
 
@@ -41018,6 +41561,37 @@ cdb.vis.Overlay.register('fullscreen', function(data, vis) {
 
   return fullscreen.render();
 
+});
+
+cdb.vis.Overlay.register('inset_map', function(data, vis) {
+    var options = cleanupPositioning(vis, data.options);
+
+    var widget = new cdb.geo.ui.InsetMap({
+        vis: vis,
+        map: vis.map,
+        mapView: vis.mapView,
+        model: new cdb.core.Model(options)
+    });
+    return widget.render();
+
+    function cleanupPositioning(vis, options) {
+      var overrides = _.extend({}, options);
+      if (options.xPosition === 'right' && options.yPosition === 'bottom') {
+        // Shift up to match legend placement on public map
+        overrides.y = options.y + 14;
+      } else if (options.xPosition === 'left' && options.yPosition === 'bottom') {
+        // Shift into corner, there are no map controls in this corner on public maps
+        overrides.x = 10;
+        overrides.y = 10;
+      } else if (options.yPosition === 'top') {
+        // Shift down if header, positioning of description appears to be accounted for
+        var header = vis.overlayModels.find(function (model) { return model.get('type') === 'header'; });
+        if (header) {
+          overrides.y = options.y + 10;
+        }
+      }
+      return overrides;
+    }
 });
 
 // share content

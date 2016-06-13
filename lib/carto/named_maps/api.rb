@@ -107,7 +107,7 @@ module Carto
 
       def url(template_name: '')
         username = @user.username
-        user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ""
+        user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ''
 
         "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named/#{template_name}?api_key=#{@user.api_key}"
       end

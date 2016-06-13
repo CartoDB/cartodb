@@ -93,7 +93,7 @@ module Carto
           if response.code.to_s =~ /^2/
             response.response_body
           else
-            log_response(response, 'update')
+            log_response(response, 'destroy')
           end
         end
       end

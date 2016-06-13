@@ -244,7 +244,7 @@ module Carto
 
       def auth
         method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, @user.get_auth_tokens]
+                                 [AUTH_TYPE_SIGNED, @visualization.user.get_auth_tokens]
                                elsif @visualization.organization?
                                  auth_tokens = @visualization.all_users_with_read_permission
                                                              .map(&:get_auth_tokens)

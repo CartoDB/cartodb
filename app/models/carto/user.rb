@@ -450,7 +450,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_auth_tokens
-    tokens = [SecureRandom.urlsafe_base64(nil, false)]
+    tokens = [get_auth_token]
 
     tokens << organization.get_auth_token if has_organization?
   end

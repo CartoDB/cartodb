@@ -532,6 +532,13 @@
       "code-mirror": {
         "save": "CMD + S to apply your query."
       },
+      "messages": {
+        "sql-readonly": {
+          "title": "SQL ONLY READ",
+          "body": "You just applied analysis to this layer and the SQL passed to only read.",
+          "accept": "CLOSE"
+        }
+      }
     },
     "style": {
       "types": {

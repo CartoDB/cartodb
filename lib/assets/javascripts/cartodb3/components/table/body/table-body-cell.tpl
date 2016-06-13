@@ -1,11 +1,11 @@
-<td>
+<td class="Table-cellItem">
   <div class="
       Table-cell u-flex u-justifySpace
       <%- columnName === 'cartodb_id' || type === 'geometry' ? 'Table-cell--short' : '' %>
     " title="<%- value %>">
-    <span class="
+    <p class="
       CDB-Text CDB-Size-medium
-      u-ellipsis
+      u-ellipsis u-rSpace--xl
       <%- type === 'number' && columnName !== 'cartodb_id' ? 'is-number' : '' %>
       <%- value === null ? 'is-null' : '' %>
       <%- columnName === 'cartodb_id' ? 'is-cartodbId' : '' %>
@@ -15,7 +15,7 @@
       <% } else { %>
         <%- value === null ? 'null' : value %>
       <% } %>
-    </span>
+    </p>
 
     <% if (columnName !== 'cartodb_id') { %>
       <button class="CDB-Shape-threePoints is-blue is-small js-options">

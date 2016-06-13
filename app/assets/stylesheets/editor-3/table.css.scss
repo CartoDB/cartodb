@@ -5,8 +5,8 @@
 @import 'cdb-variables/colors';
 
 $elementWidth: 180px;
-$elementWidthShort: 95px;
-$elementPadding: 12px 12px 12px 15px;
+$elementWidthShort: 120px;
+$elementPadding: 14px 14px 18px;
 $tableBorderColor: $cSecondaryLine;
 
 .Table {
@@ -26,18 +26,22 @@ $tableBorderColor: $cSecondaryLine;
 .Table-head {
   @include display-flex();
   @include justify-content(flex-start);
-  border: 1px solid $tableBorderColor;
-  border-bottom-color: #CBCED0;
+  border-bottom: 1px solid $cMainLine;
   background: $cThirdBackground;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
   background: $cThirdBackground;
 }
+.Table-headItemInfo {
+  margin-top: 2px;
+  font-family: 'Monaco';
+}
 .Table-headItemWrapper {
   width: $elementWidth;
   padding: $elementPadding;
-  box-sizing: content-box;
+  box-sizing: border-box;
+  text-align: left;
 }
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
@@ -61,19 +65,53 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-row {
   border-bottom: 1px solid $tableBorderColor;
-  border-left: 1px solid $tableBorderColor;
   background: none;
   &:hover {
     background: rgba($cHighlight, 0.16);
   }
 }
+.Table-cellItem {
+  position: relative;
+  box-sizing: content-box;
+  border-right: 1px solid $tableBorderColor;
+}
+.Table-cellItem:hover {
+  background: rgba($cHighlight, 0.32);
+  .CDB-Shape-threePoints {
+    display: block;
+  }
+}
+.Table-cellItem:hover:after {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  border: 1px solid rgba($cHighlight, 0.8);
+  pointer-events: none;
+  content: '';
+}
+
+
+.Table-row:hover .Table-cellItem:before {
+  display: block;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: 0;
+  border-top: 1px solid rgba($cHighlight, 0.32);
+  border-bottom: 1px solid rgba($cHighlight, 0.32);
+  pointer-events: none;
+  content: '';
+}
+
 .Table-cell {
   @include align-items(center);
-  box-sizing: content-box;
   width: $elementWidth;
-  height: 16px;
-  padding: $elementPadding;
-  border-right: 1px solid $tableBorderColor;
+  height: 40px;
+  padding: 12px 14px;
+  box-sizing: border-box;
 }
 .Table-cell .CDB-Shape-threePoints {
   display: none;
@@ -81,20 +119,15 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text {
   @include flex(2);
 }
-.Table-cell:hover {
-  background: rgba($cHighlight, 0.32);
-  .CDB-Shape-threePoints {
-    display: block;
-  }
-}
+
 .Table-cell--short {
   width: $elementWidthShort;
 }
 .Table-cell .CDB-Text.is-number {
-  color: #6BC981;
+  color: darken($cHighlight, 16%);
 }
 .Table-cell .CDB-Text.is-null {
-  color: #BEC5C9;
+  color: $cHintText;
   font-style: italic;
 }
 .Table-cell .CDB-Text.is-cartodbId {

@@ -1,7 +1,7 @@
 <td class="Table-cellItem">
   <div class="
       Table-cell u-flex u-justifySpace
-      <%- columnName === 'cartodb_id' || type === 'geometry' ? 'Table-cell--short' : '' %>
+      <%- columnName === 'cartodb_id' || geometry !== 'point' ? 'Table-cell--short' : '' %>
     " title="<%- value %>">
     <p class="
       CDB-Text CDB-Size-medium
@@ -10,11 +10,7 @@
       <%- value === null ? 'is-null' : '' %>
       <%- columnName === 'cartodb_id' ? 'is-cartodbId' : '' %>
     ">
-      <% if (type === 'geometry') { %>
-        <%- value ? geometry : 'null' %>
-      <% } else { %>
-        <%- value === null ? 'null' : value %>
-      <% } %>
+      <%- value === null ? 'null' : formattedValue %>
     </p>
 
     <% if (columnName !== 'cartodb_id') { %>

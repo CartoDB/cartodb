@@ -132,7 +132,5 @@ module Carto
 
       reload
     end
-
   end
-
 end

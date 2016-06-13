@@ -81,7 +81,7 @@ $tableBorderColor: $cSecondaryLine;
     display: block;
   }
 }
-.Table-cellItem:hover:after {
+.Table-cellItem:hover::after {
   position: absolute;
   top: -1px;
   right: -1px;
@@ -93,7 +93,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 
-.Table-row:hover .Table-cellItem:before {
+.Table-row:hover .Table-cellItem::before {
   display: block;
   position: absolute;
   top: -1px;

@@ -28,8 +28,8 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
-.Editor-ListLayer-item.ui-draggable {
-  cursor: move;
+.Editor-ListLayer-item.ui-sortable-helper {
+  width: 294px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);

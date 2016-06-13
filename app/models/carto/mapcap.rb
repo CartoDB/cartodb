@@ -22,7 +22,7 @@ module Carto
     private
 
     def generate_export_vizjson
-      self.export_vizjson = export_visualization_json_string(vis_id, visualization.user)
+      self.export_vizjson = export_visualization_json_string(visualization_id, visualization.user)
     end
   end
 end

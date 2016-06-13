@@ -60,6 +60,19 @@ FactoryGirl.define do
 
       tooltip tooltip_light
     end
+
+    factory :carto_layer_with_sql do
+      ignore do
+        table_name 'default_table'
+      end
+      options do
+        {
+          table_name: table_name,
+          query:      "select * from #{table_name}",
+          sql_wrap:   "select * from (<%= sql %>) __wrap"
+        }
+      end
+    end
   end
 
 end

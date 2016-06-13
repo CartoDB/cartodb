@@ -40,8 +40,8 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/templates_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
-	spec/requests/carto/editor/public/embeds_controller_spec.rb \
-	spec/requests/carto/editor/visualizations_controller_spec.rb \
+	spec/requests/carto/builder/public/embeds_controller_spec.rb \
+	spec/requests/carto/builder/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
@@ -247,6 +247,7 @@ WORKING_SPECS_9 = \
 # Tests using spec_helper_min instead of spec_helper
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
+	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/table_registrar_spec.rb \
@@ -258,9 +259,11 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
+	spec/services/carto/user_table_index_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
+	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

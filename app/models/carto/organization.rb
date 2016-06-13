@@ -114,7 +114,7 @@ module Carto
     end
 
     def get_auth_token
-      auth_token ? auth_token : generate_auth_token
+      auth_token.present? ? auth_token : generate_auth_token
     end
 
     private

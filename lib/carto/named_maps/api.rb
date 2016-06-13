@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require_relative '../http/client'
-require_relative 'template'
+require_relative '../http/client.rb'
+require_relative 'template.rb'
 
 module Carto
   module NamedMaps

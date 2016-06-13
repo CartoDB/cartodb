@@ -1,7 +1,7 @@
 var CategoryFilter = require('../../../../../src/windshaft/filters/category');
-var CategoryGeoJSONDataProvider = require('../../../../../src/geo/data-providers/geojson/category-geojson-data-provider');
+var CategoryDataviewDataProvider = require('../../../../../src/geo/data-providers/geojson/category-dataview-data-provider');
 
-describe('src/geo/data-providers/geojson/category-geojson-data-provider.js', function () {
+describe('src/geo/data-providers/geojson/category-dataview-data-provider.js', function () {
   beforeEach(function () {
     this.vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'applyFilter']);
     var dataview = jasmine.createSpyObj('dataview', ['get']);
@@ -10,7 +10,7 @@ describe('src/geo/data-providers/geojson/category-geojson-data-provider.js', fun
         return 'columnName';
       }
     });
-    this.dataProvider = new CategoryGeoJSONDataProvider({
+    this.dataProvider = new CategoryDataviewDataProvider({
       dataview: dataview,
       vectorLayerView: this.vectorLayerView,
       layerIndex: 0

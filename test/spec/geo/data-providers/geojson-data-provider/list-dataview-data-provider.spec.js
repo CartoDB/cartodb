@@ -1,6 +1,6 @@
-var ListGeoJSONDataProvider = require('../../../../../src/geo/data-providers/geojson/list-geojson-data-provider');
+var ListDataviewDataProvider = require('../../../../../src/geo/data-providers/geojson/list-dataview-data-provider');
 
-describe('src/geo/data-providers/geojson/list-geojson-data-provider.js', function () {
+describe('src/geo/data-providers/geojson/list-dataview-data-provider.js', function () {
   beforeEach(function () {
     this.vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'applyFilter']);
     var dataview = jasmine.createSpyObj('dataview', ['get']);
@@ -9,7 +9,7 @@ describe('src/geo/data-providers/geojson/list-geojson-data-provider.js', functio
         return 'columnName';
       }
     });
-    this.dataProvider = new ListGeoJSONDataProvider({
+    this.dataProvider = new ListDataviewDataProvider({
       dataview: dataview,
       vectorLayerView: this.vectorLayerView,
       layerIndex: 0

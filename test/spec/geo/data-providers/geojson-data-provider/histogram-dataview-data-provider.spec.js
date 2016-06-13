@@ -1,7 +1,7 @@
 var RangeFilter = require('../../../../../src/windshaft/filters/range');
-var HistogramGeoJSONDataProvider = require('../../../../../src/geo/data-providers/geojson/histogram-geojson-data-provider');
+var HistogramDataviewDataProvider = require('../../../../../src/geo/data-providers/geojson/histogram-dataview-data-provider');
 
-describe('src/geo/data-providers/geojson/histogram-geojson-data-provider.js', function () {
+describe('src/geo/data-providers/geojson/histogram-dataview-data-provider.js', function () {
   beforeEach(function () {
     this.vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'applyFilter']);
     var dataview = jasmine.createSpyObj('dataview', ['get']);
@@ -10,7 +10,7 @@ describe('src/geo/data-providers/geojson/histogram-geojson-data-provider.js', fu
         return 'columnName';
       }
     });
-    this.dataProvider = new HistogramGeoJSONDataProvider({
+    this.dataProvider = new HistogramDataviewDataProvider({
       dataview: dataview,
       vectorLayerView: this.vectorLayerView,
       layerIndex: 0

@@ -65,19 +65,19 @@ module.exports = Model.extend({
       this.filter.set('dataviewId', this.id);
     }
 
-    var dataProvider = this.layer.getDataProvider();
-    if (dataProvider) {
-      this._dataProvider = dataProvider.createDataProviderForDataview(this);
-    }
     this._initBinds();
+  },
+
+  _getLayerDataProvider: function () {
+    return this.layer.getDataProvider();
   },
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-
-    if (this._dataProvider) {
-      this.listenToOnce(this._dataProvider, 'dataChanged', this._onChangeBinds, this);
-      this.listenTo(this._dataProvider, 'dataChanged', this._onDataProviderChanged);
+    var layerDataProvider = this._getLayerDataProvider();
+    if (layerDataProvider) {
+      this.listenToOnce(layerDataProvider, 'dataChanged', this._onChangeBinds, this);
+      this.listenTo(layerDataProvider, 'dataChanged', this.fetch);
     } else {
       this.listenToOnce(this, 'change:url', function () {
         this.fetch({
@@ -90,16 +90,13 @@ module.exports = Model.extend({
     }
   },
 
-  _onDataProviderChanged: function () {
-    this.set(this.parse(this._dataProvider.getData()));
-  },
-
   /**
    * @private
    */
   _onFilterChanged: function (filter) {
-    if (this._dataProvider) {
-      this._dataProvider.applyFilter(filter);
+    var layerDataProvider = this._getLayerDataProvider();
+    if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
+      layerDataProvider.applyFilter(this, filter);
     } else {
       this._reloadMap();
     }
@@ -194,8 +191,9 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     opts = opts || {};
-    if (this._dataProvider) {
-      this.set(this.parse(this._dataProvider.getData()));
+    var layerDataProvider = this._getLayerDataProvider();
+    if (layerDataProvider && layerDataProvider.canProvideDataFor(this)) {
+      this.set(this.parse(layerDataProvider.getDataFor(this)));
     } else {
       this.trigger('loading', this);
 
@@ -219,6 +217,10 @@ module.exports = Model.extend({
 
   toJSON: function () {
     throw new Error('toJSON should be defined for each dataview');
+  },
+
+  hasSameSourceAsLayer: function () {
+    return this.getSourceId() === this.layer.get('source');
   },
 
   getSourceId: function () {

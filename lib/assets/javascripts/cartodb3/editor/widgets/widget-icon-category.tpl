@@ -1,4 +1,4 @@
-<ul class="CategoryShape">
+<ul class="CategoryShape <% if (typeof makeItBig != 'undefined') { %>WidgetShape--big<% } %>">
   <li class="CategoryShape-item">
     <p class="CategoryShape-title"></p>
     <div class="CategoryShape-bar">

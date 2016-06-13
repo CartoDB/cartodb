@@ -13,7 +13,7 @@ module Carto
     has_many :layers_user
     has_many :users, through: :layers_user
 
-    has_many :layers_user_table, foreign_key: :layer_id
+    has_many :layers_user_table
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
@@ -95,8 +95,20 @@ module Carto
       !base?
     end
 
+    def carto_layer?
+      kind == 'carto'
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
+    end
+
+    def map
+      maps.first
+    end
+
+    def visualization
+      map.visualization
     end
 
     private

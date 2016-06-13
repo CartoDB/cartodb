@@ -1,4 +1,4 @@
-<div class="TimeSeriesShape">
+<div class="TimeSeriesShape <% if (typeof makeItBig != 'undefined') { %>WidgetShape--big<% } %>">
   <div class="TimeSeriesShape-header">
     <span class="TimeSeriesShape-play"></span>
     <h2 class="TimeSeriesShape-title"></h2>

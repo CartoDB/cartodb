@@ -38,14 +38,11 @@
   background: #F5FAFE;
 }
 .WidgetList-inner {
-  @include display-flex;
-  flex-wrap: wrap;
   width: 100%;
 }
 .WidgetList-title {
   @include display-flex;
 }
-
 .WidgetPlaceHolder {
   @include display-flex();
   @include flex(1);

@@ -445,6 +445,30 @@ class Carto::User < ActiveRecord::Base
     organization && organization.owner_id == id
   end
 
+  def mobile_sdk_enabled?
+    mobile_max_open_users > 0 || mobile_max_private_users > 0
+  end
+
+  def get_auth_tokens
+    tokens = [get_auth_token]
+
+    tokens << organization.get_auth_token if has_organization?
+
+    tokens
+  end
+
+  def get_auth_token
+    # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
+    auth_token = Carto::User.select(auth_token).find(id).auth_token
+
+    auth_token.present? ? auth_token : generate_auth_token
+  end
+
   private
 
+  def generate_auth_token
+    update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+
+    auth_token
+  end
 end

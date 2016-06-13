@@ -9,7 +9,7 @@ module CartoDB
 
       class DatasourceBaseError  < StandardError
 
-        UNKNOWN_SERVICE = 'UKNOWN'
+        UNKNOWN_SERVICE = 'UNKNOWN'.freeze
 
         attr_reader :service_name
 

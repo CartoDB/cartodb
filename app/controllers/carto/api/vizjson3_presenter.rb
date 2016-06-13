@@ -122,12 +122,6 @@ module Carto
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
 
-        children_vizjson = @visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @redis_vizjson_cache)
-                           .to_vizjson(https_request: options[:https_request], vector: options[:vector])
-        end
-        vizjson[:slides] = children_vizjson unless children_vizjson.empty?
-
         parent = @visualization.parent
         if parent
           vizjson[:title] = parent.qualified_name(user)
@@ -249,7 +243,7 @@ module Carto
         }
 
         if display_named_map?(@visualization, forced_privacy_version)
-          ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          ds[:template_name] = Carto::NamedMaps::Template.new(@visualization).name
         end
 
         ds
@@ -284,18 +278,16 @@ module Carto
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
         @visualization    = visualization
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+        @named_map_name   = Carto::NamedMaps::Template.new(@visualization).name
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
-      # @throws NamedMapsPresenterError
       def to_vizjson
         return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
@@ -323,7 +315,6 @@ module Carto
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
@@ -575,10 +566,8 @@ module Carto
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
 
-          sql_wrap = @layer.options['sql_wrap']
-          if sql_wrap 
-            data[:sql_wrap] = sql_wrap 
-          end
+          sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+          data[:sql_wrap] = sql_wrap if sql_wrap
 
           data = decorate_with_data(data, @decoration_data)
 

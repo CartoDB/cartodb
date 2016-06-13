@@ -47,7 +47,7 @@ CartoDB::Application.routes.draw do
 
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
-    namespace :editor do
+    namespace :builder do
       # Visualizations
       resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
         namespace :public, path: '/' do
@@ -55,6 +55,10 @@ CartoDB::Application.routes.draw do
           match 'embed_protected', to: 'embeds#show_protected', via: :post
         end
       end
+    end
+
+    namespace :editor do
+      match '(*path)', to: redirect { |params, request| CartoDB.base_url_from_request(request) + '/builder/' + params[:path] }
     end
   end
 
@@ -303,16 +307,19 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     post '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', as: :protected_public_map, constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
 
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
-    post   '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
-    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'   => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
-
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
+    post '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate'  => 'client_applications#regenerate_api_key', as: :regenerate_api_key
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
+    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'  => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
   end
 
   scope :module => 'carto/admin' do
     # 1b Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
+
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit] do
+      get 'api_keys', on: :member
+    end
   end
 
   scope :module => 'carto/api', :format => :json do
@@ -485,7 +492,9 @@ CartoDB::Application.routes.draw do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end
 
-      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ }
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
+        get 'download' => 'visualization_exports#download', as: :download
+      end
     end
   end
 

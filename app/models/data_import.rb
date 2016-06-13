@@ -200,12 +200,6 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
     self
-  rescue CartoDB::NamedMapsWrapper::TooManyTemplatesError
-    templates_exception = CartoDB::Importer2::TooManyNamedMapTemplatesError.new
-    log.append "Exception: #{templates_exception}"
-    CartoDB::notify_warning_exception(templates_exception)
-    handle_failure(templates_exception)
-    self
   rescue CartoDB::CartoDBfyInvalidID
     invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
     log.append "Exception: #{invalid_cartodb_id_exception}"
@@ -314,11 +308,7 @@ class DataImport < Sequel::Model
     end
     notify(results)
 
-    begin
-      track_new_datasets(results)
-    rescue => exception
-      CartoDB::notify_exception(exception)
-    end
+    Cartodb::EventTracker.new.track_import(current_user, id, results, visualization_id, from_common_data?)
 
     self
   end
@@ -944,25 +934,4 @@ class DataImport < Sequel::Model
       datasource.set_audit_to_failed
     end
   end
-
-  def track_new_datasets(results)
-    return unless current_user
-
-    results.each do |result|
-      if result.success?
-        if result.name != nil
-          map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
-          origin = self.from_common_data? ? 'common-data' : 'import'
-        else
-          map_id = UserTable.where(data_import_id: self.id).first.map_id
-          origin = 'copy'
-        end
-        vis = Carto::Visualization.where(map_id: map_id).first
-
-        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => origin}
-        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
-      end
-    end
-  end
-
 end

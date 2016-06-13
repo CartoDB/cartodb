@@ -5,7 +5,7 @@ require_relative 'bolt.rb'
 module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
-    MUTEX_TTL_MS = 60000
+    MUTEX_TTL_MS = 600000
 
     def initialize(user_id)
       @user_id = user_id
@@ -19,7 +19,7 @@ module Carto
       return if user_tables_synced_with_db?
 
       if safe_async?
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user_id)
+        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
       else
         link_ghost_tables_synchronously
       end
@@ -138,6 +138,7 @@ module Carto
                  count(column_name::text) cdb_columns_count
           FROM information_schema.columns c, pg_tables t, pg_trigger tg
           WHERE
+            t.tablename !~ '^importer_' AND
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND

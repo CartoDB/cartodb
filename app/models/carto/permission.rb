@@ -19,6 +19,14 @@ class Carto::Permission < ActiveRecord::Base
     JSON.parse(access_control_list, symbolize_names: true)
   end
 
+  def users_with_permissions(permission_types)
+    relevant_acl = acl.select do |entry|
+      entry[:type] == TYPE_USER && permission_types.include?(entry[:access])
+    end
+
+    Carto::User.find(relevant_acl.map { |entry| entry[:id] })
+  end
+
   def user_has_read_permission?(user)
     owner?(user) || permitted?(user, ACCESS_READONLY)
   end

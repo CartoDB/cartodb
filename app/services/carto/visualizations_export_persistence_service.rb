@@ -12,12 +12,9 @@ module Carto
         visualization.id = visualization_id ? visualization_id : random_uuid
         visualization.user = user
 
-        visualization.layers.map do |layer|
-          options = layer.options
-          if options.has_key?(:user_name)
-            options[:user_name] = user.username
-          end
-        end
+        ensure_unique_name(user, visualization)
+
+        visualization.layers.map { |layer| fix_layer_user_information(layer, user) }
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
@@ -67,6 +64,21 @@ module Carto
 
     private
 
+    def ensure_unique_name(user, visualization)
+      existing_names = Carto::Visualization.uniq
+                                           .where(user_id: user.id)
+                                           .where("name ~ '#{visualization.name}( Import)?( \d*)?$'")
+                                           .pluck(:name)
+      if existing_names.include?(visualization.name)
+        import_name = "#{visualization.name} Import"
+        i = 1
+        while existing_names.include?(import_name)
+          import_name = "#{visualization.name} Import #{i += 1}"
+        end
+        visualization.name = import_name
+      end
+    end
+
     def apply_user_limits(user, visualization)
       visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
       # Since password is not exported we must fallback to private
@@ -87,6 +99,30 @@ module Carto
         end
       end
       visualization.map.layers = layers
+    end
+
+    def fix_layer_user_information(layer, new_user)
+      new_username = new_user.username
+
+      options = layer.options
+      if options.has_key?(:user_name)
+        old_username = options[:user_name]
+        options[:user_name] = new_username
+
+        # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
+        query = options[:query]
+
+        options[:query] = rewrite_query_for_new_user(query, old_username, new_user) if query.present?
+      end
+    end
+
+    def rewrite_query_for_new_user(query, old_username, new_user)
+      if new_user.username == new_user.database_schema
+        new_schema = new_user.sql_safe_database_schema
+        query.gsub(" #{old_username}.", " #{new_schema}.").gsub(" \"#{old_username}\".", " #{new_schema}.")
+      else
+        query.gsub(" #{old_username}.", " ").gsub(" \"#{old_username}\".", " ")
+      end
     end
   end
 end

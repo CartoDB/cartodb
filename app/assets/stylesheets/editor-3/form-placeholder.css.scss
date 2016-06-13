@@ -1,0 +1,78 @@
+// Form placeholder styles
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+$color: $cThirdBackground;
+$br: 2px;
+
+.FormPlaceholder-paragraph {
+  position: relative;
+  margin-bottom: 30px;
+}
+.FormPlaceholder-step {
+  min-width: 26px;
+  height: 26px;
+  border-radius: $br;
+  background: $color;
+}
+.FormPlaceholder-inner {
+  width: 90%;
+}
+.FormPlaceholder-title {
+  display: block;
+  position: relative;
+  width: 60%;
+  height: 8px;
+  background: $color;
+}
+.FormPlaceholder-label {
+  display: block;
+  position: relative;
+  width: 60%;
+  height: 3px;
+  border-radius: $br;
+  background: $color;
+}
+.FormPlaceholder-input {
+  display: block;
+  height: 33px;
+  border-radius: $br;
+  background: $color;
+}
+.FormPlaceholder-size--shorter {
+  width: 18%;
+}
+.FormPlaceholder-size--short {
+  width: 25%;
+}
+.FormPlaceholder-size--med {
+  width: 50%;
+}
+.FormPlaceholder-size--long {
+  width: 100%;
+}
+.FormPlaceholder-carousel {
+  width: 100%;
+  margin-top: 25px;
+  overflow: hidden;
+}
+.FormPlaceholder-carouselItem {
+  display: block;
+  width: 88px;
+  min-width: 88px;
+  height: 56px;
+  margin-right: 10px;
+  border-radius: $br;
+  background: $color;
+}
+.FormPlaceholder-fields {
+  display: block;
+  margin-top: 15px;
+}
+.FormPlaceholder-fieldsItem {
+  @include align-items(center);
+  width: 100%;
+  margin-top: 10px;
+}

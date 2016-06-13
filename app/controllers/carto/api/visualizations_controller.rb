@@ -132,15 +132,6 @@ module Carto
         render_jsonp(vizjson)
       rescue KeyError => exception
         render(text: exception.message, status: 403)
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB.notify_exception(exception, user: current_user, template_data: exception.template_data)
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        CartoDB.notify_exception(exception)
-        render_jsonp({ errors: { named_map: exception.message } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        CartoDB.notify_exception(exception)
-        render_jsonp({ errors: { named_maps: exception.message } }, 400)
       rescue => exception
         CartoDB.notify_exception(exception)
         raise exception

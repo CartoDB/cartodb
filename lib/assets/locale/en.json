@@ -6,9 +6,28 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon"
   },
+  "analysis-category": {
+    "data-transformation": "Data transformation",
+    "relationship-analysis":"Relationship Analysis"
+  },
   "form-components": {
     "editors": {
       "fill": {
+        "switch": {
+          "to-categories": "Switch to categories",
+          "to-ramps": "Switch to ramps"
+        },
+        "customize": "Custom color set",
+        "quantification": {
+          "title": "Quantification",
+          "methods": {
+            "jenks": "Jenks",
+            "equal": "Equal Interval",
+            "headtails": "Heads/Tails",
+            "quantiles": "Quantiles"
+          }
+        },
+        "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
           "value": "By value"
@@ -19,6 +38,9 @@
         },
         "input-ramp": {
           "buckets": "bucket |||| buckets"
+        },
+        "input-categories": {
+          "others": "Others"
         }
       }
     }
@@ -401,13 +423,18 @@
         "count-message": "If you select COUNT all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
+    },
+    "codemirror": {
+      "no-errors": "No errors"
     }
   },
   "data": {
     "analysis-definition-node-model": {
       "validation": {
-        "invalid-source": "invalid source",
-        "required-param": "required"
+        "missing-required": "Required",
+        "invalid-source": "Invalid source",
+        "invalid-value": "Invalid value",
+        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
       }
     }
   },
@@ -418,8 +445,7 @@
     "button_add": "Add",
     "tab-pane": {
       "layers": {
-        "title-label": "Layers",
-        "basemap": "Basemap"
+        "title-label": "Layers"
       },
       "elements": {
         "title-label": "Elements"
@@ -434,6 +460,18 @@
         "add-analysis": "Add analysis",
         "add-layer": "Add layer",
         "delete": "Delete"
+      },
+      "basemap": {
+        "title-label": "Basemap",
+        "by": "by",
+        "category": {
+          "title-label": "Source",
+          "select-category": "Select source"
+        },
+        "style": {
+          "title-label": "Style",
+          "select-style": "Select style"
+        }
       },
       "menu-tab-pane-labels": {
         "data": "Data",
@@ -470,12 +508,16 @@
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
+        "apply-btn": "Apply",
+        "create-btn": "Create"
       },
       "infowindow": {
         "style": {
           "title-label": "Style",
-          "none": "None",
+          "select-style": "Select style",
           "window-size": "Window size",
+          "header-color": "Header color",
+          "none": "None",
           "light": "Light",
           "dark": "Dark",
           "color": "Color",
@@ -509,10 +551,21 @@
           "desc": "Change the visualization"
         }
       },
+      "style-toggle": {
+        "values": "VALUES",
+        "cartocss": "CARTOCSS"
+      },
       "messages": {
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
         "unavailable": "There was a problem getting schema, try to reload",
+        "none": "Your styles were reset, choose new styles for your layer, or get back to your previous style.",
+        "cartocss-applied": {
+          "title": "CARTOCSS APPLIED",
+          "body": "You just applied styles with CartoCSS editor. You can continue or clean all styles.",
+          "accept": "CONTINUE",
+          "cancel": "CLEAR"
+        }
       },
       "components": {
         "fill": "Fill",
@@ -535,7 +588,6 @@
             "overlay": "overlay"
           }
         },
-        "aggregation-resolution": "Resolution",
         "aggregation-value": "Value",
         "aggregation-size": {
           "label": "Size",
@@ -635,6 +687,13 @@
           "description": "Description",
           "yes": "Yes",
           "no": "No"
+        },
+        "aggregation-options": {
+          "count": "Count",
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }

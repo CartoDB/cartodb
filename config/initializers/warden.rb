@@ -91,7 +91,8 @@ Warden::Strategies.add(:ldap) do
         cartodb_username: exception.cartodb_username, organization_id: exception.organization_id,
         ldap_username: exception.ldap_username, ldap_email: exception.ldap_email)
     end
-    (fail! and return) unless user
+    # Fails, but do not stop processin other strategies (allows fallbacks)
+    return unless user
 
     success!(user, :message => "Success")
     request.flash['logged'] = true

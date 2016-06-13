@@ -10,7 +10,6 @@ require_relative './relator'
 require_relative './like'
 require_relative '../table/privacy_manager'
 require_relative '../../../services/minimal-validation/validator'
-require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 
@@ -92,7 +91,6 @@ module CartoDB
         self.id         ||= @repository.next_id
         @name_checker   = name_checker
         @validator      = MinimalValidator::Validator.new
-        @named_maps     = nil
         @user_data      = nil
         self.permission_change_valid = true   # Changes upon set of different permission_id
         # this flag is passed to the table in case of canonical visualizations. It's used to say to the table to not touch the database and only change the metadata information, useful for ghost tables
@@ -167,6 +165,7 @@ module CartoDB
       def store
         raise CartoDB::InvalidMember.new(validator.errors) unless self.valid?
         do_store
+
         self
       end
 
@@ -258,16 +257,7 @@ module CartoDB
         end
 
         # Named map must be deleted before the map, or we lose the reference to it
-        begin
-          named_map = get_named_map
-          # non-existing named map is not a critical failure, keep deleting even if not found
-          named_map.delete if named_map
-        rescue NamedMapsWrapper::HTTPResponseError => exception
-          # CDB-1964: Silence named maps API exception if deleting data to avoid interrupting whole flow
-          unless from_table_deletion
-            CartoDB.notify_exception(exception, user: user)
-          end
-        end
+        Carto::NamedMaps::Api.new(carto_visualization).destroy
 
         unlink_self_from_list!
 
@@ -306,7 +296,6 @@ module CartoDB
 
       def user_data=(user_data)
         @user_data = user_data
-        named_maps(true)
       end
 
       def name=(name)
@@ -496,17 +485,6 @@ module CartoDB
         password_protected? || has_private_tables?
       end
 
-      def get_named_map
-        return false if type == TYPE_REMOTE
-
-        data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
-        if data.nil?
-          false
-        else
-          data
-        end
-      end
-
       def password=(value)
         if value && value.size > 0
           @password_salt = generate_salt if @password_salt.nil?
@@ -664,16 +642,18 @@ module CartoDB
         embed_redis_cache.invalidate(self.id)
       end
 
-      # INFO: Handles doing nothing if instance is not eligible to have a named map
       def save_named_map
         return if type == TYPE_REMOTE
 
-        named_map = get_named_map
-        if named_map
-          update_named_map(named_map)
-        else
-          create_named_map
+        Rails::Sequel.connection.after_commit do
+          (get_named_map ? update_named_map : create_named_map) if carto_visualization
         end
+      end
+
+      def get_named_map
+        return false if type == TYPE_REMOTE
+
+        Carto::NamedMaps::Api.new(carto_visualization).show if carto_visualization
       end
 
       def license_info
@@ -762,13 +742,7 @@ module CartoDB
         end
         repository.store(id, attributes.to_hash)
 
-        begin
-          save_named_map
-        rescue => exception
-          CartoDB.notify_exception(exception, user: user, message: "Error saving visualization named map")
-          restore_previous_privacy
-          raise exception
-        end
+        save_named_map
 
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL
@@ -804,40 +778,12 @@ module CartoDB
         end
       end
 
-      def named_maps(force_init = false)
-        if @named_maps.nil? || force_init
-          if user.nil?
-            name_param = @user_data.nil? ? '' : @user_data[:name]
-            api_key_param = @user_data.nil? ? '' : @user_data[:api_key]
-          else
-            name_param = user.username
-            api_key_param = user.api_key
-          end
-          @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
-            {
-              name:     name_param,
-              api_key:  api_key_param
-            },
-            {
-              domain:     Cartodb.config[:tiler]['internal']['domain'],
-              port:       Cartodb.config[:tiler]['internal']['port'] || 443,
-              protocol:   Cartodb.config[:tiler]['internal']['protocol'],
-              verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true),
-              host:       (Cartodb.config[:tiler]['internal']['host'] rescue nil)
-            },
-            configuration
-          )
-        end
-        @named_maps
-      end
-
       def create_named_map
-        new_named_map = named_maps.create(self)
-        !new_named_map.nil?
+        Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
-      def update_named_map(named_map_instance)
-        named_map_instance.update(self)
+      def update_named_map
+        Carto::NamedMaps::Api.new(carto_visualization).update
       end
 
       def propagate_privacy_and_name_to(table)
@@ -955,6 +901,9 @@ module CartoDB
         CartoDB.notify_exception(exception)
       end
 
+      def carto_visualization
+        Carto::Visualization.where(id: id).first
+      end
     end
   end
 end

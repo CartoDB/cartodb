@@ -6,7 +6,7 @@ defaults: &defaults
   http_client_logs: true
   ogr2ogr:
     binary:           'which ogr2ogr2.1'
-    csv_guessing:     false
+    csv_guessing:     true
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
@@ -180,7 +180,7 @@ defaults: &defaults
       bucket_name: ''
       url_ttl: 7200
       async_long_uploads: false
-    uploads_path: 'public/uploads'
+    uploads_path: 'public/uploads' # including 'uploads' assumes public path. Absolute path example: /tmp/exports/downloads
   importer:
     blacklisted_ip_addr: []
     content_guessing:        # Depends on geocoding
@@ -252,8 +252,8 @@ defaults: &defaults
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
-  # app_assets:
-  #   asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
+  app_assets:
+    asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:
     gravatar_enabled: true
     base_url: 'example.com/avatars'

@@ -1,6 +1,6 @@
 <div class="Editor-ListAnalysis-itemInfo u-rSpace--m CDB-Text is-semibold CDB-Size-small u-upperCase" style="background: <%- bgColor %>; color: #fff">
   <% if (isDone) { %>
-    <span class="CDB-Text is-light u-rSpace">
+    <span class="CDB-Text u-rSpace">
       <%- id %>
     </span>
     <i class="CDB-IconFont CDB-IconFont-ray CDB-Size-medium"></i>

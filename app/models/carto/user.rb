@@ -454,4 +454,16 @@ class Carto::User < ActiveRecord::Base
 
     tokens << organization.get_auth_token if has_organization?
   end
+
+  def get_auth_token
+    auth_token.present? ? auth_token : generate_auth_token
+  end
+
+  private
+
+  def generate_auth_token
+    update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+
+    auth_token
+  end
 end

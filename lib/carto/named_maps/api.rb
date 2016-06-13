@@ -90,10 +90,11 @@ module Carto
 
           response = http_client.delete(url, request_params)
 
-          if response.code.to_s =~ /^2/
+          response_code = response.code
+          if response_code.to_s =~ /^2/
             response.response_body
           else
-            log_response(response, 'destroy')
+            log_response(response, 'destroy') unless response_code == 404
           end
         end
       end

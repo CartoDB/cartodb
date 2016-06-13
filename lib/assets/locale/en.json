@@ -517,7 +517,8 @@
         "create-btn": "Create",
         "top-range": "Top range",
         "result": "Result",
-        "filter": "Filter"
+        "filter": "Filter",
+        "column": "Column"
       },
       "infowindow": {
         "style": {

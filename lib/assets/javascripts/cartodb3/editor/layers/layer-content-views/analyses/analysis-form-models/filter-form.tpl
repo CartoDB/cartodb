@@ -6,6 +6,14 @@
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.filter') %></h2>
       </div>
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.select-column') %></p>
+      <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
+        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.input') %></p>
+        <div class="Editor-formInput" data-editors="source"></div>
+      </div>
+      <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
+        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.column') %></p>
+        <div class="Editor-formInput" data-editors="column"></div>
+      </div>
     </div>
   </div>
   <div class="Editor-HeaderInfo">

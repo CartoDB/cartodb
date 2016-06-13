@@ -10,6 +10,7 @@ ghost tables, importing common data and automatic index creation.
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
+* Fix visualization not found error when exporting maps created from datasets
 
 3.13.0 (2016-XX-XX)
 -------------------

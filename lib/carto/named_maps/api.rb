@@ -80,7 +80,6 @@ module Carto
             update(retries: retries + 1)
           else
             log_response(response, 'update')
-            raise "Carto::NamedMaps::Api: Could not update named map (code: #{response_code_string})"
           end
         end
       end

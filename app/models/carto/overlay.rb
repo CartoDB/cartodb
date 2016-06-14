@@ -11,7 +11,9 @@ module Carto
 
     validates :type, presence: true
     validate :unique_overlay_not_duplicated
-    validate :user_not_viewer
+    validate :validate_user_not_viewer
+
+    before_destroy :raise_error_if_user_viewer
 
     after_save :invalidate_cache
     after_destroy :invalidate_cache
@@ -49,8 +51,17 @@ module Carto
       end
     end
 
-    def user_not_viewer
-      errors.add(:visualization, "Viewer users can't add overlays") if visualization.user.viewer
+    def validate_user_not_viewer
+      # TODO: `visualization` check is needed because the creation of default overlays for visualization
+      # is yet done from the old models (Member). Member assigns the id (because it can't assign itself, as
+      # it's not a `Carto::Visualization`), but since that happens in a transaction managed by Sequel
+      # we can't get the `Carto::Visualization` here. When `Member` is gone the `visualization` check can
+      # be removed, as an `Overlay` must have a `Visualization`.
+      errors.add(:visualization, "Viewer users can't add overlays") if visualization && visualization.user.viewer
+    end
+
+    def raise_error_if_user_viewer
+      raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy overlays") if visualization.user.viewer
     end
 
     def invalidate_cache

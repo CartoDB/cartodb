@@ -112,18 +112,34 @@ describe Carto::Overlay do
       overlay.hidden?.should be_false
       overlay.options['display'].should be_true
     end
+  end
 
-    context 'viewer users' do
-        it "can't create a new overlay" do
-          user = @visualization.user
-          user.viewer = true
-          user.save
-          @visualization.reload
+  context 'viewer users' do
+    it "can't create a new overlay" do
+      user = @visualization.user
+      user.viewer = true
+      user.save
+      @visualization.reload
 
-          overlay = @visualization.overlays.new(type: 'header', template: 'wadus', order: 0)
-          overlay.save.should be_false
-          overlay.errors[:visualization].should eq(["Viewer users can't add overlays"])
-        end
+      overlay = @visualization.overlays.new(type: 'header', template: 'wadus', order: 0)
+      overlay.save.should be_false
+      overlay.errors[:visualization].should eq(["Viewer users can't add overlays"])
+
+      user.viewer = false
+      user.save
+    end
+
+    it "can't delete overlays" do
+      user = @visualization.user
+      user.viewer = true
+      user.save
+      @visualization.reload
+
+      overlay = @visualization.overlays.first
+      expect { overlay.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy overlays/)
+
+      user.viewer = false
+      user.save
     end
   end
 end

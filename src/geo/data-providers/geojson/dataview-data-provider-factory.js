@@ -19,7 +19,6 @@ DataviewDataProviderFactory.prototype.createDataProviderForDataview = function (
   var options = {
     dataview: dataview,
     vectorLayerView: this._vectorLayerView,
-    layerModel: this._layerModel,
     layerIndex: this._layerIndex
   };
   var DataProviderClass = this._dataProviderMap[dataview.get('type')];

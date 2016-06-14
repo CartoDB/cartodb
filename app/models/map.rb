@@ -84,7 +84,7 @@ class Map < Sequel::Model
   end
 
   def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user.viewer
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
     super
     invalidate_vizjson_varnish_cache
   end
@@ -96,7 +96,7 @@ class Map < Sequel::Model
   def validate
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
-    errors.add(:user, "Viewer users can't save maps") if user.viewer
+    errors.add(:user, "Viewer users can't save maps") if user && user.viewer
   end
 
   def recalculate_bounds!

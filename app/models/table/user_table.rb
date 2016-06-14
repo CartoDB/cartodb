@@ -164,7 +164,7 @@ class UserTable < Sequel::Model
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
-    errors.add(:user, "Viewer users can't create tables") if user.viewer
+    errors.add(:user, "Viewer users can't create tables") if user && user.viewer
 
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'

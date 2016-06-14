@@ -62,6 +62,7 @@ $tableBorderColor: $cSecondaryLine;
   @include flex-direction(column);
   width: 100%;
   height: 100%;
+  padding-bottom: 60px;
   overflow-y: scroll;
 }
 .Table-row {
@@ -96,7 +97,11 @@ $tableBorderColor: $cSecondaryLine;
   content: '';
 }
 .Table-rowMenu {
+  width: 65px;
   z-index: 20;
+}
+.Table-rowMenu--bottom {
+  margin-top: -200px;
 }
 
 .Table-row:hover .Table-cellItem::before {

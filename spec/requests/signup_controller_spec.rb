@@ -21,17 +21,26 @@ describe SignupController do
     end
 
     it 'returns 200 for organizations with signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['cartodb.com'] )
+      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['cartodb.com'])
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
     end
 
     it 'returns 404 for organizations without signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: [] )
+      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: [])
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 404
+    end
+
+    it 'returns 200 for organizations without signup_page_enabled but with a valid invitation' do
+      @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
+      owner = Carto::User.find(@fake_organization.owner.id)
+      invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!')
+      Organization.stubs(:where).returns([@fake_organization])
+      get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
+      response.status.should == 200
     end
 
     it 'returns user error with admin mail if organization has not enough seats' do

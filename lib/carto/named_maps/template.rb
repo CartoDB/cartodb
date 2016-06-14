@@ -36,7 +36,7 @@ module Carto
               layers: layers,
               stat_tag: @visualization.id,
               dataviews: dataviews,
-              analyses: analyses
+              analyses: analyses_definitions
             },
             view: view
           }
@@ -172,7 +172,7 @@ module Carto
         dataviews
       end
 
-      def analyses
+      def analyses_definitions
         @visualization.analyses.map(&:analysis_definition)
       end
 

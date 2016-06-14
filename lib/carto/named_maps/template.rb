@@ -118,7 +118,7 @@ module Carto
         options = {}
 
         options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
-        options[:subdomains] = layer_options['subdomains']  if layer_options['subdomains']
+        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains']
 
         options
       end

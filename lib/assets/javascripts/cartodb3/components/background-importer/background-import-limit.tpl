@@ -1,7 +1,5 @@
-<div class="ImportItem-text is-long">
-  <% if (isUpgradeable) { %>
-  <%- _t('components.background-importer.background-import-limit.hurry', { upgradeUrl: upgradeUrl }) %>
-  <% } else { %>
-  <%- _t('components.background-importer.background-import-limit.one-file', { importQuota: importQuota }) %>
-  <% } %>
-</div>
+<% if (isUpgradeable) { %>
+<%- _t('components.background-importer.background-import-limit.hurry', { upgradeUrl: upgradeUrl }) %>
+<% } else { %>
+<%- _t('components.background-importer.background-import-limit.one-file', { importQuota: importQuota }) %>
+<% } %>

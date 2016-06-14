@@ -6,13 +6,13 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
+  position: relative;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
-  position:relative;
 }
 .Editor-ListLayer-item--placeholder {
   border-color: $cSecondaryBackground;
@@ -181,6 +181,10 @@
   margin-left: -1px;
   border-top-left-radius: $halfBaseSize;
   border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-itemInfoIcon {
+  line-height: 18px;
 }
 
 .Editor-ListAnalysis-title {

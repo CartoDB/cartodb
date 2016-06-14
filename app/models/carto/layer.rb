@@ -111,17 +111,17 @@ module Carto
       map.visualization
     end
 
-    def sql
+    def sql(user)
       query = options[:query]
 
       sql = if query.present?
               query
             else
-              "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{options['table_name']}"
+              "SELECT * FROM #{user.sql_safe_database_schema}.#{options['table_name']}"
             end
 
       query_wrapper = options[:query_wrapper]
-      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper && layer.torque?
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper && torque?
 
       sql
     end

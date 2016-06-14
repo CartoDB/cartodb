@@ -1,8 +1,8 @@
-<td class="Table-cellItem">
+<td class="Table-cellItem" data-attribute="<%- columnName %>" title="<%- value %>" data-clipboard-text='<%- value %>'>
   <div class="
       Table-cell u-flex u-justifySpace
       <%- columnName === 'cartodb_id' || geometry !== 'point' ? 'Table-cell--short' : '' %>
-    " title="<%- value %>" data-clipboard-text='<%- value %>'>
+    ">
     <p class="
       CDB-Text CDB-Size-medium
       u-ellipsis u-rSpace--xl

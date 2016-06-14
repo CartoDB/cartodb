@@ -67,22 +67,25 @@ $tableBorderColor: $cSecondaryLine;
 .Table-row {
   border-bottom: 1px solid $tableBorderColor;
   background: none;
-  &:hover {
-    background: rgba($cHighlight, 0.16);
-  }
+}
+.Table-row:hover,
+.Table-row.is-highlighted {
+  background: rgba($cHighlight, 0.16);
 }
 .Table-cellItem {
   position: relative;
   box-sizing: content-box;
   border-right: 1px solid $tableBorderColor;
 }
-.Table-cellItem:hover {
+.Table-cellItem:hover,
+.Table-cellItem.is-highlighted {
   background: rgba($cHighlight, 0.32);
   .CDB-Shape-threePoints {
     display: block;
   }
 }
-.Table-cellItem:hover::after {
+.Table-cellItem:hover::after,
+.Table-cellItem.is-highlighted::after {
   position: absolute;
   top: -1px;
   right: -1px;

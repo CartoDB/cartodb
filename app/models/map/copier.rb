@@ -14,6 +14,9 @@ module CartoDB
 
       def new_map_from(map)
         @new_map ||= ::Map.new(map.to_hash.select { |k, v| k != :id })
+        # Explicit association assignment to make user itself available, beyond its id, for validations
+        @new_map.user ||= map.user
+        @new_map
       end
 
       def copy_layers(origin_map, destination_map)
@@ -58,4 +61,3 @@ module CartoDB
     end
   end
 end
-

@@ -130,11 +130,7 @@ module Carto
         layer_options_sql_wrap = layer_options[:sql_wrap]
         layer_options_query_wrapper = layer_options[:query_wrapper]
 
-        options[:sql_wrap] = if layer_options_sql_wrap
-                               layer_options_sql_wrap
-                             elsif layer_options_query_wrapper
-                               layer_options_query_wrapper
-                             end
+        options[:sql_wrap] = layer_options_sql_wrap || layer_options_query_wrapper
 
         options
       end

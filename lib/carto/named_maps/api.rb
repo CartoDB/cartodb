@@ -19,7 +19,7 @@ module Carto
       def index
         stats_aggregator.timing('carto-named-maps-api.index') do
           response = stats_aggregator.timing('call') do
-            response = http_client.get(url, request_params)
+            http_client.get(url, request_params)
           end
 
           if response.code.to_s =~ /^2/

@@ -28,7 +28,6 @@ describe Layer do
   end
 
   context "setups" do
-
     it "should be preloaded with the correct default values" do
       l = Layer.create(Cartodb.config[:layer_opts]["data"]).reload
       l.kind.should == 'carto'

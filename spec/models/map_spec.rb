@@ -367,4 +367,41 @@ describe Map do
       derived.fetch.private?.should be_true
     end
   end
+
+  context 'viewer role support on layer management' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+      @user.reload
+    end
+
+    def become_viewer(user)
+      user.viewer = true
+      user.save
+      user.reload
+    end
+
+    describe 'add layers' do
+      it 'should fail for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        become_viewer(@user)
+        @map.reload
+
+        @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
+        expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't add layers/)
+      end
+    end
+
+    describe 'can_add_layer' do
+      it 'should return false for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        become_viewer(@user)
+        @map.reload
+
+        @map.can_add_layer(@user).should eq false
+      end
+    end
+  end
 end

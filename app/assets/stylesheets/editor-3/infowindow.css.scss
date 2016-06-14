@@ -26,3 +26,22 @@
   @include opacity(1);
 }
 
+.CDB-infowindow.Infowindow-none {
+  background: $cHighlightYellow;
+}
+.Infowindow-none .CDB-hook::before {
+  border-top: 16px solid $cHighlightYellow;
+}
+.Infowindow-none .CDB-infowindow-subtitle {
+  margin-bottom: 8px;
+  color: $cMainBg;
+  font-weight: 600;
+}
+.Infowindow-none .CDB-infowindow-title {
+  font-weight: 400;
+}
+
+
+
+
+

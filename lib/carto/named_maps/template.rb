@@ -58,24 +58,29 @@ module Carto
 
         layers = @visualization.map.layers
 
-        index = -1
-        layers.select(&:carto_layer?).each do |layer|
-          index += 1
-          placeholders["layer#{index}".to_sym] = {
-            type: 'number',
-            default: layer.options[:visible] ? 1 : 0
-          }
-        end
+        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
+        _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
+                                                                                starting_index: last_index)
 
-        layers.select(&:torque?).each do |layer|
-          index += 1
-          placeholders["layer#{index}".to_sym] = {
-            type: 'number',
-            default: layer.options[:visible] ? 1 : 0
-          }
-        end
+        placeholders = placeholders.merge(carto_layers_visibility_placeholders)
+        placeholders = placeholders.merge(torque_layer_visibility_placeholders)
 
         placeholders
+      end
+
+      def layer_visibility_placeholders(layers, staring_index: 0)
+        placeholders = {}
+
+        index = starting_index
+        layers.each do |layer|
+          placeholders["layer#{index}".to_sym] = {
+            type: 'number',
+            default: layer.options[:visible] ? 1 : 0
+          }
+          index += 1
+        end
+
+        [index, placeholders]
       end
 
       def layers

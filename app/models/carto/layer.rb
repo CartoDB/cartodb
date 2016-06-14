@@ -111,7 +111,7 @@ module Carto
       map.visualization
     end
 
-    def sql(user)
+    def wrapped_sql(user)
       query = options[:query]
 
       sql = if query.present?

@@ -148,7 +148,7 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = visibility_wrapped_sql(layer.sql(@visualization.user), index)
+          options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
         interactivity, attributes = infowindow_options(layer)

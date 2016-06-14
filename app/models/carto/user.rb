@@ -459,7 +459,7 @@ class Carto::User < ActiveRecord::Base
 
   def get_auth_token
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
-    auth_token = Carto::User.select(auth_token).find(id).auth_token
+    auth_token = Carto::User.select(:auth_token).find(id).auth_token
 
     auth_token.present? ? auth_token : generate_auth_token
   end

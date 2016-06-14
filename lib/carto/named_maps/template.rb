@@ -68,7 +68,7 @@ module Carto
         placeholders
       end
 
-      def layer_visibility_placeholders(layers, staring_index: 0)
+      def layer_visibility_placeholders(layers, starting_index: 0)
         placeholders = {}
 
         index = starting_index

@@ -48,9 +48,8 @@ describe Map do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)
         new_map.user.stubs(:viewer).returns(true)
-byebug
-        new_map.destroy
-        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        expect { new_map.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy maps/)
 
         new_map.user.stubs(:viewer).returns(false)
         new_map.destroy

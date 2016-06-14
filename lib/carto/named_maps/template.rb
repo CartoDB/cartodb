@@ -199,8 +199,7 @@ module Carto
 
       def dataview_data(widget)
         options = widget.options.select { |k, _v| DATAVIEW_TEMPLATE_OPTIONS.include?(k) }
-        options[:aggregationColumn] = options[:aggregation_column]
-        options.delete(:aggregation_column)
+        options[:aggregationColumn] = options.delete(:aggregation_column)
 
         dataview_data = {
           type: TILER_WIDGET_TYPES[widget.type.to_sym],

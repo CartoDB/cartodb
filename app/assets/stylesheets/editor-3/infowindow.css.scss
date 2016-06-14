@@ -27,9 +27,9 @@
 }
 
 .CDB-infowindow.Infowindow-none {
-  background: $cHighlightYellow; 
+  background: $cHighlightYellow;
 }
-.Infowindow-none .CDB-hook:before {
+.Infowindow-none .CDB-hook::before {
   border-top: 16px solid $cHighlightYellow;
 }
 .Infowindow-none .CDB-infowindow-subtitle {

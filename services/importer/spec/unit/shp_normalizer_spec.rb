@@ -10,6 +10,9 @@ include CartoDB::Importer2::Doubles
 describe CartoDB::Importer2::ShpNormalizer do
 
   describe '#shape_encoding' do
+    before(:each) do
+      CartoDB.stubs(:python_bin_path).returns(`which python`.strip)
+    end
 
     it 'guesses UTF-8 encoding for USA counties common data unzipped with cpg file' do
       job = CartoDB::Importer2::Doubles::Job.new
@@ -19,7 +22,7 @@ describe CartoDB::Importer2::ShpNormalizer do
 
       shp_normalizer.shape_encoding.should eq 'UTF-8'
     end
-  
+
     it 'guesses LATIN1 encoding for a "greek", unsupported encoding' do
       job = CartoDB::Importer2::Doubles::Job.new
       job.stubs(:table_name).returns('greek')

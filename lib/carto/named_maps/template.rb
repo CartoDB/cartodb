@@ -104,8 +104,9 @@ module Carto
           end
         end
 
-        @visualization.map.torque_layers.each_with_index do |layer, index|
-          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index + index))
+        @visualization.map.torque_layers.each do |layer|
+          layer_index += 1
+          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end
 
         layers

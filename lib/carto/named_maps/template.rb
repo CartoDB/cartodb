@@ -98,7 +98,7 @@ module Carto
           layers.push(type: type, options: options)
         end
 
-        @visualization.map.layers.select(&:torque?).each do |layer|
+        @visualization.map.torque_layers.each do |layer|
           index += 1
           type, options = type_and_options_for_torque_layers(layer, index)
 

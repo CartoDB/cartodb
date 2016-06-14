@@ -117,7 +117,7 @@ module Carto
       sql = if query.present?
               query
             else
-              "SELECT * FROM #{user.sql_safe_database_schema}.#{options['table_name']}"
+              "SELECT * FROM #{qualified_table_name(user)}"
             end
 
       query_wrapper = options[:query_wrapper]

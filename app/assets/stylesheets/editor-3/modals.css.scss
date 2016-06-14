@@ -168,12 +168,18 @@
 }
 
 .Editor-navButtonsItemLink {
+  @include align-items(center);
   min-width: 136px;
   padding: 10px;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   color: $cSecondaryText;
   text-align: left;
+  box-sizing: border-box;
+}
+
+.Editor-navButtonsItemLink:hover {
+  border: 1px solid rgba($cHoverLine, 0.4);
 }
 
 .Editor-navButtonsItem.is-selected .Editor-navButtonsItemLink {

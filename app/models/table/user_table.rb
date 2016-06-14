@@ -67,6 +67,7 @@ class UserTable < Sequel::Model
   one_to_one   :automatic_geocoding, key: :table_id
   one_to_many  :geocodings, key: :table_id
   many_to_one  :data_import, key: :data_import_id
+  many_to_one  :user
 
   plugin :association_dependencies, map:                  :destroy,
                                     layers:               :nullify,
@@ -163,6 +164,8 @@ class UserTable < Sequel::Model
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
+    errors.add(:user, "Viewer users can't create tables") if user.viewer
+
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
     ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
@@ -203,6 +206,7 @@ class UserTable < Sequel::Model
   end
 
   def before_destroy
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user.viewer
     service.before_destroy
     super
   end

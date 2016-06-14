@@ -53,14 +53,17 @@ module Carto
         downloaded_file = File.open file_path, 'wb'
         request = request(url, options)
         request.on_headers do |response|
-          if response.code != 200
+          unless response.code == 200
             raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
           end
         end
         request.on_body do |chunk|
           downloaded_file.write(chunk)
         end
-        request.on_complete do
+        request.on_complete do |response|
+          unless response.success?
+            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
+          end
           downloaded_file.close
         end
         request.run

@@ -41,6 +41,9 @@
     cursor: pointer;
   }
 }
+.Mosaic-item.is-hidden {
+  display: none;
+}
 .Mosaic-item.is-selected {
   border: 2px solid $cBlue;
 

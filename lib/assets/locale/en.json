@@ -470,7 +470,8 @@
         },
         "style": {
           "title-label": "Style",
-          "select-style": "Select style"
+          "select-style": "Select style",
+          "color": "Color"
         }
       },
       "menu-tab-pane-labels": {

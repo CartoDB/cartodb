@@ -106,10 +106,10 @@ module Carto
       end
 
       def url(template_name: '')
-        org_username = @user.organization ? @user.username : nil
-        base_url = CartoDB::subdomain_based_base_url(@user.domain, org_username)
+        username = @user.username
+        user_url = CartoDB.subdomainless_urls? ? "/user/#{username}" : ''
 
-        "#{base_url}/api/v1/map/named/#{template_name}?api_key=#{@user.api_key}"
+        "#{protocol}://#{host(username)}:#{port}#{user_url}/api/v1/map/named/#{template_name}?api_key=#{@user.api_key}"
       end
 
       def request_params

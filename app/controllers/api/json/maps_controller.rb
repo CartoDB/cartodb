@@ -16,12 +16,12 @@ class Api::Json::MapsController < Api::ApplicationController
                                  :view_bounds_sw, :view_bounds_ne, :legends, :scrollwheel))
       end
 
-      if updated == false
+      if updated
+        render_jsonp(@map.public_values)
+      else
         CartoDB::Logger.error(message: 'Error updating map', errors: @map.errors)
 
         render_jsonp({ description: @map.errors.full_messages, stack: @map.errors.full_messages }, 400)
-      else
-        render_jsonp(@map.public_values)
       end
     end
   end

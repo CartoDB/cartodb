@@ -21,7 +21,7 @@ $tableBorderColor: $cSecondaryLine;
   background: #FFF;
   overflow-x: scroll;
   overflow-y: hidden;
-  z-index: 1000;
+  z-index: 10;
 }
 .Table-head {
   @include display-flex();
@@ -92,7 +92,9 @@ $tableBorderColor: $cSecondaryLine;
   pointer-events: none;
   content: '';
 }
-
+.Table-rowMenu {
+  z-index: 20;
+}
 
 .Table-row:hover .Table-cellItem::before {
   display: block;

@@ -436,10 +436,21 @@
         }
       },
       "rows": {
+        "options": {
+          "copy": "Copy cell value",
+          "create": "Add new row",
+          "edit": "Edit this cell",
+          "delete": "Delete this row..."
+        },
         "create": {
           "loading": "Adding new row...",
           "error": "Error adding new row: %{error}",
           "success": "New row added"
+        },
+        "destroy": {
+          "loading": "Deleting row...",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "success": "Row with cartodb_id %{cartodb_id} deleted"
         }
       }
     }

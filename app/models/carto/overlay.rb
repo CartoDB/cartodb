@@ -11,6 +11,7 @@ module Carto
 
     validates :type, presence: true
     validate :unique_overlay_not_duplicated
+    validate :user_not_viewer
 
     after_save :invalidate_cache
     after_destroy :invalidate_cache
@@ -46,6 +47,10 @@ module Carto
           errors.add(:base, "Unique overlay of type #{type} already exists")
         end
       end
+    end
+
+    def user_not_viewer
+      errors.add(:visualization, "Viewer users can't add overlays") if visualization.user.viewer
     end
 
     def invalidate_cache

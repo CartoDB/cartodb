@@ -21,7 +21,8 @@ class Carto::User < ActiveRecord::Base
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
-                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
+                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " +
+                   "users.viewer"
 
   SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
 

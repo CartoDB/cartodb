@@ -12,8 +12,8 @@ module Carto
       MAX_RETRY_ATTEMPTS = 3
 
       def initialize(visualization)
-        @visualization = visualization
-        @user = @visualization.user
+        @user = visualization.user
+        @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
 
       def index
@@ -33,7 +33,7 @@ module Carto
       def create
         stats_aggregator.timing('carto-named-maps-api.create') do
           params = request_params
-          params[:body] = Carto::NamedMaps::Template.new(@visualization).to_json
+          params[:body] = @named_map_template.to_json
 
           response = http_client.post(url, params)
 
@@ -49,7 +49,7 @@ module Carto
         stats_aggregator.timing('carto-named-maps-api.show') do
           response = stats_aggregator.timing('call') do
 
-            url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)
+            url = url(template_name: @named_map_template.name)
 
             response = http_client.get(url, request_params)
           end
@@ -65,7 +65,7 @@ module Carto
 
       def update(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.update') do
-          template = Carto::NamedMaps::Template.new(@visualization)
+          template = @named_map_template
 
           params = request_params
           params[:body] = template.to_json
@@ -86,7 +86,7 @@ module Carto
 
       def destroy
         stats_aggregator.timing('carto-named-maps-api.destroy') do
-          url = url(template_name: Carto::NamedMaps::Template.new(@visualization).name)
+          url = url(template_name: @named_map_template.name)
 
           response = http_client.delete(url, request_params)
 

@@ -9,5 +9,6 @@
     <ul class="u-flex CDB-Text CDB-Size-small u-upperCase">
       <li class='u-rSpace'></li>
     </ul>
+  	<h4 class="CDB-Text CDB-Size-huge"></h4>
   </div>
 </div>

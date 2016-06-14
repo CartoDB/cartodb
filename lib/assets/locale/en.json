@@ -201,6 +201,10 @@
       "gmt-convertion": "Date will be converted to GMT +0"
     },
     "modals": {
+      "add-basemap": {
+        "modal-title": "Add a custom basemap",
+        "modal-desc": "Select from these great resources"
+      },
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",

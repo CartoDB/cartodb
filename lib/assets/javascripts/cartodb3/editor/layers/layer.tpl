@@ -16,7 +16,13 @@
       <h2 class="Editor-ListLayer-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
       <ul class="Editor-HeaderInfo-actions">
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
-          <div class="CDB-ArrowToogle is-blue is-small"></div>
+          <button class="js-toggle">
+            <% if (isVisible) { %>
+              <i class="CDB-IconFont CDB-IconFont-eyeDisabled"></i>
+            <% } else { %>
+              <i class="CDB-IconFont CDB-IconFont-eye"></i>
+            <% } %>
+          </button>
         </li>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">

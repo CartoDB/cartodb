@@ -356,6 +356,7 @@ module Carto
             @visualization.save
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:valid_tokens].should_not be_empty
             template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
           end
 

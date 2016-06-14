@@ -4,7 +4,8 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon"
+    "point-in-polygon": "Point in polygon",
+    "cluster": "Cluster"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -219,6 +220,14 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "kmeans": {
+            "title": "K-means",
+            "desc": "??????????"
+          },
+          "weighted-centroid": {
+            "title": "Weighted Centroid",
+            "desc": "??????????"
           }
         }
       },
@@ -505,11 +514,17 @@
         "points_source": "Point source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "input-layer": "Define your input layer",
+        "tune-clusters": "Tune your clusters",
         "time": "Time",
         "type": "Type",
         "workflow": "Workflow",
         "apply-btn": "Apply",
-        "create-btn": "Create"
+        "create-btn": "Create",
+        "clusters-num": "# Clusters",
+        "aggregate": "Aggregate",
+        "weight-column": "Weight column",
+        "category-column": "Category column"
       },
       "infowindow": {
         "style": {

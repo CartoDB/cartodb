@@ -3,5 +3,5 @@
 </div>
 <div class="CodeMirror-console">
   <%- tip %>
-  <div class="CodeMirror-message js-console">No errors</div>
+  <div class="CodeMirror-message js-console"><%- _t('components.codemirror.no-errors') %></div>
 </div>

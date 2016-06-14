@@ -425,7 +425,10 @@
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
     },
     "codemirror": {
-      "no-errors": "No errors"
+      "no-errors": "No errors",
+      "docs": "DOCS",
+      "syntax-error": "Syntax error",
+      "line": "Line"
     }
   },
   "data": {

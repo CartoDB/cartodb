@@ -183,9 +183,10 @@
 }
 
 .Editor-navButtonsItem.is-selected .Editor-navButtonsItemLink {
-  border: 2px solid $cBlue;
+  border: 1px solid $cBlue;
   background: $cWhite;
   color: $cMainBg;
+  box-shadow: 1px 0 0 $cBlue, -1px 0 0 $cBlue, 0 1px 0 $cBlue, 0 -1px 0 $cBlue;
 }
 
 

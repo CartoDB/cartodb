@@ -85,34 +85,45 @@ module Carto
 
       def layers
         layers = []
-        index = -1 # forgive me for I have sinned
+        layer_index = -1 # forgive me for I have sinned
 
         @visualization.map.named_maps_layers.each do |layer|
-          type, options = if layer.data_layer?
-                            index += 1
-                            type_and_options_for_cartodb_layers(layer, index)
-                          elsif layer.base?
-                            type_and_options_for_basemap_layers(layer)
-                          end
+          if layer.data_layer?
+            layer_index += 1
 
-          layers.push(type: type, options: options)
+            layers.push(type: 'cartodb', options: options_for_cartodb_layers(layer, layer_index))
+          elsif layer.base?
+            layer_options = layer.options
+
+            if layer_options['type'] == 'Plain'
+              layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
+            else
+              layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
+            end
+          end
         end
 
-        @visualization.map.torque_layers.each do |layer|
-          index += 1
-          type, options = type_and_options_for_torque_layers(layer, index)
-
-          layers.push(type: type, options: options)
+        @visualization.map.torque_layers.each_with_index do |layer, index|
+          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index + index))
         end
 
         layers
       end
 
-      def visibility_wrapped_sql(sql, index)
-        "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      def options_for_plain_basemap_layers(layer_options)
+        layer_options['image'].empty? ? { color: layer_options['color'] } : { imageUrl: layer_options['image'] }
       end
 
-      def type_and_options_for_cartodb_layers(layer, index)
+      def options_for_http_basemap_layers(layer_options)
+        options = {}
+
+        options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
+        options[:subdomains] = layer_options['subdomains']  if layer_options['subdomains']
+
+        options
+      end
+
+      def options_for_cartodb_layers(layer, index)
         options = common_options_for_carto_and_torque_layers(layer, index)
 
         layer_options = layer.options
@@ -125,11 +136,7 @@ module Carto
                                layer_options_query_wrapper
                              end
 
-        ['cartodb', options]
-      end
-
-      def type_and_options_for_torque_layers(layer, index)
-        ['torque', common_options_for_carto_and_torque_layers(layer, index)]
+        options
       end
 
       def common_options_for_carto_and_torque_layers(layer, index)
@@ -155,34 +162,8 @@ module Carto
         options
       end
 
-      def type_and_options_for_basemap_layers(layer)
-        layer_options = layer.options
-
-        if layer_options['type'] == 'Plain'
-          type = 'plain'
-
-          layer_options = if layer_options['image'].empty?
-                            { color: layer_options['color'] }
-                          else
-                            { imageUrl: layer_options['image'] }
-                          end
-        else
-          type = 'http'
-
-          layer_options = if layer_options['urlTemplate'] && !layer_options['urlTemplate'].empty?
-                            options = {
-                              urlTemplate: layer_options['urlTemplate']
-                            }
-
-                            if layer_options.include?('subdomains')
-                              options[:subdomains] = layer_options['subdomains']
-                            end
-
-                            options
-                          end
-        end
-
-        [type, layer_options]
+      def visibility_wrapped_sql(sql, index)
+        "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
       end
 
       def dataviews

@@ -2,7 +2,7 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--negative">
     <i class="CDB-IconFont CDB-IconFont-trash"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large Color-Error u-bSpace">
+  <h2 class="CDB-Text CDB-Size-large u-bSpace">
     <%- _t('components.table.rows.confirmation.title', { cartodb_id: cartodb_id }) %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">

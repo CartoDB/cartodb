@@ -4,7 +4,7 @@
 </div>
 
 <div class="WidgetList-inner js-inner">
-  <h3 class="WidgetList-title CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
+  <h3 class="u-ellipsis CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
   <div class="u-bSpace--xl">
     <svg width="239px" height="16px" viewBox="0 0 239 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">

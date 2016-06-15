@@ -376,6 +376,7 @@
       'scrollwheel':      bool_fn,
       'sublayer_options': layer_fn,
       'layer_selector':   bool_fn,
+      'inset_map':        bool_fn,
       'legends':          bool_fn
     });
 
@@ -398,6 +399,13 @@
     map_options.fullscreen    = false;
     map_options.scrollwheel   = false;
     map_options.mobile_layout = true;
+
+    // Default to true if not provided, for some reason legends is always set to false in the
+    //  vizjson presenter and I can't seem to track it down.
+    // This doesn't seem to have adverse effects if set to true when no legends are set
+    if (map_options.legends === undefined) {
+      map_options.legends = true;
+    }
 
   </script>
 

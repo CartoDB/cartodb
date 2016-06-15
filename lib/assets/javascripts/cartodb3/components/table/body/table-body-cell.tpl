@@ -1,7 +1,7 @@
 <td class="Table-cellItem" data-attribute="<%- columnName %>" title="<%- value %>" data-clipboard-text='<%- value %>'>
   <div class="
       Table-cell u-flex u-justifySpace
-      <%- columnName === 'cartodb_id' || geometry !== 'point' ? 'Table-cell--short' : '' %>
+      <%- columnName === 'cartodb_id' || (type === 'geometry' && geometry !== 'point') ? 'Table-cell--short' : '' %>
     ">
     <p class="
       CDB-Text CDB-Size-medium

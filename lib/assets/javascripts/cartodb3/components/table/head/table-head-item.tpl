@@ -1,6 +1,6 @@
 <div class="
     Table-headItemWrapper
-    <%- name === 'cartodb_id' || geometry !== 'point' ? 'Table-headItemWrapper--short' : '' %>
+    <%- name === 'cartodb_id' || (type === 'geometry' && geometry !== 'point') ? 'Table-headItemWrapper--short' : '' %>
   ">
   <div class="u-flex u-justifySpace">
     <p class="CDB-Text CDB-Size-medium is-semibold u-ellipsis"><%- name %></p>

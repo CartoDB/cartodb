@@ -47,7 +47,7 @@ CartoDB::Application.routes.draw do
 
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
-    namespace :editor do
+    namespace :builder do
       # Visualizations
       resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
         namespace :public, path: '/' do
@@ -55,6 +55,10 @@ CartoDB::Application.routes.draw do
           match 'embed_protected', to: 'embeds#show_protected', via: :post
         end
       end
+    end
+
+    namespace :editor do
+      match '(*path)', to: redirect { |params, request| CartoDB.base_url_from_request(request) + '/builder/' + params[:path] }
     end
   end
 

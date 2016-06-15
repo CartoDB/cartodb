@@ -1,7 +1,7 @@
 require_relative '../../../../spec_helper'
 require_relative '../../../../factories/users_helper'
 
-describe Carto::Editor::Public::EmbedsController do
+describe Carto::Builder::Public::EmbedsController do
   include_context 'users helper'
 
   before(:all) do
@@ -22,21 +22,21 @@ describe Carto::Editor::Public::EmbedsController do
 
   describe '#show' do
     it 'embeds visualizations' do
-      get editor_visualization_public_embed_url(visualization_id: @visualization.id)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.include?(@visualization.name).should be true
     end
 
     it 'defaults to generate vizjson with vector=false' do
-      get editor_visualization_public_embed_url(visualization_id: @visualization.id)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.should include('\"vector\":false')
     end
 
     it 'generates vizjson with vector=true with flag' do
-      get editor_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
 
       response.status.should == 200
       response.body.should include('\"vector\":true')
@@ -46,7 +46,7 @@ describe Carto::Editor::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       @visualization.save
 
-      get editor_visualization_public_embed_url(visualization_id: @visualization.id)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Embed error | CartoDB').should be true
       response.status.should == 403
@@ -56,14 +56,14 @@ describe Carto::Editor::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      get editor_visualization_public_embed_url(visualization_id: @visualization.id)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.body.include?('Protected map').should be true
       response.status.should == 403
     end
 
     it 'returns 404 for inexistent visualizations' do
-      get editor_visualization_public_embed_url(visualization_id: UUIDTools::UUID.timestamp_create.to_s)
+      get builder_visualization_public_embed_url(visualization_id: UUIDTools::UUID.timestamp_create.to_s)
 
       response.status.should == 404
     end
@@ -77,7 +77,7 @@ describe Carto::Editor::Public::EmbedsController do
       Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
       Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(false)
 
-      post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
       response.body.include?('The password is not ok').should be true
       response.status.should == 403
@@ -90,7 +90,7 @@ describe Carto::Editor::Public::EmbedsController do
       Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
       Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(true)
 
-      post editor_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
       response.body.include?('The password is not ok').should_not be true
       response.body.include?(@visualization.name).should be true

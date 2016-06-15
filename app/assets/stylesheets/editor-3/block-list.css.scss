@@ -58,6 +58,7 @@
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
+  cursor: pointer;
 }
 .BlockList-media {
   @include display-flex();

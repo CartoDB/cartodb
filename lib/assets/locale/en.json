@@ -207,6 +207,7 @@
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "unknown-geometry-type": "unknown",
         "option-types": {
           "buffer": {
             "title": "Buffer",

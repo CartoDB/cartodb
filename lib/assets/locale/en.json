@@ -460,6 +460,7 @@
           "cancel": "cancel"
         },
         "paginator": {
+          "error": "There was an error with pagination: %{error}",
           "to": "to"
         }
       }

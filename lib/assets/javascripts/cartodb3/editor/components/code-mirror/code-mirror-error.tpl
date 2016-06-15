@@ -1,8 +1,8 @@
-<ul class="CDB-InfoBox-footer CodeMirror-error">
-  <li class="CDB-InfoBox-footerItem CodeMirror-errorMessage u-lSpace--xl u-rSpace--xl">
-    Syntax error. Line <%- line %>: <span><%- message %></span>
+<ul class="CodeMirror-error">
+  <li class="CodeMirror-errorMessage u-lSpace--xl u-rSpace--xl">
+    <%- _t('components.codemirror.syntax-error') %>. <%- _t('components.codemirror.line') %> <%- line %>: <span><%- message %></span>
   </li>
-  <li class="CDB-InfoBox-footerItem--right">
-    <a href="https://docs.cartodb.com/cartodb-platform/cartocss/" target="_black">DOCS</a>
+  <li class="CodeMirror-errorDocs">
+    <a href="https://docs.cartodb.com/cartodb-platform/cartocss/" target="_black"><%- _t('components.codemirror.docs') %></a>
   </li>
 </ul>

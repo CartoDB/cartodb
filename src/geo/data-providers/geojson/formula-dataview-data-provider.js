@@ -1,13 +1,13 @@
 var _ = require('underscore');
-var GeoJSONDataProviderBase = require('./geojson-data-provider-base');
+var DataviewDataProviderBase = require('./dataview-data-provider-base');
 
-var FormulaGeoJSONDataProvider = function (vectorLayerView, layerIndex) {
-  GeoJSONDataProviderBase.apply(this, arguments);
+var FormulaDataviewDataProvider = function (vectorLayerView, layerIndex) {
+  DataviewDataProviderBase.apply(this, arguments);
 };
 
-_.extend(FormulaGeoJSONDataProvider.prototype, GeoJSONDataProviderBase.prototype);
+_.extend(FormulaDataviewDataProvider.prototype, DataviewDataProviderBase.prototype);
 
-FormulaGeoJSONDataProvider.prototype.getData = function () {
+FormulaDataviewDataProvider.prototype.getData = function () {
   var filter = this._vectorLayerView.getFilter(this._layerIndex);
   var options = this._dataview.attributes;
   var features = filter.getValues();
@@ -37,4 +37,6 @@ FormulaGeoJSONDataProvider.prototype.getData = function () {
   return data;
 };
 
-module.exports = FormulaGeoJSONDataProvider;
+FormulaDataviewDataProvider.prototype.applyFilter = function (filter) {};
+
+module.exports = FormulaDataviewDataProvider;

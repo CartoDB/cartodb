@@ -1,6 +1,6 @@
-var FormulaGeoJSONDataProvider = require('../../../../../src/geo/data-providers/geojson/formula-geojson-data-provider');
+var FormulaDataviewDataProvider = require('../../../../../src/geo/data-providers/geojson/formula-dataview-data-provider');
 
-describe('src/geo/data-providers/geojson/formula-geojson-data-provider.js', function () {
+describe('src/geo/data-providers/geojson/formula-dataview-data-provider.js', function () {
   beforeEach(function () {
     this.vectorLayerView = jasmine.createSpyObj('vectorLayerView', ['_on', 'applyFilter']);
     var dataview = jasmine.createSpyObj('dataview', ['get']);
@@ -9,7 +9,7 @@ describe('src/geo/data-providers/geojson/formula-geojson-data-provider.js', func
         return 'columnName';
       }
     });
-    this.dataProvider = new FormulaGeoJSONDataProvider({
+    this.dataProvider = new FormulaDataviewDataProvider({
       dataview: dataview,
       vectorLayerView: this.vectorLayerView,
       layerIndex: 0

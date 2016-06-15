@@ -318,27 +318,17 @@ describe('dataviews/dataview-model-base', function () {
   });
 
   describe('when the layer has a data provider', function () {
-    var MyDataviewDataProvider = function () {};
-    _.extend(MyDataviewDataProvider.prototype, Backbone.Events);
-    MyDataviewDataProvider.prototype.getData = function () {
-      return { a: 1 };
-    };
-    MyDataviewDataProvider.prototype.applyFilter = jasmine.createSpy('applyFilter');
-
     beforeEach(function () {
-      this.geoJSONDataProvider = jasmine.createSpyObj('dataProvider', ['createDataProviderForDataview']);
+      this.geoJSONDataProvider = jasmine.createSpyObj('dataProvider', ['getDataFor', 'canProvideDataFor', 'applyFilter', 'canApplyFilterTo']);
+      _.extend(this.geoJSONDataProvider, Backbone.Events);
+
       this.layer = new Backbone.Model({
         id: 'layerId'
       });
-      this.layer.getDataProvider = function () {
-        return this.geoJSONDataProvider;
-      }.bind(this);
-
-      this.dataviewDataProvider = new MyDataviewDataProvider();
-      this.geoJSONDataProvider.createDataProviderForDataview.and.returnValue(this.dataviewDataProvider);
+      this.layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(this.geoJSONDataProvider);
     });
 
-    it('should set a dataProvider for the dataview', function () {
+    it('should get data from a data provider if data provider can provide data for the dataview', function () {
       var dataview = new DataviewModelBase({ // eslint-disable-line
         column: 'columnName'
       }, {
@@ -347,54 +337,49 @@ describe('dataviews/dataview-model-base', function () {
         layer: this.layer
       });
 
-      expect(this.geoJSONDataProvider.createDataProviderForDataview).toHaveBeenCalledWith(dataview);
-    });
-
-    it('should get data from a data provider if present', function () {
-      var dataview = new DataviewModelBase({ // eslint-disable-line
-        column: 'columnName'
-      }, {
-        map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: this.layer
-      });
-
-      spyOn(dataview, 'parse').and.callFake(function () {
-        return {
-          b: 2
-        };
-      });
+      this.geoJSONDataProvider.canProvideDataFor.and.returnValue(true);
 
       dataview.fetch();
 
-      expect(dataview.parse).toHaveBeenCalledWith({ a: 1 });
-      expect(dataview.get('b')).toEqual(2);
+      expect(this.geoJSONDataProvider.getDataFor).toHaveBeenCalledWith(dataview);
     });
 
-    it('should be bound to changes on the changes on the map bounds', function () {
+    it("should NOT get data from a data provider if data provider CAN'T provide data for the dataview", function () {
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer
+      });
+
+      this.geoJSONDataProvider.canProvideDataFor.and.returnValue(false);
+
+      dataview.fetch();
+
+      expect(this.geoJSONDataProvider.getDataFor).not.toHaveBeenCalledWith(dataview);
+    });
+
+    it('should be bound to changes on the map bounds', function () {
       var dataview = new DataviewModelBase(null, {
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: this.layer
       });
-      spyOn(dataview, 'parse').and.callFake(function () {
-        return {
-          b: 2
-        };
-      });
 
-      // New data is available
-      this.dataviewDataProvider.trigger('dataChanged');
+      // Bindings are done
+      this.geoJSONDataProvider.trigger('dataChanged');
+
+      spyOn(dataview, 'fetch');
 
       // Map bounds change
       this.map.getViewBounds.and.returnValue([100, 200], [300, 400]);
       this.map.trigger('change:center');
 
-      expect(dataview.parse).toHaveBeenCalledWith({ a: 1 });
-      expect(dataview.get('b')).toEqual(2);
+      expect(dataview.fetch).toHaveBeenCalled();
     });
 
-    it('should apply the filter to the data provider when the filter changes', function () {
+    it('should apply the filter to the data provider when the filter changes and data provider can apply filters to the dataview', function () {
       spyOn(this.map, 'reload');
 
       var filter = new Backbone.Model();
@@ -407,11 +392,35 @@ describe('dataviews/dataview-model-base', function () {
         filter: filter
       });
 
+      this.geoJSONDataProvider.canApplyFilterTo.and.returnValue(true);
+
       // Filter changes
       filter.trigger('change', filter);
 
       expect(this.map.reload).not.toHaveBeenCalled();
-      expect(this.dataviewDataProvider.applyFilter).toHaveBeenCalledWith(filter);
+      expect(this.geoJSONDataProvider.applyFilter).toHaveBeenCalledWith(dataview, filter);
+    });
+
+    it("should NOT apply the filter to the data provider when the filter changes and data provider CAN'T apply filters to the dataview", function () {
+      spyOn(this.map, 'reload');
+
+      var filter = new Backbone.Model();
+      var dataview = new DataviewModelBase({ // eslint-disable-line
+        column: 'columnName'
+      }, {
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: this.layer,
+        filter: filter
+      });
+
+      this.geoJSONDataProvider.canApplyFilterTo.and.returnValue(false);
+
+      // Filter changes
+      filter.trigger('change', filter);
+
+      expect(this.map.reload).toHaveBeenCalled();
+      expect(this.geoJSONDataProvider.applyFilter).not.toHaveBeenCalled();
     });
   });
 
@@ -434,6 +443,48 @@ describe('dataviews/dataview-model-base', function () {
       });
 
       expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
+    });
+  });
+
+  describe('.hasSameSourceAsLayer', function () {
+    it("should return true if dataview has the same source as it's layer", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'SOURCE_ID'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase({
+        source: {
+          id: 'SOURCE_ID'
+        }
+      }, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview.hasSameSourceAsLayer()).toBe(true);
+    });
+
+    it("should return false if dataview doen't have the same source as it's layer", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'SOURCE_ID'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase({
+        source: {
+          id: 'DIFFERENT_SOURCE_ID'
+        }
+      }, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview.hasSameSourceAsLayer()).toBe(false);
     });
   });
 });

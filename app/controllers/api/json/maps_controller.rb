@@ -11,17 +11,14 @@ class Api::Json::MapsController < Api::ApplicationController
 
   def update
     @stats_aggregator.timing('maps.update') do
-      updated = @stats_aggregator.timing('save') do
-        @map.update(params.slice(:provider, :bounding_box_sw, :bounding_box_ne, :center, :zoom, :table_id,
-                                 :view_bounds_sw, :view_bounds_ne, :legends, :scrollwheel))
-      end
+      updated = @stats_aggregator.timing('save') { @map.update(allowed_params) }
 
-      if updated == false
+      if updated != false
+        render_jsonp(@map.public_values)
+      else
         CartoDB::Logger.error(message: 'Error updating map', errors: @map.errors)
 
         render_jsonp({ description: @map.errors.full_messages, stack: @map.errors.full_messages }, 400)
-      else
-        render_jsonp(@map.public_values)
       end
     end
   end
@@ -41,5 +38,18 @@ class Api::Json::MapsController < Api::ApplicationController
 
     @map = ::Map.filter(id: params[:id]).first
     raise RecordNotFound if @map.nil?
+  end
+
+  def allowed_params
+    params.slice(:provider,
+                 :bounding_box_sw,
+                 :bounding_box_ne,
+                 :center,
+                 :zoom,
+                 :table_id,
+                 :view_bounds_sw,
+                 :view_bounds_ne,
+                 :legends,
+                 :scrollwheel)
   end
 end

@@ -279,11 +279,11 @@ module Carto
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
       def initialize(visualization, layergroup, options, configuration)
-        @visualization    = visualization
-        @options          = options
-        @configuration    = configuration
-        @layergroup_data  = layergroup
-        @named_map_name   = Carto::NamedMaps::Template.new(@visualization).name
+        @visualization      = visualization
+        @options            = options
+        @configuration      = configuration
+        @layergroup_data    = layergroup
+        @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
@@ -303,7 +303,7 @@ module Carto
             sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
             filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             named_map: {
-              name: @named_map_name,
+              name: @named_map_template.name,
               stat_tag: @visualization.id,
               params: placeholders_data,
               layers: configure_layers_data
@@ -320,7 +320,7 @@ module Carto
 
         {
           named_map: {
-            name:         @named_map_name,
+            name:         @named_map_template.name,
             layer_index:  layer_index,
             params:       placeholders_data
           },

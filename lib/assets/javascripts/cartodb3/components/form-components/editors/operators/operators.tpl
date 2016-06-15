@@ -1,4 +1,4 @@
-<div class="CDB-InputText CDB-Text is-cursor js-button
+<div class="CDB-InputText CDB-Text is-cursor js-button u-ellipsis
   <% if (disabled) { %> is-disabled <% } %>
   <% if (!name) { %> is-empty <% } %>"
   tabindex="0">

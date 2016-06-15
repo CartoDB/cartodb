@@ -82,7 +82,7 @@ module Carto
                 layer_options_hash[:interactivity].should be_present
               end
 
-              it 'interactivity should not be correct' do
+              it 'interactivity should be correct' do
                 template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
                 layer_options_hash = template_hash[:layergroup][:layers].second[:options]
 
@@ -128,7 +128,7 @@ module Carto
                 layer_options_hash[:attributes].should be_present
               end
 
-              it 'attributes should not be correct' do
+              it 'attributes should be correct' do
                 template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
                 layer_options_hash = template_hash[:layergroup][:layers].second[:options]
 
@@ -356,6 +356,7 @@ module Carto
             @visualization.save
 
             template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:valid_tokens].should_not be_empty
             template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
           end
 

@@ -742,7 +742,7 @@ module CartoDB
         end
         repository.store(id, attributes.to_hash)
 
-        save_named_map
+        restore_previous_privacy unless save_named_map
 
         propagate_attribution_change if table
         if type == TYPE_REMOTE || type == TYPE_CANONICAL

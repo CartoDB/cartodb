@@ -111,6 +111,21 @@ module Carto
       map.visualization
     end
 
+    def wrapped_sql(user)
+      query = options[:query]
+
+      sql = if query.present?
+              query
+            else
+              "SELECT * FROM #{qualified_table_name(user)}"
+            end
+
+      query_wrapper = options[:query_wrapper]
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+
+      sql
+    end
+
     private
 
     def tables_from_query_option

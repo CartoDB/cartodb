@@ -8,11 +8,13 @@
 .Editor-formInner {
   @include display-flex();
   @include align-items(center);
+  height: $baseSize * 4;
   margin-top: $baseSize;
 }
 .Editor-formInput {
   @include flex(1);
   position: relative;
+  max-width: 160px;
 }
 .Editor-formInput:focus {
   outline: none;

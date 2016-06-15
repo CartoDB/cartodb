@@ -20,6 +20,7 @@ module Carto
       DATAVIEW_TEMPLATE_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column, :operation].freeze
 
       def initialize(visualization)
+        # TODO: Remove when it's safe to assume thais confussion wont' happen.
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
 
         @visualization = visualization
@@ -36,7 +37,7 @@ module Carto
               layers: layers,
               stat_tag: @visualization.id,
               dataviews: dataviews,
-              analyses: analyses
+              analyses: analyses_definitions
             },
             view: view
           }
@@ -58,86 +59,82 @@ module Carto
 
         layers = @visualization.map.layers
 
-        index = -1
-        layers.select(&:carto_layer?).each do |layer|
-          index += 1
-          placeholders["layer#{index}".to_sym] = {
-            type: 'number',
-            default: layer.options[:visible] ? 1 : 0
-          }
-        end
+        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
+        _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
+                                                                                starting_index: last_index)
 
-        layers.select(&:torque?).each do |layer|
-          index += 1
-          placeholders["layer#{index}".to_sym] = {
-            type: 'number',
-            default: layer.options[:visible] ? 1 : 0
-          }
-        end
+        placeholders = placeholders.merge(carto_layers_visibility_placeholders)
+        placeholders = placeholders.merge(torque_layer_visibility_placeholders)
 
         placeholders
       end
 
-      def layers
-        layers = []
-        index = -1 # forgive me for I have sinned
+      def layer_visibility_placeholders(layers, starting_index: 0)
+        placeholders = {}
 
-        @visualization.map.named_maps_layers.each do |layer|
-          type, options = if layer.data_layer?
-                            index += 1
-                            type_and_options_for_cartodb_layers(layer, index)
-                          elsif layer.base?
-                            type_and_options_for_basemap_layers(layer)
-                          end
-
-          layers.push(type: type, options: options)
+        index = starting_index
+        layers.each do |layer|
+          placeholders["layer#{index}".to_sym] = {
+            type: 'number',
+            default: layer.options[:visible] ? 1 : 0
+          }
+          index += 1
         end
 
-        @visualization.map.layers.select(&:torque?).each do |layer|
-          index += 1
-          type, options = type_and_options_for_torque_layers(layer, index)
+        [index, placeholders]
+      end
 
-          layers.push(type: type, options: options)
+      def layers
+        layers = []
+        layer_index = -1 # forgive me for I have sinned
+
+        @visualization.map.named_maps_layers.each do |layer|
+          if layer.data_layer?
+            layer_index += 1
+
+            layers.push(type: 'cartodb', options: options_for_cartodb_layers(layer, layer_index))
+          elsif layer.base?
+            layer_options = layer.options
+
+            if layer_options['type'] == 'Plain'
+              layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
+            else
+              layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
+            end
+          end
+        end
+
+        @visualization.map.torque_layers.each do |layer|
+          layer_index += 1
+          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end
 
         layers
       end
 
-      def sql(layer, index)
-        layer_options = layer.options
-        query = layer_options[:query]
-
-        sql = if query.present?
-                query
-              else
-                "SELECT * FROM #{@visualization.user.sql_safe_database_schema}.#{layer_options['table_name']}"
-              end
-
-        query_wrapper = layer_options[:query_wrapper]
-
-        sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper && layer.torque?
-
-        "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      def options_for_plain_basemap_layers(layer_options)
+        layer_options['image'].empty? ? { color: layer_options['color'] } : { imageUrl: layer_options['image'] }
       end
 
-      def type_and_options_for_cartodb_layers(layer, index)
+      def options_for_http_basemap_layers(layer_options)
+        options = {}
+
+        options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
+        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains']
+
+        options
+      end
+
+      def options_for_cartodb_layers(layer, index)
         options = common_options_for_carto_and_torque_layers(layer, index)
 
         layer_options = layer.options
         layer_options_sql_wrap = layer_options[:sql_wrap]
         layer_options_query_wrapper = layer_options[:query_wrapper]
 
-        options[:sql_wrap] = if layer_options_sql_wrap
-                               layer_options_sql_wrap
-                             elsif layer_options_query_wrapper
-                               layer_options_query_wrapper
-                             end
+        options[:sql_wrap] = layer_options_sql_wrap || layer_options_query_wrapper
 
-        ['cartodb', options]
-      end
-
-      def type_and_options_for_torque_layers(layer, index)
-        ['torque', common_options_for_carto_and_torque_layers(layer, index)]
+        options
       end
 
       def common_options_for_carto_and_torque_layers(layer, index)
@@ -152,7 +149,7 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = sql(layer, index)
+          options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
         interactivity, attributes = infowindow_options(layer)
@@ -163,34 +160,8 @@ module Carto
         options
       end
 
-      def type_and_options_for_basemap_layers(layer)
-        layer_options = layer.options
-
-        if layer_options['type'] == 'Plain'
-          type = 'plain'
-
-          layer_options = if layer_options['image'].empty?
-                            { color: layer_options['color'] }
-                          else
-                            { imageUrl: layer_options['image'] }
-                          end
-        else
-          type = 'http'
-
-          layer_options = if layer_options['urlTemplate'] && !layer_options['urlTemplate'].empty?
-                            options = {
-                              urlTemplate: layer_options['urlTemplate']
-                            }
-
-                            if layer_options.include?('subdomains')
-                              options[:subdomains] = layer_options['subdomains']
-                            end
-
-                            options
-                          end
-        end
-
-        [type, layer_options]
+      def visibility_wrapped_sql(sql, index)
+        "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
       end
 
       def dataviews
@@ -203,7 +174,7 @@ module Carto
         dataviews
       end
 
-      def analyses
+      def analyses_definitions
         @visualization.analyses.map(&:analysis_definition)
       end
 
@@ -229,8 +200,7 @@ module Carto
 
       def dataview_data(widget)
         options = widget.options.select { |k, _v| DATAVIEW_TEMPLATE_OPTIONS.include?(k) }
-        options[:aggregationColumn] = options[:aggregation_column]
-        options.delete(:aggregation_column)
+        options[:aggregationColumn] = options.delete(:aggregation_column)
 
         dataview_data = {
           type: TILER_WIDGET_TYPES[widget.type.to_sym],

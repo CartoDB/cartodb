@@ -1,6 +1,5 @@
 require_dependency 'carto/api/layer_vizjson_adapter'
 require_dependency 'cartodb/redis_vizjson_cache'
-require_dependency 'lib/carto/named_maps/template'
 
 module Carto
   module Api
@@ -141,6 +140,7 @@ module Carto
       end
 
       def layers_vizjson(options, forced_privacy_version)
+        byebug
         basemap_layer = basemap_layer_vizjson(options)
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer

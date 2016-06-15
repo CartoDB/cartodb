@@ -155,9 +155,11 @@ class SignupController < ApplicationController
   end
 
   def valid_email_invitation_token?
-    if (params[:user] && params[:user][:email]) || params[:email] && params[:invitation_token]
-      invitation = Carto::Invitation.find_by_seed(params[:invitation_token])
-      invitation.present? && invitation.users_emails.include?(params[:email] || params[:user][:email]) ? true : false
+    email = (params[:user] && params[:user][:email]) || params[:email]
+    token = params[:invitation_token]
+    if email && token
+      invitation = Carto::Invitation.query_with_valid_email(email).where(organization_id: @organization.id).all
+      invitation.any? { |i| i.token(email) == token }
     end
   end
 

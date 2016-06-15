@@ -3,9 +3,11 @@
 
 .SelectorLayer {
   position: relative;
+}
+.SelectorLayer.is-disabled {
   background-color: $cThirdBackground;
 }
 .SelectorLayer-letter {
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: $halfBaseSize;
 }

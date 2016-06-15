@@ -65,12 +65,10 @@ module Carto
 
       def update(retries: 0)
         stats_aggregator.timing('carto-named-maps-api.update') do
-          template = @named_map_template
-
           params = request_params
-          params[:body] = template.to_json
+          params[:body] = @named_map_template.to_json
 
-          response = http_client.put(url(template_name: template.name), params)
+          response = http_client.put(url(template_name: @named_map_template.name), params)
 
           response_code_string = response.code.to_s
           if response_code_string =~ /^2/

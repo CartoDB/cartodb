@@ -458,6 +458,9 @@
           "loading": "Removing your row...",
           "confirm": "ok, delete",
           "cancel": "cancel"
+        },
+        "paginator": {
+          "to": "to"
         }
       }
     }

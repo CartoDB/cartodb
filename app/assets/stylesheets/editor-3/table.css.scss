@@ -148,3 +148,15 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text.is-disabled {
   color: $cAltText;
 }
+
+.Table-paginator {
+  @include display-flex();
+  @include justify-content(space-between);
+  position: fixed;
+  bottom: 30px;
+  width: 145px;
+  height: 33px;
+  margin-left: 25%;
+  background: #FFF;
+  z-index: 10;
+}

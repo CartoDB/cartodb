@@ -47,7 +47,7 @@ class Layer < Sequel::Model
   def validate
     super
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
-    errors.add(:maps, "Viewer users can't add layers") if !maps.empty? && maps.find { |m| m.user && m.user.viewer }
+    errors.add(:maps, "Viewer users can't add layers") if maps.find { |m| m.user && m.user.viewer }
 
     if ((Cartodb.config[:enforce_non_empty_layer_css] rescue true))
       style = options.include?('tile_style') ? options['tile_style'] : nil
@@ -82,6 +82,7 @@ class Layer < Sequel::Model
   end
 
   def before_destroy
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user.viewer
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
     super

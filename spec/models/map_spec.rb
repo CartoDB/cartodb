@@ -329,9 +329,6 @@ describe Map do
 
   describe '#process_privacy_in' do
     it 'sets related visualization private if layer uses private tables' do
-
-      pending("To be checked when private tables are coded")
-
       @table1 = Table.new
       @table1.user_id = @user.id
       @table1.save
@@ -344,7 +341,7 @@ describe Map do
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store
 
-      derived.layers(:cartodb).length.should == 1
+      derived.layers(:cartodb).length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
       derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -373,6 +370,8 @@ describe Map do
       @user.viewer = false
       @user.save
       @user.reload
+
+      @map.reload && @map.destroy if @map
     end
 
     def become_viewer(user)
@@ -390,6 +389,27 @@ describe Map do
 
         @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
         expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't add layers/)
+      end
+    end
+
+    describe 'remove layers' do
+      it 'should fail for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        layer = Layer.create(kind: 'carto', options: { table_name: @table.name })
+        layer.add_map(@map)
+        layer.save
+        layer.reload
+        @map.reload
+
+        @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
+
+        become_viewer(@user)
+        expect {
+          @map.layers_dataset.where(layer_id: layer.id).destroy
+        }.to raise_error(/Viewer users can't destroy layers/)
+        @map.reload
+        @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
       end
     end
 

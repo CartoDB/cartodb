@@ -33,7 +33,7 @@
       </button>
       <% if (isCollapsed && numberOfAnalyses > 0) { %>
         <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
-          (<%- numberOfAnalyses %>) <%- numberOfAnalyses === 1 ? 'Analysis' : 'Analyses' %>
+          <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
         </p>
       <% } %>
     </div>

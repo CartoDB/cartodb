@@ -121,7 +121,7 @@ module Carto
             end
 
       query_wrapper = options[:query_wrapper]
-      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper && torque?
 
       sql
     end

@@ -14,42 +14,6 @@ class Carto::Map < ActiveRecord::Base
                          through: :layers_maps,
                          source: :layer
 
-  has_many :data_layers, class_name: 'Carto::Layer',
-                         conditions: { kind: 'carto' },
-                         order: '"order"',
-                         through: :layers_maps,
-                         source: :layer
-
-  has_many :user_layers, class_name: 'Carto::Layer',
-                         conditions: { kind: ['tiled', 'background', 'gmapsbase', 'wms'] },
-                         order: '"order"',
-                         through: :layers_maps,
-                         source: :layer
-
-  has_many :carto_and_torque_layers, class_name: 'Carto::Layer',
-                                     conditions: { kind: ['carto', 'torque'] },
-                                     order: '"order"',
-                                     through: :layers_maps,
-                                     source: :layer
-
-  has_many :torque_layers, class_name: 'Carto::Layer',
-                           conditions: { kind: 'torque' },
-                           order: '"order"',
-                           through: :layers_maps,
-                           source: :layer
-
-  has_many :other_layers, class_name: 'Carto::Layer',
-                          conditions: "kind not in ('carto', 'tiled', 'background', 'gmapsbase', 'wms')",
-                          order: '"order"',
-                          through: :layers_maps,
-                          source: :layer
-
-  has_many :named_maps_layers, class_name: 'Carto::Layer',
-                               conditions: { kind: ['carto', 'tiled', 'background', 'gmapsbase', 'wms'] },
-                               order: '"order"',
-                               through: :layers_maps,
-                               source: :layer
-
   has_many :user_tables, class_name: Carto::UserTable, inverse_of: :map
 
   belongs_to :user
@@ -63,6 +27,34 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0]
   }.freeze
+
+  def data_layers
+    layers.select(&:carto?)
+  end
+
+  def user_layers
+    layers.select(&:user_layer?)
+  end
+
+  def carto_and_torque_layers
+    layers.select(&:carto?) + layers.select(&:torque?)
+  end
+
+  def torque_layers
+    layers.select(&:torque?)
+  end
+
+  def other_layers
+    layers.reject(&:carto?)
+          .reject(&:tiled?)
+          .reject(&:background?)
+          .reject(&:gmapsbase?)
+          .reject(&:wms?)
+  end
+
+  def named_maps_layers
+    layers.select(&:named_maps_layer?)
+  end
 
   def viz_updated_at
     get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

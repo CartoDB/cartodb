@@ -80,11 +80,11 @@ module Carto
     end
 
     def basemap?
-      ["gmapsbase", "tiled"].include?(kind)
+      gmapsbase? || tiled?
     end
 
     def base?
-      ['tiled', 'background', 'gmapsbase', 'wms'].include?(kind)
+      tiled? || background? || gmapsbase? || wms?
     end
 
     def torque?
@@ -95,12 +95,32 @@ module Carto
       !base?
     end
 
-    def carto_layer?
-      kind == 'carto'
+    def user_layer?
+      tiled? || background? || gmapsbase? || wms?
     end
 
     def named_map_layer?
-      ['tiled', 'background', 'gmapsbase', 'wms', 'carto'].include?(kind)
+      tiled? || background? || gmapsbase? || wms? || carto?
+    end
+
+    def carto?
+      kind == 'carto'
+    end
+
+    def tiled?
+      kind == 'tiled'
+    end
+
+    def background?
+      kind == 'background'
+    end
+
+    def gmapsbase?
+      kind == 'gmapsbase'
+    end
+
+    def wms?
+      kind == 'wms'
     end
 
     def supports_labels_layer?

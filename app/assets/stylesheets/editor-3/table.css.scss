@@ -18,7 +18,7 @@ $tableBorderColor: $cSecondaryLine;
   bottom: 10px;
   left: 10px;
   border-radius: 4px;
-  background: #FFF;
+  background: $cThirdBackground;
   overflow-x: scroll;
   overflow-y: hidden;
   z-index: 10;
@@ -26,8 +26,10 @@ $tableBorderColor: $cSecondaryLine;
 .Table-head {
   @include display-flex();
   @include justify-content(flex-start);
-  border-bottom: 1px solid $cMainLine;
   background: $cThirdBackground;
+}
+.Table-head tr {
+  border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
@@ -56,6 +58,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body table {
   width: 100%;
   height: 100%;
+  background: #FFF;
 }
 .Table-body tbody {
   @include display-flex();

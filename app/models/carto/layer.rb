@@ -99,6 +99,10 @@ module Carto
       kind == 'carto'
     end
 
+    def named_map_layer?
+      ['tiled', 'background', 'gmapsbase', 'wms', 'carto'].include?(kind)
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end
@@ -117,7 +121,7 @@ module Carto
       sql = if query.present?
               query
             else
-              "SELECT * FROM #{qualified_table_name(user)}"
+              "SELECT * FROM #{user.sql_safe_database_schema}.#{options[:table_name]}"
             end
 
       query_wrapper = options[:query_wrapper]

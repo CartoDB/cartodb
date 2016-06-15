@@ -1,5 +1,6 @@
 require_dependency 'carto/api/layer_vizjson_adapter'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'lib/carto/named_maps/template'
 
 module Carto
   module Api

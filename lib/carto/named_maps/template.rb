@@ -57,7 +57,7 @@ module Carto
       def placeholders
         placeholders = {}
 
-        layers = @visualization.map.layers
+        layers = @visualization.layers
 
         last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
         _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
@@ -88,7 +88,7 @@ module Carto
         layers = []
         layer_index = -1 # forgive me for I have sinned
 
-        @visualization.map.named_maps_layers.each do |layer|
+        @visualization.layers.select(&:named_map_layer?).each do |layer|
           if layer.data_layer?
             layer_index += 1
 
@@ -96,7 +96,7 @@ module Carto
           elsif layer.base?
             layer_options = layer.options
 
-            if layer_options['type'] == 'Plain'
+            if layer_options[:type] == 'Plain'
               layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
             else
               layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
@@ -104,7 +104,7 @@ module Carto
           end
         end
 
-        @visualization.map.torque_layers.each do |layer|
+        @visualization.layers.select(&:torque?).each do |layer|
           layer_index += 1
           layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end
@@ -113,14 +113,14 @@ module Carto
       end
 
       def options_for_plain_basemap_layers(layer_options)
-        layer_options['image'].empty? ? { color: layer_options['color'] } : { imageUrl: layer_options['image'] }
+        layer_options[:image].empty? ? { color: layer_options[:color] } : { imageUrl: layer_options[:image] }
       end
 
       def options_for_http_basemap_layers(layer_options)
         options = {}
 
-        options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
-        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains']
+        options[:urlTemplate] = layer_options[:urlTemplate] if layer_options[:urlTemplate].present?
+        options[:subdomains] = layer_options[:subdomains] if layer_options[:subdomains]
 
         options
       end
@@ -141,8 +141,8 @@ module Carto
         layer_options = layer.options
 
         options = {
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
-          cartocss_version: layer_options.fetch('style_version')
+          cartocss: layer_options.fetch(:tile_style).strip.empty? ? EMPTY_CSS : layer_options.fetch(:tile_style),
+          cartocss_version: layer_options.fetch(:style_version)
         }
 
         layer_options_source = layer_options[:source]
@@ -187,11 +187,11 @@ module Carto
         interactivity = layer_options_interactivity if layer_options_interactivity
 
         layer_infowindow = layer.infowindow
-        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
+        layer_infowindow_fields = layer_infowindow[:fields] if layer_infowindow
         attributes = if layer_infowindow_fields && !layer_infowindow_fields.empty?
                        {
                          id:       'cartodb_id',
-                         columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
+                         columns:  layer_infowindow[:fields].map { |field| field.fetch(:name) }
                        }
                      end
 

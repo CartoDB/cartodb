@@ -99,6 +99,10 @@ module Carto
       kind == 'carto'
     end
 
+    def named_map_layer?
+      ['tiled', 'background', 'gmapsbase', 'wms', 'carto'].include?(kind)
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end

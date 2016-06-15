@@ -88,7 +88,7 @@ module Carto
         layers = []
         layer_index = -1 # forgive me for I have sinned
 
-        @visualization.layers.select(&:named_map_layer?).each do |layer|
+        @visualization.named_maps_layers.each do |layer|
           if layer.data_layer?
             layer_index += 1
 
@@ -104,7 +104,7 @@ module Carto
           end
         end
 
-        @visualization.layers.select(&:torque?).each do |layer|
+        @visualization.torque_layers.each do |layer|
           layer_index += 1
           layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end

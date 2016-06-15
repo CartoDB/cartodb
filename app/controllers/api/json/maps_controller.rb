@@ -13,7 +13,7 @@ class Api::Json::MapsController < Api::ApplicationController
     @stats_aggregator.timing('maps.update') do
       updated = @stats_aggregator.timing('save') { @map.update(allowed_params) }
 
-      if updated != true
+      if updated != false
         render_jsonp(@map.public_values)
       else
         CartoDB::Logger.error(message: 'Error updating map', errors: @map.errors)

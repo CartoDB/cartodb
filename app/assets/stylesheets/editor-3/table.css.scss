@@ -27,6 +27,7 @@ $tableBorderColor: $cSecondaryLine;
   @include display-flex();
   @include justify-content(flex-start);
   background: $cThirdBackground;
+  box-shadow: inset 0 -1px 0 0 $cMainLine;
 }
 .Table-head tr {
   border-bottom: 1px solid $cMainLine;
@@ -69,6 +70,8 @@ $tableBorderColor: $cSecondaryLine;
   overflow-y: scroll;
 }
 .Table-row {
+  height: 40px;
+  min-height: 40px;
   border-bottom: 1px solid $tableBorderColor;
   background: none;
 }

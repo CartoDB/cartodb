@@ -47,7 +47,7 @@ class Layer < Sequel::Model
   def validate
     super
     errors.add(:kind, "not accepted") unless ALLOWED_KINDS.include?(kind)
-    errors.add(:maps, "Viewer users can't add layers") if maps.find { |m| m.user && m.user.viewer }
+    errors.add(:maps, "Viewer users can't edit layers") if maps.find { |m| m.user && m.user.viewer }
 
     if ((Cartodb.config[:enforce_non_empty_layer_css] rescue true))
       style = options.include?('tile_style') ? options['tile_style'] : nil

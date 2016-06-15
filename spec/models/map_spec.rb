@@ -388,7 +388,7 @@ describe Map do
         @map.reload
 
         @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
-        expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't add layers/)
+        expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't edit layers/)
       end
     end
 

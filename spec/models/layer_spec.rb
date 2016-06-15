@@ -290,4 +290,25 @@ describe Layer do
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
     end
   end
+
+  context 'viewer role' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't update layers" do
+      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.create(kind: 'carto')
+      map.add_layer(layer)
+
+      @user.viewer = true
+      @user.save
+
+      layer.reload
+
+      layer.kind = 'torque'
+      expect { layer.save }.to raise_error(Sequel::ValidationFailed, "maps Viewer users can't edit layers")
+    end
+  end
 end

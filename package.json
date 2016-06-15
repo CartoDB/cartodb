@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.25.29",
+  "version": "3.25.30",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
+    "cartocolor": "1.1.0",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",

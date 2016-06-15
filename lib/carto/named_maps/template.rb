@@ -59,7 +59,7 @@ module Carto
 
         layers = @visualization.layers
 
-        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
+        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto?))
         _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
                                                                                 starting_index: last_index)
 

@@ -10,7 +10,11 @@
   </div>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
-    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="aggregate">
+      <% if (this.model.get('aggregate')) { %>
+        <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="aggregate,aggregate_column,aggregate_operation">
+      <% } else { %>
+        <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="aggregate">
+      <% } %>
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.parameters') %></h2>
       </div>

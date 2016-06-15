@@ -48,7 +48,6 @@ module Carto
       def show
         stats_aggregator.timing('carto-named-maps-api.show') do
           response = stats_aggregator.timing('call') do
-
             url = url(template_name: @named_map_template.name)
 
             response = http_client.get(url, request_params)

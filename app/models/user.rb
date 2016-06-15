@@ -291,15 +291,14 @@ class User < Sequel::Model
   end
 
   def before_destroy
-    org_id = nil
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
-    unless self.organization.nil?
-      self.organization.reload  # Avoid ORM caching
-      if self.organization.owner_id == self.id
-        @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
-        if self.organization.users.count > 1
+    unless organization.nil?
+      organization.reload # Avoid ORM caching
+      if organization.owner_id == id
+        @org_id_for_org_wipe = organization.id # after_destroy will wipe the organization too
+        if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
           CartoDB::StdoutLogger.info msg
           raise CartoDB::BaseCartoDBError.new(msg)
@@ -314,26 +313,23 @@ class User < Sequel::Model
     end
 
     begin
-      org_id = self.organization_id
-      self.organization_id = nil
-
       # Remove user tables
-      self.tables.all.each { |t| t.destroy }
+      tables.all.each(&:destroy)
 
       # Remove user data imports, maps, layers and assets
-      self.delete_external_data_imports
-      self.delete_external_sources
+      delete_external_data_imports
+      delete_external_sources
       # There's a FK from geocodings to data_import.id so must be deleted in proper order
-      if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-        self.geocodings.each { |g| g.destroy }
+      if organization.nil? || organization.owner.nil? || id == organization.owner.id
+        geocodings.each(&:destroy)
       else
         assign_geocodings_to_organization_owner
       end
-      self.data_imports.each { |d| d.destroy }
-      self.maps.each { |m| m.destroy }
-      self.layers.each { |l| remove_layer l }
-      self.assets.each { |a| a.destroy }
-      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
+      data_imports.each(&:destroy)
+      maps.each(&:destroy)
+      layers.each { |l| remove_layer l }
+      assets.each(&:destroy)
+      CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
 
       destroy_shared_with
 
@@ -348,18 +344,17 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(org_id, !@org_id_for_org_wipe.nil?) unless error_happened
-    else
-      if ::User.where(database_name: database_name).count > 1
-        raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
-      elsif !error_happened
-        Thread.new {
-          conn = in_database(as: :cluster_admin)
-          db_service.drop_database_and_user(conn)
-          db_service.drop_user(conn)
-        }.join
-        db_service.monitor_user_notification
-      end
+      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?) unless error_happened
+    elsif ::User.where(database_name: database_name).count > 1
+      raise CartoDB::BaseCartoDBError.new(
+        'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+    elsif !error_happened
+      Thread.new {
+        conn = in_database(as: :cluster_admin)
+        db_service.drop_database_and_user(conn)
+        db_service.drop_user(conn)
+      }.join
+      db_service.monitor_user_notification
     end
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)

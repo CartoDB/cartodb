@@ -34,6 +34,7 @@
   &::before {
     display: block;
     height: 1px;
+    margin-top: -1px; // to compensate the height
     box-shadow: 0 3px 10px #666;
     content: '';
   }
@@ -41,6 +42,10 @@
 
 .ScrollView-shadow--top {
   top: 0;
+
+  &::before {
+    margin-top: 0;
+  }
 }
 
 .ScrollView-shadow--bottom {

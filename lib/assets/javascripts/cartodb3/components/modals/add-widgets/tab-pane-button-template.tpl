@@ -1,0 +1,1 @@
+<i class="WidgetIcon WidgetIcon--<%- name %> u-rSpace--m"></i> <%- label %>

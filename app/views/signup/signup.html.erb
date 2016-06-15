@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="Sessions-field">
-                      <%= f.email_field :email, class: "Sessions-input", placeholder: 'email' %>
+                      <%= f.email_field :email, class: "Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? %>
                       <% if !@user.errors[:email].blank? %>
                         <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
                       <% end %>

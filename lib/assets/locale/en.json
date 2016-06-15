@@ -451,6 +451,13 @@
           "loading": "Deleting row...",
           "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
           "success": "Row with cartodb_id %{cartodb_id} deleted"
+        },
+        "confirmation": {
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
+          "desc": "Are you sure you want to delete it?",
+          "loading": "Removing your row...",
+          "confirm": "ok, delete",
+          "cancel": "cancel"
         }
       }
     }

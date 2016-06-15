@@ -14,9 +14,10 @@ module Carto
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_json_export(export_vizjson)
 
+      regenerated_visualization.id = visualization.id
       regenerated_visualization.user = visualization.user
 
-      visualization
+      regenerated_visualization
     end
 
     private

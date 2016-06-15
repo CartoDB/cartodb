@@ -107,6 +107,10 @@ module Carto
       map.visualization
     end
 
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
     private
 
     def tables_from_query_option
@@ -135,10 +139,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def user
-      @user ||= maps.first.user
     end
 
   end

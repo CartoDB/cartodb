@@ -20,7 +20,7 @@ $tableBorderColor: $cSecondaryLine;
   left: 16px;
   border-radius: $halfBaseSize;
   background: $cThirdBackground;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: hidden;
   z-index: 2;
 }
@@ -52,6 +52,7 @@ $tableBorderColor: $cSecondaryLine;
   @include flex(1);
 }
 .Table-body table {
+  position: absolute;
   width: 100%;
   height: 100%;
   background: #FFF;
@@ -59,8 +60,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body tbody {
   @include display-flex();
   @include flex-direction(column);
-  width: 100%;
-  height: 100%;
+  height: calc(100vh - 175px);
   padding-bottom: 60px;
   overflow-y: scroll;
 }
@@ -154,7 +154,7 @@ $tableBorderColor: $cSecondaryLine;
   @include display-flex();
   @include align-items(center);
   position: fixed;
-  bottom: 32px;
+  bottom: 45px;
   left: calc(50% + 142px);
   padding: 1px;
   border-radius: $halfBaseSize;

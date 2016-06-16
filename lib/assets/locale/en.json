@@ -6,6 +6,7 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
+    "moran": "Moran",
     "kmeans": "K-means"
   },
   "analysis-category": {
@@ -222,6 +223,10 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "moran": {
+            "title": "Moran",
+            "desc": ""
           },
           "kmeans": {
             "title": "K-means",
@@ -512,6 +517,7 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
@@ -520,10 +526,12 @@
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
+        "permutations": "Permutations",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
@@ -535,6 +543,7 @@
         "tune-clusters": "Tune your clusters",
         "type": "Type",
         "weight-column": "Weight column",
+        "weight-type": "Weight type",
         "workflow": "Workflow"
       },
       "infowindow": {

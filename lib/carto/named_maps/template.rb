@@ -20,7 +20,7 @@ module Carto
       DATAVIEW_TEMPLATE_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column, :operation].freeze
 
       def initialize(visualization)
-        # TODO: Remove when it's safe to assume thais confussion wont' happen.
+        # TODO: Remove when it's safe to assume thais confussion won't happen.
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
 
         @visualization = visualization
@@ -59,7 +59,7 @@ module Carto
 
         layers = @visualization.layers
 
-        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
+        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto?))
         _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
                                                                                 starting_index: last_index)
 
@@ -88,7 +88,7 @@ module Carto
         layers = []
         layer_index = -1 # forgive me for I have sinned
 
-        @visualization.layers.select(&:named_map_layer?).each do |layer|
+        @visualization.named_map_layers.each do |layer|
           if layer.data_layer?
             layer_index += 1
 
@@ -104,7 +104,7 @@ module Carto
           end
         end
 
-        @visualization.layers.select(&:torque?).each do |layer|
+        @visualization.torque_layers.each do |layer|
           layer_index += 1
           layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end

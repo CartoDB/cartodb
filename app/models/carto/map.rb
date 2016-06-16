@@ -52,8 +52,8 @@ class Carto::Map < ActiveRecord::Base
           .reject(&:wms?)
   end
 
-  def named_maps_layers
-    layers.select(&:named_maps_layer?)
+  def named_map_layers
+    layers.select(&:named_map_layer?)
   end
 
   def viz_updated_at

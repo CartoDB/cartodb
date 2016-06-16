@@ -28,11 +28,12 @@ module CartoDB
 
     rescue NoMethodError => exception
       if @table.map.nil? && exception.message =~ /undefined method `save' for nil:NilClass/
-        CartoDB.notify_debug("#{exception.message} #{exception.backtrace}",
-                             table_id: @table.id,
-                             table_name: @table.name,
-                             user_id: @table.user_id,
-                             data_import_id: @table.data_import_id)
+        CartoDB::Logger.debug(message: 'Privacy change of table with no map',
+                              exception: exception,
+                              table_id: @table.id,
+                              table_name: @table.name,
+                              user: User.where(id: @table.user_id),
+                              data_import_id: @table.data_import_id)
       else
         raise exception
       end

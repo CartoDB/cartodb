@@ -1,0 +1,33 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.StatsList-item {
+  @include display-flex;
+  @include align-items(baseline);
+  width: 294px;
+  margin: 0 0 $baseSize * 3;
+  box-sizing: border-box;
+  background: $cWhite;
+}
+
+.StatsList-header {
+  @include display-flex;
+  @include justify-content(space-between);
+}
+
+.StatsList-arrow {
+  @include transform(rotate(90deg));
+}
+
+.StatsList-details {
+  @include display-flex;
+  @include align-items(baseline);
+}
+
+.StatsList-tag {
+  padding: 1px $baseSize / 2;
+  border-radius: $baseSize / 2;
+  background-color: $cThirdBackground;
+  color: $cAltText;
+}

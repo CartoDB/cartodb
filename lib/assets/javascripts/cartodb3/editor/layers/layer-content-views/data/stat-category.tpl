@@ -1,5 +1,5 @@
 <ul class="u-flex CDB-Text CDB-Size-small u-upperCase">
-  <li class='u-rSpace js-null'></li>
-  <li class='u-rSpace js-percent'></li>
+  <li class='u-rSpace--m js-null'></li>
+  <li class='js-percent'></li>
 </ul>
-<div class="u-bSpace--xl js-category-stat"></div>
+<div class="js-category-stat"></div>

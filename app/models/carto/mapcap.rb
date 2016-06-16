@@ -17,7 +17,15 @@ module Carto
       regenerated_visualization.id = visualization.id
       regenerated_visualization.user = visualization.user
       regenerated_visualization.map.user = visualization.user
-      regenerated_visualization.map.layers.each { |layer| layer.maps = [regenerated_visualization.map] }
+      regenerated_visualization.map.layers.each do |layer|
+        layer.id = SecureRandom.uuid
+        layer.maps = [regenerated_visualization.map]
+
+        layer.widgets.each do |widget|
+          widget.id = "patatini-#{SecureRandom.uuid}"
+          widget.layer_id = layer.id
+        end
+      end
 
       regenerated_visualization
     end

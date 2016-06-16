@@ -2,6 +2,10 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+.StatsList.is-hidden {
+  display: none;
+}
+
 .StatsList-item {
   @include display-flex;
   @include align-items(baseline);

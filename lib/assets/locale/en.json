@@ -203,7 +203,9 @@
     "modals": {
       "add-basemap": {
         "modal-title": "Add a custom basemap",
-        "modal-desc": "Select from these great resources"
+        "modal-desc": "Select from these great resources",
+        "adding-new-basemap": "Adding new basemap…",
+        "add-basemap-error": "Could not add basemap"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",

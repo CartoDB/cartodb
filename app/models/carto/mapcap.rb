@@ -16,6 +16,8 @@ module Carto
 
       regenerated_visualization.id = visualization.id
       regenerated_visualization.user = visualization.user
+      regenerated_visualization.map.user = visualization.user
+      regenerated_visualization.map.layers.each { |layer| layer.maps = [regenerated_visualization.map] }
 
       regenerated_visualization
     end

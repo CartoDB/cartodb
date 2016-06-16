@@ -141,13 +141,21 @@ module Carto
       sql = if query.present?
               query
             else
-              "SELECT * FROM #{user.sql_safe_database_schema}.#{options[:table_name]}"
+              "SELECT * FROM #{qualified_table_name(user)}"
             end
 
       query_wrapper = options[:query_wrapper]
       sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
 
       sql
+    end
+
+    def options
+      options.with_indifferent_access
+    end
+
+    def infowindow
+      infowindow.with_indifferent_access
     end
 
     private
@@ -183,6 +191,5 @@ module Carto
     def user
       @user ||= maps.first.user
     end
-
   end
 end

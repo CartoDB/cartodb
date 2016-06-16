@@ -206,35 +206,35 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def layers
-    map ? [] : map.layers
+    map ? map.layers : []
   end
 
   def data_layers
-    map ? [] : map.data_layers
+    map ? map.data_layers : []
   end
 
   def user_layers
-    map ? [] : map.user_layers
+    map ? map.user_layers : []
   end
 
   def carto_and_torque_layers
-    map ? [] : map.carto_and_torque_layers
+    map ? map.carto_and_torque_layers : []
   end
 
   def torque_layers
-    map ? [] : map.torque_layers
+    map ? map.torque_layers : []
   end
 
   def other_layers
-    map ? [] : map.other_layers
+    map ? map.other_layers : []
   end
 
   def base_layers
-    map ? [] : map.base_layers
+    map ? map.base_layers : []
   end
 
   def named_map_layers
-    map ? [] : map.named_map_layers
+    map ? map.named_map_layers : []
   end
 
   def password_valid?(password)

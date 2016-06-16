@@ -155,7 +155,7 @@ module CartoDB
         end
       end
 
-      if !errors.emtpy?
+      if !errors.empty?
         CartoDB.notify_error("Errors reverting Table privacy", user_id: metadata_table.user_id,
                                                                table_id: metadata_table.id,
                                                                errors: errors)

@@ -219,9 +219,9 @@ class User < Sequel::Model
     end
   end
 
-  def salesforce_connector_enabled
+  def salesforce_datasource_enabled
     if has_organization?
-      organization.salesforce_connector_enabled || super
+      organization.salesforce_datasource_enabled || super
     else
       super
     end

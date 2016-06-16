@@ -141,7 +141,6 @@ module Carto
       end
 
       def layers_vizjson(options, forced_privacy_version)
-        byebug
         basemap_layer = basemap_layer_vizjson(options)
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer

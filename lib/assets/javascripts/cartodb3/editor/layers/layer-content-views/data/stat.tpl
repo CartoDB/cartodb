@@ -1,6 +1,6 @@
 <div class="StatsList-item">
   <div class="WidgetList-option">
-    <input class="CDB-Checkbox js-checkbox" type="checkbox" />
+    <input class="CDB-Checkbox js-checkbox" type="checkbox" <% if (isSelected) { %>checked="checked"<% } %> />
     <span class="u-iBlock CDB-Checkbox-face"></span>
   </div>
 

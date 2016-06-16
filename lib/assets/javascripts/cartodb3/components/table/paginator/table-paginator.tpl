@@ -1,21 +1,35 @@
 <button class="Table-paginatorButton Table-paginatorButton--prev
   <% if (isPrevAvailable) { %>
     js-prev
-  <% } else { %>
-    is-disabled
   <% } %>
-"><</button>
-<span class="Table-paginatorInfo u-upperCase">
+">
+  <i class="CDB-Text is-semibold CDB-IconFont CDB-IconFont-lArrowLight CDB-Size-small
+  <% if (isPrevAvailable) { %>
+    u-actionTextColor
+  <% } else { %>
+    u-hintTextColor
+  <% } %>
+  "></i>
+</button>
+<p class="Table-paginatorText CDB-Text CDB-Size-small is-semibold u-upperCase">
   <% if (!size) {%>
-    …
+   <span class="u-mainTextColor">…</span>
   <% } else { %>
-    <strong><%- page * 40 %></strong> <%- _t('components.table.rows.paginator.to') %> <strong><%- (page * 40) + size %></strong>
+    <span class="u-mainTextColor"><%- page * 40 %></span>
+    <span class="u-altTextColor u-lSpace u-rSpace"><%- _t('components.table.rows.paginator.to') %></span>
+    <span class="u-mainTextColor"><%- (page * 40) + size %></span>
   <% } %>
-</span>
+</p>
 <button class="Table-paginatorButton Table-paginatorButton--next
   <% if (isNextAvailable) { %>
     js-next
-  <% } else { %>
-    is-disabled
   <% } %>
-">></button>
+">
+  <i class="CDB-Text is-semibold CDB-IconFont CDB-IconFont-rArrowLight CDB-Size-small
+  <% if (isNextAvailable) { %>
+    u-actionTextColor
+  <% } else { %>
+    u-hintTextColor
+  <% } %>
+  "></i>
+</button>

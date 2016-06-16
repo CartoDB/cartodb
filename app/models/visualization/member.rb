@@ -902,7 +902,9 @@ module CartoDB
       end
 
       def carto_visualization
-        Carto::Visualization.where(id: id).first
+        latest_mapcap = Carto::Mapcap.where(visualization_id: id).order('created_at DESC').first
+
+        latest_mapcap ? latest_mapcap.regenerate_visualization : Carto::Visualization.where(id: id).first
       end
     end
   end

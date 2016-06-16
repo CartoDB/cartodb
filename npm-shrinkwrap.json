@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.25.32",
+  "version": "3.25.34",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",

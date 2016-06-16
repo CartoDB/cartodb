@@ -234,6 +234,7 @@
           "formula-label": "Formula",
           "time-series-label": "Time-series"
         },
+        "percentage-in-top-cats": "% in top 10 cat",
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
       },
@@ -462,6 +463,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses", 
         "add-layer": "Add layer",
         "delete": "Delete"
       },

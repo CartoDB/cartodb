@@ -65,7 +65,7 @@ module CartoDB
           hard_limit:  self.hard_twitter_datasource_limit
         },
         salesforce: {
-          enabled: salesforce_datasource_enabled
+          enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
         },
         billing_period: self.last_billing_cycle,
         api_key: self.api_key,

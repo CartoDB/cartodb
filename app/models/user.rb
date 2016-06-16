@@ -219,14 +219,6 @@ class User < Sequel::Model
     end
   end
 
-  def salesforce_datasource_enabled
-    if has_organization?
-      organization.salesforce_datasource_enabled || super
-    else
-      super
-    end
-  end
-
   def after_create
     super
     setup_user

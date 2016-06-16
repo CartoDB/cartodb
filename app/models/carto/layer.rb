@@ -151,11 +151,11 @@ module Carto
     end
 
     def options
-      options.with_indifferent_access
+      self[:options].with_indifferent_access
     end
 
     def infowindow
-      infowindow.with_indifferent_access
+      self[:infowindow].with_indifferent_access
     end
 
     private

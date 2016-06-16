@@ -159,7 +159,7 @@ module Carto
     def infowindow
       raw_infowindow = self[:infowindow]
 
-      raw_infowindow.with_indifferent_access fi if raw_infowindow
+      raw_infowindow.with_indifferent_access if raw_infowindow
     end
 
     def tooltip

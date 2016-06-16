@@ -1,7 +1,7 @@
 <form>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">2</div>
-    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="weight_column,category_column">
+    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="category_column">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.cluster') %></h2>
       </div>

@@ -535,6 +535,12 @@
       }
     },
     "data": {
+      "stats": {
+        "add-widget": "Add as a widget",
+        "style": "STYLE",
+        "top-cat": "% in top 10 cat.",
+        "null": "% null"
+      },
       "data-toggle": {
         "values": "VALUES",
         "cartocss": "SQL"

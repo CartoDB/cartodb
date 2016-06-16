@@ -77,12 +77,6 @@
   cursor: pointer;
 }
 
-.Editor-ListLayer-subtitle {
-  @include display-flex();
-  @include flex-direction(row);
-  @include justify-content(space-between, justify);
-}
-
 .Editor-ListAnalysis {
   position: relative;
   margin-top: 16px;

@@ -27,7 +27,7 @@
         </li>
       </ul>
     </div>
-    <div class="Editor-ListLayer-subtitle">
+    <div class="u-flex u-justify">
       <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
         <%- _t('editor.layers.layer.add-analysis') %>
       </button>

@@ -28,6 +28,9 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
+.Editor-ListLayer-item.is-unavailable {
+  @include opacity(0.6);
+}
 .Editor-ListLayer-item.ui-sortable-helper {
   width: 294px;
 }

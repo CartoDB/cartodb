@@ -151,11 +151,21 @@ module Carto
     end
 
     def options
-      self[:options].with_indifferent_access
+      raw_options = self[:options]
+
+      raw_options.with_indifferent_access if raw_options
     end
 
     def infowindow
-      self[:infowindow].with_indifferent_access
+      raw_infowindow = self[:infowindow]
+
+      raw_infowindow.with_indifferent_access fi if raw_infowindow
+    end
+
+    def tooltip
+      raw_tooltip = self[:tooltip]
+
+      raw_tooltip.with_indifferent_access if raw_tooltip
     end
 
     private

@@ -440,6 +440,20 @@
         }
       },
       "rows": {
+        "loading": {
+          "title": "Loading rows..."
+        },
+        "error": {
+          "title": "There was an error...",
+          "desc": "It was not possible to obtain any result, check the query applied"
+        },
+        "result": {
+          "no-page-title": "Ouch! Sorry",
+          "no-page-desc": "This page %{page} doesn't contain any result...",
+          "no-results-title": "There is no data",
+          "no-results-desc": "",
+          "no-results-button": ""
+        },
         "options": {
           "copy": "Copy cell value",
           "create": "Add new row",

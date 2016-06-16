@@ -82,7 +82,8 @@
   position: relative;
   margin-top: 16px;
 }
-.Editor-ListAnalysis:empty {
+.Editor-ListAnalysis:empty,
+.Editor-ListAnalysis.is-hidden {
   display: none;
 }
 

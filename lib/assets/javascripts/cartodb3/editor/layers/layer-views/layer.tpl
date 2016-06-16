@@ -27,9 +27,16 @@
         </li>
       </ul>
     </div>
-    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
-      <%- _t('editor.layers.layer.add-analysis') %>
-    </button>
+    <div class="u-flex u-justifySpace">
+      <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
+        <%- _t('editor.layers.layer.add-analysis') %>
+      </button>
+      <% if (isCollapsed && numberOfAnalyses > 0) { %>
+        <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
+          <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
+        </p>
+      <% } %>
+    </div>
   </div>
 </div>
-<ul class="Editor-ListAnalysis js-analyses"></ul>
+<ul class="Editor-ListAnalysis js-analyses <%- isCollapsed ? 'is-hidden' : '' %>"></ul>

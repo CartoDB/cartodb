@@ -1,4 +1,4 @@
-<div class="BlockList-media u-rSpace--xl">
+<div class="BlockList-media u-rSpace--xl js-thumbnail">
   <img src="<%- imgURL %>" class="BlockList-mediaImg" />
 </div>
 <div class="BlockList-inner">

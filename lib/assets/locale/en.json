@@ -481,6 +481,9 @@
       "labels": {
         "title-label": "Labels"
       },
+      "color": {
+        "title-label": "Color"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",

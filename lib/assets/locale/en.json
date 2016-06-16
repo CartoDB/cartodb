@@ -495,6 +495,9 @@
       "color": {
         "title-label": "Color"
       },
+      "image": {
+        "title-label": "Image"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",

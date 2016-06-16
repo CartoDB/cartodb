@@ -472,6 +472,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses", 
         "add-layer": "Add layer",
         "delete": "Delete"
       },

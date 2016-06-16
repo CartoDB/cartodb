@@ -11,40 +11,37 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      begin
+      @table.map.save
+
+      # Separate on purpose as if fails here no need to revert visualizations' privacy
+      revertable_privacy_change(metadata_table, old_privacy) do
+        # Map saving actually doesn't changes privacy, but to keep on same reverting logic
         @table.map.save
+        set_from_table_privacy(@table.privacy)
+      end
 
-        # Separate on purpose as if fails here no need to revert visualizations' privacy
-        revertable_privacy_change(metadata_table, old_privacy) do
-          # Map saving actually doesn't changes privacy, but to keep on same reverting logic
-          @table.map.save
-          set_from_table_privacy(@table.privacy)
-        end
+      revertable_privacy_change(metadata_table, old_privacy,
+                                [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
+        propagate_to([metadata_table.table_visualization])
+        notify_privacy_affected_entities(metadata_table) if privacy_changed
+      end
 
-        revertable_privacy_change(metadata_table, old_privacy,
-                                  [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
-          propagate_to([metadata_table.table_visualization])
-          notify_privacy_affected_entities(metadata_table) if privacy_changed
-        end
-
-      rescue NoMethodError => exception
-        if @table.map.nil? && exception.message =~ /undefined method `save' for nil:NilClass/
-          CartoDB.notify_debug("#{exception.message} #{exception.backtrace}", {
-              table_id: @table.id,
-              table_name: @table.name,
-              user_id: @table.user_id,
-              data_import_id: @table.data_import_id
-            })
-        else
-          raise exception
-        end
+    rescue NoMethodError => exception
+      if @table.map.nil? && exception.message =~ /undefined method `save' for nil:NilClass/
+        CartoDB.notify_debug("#{exception.message} #{exception.backtrace}",
+                             table_id: @table.id,
+                             table_name: @table.name,
+                             user_id: @table.user_id,
+                             data_import_id: @table.data_import_id)
+      else
+        raise exception
       end
     end
 
     def set_from_visualization(visualization)
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
-      set_private               if visualization.private? or visualization.organization?
+      set_private               if visualization.private? || visualization.organization?
       table.update(privacy: privacy)
       self
     end
@@ -157,7 +154,7 @@ module CartoDB
         end
       end
 
-      if errors.length > 0
+      if !errors.emtpy?
         CartoDB.notify_error("Errors reverting Table privacy", user_id: metadata_table.user_id,
                                                                table_id: metadata_table.id,
                                                                errors: errors)

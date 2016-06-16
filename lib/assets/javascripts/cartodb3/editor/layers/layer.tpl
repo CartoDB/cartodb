@@ -18,9 +18,9 @@
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="js-toggle">
             <% if (isVisible) { %>
-              <i class="CDB-IconFont CDB-IconFont-eyeDisabled"></i>
+              <i class="CDB-IconFont CDB-IconFont-view u-actionTextColor"></i>
             <% } else { %>
-              <i class="CDB-IconFont CDB-IconFont-eye"></i>
+              <i class="CDB-IconFont CDB-IconFont-hide u-actionTextColor"></i>
             <% } %>
           </button>
         </li>

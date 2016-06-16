@@ -4,7 +4,9 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon"
+    "point-in-polygon": "Point in polygon",
+    "cluster": "Cluster",
+    "kmeans": "K-means"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -220,6 +222,14 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "kmeans": {
+            "title": "K-means",
+            "desc": "Grups closer points into a single one or into a group with different colors."
+          },
+          "weighted-centroid": {
+            "title": "Weighted centroid",
+            "desc": ""
           }
         }
       },
@@ -426,7 +436,10 @@
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
     },
     "codemirror": {
-      "no-errors": "No errors"
+      "no-errors": "No errors",
+      "docs": "DOCS",
+      "syntax-error": "Syntax error",
+      "line": "Line"
     }
   },
   "data": {
@@ -459,6 +472,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses", 
         "add-layer": "Add layer",
         "delete": "Delete"
       },
@@ -487,31 +501,41 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "aggregate": "Aggregate",
+        "apply-btn": "Apply",
+        "boundaries": "Boundaries",
         "by": "By",
-        "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "car",
-        "tracts": "Tracts",
-        "boundaries": "Boundaries",
-        "intact": "Intact",
+        "by-walk": "walk",
+        "category-column": "Category column",
+        "clusters-num": "# Clusters",
+        "column": "Column",
+        "create-btn": "Create",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
+        "input-layer": "Define your input layer",
+        "intact": "Intact",
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "numerator": "Numerator",
+        "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
-        "polygons_source": "Polygon source",
         "points_source": "Point source",
+        "polygons_source": "Polygon source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "significance": "Significance",
         "time": "Time",
+        "tracts": "Tracts",
+        "tune-clusters": "Tune your clusters",
         "type": "Type",
-        "workflow": "Workflow",
-        "apply-btn": "Apply",
-        "create-btn": "Create"
+        "weight-column": "Weight column",
+        "workflow": "Workflow"
       },
       "infowindow": {
         "style": {
@@ -528,6 +552,22 @@
         "items": {
           "title-label": "Show items",
           "description": "Add items"
+        }
+      }
+    },
+    "data": {
+      "data-toggle": {
+        "values": "VALUES",
+        "cartocss": "SQL"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your query."
+      },
+      "messages": {
+        "sql-readonly": {
+          "title": "SQL ONLY READ",
+          "body": "You just applied analysis to this layer and the SQL passed to only read.",
+          "accept": "CLOSE"
         }
       }
     },
@@ -552,6 +592,9 @@
           "title-label": "Style",
           "desc": "Change the visualization"
         }
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your styles."
       },
       "style-toggle": {
         "values": "VALUES",

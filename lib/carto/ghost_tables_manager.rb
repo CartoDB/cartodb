@@ -44,13 +44,13 @@ module Carto
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
     # the workers for more that 180 seconds
-    def safe_sync?
+    def should_run_synchronously?
       cartodbfied_tables = fetch_cartodbfied_tables
 
       dropped_and_stale_table_count = find_dropped_tables(cartodbfied_tables).count +
                                       find_stale_tables(cartodbfied_tables).count
 
-      dropped_and_stale_table_count < MAX_TABLES_FOR_SYNC_RUN
+      dropped_and_stale_table_count != 0 && dropped_and_stale_table_count < MAX_TABLES_FOR_SYNC_RUN
     end
 
     def sync_user_tables_with_db

@@ -10,6 +10,9 @@
   padding: 25px;
   box-sizing: border-box;
 }
+.Options-bar--right {
+  @include justify-content(flex-end);
+}
 .Options-bar.is-dark {
   color: $cWhite;
 }

@@ -1,3 +1,3 @@
 <% if (isVisible) { %>
-  <a href="#" class="CDB-Text CDB-Size-small u-upperCase js-button"><%-number %> columns more</a>
+  <button class="CDB-Text CDB-Size-small u-upperCase u-actionTextColor js-button"><%-number %> columns more</button>
 <% } %>

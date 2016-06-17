@@ -1,0 +1,1 @@
+<img src="<%= backgroundImage %>" class="Mosaic-image" />

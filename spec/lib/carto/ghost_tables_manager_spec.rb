@@ -27,6 +27,46 @@ module Carto
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
 
+    it 'should not run sync when more than MAX_TABLES_FOR_SYNC_RUN need to be linked' do
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @ghost_tables_manager.stubs(:find_dropped_tables)
+                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
+
+      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+    end
+
+    it 'should not run sync when more than MAX_TABLES_FOR_SYNC_RUN need to be linked including new tables' do
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @ghost_tables_manager.stubs(:find_dropped_tables)
+                           .returns(['manolo'])
+      @ghost_tables_manager.stubs(:find_dropped_tables)
+                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
+
+      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+    end
+
+    it 'should run sync when more than 0 but less than MAX_TABLES_FOR_SYNC_RUN need to be linked' do
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @ghost_tables_manager.stubs(:find_dropped_tables)
+                           .returns([*1..(Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN - 1)])
+
+      @ghost_tables_manager.send(:should_run_synchronously?).should be_true
+    end
+
+    it 'should not run sync when no tables are stale or dropped' do
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @ghost_tables_manager.stubs(:find_dropped_tables)
+                           .returns([])
+      @ghost_tables_manager.stubs(:find_new_tables)
+                           .returns([*1..Carto::GhostTablesManager::MAX_TABLES_FOR_SYNC_RUN])
+
+      @ghost_tables_manager.send(:should_run_synchronously?).should be_false
+    end
+
     it 'should link sql created table, relink sql renamed tables and unlink sql dropped tables' do
       run_in_user_database(%{
         CREATE TABLE manoloescobar ("description" text);

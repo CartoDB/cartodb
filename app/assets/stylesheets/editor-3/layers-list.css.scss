@@ -32,7 +32,7 @@
   @include opacity(0.6);
 }
 .Editor-ListLayer-item.ui-sortable-helper {
-  width: 294px;
+  min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);

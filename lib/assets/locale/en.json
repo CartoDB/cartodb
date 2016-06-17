@@ -7,7 +7,7 @@
     "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
     "polygon-cluster": "Polygon cluster",
-    "kmeans": "K-means"
+    "kmeans": "Cluster"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -229,12 +229,12 @@
             "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {
-            "title": "K-means",
-            "desc": "Grups closer points into a single one or into a group with different colors."
+            "title": "Cluster",
+            "desc": "Group closer points into a single one or into a group with different colors"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
-            "desc": ""
+            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           }
         }
       },
@@ -619,6 +619,12 @@
       }
     },
     "data": {
+      "stats": {
+        "add-widget": "Add as a widget",
+        "style": "STYLE",
+        "top-cat": "% in top 10 cat.",
+        "null": "% null"
+      },
       "data-toggle": {
         "values": "VALUES",
         "cartocss": "SQL"

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.26.03",
+  "version": "3.27.0",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -24,7 +24,6 @@
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/cartodb.js#v4",
     "jquery": "2.1.4",
-    "jquery-ui": "^1.10.5",
     "moment": "2.10.6",
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "0.6.7",

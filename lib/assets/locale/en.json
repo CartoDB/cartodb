@@ -6,7 +6,7 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
-    "moran": "Moran",
+    "polygon-cluster": "Polygon cluster",
     "kmeans": "K-means"
   },
   "analysis-category": {
@@ -224,9 +224,9 @@
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
           },
-          "moran": {
-            "title": "Moran",
-            "desc": ""
+          "polygon-cluster": {
+            "title": "Polygon cluster",
+            "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {
             "title": "K-means",
@@ -593,6 +593,7 @@
         "time": "Time",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
+        "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
         "weight-type": "Weight type",

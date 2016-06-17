@@ -47,8 +47,8 @@ module Carto
     def should_run_synchronously?
       cartodbfied_tables = fetch_cartodbfied_tables
 
-      dropped_and_stale_table_count = (find_dropped_tables(cartodbfied_tables) +
-                                       find_stale_tables(cartodbfied_tables)).count
+      dropped_and_stale_tables = find_dropped_tables(cartodbfied_tables) + find_stale_tables(cartodbfied_tables)
+      dropped_and_stale_table_count = dropped_and_stale_tables.count
 
       dropped_and_stale_table_count != 0 && dropped_and_stale_table_count < MAX_TABLES_FOR_SYNC_RUN
     end

@@ -19,7 +19,7 @@ module Carto
     def link_ghost_tables
       return if user_tables_synced_with_db?
 
-      if safe_sync?
+      if should_run_synchronously?
         link_ghost_tables_synchronously
       else
         ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)

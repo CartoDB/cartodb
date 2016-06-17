@@ -228,7 +228,7 @@
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
-            "desc": ""
+            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           }
         }
       },

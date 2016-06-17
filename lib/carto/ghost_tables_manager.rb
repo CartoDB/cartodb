@@ -48,7 +48,6 @@ module Carto
       cartodbfied_tables = fetch_cartodbfied_tables
 
       dropped_and_stale_tables = find_dropped_tables(cartodbfied_tables) + find_stale_tables(cartodbfied_tables)
-
       total_tables_to_be_linked = dropped_and_stale_tables + find_new_tables(cartodbfied_tables)
 
       dropped_and_stale_tables.count != 0 && total_tables_to_be_linked.count < MAX_TABLES_FOR_SYNC_RUN

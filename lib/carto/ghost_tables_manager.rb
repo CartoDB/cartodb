@@ -85,8 +85,7 @@ module Carto
       user_table_ids = user_tables.map(&:id)
 
       cartodbfied_tables.select do |cartodbfied_table|
-        user_table_ids.include?(cartodbfied_table.id) &&
-          !user_table_names.include?(cartodbfied_table.name)
+        user_table_ids.include?(cartodbfied_table.id) && !user_table_names.include?(cartodbfied_table.name)
       end
     end
 
@@ -98,8 +97,7 @@ module Carto
       user_table_ids = user_tables.map(&:id)
 
       cartodbfied_tables.select do |cartodbfied_table|
-        user_table_names.include?(cartodbfied_table.name) &&
-          !user_table_ids.include?(cartodbfied_table.id)
+        !user_table_ids.include?(cartodbfied_table.id) && user_table_names.include?(cartodbfied_table.name)
       end
     end
 

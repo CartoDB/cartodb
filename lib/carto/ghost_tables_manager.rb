@@ -6,6 +6,7 @@ module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL_MS = 600000
+    MAX_TABLES_FOR_SYNC_RUN = 5
 
     def initialize(user_id)
       @user_id = user_id
@@ -18,10 +19,10 @@ module Carto
     def link_ghost_tables
       return if user_tables_synced_with_db?
 
-      if safe_async?
-        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
-      else
+      if safe_sync?
         link_ghost_tables_synchronously
+      else
+        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
       end
     end
 
@@ -41,11 +42,15 @@ module Carto
         (cartodbfied_tables - user_tables).empty?
     end
 
-    # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?
+    # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
+    # the workers for more that 180 seconds
+    def safe_sync?
       cartodbfied_tables = fetch_cartodbfied_tables
 
-      find_dropped_tables(cartodbfied_tables).empty? && find_stale_tables(cartodbfied_tables).empty?
+      dropped_and_stale_table_count = find_dropped_tables(cartodbfied_tables).count +
+                                      find_stale_tables(cartodbfied_tables).count
+
+      dropped_and_stale_table_count < MAX_TABLES_FOR_SYNC_RUN
     end
 
     def sync_user_tables_with_db

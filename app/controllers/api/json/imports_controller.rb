@@ -40,15 +40,13 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if params[:url].present?
           validate_url!(params.fetch(:url)) unless Rails.env.development? || Rails.env.test?
-          options.merge!(data_source: params.fetch(:url))
+          options[:data_source] = params.fetch(:url)
         elsif params[:odbc].present?
-          options.merge!(
-            service_name: 'connector',
-            service_item_id: "ODBC:#{params[:odbc]}"
-          )
+          options[:service_name]    = 'connector'
+          options[:service_item_id] = "ODBC:#{params[:odbc]}"
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
-          options.merge!( { data_source: external_source.import_url.presence } )
+          options[:data_source] = external_source.import_url.presence
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
             results = file_upload_helper.upload_file_to_storage(

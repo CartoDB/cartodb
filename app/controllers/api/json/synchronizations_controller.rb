@@ -140,20 +140,22 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   private
 
   def set_external_source
-    @external_source = params[:remote_visualization_id].present? ?
-                                                get_external_source(params[:remote_visualization_id]) : nil
+    @external_source =
+      if params[:remote_visualization_id].present?
+        get_external_source(params[:remote_visualization_id])
+      end
   end
 
   def setup_member_attributes
     member_attributes = payload.merge(
-            name:                   params[:table_name],
-            user_id:                current_user.id,
-            state:                  Synchronization::Member::STATE_CREATED,
-            # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params-4
-            type_guessing:          !["false", false].include?(params[:type_guessing]),
-            quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
-            content_guessing:       ["true", true].include?(params[:content_guessing])
-        )
+      name:                   params[:table_name],
+      user_id:                current_user.id,
+      state:                  Synchronization::Member::STATE_CREATED,
+      # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params-4
+      type_guessing:          !["false", false].include?(params[:type_guessing]),
+      quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
+      content_guessing:       ["true", true].include?(params[:content_guessing])
+    )
 
     if from_sync_file_provider?
       member_attributes = member_attributes.merge({
@@ -165,17 +167,13 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     if params[:remote_visualization_id].present?
       member_attributes[:interval] = Carto::ExternalSource::REFRESH_INTERVAL
       external_source = @external_source
-      member_attributes.merge!( {
-        url: external_source.import_url.presence,
-        service_item_id: external_source.import_url.presence
-        } )
+      member_attributes[:url] = external_source.import_url.presence
+      member_attributes[:service_item_id] = external_source.import_url.presence
     end
 
     if params[:odbc].present?
-      member_attributes.merge!(
-        service_name: 'connector',
-        service_item_id: "ODBC:#{params[:odbc]}"
-      )
+      member_attributes[:service_name]    = 'connector'
+      member_attributes[:service_item_id] = "ODBC:#{params[:odbc]}"
     end
 
     member_attributes
@@ -205,10 +203,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       external_source = get_external_source(params[:remote_visualization_id])
       options.merge!( { data_source: external_source.import_url.presence } )
     elsif params[:odbc].present?
-      options.merge!(
-        service_name: 'connector',
-        service_item_id: "ODBC:#{params[:odbc]}"
-      )
+      options[:service_name]    = 'connector'
+      options[:service_item_id] = "ODBC:#{params[:odbc]}"
     else
       url = params[:url]
       validate_url!(url) unless Rails.env.development? || Rails.env.test? || url.nil? || url.empty?

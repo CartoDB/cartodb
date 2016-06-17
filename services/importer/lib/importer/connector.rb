@@ -18,7 +18,7 @@ module CartoDB
         def initialize(message = 'General error', channel = nil, user = nil)
           @channel_name  = channel
           @user_name     = user && user.username
-          message = "#{message}"
+          message = message.to_s
           message << " Channel: #{@channel_name}" if @channel_name
           message << " User: #{@user_name}" if @user_name
           super(message)
@@ -46,7 +46,7 @@ module CartoDB
         @id = @job.id
         @unique_suffix = @id.delete('-')
         channel, conn_str = connector_source.split(':')
-        raise InvalidChannelError.new(channel, @user) unless channel.downcase == 'odbc'
+        raise InvalidChannelError.new(channel, @user) unless channel.casecmp('odbc') == 0
         @conn_str = conn_str
         # TODO: parser params properly, make param names lowercase
         @params = Hash[@conn_str.split(';').map { |p| p.split('=').map(&:strip) }]
@@ -115,8 +115,8 @@ module CartoDB
 
       private
 
-      ACCEPTED_PARAMETERS = %w(dsn driver host port database table username password sql_query sql_count)
-      SERVER_OPTIONS = %w(dsn driver host port database)
+      ACCEPTED_PARAMETERS = %w(dsn driver host port database table username password sql_query sql_count).freeze
+      SERVER_OPTIONS = %w(dsn driver host port database).freeze
 
       def server_params
         @params.slice(*SERVER_OPTIONS)

@@ -5,8 +5,7 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
-    "cluster": "Cluster",
-    "kmeans": "K-means"
+    "kmeans": "Cluster"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -224,12 +223,12 @@
             "desc": "Analyse points in polygon (or vice versa)"
           },
           "kmeans": {
-            "title": "K-means",
-            "desc": "Grups closer points into a single one or into a group with different colors."
+            "title": "Cluster",
+            "desc": "Group closer points into a single one or into a group with different colors"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
-            "desc": ""
+            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           }
         }
       },
@@ -244,6 +243,7 @@
           "formula-label": "Formula",
           "time-series-label": "Time-series"
         },
+        "percentage-in-top-cats": "% in top 10 cat",
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
       },
@@ -440,6 +440,58 @@
       "docs": "DOCS",
       "syntax-error": "Syntax error",
       "line": "Line"
+    },
+    "table": {
+      "columns": {
+        "create": {
+          "loading": "Adding new column...",
+          "error": "Error adding new column: %{error}",
+          "success": "Column %{column_name} added"
+        }
+      },
+      "rows": {
+        "loading": {
+          "title": "Loading rows..."
+        },
+        "error": {
+          "title": "There was an error...",
+          "desc": "It was not possible to obtain any result, check the query applied"
+        },
+        "result": {
+          "no-page-title": "Ouch! Sorry",
+          "no-page-desc": "This page %{page} doesn't contain any result...",
+          "no-results-title": "There is no data",
+          "no-results-desc": "",
+          "no-results-button": ""
+        },
+        "options": {
+          "copy": "Copy cell value",
+          "create": "Add new row",
+          "edit": "Edit this cell",
+          "delete": "Delete this row..."
+        },
+        "create": {
+          "loading": "Adding new row...",
+          "error": "Error adding new row: %{error}",
+          "success": "New row added"
+        },
+        "destroy": {
+          "loading": "Deleting row...",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "success": "Row with cartodb_id %{cartodb_id} deleted"
+        },
+        "confirmation": {
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
+          "desc": "Are you sure you want to delete it?",
+          "loading": "Removing your row...",
+          "confirm": "ok, delete",
+          "cancel": "cancel"
+        },
+        "paginator": {
+          "error": "There was an error with pagination: %{error}",
+          "to": "to"
+        }
+      }
     }
   },
   "data": {
@@ -565,6 +617,12 @@
       }
     },
     "data": {
+      "stats": {
+        "add-widget": "Add as a widget",
+        "style": "STYLE",
+        "top-cat": "% in top 10 cat.",
+        "null": "% null"
+      },
       "data-toggle": {
         "values": "VALUES",
         "cartocss": "SQL"

@@ -5,8 +5,7 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
-    "cluster": "Cluster",
-    "kmeans": "K-means"
+    "kmeans": "Cluster"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -224,12 +223,12 @@
             "desc": "Analyse points in polygon (or vice versa)"
           },
           "kmeans": {
-            "title": "K-means",
-            "desc": "Grups closer points into a single one or into a group with different colors."
+            "title": "Cluster",
+            "desc": "Group closer points into a single one or into a group with different colors"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
-            "desc": ""
+            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           }
         }
       },

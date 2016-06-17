@@ -442,10 +442,11 @@ module CartoDB
           raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if body.include?('error')
 
           begin
+            retrieved_items = body.fetch('features')
+            return [] if retrieved_items.nil? || retrieved_items.empty?
             retrieved_fields = body.fetch('fields')
             geometry_type = body.fetch('geometryType')
             spatial_reference = body.fetch('spatialReference')
-            retrieved_items = body.fetch('features')
           rescue => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
           end

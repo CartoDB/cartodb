@@ -6,7 +6,7 @@ module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
     MUTEX_TTL_MS = 600000
-    MAX_TABLES_FOR_SYNC_RUN = 5
+    MAX_TABLES_FOR_SYNC_RUN = 8
 
     def initialize(user_id)
       @user_id = user_id

@@ -5,7 +5,7 @@
 
 <div class="WidgetList-inner js-inner">
   <h3 class="u-ellipsis CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
-  <div id="formulastats" style="display: none;">
+  <div class="js-formulastats" style="display: none;">
     <ul class="u-flex CDB-Text CDB-Size-small u-upperCase">
       <li class='u-rSpace'></li>
     </ul>

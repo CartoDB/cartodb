@@ -683,7 +683,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _getBarIndex: function () {
-    var x = d3.event.sourceEvent.offsetX;
+    var x = d3.event.sourceEvent.layerX;
     return Math.floor(x / this.barWidth);
   },
 

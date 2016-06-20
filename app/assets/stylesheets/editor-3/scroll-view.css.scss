@@ -23,13 +23,26 @@
 }
 
 .ScrollView-shadow {
-  display: none;
+  @include transition(opacity, 400ms);
+  @include opacity(0);
+  display: block;
   position: absolute;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.ScrollView-shadow--top,
+.ScrollView-shadow--bottom {
   right: -1px;
   left: -1px;
   height: 18px;
-  overflow: hidden;
-  z-index: 20;
+}
+
+.ScrollView-shadow--left,
+.ScrollView-shadow--right {
+  bottom: 0;
+  top: 0;
+  width: 30px;
 }
 
 .ScrollView-shadow--top {
@@ -42,21 +55,16 @@
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 87%);
 }
 
-.has-both-shadow {
-  .ScrollView-shadow--top,
-  .ScrollView-shadow--bottom {
-    display: block;
-  }
+.ScrollView-shadow--left {
+  @include background-horizontal(#FFF, rgba(255, 255, 255, 0));
+  left: 0;
 }
 
-.has-top-shadow {
-  .ScrollView-shadow--top {
-    display: block;
-  }
+.ScrollView-shadow--right {
+  @include background-horizontal(rgba(255, 255, 255, 0), #FFF);
+  right: 0;
 }
 
-.has-bottom-shadow {
-  .ScrollView-shadow--bottom {
-    display: block;
-  }
+.ScrollView-shadow.is-visible {
+  @include opacity(1);
 }

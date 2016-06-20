@@ -6,6 +6,7 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
+  box-sizing: border-box;
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
@@ -32,6 +33,8 @@
   @include opacity(0.6);
 }
 .Editor-ListLayer-item.ui-sortable-helper {
+  // scss-lint:disable ImportantRule
+  left: 24px !important; // compensate for the draggable handle
   min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {

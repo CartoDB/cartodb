@@ -190,7 +190,7 @@ describe Carto::VisualizationQueryBuilder do
 
   it 'filters remote tables with syncs' do
 
-    stub_named_maps_calls
+    bypass_named_maps
 
     table = create_random_table(@user1)
 
@@ -309,7 +309,7 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   it 'filters raster tables' do
-    stub_named_maps_calls
+    bypass_named_maps
 
     table = create_random_table(@user1)
     table_visualization = table.table_visualization

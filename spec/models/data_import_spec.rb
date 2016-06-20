@@ -5,12 +5,12 @@ describe DataImport do
   before(:each) do
     ::User.all.each(&:destroy)
     @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
-    stub_named_maps_calls
+    bypass_named_maps
     @table = create_table(user_id: @user.id)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 

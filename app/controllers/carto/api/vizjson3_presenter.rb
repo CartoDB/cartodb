@@ -243,7 +243,7 @@ module Carto
         }
 
         if display_named_map?(@visualization, forced_privacy_version)
-          ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          ds[:template_name] = Carto::NamedMaps::Template.new(@visualization).name
         end
 
         ds
@@ -278,18 +278,16 @@ module Carto
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
-        @visualization    = visualization
-        @options          = options
-        @configuration    = configuration
-        @layergroup_data  = layergroup
-        @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+        @visualization      = visualization
+        @options            = options
+        @configuration      = configuration
+        @layergroup_data    = layergroup
+        @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
-      # @throws NamedMapsPresenterError
       def to_vizjson
         return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
@@ -305,7 +303,7 @@ module Carto
             sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
             filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             named_map: {
-              name: @named_map_name,
+              name: @named_map_template.name,
               stat_tag: @visualization.id,
               params: placeholders_data,
               layers: configure_layers_data
@@ -317,13 +315,12 @@ module Carto
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         {
           named_map: {
-            name:         @named_map_name,
+            name:         @named_map_template.name,
             layer_index:  layer_index,
             params:       placeholders_data
           },

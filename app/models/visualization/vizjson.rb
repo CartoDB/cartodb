@@ -4,7 +4,6 @@ require 'ostruct'
 require_relative '../layer/presenter'
 require_relative '../layer_group/presenter'
 require_relative '../named_map/presenter'
-require_relative '../../../services/named-maps-api-wrapper/lib/named_maps_wrapper'
 
 module CartoDB
   module Visualization

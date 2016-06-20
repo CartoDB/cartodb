@@ -420,6 +420,7 @@ module CartoDB
       # @param user ::User
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
+        return false if user.viewer && permission_type == PERMISSION_READWRITE
         return is_owner?(user) if permission_id.nil?
         is_owner?(user) || permission.permitted?(user, permission_type)
       end

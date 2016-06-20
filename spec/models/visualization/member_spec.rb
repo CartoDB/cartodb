@@ -253,23 +253,24 @@ describe Visualization::Member do
       member.is_owner?(user).should == false
     end
 
+    def mock_user(username, viewer: false)
+      user_mock = mock
+      user_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      user_mock.stubs(:username).returns(username)
+      user_mock.stubs(:organization).returns(nil)
+      user_mock.stubs(:viewer).returns(viewer)
+      user_mock
+    end
+
     it 'checks has_permission? permissions' do
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
 
       Permission.any_instance.stubs(:notify_permissions_change).returns(nil)
 
-      user2_mock = mock
-      user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
-      user2_mock.stubs(:username).returns('user2')
-      user2_mock.stubs(:organization).returns(nil)
-      user3_mock = mock
-      user3_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
-      user3_mock.stubs(:username).returns('user3')
-      user3_mock.stubs(:organization).returns(nil)
-      user4_mock = mock
-      user4_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
-      user4_mock.stubs(:username).returns('user4')
-      user4_mock.stubs(:organization).returns(nil)
+      user2_mock = mock_user('user2')
+      user3_mock = mock_user('user3')
+      user4_mock = mock_user('user4')
+      viewer_user = mock_user('user_v', viewer: true)
 
       visualization = Visualization::Member.new(
           privacy: Visualization::Member::PRIVACY_PUBLIC,
@@ -297,6 +298,14 @@ describe Visualization::Member do
             username: user3_mock.username
           },
           access: Permission::ACCESS_READWRITE
+        },
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: viewer_user.id,
+            username: viewer_user.username
+          },
+          access: Permission::ACCESS_READWRITE
         }
       ]
       acl_expected = [
@@ -308,6 +317,11 @@ describe Visualization::Member do
         {
           type: Permission::TYPE_USER,
           id: user3_mock.id,
+          access: Permission::ACCESS_READWRITE
+        },
+        {
+          type: Permission::TYPE_USER,
+          id: viewer_user.id,
           access: Permission::ACCESS_READWRITE
         }
       ]
@@ -324,6 +338,9 @@ describe Visualization::Member do
 
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READONLY).should eq false
       visualization.has_permission?(user4_mock, Visualization::Member::PERMISSION_READWRITE).should eq false
+
+      # Viewer users hasn't RW permission even though granted
+      visualization.has_permission?(viewer_user, Visualization::Member::PERMISSION_READWRITE).should eq false
 
       delete_user_data(@user)
     end

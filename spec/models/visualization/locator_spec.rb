@@ -22,7 +22,7 @@ describe Visualization::Locator do
   end
 
   before do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)

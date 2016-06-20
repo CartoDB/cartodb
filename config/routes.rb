@@ -58,7 +58,7 @@ CartoDB::Application.routes.draw do
     end
 
     namespace :editor do
-      match '(*path)', to: redirect { |params, request| CartoDB.base_url_from_request(request) + '/builder/' + params[:path] }
+      match '(*path)', to: redirect { |params, request| CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s }
     end
   end
 

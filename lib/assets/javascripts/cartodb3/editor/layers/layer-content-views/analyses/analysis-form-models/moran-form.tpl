@@ -10,7 +10,7 @@
   </div>
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
-    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="numerator_column,denominator_column,significance,neighbours,permutations,w_type">
+    <div class="Editor-HeaderInfo-inner CDB-Text" data-fields="numerator_column,denominator_column,significance,neighbours">
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('editor.layers.analysis-form.parameters') %></h2>
       </div>

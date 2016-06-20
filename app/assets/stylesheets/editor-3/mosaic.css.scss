@@ -13,62 +13,54 @@
 */
 
 @import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
-.Mosaic {
-  position: relative;
-}
+
 .Mosaic-list {
-  position: relative;
-  padding-bottom: 10px;
+  @include display-flex();
+  @include flex-wrap(wrap);
 }
 .Mosaic-item {
-  @include inline-block();
-  width: 56px;
-  height: 56px;
+  position: relative;
+  width: 40px;
+  height: 40px;
   margin-right: 8px;
   margin-bottom: 8px;
-  border: 1px solid $cSecondaryLine;
-  border-radius: 4px;
-  background: $cThirdBackground;
+  border-radius: $halfBaseSize;
   box-sizing: border-box;
-
-  &:last-child {
-    margin-right: 0;
-  }
-  &:hover {
-    border: 1px solid $cMainLine;
-    cursor: pointer;
-  }
+  cursor: pointer;
 }
-.Mosaic-item.is-selected {
+.Mosaic-item::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: $halfBaseSize;
+  pointer-events: none;
+  content: '';
+}
+.Mosaic-item:hover::before {
+  @include transition(all, 300ms);
+  border: 1px solid rgba(0, 0, 0, 0.24);
+}
+.Mosaic-item.is-selected::before {
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
   border: 2px solid $cBlue;
-
-  .Mosaic-inner {
-    width: 52px;
-    height: 52px;
-    border-radius: 2px;
-  }
-
-  .Mosaic-image {
-    margin-top: -27px;
-    margin-left: -27px;
-  }
-}
-.Mosaic-inner {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  border-radius: 3px;
-  overflow: hidden;
 }
 .Mosaic-image {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 56px;
-  height: 56px;
-  margin-top: -28px;
-  margin-left: -28px;
-  background-size: 100%;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
+.Mosaic-inner {
+  border-radius: $halfBaseSize;
+  overflow: hidden;
+  pointer-events: none;
+}
+

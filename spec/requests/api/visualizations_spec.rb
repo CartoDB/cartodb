@@ -35,7 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     begin
       delete_user_data @user
@@ -51,7 +51,7 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -417,7 +417,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 
@@ -577,7 +577,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#source_visualization_id_and_hierarchy' do
     it 'checks proper working of parent_id' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 

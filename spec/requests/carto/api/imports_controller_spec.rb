@@ -22,7 +22,7 @@ describe Carto::Api::ImportsController do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data @user
   end
 

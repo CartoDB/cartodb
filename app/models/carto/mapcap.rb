@@ -9,11 +9,11 @@ module Carto
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
 
-    before_save :generate_export_vizjson
+    before_save :generate_export_json
     after_commit :invalidate_visualization_cache
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_json_export(export_vizjson)
+      regenerated_visualization = build_visualization_from_json_export(export_json)
 
       regenerated_visualization.id = visualization.id
       regenerated_visualization.user = visualization.user
@@ -33,8 +33,8 @@ module Carto
 
     private
 
-    def generate_export_vizjson
-      self.export_vizjson = export_visualization_json_string(visualization_id, visualization.user)
+    def generate_export_json
+      self.export_json = export_visualization_json_string(visualization_id, visualization.user)
     end
 
     def invalidate_visualization_cache

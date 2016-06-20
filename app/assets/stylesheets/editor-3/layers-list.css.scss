@@ -28,8 +28,11 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
-.Editor-ListLayer-item.ui-draggable {
-  cursor: move;
+.Editor-ListLayer-item.is-unavailable {
+  @include opacity(0.6);
+}
+.Editor-ListLayer-item.ui-sortable-helper {
+  min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);
@@ -81,7 +84,8 @@
   position: relative;
   margin-top: 16px;
 }
-.Editor-ListAnalysis:empty {
+.Editor-ListAnalysis:empty,
+.Editor-ListAnalysis.is-hidden {
   display: none;
 }
 

@@ -4,7 +4,8 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon"
+    "point-in-polygon": "Point in polygon",
+    "kmeans": "Cluster"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -207,6 +208,7 @@
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "unknown-geometry-type": "unknown",
         "option-types": {
           "buffer": {
             "title": "Buffer",
@@ -219,6 +221,14 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "kmeans": {
+            "title": "Cluster",
+            "desc": "Group closer points into a single one or into a group with different colors"
+          },
+          "weighted-centroid": {
+            "title": "Weighted centroid",
+            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           }
         }
       },
@@ -233,6 +243,7 @@
           "formula-label": "Formula",
           "time-series-label": "Time-series"
         },
+        "percentage-in-top-cats": "% in top 10 cat",
         "time-series-no-option-title": "None",
         "time-series-no-option-desc": "This option won't show your time-series widget"
       },
@@ -425,7 +436,62 @@
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
     },
     "codemirror": {
-      "no-errors": "No errors"
+      "no-errors": "No errors",
+      "docs": "DOCS",
+      "syntax-error": "Syntax error",
+      "line": "Line"
+    },
+    "table": {
+      "columns": {
+        "create": {
+          "loading": "Adding new column...",
+          "error": "Error adding new column: %{error}",
+          "success": "Column %{column_name} added"
+        }
+      },
+      "rows": {
+        "loading": {
+          "title": "Loading rows..."
+        },
+        "error": {
+          "title": "There was an error...",
+          "desc": "It was not possible to obtain any result, check the query applied"
+        },
+        "result": {
+          "no-page-title": "Ouch! Sorry",
+          "no-page-desc": "This page %{page} doesn't contain any result...",
+          "no-results-title": "There is no data",
+          "no-results-desc": "",
+          "no-results-button": ""
+        },
+        "options": {
+          "copy": "Copy cell value",
+          "create": "Add new row",
+          "edit": "Edit this cell",
+          "delete": "Delete this row..."
+        },
+        "create": {
+          "loading": "Adding new row...",
+          "error": "Error adding new row: %{error}",
+          "success": "New row added"
+        },
+        "destroy": {
+          "loading": "Deleting row...",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "success": "Row with cartodb_id %{cartodb_id} deleted"
+        },
+        "confirmation": {
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
+          "desc": "Are you sure you want to delete it?",
+          "loading": "Removing your row...",
+          "confirm": "ok, delete",
+          "cancel": "cancel"
+        },
+        "paginator": {
+          "error": "There was an error with pagination: %{error}",
+          "to": "to"
+        }
+      }
     }
   },
   "data": {
@@ -458,6 +524,7 @@
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
+        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
         "delete": "Delete"
       },
@@ -486,31 +553,41 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "aggregate": "Aggregate",
+        "apply-btn": "Apply",
+        "boundaries": "Boundaries",
         "by": "By",
-        "by-walk": "walk",
         "by-bike": "bike",
         "by-car": "car",
-        "tracts": "Tracts",
-        "boundaries": "Boundaries",
-        "intact": "Intact",
+        "by-walk": "walk",
+        "category-column": "Category column",
+        "clusters-num": "# Clusters",
+        "column": "Column",
+        "create-btn": "Create",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
+        "input-layer": "Define your input layer",
+        "intact": "Intact",
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "numerator": "Numerator",
+        "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
-        "polygons_source": "Polygon source",
         "points_source": "Point source",
+        "polygons_source": "Polygon source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "significance": "Significance",
         "time": "Time",
+        "tracts": "Tracts",
+        "tune-clusters": "Tune your clusters",
         "type": "Type",
-        "workflow": "Workflow",
-        "apply-btn": "Apply",
-        "create-btn": "Create"
+        "weight-column": "Weight column",
+        "workflow": "Workflow"
       },
       "infowindow": {
         "style": {
@@ -527,6 +604,28 @@
         "items": {
           "title-label": "Show items",
           "description": "Add items"
+        }
+      }
+    },
+    "data": {
+      "stats": {
+        "add-widget": "Add as a widget",
+        "style": "STYLE",
+        "top-cat": "% in top 10 cat.",
+        "null": "% null"
+      },
+      "data-toggle": {
+        "values": "VALUES",
+        "cartocss": "SQL"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your query."
+      },
+      "messages": {
+        "sql-readonly": {
+          "title": "SQL ONLY READ",
+          "body": "You just applied analysis to this layer and the SQL passed to only read.",
+          "accept": "CLOSE"
         }
       }
     },
@@ -551,6 +650,9 @@
           "title-label": "Style",
           "desc": "Change the visualization"
         }
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your styles."
       },
       "style-toggle": {
         "values": "VALUES",
@@ -652,6 +754,12 @@
     "widgets": {
       "widgets-view": {
         "add_widget": "Add widget"
+      },
+      "widgets-types": {
+        "histogram": "Histogram",
+        "category": "Category",
+        "formula": "Formula",
+        "time-series": "Time-series"
       },
       "widgets-form": {
         "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",

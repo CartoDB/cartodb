@@ -65,6 +65,10 @@
   box-sizing: border-box;
 }
 
+.Editor-headerLayerName {
+  @include flex(1);
+}
+
 .Editor-HeaderInfo.is-dark {
   .Editor-HeaderInfo-titleText {
     color: $cWhite;

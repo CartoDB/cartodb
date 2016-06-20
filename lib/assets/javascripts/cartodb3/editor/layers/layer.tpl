@@ -16,7 +16,13 @@
       <h2 class="Editor-ListLayer-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
       <ul class="Editor-HeaderInfo-actions">
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
-          <div class="CDB-ArrowToogle is-blue is-small"></div>
+          <button class="js-toggle">
+            <% if (isVisible) { %>
+              <i class="CDB-IconFont CDB-IconFont-view u-actionTextColor"></i>
+            <% } else { %>
+              <i class="CDB-IconFont CDB-IconFont-hide u-actionTextColor"></i>
+            <% } %>
+          </button>
         </li>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
@@ -27,9 +33,16 @@
         </li>
       </ul>
     </div>
-    <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
-      <%- _t('editor.layers.layer.add-analysis') %>
-    </button>
+    <div class="u-flex u-justifySpace">
+      <button class="CDB-Text CDB-Size-small u-actionTextColor u-upperCase js-add-analysis" data-layer-id="<%- layerId %>">
+        <%- _t('editor.layers.layer.add-analysis') %>
+      </button>
+      <% if (isCollapsed && numberOfAnalyses > 0) { %>
+        <p class="CDB-Text CDB-Size-small u-secondaryTextColor">
+          <%- _t('editor.layers.layer.analyses-count', { smart_count: numberOfAnalyses }) %>
+        </p>
+      <% } %>
+    </div>
   </div>
 </div>
-<ul class="Editor-ListAnalysis js-analyses"></ul>
+<ul class="Editor-ListAnalysis js-analyses <%- isCollapsed ? 'is-hidden' : '' %>"></ul>

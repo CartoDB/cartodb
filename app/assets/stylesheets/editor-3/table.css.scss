@@ -34,6 +34,9 @@ $tableBorderColor: $cSecondaryLine;
   border-right: 1px solid $tableBorderColor;
   background: $cThirdBackground;
 }
+.Table-headItem.is-highlighted {
+  background: $cMainLine;
+}
 .Table-headItemInfo {
   margin-top: 2px;
   font-family: 'Monaco';
@@ -46,6 +49,28 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
+}
+.Table-columnMenu {
+  z-index: 10;
+}
+.Table-columnMenu .CustomList-list {
+  max-height: none;
+}
+.Table-columnMenu--toLeft {
+  margin-left: 213px;
+}
+.Table-columnTypeMenu {
+  left: 100%;
+  min-width: 95px;
+  max-width: 95px;
+  margin-left: 10px;
+  z-index: 20;
+}
+.Table-columnTypeMenu--toLeft {
+  right: 100%;
+  left: auto;
+  margin-right: 10px;
+  margin-left: 0;
 }
 .Table-body {
   @include display-flex();

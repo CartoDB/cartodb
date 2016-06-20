@@ -446,7 +446,25 @@
         "create": {
           "loading": "Adding new column...",
           "error": "Error adding new column: %{error}",
-          "success": "Column %{column_name} added"
+          "success": "Column %{columnName} added"
+        },
+        "destroy": {
+          "loading": "Deleting column...",
+          "error": "Error deleting column %{columnName}: %{error}",
+          "success": "Column %{columnName} deleted"
+        },
+        "options": {
+          "order": "Order",
+          "rename": "Rename column",
+          "change": "Change data type",
+          "create": "Add new column",
+          "delete": "Delete this column..."
+        },
+        "types": {
+          "boolean": "boolean",
+          "date": "date",
+          "number": "number",
+          "string": "string"
         }
       },
       "rows": {

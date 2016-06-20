@@ -1,4 +1,5 @@
-<div class="BlockList-media u-rSpace--xl"></div>
+<div class="BlockList-media u-rSpace--xl js-thumbnail" style="background-color: <%- color %>">
+</div>
 <div class="BlockList-inner">
   <div class="BlockList-title u-bSpace">
     <h2 class="BlockList-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>

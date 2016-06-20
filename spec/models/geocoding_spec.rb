@@ -5,16 +5,16 @@ describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
 
-    stub_named_maps_calls
+    bypass_named_maps
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 

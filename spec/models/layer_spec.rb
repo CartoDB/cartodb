@@ -9,14 +9,14 @@ describe Layer do
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   before(:each) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     @table = Table.new
     @table.user_id = @user.id
@@ -275,7 +275,7 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       map = Map.create(user_id: @user.id, table_id: @table.id)
       source = @table.table_visualization

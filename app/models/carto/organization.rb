@@ -113,7 +113,17 @@ module Carto
       self.quota_in_bytes - assigned_quota
     end
 
+    def get_auth_token
+      auth_token.present? ? auth_token : generate_auth_token
+    end
+
     private
+
+    def generate_auth_token
+      update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+
+      auth_token
+    end
 
     def destroy_groups_with_extension
       return unless groups
@@ -122,7 +132,5 @@ module Carto
 
       reload
     end
-
   end
-
 end

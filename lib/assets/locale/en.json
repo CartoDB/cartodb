@@ -550,6 +550,15 @@
           "color": "Color"
         }
       },
+      "labels": {
+        "title-label": "Labels"
+      },
+      "color": {
+        "title-label": "Color"
+      },
+      "image": {
+        "title-label": "Image"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",
@@ -818,11 +827,8 @@
           "no": "No"
         },
         "aggregation-options": {
-          "count": "Count",
-          "sum": "SUM",
-          "avg": "AVG",
-          "min": "MIN",
-          "max": "MAX"
+          "count": "COUNT",
+          "sum": "SUM"
         }
       }
     }

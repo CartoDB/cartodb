@@ -24,12 +24,12 @@ describe Visualization::Relator do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data(@user)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 

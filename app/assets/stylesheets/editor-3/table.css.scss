@@ -50,6 +50,10 @@ $tableBorderColor: $cSecondaryLine;
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
 }
+.Table-headItemName.is-disabled {
+  border: none;
+  background: none;
+}
 .Table-columnMenu {
   z-index: 10;
 }

@@ -3,7 +3,7 @@
     <%- name === 'cartodb_id' || (type === 'geometry' && geometry !== 'point') ? 'Table-headItemWrapper--short' : '' %>
   ">
   <div class="u-flex u-justifySpace">
-    <p class="CDB-Text CDB-Size-medium is-semibold u-ellipsis js-attribute"><%- name %></p>
+    <input class="Table-headItemName CDB-Text CDB-Size-medium is-semibold u-ellipsis js-attribute is-disabled" value="<%- name %>" readonly />
     <% if (type !== 'geometry') { %>
       <button class="CDB-Shape-threePoints is-blue is-small js-options">
         <div class="CDB-Shape-threePointsItem"></div>

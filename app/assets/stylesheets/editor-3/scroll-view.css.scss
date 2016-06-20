@@ -16,9 +16,24 @@
     padding-left: 24px;
   }
 
+  &
+
   .ScrollView-content {
     @include flex(1);
     padding: 18px 0;
+  }
+}
+
+.ScrollView--horizontal {
+
+  &,
+  & .ScrollView-wrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ScrollView-content {
+    padding: 0 0 18px;
   }
 }
 
@@ -40,8 +55,8 @@
 
 .ScrollView-shadow--left,
 .ScrollView-shadow--right {
-  bottom: 0;
   top: 0;
+  bottom: 0;
   width: 30px;
 }
 
@@ -57,6 +72,8 @@
 
 .ScrollView-shadow--left {
   @include background-horizontal(#FFF, rgba(255, 255, 255, 0));
+  // Overriding default background color
+  background-color: rgba(255, 255, 255, 0) !important;
   left: 0;
 }
 

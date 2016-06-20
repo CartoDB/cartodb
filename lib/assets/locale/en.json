@@ -798,11 +798,8 @@
           "no": "No"
         },
         "aggregation-options": {
-          "count": "Count",
-          "sum": "SUM",
-          "avg": "AVG",
-          "min": "MIN",
-          "max": "MAX"
+          "count": "COUNT",
+          "sum": "SUM"
         }
       }
     }

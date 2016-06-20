@@ -64,6 +64,9 @@ module CartoDB
           monthly_use: self.organization_user? ? self.organization.get_twitter_imports_count          : self.get_twitter_imports_count,
           hard_limit:  self.hard_twitter_datasource_limit
         },
+        salesforce: {
+          enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
+        },
         billing_period: self.last_billing_cycle,
         api_key: self.api_key,
         layers: self.layers.map(&:public_values),

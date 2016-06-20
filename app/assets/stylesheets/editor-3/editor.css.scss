@@ -20,18 +20,20 @@
   @include display-flex();
   position: relative;
   height: 100%;
+  min-height: 450px;
 }
 .Editor-panel {
   @include transition(width, 300ms, ease-in-out);
   @include display-flex();
   @include flex-direction(column);
+  @include flex(1);
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  min-height: 0;
   padding: 18px 25px 0;
   box-sizing: border-box;
 }
@@ -42,6 +44,7 @@
   @include display-flex();
   @include flex(1);
   @include flex-direction(column);
+  min-height: 0;
 }
 .Editor-panelWrapper {
   position: relative;

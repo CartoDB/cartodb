@@ -5,17 +5,7 @@
 .WidgetList {
   @include display-flex;
   flex-wrap: wrap;
-}
-
-.WidgetList-fakeInner { // TODO: REMOVE ME
-  width: 940px;
-  margin: auto;
-  .CDB-NavMenu-item {
-    margin-right: 10px;
-  }
-  .CDB-NavMenu-link {
-    padding: 32px 0;
-  }
+  padding-top: 105px;
 }
 
 .WidgetList-option {
@@ -33,15 +23,9 @@
   border-radius: $baseSize / 2;
   background: $cWhite;
 }
-.WidgetList-item:hover {
-  border: 1px solid $cBlue;
-  background: #F5FAFE;
-}
 .WidgetList-inner {
-  width: 100%;
-}
-.WidgetList-title {
-  @include display-flex;
+  @include flex(1);
+  min-width: 0;
 }
 .WidgetPlaceHolder {
   @include display-flex();
@@ -69,4 +53,54 @@
   border-radius: 2px;
   background: $cThirdBackground;
 }
+.WidgetList-nav {
+  @include display-flex();
+  @include justify-content(center);
+  position: fixed;
+  width: 100%;
+  padding: $baseSize * 4 0;
+  background-color: $cThirdBackground;
+  z-index: 1;
+}
+
+.WidgetIcon {
+  width: 20px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.WidgetIcon--histogram {
+  background-image: image-url('layout/widgets/histogram_bn.svg');
+}
+.Editor-navButtonsItem.is-selected .WidgetIcon--histogram {
+  background-image: image-url('layout/widgets/histogram_color.svg');
+}
+
+.WidgetIcon--category {
+  background-image: image-url('layout/widgets/category_bn.svg');
+}
+.Editor-navButtonsItem.is-selected .WidgetIcon--category {
+  background-image: image-url('layout/widgets/category_color.svg');
+}
+
+.WidgetIcon--formula {
+  background-image: image-url('layout/widgets/formula_bn.svg');
+
+}
+.Editor-navButtonsItem.is-selected .WidgetIcon--formula {
+  background-image: image-url('layout/widgets/formula_color.svg');
+}
+
+.WidgetIcon--time-series {
+  background-image: image-url('layout/widgets/timeSeries_bn.svg');
+}
+.Editor-navButtonsItem.is-selected .WidgetIcon--time-series {
+  background-image: image-url('layout/widgets/timeSeries_color.svg');
+}
+
+
+
+
+
+
 

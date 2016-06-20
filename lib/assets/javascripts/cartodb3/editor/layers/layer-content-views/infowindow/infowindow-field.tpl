@@ -1,6 +1,6 @@
 <div class="CDB-Text CDB-Fieldset u-tSpace-xl">
   <div class="CDB-Legend CDB-Legend--big u-ellipsis CDB-Text CDB-Size-medium u-rSpace--m">
-    <div class="CDB-Shape u-iblock u-malign">
+    <div class="Infowindow-listFieldsOrder CDB-Shape u-iblock u-malign">
       <div class="CDB-Shape-rectsHandle is-small">
         <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-first"></div>
         <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-second"></div>

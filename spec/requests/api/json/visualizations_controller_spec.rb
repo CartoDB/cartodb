@@ -3,6 +3,7 @@
 require_relative '../../../spec_helper'
 require_relative 'visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/visualizations_controller'
+require_relative '.././../../factories/organizations_contexts'
 
 describe Api::Json::VisualizationsController do
   it_behaves_like 'visualization controllers' do
@@ -31,6 +32,30 @@ describe Api::Json::VisualizationsController do
   after(:each) do
     stub_named_maps_calls
     delete_user_data @user
+  end
+
+  describe '#create' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'correctly creates a visualization from two dataset of different users' do
+      table1 = create_table(user_id: @org_user_1.id)
+      table2 = create_table(user_id: @org_user_2.id)
+      share_table_with_user(table1, @org_user_2)
+      payload = {
+        type: 'derived',
+        tables: ["#{@org_user_1.username}.#{table1.name}", table2.name]
+      }
+      post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                payload) do |response|
+        response.status.should eq 200
+        vid = response.body[:id]
+        v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+        v.user.should eq @org_user_2
+        v.map.user.should eq @org_user_2
+      end
+    end
   end
 
   describe "#update" do

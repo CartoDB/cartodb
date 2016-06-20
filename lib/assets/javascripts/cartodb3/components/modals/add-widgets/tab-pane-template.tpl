@@ -1,4 +1,4 @@
-<div class="WidgetList-fakeInner">
-  <ul class="CDB-NavMenu-inner CDB-Text is-semibold CDB-Size-medium js-menu"></ul>
+<ul class="WidgetList-nav js-menu"></ul>
+<div class="u-inner">
   <div class="js-content"></div>
 </div>

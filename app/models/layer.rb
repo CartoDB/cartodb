@@ -82,7 +82,7 @@ class Layer < Sequel::Model
   end
 
   def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user.viewer
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
     super
@@ -217,8 +217,12 @@ class Layer < Sequel::Model
     CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
   end
 
+  def map
+    maps.first
+  end
+
   def user
-    maps.first.user
+    map.user if map
   end
 
   def query

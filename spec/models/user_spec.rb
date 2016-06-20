@@ -35,7 +35,7 @@ describe User do
   end
 
   before(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
 
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
@@ -49,14 +49,14 @@ describe User do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
     @user2.destroy
   end
@@ -1421,7 +1421,7 @@ describe User do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       # No need to really touch the DB for the permissions
       Table::any_instance.stubs(:add_read_permission).returns(nil)
 

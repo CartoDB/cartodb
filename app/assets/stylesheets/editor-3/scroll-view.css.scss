@@ -51,13 +51,6 @@
   height: 18px;
 }
 
-.ScrollView-shadow--left,
-.ScrollView-shadow--right {
-  top: 0;
-  bottom: 0;
-  width: 30px;
-}
-
 .ScrollView-shadow--top {
   top: 0;
   background-image: linear-gradient(-180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 87%);
@@ -66,18 +59,6 @@
 .ScrollView-shadow--bottom {
   bottom: 0;
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 87%);
-}
-
-.ScrollView-shadow--left {
-  @include background-horizontal(#FFF, rgba(255, 255, 255, 0));
-  left: 0;
-  // Overriding default background color
-  background-color: rgba(255, 255, 255, 0) !important;
-}
-
-.ScrollView-shadow--right {
-  @include background-horizontal(rgba(255, 255, 255, 0), #FFF);
-  right: 0;
 }
 
 .ScrollView-shadow.is-visible {

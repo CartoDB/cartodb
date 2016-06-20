@@ -6,7 +6,7 @@
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
-    "polygon-cluster": "Polygon cluster",
+    "moran-cluster": "Moran cluster",
     "kmeans": "Cluster"
   },
   "analysis-category": {
@@ -224,8 +224,8 @@
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
           },
-          "polygon-cluster": {
-            "title": "Polygon cluster",
+          "moran-cluster": {
+            "title": "Moran cluster",
             "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {

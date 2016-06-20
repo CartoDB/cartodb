@@ -2307,6 +2307,40 @@ describe User do
     end
   end
 
+  describe '#destroy' do
+    def create_full_data
+      user = FactoryGirl.create(:carto_user)
+      table = create_table(user_id: user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
+      visualization = table.table_visualization
+      return ::User[user.id], table, visualization
+    end
+
+    def check_deleted_data(user_id, table_id, visualization_id)
+      ::User[user_id].should be_nil
+      Carto::Visualization.exists?(visualization_id).should be_false
+      Carto::UserTable.exists?(table_id).should be_false
+    end
+
+    it 'destroys all related information' do
+      user, table, visualization = create_full_data
+
+      ::User[user.id].destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
+    end
+
+    it 'destroys all related information, even for viewer users' do
+      user, table, visualization = create_full_data
+      user.viewer = true
+      user.save
+      user.reload
+
+      user.destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
+    end
+  end
+
   protected
 
   def create_org(org_name, org_quota, org_seats)

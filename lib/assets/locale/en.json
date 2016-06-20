@@ -629,6 +629,16 @@
         }
       }
     },
+    "infowindow": {
+      "apply": "APPLY",
+      "html-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html."
+      }
+    },
     "style": {
       "types": {
         "none": "none",

@@ -8,7 +8,6 @@
 
 .StatsList-item {
   @include display-flex;
-  @include align-items(baseline);
   width: 294px;
   margin: 0 0 $baseSize * 3;
   box-sizing: border-box;
@@ -34,4 +33,8 @@
   border-radius: $baseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
+}
+
+.StatsList-style.is-hidden {
+  display: none;
 }

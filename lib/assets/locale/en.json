@@ -5,6 +5,8 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
+    "cluster": "Cluster",
+    "moran-cluster": "Moran cluster",
     "kmeans": "Cluster"
   },
   "analysis-category": {
@@ -210,17 +212,17 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "buffer": {
-            "title": "Buffer",
-            "desc": "Calculate the area of influence of a layer determined by distance."
-          },
           "trade-area": {
-            "title": "Trade Areas",
+            "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "moran-cluster": {
+            "title": "Moran cluster",
+            "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -541,6 +543,15 @@
           "color": "Color"
         }
       },
+      "labels": {
+        "title-label": "Labels"
+      },
+      "color": {
+        "title-label": "Color"
+      },
+      "image": {
+        "title-label": "Image"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",
@@ -564,6 +575,7 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
@@ -572,10 +584,12 @@
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
+        "permutations": "Permutations",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
@@ -585,8 +599,10 @@
         "time": "Time",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
+        "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
+        "weight-type": "Weight type",
         "workflow": "Workflow"
       },
       "infowindow": {
@@ -596,10 +612,21 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
-          "light": "Light",
-          "dark": "Dark",
-          "color": "Color",
-          "image": "Image"
+          "infowindow_light": "Light",
+          "infowindow_dark": "Dark",
+          "infowindow_light_header_blue": "Color",
+          "infowindow_header_with_image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
+      },
+      "tooltip": {
+        "style": {
+          "none": "None",
+          "tooltip_light": "Light",
+          "tooltip_dark": "Dark"
         },
         "items": {
           "title-label": "Show items",

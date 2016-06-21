@@ -8,12 +8,15 @@
 
   &,
   .ScrollView-wrapper {
+    @include display-flex();
+    @include flex-direction(column);
     @include flex(1);
     position: relative;
     margin-right: -24px;
     margin-left: -24px;
     padding-right: 24px;
     padding-left: 24px;
+    min-height: 0;
   }
 
   .ScrollView-content {
@@ -22,14 +25,33 @@
   }
 }
 
+.ScrollView--horizontal {
+
+  &,
+  & .ScrollView-wrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ScrollView-content {
+    padding: 0 0 18px;
+  }
+}
+
 .ScrollView-shadow {
-  display: none;
+  @include transition(opacity, 400ms);
+  @include opacity(0);
+  display: block;
   position: absolute;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.ScrollView-shadow--top,
+.ScrollView-shadow--bottom {
   right: -1px;
   left: -1px;
   height: 18px;
-  overflow: hidden;
-  z-index: 20;
 }
 
 .ScrollView-shadow--top {
@@ -42,21 +64,6 @@
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 87%);
 }
 
-.has-both-shadow {
-  .ScrollView-shadow--top,
-  .ScrollView-shadow--bottom {
-    display: block;
-  }
-}
-
-.has-top-shadow {
-  .ScrollView-shadow--top {
-    display: block;
-  }
-}
-
-.has-bottom-shadow {
-  .ScrollView-shadow--bottom {
-    display: block;
-  }
+.ScrollView-shadow.is-visible {
+  @include opacity(1);
 }

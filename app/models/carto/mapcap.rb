@@ -9,22 +9,25 @@ module Carto
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
 
-    before_save :generate_export_json
+    before_save :generate_export_json, :generate_ids_json
     after_commit :invalidate_visualization_cache
 
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_json_export(export_json)
 
-      regenerated_visualization.id = visualization.id
       regenerated_visualization.user = visualization.user
       regenerated_visualization.map.user = visualization.user
-      regenerated_visualization.map.layers.each do |layer|
-        layer.id = SecureRandom.uuid
+
+      regenerated_visualization.id = ids_json[:id]
+      regenerated_visualization.map.layers.each_with_index do |layer, index|
+        layer.id = ids_json[:layers][index].keys.first
         layer.maps = [regenerated_visualization.map]
 
-        layer.widgets.each_with_index do |widget, index|
-          widget.id = index
-          widget.layer_id = layer.id
+        layer.widgets.each_with_index do |widget, widget_index|
+          layer_id = layer.id
+
+          widget.id = ids_json[:layers][layer_id.to_sym][widget_index]
+          widget.layer_id = layer_id
         end
       end
 
@@ -35,6 +38,14 @@ module Carto
 
     def generate_export_json
       self.export_json = export_visualization_json_string(visualization_id, visualization.user)
+    end
+
+    def generate_ids_json
+      self.ids_json = {
+        id: visualization.id,
+        map_id: visualization.map.id,
+        layers: [visualization.layers.map { |layer| { "#{layer.id}": layer.widgets.map(&:id) } }]
+      }
     end
 
     def invalidate_visualization_cache

@@ -34,6 +34,10 @@ module Carto
       regenerated_visualization
     end
 
+    def ids_json
+      JSON.load(self[:ids_json]).with_indifferent_access
+    end
+
     private
 
     def generate_export_json
@@ -44,8 +48,8 @@ module Carto
       self.ids_json = {
         id: visualization.id,
         map_id: visualization.map.id,
-        layers: [visualization.layers.map { |layer| { "#{layer.id}": layer.widgets.map(&:id) } }]
-      }
+        layers: visualization.layers.map { |layer| { "#{layer.id}": layer.widgets.map(&:id) } }
+      }.to_json
     end
 
     def invalidate_visualization_cache

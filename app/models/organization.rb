@@ -140,8 +140,9 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-
     Organization.all.select do |o|
+        next unless o.check_consistency
+
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
 
@@ -161,11 +162,24 @@ class Organization < Sequel::Model
     end
   end
 
+  def check_consistency
+    if owner.nil?
+      CartoDB::Logger.error(
+        message: 'Organization without owner',
+        organization: name
+      )
+      false
+    else
+      true
+    end
+  end
+
   def get_api_calls(options = {})
     users.map{ |u| u.get_api_calls(options).sum }.sum
   end
 
   def get_geocoding_calls(options = {})
+    return if owner.nil?
     date_from, date_to = quota_dates(options)
     if owner.has_feature_flag?('new_geocoder_quota')
       get_organization_geocoding_data(self, date_from, date_to)
@@ -175,6 +189,7 @@ class Organization < Sequel::Model
   end
 
   def get_new_system_geocoding_calls(options = {})
+    return if owner.nil?
     date_to = (options[:to] ? options[:to].to_date : Date.current)
     date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
     get_organization_geocoding_data(self, date_from, date_to)

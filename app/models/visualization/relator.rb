@@ -8,20 +8,20 @@ require_relative '../layer'
 module CartoDB
   module Visualization
     class Relator
-      LAYER_SCOPES  = {
-                        base:             :user_layers,
-                        cartodb:          :data_layers,
-                        carto_and_torque: :carto_and_torque_layers,
-                        others:           :other_layers,
-                        named_map:        :named_maps_layers
-                      }
+      LAYER_SCOPES = {
+        base:             :user_layers,
+        cartodb:          :data_layers,
+        carto_and_torque: :carto_and_torque_layers,
+        others:           :other_layers,
+        named_map:        :named_maps_layers
+      }.freeze
 
-      INTERFACE     = %w{ overlays user table related_templates related_tables related_canonical_visualizations
-                          layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
-                          parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
-                          estimated_row_count actual_row_count }
+      INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
+                      layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
+                      parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
+                      estimated_row_count actual_row_count }.freeze
 
-      def initialize(map, attributes={})
+      def initialize(map, attributes = {})
         @id             = attributes.fetch(:id)
         @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)

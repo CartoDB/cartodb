@@ -20,6 +20,7 @@ $tableBorderColor: $cSecondaryLine;
   left: $baseSize * 2;
   overflow-x: auto;
   overflow-y: hidden;
+  background: $cWhite;
   z-index: 2;
 }
 .Table-head {

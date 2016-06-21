@@ -218,8 +218,8 @@ class Map < Sequel::Model
 
   def set_boundaries(bounds)
     # switch to (lat,lon) for the frontend
-    self.view_bounds_ne = "[#{result[:maxy]}, #{result[:maxx]}]"
-    self.view_bounds_sw = "[#{result[:miny]}, #{result[:minx]}]"
+    self.view_bounds_ne = "[#{bounds[:maxy]}, #{bounds[:maxx]}]"
+    self.view_bounds_sw = "[#{bounds[:miny]}, #{bounds[:minx]}]"
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

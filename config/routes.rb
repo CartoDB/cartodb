@@ -47,14 +47,16 @@ CartoDB::Application.routes.draw do
 
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
-    namespace :builder do
+    namespace :builder, path: '/' do
       # Visualizations
-      resources :visualizations, only: :show, path: '/', constraints: { id: /[0-z\.\-]+/ } do
+      resources :visualizations, only: :show, path: '/builder', constraints: { id: /[0-z\.\-]+/ } do
         namespace :public, path: '/' do
           match 'embed', to: 'embeds#show', via: :get
           match 'embed_protected', to: 'embeds#show_protected', via: :post
         end
       end
+
+      resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
     end
 
     namespace :editor do

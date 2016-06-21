@@ -20,13 +20,15 @@ module Carto
 
       regenerated_visualization.id = ids_json[:id]
       regenerated_visualization.map.layers.each_with_index do |layer, index|
-        layer.id = ids_json[:layers][index].keys.first
+        ids_json_layers = ids_json[:layers]
+
+        layer.id = ids_json_layers[index].keys.first
         layer.maps = [regenerated_visualization.map]
 
         layer.widgets.each_with_index do |widget, widget_index|
           layer_id = layer.id
 
-          widget.id = ids_json[:layers][layer_id.to_sym][widget_index]
+          widget.id = ids_json_layers[layer_id.to_sym][widget_index]
           widget.layer_id = layer_id
         end
       end

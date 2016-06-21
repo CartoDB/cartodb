@@ -4,9 +4,11 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon",
+    "cluster": "Cluster",
+    "intersection": "Intersection",
     "kmeans": "Cluster",
-    "intersection": "Intersection"
+    "moran-cluster": "Moran cluster",
+    "point-in-polygon": "Point in polygon",
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -226,6 +228,10 @@
           "intersection": {
             "title": "Intersection",
             "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+          },
+          "moran-cluster": {
+            "title": "Moran cluster",
+            "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -578,6 +584,7 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter-aggregate": "Filter or aggregate your results",
@@ -587,10 +594,12 @@
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
+        "permutations": "Permutations",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
@@ -600,8 +609,10 @@
         "time": "Time",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
+        "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
+        "weight-type": "Weight type",
         "workflow": "Workflow"
       },
       "infowindow": {

@@ -55,17 +55,17 @@ $tableBorderColor: $cSecondaryLine;
   background: none;
 }
 .Table-columnSorted {
-  @include transform(scale(0.6));
+  @include transform(scale(0.6, 0.6));
   color: $cBlue;
 }
 .Table-columnSorted.is-selected {
   color: $cAltText;
 }
 .Table-columnSorted--asc {
-  @include transform(rotate(-90deg));
+  @include transform(scale(0.6, 0.6) rotate(-90deg));
 }
 .Table-columnSorted--desc {
-  @include transform(rotate(90deg));
+  @include transform(scale(0.6, 0.6) rotate(90deg));
 }
 .Table-columnMenu {
   z-index: 10;

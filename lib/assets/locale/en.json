@@ -452,7 +452,7 @@
         "change-type": {
           "confirm": "ok, change it",
           "cancel": "cancel",
-          "desc": "Unconvertible data will be lost. Are you sure?",
+          "desc": "Maps using this column will be affected, and unconvertible data will be lost. Are you sure?",
           "error": "Error changing type of column %{columnName}: %{error}",
           "loading": "Changing the type of %{columnName} column...",
           "title": "%{columnName} column will change to %{newType}",
@@ -466,7 +466,7 @@
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete it",
-          "desc": "All your maps using this column could be affected, are you sure you want to delete it?",
+          "desc": "Maps using this column will be affected, are you sure you want to delete it?",
           "error": "Error deleting column %{columnName}: %{error}",
           "loading": "Removing your column %{columnName}...",
           "success": "Column %{columnName} deleted",

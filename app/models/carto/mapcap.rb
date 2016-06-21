@@ -22,8 +22,8 @@ module Carto
         layer.id = SecureRandom.uuid
         layer.maps = [regenerated_visualization.map]
 
-        layer.widgets.each do |widget|
-          widget.id = "patatini-#{SecureRandom.uuid}"
+        layer.widgets.each_with_index do |widget, index|
+          widget.id = index
           widget.layer_id = layer.id
         end
       end

@@ -1,8 +1,8 @@
 var AutoStyler = require('./auto-styler');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
-    var startingStyle = this.layer.get('meta').cartocss;
-    var originalWidth = startingStyle.match(/marker-width:.*ramp.*;/g).replace('marker-width:', '');
+    var startingStyle = this.layer.get('cartocss');
+    var originalWidth = startingStyle.match(/marker-width:.*;/g)[0].replace('marker-width:', '').replace(';', '');
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');
     var stylesByGeometry = this.STYLE_TEMPLATE;

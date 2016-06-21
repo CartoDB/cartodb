@@ -643,7 +643,7 @@ module CartoDB
       end
 
       def save_named_map
-        return if type == TYPE_REMOTE
+        return if type == TYPE_REMOTE || latest_mapcap
 
         Rails::Sequel.connection.after_commit do
           (get_named_map ? update_named_map : create_named_map) if carto_visualization
@@ -902,9 +902,11 @@ module CartoDB
       end
 
       def carto_visualization
-        latest_mapcap = Carto::Mapcap.where(visualization_id: id).order('created_at DESC').first
+        Carto::Visualization.where(id: id).first
+      end
 
-        latest_mapcap ? latest_mapcap.regenerate_visualization : Carto::Visualization.where(id: id).first
+      def latest_mapcap
+        Carto::Mapcap.where(visualization_id: id).order('created_at DESC').first
       end
     end
   end

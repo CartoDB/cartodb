@@ -208,7 +208,7 @@ describe Table do
       }
 
       # To forget about internals of zooming
-      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
+      ::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
 
       visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
       table = create_table(name: "epaminondas_pantulis", user_id: @user.id)

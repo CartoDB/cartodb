@@ -645,8 +645,12 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        Rails::Sequel.connection.after_commit do
-          (get_named_map ? update_named_map : create_named_map) if carto_visualization
+        unless @updating_named_maps
+          Rails::Sequel.connection.after_commit do
+            @updating_named_maps = false
+            (get_named_map ? update_named_map : create_named_map) if carto_visualization
+          end
+          @updating_named_maps = true
         end
       end
 

@@ -7,7 +7,7 @@
   <div class="WidgetList-inner js-inner">
     <div class="StatsList-header">
       <h3 class="u-ellipsis CDB-Text CDB-Size-medium u-bSpace--xl"><%- _t('editor.data.stats.add-widget') %></h3>
-      <a class="CDB-Text CDB-Size-small" href="#"><div class="StatsList-arrow CDB-Shape-Arrow is-blue u-iBlock  u-rSpace--m"></div> <%- _t('editor.data.stats.style') %></a>
+      <a class="StatsList-style CDB-Text CDB-Size-small js-style <% if (!isSelected) { %> is-hidden <% } %>" href="#"><div class="StatsList-arrow CDB-Shape-Arrow is-blue u-iBlock  u-rSpace--m"></div> <%- _t('editor.data.stats.style') %></a>
     </div>
     <div class="StatsList-details u-bSpace--xl">
       <h2 class="u-ellipsis CDB-Text CDB-Size-large u-rSpace--m"><%- column %></h2>

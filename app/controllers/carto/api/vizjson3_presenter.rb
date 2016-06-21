@@ -442,7 +442,9 @@ module Carto
         visible
       ).freeze
 
-      INFOWINDOW_AND_TOOLTIP_KEYS = %w(fields template_name template alternative_names width maxHeight).freeze
+      INFOWINDOW_AND_TOOLTIP_KEYS = %w(
+        fields template_name template alternative_names width maxHeight headerColor
+      ).freeze
 
       def initialize(layer, options = {}, configuration = {}, decoration_data = {})
         @layer            = layer
@@ -528,11 +530,55 @@ module Carto
         return templated_element if !template.nil? && !template.empty?
 
         templated_sym = templated_element.deep_symbolize_keys
-        templated_element[:template] = get_template(
-          templated_sym[:template_name],
-          templated_sym[:template],
-          "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
+
+        old_template_name = templated_sym[:template_name]
+
+        new_template_name = NEW_TEMPLATES_MAP.fetch(old_template_name, old_template_name)
+
+        if new_template_name == INFOWINDOW_COLOR_TEMPLATE
+          templated_element[:template] = get_template(
+            new_template_name,
+            templated_sym[:template],
+            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/infowindow_light_header_blue.jst.mustache")
+
+          templated_element[:headerColor] = {
+            color: {
+              opacity: 1,
+              fixed: extract_color_from_old_template(templated_sym[:template_name])
+            }
+          }
+
+          templated_element[:template_name] = new_template_name
+        else
+          templated_element[:template] = get_template(
+            templated_sym[:template_name],
+            templated_sym[:template],
+            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
+        end
+
         templated_element
+      end
+
+      INFOWINDOW_COLOR_TEMPLATE = 'infowindow_color'.freeze
+
+      NEW_TEMPLATES_MAP = {
+        'infowindow_light' => 'infowindow_light',
+        'infowindow_dark' => 'infowindow_dark',
+        'infowindow_light_header_blue' => INFOWINDOW_COLOR_TEMPLATE,
+        'infowindow_light_header_yellow' => INFOWINDOW_COLOR_TEMPLATE,
+        'infowindow_light_header_orange' => INFOWINDOW_COLOR_TEMPLATE,
+        'infowindow_light_header_green' => INFOWINDOW_COLOR_TEMPLATE,
+        'infowindow_header_with_image' => 'infowindow_header_with_image'
+      }.freeze
+
+      COLOR_MAP = {
+        'blue' => '#35AAE5',
+        'green' => '#7FC97F',
+        'yellow' => '#E5C13D'
+      }.freeze
+
+      def extract_color_from_old_template(old_template_name)
+        COLOR_MAP.fetch(old_template_name.split('_').last, '#FABADA')
       end
 
       def get_template_name(name)

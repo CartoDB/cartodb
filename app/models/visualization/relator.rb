@@ -16,12 +16,12 @@ module CartoDB
                         named_map:        :named_maps_layers
                       }
 
-      INTERFACE     = %w{ overlays map user table related_templates related_tables related_canonical_visualizations
+      INTERFACE     = %w{ overlays user table related_templates related_tables related_canonical_visualizations
                           layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
                           parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
                           estimated_row_count actual_row_count }
 
-      def initialize(attributes={})
+      def initialize(map, attributes={})
         @id             = attributes.fetch(:id)
         @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)
@@ -32,6 +32,7 @@ module CartoDB
         @likes          = nil
         @prev_id        = attributes.fetch(:prev_id)
         @next_id        = attributes.fetch(:next_id)
+        @map            = map
       end
 
       # @return []
@@ -72,10 +73,6 @@ module CartoDB
 
       def overlays
         @overlays ||= Carto::Overlay.where(visualization_id: id).all
-      end
-
-      def map
-        @map ||= ::Map.where(id: map_id).first
       end
 
       def user
@@ -157,7 +154,7 @@ module CartoDB
         likes
       end
 
-      attr_reader :id, :map_id
+      attr_reader :id, :map_id, :map
 
       private
 

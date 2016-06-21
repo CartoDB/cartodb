@@ -670,6 +670,10 @@ module CartoDB
         related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
       end
 
+      def map
+        @map ||= ::Map.where(id: map_id).first
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -849,7 +853,7 @@ module CartoDB
       end
 
       def relator
-        @relator ||= Relator.new(attributes)
+        Relator.new(map, attributes)
       end
 
       def name_checker

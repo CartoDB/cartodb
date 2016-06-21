@@ -152,7 +152,7 @@ module CartoDB
       data_import
     end
 
-    def delete_user_data user
+    def delete_user_data(user)
       user.tables.destroy
       user.maps_dataset.destroy
       user.layers_dataset.destroy

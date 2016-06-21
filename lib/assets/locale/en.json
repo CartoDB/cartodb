@@ -5,6 +5,8 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "point-in-polygon": "Point in polygon",
+    "cluster": "Cluster",
+    "moran-cluster": "Moran cluster",
     "kmeans": "Cluster"
   },
   "analysis-category": {
@@ -221,6 +223,10 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "moran-cluster": {
+            "title": "Moran cluster",
+            "desc": "Finds areas which have similar values and also outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -566,6 +572,15 @@
           "color": "Color"
         }
       },
+      "labels": {
+        "title-label": "Labels"
+      },
+      "color": {
+        "title-label": "Color"
+      },
+      "image": {
+        "title-label": "Image"
+      },
       "menu-tab-pane-labels": {
         "data": "Data",
         "analyses": "Analyses",
@@ -589,6 +604,7 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "input": "Input",
@@ -597,10 +613,12 @@
         "kilometers": "km",
         "meters": "m",
         "miles": "mi",
+        "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
+        "permutations": "Permutations",
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
@@ -610,8 +628,10 @@
         "time": "Time",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
+        "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
+        "weight-type": "Weight type",
         "workflow": "Workflow"
       },
       "infowindow": {
@@ -823,11 +843,8 @@
           "no": "No"
         },
         "aggregation-options": {
-          "count": "Count",
-          "sum": "SUM",
-          "avg": "AVG",
-          "min": "MIN",
-          "max": "MAX"
+          "count": "COUNT",
+          "sum": "SUM"
         }
       }
     }

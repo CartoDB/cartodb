@@ -95,6 +95,10 @@ module Carto
       !base?
     end
 
+    def carto_layer?
+      kind == 'carto'
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end
@@ -105,6 +109,21 @@ module Carto
 
     def visualization
       map.visualization
+    end
+
+    def wrapped_sql(user)
+      query = options[:query]
+
+      sql = if query.present?
+              query
+            else
+              "SELECT * FROM #{qualified_table_name(user)}"
+            end
+
+      query_wrapper = options[:query_wrapper]
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+
+      sql
     end
 
     private

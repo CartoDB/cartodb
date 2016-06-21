@@ -18,19 +18,19 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
   # let(:params) { { api_key: @user.api_key } }
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     host! "#{@user.username}.localhost.lan"
   end
 
   after(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data @user
   end
 
@@ -70,9 +70,9 @@ describe Api::Json::VisualizationsController do
 
       table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance
-                                          .stubs(:create)
-                                          .raises(CartoDB::NamedMapsWrapper::HTTPResponseError)
+      Carto::NamedMaps::Api.any_instance
+                           .stubs(:create)
+                           .raises('manolos')
 
       put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
       {

@@ -8,7 +8,6 @@
 
 .StatsList-item {
   @include display-flex;
-  @include align-items(baseline);
   width: 294px;
   margin: 0 0 $baseSize * 3;
   box-sizing: border-box;

@@ -15,7 +15,7 @@ describe "Geocodings API" do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   let(:params) { { :api_key => @user.api_key } }

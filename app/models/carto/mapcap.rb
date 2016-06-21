@@ -28,7 +28,7 @@ module Carto
         layer.widgets.each_with_index do |widget, widget_index|
           layer_id = layer.id
 
-          widget.id = ids_json_layers[layer_id.to_sym][widget_index]
+          widget.id = ids_json_layers[index].values.flatten[widget_index]
           widget.layer_id = layer_id
         end
       end

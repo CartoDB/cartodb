@@ -69,6 +69,7 @@ module CartoDB
       user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      user.viewer                = attributes[:viewer] || false
       if attributes[:organization_id]
         user.organization_id = attributes[:organization_id]
       end

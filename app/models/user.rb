@@ -209,6 +209,10 @@ class User < Sequel::Model
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
     end
+
+    if viewer
+      self.quota_in_bytes = 0 unless quota_in_bytes == 0
+    end
   end
 
   def twitter_datasource_enabled

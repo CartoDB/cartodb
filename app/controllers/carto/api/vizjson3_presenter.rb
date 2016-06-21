@@ -536,15 +536,19 @@ module Carto
         new_template_name = NEW_TEMPLATES_MAP.fetch(old_template_name, old_template_name)
 
         if new_template_name == INFOWINDOW_COLOR_TEMPLATE
+          fixed_color = extract_color_from_old_template(templated_sym[:template_name])
+
+          template_content_path = "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/infowindow_color.jst.mustache"
+
           templated_element[:template] = get_template(
             new_template_name,
             templated_sym[:template],
-            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/infowindow_light_header_blue.jst.mustache")
+            template_content_path).gsub('#35AAE5', fixed_color)
 
           templated_element[:headerColor] = {
             color: {
               opacity: 1,
-              fixed: extract_color_from_old_template(templated_sym[:template_name])
+              fixed: fixed_color
             }
           }
 
@@ -574,6 +578,7 @@ module Carto
       COLOR_MAP = {
         'blue' => '#35AAE5',
         'green' => '#7FC97F',
+        'orange' => '#E68165',
         'yellow' => '#E5C13D'
       }.freeze
 

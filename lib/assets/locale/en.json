@@ -443,6 +443,13 @@
     },
     "table": {
       "columns": {
+        "confirmation": {
+          "title": "You are about to delete column %{columnName}",
+          "desc": "Are you sure you want to delete it?",
+          "loading": "Removing your column %{columnName}...",
+          "confirm": "ok, delete",
+          "cancel": "cancel"
+        },
         "create": {
           "loading": "Adding new column...",
           "error": "Error adding new column: %{error}",
@@ -461,10 +468,10 @@
           "delete": "Delete this column..."
         },
         "types": {
-          "boolean": "boolean",
-          "date": "date",
-          "number": "number",
-          "string": "string"
+          "boolean": "Boolean",
+          "date": "Date",
+          "number": "Number",
+          "string": "String"
         }
       },
       "rows": {

@@ -66,6 +66,7 @@ $tableBorderColor: $cSecondaryLine;
   border: 1px solid $cBlue;
   border-radius: 2px;
   background: $cWhite;
+  box-sizing: border-box;
 }
 
 .Table-columnSorted--asc {

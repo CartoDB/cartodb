@@ -475,7 +475,7 @@
         "rename": {
           "cancel": "cancel",
           "confirm": "ok, rename it",
-          "desc": "All your maps using this column will be affected, are you sure you want to rename it?",
+          "desc": "Maps using this column will be affected, are you sure you want to rename it?",
           "error": "Error renaming column %{columnName} to %{newName}: %{error}",
           "loading": "Renaming your column %{columnName} to %{newName}...",
           "success": "Column %{columnName} renamed to %{newName}",

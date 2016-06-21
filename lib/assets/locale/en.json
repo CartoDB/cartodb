@@ -616,10 +616,21 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
-          "light": "Light",
-          "dark": "Dark",
-          "color": "Color",
-          "image": "Image"
+          "infowindow_light": "Light",
+          "infowindow_dark": "Dark",
+          "infowindow_light_header_blue": "Color",
+          "infowindow_header_with_image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
+      },
+      "tooltip": {
+        "style": {
+          "none": "None",
+          "tooltip_light": "Light",
+          "tooltip_dark": "Dark"
         },
         "items": {
           "title-label": "Show items",

@@ -7,6 +7,7 @@
   @import "../table/table-sprite";
   @import "../old_elements/progress-bar";
   @import "../variables/colors";
+  @import "../variables/mixins";
 
   @-webkit-keyframes highlight-fade {
     0%   { background: none; }
@@ -496,9 +497,6 @@ div.table {
 
     // Sync table
     &.synced {
-      tbody tr td div.cell {
-        color:rgba(#666666,.5);
-      }
       div.shadow {
         top:144px;
       }
@@ -669,7 +667,7 @@ div.table {
 
 div.order_selector {
   position:absolute;
-  top:-3px;
+  top:-1px;
   right:0;
   a.asc {
     @include border-left-radius(2px);
@@ -681,24 +679,13 @@ div.order_selector {
   }
   a.asc, a.desc {
     @include inline-block();
+    @include bb_button_style;
     position:relative;
-    margin-top: 13px;
-    padding:0;
-    padding: (21px - 9px)/2 8px;
-    background-color: $btn_background_normal;
-    box-shadow: $button_shadow;
-    color: $Grey1;
+    padding:0px 6px;
     text-transform: uppercase;
-    font-weight: bold;
     font-size: 9px;
-    &:hover {
-    
-      background-color: $btn_background_hover;
-      box-shadow: $button_shadow_hover;
-    }
     &.selected {
       background-color: $btn_background_selected;
-      box-shadow: $button_shadow;
       cursor: default;
     }
   }

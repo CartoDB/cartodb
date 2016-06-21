@@ -652,6 +652,7 @@ module CartoDB
           end
           @updating_named_maps = true
         end
+        true
       end
 
       def get_named_map

@@ -48,10 +48,26 @@ $tableBorderColor: $cSecondaryLine;
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
 }
+
+
 .Table-headItemName.is-disabled {
+  height: auto;
+  margin: 0;
+  padding: 0;
   border: none;
+  border-radius: 0;
   background: none;
+  box-sizing: border-box;
 }
+.Table-headItemName {
+  height: 28px;
+  margin: -6px 0 -5px -6px;
+  padding: 5px;
+  border: 1px solid $cBlue;
+  border-radius: 2px;
+  background: $cWhite;
+}
+
 .Table-columnSorted--asc {
   @include transform(rotate(-90deg));
 }

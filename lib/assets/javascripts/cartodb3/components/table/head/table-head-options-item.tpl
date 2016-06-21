@@ -3,10 +3,20 @@
     <p class="CDB-Text CDB-Size-medium"><%- name %></p>
     <div class="u-flex">
       <button class="js-asc">
-        <i class="CDB-IconFont CDB-IconFont-arrowNext"></i>
+        <i class="CDB-IconFont
+          CDB-IconFont-arrowNext
+          Table-columnSorted
+          Table-columnSorted--asc
+          <% if (isOrderBy && sortBy === 'asc') { %>is-selected<% } %>
+        "></i>
       </button>
       <button class="js-desc">
-        <i class="CDB-IconFont CDB-IconFont-arrowNext"></i>
+        <i class="CDB-IconFont
+          CDB-IconFont-arrowNext
+          Table-columnSorted
+          Table-columnSorted--desc
+          <% if (isOrderBy && sortBy === 'desc') { %>is-selected<% } %>
+        "></i>
       </button>
     </div>
   </div>

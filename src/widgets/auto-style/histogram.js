@@ -31,7 +31,7 @@ var HistogramAutoStyler = AutoStyler.extend({
       if (shape === 'F') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset3, {{bins}})), quantiles');
       } else if (shape === 'L' || shape === 'J') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)');
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headtails)');
       } else if (shape === 'A') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles');
       } else if (shape === 'C' || shape === 'U') {
@@ -44,7 +44,7 @@ var HistogramAutoStyler = AutoStyler.extend({
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}})), quantiles')
                      .replace('{{markerWidth}}', '7');
       } else if (shape === 'L' || shape === 'J') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headstails)')
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headtails)')
                      .replace('{{markerWidth}}', '7');
       } else if (shape === 'A') {
         style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')

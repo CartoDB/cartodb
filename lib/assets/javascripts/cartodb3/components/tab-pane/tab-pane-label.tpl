@@ -1,1 +1,1 @@
-<%- label %><% if (typeof selectedChild !== 'undefined') { %> <span class="CDB-NavSubmenu-status u-hintTextColor"><%- selectedChild %></span><% } %>
+<%- label %><% if (selectedChild) { %> <span class="CDB-NavSubmenu-status u-hintTextColor"><%- selectedChild %></span><% } %>

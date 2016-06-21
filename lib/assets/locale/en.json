@@ -449,12 +449,14 @@
     },
     "table": {
       "columns": {
-        "confirmation": {
-          "title": "You are about to delete column %{columnName}",
-          "desc": "Are you sure you want to delete it?",
-          "loading": "Removing your column %{columnName}...",
-          "confirm": "ok, delete",
-          "cancel": "cancel"
+        "change-type": {
+          "confirm": "ok, change it",
+          "cancel": "cancel",
+          "desc": "Unconvertible data will be lost. Are you sure?",
+          "error": "Error changing type of column %{columnName}: %{error}",
+          "loading": "Changing the type of %{columnName} column...",
+          "title": "%{columnName} column will change to %{newType}",
+          "success": "Column %{columnName} changed to %{newType}"
         },
         "create": {
           "loading": "Adding new column...",
@@ -462,9 +464,22 @@
           "success": "Column %{columnName} added"
         },
         "destroy": {
-          "loading": "Deleting column...",
+          "cancel": "cancel",
+          "confirm": "ok, delete it",
+          "desc": "All your maps using this column could be affected, are you sure you want to delete it?",
           "error": "Error deleting column %{columnName}: %{error}",
-          "success": "Column %{columnName} deleted"
+          "loading": "Removing your column %{columnName}...",
+          "success": "Column %{columnName} deleted",
+          "title": "You are about to delete column %{columnName}"
+        },
+        "rename": {
+          "cancel": "cancel",
+          "confirm": "ok, rename it",
+          "desc": "All your maps using this column will be affected, are you sure you want to rename it?",
+          "error": "Error renaming column %{columnName} to %{newName}: %{error}",
+          "loading": "Renaming your column %{columnName} to %{newName}...",
+          "success": "Column %{columnName} renamed to %{newName}",
+          "title": "You are about to rename column %{columnName} to %{newName}"
         },
         "options": {
           "order": "Order",

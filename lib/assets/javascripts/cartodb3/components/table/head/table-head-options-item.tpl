@@ -1,41 +1,42 @@
 <% if (val === 'order') { %>
-  <div class="u-flex u-justifySpace">
+  <div class="u-flex u-justifySpace CDB-ListDecoration-itemLink">
     <p class="CDB-Text CDB-Size-medium"><%- name %></p>
-    <div class="u-flex">
-      <button class="js-asc">
-        <i class="CDB-IconFont
-          CDB-IconFont-arrowNext
+    <ul class="u-flex">
+      <li class="js-asc">
+        <i class="CDB-Text CDB-IconFont
+          CDB-IconFont-arrowNext u-actionTextColor
           Table-columnSorted
           Table-columnSorted--asc
-          <% if (isOrderBy && sortBy === 'asc') { %>is-selected<% } %>
+           <% if (isOrderBy && sortBy === 'asc') { %>is-disabled<% } %>
+           <% if (isOrderBy && sortBy === 'desc') { %>is-semibold<% } %>
         "></i>
-      </button>
-      <button class="js-desc">
-        <i class="CDB-IconFont
-          CDB-IconFont-arrowNext
+      </li>
+      <li class="js-desc u-lSpace--xl">
+        <i class="CDB-Text CDB-IconFont
+          CDB-IconFont-arrowNext u-actionTextColor
           Table-columnSorted
           Table-columnSorted--desc
-          <% if (isOrderBy && sortBy === 'desc') { %>is-selected<% } %>
+           <% if (isOrderBy && sortBy === 'desc') { %>is-disabled<% } %>
+           <% if (isOrderBy && sortBy === 'asc') { %>is-semibold<% } %>
         "></i>
-      </button>
-    </div>
+      </li>
+    </ul>
   </div>
 <% } else if (val === 'change') { %>
-  <button type="button" class="CDB-ListDecoration-itemLink u-actionTextColor u-flex
-    " title="<%- name %>">
+  <div class="CDB-ListDecoration-itemLink u-actionTextColor u-flex u-justifySpace u-alignCenter" title="<%- name %>">
     <span><%- name %></span>
-    <i class="CDB-IconFont CDB-IconFont-rArrow"></i>
-  </button>
+    <i class="CDB-Text CDB-Size-small is-semibold CDB-IconFont CDB-IconFont-rArrowLight"></i>
+  </div>
 <% } else { %>
-  <button type="button" class="CDB-ListDecoration-itemLink
+  <div class="CDB-ListDecoration-itemLink
     <% if (isDestructive) { %>  u-alertTextColor <% } else { %> u-actionTextColor <% } %>
     <% if (val === 'change') { %> u-flex <% } %>
     " title="<%- name %>">
     <%- name %>
     <% if (val === 'change') { %>
       <span>
-        <i class="CDB-IconFont CDB-IconFont-rArrow"></i>
+        <i class="CDB-Text CDB-Size-small is-semibold CDB-IconFont CDB-IconFont-rArrowLight"></i>
       </span>
     <% } %>
-  </button>
+  </div>
 <% } %>

@@ -14,12 +14,10 @@ $tableBorderColor: $cSecondaryLine;
   @include display-flex();
   @include flex-direction(column);
   position: absolute;
-  top: 16px;
-  right: 16px;
-  bottom: 16px;
-  left: 16px;
-  border-radius: $halfBaseSize;
-  background: $cThirdBackground;
+  top: $baseSize * 2;
+  right: $baseSize * 2;
+  bottom: $baseSize * 2;
+  left: $baseSize * 2;
   overflow-x: auto;
   overflow-y: hidden;
   z-index: 2;
@@ -35,7 +33,7 @@ $tableBorderColor: $cSecondaryLine;
   background: $cThirdBackground;
 }
 .Table-headItem.is-highlighted {
-  background: $cMainLine;
+  background: $cSecondaryLine;
 }
 .Table-headItemInfo {
   margin-top: 2px;
@@ -50,22 +48,31 @@ $tableBorderColor: $cSecondaryLine;
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
 }
+
+
 .Table-headItemName.is-disabled {
+  height: auto;
+  margin: 0;
+  padding: 0;
   border: none;
+  border-radius: 0;
   background: none;
+  box-sizing: border-box;
 }
-.Table-columnSorted {
-  @include transform(scale(0.6, 0.6));
-  color: $cBlue;
+.Table-headItemName {
+  height: 28px;
+  margin: -6px 0 -5px -6px;
+  padding: 5px;
+  border: 1px solid $cBlue;
+  border-radius: 2px;
+  background: $cWhite;
 }
-.Table-columnSorted.is-selected {
-  color: $cAltText;
-}
+
 .Table-columnSorted--asc {
-  @include transform(scale(0.6, 0.6) rotate(-90deg));
+  @include transform(rotate(-90deg));
 }
 .Table-columnSorted--desc {
-  @include transform(scale(0.6, 0.6) rotate(90deg));
+  @include transform(rotate(90deg));
 }
 .Table-columnMenu {
   z-index: 10;

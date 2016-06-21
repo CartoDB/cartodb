@@ -1,5 +1,5 @@
 <% if (val === 'order') { %>
-  <div class="u-flex u-justifySpace CDB-ListDecoration-itemLink">
+  <div class="u-flex u-justifySpace CDB-ListDecoration-itemLink js-order">
     <p class="CDB-Text CDB-Size-medium"><%- name %></p>
     <ul class="u-flex">
       <li class="js-asc">

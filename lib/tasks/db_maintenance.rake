@@ -1307,13 +1307,13 @@ namespace :cartodb do
       users.each do |u|
         begin
           if u.organization_owner? && !u.organization.nil?
-            u.organization.obs_general_quota = do_quota if u.organization.obs_general_quota.to_i = 0
-            u.organization.obs_snapshot_quota = do_quota if u.organization.obs_snapshot_quota.to_i = 0
+            u.organization.obs_general_quota = do_quota if u.organization.obs_general_quota.to_i == 0
+            u.organization.obs_snapshot_quota = do_quota if u.organization.obs_snapshot_quota.to_i == 0
             u.organization.save
             puts "Organization #{u.organization.name} processed OK"
           else
-            u.obs_general_quota = do_quota if u.obs_general_quota.to_i = 0
-            u.obs_snapshot_quota = do_quota if u.obs_snapshot_quota.to_i = 0
+            u.obs_general_quota = do_quota if u.obs_general_quota.to_i == 0
+            u.obs_snapshot_quota = do_quota if u.obs_snapshot_quota.to_i == 0
             u.save
             puts "User #{u.username} processed OK"
           end

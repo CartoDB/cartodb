@@ -27,7 +27,7 @@ module Carto
       end
 
       def destroy
-        @analysis.destroy
+        @mapcap.destroy
       end
 
       def show; end

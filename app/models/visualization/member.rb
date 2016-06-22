@@ -905,8 +905,12 @@ module CartoDB
         Carto::Visualization.where(id: id).first
       end
 
+      def mapcaps
+        Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
+      end
+
       def latest_mapcap
-        Carto::Mapcap.where(visualization_id: id).order('created_at DESC').first
+        mapcaps.first
       end
     end
   end

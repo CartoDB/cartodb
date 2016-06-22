@@ -21,7 +21,7 @@
       <%- _t('components.table.columns.rename.cancel') %>
     </span>
   </button>
-  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-delete">
+  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-confirm">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.columns.rename.confirm') %>
     </span>

@@ -241,6 +241,7 @@
  @mixin bb_button_style {
     background-color: $btn_background_normal;
     border-radius: 2px;
+    color: $Grey1; 
 
       &:hover {
         background-color: $btn_background_hover;

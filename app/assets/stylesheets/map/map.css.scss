@@ -572,6 +572,10 @@ div.map {
       top: 0;
       left: 0;
       margin:0;
+      background: url(../images/loader.svg) no-repeat center;
+      border-radius: 0px;
+      border:none;
+      box-shadow: none;
     }
   }
 

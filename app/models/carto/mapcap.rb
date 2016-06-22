@@ -15,8 +15,7 @@ module Carto
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_json_export(export_json)
 
-      regenerated_visualization.user = visualization.user
-      regenerated_visualization.map.user = visualization.user
+      regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
 
       repopulate_ids(regenerated_visualization)
     end

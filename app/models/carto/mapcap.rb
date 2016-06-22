@@ -18,22 +18,7 @@ module Carto
       regenerated_visualization.user = visualization.user
       regenerated_visualization.map.user = visualization.user
 
-      regenerated_visualization.id = ids_json[:id]
-      regenerated_visualization.map.layers.each_with_index do |layer, index|
-        ids_json_layers = ids_json[:layers]
-
-        layer.id = ids_json_layers[index].keys.first
-        layer.maps = [regenerated_visualization.map]
-
-        layer.widgets.each_with_index do |widget, widget_index|
-          layer_id = layer.id
-
-          widget.id = ids_json_layers[index].values.flatten[widget_index]
-          widget.layer_id = layer_id
-        end
-      end
-
-      regenerated_visualization
+      repopulate_ids(regenerated_visualization)
     end
 
     def ids_json
@@ -52,6 +37,25 @@ module Carto
         map_id: visualization.map.id,
         layers: visualization.layers.map { |layer| { "#{layer.id}": [widgets: layer.widgets.map(&:id)] } }
       }.to_json
+    end
+
+    def repopulate_ids(regenerated_visualization)
+      regenerated_visualization.id = ids_json[:id]
+      regenerated_visualization.map.layers.each_with_index do |layer, index|
+        ids_json_layers = ids_json[:layers]
+
+        layer.id = ids_json_layers[index].keys.first
+        layer.maps = [regenerated_visualization.map]
+
+        layer.widgets.each_with_index do |widget, widget_index|
+          layer_id = layer.id
+
+          widget.id = ids_json_layers[index].values.flatten[widget_index]
+          widget.layer_id = layer_id
+        end
+      end
+
+      regenerated_visualization
     end
 
     def invalidate_visualization_cache

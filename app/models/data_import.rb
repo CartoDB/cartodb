@@ -705,7 +705,7 @@ class DataImport < Sequel::Model
     log.append 'After importer run'
 
     store_results(importer, connector)
-    importer.nil? ? false : importer.success?
+    importer.success?
   end
 
   # Note: Assumes that if importer is nil an error happened

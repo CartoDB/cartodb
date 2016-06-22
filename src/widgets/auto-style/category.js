@@ -3,12 +3,16 @@ var _ = require('underscore');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var preserveWidth = true;
-    var startingStyle = this.layer.get('cartocss');
-    var originalWidth = startingStyle.match(/marker-width:.*;/g);
-    if (originalWidth.length > 1) {
-      preserveWidth = false;
-    } else {
-      originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
+    var startingStyle = this.layer.get && this.layer.get('cartocss');
+    if (startingStyle) {
+      var originalWidth = startingStyle.match(/marker-width:.*;/g);
+      if (originalWidth) {
+        if (originalWidth.length > 1) {
+          preserveWidth = false;
+        } else {
+          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
+        }
+      }
     }
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');

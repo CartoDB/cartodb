@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.0",
+  "version": "3.27.11",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1081,9 +1081,9 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.12.0",
-      "from": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.12.0.tgz",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.12.0.tgz"
+      "version": "0.14.0",
+      "from": "camshaft-reference@0.14.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.14.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",

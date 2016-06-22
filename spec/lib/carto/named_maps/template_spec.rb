@@ -162,7 +162,6 @@ module Carto
 
           describe 'with analyses' do
             before(:all) do
-              @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
               @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
               @visualization.reload
 
@@ -174,7 +173,8 @@ module Carto
 
             after(:all) do
               @analysis.destroy
-              @carto_layer.destroy
+              @carto_layer.options.delete(:source)
+              @carto_layer.save
               @visualization.reload
               @template_hash = nil
             end

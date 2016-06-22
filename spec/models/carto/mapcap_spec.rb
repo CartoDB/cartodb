@@ -65,7 +65,7 @@ describe Carto::Mapcap do
         @ids_json_layers.should_not be_empty
       end
 
-      it 'should contain layer ids' do
+      it 'should contain layer ids and in the right order' do
         @ids_json_layers.count.should eq @visualization.layers.count
 
         @ids_json_layers.each_with_index do |layer, index|
@@ -89,7 +89,7 @@ describe Carto::Mapcap do
           @ids_json_layers = nil
         end
 
-        it 'should contain widgets on correct layers' do
+        it 'should contain widgets only for layers with widgets and in the right order' do
           @visualization.layers.each_with_index do |layer, index|
             @ids_json_layers[index][:widgets].each_with_index do |widget_id, widget_index|
               widget_id.should eq layer.widgets[widget_index].id
@@ -98,9 +98,6 @@ describe Carto::Mapcap do
         end
       end
     end
-  end
-
-  describe '#populate_ids' do
   end
 
   describe '#regenerate_visualization' do

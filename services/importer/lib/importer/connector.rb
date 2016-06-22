@@ -49,15 +49,7 @@ module CartoDB
         channel, conn_str = connector_source.split(':')
         raise InvalidChannelError.new(channel, @user) unless channel.casecmp('odbc') == 0
         @conn_str = conn_str
-        # TODO: parser params properly, make param names lowercase
-        @params = Hash[@conn_str.split(';').map { |p| p.split('=').map(&:strip) }]
-        # Temporary hack to allow equal signs in parameter values (e.g. sql_query):
-        # the equal sign should be codified as .eq.
-        @params = Hash[@params.map { |k, v| [k, v.gsub('.eq.', '=').gsub('.sc.', ';')] }]
-        # TODO: use IMPORT FOREIGH SCHEMA with query options to create table
-        # and thus avoid the need for the columns.
-        @columns = @params.delete 'columns'
-        @columns = @columns.split(',') if @columns
+        extract_params
         validate_params!
         @schema = @user.database_schema
         @results = []
@@ -124,6 +116,33 @@ module CartoDB
 
       def table_params
         @params.except(*SERVER_OPTIONS)
+      end
+
+      PARAM_SEP_TOKENS = {
+        '.eq.' => '=',
+        '.sc.' => ';'
+      }
+
+      # Parse connection string in @conn_str and extract @params and @columns
+      def extract_params
+        # Convert into hash form: "p=v;..." -> { 'p' => v, ...}
+        # TODO: parser params properly, make param names lowercase
+        @params = Hash[@conn_str.split(';').map { |p| p.split('=').map(&:strip) }]
+
+        # Decode special tokens for the separator chars used.
+        # (this is to allow its use in parameters such as sql_query)
+        @params.each do |key, value|
+          PARAM_SEP_TOKENS.each do |token, symbol|
+            value = value.gsub(token, symbol)
+          end
+          @params[key] = value
+        end
+
+        # Extract columns of the result table from the parameters
+        # Column definitions are expected in SQL syntax, e.g.
+        #     columns=id int, name text
+        @columns = @params.delete 'columns'
+        @columns = @columns.split(',').map(&:strip) if @columns
       end
 
       def validate_params!

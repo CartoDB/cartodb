@@ -97,12 +97,32 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-left: 4px;
   height: 18px;
   background: #8EB83F;
-  border-radius: 35px;
+  border-radius: 5px;
   font-size: $sFontSize-smaller;
   line-height: 18px;
   color: white;
   text-transform: uppercase;
   text-align: center;
+}
+.UserRoleIndicator {
+  display: inline-block;
+  padding: 0 8px;
+  margin-left: 4px;
+  height: 18px;
+  background: white;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  font-size: $sFontSize-smaller;
+  line-height: 18px;
+  text-transform: uppercase;
+  text-align: center;
+}
+.UserRoleIndicator.Builder {
+  color: #2E3C43;
+}
+.UserRoleIndicator.Viewer {
+  color: #979EA1;
 }
 .OrganizationList-userInfoData {
   @include display-flex();

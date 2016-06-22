@@ -25,6 +25,7 @@ module Carto
           quota_in_bytes:   @user.quota_in_bytes,
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
+          viewer:           @user.viewer,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count
         }
@@ -43,7 +44,8 @@ module Carto
           id:               @user.id,
           username:         @user.username,
           avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url
+          base_url:         @user.public_url,
+          viewer:           @user.viewer
         }
 
         if @options[:fetch_groups] == true
@@ -75,6 +77,7 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
+          viewer: @user.viewer,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,

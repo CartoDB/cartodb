@@ -518,16 +518,13 @@
           "success": "New row added"
         },
         "destroy": {
-          "loading": "Deleting row...",
-          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
-          "success": "Row with cartodb_id %{cartodb_id} deleted"
-        },
-        "confirmation": {
-          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
-          "desc": "Are you sure you want to delete it?",
-          "loading": "Removing your row...",
+          "cancel": "cancel",
           "confirm": "ok, delete",
-          "cancel": "cancel"
+          "desc": "Are you sure you want to delete it?",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
+          "success": "Row with cartodb_id %{cartodb_id} deleted",
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
         },
         "paginator": {
           "error": "There was an error with pagination: %{error}",

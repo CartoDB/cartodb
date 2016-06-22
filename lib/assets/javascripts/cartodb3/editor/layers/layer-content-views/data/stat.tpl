@@ -1,4 +1,4 @@
-<div class="StatsList-item">
+<div class="StatsList-item <% if (isHidden) { %>is-hidden<% } %>">
   <div class="WidgetList-option">
     <input class="CDB-Checkbox js-checkbox" type="checkbox" <% if (isSelected) { %>checked="checked"<% } %> />
     <span class="u-iBlock CDB-Checkbox-face"></span>

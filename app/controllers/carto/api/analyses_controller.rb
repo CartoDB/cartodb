@@ -63,14 +63,6 @@ module Carto
         analysis_definition
       end
 
-      def json_post(raw_post = request.raw_post)
-        @json_post ||= (raw_post.present? ? JSON.parse(raw_post) : nil)
-      rescue => e
-        # Malformed JSON is not our business
-        CartoDB.notify_warning_exception(e)
-        raise UnprocesableEntityError.new("Malformed JSON: #{raw_post}")
-      end
-
       def load_visualization
         visualization_id = params[:visualization_id]
 

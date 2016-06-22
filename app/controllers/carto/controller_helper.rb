@@ -35,6 +35,13 @@ module Carto
     end
   end
 
+  def json_post(raw_post = request.raw_post)
+    @json_post ||= (raw_post.present? ? JSON.parse(raw_post) : nil)
+  rescue => exception
+    CartoDB.notify_warning_exception(exception)
+    raise Carto::UnprocesableEntityError.new("Malformed JSON: #{raw_post}")
+  end
+
   module ControllerHelper
     include Carto::UUIDHelper
 

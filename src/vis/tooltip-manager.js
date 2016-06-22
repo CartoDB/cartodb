@@ -16,6 +16,7 @@ TooltipManager.prototype.manage = function (mapView, map) {
   this._map.layers.bind('reset', function (layers) {
     layers.each(this._addTooltipForLayer, this);
   }, this);
+  this._map.layers.each(this._addTooltipForLayer, this);
   this._map.layers.bind('add', this._addTooltipForLayer, this);
 };
 

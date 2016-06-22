@@ -30,7 +30,28 @@ describe('src/vis/infowindow-manager.js', function () {
     };
   });
 
-  it('should add a new infowindow view to the map view when new layers are reseted', function () {
+  it('should add a new infowindow view to the map view when new layers were previously reset', function () {
+    spyOn(this.mapView, 'addInfowindow');
+
+    var layer = new CartoDBLayer({
+      infowindow: {
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }]
+      }
+    });
+
+    this.map.layers.reset([ layer ]);
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    expect(this.mapView.addInfowindow).toHaveBeenCalled();
+  });
+
+  it('should add a new infowindow view to the map view when new layers are reset', function () {
     spyOn(this.mapView, 'addInfowindow');
 
     var layer = new CartoDBLayer({

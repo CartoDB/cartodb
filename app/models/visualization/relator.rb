@@ -23,7 +23,6 @@ module CartoDB
 
       def initialize(map, attributes = {})
         @id             = attributes.fetch(:id)
-        @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
@@ -80,8 +79,8 @@ module CartoDB
       end
 
       def table
-        return nil if map_id.nil?
-        @table ||= ::UserTable.from_map_id(map_id).try(:service)
+        return nil if map.nil?
+        @table ||= ::UserTable.from_map_id(map.id).try(:service)
       end
 
       def estimated_row_count
@@ -154,7 +153,7 @@ module CartoDB
         likes
       end
 
-      attr_reader :id, :map_id, :map
+      attr_reader :id, :map
 
       private
 

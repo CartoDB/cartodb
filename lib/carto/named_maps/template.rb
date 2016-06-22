@@ -152,11 +152,14 @@ module Carto
           options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
-        interactivity = interactivity(layer)
-        attributes = attributes(layer)
+        layer_infowindow = layer.infowindow
+        layer_tooltip = layer.tooltip
 
-        options[:interactivity] = interactivity if interactivity
-        options[:attributes] = attributes if attributes
+        click_fields = layer_infowindow['fields'] if layer_infowindow
+        hover_fields = layer_tooltip['fields'] if layer_tooltip
+
+        options[:interactivity] = interactivity(click_fields, hover_fields) if click_fields || hover_fields
+        options[:attributes] = attributes(click_fields) if click_fields
 
         options
       end
@@ -165,23 +168,17 @@ module Carto
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
       end
 
-      def interactivity(layer)
-        layer_infowindow = layer.infowindow
-        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
+      def interactivity(click_fields, hover_fields)
+        interactivity = []
 
-        layer_tooltip = layer.tooltip
-        layer_tooltip_fields = layer_tooltip['fields'] if layer_tooltip
+        interactivity << 'cartodb_id' unless click_fields.empty?
+        interactivity << hover_fields.map { |field| field.fetch('name') } unless hover_fields.empty?
 
-        interactivity = layer_infowindow_fields.map { |field| field.fetch('name') } +
-                        layer_tooltip_fields.map { |field| field.fetch('name') }
-
-        interactivity.uniq
+        interactivity.join(',')
       end
 
-      def attributes(layer)
-        interactivity = interactivity(layer)
-
-        { id: 'cartodb_id', columns: interactivity } unless interactivity.empty?
+      def attributes(click_fields)
+        { id: 'cartodb_id', columns: click_fields.map { |field| field.fetch('name') } } unless click_fields.empty?
       end
 
       def dataviews

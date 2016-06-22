@@ -171,8 +171,8 @@ module Carto
       def interactivity(click_fields, hover_fields)
         interactivity = []
 
-        interactivity << 'cartodb_id' unless click_fields.empty?
-        interactivity << hover_fields.map { |field| field.fetch('name') } unless hover_fields.empty?
+        interactivity << 'cartodb_id' if click_fields.present?
+        interactivity << hover_fields.map { |field| field.fetch('name') } if hover_fields.present?
 
         interactivity.join(',')
       end

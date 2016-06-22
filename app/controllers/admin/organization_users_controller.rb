@@ -20,13 +20,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def new
     @user = ::User.new
-    @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+    organization = current_user.organization
+    @user.quota_in_bytes = organization.unassigned_quota < 100.megabytes ? organization.unassigned_quota : 100.megabytes
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
     @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
     @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+
+    @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
 
     respond_to do |format|
       format.html { render 'new' }
@@ -61,7 +64,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # Validate password first, so nicer errors are displayed
     model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
 
-    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
+    raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}") unless model_validation_ok
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
@@ -127,7 +130,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     if attributes[:password].present? || attributes[:password_confirmation].present?
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
-    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
+    raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}") unless model_validation_ok
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 

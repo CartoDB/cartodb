@@ -74,7 +74,7 @@
     </div>
     <div class="FormAccount-rowData">
       <div class="RadioButton">
-        <input class="RadioButtonInput js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.viewer ? '' : 'checked' %> required>
+        <input class="RadioButtonInput js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.viewer ? '' : 'checked' %> <%= current_user.organization.remaining_seats > 0 ? '' : 'disabled' %> required>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Builder (<%= current_user.organization.assigned_seats %>/<%= current_user.organization.seats %>)</label>
       </div>
@@ -86,7 +86,7 @@
   <div class="FormAccount-row">
     <div class="FormAccount-rowData">
       <div class="RadioButton">
-        <input class="RadioButtonInput js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer ? 'checked' : '' %> required>
+        <input class="RadioButtonInput js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer ? 'checked' : '' %> <%= current_user.organization.remaining_viewer_seats > 0 ? '' : 'disabled' %> required>
         <span class="RadioButtonInput-face"></span>
         <label class="RadioButton-label dark-color">Viewer (<%= current_user.organization.assigned_viewer_seats %>/<%= current_user.organization.viewer_seats %>)</label>
       </div>

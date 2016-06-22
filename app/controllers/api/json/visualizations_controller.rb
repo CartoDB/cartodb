@@ -54,6 +54,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                   export_service = Carto::VisualizationsExportService2.new
                   visualization_hash = export_service.export_visualization_json_hash(source, user)
                   visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+                  visualization_copy.name = name_candidate
                   Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
                   visualization_copy.id
                 end

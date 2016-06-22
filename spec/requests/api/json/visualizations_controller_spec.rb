@@ -101,7 +101,8 @@ describe Api::Json::VisualizationsController do
       bypass_named_maps
 
       @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
-      @visualization = Carto::Visualization.where(map_id: @map.id).first
+      @visualization = FactoryGirl.create(:derived_visualization, map_id: @map.id, user_id: @user.id,
+                                                                  privacy: Visualization::Member::PRIVACY_PRIVATE)
     end
 
     after(:each) do
@@ -127,10 +128,7 @@ describe Api::Json::VisualizationsController do
     it "duplicates someone else's map if has at least read permission to it" do
       new_name = @visualization.name + ' patatas'
 
-      CartoDB::Visualization::Member.any_instance
-                                    .stubs(:has_permission?)
-                                    .with(@other_user, Visualization::Member::PERMISSION_READONLY)
-                                    .returns(true)
+      Carto::Visualization.any_instance.stubs(:is_viewable_by_user?).returns(true)
 
       post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
                 source_visualization_id: @visualization.id,
@@ -142,7 +140,7 @@ describe Api::Json::VisualizationsController do
     end
 
     it "doesn't duplicate someone else's map without permission" do
-      new_name = @visualization.name + ' patatas'
+      new_name = @visualization.name + ' patatatosky'
 
       post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
                 source_visualization_id: @visualization.id,

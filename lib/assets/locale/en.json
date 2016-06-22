@@ -708,7 +708,15 @@
         "errors": {
           "empty": "Template can\'t be empty."
         }
-      }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "CUSTOM HTML APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue or clean all html.",
+          "accept": "CONTINUE",
+          "cancel": "CLEAR"
+        }
+      },
     },
     "style": {
       "types": {

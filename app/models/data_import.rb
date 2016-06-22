@@ -392,8 +392,15 @@ class DataImport < Sequel::Model
     self.state = STATE_UPLOADING
     return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
-    return new_connector      if service_name == 'connector'
-    new_importer
+
+    if service_name == 'connector'
+      importer, runner    = new_importer_with_connector
+      datasource_provider = nil
+      manual_fields       = nil
+    else
+      importer, runner, datasource_provider, manual_fields = new_importer
+    end
+    execute_importer importer, runner, datasource_provider, manual_fields
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
     raise exception
@@ -576,6 +583,12 @@ class DataImport < Sequel::Model
     end
   end
 
+  # Create an Importer object (using a Runner to fetch the data).
+  # This methods returns an array with four elements:
+  # * importer: the new importer (nil if download errors detected)
+  # * runner: the runner that the importer uses
+  # * datasource_provider: the DataSource used
+  # * manual_fields: error code and log in case of errors
   def new_importer
     manual_fields = {}
     had_errors = false
@@ -627,11 +640,6 @@ class DataImport < Sequel::Model
     if had_errors
       importer = runner = datasource_provider = nil
     else
-      tracker       = lambda { |state|
-        self.state = state
-        save
-      }
-
       post_import_handler = CartoDB::Importer2::PostImportHandler.new
       case datasource_provider.class::DATASOURCE_NAME
         when Url::ArcGIS::DATASOURCE_NAME
@@ -663,21 +671,16 @@ class DataImport < Sequel::Model
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
                                                        overviews_creator,
                                                        destination_schema, public_user_roles)
-      log.append 'Before importer run'
-      importer.run(tracker)
-      log.append 'After importer run'
     end
 
-    store_results(importer, runner, datasource_provider, manual_fields)
-
-    importer.nil? ? false : importer.success?
+    [importer, runner, datasource_provider, manual_fields]
   end
 
-  def new_connector
-    tracker = lambda do |state|
-      self.state = state
-      save
-    end
+  # Create an Importer using a Connector to fetch the data.
+  # This methods returns an array with two elements:
+  # * importer: the new importer (nil if download errors detected)
+  # * connector: the connector that the importer uses
+  def new_importer_with_connector
     database_options = pg_options
 
     self.host = database_options[:host]
@@ -700,12 +703,22 @@ class DataImport < Sequel::Model
       overviews_creator,
       destination_schema, public_user_roles
     )
-    log.append 'Before importer run'
-    importer.run(tracker)
-    log.append 'After importer run'
+    [importer, connector, nil, nil]
+  end
 
-    store_results(importer, connector)
-    importer.success?
+  # Run importer, store results and return success state.
+  def execute_importer(importer, runner, datasource_provider = nil, manual_fields = nil)
+    if importer
+      tracker = lambda do |state|
+        self.state = state
+        save
+      end
+      log.append 'Before importer run'
+      importer.run(tracker)
+      log.append 'After importer run'
+    end
+    store_results(importer, runner, datasource_provider, manual_fields)
+    importer.nil? ? false : importer.success?
   end
 
   # Note: Assumes that if importer is nil an error happened

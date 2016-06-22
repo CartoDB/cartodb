@@ -99,7 +99,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @table1 = create_random_table(@user_1)
@@ -129,7 +129,7 @@ describe Carto::Api::VisualizationsController do
         height: height), @headers
       last_response.status.should == 302
 
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
@@ -149,13 +149,12 @@ describe Carto::Api::VisualizationsController do
       ), @headers
       last_response.status.should == 302
 
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
+      tpl_id = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
       last_response.location.should == "http://cdn.local.lan/#{@user_1.username}/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
     end
 
     it 'tests privacy of static_maps calls' do
       # As privacy is equal to other visualizations controller methods, no need to test every option, just generally
-
       width = 123
       height = 456
 
@@ -181,8 +180,9 @@ describe Carto::Api::VisualizationsController do
         height: height
       ), @headers
       last_response.status.should == 302
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(@table1.table_visualization.id)
-      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+
+      template_name = Carto::NamedMaps::Template.new(Carto::Visualization.find(@table1.table_visualization.id)).name
+      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{template_name}/#{width}/#{height}.png"
 
       get api_v2_visualizations_static_map_url(
         user_domain: @user_1.username,
@@ -200,8 +200,11 @@ describe Carto::Api::VisualizationsController do
         height: height
       ), @headers
       last_response.status.should == 302
-      tpl_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(private_table.table_visualization.id)
-      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{tpl_id}/#{width}/#{height}.png"
+
+      visualization_id = private_table.table_visualization.id
+
+      template_name = Carto::NamedMaps::Template.new(Carto::Visualization.find(visualization_id)).name
+      last_response.location.should == "http://#{@user_1.username}.localhost.lan:8181/api/v1/map/static/named/#{template_name}/#{width}/#{height}.png"
     end
 
     it 'tests varnish keys' do
@@ -234,7 +237,7 @@ describe Carto::Api::VisualizationsController do
     include_context 'users helper'
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
     end
@@ -309,7 +312,7 @@ describe Carto::Api::VisualizationsController do
     before(:all) do
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user, private_maps_enabled: true)
@@ -336,7 +339,7 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'tests exclude_shared and only_shared filters' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       user_1 = create_user(
         username: unique_name('user'),
@@ -557,7 +560,7 @@ describe Carto::Api::VisualizationsController do
       # TODO: currently new endpoint doesn't match this endpoint
 
       it 'tests like endpoints' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         vis_1_id = create_visualization(@user_1).id
 
@@ -624,7 +627,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
 
       it 'tests totals calculations' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         # user 1 will have 1 table and 1 vis
         # user 2 will have 2 of each
@@ -767,7 +770,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
-        body['visualizations'][0]['table']['name'].should == "#{@org_user_2.database_schema}.#{u2_t_2.name}"
+        body['visualizations'][0]['table']['name'].should == "\"#{@org_user_2.database_schema}\".#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
 
@@ -794,7 +797,7 @@ describe Carto::Api::VisualizationsController do
     describe 'index endpoint' do
 
       it 'tests normal users authenticated and unauthenticated calls' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         collection = CartoDB::Visualization::Collection.new.fetch(user_id: @user_2.id)
         collection.map(&:delete)
@@ -842,7 +845,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'tests organization users authenticated and unauthenticated calls' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         organization = test_organization.save
 
@@ -917,7 +920,7 @@ describe Carto::Api::VisualizationsController do
 
     describe 'GET /api/v1/viz' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
@@ -1024,7 +1027,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'creates a visualization from a list of tables' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         table1 = table_factory
         table2 = table_factory
         table3 = table_factory
@@ -1068,7 +1071,7 @@ describe Carto::Api::VisualizationsController do
     describe 'GET /api/v1/viz/:id' do
 
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
@@ -1394,12 +1397,12 @@ describe Carto::Api::VisualizationsController do
 
     describe 'tests visualization listing filters' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
         delete_user_data(@user_1)
       end
 
       it 'uses locked filter' do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        bypass_named_maps
 
         post api_v1_visualizations_create_url(api_key: @api_key), factory(@user_1, locked: true).to_json, @headers
         vis_1_id = JSON.parse(last_response.body).fetch('id')
@@ -1474,7 +1477,7 @@ describe Carto::Api::VisualizationsController do
       it 'returns an empty array if no other user is watching' do
         CartoDB::Visualization::Watcher.any_instance.stubs(:list).returns([])
 
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        bypass_named_maps
 
         login(@user_1_1)
         post api_v1_visualizations_create_url(api_key: @user_1_1.api_key), factory(@user_1_1, locked: true).to_json, @headers
@@ -1712,7 +1715,7 @@ describe Carto::Api::VisualizationsController do
 
     describe 'normal user urls' do
       before(:all) do
-        stub_named_maps_calls
+        bypass_named_maps
         @vis_owner = FactoryGirl.create(:valid_user, private_tables_enabled: true)
         @other_user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
@@ -1792,7 +1795,7 @@ describe Carto::Api::VisualizationsController do
       include_context 'organization with users helper'
 
       before(:each) do
-        stub_named_maps_calls
+        bypass_named_maps
 
         @vis_owner = @org_user_1
         @shared_vis = FactoryGirl.build(:derived_visualization,

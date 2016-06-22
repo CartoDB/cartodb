@@ -155,6 +155,29 @@ describe 'zip regression tests' do
       name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{table_result.table_name}' }].first[:relname]
       name.should eq table_result.table_name
     end
+
+    it 'imports one table from a geopackage visualization export (ignoring the visualization json)' do
+      filepath    = path_to('visualization_export_with_geopackage_tables.carto')
+      downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
+      runner      = ::CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
+                                                     downloader: downloader,
+                                                     log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                     user: @user)
+      runner.run
+
+      runner.results.length.should eq 4
+      runner.results.count(&:success?).should eq 4
+
+      table_results = runner.results.select { |r| !r.respond_to?(:visualization_id) }
+      table_results.length.should eq 4
+
+      visualization_results = runner.results.select { |r| r.respond_to?(:visualization_id) }
+      visualization_results.length.should eq 0
+
+      table_result = table_results.first
+      name = @user.in_database[%{ SELECT * FROM pg_class WHERE relname='#{table_result.table_name}' }].first[:relname]
+      name.should eq table_result.table_name
+    end
   end
 
 end

@@ -378,46 +378,38 @@ module CartoDB
       # Note: Not implemented ascending order for now, all are descending sorts
       def lazy_order_by(objects, field)
         case field
-          when :likes
-            lazy_order_by_likes(objects)
-          when :mapviews
-            lazy_order_by_mapviews(objects)
-          when :row_count
-            lazy_order_by_row_count(objects)
-          when :size
-            lazy_order_by_size(objects)
+        when :likes
+          lazy_order_by_likes(objects)
+        when :mapviews
+          lazy_order_by_mapviews(objects)
+        when :row_count
+          lazy_order_by_row_count(objects)
+        when :size
+          lazy_order_by_size(objects)
         end
-        objects
       end
 
       def lazy_order_by_likes(objects)
-        objects.sort! { |obj_a, obj_b|
-          obj_b.likes.count <=> obj_a.likes.count
-        }
+        objects.sort! { |obj_a, obj_b| obj_b.likes.count <=> obj_a.likes.count }
       end
 
       def lazy_order_by_mapviews(objects)
-        objects.sort! { |obj_a, obj_b|
-          # Stats have format [ date, value ]
-          # TODO: refactor with mapviews method at refactor
-          obj_b.stats.collect{|o| o[1] }.reduce(:+) <=> obj_a.stats.collect{|o| o[1] }.reduce(:+)
-        }
+        # Stats have format [ date, value ]
+        viz_and_views = objects.map { |viz| [viz, viz.stats.map { |o| o[1] }.reduce(0, :+)] }
+        viz_and_views.sort! { |vv_a, vv_b| vv_b[1] <=> vv_a[1] }
+        viz_and_views.map { |vv| vv[0] }
       end
 
       def lazy_order_by_row_count(objects)
-        objects.sort! { |obj_a, obj_b|
-          a_rows = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:row_count)) || 0
-          b_rows = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:row_count)) || 0
-          b_rows <=> a_rows
-        }
+        viz_and_rows = objects.map { |obj| [obj, (obj.table ? obj.table.row_count_and_size.fetch(:row_count, 0) : 0)] }
+        viz_and_rows.sort! { |vr_a, vr_b| vr_b[1] <=> vr_a[1] }
+        viz_and_rows.map { |vr| vr[0] }
       end
 
       def lazy_order_by_size(objects)
-        objects.sort! { |obj_a, obj_b|
-          a_size = (obj_a.table.nil? ? 0 : obj_a.table.row_count_and_size.fetch(:size)) || 0
-          b_size = (obj_b.table.nil? ? 0 : obj_b.table.row_count_and_size.fetch(:size)) || 0
-          b_size <=> a_size
-        }
+        viz_and_size = objects.map { |obj| [obj, (obj.table ? obj.table.row_count_and_size.fetch(:size, 0) : 0)] }
+        viz_and_size.sort! { |vs_a, vs_b| vs_b[1] <=> vs_a[1] }
+        viz_and_size.map { |vs| vs[0] }
       end
 
       # Note: Not implemented ascending order for now

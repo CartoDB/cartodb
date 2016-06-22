@@ -80,12 +80,14 @@ class User < Sequel::Model
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
+  OBS_GENERAL_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
+  DEFAULT_OBS_GENERAL_QUOTA = 0
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
@@ -129,6 +131,7 @@ class User < Sequel::Model
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
+    errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
   end
 
   def organization_validation
@@ -179,6 +182,7 @@ class User < Sequel::Model
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
+    self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
   end
 
   def before_create
@@ -287,15 +291,21 @@ class User < Sequel::Model
   end
 
   def before_destroy
-    org_id = nil
+    # A viewer can't destroy data, this allows the cleanup. Down to dataset level
+    # to skip model hooks.
+    if viewer
+      this.update(viewer: false)
+      self.viewer = false
+    end
+
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false
-    unless self.organization.nil?
-      self.organization.reload  # Avoid ORM caching
-      if self.organization.owner_id == self.id
-        @org_id_for_org_wipe = self.organization.id  # after_destroy will wipe the organization too
-        if self.organization.users.count > 1
+    unless organization.nil?
+      organization.reload # Avoid ORM caching
+      if organization.owner_id == id
+        @org_id_for_org_wipe = organization.id # after_destroy will wipe the organization too
+        if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
           CartoDB::StdoutLogger.info msg
           raise CartoDB::BaseCartoDBError.new(msg)
@@ -310,26 +320,23 @@ class User < Sequel::Model
     end
 
     begin
-      org_id = self.organization_id
-      self.organization_id = nil
-
       # Remove user tables
-      self.tables.all.each { |t| t.destroy }
+      tables.all.each(&:destroy)
 
       # Remove user data imports, maps, layers and assets
-      self.delete_external_data_imports
-      self.delete_external_sources
+      delete_external_data_imports
+      delete_external_sources
       # There's a FK from geocodings to data_import.id so must be deleted in proper order
-      if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-        self.geocodings.each { |g| g.destroy }
+      if organization.nil? || organization.owner.nil? || id == organization.owner.id
+        geocodings.each(&:destroy)
       else
         assign_geocodings_to_organization_owner
       end
-      self.data_imports.each { |d| d.destroy }
-      self.maps.each { |m| m.destroy }
-      self.layers.each { |l| remove_layer l }
-      self.assets.each { |a| a.destroy }
-      CartoDB::Synchronization::Collection.new.fetch(user_id: self.id).destroy
+      data_imports.each(&:destroy)
+      maps.each(&:destroy)
+      layers.each { |l| remove_layer l }
+      assets.each(&:destroy)
+      CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
 
       destroy_shared_with
 
@@ -344,18 +351,17 @@ class User < Sequel::Model
 
     # Delete the DB or the schema
     if has_organization
-      db_service.drop_organization_user(org_id, !@org_id_for_org_wipe.nil?) unless error_happened
-    else
-      if ::User.where(database_name: database_name).count > 1
-        raise CartoDB::BaseCartoDBError.new('The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
-      elsif !error_happened
-        Thread.new {
-          conn = in_database(as: :cluster_admin)
-          db_service.drop_database_and_user(conn)
-          db_service.drop_user(conn)
-        }.join
-        db_service.monitor_user_notification
-      end
+      db_service.drop_organization_user(organization_id, !@org_id_for_org_wipe.nil?) unless error_happened
+    elsif ::User.where(database_name: database_name).count > 1
+      raise CartoDB::BaseCartoDBError.new(
+        'The user is not supposed to be in a organization but another user has the same database_name. Not dropping it')
+    elsif !error_happened
+      Thread.new {
+        conn = in_database(as: :cluster_admin)
+        db_service.drop_database_and_user(conn)
+        db_service.drop_user(conn)
+      }.join
+      db_service.monitor_user_notification
     end
 
     # Remove metadata from redis last (to avoid cutting off access to SQL API if db deletion fails)
@@ -466,7 +472,10 @@ class User < Sequel::Model
         limit = u.obs_snapshot_quota.to_i - (u.obs_snapshot_quota.to_i * delta)
         over_obs_snapshot = u.get_obs_snapshot_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot
+        limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
+        over_obs_general = u.get_obs_general_calls > limit
+
+        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
           users_overquota.push(u)
         end
     end
@@ -803,6 +812,20 @@ class User < Sequel::Model
     self[:soft_obs_snapshot_limit] = !val
   end
 
+  def soft_obs_general_limit?
+    Carto::AccountType.new.soft_obs_general_limit?(self)
+  end
+  alias_method :soft_obs_general_limit, :soft_obs_general_limit?
+
+  def hard_obs_general_limit?
+    !soft_obs_general_limit?
+  end
+  alias_method :hard_obs_general_limit, :hard_obs_general_limit?
+
+  def hard_obs_general_limit=(val)
+    self[:soft_obs_general_limit] = !val
+  end
+
   def arcgis_datasource_enabled?
     self.arcgis_datasource_enabled == true
   end
@@ -867,6 +890,8 @@ class User < Sequel::Model
       'soft_here_isolines_limit', soft_here_isolines_limit,
       'obs_snapshot_quota', obs_snapshot_quota,
       'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
+      'obs_general_quota', obs_general_quota,
+      'soft_obs_general_limit', soft_obs_general_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date
@@ -933,6 +958,11 @@ class User < Sequel::Model
     get_user_obs_snapshot_data(self, date_from, date_to)
   end
 
+  def get_obs_general_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_obs_general_data(self, date_from, date_to)
+  end
+
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
   end
@@ -976,7 +1006,18 @@ class User < Sequel::Model
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_obs_general_quota
+    if organization.present?
+      remaining = organization.remaining_obs_general_quota
+    else
+      remaining = obs_general_quota - get_obs_general_calls
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   def remaining_twitter_quota
+    # HOTFIX block remaining quota for free users
+    return 0 if self.account_type == 'FREE'
     if organization.present?
       remaining = organization.remaining_twitter_quota
     else
@@ -1479,7 +1520,8 @@ class User < Sequel::Model
       :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
       :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
       :here_isolines_block_price, :soft_here_isolines_limit, :obs_snapshot_quota,
-      :obs_snapshot_block_price, :soft_obs_snapshot_limit
+      :obs_snapshot_block_price, :soft_obs_snapshot_limit, :obs_general_quota,
+      :obs_general_block_price, :soft_obs_general_limit
     ])
     to.invite_token = ::User.make_token
   end
@@ -1487,6 +1529,12 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
+    if mobile_sdk_enabled? && sync_data_with_cartodb_central?
+      cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
+    end
+  rescue CartoDB::CentralCommunicationFailure => e
+    CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
+    raise e
   end
 
   # This is set temporary on user creation with invitation,
@@ -1502,6 +1550,18 @@ class User < Sequel::Model
   def created_with_invitation?
     user_creation = get_user_creation
     user_creation && user_creation.invitation_token
+  end
+
+  def mobile_sdk_enabled?
+    private_apps_enabled? || open_apps_enabled?
+  end
+
+  def private_apps_enabled?
+    mobile_max_private_users > 0
+  end
+
+  def open_apps_enabled?
+    mobile_max_open_users > 0
   end
 
   private

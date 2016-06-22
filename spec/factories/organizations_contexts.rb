@@ -6,7 +6,16 @@ include UniqueNamesHelper
 
 class TestUserFactory
   include CartoDB::Factories
+end
 
+module TableSharing
+  def share_table_with_user(table, user, access: CartoDB::Permission::ACCESS_READONLY)
+    vis = table.table_visualization
+    per = vis.permission
+    per.set_user_permission(user, access)
+    per.save
+    per.reload
+  end
 end
 
 shared_context 'organization with users helper' do

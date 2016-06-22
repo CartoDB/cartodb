@@ -17,6 +17,7 @@ module CartoDB
           dbport: ENV['DB_PORT'] || database[rails_env]['port'] || 5432,
 
           user_dbport: ENV['USER_DB_PORT'] || ENV['DB_PORT'] || database[rails_env]['port'] || 5432,
+          connect_timeout: ENV['CONNECT_TIMEOUT'] || ENV['CONNECT_TIMEOUT'] || database[rails_env]['connect_timeout'] || 5,
 
           redis_port: ENV['REDIS_PORT'] || config[rails_env]['redis']['port'],
           redis_host: ENV['REDIS_HOST'] || config[rails_env]['redis']['host']

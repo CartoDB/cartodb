@@ -10,12 +10,15 @@ require_dependency 'carto/visualization_exporter'
 module Carto
   class VisualizationExport < ::ActiveRecord::Base
     include VisualizationExporter
+    include Carto::VisualizationsExportService2Validator
+
     belongs_to :visualization, class_name: Carto::Visualization
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log
 
     validate :visualization_exportable_by_user?, if: :new_record?
     validate :user_tables_ids_valid?, if: :new_record?
+    validate :valid_visualization_type?, if: :new_record?
 
     STATE_PENDING = 'pending'.freeze
     STATE_EXPORTING = 'exporting'.freeze
@@ -27,7 +30,7 @@ module Carto
       ensure_folder(exporter_config['exporter_temporal_folder'] || DEFAULT_EXPORTER_TMP_FOLDER)
     end
 
-    def run_export!(file_upload_helper: default_file_upload_helper)
+    def run_export!(file_upload_helper: default_file_upload_helper, download_path: nil)
       logger = Carto::Log.new(type: 'visualization_export')
 
       logger.append('Exporting')
@@ -36,16 +39,35 @@ module Carto
 
       logger.append('Uploading')
       update_attributes(state: STATE_UPLOADING, file: filepath)
-      upload_params = { file: CartoDB::FileUploadFile.new(filepath) }
-      results = file_upload_helper.upload_file_to_storage(upload_params, nil, Cartodb.config[:exporter]['s3'])
-      url = results[:file_uri]
+
+      file = CartoDB::FileUploadFile.new(filepath)
+
+      s3_config = Cartodb.config[:exporter]['s3'] || {}
+      s3_config['content-disposition'] = %{attachment;filename="#{file.original_filename}"}
+
+      results = file_upload_helper.upload_file_to_storage(
+        file_param: file,
+        s3_config: s3_config,
+        allow_spaces: true,
+        force_s3_upload: true
+      )
+
+      if results[:file_uri].present?
+        logger.append("By file_upload_helper: #{results[:file_uri]}, #{filepath}, (ignored: #{results[:file_path]})")
+        export_url = results[:file_uri]
+        export_file = filepath
+      else
+        logger.append("Ad-hoc export download: #{results[:file_path]} (ignored: #{filepath})")
+        export_url = download_path
+        export_file = results[:file_path]
+      end
 
       logger.append('Deleting tmp file')
       FileUtils.rm(filepath)
 
-      logger.append('Finishing')
-      state = filepath.present? && url.present? ? STATE_COMPLETE : STATE_FAILURE
-      update_attributes(state: state, file: filepath, url: url)
+      state = export_url.present? && export_file.present? ? STATE_COMPLETE : STATE_FAILURE
+      logger.append("Finishing. State: #{state}. File: #{export_file}. URL: #{url}")
+      update_attributes(state: state, file: export_file, url: export_url)
       true
     rescue => e
       logger.append_exception('Exporting', exception: e)
@@ -67,7 +89,7 @@ module Carto
     end
 
     def visualization_exportable_by_user?
-      errors.add(:visualization, 'Must be accessible by the user') unless visualization.is_accesible_by_user?(user)
+      errors.add(:user, 'Must be able to view the visualization') unless visualization.is_viewable_by_user?(user)
     end
 
     def user_tables_ids_valid?
@@ -79,5 +101,10 @@ module Carto
       end
     end
 
+    def valid_visualization_type?
+      check_valid_visualization(visualization)
+    rescue => e
+      errors.add(:visualization, e.message)
+    end
   end
 end

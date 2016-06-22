@@ -26,6 +26,7 @@
 
 .Editor-HeaderInfo-inner {
   @include flex(1);
+  max-width: calc(100% - 32px);
 }
 .Editor-HeaderInfo-back {
   margin-top: 7px;
@@ -62,4 +63,17 @@
   line-height: 23px;
   text-align: center;
   box-sizing: border-box;
+}
+
+.Editor-headerLayerName {
+  @include flex(1);
+}
+
+.Editor-HeaderInfo.is-dark {
+  .Editor-HeaderInfo-titleText {
+    color: $cWhite;
+  }
+  .CDB-IconFont-arrowPrev {
+    color: $cWhite;
+  }
 }

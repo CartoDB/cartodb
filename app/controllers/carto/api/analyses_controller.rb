@@ -1,17 +1,17 @@
 # encoding: utf-8
 require_dependency 'carto/uuidhelper'
-require_relative '../editor/editor_users_module'
+require_relative '../builder/builder_users_module'
 
 module Carto
   module Api
     class AnalysesController < ::Api::ApplicationController
       include Carto::ControllerHelper
       include Carto::UUIDHelper
-      include Carto::Editor::EditorUsersModule
+      include Carto::Builder::BuilderUsersModule
 
       ssl_required :show, :create, :update, :destroy
 
-      before_filter :editor_users_only
+      before_filter :builder_users_only
       before_filter :load_visualization
       before_filter :check_user_can_add_analysis, only: [:show, :create, :update, :destroy]
       before_filter :load_analysis, only: [:show, :update, :destroy]
@@ -29,14 +29,14 @@ module Carto
         analysis = Carto::Analysis.new(
           visualization_id: @visualization.id,
           user_id: current_user.id,
-          analysis_definition: analysis_definition_from_request.to_json
+          analysis_definition: analysis_definition_from_request
         )
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
-        @analysis.analysis_definition = analysis_definition_from_request.to_json
+        @analysis.analysis_definition = analysis_definition_from_request
         @analysis.save!
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end

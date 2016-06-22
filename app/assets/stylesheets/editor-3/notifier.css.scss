@@ -1,0 +1,53 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Notifier {
+  margin: 0 -25px;
+  padding: 0 $baseSize * 3;
+  border-top: 1px solid $cSecondaryLine;
+
+  &.is-dark {
+    border-color: #3A484E;
+  }
+}
+
+
+.Notifier-inner {
+  position: relative;
+  padding: $baseSize + 4 0;
+  border-top: 1px solid $cSecondaryLine;
+
+  &.is-dark {
+    border-color: #3A484E;
+  }
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
+.Notifier-item {
+  @include display-flex();
+  @include align-items(center);
+  padding: $baseSize 0;
+  color: $cSecondaryText;
+
+  &.is-working {
+    color: $cAltText;
+  }
+}
+
+.Notifier-info {
+  @include flex(1);
+  padding-right: $baseSize * 2;
+}
+
+.Notifier-actions {
+  margin-left: $baseSize * 3;
+
+  &:first-of-type {
+    margin-left: 0;
+  }
+}
+

@@ -9,14 +9,14 @@ describe Layer do
 
   after(:all) do
     # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   before(:each) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     @table = Table.new
     @table.user_id = @user.id
@@ -28,7 +28,6 @@ describe Layer do
   end
 
   context "setups" do
-
     it "should be preloaded with the correct default values" do
       l = Layer.create(Cartodb.config[:layer_opts]["data"]).reload
       l.kind.should == 'carto'
@@ -275,7 +274,7 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       map = Map.create(user_id: @user.id, table_id: @table.id)
       source = @table.table_visualization
@@ -289,6 +288,27 @@ describe Layer do
       @user.reload
 
       derived.layers(:cartodb).first.uses_private_tables?.should be_false
+    end
+  end
+
+  context 'viewer role' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't update layers" do
+      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.create(kind: 'carto')
+      map.add_layer(layer)
+
+      @user.viewer = true
+      @user.save
+
+      layer.reload
+
+      layer.kind = 'torque'
+      expect { layer.save }.to raise_error(Sequel::ValidationFailed, "maps Viewer users can't edit layers")
     end
   end
 end

@@ -61,6 +61,10 @@ module OrganizationUsersHelper
     if user.soft_obs_snapshot_limit != soft_obs_snapshot_limit && soft_obs_snapshot_limit && !owner.soft_obs_snapshot_limit
       errors.add(:soft_obs_snapshot_limit, "Organization owner hasn't this soft limit")
     end
+    soft_obs_general_limit = soft_param_to_boolean(params_to_update[:soft_obs_general_limit])
+    if user.soft_obs_general_limit != soft_obs_general_limit && soft_obs_general_limit && !owner.soft_obs_general_limit
+      errors.add(:soft_obs_general_limit, "Organization owner hasn't this soft limit")
+    end
     soft_twitter_datasource_limit = soft_param_to_boolean(params_to_update[:soft_twitter_datasource_limit])
     if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit
       errors.add(:soft_twitter_datasource_limit, "Organization owner hasn't this soft limit")

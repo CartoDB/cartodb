@@ -6,6 +6,8 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
+  box-sizing: border-box;
+  position: relative;
   width: auto;
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
@@ -13,8 +15,12 @@
   border-radius: $halfBaseSize;
   background: #FFF;
 }
+.Editor-ListLayer-item--placeholder {
+  border-color: $cSecondaryBackground;
+  background: $cSecondaryBackground;
+}
 .Editor-ListLayer-item:hover {
-  @include transition(border, 200ms, ease-in);
+  @include transition(border 200ms ease-in);
   border: 1px solid $cHoverLine;
 }
 .Editor-ListLayer-item.last-child {
@@ -23,8 +29,13 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
-.Editor-ListLayer-item.ui-draggable {
-  cursor: move;
+.Editor-ListLayer-item.is-unavailable {
+  @include opacity(0.6);
+}
+.Editor-ListLayer-item.ui-sortable-helper {
+  // scss-lint:disable ImportantRule
+  left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
+  min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);
@@ -34,7 +45,7 @@
   z-index: 1000;
 }
 .Editor-ListLayer-dragIcon {
-  @include transition(opacity, 200ms, ease-in);
+  @include transition(opacity 200ms ease-in);
   position: absolute;
   top: 28px;
   left: -20px;
@@ -51,6 +62,7 @@
   width: 40px;
   height: 40px;
   border-radius: $baseSize / 2;
+  cursor: pointer;
 }
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;
@@ -76,7 +88,8 @@
   position: relative;
   margin-top: 16px;
 }
-.Editor-ListAnalysis:empty {
+.Editor-ListAnalysis:empty,
+.Editor-ListAnalysis.is-hidden {
   display: none;
 }
 
@@ -151,7 +164,7 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   &:hover {
-    @include transition(border, 200ms, ease-in);
+    @include transition(border 200ms ease-in);
     border: 1px solid $cHoverLine;
     cursor: pointer;
   }
@@ -176,6 +189,10 @@
   margin-left: -1px;
   border-top-left-radius: $halfBaseSize;
   border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-itemInfoIcon {
+  line-height: 18px;
 }
 
 .Editor-ListAnalysis-title {

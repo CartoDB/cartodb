@@ -42,6 +42,7 @@ class Organization < Sequel::Model
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
+  DEFAULT_OBS_GENERAL_QUOTA = 0
 
   def validate
     super
@@ -52,6 +53,7 @@ class Organization < Sequel::Model
     validates_integer :geocoding_quota, allow_nil: false, message: 'geocoding_quota cannot be nil'
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
+    validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
 
 
     if default_quota_in_bytes
@@ -78,6 +80,7 @@ class Organization < Sequel::Model
     self.geocoding_quota ||= DEFAULT_GEOCODING_QUOTA
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
+    self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
   end
 
   # Just to make code more uniform with user.database_schema
@@ -90,6 +93,7 @@ class Organization < Sequel::Model
     @geocoding_quota_modified = changed_columns.include?(:geocoding_quota)
     @here_isolines_quota_modified = changed_columns.include?(:here_isolines_quota)
     @obs_snapshot_quota_modified = changed_columns.include?(:obs_snapshot_quota)
+    @obs_general_quota_modified = changed_columns.include?(:obs_general_quota)
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
   end
@@ -147,10 +151,13 @@ class Organization < Sequel::Model
         limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
         over_obs_snapshot = o.get_obs_snapshot_calls > limit
 
+        limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
+        over_obs_general = o.get_obs_general_calls > limit
+
         limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
 
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
     end
   end
 
@@ -183,6 +190,11 @@ class Organization < Sequel::Model
     get_organization_obs_snapshot_data(self, date_from, date_to)
   end
 
+  def get_obs_general_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_organization_obs_general_data(self, date_from, date_to)
+  end
+
   def get_twitter_imports_count(options = {})
     date_from, date_to = quota_dates(options)
 
@@ -201,6 +213,11 @@ class Organization < Sequel::Model
 
   def remaining_obs_snapshot_quota
     remaining = obs_snapshot_quota - get_obs_snapshot_calls
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_general_quota
+    remaining = obs_general_quota - get_obs_general_calls
     (remaining > 0 ? remaining : 0)
   end
 
@@ -245,8 +262,10 @@ class Organization < Sequel::Model
       :geocoding_block_price    => self.geocoding_block_price,
       :here_isolines_quota      => self.here_isolines_quota,
       :here_isolines_block_price => self.here_isolines_block_price,
-      :obs_snapshot_quota => self.obs_snapshot_quota,
+      :obs_snapshot_quota       => self.obs_snapshot_quota,
       :obs_snapshot_block_price => self.obs_snapshot_block_price,
+      :obs_general_quota        => self.obs_general_quota,
+      :obs_general_block_price  => self.obs_general_block_price,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :location                 => self.twitter_username,
@@ -344,6 +363,7 @@ class Organization < Sequel::Model
       'geocoding_quota', geocoding_quota,
       'here_isolines_quota', here_isolines_quota,
       'obs_snapshot_quota', obs_snapshot_quota,
+      'obs_general_quota', obs_general_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date

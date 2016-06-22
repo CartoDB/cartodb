@@ -50,6 +50,12 @@ module CartoDB
           monthly_use: organization_user? ? organization.get_obs_snapshot_calls : get_obs_snapshot_calls,
           hard_limit:  hard_obs_snapshot_limit?
         },
+        obs_general: {
+          quota:       organization_user? ? organization.obs_general_quota : obs_general_quota,
+          block_price: organization_user? ? organization.obs_general_block_price : obs_general_block_price,
+          monthly_use: organization_user? ? organization.get_obs_general_calls : get_obs_general_calls,
+          hard_limit:  hard_obs_general_limit?
+        },
         twitter: {
           enabled:     self.organization_user? ? self.organization.twitter_datasource_enabled         : self.twitter_datasource_enabled,
           quota:       self.organization_user? ? self.organization.twitter_datasource_quota           :  self.twitter_datasource_quota,
@@ -57,6 +63,9 @@ module CartoDB
           block_size:  self.organization_user? ? self.organization.twitter_datasource_block_size      : self.twitter_datasource_block_size,
           monthly_use: self.organization_user? ? self.organization.get_twitter_imports_count          : self.get_twitter_imports_count,
           hard_limit:  self.hard_twitter_datasource_limit
+        },
+        salesforce: {
+          enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
         },
         billing_period: self.last_billing_cycle,
         api_key: self.api_key,

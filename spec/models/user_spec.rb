@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 require_relative 'user_shared_examples'
 require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 require 'factories/organizations_contexts'
 require_relative '../../app/model_factories/layer_factory'
 require_dependency 'cartodb/redis_vizjson_cache'
@@ -34,7 +35,7 @@ describe User do
   end
 
   before(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
 
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
@@ -48,14 +49,14 @@ describe User do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
     @user2.destroy
   end
@@ -605,13 +606,15 @@ describe User do
       overquota(0.10).should be_empty
     end
 
-    it "should return users near their data observatory quota" do
+    it "should return users near their data observatory snapshot quota" do
       ::User.any_instance.stubs(:get_api_calls).returns([0])
       ::User.any_instance.stubs(:map_view_quota).returns(120)
       ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
       ::User.any_instance.stubs(:geocoding_quota).returns(100)
       ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
       ::User.any_instance.stubs(:here_isolines_quota).returns(100)
+      ::User.any_instance.stubs(:get_obs_general_calls).returns(0)
+      ::User.any_instance.stubs(:obs_general_quota).returns(100)
       ::User.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
       ::User.any_instance.stubs(:obs_snapshot_quota).returns(100)
       overquota.should be_empty
@@ -620,6 +623,22 @@ describe User do
       overquota(0.10).should be_empty
     end
 
+    it "should return users near their data observatory general quota" do
+      ::User.any_instance.stubs(:get_api_calls).returns([0])
+      ::User.any_instance.stubs(:map_view_quota).returns(120)
+      ::User.any_instance.stubs(:get_geocoding_calls).returns(0)
+      ::User.any_instance.stubs(:geocoding_quota).returns(100)
+      ::User.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      ::User.any_instance.stubs(:here_isolines_quota).returns(100)
+      ::User.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
+      ::User.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      ::User.any_instance.stubs(:get_obs_general_calls).returns(81)
+      ::User.any_instance.stubs(:obs_general_quota).returns(100)
+      overquota.should be_empty
+      overquota(0.20).map(&:id).should include(@user.id)
+      overquota(0.20).size.should == 2
+      overquota(0.10).should be_empty
+    end
     it "should return users near their twitter quota" do
       ::User.any_instance.stubs(:get_api_calls).returns([0])
       ::User.any_instance.stubs(:map_view_quota).returns(120)
@@ -738,13 +757,13 @@ describe User do
       @user.save.reload
     end
 
-    it "should return the sum of here isolines rows for the current billing period" do
+    it "should return the sum of data observatory snapshot rows for the current billing period" do
       @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
       @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
       @user.get_obs_snapshot_calls.should eq 10
     end
 
-    it "should return the sum of here isolines rows for the specified period" do
+    it "should return the sum of data observatory snapshot rows for the specified period" do
       @usage_metrics.incr(:obs_snapshot, :success_responses, 10, DateTime.current)
       @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 2))
       @usage_metrics.incr(:obs_snapshot, :success_responses, 100, (DateTime.current - 7))
@@ -754,6 +773,36 @@ describe User do
 
     it "should return 0 when no here isolines actions" do
       @user.get_obs_snapshot_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
+    end
+  end
+
+  describe '#get_obs_general_calls' do
+    before do
+      delete_user_data @user
+      @mock_redis = MockRedis.new
+      @usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(@user.username, nil, @mock_redis)
+      CartoDB::ObservatoryGeneralUsageMetrics.stubs(:new).returns(@usage_metrics)
+      @user.stubs(:last_billing_cycle).returns(Date.today)
+      @user.period_end_date = (DateTime.current + 1) << 1
+      @user.save.reload
+    end
+
+    it "should return the sum of data observatory general rows for the current billing period" do
+      @usage_metrics.incr(:obs_general, :success_responses, 10, DateTime.current)
+      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 2))
+      @user.get_obs_general_calls.should eq 10
+    end
+
+    it "should return the sum of data observatory general rows for the specified period" do
+      @usage_metrics.incr(:obs_general, :success_responses, 10, DateTime.current)
+      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 2))
+      @usage_metrics.incr(:obs_general, :success_responses, 100, (DateTime.current - 7))
+      @user.get_obs_general_calls(from: Time.now - 5.days).should eq 110
+      @user.get_obs_general_calls(from: Time.now - 5.days, to: Time.now - 2.days).should eq 100
+    end
+
+    it "should return 0 when no data observatory general actions" do
+      @user.get_obs_general_calls(from: Time.now - 15.days, to: Time.now - 10.days).should eq 0
     end
   end
 
@@ -1090,6 +1139,12 @@ describe User do
     expect { @user.save }.to_not change { @user.api_key }
   end
 
+  it "should not try to update mobile api_keys if the user has it disabled" do
+    @user.stubs(:mobile_sdk_enabled?).returns(false)
+    @user.stubs(:cartodb_central_client).never
+    @user.regenerate_api_key
+  end
+
   it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
@@ -1324,11 +1379,49 @@ describe User do
 
   end
 
+  describe '#hard_obs_general_limit?' do
+
+    before(:each) do
+      @user_account = create_user
+    end
+
+    it 'returns true with every plan unless it has been manually set to false' do
+      @user_account[:soft_obs_general_limit].should be_nil
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_obs_general_limit?.should be_false
+      @user_account.soft_obs_general_limit.should be_false
+      @user_account.hard_obs_general_limit?.should be_true
+      @user_account.hard_obs_general_limit.should be_true
+
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_obs_general_limit?.should be_false
+      @user_account.soft_obs_general_limit.should be_false
+      @user_account.hard_obs_general_limit?.should be_true
+      @user_account.hard_obs_general_limit.should be_true
+
+      @user_account.hard_obs_general_limit = false
+      @user_account[:soft_obs_general_limit].should_not be_nil
+
+      @user_account.stubs(:account_type).returns('AMBASSADOR')
+      @user_account.soft_obs_general_limit?.should be_true
+      @user_account.soft_obs_general_limit.should be_true
+      @user_account.hard_obs_general_limit?.should be_false
+      @user_account.hard_obs_general_limit.should be_false
+
+      @user_account.stubs(:account_type).returns('FREE')
+      @user_account.soft_obs_general_limit?.should be_true
+      @user_account.soft_obs_general_limit.should be_true
+      @user_account.hard_obs_general_limit?.should be_false
+      @user_account.hard_obs_general_limit.should be_false
+    end
+
+  end
+
   describe '#shared_tables' do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       # No need to really touch the DB for the permissions
       Table::any_instance.stubs(:add_read_permission).returns(nil)
 
@@ -2211,6 +2304,40 @@ describe User do
       @user.db_service.enable_writes
       @user.db_service.terminate_database_connections
       @user.db_service.run_pg_query("create table foo_3(a int);")
+    end
+  end
+
+  describe '#destroy' do
+    def create_full_data
+      user = FactoryGirl.create(:carto_user)
+      table = create_table(user_id: user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
+      visualization = table.table_visualization
+      return ::User[user.id], table, visualization
+    end
+
+    def check_deleted_data(user_id, table_id, visualization_id)
+      ::User[user_id].should be_nil
+      Carto::Visualization.exists?(visualization_id).should be_false
+      Carto::UserTable.exists?(table_id).should be_false
+    end
+
+    it 'destroys all related information' do
+      user, table, visualization = create_full_data
+
+      ::User[user.id].destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
+    end
+
+    it 'destroys all related information, even for viewer users' do
+      user, table, visualization = create_full_data
+      user.viewer = true
+      user.save
+      user.reload
+
+      user.destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
     end
   end
 

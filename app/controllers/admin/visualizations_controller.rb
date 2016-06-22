@@ -457,7 +457,7 @@ class Admin::VisualizationsController < Admin::AdminController
     return true unless current_user.present?
     begin
       visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+      ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
     rescue Exception => e
       # We don't block the load of the dashboard because we aren't able to load common dat
       CartoDB.notify_exception(e, {user:current_user})

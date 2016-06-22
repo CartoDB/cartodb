@@ -6,7 +6,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
 
-  factory :user do
+  factory :user, class: ::User do
 
     username               { unique_name('user') }
     email                  { unique_email }
@@ -33,6 +33,11 @@ FactoryGirl.define do
 
     trait :enabled do
       enabled true
+    end
+
+    trait :mobile do
+      mobile_max_open_users    100000
+      mobile_max_private_users 20000
     end
 
     factory :user_with_private_tables, traits: [:enabled, :private_tables]

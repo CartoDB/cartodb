@@ -25,8 +25,7 @@
   @include display-flex();
   @include justify-content(flex-start);
   position: relative;
-  max-width: 249px;
-  padding-bottom: 10px;
+  padding-bottom: 16px;
 }
 .Carousel-item {
   @include display-flex();

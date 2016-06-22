@@ -46,6 +46,10 @@ module Carto
           account_creator.with_soft_obs_snapshot_limit(create_params[:soft_obs_snapshot_limit])
         end
 
+        if create_params[:soft_obs_general_limit].present?
+          account_creator.with_soft_obs_general_limit(create_params[:soft_obs_general_limit])
+        end
+
         if create_params[:soft_twitter_datasource_limit].present?
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
@@ -67,12 +71,18 @@ module Carto
         params_to_update = update_params
 
         # ::User validation requires confirmation
-        params_to_update[:password_confirmation] = params_to_update[:password]
+        password = params_to_update[:password]
+        params_to_update[:password_confirmation] = password
+
+        model_validation_ok = @user.valid?
+        if password.present?
+          model_validation_ok &&= @user.valid_password?(:password, password, password)
+        end
 
         # NOTE: Verify soft limits BEFORE updating the user
         unless soft_limits_validation(@user, params_to_update) &&
                @user.set_fields(params_to_update, params_to_update.keys) &&
-               @user.valid?
+               model_validation_ok
           render_jsonp(@user.errors.full_messages, 410)
           return
         end
@@ -113,13 +123,13 @@ module Carto
       # TODO: Use native strong params when in Rails 4+
       def create_params
         permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
+               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
         permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_twitter_datasource_limit)
+               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
       end
     end
   end

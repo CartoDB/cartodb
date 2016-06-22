@@ -15,8 +15,8 @@ module CartoDB
       COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar .carto }.freeze
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-        .js .json .tar .gz .tgz .osm .bz2 .geojson
-        .gpx .sql .tab .tsv .txt
+        .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
+        .gpx .tab .tsv .txt
       }
       SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 

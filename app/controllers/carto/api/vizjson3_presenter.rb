@@ -116,17 +116,11 @@ module Carto
         vizjson[:analyses] = if display_named_map?(@visualization, forced_privacy_version)
                                visualization_analyses.map { |a| named_map_analysis_json(a) }
                              else
-                               visualization_analyses.map(&:analysis_definition_json)
+                               visualization_analyses.map(&:analysis_definition)
                              end
 
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
-
-        children_vizjson = @visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @redis_vizjson_cache)
-                           .to_vizjson(https_request: options[:https_request], vector: options[:vector])
-        end
-        vizjson[:slides] = children_vizjson unless children_vizjson.empty?
 
         parent = @visualization.parent
         if parent
@@ -225,16 +219,16 @@ module Carto
       end
 
       def named_map_analysis_json(analysis)
-        analysis_definition_json_without_sources(analysis.analysis_definition_json)
+        analysis_definition_without_sources(analysis.analysis_definition)
       end
 
-      def analysis_definition_json_without_sources(analysis_definition_json)
-        if analysis_definition_json[:type] == 'source'
-          analysis_definition_json.delete(:params)
-        elsif analysis_definition_json[:params] && analysis_definition_json[:params][:source]
-          analysis_definition_json_without_sources(analysis_definition_json[:params][:source])
+      def analysis_definition_without_sources(analysis_definition)
+        if analysis_definition[:type] == 'source'
+          analysis_definition.delete(:params)
+        elsif analysis_definition[:params] && analysis_definition[:params][:source]
+          analysis_definition_without_sources(analysis_definition[:params][:source])
         end
-        analysis_definition_json
+        analysis_definition
       end
 
       def configuration
@@ -249,7 +243,7 @@ module Carto
         }
 
         if display_named_map?(@visualization, forced_privacy_version)
-          ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          ds[:template_name] = Carto::NamedMaps::Template.new(@visualization).name
         end
 
         ds
@@ -284,18 +278,16 @@ module Carto
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
-        @visualization    = visualization
-        @options          = options
-        @configuration    = configuration
-        @layergroup_data  = layergroup
-        @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+        @visualization      = visualization
+        @options            = options
+        @configuration      = configuration
+        @layergroup_data    = layergroup
+        @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
-      # @throws NamedMapsPresenterError
       def to_vizjson
         return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
@@ -311,7 +303,7 @@ module Carto
             sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
             filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             named_map: {
-              name: @named_map_name,
+              name: @named_map_template.name,
               stat_tag: @visualization.id,
               params: placeholders_data,
               layers: configure_layers_data
@@ -323,13 +315,12 @@ module Carto
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         {
           named_map: {
-            name:         @named_map_name,
+            name:         @named_map_template.name,
             layer_index:  layer_index,
             params:       placeholders_data
           },
@@ -574,6 +565,10 @@ module Carto
           else
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
+
+          sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+          data[:sql_wrap] = sql_wrap if sql_wrap
+
           data = decorate_with_data(data, @decoration_data)
 
           data

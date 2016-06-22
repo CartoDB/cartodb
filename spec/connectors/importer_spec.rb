@@ -11,7 +11,7 @@ describe CartoDB::Connector::Importer do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do

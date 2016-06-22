@@ -19,7 +19,7 @@ namespace :cartodb do
       end
       desc 'Export an organization'
       task :export_org, [:organization_name, :path, :job_uuid, :database_only, :metadata_only, :split_user_schemas] => :environment do |_task, args|
-        args.with_defaults(job_uuid: nil, schema_mode: true, database_only: false, metadata_only: false, split_user_schemas: true)
+        args.with_defaults(job_uuid: nil, database_only: false, metadata_only: false)
         job_args = args.to_hash
         if job_args[:database_only] == 'true'
           job_args[:data] = true

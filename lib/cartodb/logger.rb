@@ -58,13 +58,14 @@ module CartoDB
         error_msg += exception.backtrace.join("\n") + "\n"
       end
       unless user.nil?
-        error_msg += "user: #{user}\n"
+        error_msg += "user: #{user.inspect}\n"
       end
       additional_data.each do |k, v|
         error_msg += "#{k}: #{v}\n"
       end
 
-      ::Logger.new(STDOUT).error(error_msg)
+      rails_level = level == 'warning' ? :warn : level.to_sym
+      Rails.logger.send(rails_level, error_msg)
     end
     private_class_method :report_error_to_console
   end

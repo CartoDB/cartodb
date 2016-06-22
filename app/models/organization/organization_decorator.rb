@@ -32,6 +32,10 @@ module CartoDB
           quota:       obs_snapshot_quota,
           monthly_use: get_obs_snapshot_calls
         },
+        obs_general: {
+          quota:       obs_general_quota,
+          monthly_use: get_obs_general_calls
+        },
         twitter: {
           enabled:     self.twitter_datasource_enabled,
           quota:       self.twitter_datasource_quota,

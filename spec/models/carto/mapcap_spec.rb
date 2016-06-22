@@ -17,26 +17,47 @@ describe Carto::Mapcap do
     @user.destroy
   end
 
-  describe 'with layers' do
+  describe '#ids_vizjson' do
     before(:all) do
-      @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
-      @visualization.reload
-
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+      @ids_json = @mapcap.ids_json
     end
 
     after(:all) do
       @mapcap.destroy
-      @carto_layer.destroy
-      @visualization.reload
+      @ids_json = nil
     end
 
-    describe '#ids_vizjson' do
+    it 'should have visualization_id' do
+      @ids_json[:visualization_id].should_not be_nil
+    end
+
+    it 'should have map_id' do
+      @ids_json[:map_id].should_not be_nil
+    end
+
+    it 'should have correct visualization_id' do
+      @ids_json[:visualization_id].should eq @visualization.id
+    end
+
+    it 'should have correct map_id' do
+      @ids_json[:map_id].should eq @map.id
+    end
+
+    describe 'with layers' do
       before(:all) do
+        @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+        @visualization.reload
+
+        @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
         @ids_json_layers = @mapcap.ids_json[:layers]
       end
 
       after(:all) do
+        @mapcap.destroy
+        @carto_layer.destroy
+        @visualization.reload
+
         @ids_json_layers = nil
       end
 
@@ -52,11 +73,11 @@ describe Carto::Mapcap do
         end
       end
     end
+  end
 
-    describe '#populate_ids' do
-    end
+  describe '#populate_ids' do
+  end
 
-    describe '#regenerate_visualization' do
-    end
+  describe '#regenerate_visualization' do
   end
 end

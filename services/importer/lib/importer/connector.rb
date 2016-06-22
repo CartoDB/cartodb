@@ -121,7 +121,7 @@ module CartoDB
       PARAM_SEP_TOKENS = {
         '.eq.' => '=',
         '.sc.' => ';'
-      }
+      }.freeze
 
       # Parse connection string in @conn_str and extract @params and @columns
       def extract_params

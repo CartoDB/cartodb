@@ -101,5 +101,75 @@ describe Carto::Mapcap do
   end
 
   describe '#regenerate_visualization' do
+    before(:all) do
+      @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+      @regenerated_visualization = @mapcap.regenerate_visualization
+    end
+
+    after(:all) do
+      @mapcap.destroy
+      @ids_json = nil
+      @regenerated_visualization = nil
+    end
+
+    it 'should preserve map' do
+      @regenerated_visualization.map.id.should eq @map.id
+    end
+
+    it 'should preserve visualization' do
+      @regenerated_visualization.id.should eq @visualization.id
+    end
+
+    describe 'with layers' do
+      before(:all) do
+        @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+        @visualization.reload
+
+        @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+        @regenerated_visualization = @mapcap.regenerate_visualization
+      end
+
+      after(:all) do
+        @mapcap.destroy
+        @carto_layer.destroy
+        @visualization.reload
+        @regenerated_visualization = nil
+      end
+
+      it 'should contain same layers in same order' do
+        @regenerated_visualization.layers.each_with_index do |layer, index|
+          layer.id == @regenerated_visualization.layers[index].id
+        end
+      end
+
+      describe 'with widgets' do
+        before(:all) do
+          @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+          @visualization.reload
+
+          @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+          @regenerated_visualization = @mapcap.regenerate_visualization
+        end
+
+        after(:all) do
+          @widget.destroy
+          @visualization.reload
+          @mapcap.destroy
+          @regenerated_visualization = nil
+        end
+
+        it 'should contain widgets only for layers with widgets and in the right order' do
+          @visualization.layers.each_with_index do |layer, index|
+            regenerated_layer = @regenerated_visualization.layers[index]
+
+            layer.widgets.length.should eq regenerated_layer.widgets.length
+
+            layer.widgets.each_with_index do |widget, widget_index|
+              widget.should eq regenerated_layer.widgets[widget_index]
+            end
+          end
+        end
+      end
+    end
   end
 end

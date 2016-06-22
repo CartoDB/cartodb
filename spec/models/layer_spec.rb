@@ -275,20 +275,13 @@ describe Layer do
 
   describe '#uses_private_tables?' do
     it 'returns true if any of the affected tables is private' do
-      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-
-      map = Map.create(user_id: @user.id, table_id: @table.id)
-      source = @table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
-
-      derived.layers(:cartodb).length.should == 1
-      derived.layers(:cartodb).first.uses_private_tables?.should be_true
+      @table.table_visualization.layers(:cartodb).length.should == 1
+      @table.table_visualization.layers(:cartodb).first.uses_private_tables?.should be_true
       @table.privacy = UserTable::PRIVACY_PUBLIC
       @table.save
       @user.reload
 
-      derived.layers(:cartodb).first.uses_private_tables?.should be_false
+      @table.table_visualization.layers(:cartodb).first.uses_private_tables?.should be_false
     end
   end
 end

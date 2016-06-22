@@ -356,6 +356,10 @@ class Carto::Visualization < ActiveRecord::Base
     permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
   end
 
+  def mapcaps
+    Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
+  end
+
   private
 
   def named_maps_api

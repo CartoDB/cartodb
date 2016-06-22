@@ -48,7 +48,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                 # Copy visualization
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: params[:source_visualization_id]).first
-                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+                return head(403) unless source && source.is_viewable_by_user?(user) && source.derived?
 
                 visualization_copy_id = @stats_aggregator.timing('copy') do
                   export_service = Carto::VisualizationsExportService2.new

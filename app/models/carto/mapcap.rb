@@ -33,23 +33,22 @@ module Carto
       self.ids_json = {
         visualization_id: visualization.id,
         map_id: visualization.map.id,
-        layers: visualization.layers.map { |layer| { "#{layer.id}": [widgets: layer.widgets.map(&:id)] } }
+        layers: visualization.layers.map { |layer| [layer_id: layer.id, widgets: layer.widgets.map(&:id)] }
       }.to_json
     end
 
     def repopulate_ids(regenerated_visualization)
       regenerated_visualization.id = ids_json[:id]
       regenerated_visualization.map.layers.each_with_index do |layer, index|
-        ids_json_layers = ids_json[:layers]
+        stored_layer_ids = ids_json[:layers][index]
+        stored_layer_id = stored_layer_ids[:layer_id]
 
-        layer.id = ids_json_layers[index].keys.first
+        layer.id = stored_layer_id
         layer.maps = [regenerated_visualization.map]
 
         layer.widgets.each_with_index do |widget, widget_index|
-          layer_id = layer.id
-
-          widget.id = ids_json_layers[index].values.flatten[widget_index]
-          widget.layer_id = layer_id
+          widget.id = stored_layer_ids[:widgets][widget_index]
+          widget.layer_id = stored_layer_id
         end
       end
 

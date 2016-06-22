@@ -291,6 +291,13 @@ class User < Sequel::Model
   end
 
   def before_destroy
+    # A viewer can't destroy data, this allows the cleanup. Down to dataset level
+    # to skip model hooks.
+    if viewer
+      this.update(viewer: false)
+      self.viewer = false
+    end
+
     @org_id_for_org_wipe = nil
     error_happened = false
     has_organization = false

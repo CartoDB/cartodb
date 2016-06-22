@@ -6,6 +6,9 @@ require_relative './carto_json_serializer'
 class Carto::Analysis < ActiveRecord::Base
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
   validates :analysis_definition, carto_json_symbolizer: true
+  validate :validate_user_not_viewer
+
+  before_destroy :validate_user_not_viewer
 
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
@@ -61,5 +64,12 @@ class Carto::Analysis < ActiveRecord::Base
 
   def notify_map_change
     map.notify_map_change if map
+  end
+
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, "Viewer users can't edit analyses")
+      return false
+    end
   end
 end

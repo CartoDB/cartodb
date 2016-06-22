@@ -120,13 +120,22 @@ module CartoDB
       user
     end
 
-    def create_mocked_user(user_id = UUIDTools::UUID.timestamp_create.to_s, user_name = 'whatever', user_apikey = '123')
+    def create_mocked_user(user_id: UUIDTools::UUID.timestamp_create.to_s,
+                           user_name: 'whatever',
+                           user_apikey: '123',
+                           groups: [],
+                           public_url: nil,
+                           avatar_url: nil)
       user_mock = mock
       user_mock.stubs(:id).returns(user_id)
       user_mock.stubs(:username).returns(user_name)
       user_mock.stubs(:api_key).returns(user_apikey)
       user_mock.stubs(:invalidate_varnish_cache).returns(nil)
       user_mock.stubs(:has_feature_flag?).returns(false)
+      user_mock.stubs(:viewer).returns(false)
+      user_mock.stubs(:groups).returns(groups)
+      user_mock.stubs(:public_url).returns(public_url)
+      user_mock.stubs(:avatar_url).returns(avatar_url)
       user_mock
     end
 

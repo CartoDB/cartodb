@@ -203,9 +203,7 @@ describe Map do
       table.reload
       table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
       table.optimize
-      table.map.recalculate_bounds!
-
-      table.map.recenter_using_bounds!
+      table.map.set_default_boundaries!
 
       # casting to string :_( but currently only used by frontend
       table.map.center_data.should == [ 60.0.to_s, 5.0.to_s ]
@@ -220,28 +218,28 @@ describe Map do
       # Out of usual bounds by being bigger than "full world bounding box"
       table.map.stubs(:get_map_bounds)
                .returns({ minx: -379, maxx: 379, miny: -285 , maxy: 285.0511})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: -179, maxx: 179, miny: -85 , maxy: 85.0511})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 1, maxx: 2, miny: 1 , maxy: 2})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 8
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 0.025, maxx: 0.05, miny: 0.025 , maxy: 0.05})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 14
 
       # Smaller than our max zoom level
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 0.000001, maxx: 0.000002, miny: 0.000001 , maxy: 0.000002})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 18
 
     end

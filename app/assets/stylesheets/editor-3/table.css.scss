@@ -51,7 +51,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 
 
-.Table-headItemName.is-disabled {
+.Table-headItemName {
   height: auto;
   margin: 0;
   padding: 0;
@@ -60,7 +60,7 @@ $tableBorderColor: $cSecondaryLine;
   background: none;
   box-sizing: border-box;
 }
-.Table-headItemName {
+.Table-headItemName.is-active {
   height: 28px;
   margin: -6px 0 -5px -6px;
   padding: 5px;

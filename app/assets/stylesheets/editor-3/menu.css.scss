@@ -26,7 +26,7 @@
 .EditorMenu-navigationItem.is-selected {
   @include transition(background, 300ms, ease-in);
   border-radius: 4px;
-  background: rgba($cMainBg, 0.16);
+  background: rgba($cMainBg, 0.32);
 }
 
 .EditorMenu-navigationLink {
@@ -48,7 +48,7 @@
   @include justify-content(center);
   width: 32px;
   height: 32px;
-  margin: 0 auto 36px;
+  margin: 0 auto 48px;
 }
 
 .EditorMenu-avatar {

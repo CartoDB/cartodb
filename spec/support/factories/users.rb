@@ -82,7 +82,7 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
-      # INFO: avoiding enable_remote_db_user
+      # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
       user.save
       load_user_functions(user)

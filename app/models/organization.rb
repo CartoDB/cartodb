@@ -72,13 +72,17 @@ class Organization < Sequel::Model
   end
 
   def validate_for_signup(errors, user)
-    quota_in_bytes = user.quota_in_bytes.to_i
+    if user.builder? && remaining_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough seats")
+    end
 
-    errors.add(:organization, "not enough seats") if user.builder? && remaining_seats(excluded_users: [user]) <= 0
+    if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough viewer seats")
+    end
 
-    errors.add(:organization, "not enough viewer seats") if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
-
-    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || unassigned_quota < quota_in_bytes
+    if unassigned_quota <= 0 || unassigned_quota < user.quota_in_bytes.to_i
+      errors.add(:quota_in_bytes, "not enough disk quota")
+    end
   end
 
   def before_validation

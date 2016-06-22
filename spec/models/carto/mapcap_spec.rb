@@ -19,7 +19,7 @@ describe Carto::Mapcap do
 
   describe 'with layers' do
     before(:all) do
-      @mapcap = Carto::Mapcap.create!(@visualization)
+      @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
 
       @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
       @visualization.reload

@@ -539,9 +539,7 @@ class Table
     )
 
     member.store
-    member.map.recalculate_bounds!
-    member.map.recenter_using_bounds!
-    member.map.recalculate_zoom!
+    member.map.set_default_boundaries!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -1230,10 +1228,12 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      rescue exception
-        CartoDB::report_exception(exception,
-                                  "Failed while renaming visualization #{@name_changed_from} to #{name}",
-                                  user: owner)
+      rescue => exception
+        CartoDB::Logger.error(exception: exception,
+                              message: "Failed while renaming visualization",
+                              user: owner,
+                              from_name: @name_changed_from,
+                              to_name: name)
         raise exception
       end
     end

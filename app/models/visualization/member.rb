@@ -650,9 +650,14 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        Rails::Sequel.connection.after_commit do
-          (get_named_map ? update_named_map : create_named_map) if carto_visualization
+        unless @updating_named_maps
+          Rails::Sequel.connection.after_commit do
+            @updating_named_maps = false
+            (get_named_map ? update_named_map : create_named_map) if carto_visualization
+          end
+          @updating_named_maps = true
         end
+        true
       end
 
       def get_named_map
@@ -669,6 +674,10 @@ module CartoDB
 
       def attributions_from_derived_visualizations
         related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
+      end
+
+      def map
+        @map ||= ::Map.where(id: map_id).first
       end
 
       private
@@ -850,7 +859,7 @@ module CartoDB
       end
 
       def relator
-        Relator.new(attributes)
+        Relator.new(map, attributes)
       end
 
       def name_checker

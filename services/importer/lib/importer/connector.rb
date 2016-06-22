@@ -126,8 +126,12 @@ module CartoDB
       # Parse connection string in @conn_str and extract @params and @columns
       def extract_params
         # Convert into hash form: "p=v;..." -> { 'p' => v, ...}
-        # TODO: parser params properly, make param names lowercase
-        @params = Hash[@conn_str.split(';').map { |p| p.split('=').map(&:strip) }]
+        @params = Hash[
+          @conn_str.split(';').map do |p|
+            param, value = p.split('=').map(&:strip)
+            [param.downcase, value]
+          end
+        ]
 
         # Decode special tokens for the separator chars used.
         # (this is to allow its use in parameters such as sql_query)

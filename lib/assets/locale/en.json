@@ -212,12 +212,8 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "buffer": {
-            "title": "Buffer",
-            "desc": "Calculate the area of influence of a layer determined by distance."
-          },
           "trade-area": {
-            "title": "Trade Areas",
+            "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
           "point-in-polygon": {

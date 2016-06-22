@@ -18,6 +18,45 @@ describe Map do
     @user.destroy
   end
 
+  describe 'viewer role support' do
+    describe '#save' do
+      it 'should fail for viewer users' do
+        @user.stubs(:viewer).returns(true)
+        new_map = Map.new(user: @user, table_id: @table.id)
+
+        new_map.save.should eq nil
+        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        @user.stubs(:viewer).returns(false)
+      end
+    end
+
+    describe '#update' do
+      it 'should fail for existing maps and viewer users' do
+        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map.user.stubs(:viewer).returns(true)
+
+        new_map.save.should eq nil
+        new_map.errors[:user].should eq ["Viewer users can't save maps"]
+
+        new_map.user.stubs(:viewer).returns(false)
+        new_map.destroy
+      end
+    end
+
+    describe '#destroy' do
+      it 'should fail for existing maps and viewer users' do
+        new_map = Map.create(user_id: @user.id, table_id: @table.id)
+        new_map.user.stubs(:viewer).returns(true)
+
+        expect { new_map.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy maps/)
+
+        new_map.user.stubs(:viewer).returns(false)
+        new_map.destroy
+      end
+    end
+  end
+
   describe '#bounds' do
     it 'checks max-min bounds' do
       new_map = Map.create(user_id: @user.id, table_id: @table.id)
@@ -164,9 +203,7 @@ describe Map do
       table.reload
       table.georeference_from!(:latitude_column => :latitude, :longitude_column => :longitude)
       table.optimize
-      table.map.recalculate_bounds!
-
-      table.map.recenter_using_bounds!
+      table.map.set_default_boundaries!
 
       # casting to string :_( but currently only used by frontend
       table.map.center_data.should == [ 60.0.to_s, 5.0.to_s ]
@@ -181,28 +218,28 @@ describe Map do
       # Out of usual bounds by being bigger than "full world bounding box"
       table.map.stubs(:get_map_bounds)
                .returns({ minx: -379, maxx: 379, miny: -285 , maxy: 285.0511})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: -179, maxx: 179, miny: -85 , maxy: 85.0511})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 1
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 1, maxx: 2, miny: 1 , maxy: 2})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 8
 
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 0.025, maxx: 0.05, miny: 0.025 , maxy: 0.05})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 14
 
       # Smaller than our max zoom level
       table.map.stubs(:get_map_bounds)
                .returns({ minx: 0.000001, maxx: 0.000002, miny: 0.000001 , maxy: 0.000002})
-      table.map.recalculate_zoom!
+      table.map.set_default_boundaries!
       table.map.zoom.should == 18
 
     end
@@ -290,9 +327,6 @@ describe Map do
 
   describe '#process_privacy_in' do
     it 'sets related visualization private if layer uses private tables' do
-
-      pending("To be checked when private tables are coded")
-
       @table1 = Table.new
       @table1.user_id = @user.id
       @table1.save
@@ -305,7 +339,7 @@ describe Map do
       derived = CartoDB::Visualization::Copier.new(@user, source).copy
       derived.store
 
-      derived.layers(:cartodb).length.should == 1
+      derived.layers(:cartodb).length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
       derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -326,6 +360,66 @@ describe Map do
 
       derived.map.process_privacy_in(layer)
       derived.fetch.private?.should be_true
+    end
+  end
+
+  context 'viewer role support on layer management' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+      @user.reload
+
+      @map.reload && @map.destroy if @map
+    end
+
+    def become_viewer(user)
+      user.viewer = true
+      user.save
+      user.reload
+    end
+
+    describe 'add layers' do
+      it 'should fail for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        become_viewer(@user)
+        @map.reload
+
+        @layer = Layer.create(kind: 'carto', options: { query: "select * from #{@table.name}" })
+        expect { @map.add_layer(@layer) }.to raise_error(/Viewer users can't edit layers/)
+      end
+    end
+
+    describe 'remove layers' do
+      it 'should fail for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        layer = Layer.create(kind: 'carto', options: { table_name: @table.name })
+        layer.add_map(@map)
+        layer.save
+        layer.reload
+        @map.reload
+
+        @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
+
+        become_viewer(@user)
+        expect {
+          @map.layers_dataset.where(layer_id: layer.id).destroy
+        }.to raise_error(/Viewer users can't destroy layers/)
+        @map.reload
+        @map.layers_dataset.where(layer_id: layer.id).should_not be_empty
+      end
+    end
+
+    describe 'can_add_layer' do
+      it 'should return false for viewer users' do
+        @map = Map.create(user_id: @user.id, table_id: @table.id)
+
+        become_viewer(@user)
+        @map.reload
+
+        @map.can_add_layer(@user).should eq false
+      end
     end
   end
 end

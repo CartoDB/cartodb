@@ -71,9 +71,14 @@ class Organization < Sequel::Model
     end
   end
 
-  def validate_for_signup(errors, quota_in_bytes)
-    errors.add(:organization, "not enough seats") if remaining_seats <= 0
-    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  def validate_for_signup(errors, user)
+    quota_in_bytes = user.quota_in_bytes.to_i
+
+    errors.add(:organization, "not enough seats") if user.builder? && remaining_seats(excluded_users: [user]) <= 0
+
+    errors.add(:organization, "not enough viewer seats") if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
+
+    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || unassigned_quota < quota_in_bytes
   end
 
   def before_validation
@@ -321,12 +326,28 @@ class Organization < Sequel::Model
     !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
   end
 
-  def remaining_seats
-    seats - assigned_seats
+  def remaining_seats(excluded_users: [])
+    seats - assigned_seats(excluded_users: excluded_users)
   end
 
-  def assigned_seats
-    users.nil? ? 0 : users.count
+  def remaining_viewer_seats(excluded_users: [])
+    viewer_seats - assigned_viewer_seats(excluded_users: excluded_users)
+  end
+
+  def assigned_seats(excluded_users: [])
+    builder_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def assigned_viewer_seats(excluded_users: [])
+    viewer_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def builder_users
+    (users || []).select(&:builder?)
+  end
+
+  def viewer_users
+    (users || []).select(&:viewer?)
   end
 
   def notify_if_disk_quota_limit_reached

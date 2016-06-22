@@ -136,7 +136,7 @@ class User < Sequel::Model
 
   def organization_validation
     if new?
-      organization.validate_for_signup(errors, quota_in_bytes)
+      organization.validate_for_signup(errors, self)
       organization.validate_new_user(self, errors)
     elsif quota_in_bytes.to_i + organization.assigned_quota - initial_value(:quota_in_bytes) > organization.quota_in_bytes
       # Organization#assigned_quota includes the OLD quota for this user,
@@ -1578,6 +1578,14 @@ class User < Sequel::Model
 
   def open_apps_enabled?
     mobile_max_open_users > 0
+  end
+
+  def builder?
+    !viewer?
+  end
+
+  def viewer?
+    viewer
   end
 
   private

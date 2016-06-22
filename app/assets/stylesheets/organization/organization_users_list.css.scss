@@ -106,17 +106,17 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 .UserRoleIndicator {
   display: inline-block;
-  padding: 0 8px;
-  margin-left: 4px;
   height: 18px;
-  background: white;
-  border-radius: 5px;
-  border-style: solid;
+  margin-left: 4px;
+  padding: 0 8px;
   border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  background: #ffffff;
   font-size: $sFontSize-smaller;
   line-height: 18px;
-  text-transform: uppercase;
   text-align: center;
+  text-transform: uppercase;
 }
 .UserRoleIndicator.Builder {
   color: #2E3C43;

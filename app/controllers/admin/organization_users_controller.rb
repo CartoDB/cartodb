@@ -64,7 +64,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # Validate password first, so nicer errors are displayed
     model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
 
-    raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}") unless model_validation_ok
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
@@ -130,7 +132,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     if attributes[:password].present? || attributes[:password_confirmation].present?
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
-    raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}") unless model_validation_ok
+
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 

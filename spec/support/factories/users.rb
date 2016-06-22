@@ -92,7 +92,7 @@ module CartoDB
     # Similar to create_user, but it doesn't raise error on validation error
     def create_validated_user(attributes = {})
       user = new_user(attributes)
-      # INFO: avoiding enable_remote_db_user
+      # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
       user.save
       if user.valid?

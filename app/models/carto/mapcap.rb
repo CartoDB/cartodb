@@ -48,9 +48,9 @@ module Carto
 
     def generate_ids_json
       self.ids_json = {
-        id: visualization.id,
+        visualization_id: visualization.id,
         map_id: visualization.map.id,
-        layers: visualization.layers.map { |layer| { "#{layer.id}": layer.widgets.map(&:id) } }
+        layers: visualization.layers.map { |layer| { "#{layer.id}": [widgets: layer.widgets.map(&:id)] } }
       }.to_json
     end
 

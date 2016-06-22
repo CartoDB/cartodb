@@ -15,7 +15,7 @@
       <%- _t('components.table.rows.destroy.cancel') %>
     </span>
   </button>
-  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-confirm">
+  <button class="CDB-Button CDB-Button--error u-tSpace--m js-confirm">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.rows.destroy.confirm') %>
     </span>

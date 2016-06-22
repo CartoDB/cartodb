@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.27.05",
+  "version": "3.27.09",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "backbone-forms": "^0.14.0",
     "backbone-model-file-upload": "^1.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.8.0",
+    "camshaft-reference": "<2.0",
     "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
@@ -40,8 +40,8 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "clipboard": "^1.5.12",
     "cartocolor": "1.1.0",
+    "clipboard": "^1.5.12",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
@@ -65,13 +65,12 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
+    "jasmine": "^2.4.1",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
-    "tap-summary": "^2.1.1",
-    "tape": "^4.5.1",
     "uglify-js": "2.4.x",
     "watchify": "3.1.1"
   },
@@ -149,11 +148,8 @@
       "/vendor"
     ]
   },
-  "config": {
-    "tapeTests": "lib/assets/test/tape/**/*-test.js"
-  },
   "scripts": {
-    "test": "tape $npm_package_config_tapeTests | tap-summary",
+    "test": "jasmine",
     "test-debug": "node debug --",
     "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }

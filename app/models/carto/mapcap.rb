@@ -33,7 +33,7 @@ module Carto
       self.ids_json = {
         visualization_id: visualization.id,
         map_id: visualization.map.id,
-        layers: visualization.layers.map { |layer| layer_id: layer.id, widgets: layer.widgets.map(&:id) }
+        layers: visualization.layers.map { |layer| { layer_id: layer.id, widgets: layer.widgets.map(&:id) } }
       }.to_json
     end
 

@@ -91,7 +91,9 @@ describe Carto::Mapcap do
 
         it 'should contain widgets on correct layers' do
           @visualization.layers.each_with_index do |layer, index|
-            @ids_json_layers[index][:widgets].length.should eq layer.widgets.length
+            @ids_json_layers[index][:widgets].each_with_index do |widget_id, widget_index|
+              widget_id.should eq layer.widgets[widget_index].id
+            end
           end
         end
       end

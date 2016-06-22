@@ -45,9 +45,9 @@ describe Carto::Mapcap do
       end
 
       it 'should contain layer ids' do
-        ids_json_layers.count.should eq @visualization.layers.count
+        @ids_json_layers.count.should eq @visualization.layers.count
 
-        ids_json_layers.each_with_index do |layer, index|
+        @ids_json_layers.each_with_index do |layer, index|
           layer.keys.first.should eq @visualization.layers[index].id
         end
       end

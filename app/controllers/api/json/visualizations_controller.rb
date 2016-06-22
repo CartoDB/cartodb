@@ -11,6 +11,7 @@ require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../lib/static_maps_url_helper'
 require_relative '../../../../lib/cartodb/event_tracker'
+require_dependency 'carto/visualizations_export_service_2'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -44,24 +45,20 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         current_user_id = current_user.id
 
         vis = if params[:source_visualization_id]
-                source, = @stats_aggregator.timing('locate') do
-                  locator.get(params.fetch(:source_visualization_id), subdomain)
+                # Copy visualization
+                user = Carto::User.find(current_user_id)
+                source = Carto::Visualization.where(id: params[:source_visualization_id]).first
+                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+
+                visualization_copy_id = @stats_aggregator.timing('copy') do
+                  export_service = Carto::VisualizationsExportService2.new
+                  visualization_hash = export_service.export_visualization_json_hash(source, user)
+                  visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+                  Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
+                  visualization_copy.id
                 end
 
-                return head(403) unless source && source.can_copy?(current_user)
-
-                copy_overlays = params.fetch(:copy_overlays, true)
-                copy_layers = params.fetch(:copy_layers, true)
-
-                additional_fields = {
-                  type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-                  parent_id:  params.fetch(:parent_id, nil)
-                }
-
-                @stats_aggregator.timing('copy') do
-                  Visualization::Copier.new(current_user, source, name_candidate)
-                                       .copy(copy_overlays, copy_layers, additional_fields)
-                end
+                CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
               elsif param_tables
                 viewed_user = ::User.find(username: subdomain)
 

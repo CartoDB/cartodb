@@ -172,8 +172,10 @@ module Carto
         layer_tooltip = layer.tooltip
         layer_tooltip_fields = layer_tooltip['fields'] if layer_tooltip
 
-        layer_infowindow_fields.map { |field| field.fetch('name') } +
-          layer_tooltip_fields.map { |field| field.fetch('name') }
+        interactivity = layer_infowindow_fields.map { |field| field.fetch('name') } +
+                        layer_tooltip_fields.map { |field| field.fetch('name') }
+
+        interactivity.uniq
       end
 
       def attributes(layer)

@@ -9,13 +9,13 @@
     <%- _t('components.table.columns.change-type.desc') %>
   </h3>
 </div>
-<div class="Dialog-footer Dialog-footer--simple u-inner">
+<div class="Dialog-footer--simple u-inner">
   <button class="CDB-Button CDB-Button--secondary u-rSpace--m u-tSpace--m js-cancel">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.columns.change-type.cancel') %>
     </span>
   </button>
-  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-delete">
+  <button class="CDB-Button CDB-Button--alert u-tSpace--m js-delete">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.columns.change-type.confirm') %>
     </span>

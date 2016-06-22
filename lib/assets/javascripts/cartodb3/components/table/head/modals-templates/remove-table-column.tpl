@@ -9,13 +9,13 @@
     <%- _t('components.table.columns.destroy.desc') %>
   </h3>
 </div>
-<div class="Dialog-footer Dialog-footer--simple u-inner">
+<div class="Dialog-footer--simple u-inner">
   <button class="CDB-Button CDB-Button--secondary u-rSpace--m u-tSpace--m js-cancel">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.columns.destroy.cancel') %>
     </span>
   </button>
-  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-delete">
+  <button class="CDB-Button CDB-Button--error u-tSpace--m js-delete">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.table.columns.destroy.confirm') %>
     </span>

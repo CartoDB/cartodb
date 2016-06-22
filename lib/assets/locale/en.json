@@ -663,7 +663,10 @@
         "html": "HTML"
       },
       "code-mirror": {
-        "save": "CMD + S to apply your html."
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can\'t be empty."
+        }
       }
     },
     "style": {

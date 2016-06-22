@@ -2,7 +2,7 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
-.StatsList.is-hidden {
+.StatsList-item.is-hidden {
   display: none;
 }
 
@@ -33,4 +33,8 @@
   border-radius: $baseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
+}
+
+.StatsList-style.is-hidden {
+  display: none;
 }

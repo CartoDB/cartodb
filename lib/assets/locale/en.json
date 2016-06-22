@@ -212,12 +212,8 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "buffer": {
-            "title": "Buffer",
-            "desc": "Calculate the area of influence of a layer determined by distance."
-          },
           "trade-area": {
-            "title": "Trade Areas",
+            "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
           "point-in-polygon": {
@@ -449,10 +445,50 @@
     },
     "table": {
       "columns": {
+        "change-type": {
+          "confirm": "ok, change it",
+          "cancel": "cancel",
+          "desc": "Maps using this column will be affected, and unconvertible data will be lost. Are you sure?",
+          "error": "Error changing type of column %{columnName}: %{error}",
+          "loading": "Changing the type of %{columnName} column...",
+          "title": "%{columnName} column will change to %{newType}",
+          "success": "Column %{columnName} changed to %{newType}"
+        },
         "create": {
           "loading": "Adding new column...",
           "error": "Error adding new column: %{error}",
-          "success": "Column %{column_name} added"
+          "success": "Column %{columnName} added"
+        },
+        "destroy": {
+          "cancel": "cancel",
+          "confirm": "ok, delete it",
+          "desc": "Maps using this column will be affected, are you sure you want to delete it?",
+          "error": "Error deleting column %{columnName}: %{error}",
+          "loading": "Removing your column %{columnName}...",
+          "success": "Column %{columnName} deleted",
+          "title": "You are about to delete column %{columnName}"
+        },
+        "rename": {
+          "cancel": "cancel",
+          "confirm": "ok, rename it",
+          "desc": "Maps using this column will be affected, are you sure you want to rename it?",
+          "error": "Error renaming column %{columnName} to %{newName}: %{error}",
+          "loading": "Renaming your column %{columnName} to %{newName}...",
+          "success": "Column %{columnName} renamed to %{newName}",
+          "title": "You are about to rename column %{columnName} to %{newName}"
+        },
+        "options": {
+          "order": "Order",
+          "rename": "Rename column",
+          "change": "Change data type",
+          "create": "Add new column",
+          "delete": "Delete this column..."
+        },
+        "types": {
+          "boolean": "Boolean",
+          "date": "Date",
+          "number": "Number",
+          "string": "String"
         }
       },
       "rows": {
@@ -616,10 +652,21 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
-          "light": "Light",
-          "dark": "Dark",
-          "color": "Color",
-          "image": "Image"
+          "infowindow_light": "Light",
+          "infowindow_dark": "Dark",
+          "infowindow_light_header_blue": "Color",
+          "infowindow_header_with_image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
+      },
+      "tooltip": {
+        "style": {
+          "none": "None",
+          "tooltip_light": "Light",
+          "tooltip_dark": "Dark"
         },
         "items": {
           "title-label": "Show items",
@@ -632,6 +679,7 @@
         "add-widget": "Add as a widget",
         "style": "STYLE",
         "top-cat": "% in top 10 cat.",
+        "trues": "% true",
         "null": "% null"
       },
       "data-toggle": {

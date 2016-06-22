@@ -35,6 +35,7 @@ class DataImport < Sequel::Model
   attr_accessor   :log, :results
 
   one_to_many :external_data_imports
+  many_to_one :user
 
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
@@ -377,6 +378,11 @@ class DataImport < Sequel::Model
     end
 
     (user.quota_in_bytes / assumed_kb_sec).round
+  end
+
+  def validate
+    super
+    errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
   end
 
   private

@@ -111,6 +111,10 @@ module Carto
       map.visualization
     end
 
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
     def wrapped_sql(user)
       query = options[:query]
 
@@ -154,10 +158,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def user
-      @user ||= maps.first.user
     end
 
   end

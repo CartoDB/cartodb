@@ -12,7 +12,7 @@ describe CartoDB::SharedEntity do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 

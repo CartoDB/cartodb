@@ -33,7 +33,7 @@ describe Carto::Mapcap do
 
     describe '#ids_vizjson' do
       before(:all) do
-        @ids_json_layers = @mpacap.ids_json[:layers]
+        @ids_json_layers = @mapcap.ids_json[:layers]
       end
 
       after(:all) do

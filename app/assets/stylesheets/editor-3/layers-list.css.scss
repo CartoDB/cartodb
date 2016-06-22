@@ -34,7 +34,7 @@
 }
 .Editor-ListLayer-item.ui-sortable-helper {
   // scss-lint:disable ImportantRule
-  left: 24px !important; // compensate for the draggable handle
+  left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
   min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {

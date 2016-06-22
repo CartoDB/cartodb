@@ -5,7 +5,8 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class Connector
-      # Requirements in user db host: odbc_fdw extension deployed
+      # Requirements:
+      #   * odbc_fdw extension must be installed in the user database
 
       # Temptative terminology
       # * connector channel (ODBC, ...)
@@ -71,7 +72,6 @@ module CartoDB
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
         qualified_table_name = %{"#{@job.schema}"."#{table_name}"}
-        execute_as_superuser "CREATE EXTENSION IF NOT EXISTS odbc_fdw;"
         @job.log "Creating Server"
         execute_as_superuser create_server_command
         @job.log "Creating Foreign Table"

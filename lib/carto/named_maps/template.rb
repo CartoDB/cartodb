@@ -152,7 +152,8 @@ module Carto
           options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
-        interactivity, attributes = infowindow_options(layer)
+        interactivity = interactivity(layer)
+        attributes = attributes(layer)
 
         options[:interactivity] = interactivity if interactivity
         options[:attributes] = attributes if attributes
@@ -162,6 +163,23 @@ module Carto
 
       def visibility_wrapped_sql(sql, index)
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      end
+
+      def interactivity(layer)
+        layer_infowindow = layer.infowindow
+        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
+
+        layer_tooltip = layer.tooltip
+        layer_tooltip_fields = layer_tooltip['fields'] if layer_tooltip
+
+        layer_infowindow_fields.map { |field| field.fetch('name') } +
+          layer_tooltip_fields.map { |field| field.fetch('name') }
+      end
+
+      def attributes(layer)
+        interactivity = interactivity(layer)
+
+        { id: 'cartodb_id', columns: interactivity } unless interactivity.empty?
       end
 
       def dataviews
@@ -180,22 +198,6 @@ module Carto
 
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
-      end
-
-      def infowindow_options(layer)
-        layer_options_interactivity = layer.options[:interactivity]
-        interactivity = layer_options_interactivity if layer_options_interactivity
-
-        layer_infowindow = layer.infowindow
-        layer_infowindow_fields = layer_infowindow['fields'] if layer_infowindow
-        attributes = if layer_infowindow_fields && !layer_infowindow_fields.empty?
-                       {
-                         id:       'cartodb_id',
-                         columns:  layer_infowindow['fields'].map { |field| field.fetch('name') }
-                       }
-                     end
-
-        [interactivity, attributes]
       end
 
       def dataview_data(widget)

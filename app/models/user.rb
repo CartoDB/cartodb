@@ -210,9 +210,7 @@ class User < Sequel::Model
       self.sync_tables_enabled ||= true
     end
 
-    if viewer
-      self.quota_in_bytes = 0 unless quota_in_bytes == 0
-    end
+    set_viewer_quotas if viewer
   end
 
   def twitter_datasource_enabled
@@ -221,6 +219,20 @@ class User < Sequel::Model
     else
       super
     end
+  end
+
+  def set_viewer_quotas
+    self.quota_in_bytes = 0 unless quota_in_bytes == 0
+    self.geocoding_quota = 0 unless geocoding_quota == 0
+    self.soft_geocoding_limit = false if soft_geocoding_limit
+    self.twitter_datasource_quota = 0 unless twitter_datasource_quota == 0
+    self.soft_twitter_datasource_limit = false if soft_twitter_datasource_limit
+    self.here_isolines_quota = 0 unless here_isolines_quota == 0
+    self.soft_here_isolines_limit = false if soft_here_isolines_limit
+    self.obs_snapshot_quota = 0 unless obs_snapshot_quota == 0
+    self.soft_obs_snapshot_limit = false if soft_obs_snapshot_limit
+    self.obs_general_quota = 0 unless obs_general_quota == 0
+    self.soft_obs_general_limit = false if soft_obs_general_limit
   end
 
   def after_create

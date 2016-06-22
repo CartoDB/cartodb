@@ -69,7 +69,30 @@ describe Carto::Mapcap do
         @ids_json_layers.count.should eq @visualization.layers.count
 
         @ids_json_layers.each_with_index do |layer, index|
-          layer.keys.first.should eq @visualization.layers[index].id
+          layer[:layer_id].should eq @visualization.layers[index].id
+        end
+      end
+
+      describe 'with widgets' do
+        before(:all) do
+          @widget = FactoryGirl.create(:widget, layer: @carto_layer)
+          @visualization.reload
+
+          @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+          @ids_json_layers = @mapcap.ids_json[:layers]
+        end
+
+        after(:all) do
+          @widget.destroy
+          @visualization.reload
+          @mapcap.destroy
+          @ids_json_layers = nil
+        end
+
+        it 'should contain widgets on correct layers' do
+          @visualization.layers.each_with_index do |layer, index|
+            @ids_json_layers[index][:widgets].length.should eq layer.widgets.length
+          end
         end
       end
     end

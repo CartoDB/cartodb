@@ -9,7 +9,7 @@
   @include display-flex();
   @include align-items(baseline);
   height: 64px;
-  margin-bottom: 22px;
+  margin-bottom: 21px;
 }
 
 .Editor-HeaderInfo {
@@ -41,7 +41,7 @@
 .Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
-  margin-bottom: 5px;
+  margin-bottom: 7px;
 }
 .Editor-HeaderInfo-titleText {
   @include flex(1);

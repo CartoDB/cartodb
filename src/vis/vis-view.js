@@ -72,14 +72,9 @@ var Vis = View.extend({
 
     this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
 
-    // Bindings
-    if (options.legends || (options.legends === undefined && this.model.map.get('legends') !== false)) {
-      this.model.map.layers.bind('reset', this.addLegends, this);
-    }
-
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this, {
-      showEmptyFields: options.show_empty_infowindow_fields
+      showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
     infowindowManager.manage(this.mapView, this.model.map);
 
@@ -87,6 +82,11 @@ var Vis = View.extend({
     tooltipManager.manage(this.mapView, this.model.map);
 
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+
+    // Bindings
+    if (this.model.get('showLegends')) {
+      this.addLegends();
+    }
 
     this._addOverlays(options);
 
@@ -111,6 +111,10 @@ var Vis = View.extend({
     }, this);
   },
 
+  addLegends: function (layers) {
+    this._addLegends(this.createLegendView(this.model.map.layers));
+  },
+
   _addLegends: function (legends) {
     if (this.legends) {
       this.legends.remove();
@@ -123,8 +127,60 @@ var Vis = View.extend({
     this.mapView.addOverlay(this.legends);
   },
 
-  addLegends: function (layers) {
-    this._addLegends(this.createLegendView(layers));
+  createLegendView: function (layers) {
+    var legends = [];
+    for (var i = layers.length - 1; i >= 0; --i) {
+      var cid = layers.at(i).cid;
+      var layer = layers.at(i).attributes;
+      if (layer.visible) {
+        var layerView = this.mapView.getLayerViewByLayerCid(cid);
+        if (layerView) {
+          legends.push(this._createLayerLegendView(layer, layerView));
+        }
+      }
+    }
+    return _.flatten(legends);
+  },
+
+  _createLegendView: function (layer, layerView) {
+    if (layer.legend) {
+      layer.legend.data = layer.legend.items;
+      var legend = layer.legend;
+
+      if ((legend.items && legend.items.length) || legend.template) {
+        var legendAttrs = _.extend(layer.legend, {
+          visible: layer.visible
+        });
+        var legendModel = new LegendModel(legendAttrs);
+        var legendView = new Legend({ model: legendModel });
+        layerView.bind('change:visibility', function (layer, hidden) {
+          legendView[hidden ? 'hide' : 'show']();
+        });
+        layerView.legend = legendModel;
+        return legendView;
+      }
+    }
+    return null;
+  },
+
+  _createLayerLegendView: function (layer, layerView) {
+    var self = this;
+    var legends = [];
+    var sublayers;
+    if (layer.options && layer.options.layer_definition) {
+      sublayers = layer.options.layer_definition.layers;
+      _(sublayers).each(function (sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
+      sublayers = layer.options.named_map.layers;
+      _(sublayers).each(function (sub, i) {
+        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
+      });
+    } else {
+      legends.push(this._createLegendView(layer, layerView));
+    }
+    return _.compact(legends).reverse();
   },
 
   _setLayerOptions: function (options) {
@@ -217,12 +273,13 @@ var Vis = View.extend({
       if (type === 'header') {
         var m = overlay.model;
 
-        if (options.title !== undefined) {
-          m.set('show_title', options.title);
+        var title = this.model.get('title');
+        if (title) {
+          m.set('show_title', title);
         }
-
-        if (options.description !== undefined) {
-          m.set('show_description', options.description);
+        var description = this.model.get('description');
+        if (description) {
+          m.set('show_description', description);
         }
 
         if (m.get('show_title') || m.get('show_description')) {
@@ -261,62 +318,6 @@ var Vis = View.extend({
       type: 'header',
       options: data.options
     });
-  },
-
-  _createLegendView: function (layer, layerView) {
-    if (layer.legend) {
-      layer.legend.data = layer.legend.items;
-      var legend = layer.legend;
-
-      if ((legend.items && legend.items.length) || legend.template) {
-        var legendAttrs = _.extend(layer.legend, {
-          visible: layer.visible
-        });
-        var legendModel = new LegendModel(legendAttrs);
-        var legendView = new Legend({ model: legendModel });
-        layerView.bind('change:visibility', function (layer, hidden) {
-          legendView[hidden ? 'hide' : 'show']();
-        });
-        layerView.legend = legendModel;
-        return legendView;
-      }
-    }
-    return null;
-  },
-
-  createLegendView: function (layers) {
-    var legends = [];
-    for (var i = layers.length - 1; i >= 0; --i) {
-      var cid = layers.at(i).cid;
-      var layer = layers.at(i).attributes;
-      if (layer.visible) {
-        var layerView = this.mapView.getLayerViewByLayerCid(cid);
-        if (layerView) {
-          legends.push(this._createLayerLegendView(layer, layerView));
-        }
-      }
-    }
-    return _.flatten(legends);
-  },
-
-  _createLayerLegendView: function (layer, layerView) {
-    var self = this;
-    var legends = [];
-    var sublayers;
-    if (layer.options && layer.options.layer_definition) {
-      sublayers = layer.options.layer_definition.layers;
-      _(sublayers).each(function (sub, i) {
-        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-      });
-    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-      sublayers = layer.options.named_map.layers;
-      _(sublayers).each(function (sub, i) {
-        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-      });
-    } else {
-      legends.push(this._createLegendView(layer, layerView));
-    }
-    return _.compact(legends).reverse();
   },
 
   addOverlay: function (overlay) {

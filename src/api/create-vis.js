@@ -26,8 +26,15 @@ var createVis = function (el, vizjson, options) {
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
+
   var visModel = new VisModel({
-    apiKey: options.apiKey
+    title: options.title || vizjson.title,
+    description: options.description || vizjson.description,
+    apiKey: options.apiKey,
+    showLegends: options.legends === true || vizjson.legends === true,
+    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
   new VisView({ // eslint-disable-line
@@ -54,7 +61,7 @@ var createVis = function (el, vizjson, options) {
 var loadVizJSON = function (visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
-  visModel.load(vizjson, options);
+  visModel.load(vizjson);
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();
   }

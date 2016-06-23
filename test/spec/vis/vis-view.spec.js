@@ -152,7 +152,7 @@ describe('vis/vis-view', function () {
   });
 
   describe('Legends', function () {
-    it('should only display legends for visible layers', function () {
+    beforeEach(function () {
       this.mapConfig.layers = [
         {
           type: 'tiled',
@@ -197,10 +197,24 @@ describe('vis/vis-view', function () {
         }
       ];
       this.visModel.load(new VizJSON(this.mapConfig));
+    });
 
-      expect(this.visView.legends.$('.cartodb-legend').length).toEqual(1);
-      expect(this.visView.legends.$el.html()).toContain('visible legend item');
-      expect(this.visView.legends.$el.html()).not.toContain('invisible legend item');
+    it('should NOT display legend if showLegends is false', function () {
+      this.visModel.set('showLegends', false);
+
+      this.visView.render();
+
+      expect(this.visView.$('.cartodb-legend').length).toEqual(0);
+    });
+
+    it('should only display legends for visible layers if showLegends is true', function () {
+      this.visModel.set('showLegends', true);
+
+      this.visView.render();
+
+      expect(this.visView.$('.cartodb-legend').length).toEqual(1);
+      expect(this.visView.$el.html()).toContain('visible legend item');
+      expect(this.visView.$el.html()).not.toContain('invisible legend item');
     });
   });
 

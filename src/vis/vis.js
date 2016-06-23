@@ -17,7 +17,10 @@ var Layers = require('./vis/layers');
 
 var VisModel = Backbone.Model.extend({
   defaults: {
-    loading: false
+    loading: false,
+    https: false,
+    showLegends: false,
+    showEmptyInfowindowFields: false
   },
 
   initialize: function () {
@@ -55,9 +58,7 @@ var VisModel = Backbone.Model.extend({
     return this.map.layers.at(index);
   },
 
-  load: function (vizjson, options) {
-    options = options || {};
-
+  load: function (vizjson) {
     // Create the WindhaftClient
     var endpoint;
     var WindshaftMapClass;
@@ -116,7 +117,6 @@ var VisModel = Backbone.Model.extend({
       description: vizjson.description,
       maxZoom: vizjson.maxZoom,
       minZoom: vizjson.minZoom,
-      legends: vizjson.legends,
       bounds: vizjson.bounds,
       center: vizjson.center,
       zoom: vizjson.zoom,
@@ -153,11 +153,7 @@ var VisModel = Backbone.Model.extend({
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
-    var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-    var useHTTPs = isProtocolHTTPs ||
-      vizjson.https === true ||
-      options.https === true;
-    var layerModels = this._newLayerModels(vizjson, this.map, { https: useHTTPs });
+    var layerModels = this._newLayerModels(vizjson, this.map, { https: this.get('https') });
     this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate

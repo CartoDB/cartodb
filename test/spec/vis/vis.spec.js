@@ -350,7 +350,6 @@ describe('vis/vis', function () {
     it('when https is false all the urls should be transformed to http', function () {
       var vizjson = fakeVizJSON();
 
-      vizjson.https = false;
       vizjson.layers = [{
         type: 'tiled',
         options: {
@@ -358,6 +357,7 @@ describe('vis/vis', function () {
         }
       }];
 
+      this.vis.set('https', false);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(
@@ -368,7 +368,6 @@ describe('vis/vis', function () {
     it('when https is true all urls should NOT be transformed to http', function () {
       var vizjson = fakeVizJSON();
 
-      vizjson.https = true;
       vizjson.layers = [{
         type: 'tiled',
         options: {
@@ -376,6 +375,7 @@ describe('vis/vis', function () {
         }
       }];
 
+      this.vis.set('https', true);
       this.vis.load(new VizJSON(vizjson));
 
       expect(this.vis.map.layers.at(0).get('urlTemplate')).toEqual(

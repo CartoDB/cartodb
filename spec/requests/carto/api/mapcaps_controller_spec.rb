@@ -3,7 +3,7 @@ require 'support/helpers'
 require 'factories/carto_visualizations'
 require_dependency 'carto/uuidhelper'
 
-describe Carto::Api::AnalysesController do
+describe Carto::Api::MapcapsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
@@ -84,13 +84,49 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'returns 404 for an inexistent mapcap' do
-      get show_mapcap_url, mapcap: Carto::Mapcap.new do |response|
+      get show_mapcap_url(mapcap: Carto::Mapcap.new) do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 403 if user does not own the visualization' do
       get show_mapcap_url(user: @intruder), {} do |response|
+        response.status.should eq 403
+
+        response.body.should be_empty
+      end
+    end
+  end
+
+  describe '#destroy' do
+    before (:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
+    after  (:each) { @mapcap.destroy if @mapcap }
+
+    def destroy_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
+      mapcap_url(
+        user_domain: user.subdomain,
+        visualization_id: visualization.id,
+        id: mapcap.id,
+        api_key: user.api_key
+      )
+    end
+
+    it 'destroy a mapcap' do
+      get destroy_mapcap_url, {} do |response|
+        response.status.should eq 200
+
+        Carto::Mapcap.exists?(response.body[:id]).should_not be_true
+      end
+    end
+
+    it 'returns 404 for an inexistent mapcap' do
+      get destroy_mapcap_url(mapcap: Carto::Mapcap.new) do |response|
+        response.status.should eq 404
+      end
+    end
+
+    it 'returns 403 if user does not own the visualization' do
+      get destroy_mapcap_url(user: @intruder), {} do |response|
         response.status.should eq 403
 
         response.body.should be_empty

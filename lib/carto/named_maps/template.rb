@@ -152,14 +152,10 @@ module Carto
           options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
-        layer_infowindow = layer.infowindow
-        layer_tooltip = layer.tooltip
+        attributes, interactivity = attributes_and_interactivity(layer.infowindow, layer.tooltip)
 
-        click_fields = layer_infowindow['fields'] if layer_infowindow
-        hover_fields = layer_tooltip['fields'] if layer_tooltip
-
-        options[:interactivity] = interactivity(click_fields, hover_fields) if click_fields || hover_fields
-        options[:attributes] = attributes(click_fields) if click_fields
+        options[:attributes] = attributes if attributes.present?
+        options[:interactivity] = interactivity if interactivity.present?
 
         options
       end
@@ -168,17 +164,27 @@ module Carto
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
       end
 
-      def interactivity(click_fields, hover_fields)
+      def attributes_and_interactivity(layer_infowindow, layer_tooltip)
+        click_fields = layer_infowindow['fields'] if layer_infowindow
+        hover_fields = layer_tooltip['fields'] if layer_tooltip
+
         interactivity = []
+        attributes = {}
 
-        interactivity << 'cartodb_id' if click_fields.present?
-        interactivity << hover_fields.map { |field| field.fetch('name') } if hover_fields.present?
+        if hover_fields.present?
+          interactivity << hover_fields.map { |hover_field| hover_field.fetch('name') }
+        end
 
-        interactivity.join(',')
-      end
+        if click_fields.present?
+          interactivity << 'cartodb_id'
 
-      def attributes(click_fields)
-        { id: 'cartodb_id', columns: click_fields.map { |field| field.fetch('name') } } unless click_fields.empty?
+          attributes = {
+            id: 'cartodb_id',
+            columns: click_fields.map { |click_field| click_field.fetch('name') }
+          }
+        end
+
+        [attributes, interactivity.join(',')]
       end
 
       def dataviews

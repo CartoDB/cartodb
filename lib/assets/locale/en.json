@@ -4,10 +4,11 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
+    "intersection": "Intersection",
+    "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
-    "kmeans": "Cluster"
+    "point-in-polygon": "Point in polygon",
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -219,6 +220,10 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "intersection": {
+            "title": "Intersection",
+            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -518,16 +523,13 @@
           "success": "New row added"
         },
         "destroy": {
-          "loading": "Deleting row...",
-          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
-          "success": "Row with cartodb_id %{cartodb_id} deleted"
-        },
-        "confirmation": {
-          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
-          "desc": "Are you sure you want to delete it?",
-          "loading": "Removing your row...",
+          "cancel": "cancel",
           "confirm": "ok, delete",
-          "cancel": "cancel"
+          "desc": "Are you sure you want to delete it?",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
+          "success": "Row with cartodb_id %{cartodb_id} deleted",
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
         },
         "paginator": {
           "error": "There was an error with pagination: %{error}",
@@ -618,6 +620,7 @@
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
+        "filter-aggregate": "Filter or aggregate your results",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",

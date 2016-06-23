@@ -8,7 +8,7 @@
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
-  padding: $baseSize * 2 0;
+  padding: 20px 0 $baseSize * 2;
   background: $cBlue;
 }
 
@@ -43,16 +43,12 @@
 }
 
 .EditorMenu-logo {
-  display: block;
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 23px;
-  padding: $baseSize - 2 0;
-  border-radius: $baseSize / 2;
-  background: #FFF;
-  box-sizing: border-box;
-  font-size: $baseSize * 3;
-  text-align: center;
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 36px;
 }
 
 .EditorMenu-avatar {

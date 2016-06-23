@@ -36,9 +36,14 @@
   padding: 16px;
   text-align: center;
 }
-
 .CustomList-item.is-highlighted,
 .CustomList-item:hover {
   background: rgba($cHighlight, 0.16);
   cursor: pointer;
+}
+.CustomList-item.is-disabled {
+  &:hover {
+    background: inherit;
+    cursor: default;
+  }
 }

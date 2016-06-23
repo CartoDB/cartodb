@@ -1,6 +1,19 @@
 var AutoStyler = require('./auto-styler');
+var _ = require('underscore');
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
+    var preserveWidth = true;
+    var startingStyle = this.layer.get && (this.layer.get('cartocss') || this.layer.get('meta').cartocss);
+    if (startingStyle) {
+      var originalWidth = startingStyle.match(/marker-width:.*;/g);
+      if (originalWidth) {
+        if (originalWidth.length > 1) {
+          preserveWidth = false;
+        } else {
+          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
+        }
+      }
+    }
     var style = '';
     var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
     var color = colors[Math.floor(Math.random() * colors.length)];
@@ -14,6 +27,9 @@ var HistogramAutoStyler = AutoStyler.extend({
         style += this._getHistGeometry(symbol)
           .replace('{{layername}}', this._getLayerHeader(symbol));
       }
+    }
+    if (preserveWidth) {
+      style = style.replace('{{markerWidth}}', originalWidth);
     }
     return style.replace(/{{column}}/g, this.dataviewModel.get('column'))
       .replace(/{{bins}}/g, this.dataviewModel.get('bins'))
@@ -41,17 +57,13 @@ var HistogramAutoStyler = AutoStyler.extend({
       }
     } else if (geometryType === 'marker') {
       if (shape === 'F') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}})), quantiles')
-                     .replace('{{markerWidth}}', '7');
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(RedOr1, {{bins}})), quantiles');
       } else if (shape === 'L' || shape === 'J') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headtails)')
-                     .replace('{{markerWidth}}', '7');
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Sunset2, {{bins}}), headtails)');
       } else if (shape === 'A') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles')
-                     .replace('{{markerWidth}}', '7');
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(Geyser, {{bins}})), quantiles)');
       } else if (shape === 'C' || shape === 'U') {
-        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(BluYl1, {{bins}}), jenks)')
-                     .replace('{{markerWidth}}', '7');
+        style = style.replace('{{defaultColor}}', 'ramp([{{column}}], cartocolor(BluYl1, {{bins}}), jenks)');
       } else {
         style = style.replace('{{markerWidth}}', 'ramp([{{column}}], {{min}}, {{max}}, {{bins}})');
       }

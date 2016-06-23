@@ -10,7 +10,8 @@
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "filter": "Filter",
-    "kmeans": "Cluster"
+    "kmeans": "Cluster",
+    "filter-by-node-column": "Merge by column"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -242,6 +243,10 @@
           "weighted-centroid": {
             "title": "Weighted centroid",
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+          },
+          "filter-by-node-column": {
+            "title": "Merge by column",
+            "desc": "Merge two layers matching column names"
           }
         }
       },
@@ -660,7 +665,9 @@
         "type": "Type",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "source-column": "Source column",
+        "filter-column": "Filter column"
       },
       "infowindow": {
         "style": {

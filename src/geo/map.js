@@ -152,9 +152,9 @@ var Map = Model.extend({
     }
   },
 
-  instantiateMap: function () {
+  instantiateMap: function (options) {
     this._initBinds();
-    this.reload();
+    this.reload(_.pick(options, ['success', 'error']));
   },
 
   _onLayersResetted: function () {

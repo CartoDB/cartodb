@@ -1,11 +1,9 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var $ = require('jquery');
 var log = require('cdb.log');
 var util = require('cdb.core.util');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
-var Map = require('../geo/map');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
@@ -15,31 +13,14 @@ var Template = require('../core/template');
 var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
-var DataviewsFactory = require('../dataviews/dataviews-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
-var WindshaftConfig = require('../windshaft/config');
-var WindshaftClient = require('../windshaft/client');
-var WindshaftNamedMap = require('../windshaft/named-map');
-var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
-var AnalysisFactory = require('../analysis/analysis-factory');
-var LayersCollection = require('../geo/map/layers');
-var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
-var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
-var ModelUpdater = require('./model-updater');
-var AnalysisPoller = require('../analysis/analysis-poller');
 
 /**
  * Visualization creation
  */
 var Vis = View.extend({
   initialize: function () {
-    this.overlays = [];
-    this._dataviewsCollection = new Backbone.Collection();
-    this._layersCollection = new LayersCollection();
-    this._analysisCollection = new Backbone.Collection();
-    this._analysisPoller = new AnalysisPoller();
-
     this.model.bind('change:loading', function () {
       if (this.loader) {
         if (this.model.get('loading')) {
@@ -49,113 +30,17 @@ var Vis = View.extend({
         }
       }
     }, this);
+
+    this.model.on('load', this.render, this);
+    this.model.on('invalidateSize', this._invalidateSize, this);
+    this.overlays = [];
+
+    _.bindAll(this, '_onResize');
   },
 
-  done: function (fn) {
-    return this.bind('done', fn);
-  },
-
-  error: function (fn) {
-    return this.bind('error', fn);
-  },
-
-  load: function (vizjson, options) {
-    options = options || {};
-
-    // Create the WindhaftClient
-    var endpoint;
-    var layerGroupModel;
-    var WindshaftMapClass;
-    var apiKey = options.apiKey;
-    var datasource = vizjson.datasource;
-    // TODO: We can use something else to differentiate types of "datasource"s
-    var isNamedMap = !!datasource.template_name;
-
-    if (isNamedMap) {
-      layerGroupModel = new CartoDBLayerGroupNamedMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    } else {
-      layerGroupModel = new CartoDBLayerGroupAnonymousMap({
-        apiKey: apiKey
-      }, {
-        layersCollection: this._layersCollection
-      });
-    }
-
-    if (isNamedMap) {
-      endpoint = [WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name].join('/');
-      WindshaftMapClass = WindshaftNamedMap;
-    } else {
-      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      WindshaftMapClass = WindshaftAnonymousMap;
-    }
-
-    var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      forceCors: datasource.force_cors || true
-    });
-
-    var modelUpdater = new ModelUpdater({
-      layerGroupModel: layerGroupModel,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
-    // Create the WindshaftMap
-    this._windshaftMap = new WindshaftMapClass({
-      apiKey: apiKey,
-      statTag: datasource.stat_tag
-    }, {
-      client: windshaftClient,
-      modelUpdater: modelUpdater,
-      dataviewsCollection: this._dataviewsCollection,
-      layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
-    });
-
-    // Create the Map
-
-    var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
-
-    var mapConfig = {
-      title: vizjson.title,
-      description: vizjson.description,
-      maxZoom: vizjson.maxZoom,
-      minZoom: vizjson.minZoom,
-      legends: vizjson.legends,
-      bounds: vizjson.bounds,
-      center: vizjson.center,
-      zoom: vizjson.zoom,
-      scrollwheel: !!this.scrollwheel,
-      drag: allowDragging,
-      provider: vizjson.map_provider,
-      vector: vizjson.vector
-    };
-
-    this.map = new Map(mapConfig, {
-      layersCollection: this._layersCollection,
-      windshaftMap: this._windshaftMap,
-      dataviewsCollection: this._dataviewsCollection
-    });
-
-    // If a CartoDB embed map is hidden by default, its
-    // height is 0 and it will need to recalculate its size
-    // and re-center again.
-    // We will wait until it is resized and then apply
-    // the center provided in the parameters and the
-    // correct size.
-    var map_h = this.$el.outerHeight();
-    if (map_h === 0) {
-      $(window).bind('resize', function () {
-        this._onResize();
-      }.bind(this));
-    }
+  render: function () {
+    // TODO: Get this from this.model
+    var options = {};
 
     // Create the MapView
 
@@ -185,68 +70,36 @@ var Vis = View.extend({
 
     var mapViewFactory = new MapViewFactory();
 
-    this.mapView = mapViewFactory.createMapView(this.map.get('provider'), this.map, div_hack, layerGroupModel);
+    this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
 
     // Bindings
-
-    if (options.legends || (options.legends === undefined && this.map.get('legends') !== false)) {
-      this.map.layers.bind('reset', this.addLegends, this);
+    if (options.legends || (options.legends === undefined && this.model.map.get('legends') !== false)) {
+      this.model.map.layers.bind('reset', this.addLegends, this);
     }
-
-    // Create the Layer Models and set them on hte map
-
-    this.https = (window && window.location.protocol && window.location.protocol === 'https:') || !!vizjson.https || !!options.https;
-    var layerModels = this._newLayerModels(vizjson, this.map);
 
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this, {
       showEmptyFields: options.show_empty_infowindow_fields
     });
-    infowindowManager.manage(this.mapView, this.map);
+    infowindowManager.manage(this.mapView, this.model.map);
 
     var tooltipManager = new TooltipManager(this);
-    tooltipManager.manage(this.mapView, this.map);
+    tooltipManager.manage(this.mapView, this.model.map);
 
-    // Create the collection of Overlays
-    var overlaysCollection = new Backbone.Collection();
-    overlaysCollection.bind('reset', function (overlays) {
-      this._addOverlays(overlays, vizjson, options);
-    }, this);
-    overlaysCollection.reset(vizjson.overlays);
-
-    // Create the public Dataview Factory
-    this.dataviews = new DataviewsFactory({
-      apiKey: apiKey
-    }, {
-      dataviewsCollection: this._dataviewsCollection,
-      map: this.map
-    });
-
-    this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
 
-    // Public Analysis Factory
-    this.analysis = new AnalysisFactory({
-      apiKey: apiKey,
-      analysisCollection: this._analysisCollection,
-      map: this.map
-    });
+    this._addOverlays(options);
 
-    // Lastly: reset the layer models on the map
-    this.map.layers.reset(layerModels);
-
-    // "Load" existing analyses from the viz.json. This will generate
-    // the analyses graphs and index analysis nodes in the
-    // collection of analysis
-    if (vizjson.analyses) {
-      _.each(vizjson.analyses, function (analysis) {
-        this.analysis.analyse(analysis);
-      }, this);
+    // If a CartoDB embed map is hidden by default, its
+    // height is 0 and it will need to recalculate its size
+    // and re-center again.
+    // We will wait until it is resized and then apply
+    // the center provided in the parameters and the
+    // correct size.
+    var map_h = this.$el.outerHeight();
+    if (map_h === 0) {
+      $(window).bind('resize', this._onResize);
     }
-    // Global variable for easier console debugging / testing
-    window.vis = this;
-
-    return this;
   },
 
   _bindLayerViewToLoader: function (layerView) {
@@ -256,38 +109,6 @@ var Vis = View.extend({
     layerView.bind('loading', function () {
       this.model.trackLoadingObject(layerView);
     }, this);
-  },
-
-  _onMapInstanceCreated: function () {
-    this._analysisPoller.reset();
-    this._analysisCollection.each(function (analysisModel) {
-      analysisModel.unbind('change:status', this._onAnalysisStatusChanged, this);
-      if (analysisModel.url() && !analysisModel.isDone()) {
-        this._analysisPoller.poll(analysisModel);
-        this.model.trackLoadingObject(analysisModel);
-        analysisModel.bind('change:status', this._onAnalysisStatusChanged, this);
-      }
-    }, this);
-  },
-
-  _isAnalysisSourceOfLayerOrDataview: function (analysisModel) {
-    var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
-      return layerModel.get('source') === analysisModel.get('id');
-    });
-    var isAnalysisLinkedToDataview = this._dataviewsCollection.any(function (dataviewModel) {
-      var sourceId = dataviewModel.getSourceId();
-      return analysisModel.get('id') === sourceId;
-    });
-    return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
-  },
-
-  _onAnalysisStatusChanged: function (analysisModel) {
-    if (analysisModel.isDone()) {
-      this.model.untrackLoadingObject(analysisModel);
-      if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        this.map.reload();
-      }
-    }
   },
 
   _addLegends: function (legends) {
@@ -337,8 +158,8 @@ var Vis = View.extend({
     }
   },
 
-  _addOverlays: function (overlays, data, options) {
-    overlays = overlays.toJSON();
+  _addOverlays: function (options) {
+    overlays = this.model.overlaysCollection.toJSON();
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function (overlay) {
       return overlay.order === null ? Number.MAX_VALUE : overlay.order;
@@ -349,10 +170,10 @@ var Vis = View.extend({
       this.overlays.pop().clean();
     }
 
-    this._createOverlays(overlays, data, options);
+    this._createOverlays(overlays, options);
   },
 
-  _createOverlays: function (overlays, vis_data, options) {
+  _createOverlays: function (overlays, options) {
     _(overlays).each(function (data) {
       var type = data.type;
 
@@ -371,7 +192,7 @@ var Vis = View.extend({
       // We add the header overlay
       var overlay;
       if (type === 'header') {
-        overlay = this._addHeader(data, vis_data);
+        overlay = this._addHeader(data);
       } else {
         overlay = this.addOverlay(data);
       }
@@ -431,58 +252,11 @@ var Vis = View.extend({
     });
   },
 
-  /**
-   * Force a map instantiation.
-   * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
-   */
-  instantiateMap: function () {
-    var self = this;
-    this._dataviewsCollection.on('add reset remove', _.debounce(this._invalidateSizeOnDataviewsChanges, 10), this);
-    this.map.instantiateMap();
-
-    // Trigger 'done' event
-    _.defer(function () {
-      self.trigger('done', self, self.map.layers);
-    });
-  },
-
-  centerMapToOrigin: function () {
+  _invalidateSize: function () {
     this.mapView.invalidateSize();
-    this.map.reCenter();
   },
 
-  _newLayerModels: function (vizjson, map) {
-    var layerModels = [];
-    var layersOptions = {
-      https: this.https,
-      map: map
-    };
-    _.each(vizjson.layers, function (layerData) {
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        var layersData;
-        if (layerData.type === 'layergroup') {
-          layersData = layerData.options.layer_definition.layers;
-        } else {
-          layersData = layerData.options.named_map.layers;
-        }
-        _.each(layersData, function (layerData) {
-          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
-        });
-      } else {
-        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
-      }
-    });
-
-    return layerModels;
-  },
-
-  _invalidateSizeOnDataviewsChanges: function () {
-    if (this._dataviewsCollection.size() > 0) {
-      this.mapView.invalidateSize();
-    }
-  },
-
-  _addHeader: function (data, vis_data) {
+  _addHeader: function (data) {
     return this.addOverlay({
       type: 'header',
       options: data.options
@@ -546,7 +320,7 @@ var Vis = View.extend({
   },
 
   addOverlay: function (overlay) {
-    overlay.map = this.map;
+    overlay.map = this.model.map;
 
     var v = Overlay.create(overlay.type, this, overlay);
 
@@ -586,36 +360,12 @@ var Vis = View.extend({
     });
   },
 
-  // public methods
-
-  /**
-   * @return the native map used behind the scenes {L.Map} or {google.maps.Map}
-   */
-  getNativeMap: function () {
-    return this.mapView.getNativeMap();
-  },
-
   // returns an array of layers
   getLayerViews: function () {
     var self = this;
-    return _.compact(this.map.layers.map(function (layer) {
+    return _.compact(this.model.map.layers.map(function (layer) {
       return self.mapView.getLayerViewByLayerCid(layer.cid);
     }));
-  },
-
-  /**
-   * @return Array of {LayerModel}
-   */
-  getLayers: function () {
-    return _.clone(this.map.layers.models);
-  },
-
-  /**
-   * @param {Integer} index Layer index (including base layer if present)
-   * @return {LayerModel}
-   */
-  getLayer: function (index) {
-    return this.map.layers.at(index);
   },
 
   getOverlays: function () {
@@ -641,7 +391,7 @@ var Vis = View.extend({
     // This timeout is necessary due to GMaps needs time
     // to load tiles and recalculate its bounds :S
     setTimeout(function () {
-      self.centerMapToOrigin();
+      self.model.centerMapToOrigin();
     }, 150);
   }
 }, {

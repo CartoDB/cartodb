@@ -249,10 +249,13 @@ shared_examples_for 'vizjson generator' do
         Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
-        map_id = source_visualization[:map_id]
 
-        derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user_1.id, map_id: map_id)
-        viz_id = derived_visualization.id
+        payload = { source_visualization_id: source_visualization.fetch(:id), privacy: 'PUBLIC' }
+
+        post api_v1_visualizations_create_url(user_domain: @user_1.username, api_key: @api_key),
+             payload.to_json, @headers
+        last_response.status.should == 200
+        viz_id = JSON.parse(last_response.body).fetch('id')
 
         put api_v1_visualizations_show_url(user_domain: @user_1.username, id: viz_id, api_key: @api_key),
             { privacy: 'PUBLIC', id: viz_id }.to_json, @headers

@@ -210,9 +210,15 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      map = FactoryGirl.create(:map)
-      derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
-      id = derived_visualization.id
+      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
+      payload           = { source_visualization_id: id }
+
+      post "/api/v1/viz?api_key=#{@api_key}",
+        payload.to_json, @headers
+      last_response.status.should == 200
+
+      derived_visualization = JSON.parse(last_response.body)
+      id = derived_visualization.fetch('id')
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 302

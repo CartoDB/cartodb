@@ -25,7 +25,7 @@ $selectedColor: white;
 .UserNotifications-badge {
   @include opacity(0);
   @include transition(all, .5s, ease-in-out);
-  @include transform(scale(0));
+  @include transforms(scale(0));
   color: $cHighlight-negative;
 }
 // States
@@ -33,7 +33,7 @@ $selectedColor: white;
   color: $selectedColor;
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
-    @include transform(scale(1));
+    @include transforms(scale(1));
     @include opacity(1);
     color: $selectedColor;
   }
@@ -41,6 +41,6 @@ $selectedColor: white;
 .UserNotifications.has--alerts:hover {
   .UserNotifications-badge {
     @include transition(all, .1s, ease-in-out);
-    @include transform(scale(1.1))
+    @include transforms(scale(1.1))
   }
 }

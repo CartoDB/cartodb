@@ -42,3 +42,8 @@ button {
 button:focus {
   outline: none;
 }
+
+
+::-webkit-input-placeholder {
+  color: rgba(0,0,0,0.35);
+}

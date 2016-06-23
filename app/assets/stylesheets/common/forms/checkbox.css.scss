@@ -43,13 +43,13 @@
   &:before {
     left: 3px;
     width: 4px;
-    @include transform(rotate(55deg));
+    @include transforms(rotate(55deg));
   }
   &:after {
     top: 6px;
     left: 4px;
     width: 8px;
-    @include transform(rotate(-60deg));
+    @include transforms(rotate(-60deg));
   }
 }
 .Checkbox-label {

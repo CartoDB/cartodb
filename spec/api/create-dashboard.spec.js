@@ -26,8 +26,8 @@ describe('create-dashboard', function () {
           }
         }],
         datasource: {
-          maps_api_template: 'http://localhost/spec/',
-          user_name: 'pepe'
+          maps_api_template: 'https://{user}.cartodb.com',
+          user_name: 'documentation'
         },
         layers: [{
           id: 'first-layer',
@@ -40,7 +40,7 @@ describe('create-dashboard', function () {
       document.body.removeChild(this.$el);
     });
 
-    fit('should return an API dashboard object', function (done) { // eslint-disable-line
+    it('should return an API dashboard object', function (done) {
       var selector = '#' + this.$el.id;
       createDashboard(selector, this.vizJSON, {}, function (error, dashboard) {
         expect(error).toEqual(null);

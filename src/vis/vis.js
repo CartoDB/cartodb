@@ -275,8 +275,7 @@ var VisModel = Backbone.Model.extend({
     });
 
     return layerModels;
-   }
-
+  }
 });
 
 module.exports = VisModel;

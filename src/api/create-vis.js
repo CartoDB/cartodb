@@ -24,17 +24,13 @@ var createVis = function (el, vizjson, options) {
     throw new TypeError('a vizjson URL or object must be provided');
   }
 
-  var args = arguments;
-  var fn = args[args.length - 1];
-
-
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
   var visModel = new VisModel({
     apiKey: options.apiKey
   });
 
-  var visView = new VisView({
+  new VisView({ // eslint-disable-line
     el: el,
     model: visModel
   });

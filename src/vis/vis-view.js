@@ -159,7 +159,7 @@ var Vis = View.extend({
   },
 
   _addOverlays: function (options) {
-    overlays = this.model.overlaysCollection.toJSON();
+    var overlays = this.model.overlaysCollection.toJSON();
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function (overlay) {
       return overlay.order === null ? Number.MAX_VALUE : overlay.order;

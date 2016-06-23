@@ -13,9 +13,9 @@ module Carto
 
         old_template_name = templated_sym[:template_name]
 
-        new_template_name = NEW_TEMPLATES_MAP.fetch(old_template_name, old_template_name)
+        if MIGRATED_TEMPLATES.include?(old_template_name)
+          new_template_name = 'infowindow_color'
 
-        if new_template_name == INFOWINDOW_COLOR_TEMPLATE
           fixed_color = extract_color_from_old_template(templated_sym[:template_name])
 
           template_content_path = "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/infowindow_color.jst.mustache"
@@ -47,15 +47,8 @@ module Carto
 
       INFOWINDOW_COLOR_TEMPLATE = 'infowindow_color'.freeze
 
-      NEW_TEMPLATES_MAP = {
-        'infowindow_light' => 'infowindow_light',
-        'infowindow_dark' => 'infowindow_dark',
-        'infowindow_light_header_blue' => INFOWINDOW_COLOR_TEMPLATE,
-        'infowindow_light_header_yellow' => INFOWINDOW_COLOR_TEMPLATE,
-        'infowindow_light_header_orange' => INFOWINDOW_COLOR_TEMPLATE,
-        'infowindow_light_header_green' => INFOWINDOW_COLOR_TEMPLATE,
-        'infowindow_header_with_image' => 'infowindow_header_with_image'
-      }.freeze
+      MIGRATED_TEMPLATES = %w{ infowindow_light_header_blue infowindow_light_header_yellow
+                               infowindow_light_header_orange infowindow_light_header_green }.freeze
 
       COLOR_MAP = {
         'blue' => '#35AAE5',

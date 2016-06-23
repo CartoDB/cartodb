@@ -606,6 +606,7 @@
         "workflow": "Workflow"
       },
       "infowindow": {
+        "placeholder-text": "Popups are disabled for this layer.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",

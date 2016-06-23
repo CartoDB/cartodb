@@ -150,7 +150,7 @@
   },
   "scripts": {
     "test": "jasmine",
-    "test-debug": "node debug --",
+    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
     "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }
 }

@@ -422,7 +422,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def arcgis_datasource_enabled?
-    self.arcgis_datasource_enabled == true
+    true
   end
 
   def private_maps_enabled?

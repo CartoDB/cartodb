@@ -522,6 +522,11 @@
           "error": "Error adding new row: %{error}",
           "success": "New row added"
         },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+        },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",

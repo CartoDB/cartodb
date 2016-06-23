@@ -11,6 +11,7 @@
   padding: 16px; // padding is necessary for the background below to be used (otherwise would use the container's bg)
   background: rgba(#F2F6F9, 1); // Canvas is out of widget themes
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 .CDB-Dashboard-mapWrapper {
   @include display-flex();

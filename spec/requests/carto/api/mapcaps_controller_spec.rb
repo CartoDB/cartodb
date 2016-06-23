@@ -7,7 +7,11 @@ describe Carto::Api::MapcapsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
-  let(:dummy_mapcap) { Carto::Mapcap.new(id: UUIDTools::UUID.random_create.to_s) }
+  let(:dummy_mapcap) do
+    dummy = mock
+    dummy.stubs(:id).returns(UUIDTools::UUID.random_create.to_s)
+    dummy
+  end
 
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)

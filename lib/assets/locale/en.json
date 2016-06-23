@@ -11,7 +11,7 @@
     "point-in-polygon": "Point in polygon",
     "filter": "Filter",
     "kmeans": "Cluster",
-    "filter-by-node-column": "Merge by column"
+    "filter-by-node-column": "Link to layer"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",

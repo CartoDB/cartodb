@@ -40,7 +40,7 @@ describe('create-dashboard', function () {
       document.body.removeChild(this.$el);
     });
 
-    fit('should return an API dashboard object', function (done) {
+    fit('should return an API dashboard object', function (done) { // eslint-disable-line
       var selector = '#' + this.$el.id;
       createDashboard(selector, this.vizJSON, {}, function (error, dashboard) {
         expect(error).toEqual(null);

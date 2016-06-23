@@ -1,1 +1,1 @@
-<div class="CDB-Shape-close is-blue is-large js-theme js-close"></div>
+<div class="CDB-Shape-close is-blue is-large js-theme"></div>

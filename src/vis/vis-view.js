@@ -31,7 +31,7 @@ var Vis = View.extend({
       }
     }, this);
 
-    this.model.on('load', this.render, this);
+    this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
     this.overlays = [];
 

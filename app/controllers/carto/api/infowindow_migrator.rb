@@ -7,7 +7,7 @@ module Carto
         return nil if templated_element.nil?
 
         template = templated_element['template']
-        return templated_element if !template.nil? && !template.empty?
+        return templated_element if template.present?
 
         templated_sym = templated_element.deep_symbolize_keys
 
@@ -43,6 +43,8 @@ module Carto
         templated_element
       end
 
+      private
+
       INFOWINDOW_COLOR_TEMPLATE = 'infowindow_color'.freeze
 
       NEW_TEMPLATES_MAP = {
@@ -63,7 +65,7 @@ module Carto
       }.freeze
 
       def extract_color_from_old_template(old_template_name)
-        COLOR_MAP.fetch(old_template_name.split('_').last, '#FABADA')
+        COLOR_MAP[old_template_name.split('_').last]
       end
 
       def get_template_name(name)

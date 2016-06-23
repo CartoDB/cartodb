@@ -16,7 +16,7 @@ module Carto
         if MIGRATED_TEMPLATES.include?(old_template_name)
           new_template_name = 'infowindow_color'
 
-          fixed_color = extract_color_from_old_template(templated_sym[:template_name])
+          fixed_color = extract_color_from_old_template(old_template_name)
 
           template_content_path = "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/infowindow_color.jst.mustache"
 
@@ -31,14 +31,16 @@ module Carto
               fixed: fixed_color
             }
           }
-
-          templated_element[:template_name] = new_template_name
         else
+          new_template_name = ALIASED_TEMPLATES.fetch(old_template_name, old_template_name)
+
           templated_element[:template] = get_template(
-            templated_sym[:template_name],
+            old_template_name,
             templated_sym[:template],
-            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
+            "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(old_template_name)}.jst.mustache")
         end
+
+        templated_element[:template_name] = new_template_name
 
         templated_element
       end
@@ -49,6 +51,11 @@ module Carto
 
       MIGRATED_TEMPLATES = %w{ infowindow_light_header_blue infowindow_light_header_yellow
                                infowindow_light_header_orange infowindow_light_header_green }.freeze
+
+      ALIASED_TEMPLATES = {
+        'table/views/infowindow_light' => 'infowindow_light',
+        'table/views/infowindow_dark' => 'infowindow_dark'
+      }.freeze
 
       COLOR_MAP = {
         'blue' => '#35AAE5',

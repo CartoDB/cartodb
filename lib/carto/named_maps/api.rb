@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require_relative 'template'
 require_relative '../http/client'
 require_dependency 'carto/named_maps/template'
 

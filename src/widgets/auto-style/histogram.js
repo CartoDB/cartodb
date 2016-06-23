@@ -1,4 +1,5 @@
 var AutoStyler = require('./auto-styler');
+var _ = require('underscore');
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var preserveWidth = true;
@@ -27,7 +28,7 @@ var HistogramAutoStyler = AutoStyler.extend({
           .replace('{{layername}}', this._getLayerHeader(symbol));
       }
     }
-    if (preserveWidth) {
+    if (preserveWidth && !_.isEmpty(originalWidth)) {
       style = style.replace('{{markerWidth}}', originalWidth);
     }
     return style.replace(/{{column}}/g, this.dataviewModel.get('column'))

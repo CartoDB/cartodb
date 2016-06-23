@@ -1,4 +1,5 @@
 var AutoStyler = require('./auto-styler');
+var _ = require('underscore');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var preserveWidth = true;
@@ -30,7 +31,7 @@ var CategoryAutoStyler = AutoStyler.extend({
       }
     }
     style = style.replace(/{{defaultColor}}/g, defColor);
-    if (preserveWidth) {
+    if (preserveWidth && !_.isEmpty(originalWidth)) {
       style = style.replace('{{markerWidth}}', originalWidth);
     } else {
       style = style.replace('{{markerWidth}}', 7);

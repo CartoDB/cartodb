@@ -299,4 +299,23 @@ describe DataImport do
       data_import.logger.should == 'existing log'
     end
   end
+
+  context 'viewer users' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't create new data imports" do
+      @user.viewer = true
+      @user.save
+
+      data_import = DataImport.new(
+        user_id:    @user.id,
+        table_name: 'fromviewer',
+        from_query: 'fromviewer_q'
+      )
+      expect { data_import.save }.to raise_error(Sequel::ValidationFailed, "user Viewer users can't create data imports")
+    end
+  end
 end

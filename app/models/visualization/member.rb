@@ -187,6 +187,8 @@ module CartoDB
       end
 
       def valid?
+        validator.errors.store(:user, "Viewer users can't store visualizations") if user.viewer
+
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
         validator.validate_in(:privacy, privacy, PRIVACY_VALUES)
         # do not validate names for slides, it's never used
@@ -245,6 +247,8 @@ module CartoDB
       end
 
       def delete(from_table_deletion = false)
+        raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
+
         # from_table_deletion would be enough for canonical viz-based deletes,
         # but common data loading also calls this delete without the flag to true, causing a call without a Map
         begin
@@ -405,6 +409,7 @@ module CartoDB
       # @param user ::User
       # @param permission_type String PERMISSION_xxx
       def has_permission?(user, permission_type)
+        return false if user.viewer && permission_type == PERMISSION_READWRITE
         return is_owner?(user) if permission_id.nil?
         is_owner?(user) || permission.permitted?(user, permission_type)
       end
@@ -645,9 +650,14 @@ module CartoDB
       def save_named_map
         return if type == TYPE_REMOTE
 
-        Rails::Sequel.connection.after_commit do
-          (get_named_map ? update_named_map : create_named_map) if carto_visualization
+        unless @updating_named_maps
+          Rails::Sequel.connection.after_commit do
+            @updating_named_maps = false
+            (get_named_map ? update_named_map : create_named_map) if carto_visualization
+          end
+          @updating_named_maps = true
         end
+        true
       end
 
       def get_named_map
@@ -664,6 +674,10 @@ module CartoDB
 
       def attributions_from_derived_visualizations
         related_canonical_visualizations.map(&:attributions).reject {|attribution| attribution.blank?}
+      end
+
+      def map
+        @map ||= ::Map.where(id: map_id).first
       end
 
       private
@@ -845,7 +859,7 @@ module CartoDB
       end
 
       def relator
-        Relator.new(attributes)
+        Relator.new(map, attributes)
       end
 
       def name_checker

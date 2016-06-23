@@ -19,6 +19,8 @@ var HistogramAutoStyler = AutoStyler.extend({
     }
     if (!_.isEmpty(preservedWidth)) {
       style = style.replace('{{markerWidth}}', preservedWidth);
+    } else {
+      style = style.replace('{{markerWidth}}', 7);
     }
     return style.replace(/{{column}}/g, this.dataviewModel.get('column'))
       .replace(/{{bins}}/g, this.dataviewModel.get('bins'))

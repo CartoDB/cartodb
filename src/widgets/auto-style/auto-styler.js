@@ -16,10 +16,10 @@ var AutoStyler = cdb.core.Model.extend({
   getPreservedWidth: function () {
     var startingStyle = this.layer.get && this.layer.get('cartocss');
     if (startingStyle) {
-      var originalWidth = startingStyle.match(/marker-width:.*;/g);
+      var originalWidth = startingStyle.match(/marker-width:.*?;\s/g);
       if (originalWidth) {
         if (originalWidth.length > 1) {
-          return null
+          return null;
         } else {
           originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
         }

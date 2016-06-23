@@ -152,16 +152,39 @@ module Carto
           options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
         end
 
-        interactivity, attributes = infowindow_options(layer)
+        attributes, interactivity = attributes_and_interactivity(layer.infowindow, layer.tooltip)
 
-        options[:interactivity] = interactivity if interactivity
-        options[:attributes] = attributes if attributes
+        options[:attributes] = attributes if attributes.present?
+        options[:interactivity] = interactivity if interactivity.present?
 
         options
       end
 
       def visibility_wrapped_sql(sql, index)
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      end
+
+      def attributes_and_interactivity(layer_infowindow, layer_tooltip)
+        click_fields = layer_infowindow['fields'] if layer_infowindow
+        hover_fields = layer_tooltip['fields'] if layer_tooltip
+
+        interactivity = []
+        attributes = {}
+
+        if hover_fields.present?
+          interactivity << hover_fields.map { |hover_field| hover_field.fetch('name') }
+        end
+
+        if click_fields.present?
+          interactivity << 'cartodb_id'
+
+          attributes = {
+            id: 'cartodb_id',
+            columns: click_fields.map { |click_field| click_field.fetch('name') }
+          }
+        end
+
+        [attributes, interactivity.join(',')]
       end
 
       def dataviews
@@ -180,22 +203,6 @@ module Carto
 
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
-      end
-
-      def infowindow_options(layer)
-        layer_options_interactivity = layer.options[:interactivity]
-        interactivity = layer_options_interactivity if layer_options_interactivity
-
-        layer_infowindow = layer.infowindow
-        layer_infowindow_fields = layer_infowindow[:fields] if layer_infowindow
-        attributes = if layer_infowindow_fields && !layer_infowindow_fields.empty?
-                       {
-                         id:       'cartodb_id',
-                         columns:  layer_infowindow[:fields].map { |field| field.fetch(:name) }
-                       }
-                     end
-
-        [interactivity, attributes]
       end
 
       def dataview_data(widget)

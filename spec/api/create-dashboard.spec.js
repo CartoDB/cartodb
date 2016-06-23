@@ -43,6 +43,7 @@ describe('create-dashboard', function () {
     it('should return an API dashboard object', function (done) {
       var selector = '#' + this.$el.id;
       createDashboard(selector, this.vizJSON, {}, function (error, dashboard) {
+        expect(error).toEqual(null);
         if (error) return;
         expect(dashboard).toBeDefined();
         expect(dashboard instanceof APIDashboard).toBeTruthy();

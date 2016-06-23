@@ -10,7 +10,7 @@
       <a class="StatsList-style CDB-Text CDB-Size-small js-style <% if (!isSelected) { %> is-hidden <% } %>" href="#"><div class="StatsList-arrow CDB-Shape-Arrow is-blue u-iBlock  u-rSpace--m"></div> <%- _t('editor.data.stats.style') %></a>
     </div>
     <div class="u-flex u-alignCenter u-bSpace">
-      <h2 class="u-ellipsis CDB-Text CDB-Size-large u-rSpace--m"><%- column %></h2>
+      <h2 class="js-title u-ellipsis CDB-Text CDB-Size-large u-rSpace--m"><%- column %></h2>
       <div class="StatsList-tag CDB-Text CDB-Size-small u-upperCase"><%- type %></div>
     </div>
     <div class="js-stat"></div>

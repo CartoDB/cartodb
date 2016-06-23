@@ -1,5 +1,4 @@
 var AutoStyler = require('./auto-styler');
-var _ = require('underscore');
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var preserveWidth = true;

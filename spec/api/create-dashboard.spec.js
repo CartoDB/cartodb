@@ -41,19 +41,15 @@ describe('create-dashboard', function () {
     });
 
     it('should return an API dashboard object', function (done) {
-      var PREVIOUS_DEFAULT_TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
       var selector = '#' + this.$el.id;
       createDashboard(selector, this.vizJSON, {}, function (error, dashboard) {
         expect(error).toEqual(null);
         if (error) return;
         expect(dashboard).toBeDefined();
         expect(dashboard instanceof APIDashboard).toBeTruthy();
+
         done();
       });
-
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = PREVIOUS_DEFAULT_TIMEOUT_INTERVAL;
     });
 
     it('should skip map instantiation', function () {

@@ -6,6 +6,7 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
+  box-sizing: border-box;
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
@@ -28,8 +29,13 @@
 .Editor-ListLayer-item.is-active {
   border: 1px solid rgb(106, 181, 227);
 }
-.Editor-ListLayer-item.ui-draggable {
-  cursor: move;
+.Editor-ListLayer-item.is-unavailable {
+  @include opacity(0.6);
+}
+.Editor-ListLayer-item.ui-sortable-helper {
+  // scss-lint:disable ImportantRule
+  left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
+  min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);
@@ -56,6 +62,7 @@
   width: 40px;
   height: 40px;
   border-radius: $baseSize / 2;
+  cursor: pointer;
 }
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;

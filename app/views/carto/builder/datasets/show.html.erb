@@ -1,0 +1,16 @@
+<div class="Editor js-editor">
+  <div id="dashboard"></div>
+</div>
+
+<script>
+  var frontendConfig = <%= safe_js_object frontend_config %>;
+  var visualizationData = <%= safe_js_object @canonical_visualization_data.to_json %>
+  var userTableData = <%= safe_js_object @user_table_data.to_json %>
+  var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+
+
+  var ACTIVE_LOCALE = 'en';
+</script>
+<%= javascript_include_tag 'vendor_editor3.js' %>
+<%= javascript_include_tag 'common_editor3.js' %>
+<%= javascript_include_tag 'editor3.js' %>

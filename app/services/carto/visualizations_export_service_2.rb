@@ -5,9 +5,10 @@ require 'json'
 # 2: export full visualization. Limitations:
 #   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
 #   - Privacy is exported, but permissions are not.
+# 2.0.1: export Widget.source_id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.0'.freeze
+    CURRENT_VERSION = '2.0.1'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -147,7 +148,8 @@ module Carto
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
-        options: exported_widget[:options]
+        options: exported_widget[:options],
+        source_id: exported_widget[:source_id]
       )
     end
   end
@@ -237,7 +239,8 @@ module Carto
       {
         options: widget.options,
         type: widget.type,
-        title: widget.title
+        title: widget.title,
+        source_id: widget.source_id
       }
     end
 

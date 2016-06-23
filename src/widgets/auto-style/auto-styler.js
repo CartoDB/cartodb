@@ -11,6 +11,22 @@ var AutoStyler = cdb.core.Model.extend({
 
   _getLayerHeader: function (symbol) {
     return '#' + this.dataviewModel.layer.get('layer_name').replace(/\s*/g, '') + '[mapnik-geometry-type=' + AutoStyler.MAPNIK_MAPPING[symbol] + ']{';
+  },
+
+  getPreservedWidth: function () {
+    var originalWidth;
+    var startingStyle = this.layer.get && this.layer.get('cartocss');
+    if (startingStyle) {
+      originalWidth = startingStyle.match(/marker-width:.*?;\s/g);
+      if (originalWidth) {
+        if (originalWidth.length > 1) {
+          return null;
+        } else {
+          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
+        }
+      }
+    }
+    return originalWidth;
   }
 
 });

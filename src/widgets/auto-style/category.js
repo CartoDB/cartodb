@@ -1,6 +1,8 @@
 var AutoStyler = require('./auto-styler');
+var _ = require('underscore');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
+    var preservedWidth = this.getPreservedWidth();
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');
     var stylesByGeometry = this.STYLE_TEMPLATE;
@@ -17,9 +19,13 @@ var CategoryAutoStyler = AutoStyler.extend({
           .replace('{{ramp}}', this._generateCategoryRamp(symbol));
       }
     }
-    return style
-      .replace(/{{defaultColor}}/g, defColor)
-      .replace('{{markerWidth}}', 7);
+    style = style.replace(/{{defaultColor}}/g, defColor);
+    if (!_.isEmpty(preservedWidth)) {
+      style = style.replace('{{markerWidth}}', preservedWidth);
+    } else {
+      style = style.replace('{{markerWidth}}', 7);
+    }
+    return style;
   },
 
   _generateCategoryRamp: function (sym) {

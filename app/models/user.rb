@@ -843,7 +843,7 @@ class User < Sequel::Model
   end
 
   def arcgis_datasource_enabled?
-    self.arcgis_datasource_enabled == true
+    true
   end
 
   def soft_twitter_datasource_limit?

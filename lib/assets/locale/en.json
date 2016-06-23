@@ -4,10 +4,11 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
+    "intersection": "Intersection",
+    "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
-    "kmeans": "Cluster"
+    "point-in-polygon": "Point in polygon",
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -219,6 +220,10 @@
           "point-in-polygon": {
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
+          },
+          "intersection": {
+            "title": "Intersection",
+            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -615,6 +620,7 @@
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
+        "filter-aggregate": "Filter or aggregate your results",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",

@@ -330,6 +330,10 @@ class Organization < Sequel::Model
     !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
   end
 
+  def total_seats
+    seats + viewer_seats
+  end
+
   def remaining_seats(excluded_users: [])
     seats - assigned_seats(excluded_users: excluded_users)
   end

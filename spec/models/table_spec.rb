@@ -357,10 +357,9 @@ describe Table do
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
-
-      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
-                                                               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
+      derived_vis = CartoDB::Visualization::Copier.new(
+        @user, table.table_visualization
+      ).copy
 
       bypass_named_maps
       derived_vis.store
@@ -369,16 +368,16 @@ describe Table do
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
-      table.affected_visualizations.map do |vis|
+      table.affected_visualizations.map { |vis|
         vis.public?.should == vis.table?
-      end
+      }
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       table.save
 
-      table.affected_visualizations.map do |vis|
+      table.affected_visualizations.map { |vis|
         vis.private?.should == true
-      end
+      }
     end
 
     it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
@@ -389,8 +388,9 @@ describe Table do
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
-      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+      derived_vis = CartoDB::Visualization::Copier.new(
+          @user, table.table_visualization
+      ).copy
 
       bypass_named_maps
       derived_vis.store
@@ -400,12 +400,12 @@ describe Table do
       table.save
       table.reload
 
-      table.affected_visualizations.map do |vis|
-        vis.public?.should eq vis.derived?         # Derived kept public
-        vis.private?.should eq false               # None changed to private
-        vis.password_protected?.should eq false    # None changed to password protected
-        vis.public_with_link?.should eq vis.table? # Table/canonical changed
-      end
+      table.affected_visualizations.map { |vis|
+        vis.public?.should == vis.derived?  # Derived kept public
+        vis.private?.should == false  # None changed to private
+        vis.password_protected?.should == false  # None changed to password protected
+        vis.public_with_link?.should == vis.table?  # Table/canonical changed
+      }
     end
 
     it 'receives privacy changes from the associated visualization' do
@@ -771,11 +771,12 @@ describe Table do
 
     it 'deletes derived visualizations that depend on this table' do
       bypass_named_maps
-      table = create_table(name: 'bogus_name', user_id: @user.id)
+      table   = create_table(name: 'bogus_name', user_id: @user.id)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
 
-      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
-
+      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
       table.reload
 
       table.destroy
@@ -2268,9 +2269,9 @@ describe Table do
       table.should be_private
 
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-
-      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+      source  = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
@@ -2293,8 +2294,9 @@ describe Table do
       table.save
 
       Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
-      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
-      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+      source = table.table_visualization
+      derived = CartoDB::Visualization::Copier.new(@user, source).copy
+      derived.store
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Scenario 1: Fail at map saving (can happen due to Map handlers)
@@ -2303,7 +2305,9 @@ describe Table do
 
       ::Map.any_instance.stubs(:save).once.raises(StandardError)
 
-      expect { table.save }.to raise_exception StandardError
+      expect do
+        table.save
+      end.to raise_exception StandardError
 
       table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 

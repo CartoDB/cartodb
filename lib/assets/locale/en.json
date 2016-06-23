@@ -9,6 +9,7 @@
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
+    "filter-by-node-column": "Merge by column"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",

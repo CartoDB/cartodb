@@ -712,9 +712,8 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue or clean all html.",
-          "accept": "CONTINUE",
-          "cancel": "CLEAR"
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "CONTINUE"
         }
       },
     },

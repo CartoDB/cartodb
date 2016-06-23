@@ -169,7 +169,12 @@ $tableBorderColor: $cSecondaryLine;
   pointer-events: none;
   content: '';
 }
-
+.Table-editor {
+  position: absolute;
+  min-width: 200px;
+  min-height: 50px;
+  z-index: 5;
+}
 .Table-cell {
   @include align-items(center);
   width: $elementWidth;
@@ -183,7 +188,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text {
   @include flex(2);
 }
-
 .Table-cell--short {
   width: $elementWidthShort;
 }

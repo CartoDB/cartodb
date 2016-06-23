@@ -13,7 +13,7 @@
     </li>
     <% } %>
     <li class="CDB-ListDecoration-item CustomList-item js-listItem">
-      <button class="CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-listItemLink js-customize">Custom color set</button>
+      <button class="CDB-ListDecoration-itemLink CDB-ListDecoration-itemLink--double js-listItemLink js-customize u-actionTextColor">Custom color set</button>
     </li>
   </ul>
 </div>

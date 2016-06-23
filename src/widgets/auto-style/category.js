@@ -2,18 +2,7 @@ var AutoStyler = require('./auto-styler');
 var _ = require('underscore');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
-    var preserveWidth = true;
-    var startingStyle = this.layer.get && this.layer.get('cartocss');
-    if (startingStyle) {
-      var originalWidth = startingStyle.match(/marker-width:.*;/g);
-      if (originalWidth) {
-        if (originalWidth.length > 1) {
-          preserveWidth = false;
-        } else {
-          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
-        }
-      }
-    }
+    var preservedWidth = this.getPreservedWidth();
     var style = '';
     var defColor = this.colors.getColorByCategory('Other');
     var stylesByGeometry = this.STYLE_TEMPLATE;
@@ -31,8 +20,8 @@ var CategoryAutoStyler = AutoStyler.extend({
       }
     }
     style = style.replace(/{{defaultColor}}/g, defColor);
-    if (preserveWidth && !_.isEmpty(originalWidth)) {
-      style = style.replace('{{markerWidth}}', originalWidth);
+    if (!_.isEmpty(preservedWidth)) {
+      style = style.replace('{{markerWidth}}', preservedWidth);
     } else {
       style = style.replace('{{markerWidth}}', 7);
     }

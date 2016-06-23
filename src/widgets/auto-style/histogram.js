@@ -2,18 +2,7 @@ var AutoStyler = require('./auto-styler');
 var _ = require('underscore');
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
-    var preserveWidth = true;
-    var startingStyle = this.layer.get && (this.layer.get('cartocss') || this.layer.get('meta').cartocss);
-    if (startingStyle) {
-      var originalWidth = startingStyle.match(/marker-width:.*;/g);
-      if (originalWidth) {
-        if (originalWidth.length > 1) {
-          preserveWidth = false;
-        } else {
-          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
-        }
-      }
-    }
+    var preservedWidth = this.getPreservedWidth();
     var style = '';
     var colors = ['YlGnBu', 'Greens', 'Reds', 'Blues'];
     var color = colors[Math.floor(Math.random() * colors.length)];
@@ -28,8 +17,8 @@ var HistogramAutoStyler = AutoStyler.extend({
           .replace('{{layername}}', this._getLayerHeader(symbol));
       }
     }
-    if (preserveWidth && !_.isEmpty(originalWidth)) {
-      style = style.replace('{{markerWidth}}', originalWidth);
+    if (!_.isEmpty(preservedWidth)) {
+      style = style.replace('{{markerWidth}}', preservedWidth);
     }
     return style.replace(/{{column}}/g, this.dataviewModel.get('column'))
       .replace(/{{bins}}/g, this.dataviewModel.get('bins'))

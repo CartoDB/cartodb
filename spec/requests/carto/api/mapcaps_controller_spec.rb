@@ -7,6 +7,8 @@ describe Carto::Api::MapcapsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
+  let(:dummy_mapcap) { Carto::Mapcap.new(id: UUIDTools::UUID.random_create.to_s) }
+
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
 
@@ -84,7 +86,7 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'returns 404 for an inexistent mapcap' do
-      get show_mapcap_url(mapcap: Carto::Mapcap.new) do |response|
+      get show_mapcap_url(mapcap: dummy_mapcap) do |response|
         response.status.should eq 404
       end
     end
@@ -120,7 +122,7 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'returns 404 for an inexistent mapcap' do
-      get destroy_mapcap_url(mapcap: Carto::Mapcap.new) do |response|
+      get destroy_mapcap_url(mapcap: dummy_mapcap) do |response|
         response.status.should eq 404
       end
     end

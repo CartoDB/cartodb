@@ -14,6 +14,7 @@ ghost tables, importing common data and automatic index creation.
 * Performance improvements updating visualizations
 * Fixes for organization invitations
 * Prefer city guessing over country guessing when possible for file imports
+* Forward compatibility for infowindows at Builder
 
 3.13.0 (2016-XX-XX)
 -------------------

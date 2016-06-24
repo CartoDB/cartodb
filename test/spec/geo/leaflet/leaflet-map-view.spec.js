@@ -443,4 +443,28 @@ describe('geo/leaflet/leaflet-map-view', function () {
     expect(mapView._leafletMap.dragging.enabled()).toBeFalsy();
     expect(mapView._leafletMap.doubleClickZoom.enabled()).toBeFalsy();
   });
+
+  it('should "forward" a dragend event to the map model', function () {
+    var container = $('<div>').css({
+      'height': '200px',
+      'width': '200px'
+    });
+    var map = new Map({
+      drag: false
+    });
+    var mapView = new LeafletMapView({
+      el: container,
+      map: map,
+      layerViewFactory: new LeafletLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
+    });
+
+    spyOn(map, 'trigger');
+    spyOn(mapView, 'trigger');
+
+    mapView._leafletMap.fire('dragend');
+
+    expect(map.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
+    expect(mapView.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
+  });
 });

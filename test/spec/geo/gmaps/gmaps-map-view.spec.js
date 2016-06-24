@@ -1,3 +1,4 @@
+/* global google */
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
@@ -204,5 +205,29 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
     expect(mapView._gmapsMap.get('draggable')).toBeFalsy();
     expect(mapView._gmapsMap.get('disableDoubleClickZoom')).toBeTruthy();
+  });
+
+  it('should "forward" a dragend event to the map model', function () {
+    var container = $('<div>').css({
+      'height': '200px',
+      'width': '200px'
+    });
+    var map = new Map({
+      drag: false
+    });
+    var mapView = new GoogleMapsMapView({
+      el: container,
+      map: map,
+      layerViewFactory: new GMapsLayerViewFactory(),
+      layerGroupModel: new Backbone.Model()
+    });
+
+    spyOn(map, 'trigger');
+    spyOn(mapView, 'trigger');
+
+    google.maps.event.trigger(mapView._gmapsMap, 'dragend');
+
+    expect(map.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
+    expect(mapView.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
   });
 });

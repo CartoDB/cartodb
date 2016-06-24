@@ -97,6 +97,20 @@ module CartoDB
         if dataset.should_create_overviews?
           dataset.create_overviews!
         end
+      rescue => exception
+        # In case of overview creation failure we'll just omit the
+        # overviews creation and continue with the process.
+        # Since the actual creation is handled by a single SQL
+        # function, and thus executed in a transaction, we shouldn't
+        # need any clean up here. (Either all overviews were created
+        # or nothing changed)
+        runner.log.append("Overviews creation failed: #{exception.message}")
+        CartoDB::Logger.error(
+          message:    "Overviews creation failed",
+          exception:  exception,
+          user:       Carto::User.find(data_import.user_id),
+          table_name: result.name
+        )
       end
 
       def create_visualization

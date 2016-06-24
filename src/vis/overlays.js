@@ -277,7 +277,7 @@ Overlay.register('share', function (data, vis) {});
 Overlay.register('search', function (data, vis) {
   var opts = _.extend(data, {
     mapView: vis.mapView,
-    model: vis.map
+    model: data.map
   });
 
   if (data.template) {

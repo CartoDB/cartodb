@@ -459,6 +459,10 @@
       "syntax-error": "Syntax error",
       "line": "Line"
     },
+    "undo-redo": {
+      "clear": "CLEAR",
+      "apply": "APPLY"
+    },
     "table": {
       "columns": {
         "change-type": {

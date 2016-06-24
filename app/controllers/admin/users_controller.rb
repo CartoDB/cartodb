@@ -42,6 +42,7 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
+    @user.builder_enabled = 'force-builder' if @user.builder_enabled.nil?
     @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }
@@ -64,6 +65,10 @@ class Admin::UsersController < Admin::AdminController
 
     if @user.can_change_email? && attributes[:email].present?
       @user.set_fields(attributes, [:email])
+    end
+
+    if attributes[:builder_enabled].present?
+      @user.set_fields(attributes, [:builder_enabled])
     end
 
     raise Sequel::ValidationFailed.new('Validation failed') unless @user.valid?

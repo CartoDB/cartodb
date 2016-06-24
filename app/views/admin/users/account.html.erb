@@ -133,6 +133,25 @@
         </div>
       <% end %>
 
+      <% if (@user.has_feature_flag?('editor-3'))  %>
+      <span class="FormAccount-separator"></span>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="FormAccount-label">Builder</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <%= f.check_box :builder_enabled, { id: "builder_enabled" }, 'force-builder', 'force-editor' %>
+            <%= label_tag(:builder_enabled, '') %>
+          </div>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="FormAccount-rowInfoText">Use the Builder for creating and updating maps</p>
+          </div>
+        </div>
+      </div>
+      <% end %>
+
       <%# if none of the services are activated, this block shouldn't appear %>
       <% if @services.size > 0 %>
         <div class="FormAccount-title">

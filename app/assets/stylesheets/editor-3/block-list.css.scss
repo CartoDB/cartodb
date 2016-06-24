@@ -70,9 +70,9 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
+  overflow: hidden;
 }
 .BlockList-mediaImg {
-  @include flex(1);
   width: 100%;
 }
 

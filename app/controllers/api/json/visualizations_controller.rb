@@ -48,7 +48,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                 source = Carto::Visualization.where(id: source_id).first
                 return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
                 if source.derived?
-                  duplicate_derived_visualization(params[:source_visualization_id])
+                  duplicate_derived_visualization(params[:source_visualization_id], user)
                 else
                   tables = [UserTable.find(id: source.user_table.id)]
                   create_visualization_from_tables(tables, vis_data)
@@ -320,7 +320,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   private
 
-  def duplicate_derived_visualization(source)
+  def duplicate_derived_visualization(source, user)
     visualization_copy_id = @stats_aggregator.timing('copy') do
       export_service = Carto::VisualizationsExportService2.new
       visualization_hash = export_service.export_visualization_json_hash(source, user)

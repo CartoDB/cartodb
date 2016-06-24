@@ -42,7 +42,6 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def account
-    @user.builder_enabled = 'force-builder' if @user.builder_enabled.nil?
     @can_be_deleted, @cant_be_deleted_reason = can_be_deleted?(@user)
     respond_to do |format|
       format.html { render 'account' }

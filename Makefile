@@ -46,6 +46,7 @@ WORKING_SPECS_1 = \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
+	spec/models/visualization/copier_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \

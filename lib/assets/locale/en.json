@@ -731,12 +731,12 @@
     },
     "style": {
       "types": {
-        "none": "none",
-        "simple": "simple",
+        "none": "-",
+        "simple": "none",
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "heatmap"
+        "heatmap": "pixel"
       },
       "style-form": {
         "type": {

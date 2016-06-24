@@ -79,6 +79,10 @@ class Map < Sequel::Model
   end
 
   def notify_map_change
+    force_notify_map_change unless @visualization.latest_mapcap
+  end
+
+  def force_notify_map_change
     update_related_named_maps
     invalidate_vizjson_varnish_cache
   end

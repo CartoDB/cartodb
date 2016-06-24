@@ -1,6 +1,5 @@
 3.14.0 (2016-XX-XX)
 -------------------
-
 ### NOTICE
 This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
 ghost tables, importing common data and automatic index creation.
@@ -14,6 +13,7 @@ ghost tables, importing common data and automatic index creation.
 * Performance improvements updating visualizations
 * Fixes for organization invitations
 * Prefer city guessing over country guessing when possible for file imports
+* Forward compatibility for infowindows at Builder
 
 3.13.0 (2016-XX-XX)
 -------------------

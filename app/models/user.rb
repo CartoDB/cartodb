@@ -91,9 +91,6 @@ class User < Sequel::Model
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
-  FORCE_BUILDER = 'force-builder'.freeze
-  FORCE_EDITOR  = 'force-editor'.freeze
-
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -1565,17 +1562,19 @@ class User < Sequel::Model
     mobile_max_open_users > 0
   end
 
+  # The builder is enabled/disabled based on a feature flag
+  # The builder_enabled is used to allow the user to turn it on/off
   def builder_enabled?
     user = has_organization? ? organization.owner : self
     user.has_feature_flag?('editor-3')
   end
 
   def force_builder?
-    builder_enabled.nil? || builder_enabled == FORCE_BUILDER
+    builder_enabled == true
   end
 
   def force_editor?
-    builder_enabled == FORCE_EDITOR
+    builder_enabled == false
   end
 
   private

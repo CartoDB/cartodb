@@ -347,8 +347,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def invalidate_cache
-    return if latest_mapcap
-
     redis_vizjson_cache.invalidate(id)
     embed_redis_cache.invalidate(id)
     CartoDB::Varnish.new.purge(varnish_vizjson_key)

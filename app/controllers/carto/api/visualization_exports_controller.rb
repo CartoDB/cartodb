@@ -8,13 +8,13 @@ module Carto
       include Carto::ControllerHelper
       include VisualizationsControllerHelper
 
-      ssl_required :create, :show
+      ssl_required :create, :show, :download
 
-      skip_before_filter :api_authorization_required, only: [:create, :show]
-      before_filter :optional_api_authorization, only: [:create, :show]
+      skip_before_filter :api_authorization_required, only: [:create, :show, :download]
+      before_filter :optional_api_authorization, only: [:create, :show, :download]
 
       before_filter :load_visualization, only: :create
-      before_filter :load_visualization_export, only: :show
+      before_filter :load_visualization_export, only: [:show, :download]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -42,7 +42,10 @@ module Carto
           end
         end
 
-        Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id)
+        # In order to generate paths you need to be in a controller, so path is sent to Resque
+        download_path_params = { visualization_export_id: visualization_export.id }
+        download_path = CartoDB.path(self, 'visualization_export_download', download_path_params)
+        Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id, download_path: download_path)
 
         Cartodb::EventTracker.new.track_exported_map(current_user, @visualization)
 
@@ -51,6 +54,10 @@ module Carto
 
       def show
         render_jsonp(VisualizationExportPresenter.new(@visualization_export).to_poro, 200)
+      end
+
+      def download
+        send_file @visualization_export.file, type: "application/zip"
       end
 
       private
@@ -62,11 +69,13 @@ module Carto
       end
 
       def load_visualization_export
-        id = uuid_parameter(:id)
+        id = params[:id].present? ? uuid_parameter(:id) : uuid_parameter(:visualization_export_id)
         @visualization_export = Carto::VisualizationExport.where(id: id).first
         raise Carto::LoadError.new("Visualization export not found: #{id}") unless @visualization_export
         export_user_id = @visualization_export.user_id
-        raise Carto::UnauthorizedError.new unless export_user_id.nil? || export_user_id == current_viewer.id
+        unless export_user_id.nil? || (current_viewer && export_user_id == current_viewer.id)
+          raise Carto::UnauthorizedError.new
+        end
       end
     end
   end

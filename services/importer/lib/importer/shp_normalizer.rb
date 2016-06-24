@@ -130,7 +130,7 @@ module CartoDB
                     :job
 
       def python_bin_path
-        `which python`.strip
+        CartoDB.python_bin_path
       end
 
       def normalizer_path

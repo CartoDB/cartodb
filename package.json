@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.24.3",
+  "version": "3.27.32",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -18,16 +18,17 @@
     "backbone-forms": "^0.14.0",
     "backbone-model-file-upload": "^1.0.0",
     "browserify-shim": "3.8.12",
-    "camshaft-reference": "0.4.0",
+    "camshaft-reference": "<2.0",
+    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
     "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
     "cartodb-pecan": "0.2.x",
     "cartodb.js": "cartodb/cartodb.js#v4",
     "jquery": "2.1.4",
-    "jquery-ui": "^1.10.5",
     "moment": "2.10.6",
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
+    "torque.js": "^2.15",
     "underscore": "1.8.3"
   },
   "devDependencies": {
@@ -39,6 +40,8 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
+    "cartocolor": "1.1.0",
+    "clipboard": "^1.5.12",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
@@ -62,6 +65,7 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
+    "jasmine": "^2.4.1",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",
@@ -102,12 +106,13 @@
     "globals": [
       "alert",
       "cartodb",
-      "cdb",
       "_t",
       "jasmine",
       "describe",
       "xdescribe",
+      "beforeAll",
       "beforeEach",
+      "afterAll",
       "afterEach",
       "spyOn",
       "it",
@@ -144,6 +149,8 @@
     ]
   },
   "scripts": {
+    "test": "jasmine",
+    "test-debug": "node debug --",
     "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }
 }

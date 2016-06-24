@@ -35,7 +35,7 @@ describe User do
   end
 
   before(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
 
     @user_password = 'admin123'
     puts "\n[rspec][user_spec] Creating test user databases..."
@@ -49,14 +49,14 @@ describe User do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
     @user2.destroy
   end
@@ -1139,6 +1139,12 @@ describe User do
     expect { @user.save }.to_not change { @user.api_key }
   end
 
+  it "should not try to update mobile api_keys if the user has it disabled" do
+    @user.stubs(:mobile_sdk_enabled?).returns(false)
+    @user.stubs(:cartodb_central_client).never
+    @user.regenerate_api_key
+  end
+
   it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
@@ -1415,7 +1421,7 @@ describe User do
     it 'Checks that shared tables include not only owned ones' do
       require_relative '../../app/models/visualization/collection'
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       # No need to really touch the DB for the permissions
       Table::any_instance.stubs(:add_read_permission).returns(nil)
 
@@ -2298,6 +2304,40 @@ describe User do
       @user.db_service.enable_writes
       @user.db_service.terminate_database_connections
       @user.db_service.run_pg_query("create table foo_3(a int);")
+    end
+  end
+
+  describe '#destroy' do
+    def create_full_data
+      user = FactoryGirl.create(:carto_user)
+      table = create_table(user_id: user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
+      visualization = table.table_visualization
+      return ::User[user.id], table, visualization
+    end
+
+    def check_deleted_data(user_id, table_id, visualization_id)
+      ::User[user_id].should be_nil
+      Carto::Visualization.exists?(visualization_id).should be_false
+      Carto::UserTable.exists?(table_id).should be_false
+    end
+
+    it 'destroys all related information' do
+      user, table, visualization = create_full_data
+
+      ::User[user.id].destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
+    end
+
+    it 'destroys all related information, even for viewer users' do
+      user, table, visualization = create_full_data
+      user.viewer = true
+      user.save
+      user.reload
+
+      user.destroy
+
+      check_deleted_data(user.id, table.id, visualization.id)
     end
   end
 

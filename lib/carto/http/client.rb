@@ -48,18 +48,22 @@ module Carto
         perform_request(__method__, url, options)
       end
 
-      def get_file(url, file_path)
+      # `options` are Typhoeus options. Example: { ssl_verifypeer: false, ssl_verifyhost: 0 }
+      def get_file(url, file_path, options = {})
         downloaded_file = File.open file_path, 'wb'
-        request = request(url)
+        request = request(url, options)
         request.on_headers do |response|
-          if response.code != 200
-            raise "Request failed: #{response.code}. #{response.body}"
+          unless response.code == 200
+            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
           end
         end
         request.on_body do |chunk|
           downloaded_file.write(chunk)
         end
-        request.on_complete do
+        request.on_complete do |response|
+          unless response.success?
+            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
+          end
           downloaded_file.close
         end
         request.run

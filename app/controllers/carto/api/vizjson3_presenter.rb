@@ -1,4 +1,5 @@
 require_dependency 'carto/api/layer_vizjson_adapter'
+require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
@@ -122,12 +123,6 @@ module Carto
         auth_tokens = @visualization.needed_auth_tokens
         vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
 
-        children_vizjson = @visualization.children.map do |child|
-          VizJSON3Presenter.new(child, @redis_vizjson_cache)
-                           .to_vizjson(https_request: options[:https_request], vector: options[:vector])
-        end
-        vizjson[:slides] = children_vizjson unless children_vizjson.empty?
-
         parent = @visualization.parent
         if parent
           vizjson[:title] = parent.qualified_name(user)
@@ -249,7 +244,7 @@ module Carto
         }
 
         if display_named_map?(@visualization, forced_privacy_version)
-          ds[:template_name] = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+          ds[:template_name] = Carto::NamedMaps::Template.new(@visualization).name
         end
 
         ds
@@ -284,18 +279,16 @@ module Carto
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
       DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      # @throws NamedMapsPresenterError
       def initialize(visualization, layergroup, options, configuration)
-        @visualization    = visualization
-        @options          = options
-        @configuration    = configuration
-        @layergroup_data  = layergroup
-        @named_map_name   = CartoDB::NamedMapsWrapper::NamedMap.template_name(@visualization.id)
+        @visualization      = visualization
+        @options            = options
+        @configuration      = configuration
+        @layergroup_data    = layergroup
+        @named_map_template = Carto::NamedMaps::Template.new(visualization)
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
-      # @throws NamedMapsPresenterError
       def to_vizjson
         return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
 
@@ -311,7 +304,7 @@ module Carto
             sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
             filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
             named_map: {
-              name: @named_map_name,
+              name: @named_map_template.name,
               stat_tag: @visualization.id,
               params: placeholders_data,
               layers: configure_layers_data
@@ -323,13 +316,12 @@ module Carto
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      # @throws NamedMapsPresenterError
       def get_decoration_for_layer(layer_type, layer_index)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         {
           named_map: {
-            name:         @named_map_name,
+            name:         @named_map_template.name,
             layer_index:  layer_index,
             params:       placeholders_data
           },
@@ -434,6 +426,7 @@ module Carto
 
     class VizJSON3LayerPresenter
       include ApiTemplates
+      include InfowindowMigrator
 
       EMPTY_CSS = '#dummy{}'.freeze
 
@@ -451,7 +444,9 @@ module Carto
         visible
       ).freeze
 
-      INFOWINDOW_AND_TOOLTIP_KEYS = %w(fields template_name template alternative_names width maxHeight).freeze
+      INFOWINDOW_AND_TOOLTIP_KEYS = %w(
+        fields template_name template alternative_names width maxHeight headerColor
+      ).freeze
 
       def initialize(layer, options = {}, configuration = {}, decoration_data = {})
         @layer            = layer
@@ -469,8 +464,8 @@ module Carto
           {
             id:         @layer.id,
             type:       'CartoDB',
-            infowindow: whitelisted_attrs(with_template(@layer.infowindow, 'infowindows')),
-            tooltip:    whitelisted_attrs(with_template(@layer.tooltip, 'tooltips')),
+            infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
+            tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
             legend:     @layer.legend,
             order:      @layer.order,
             visible:    @layer.public_values[:options]['visible'],
@@ -528,35 +523,6 @@ module Carto
         torque
       end
 
-      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'.freeze
-
-      def with_template(templated_element, mustache_dir)
-        return nil if templated_element.nil?
-
-        template = templated_element['template']
-        return templated_element if !template.nil? && !template.empty?
-
-        templated_sym = templated_element.deep_symbolize_keys
-        templated_element[:template] = get_template(
-          templated_sym[:template_name],
-          templated_sym[:template],
-          "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
-        templated_element
-      end
-
-      def get_template_name(name)
-        Carto::Layer::TEMPLATES_MAP.fetch(name, name)
-      end
-
-      def get_template(template_name, fallback_template, template_path)
-        if template_name.present?
-          path = Rails.root.join(template_path)
-          File.read(path)
-        else
-          fallback_template
-        end
-      end
-
       def options_data
         if @options[:full]
           decorate_with_data(@layer.options, @decoration_data)
@@ -575,10 +541,8 @@ module Carto
             data[:sql] = wrap(sql_from(@layer.options), @layer.options)
           end
 
-          sql_wrap = @layer.options['sql_wrap']
-          if sql_wrap 
-            data[:sql_wrap] = sql_wrap 
-          end
+          sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+          data[:sql_wrap] = sql_wrap if sql_wrap
 
           data = decorate_with_data(data, @decoration_data)
 

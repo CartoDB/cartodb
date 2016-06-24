@@ -27,7 +27,7 @@ CartoDB::Application.configure do
   config.log_level = :debug
 
   # Use a different logger for distributed setups
-  # config.logger = SyslogLogger.new
+  config.logger = Logger.new(STDOUT)
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
@@ -49,7 +49,7 @@ CartoDB::Application.configure do
   # `bundle exec thin start --threaded -p 3000 --threadpool-size 5`.
   # Check your `config/database.yml` has `pool: 50` or higher for `development`.
   # The condition excludes this from resque, since it won't work with it and it doesn't need it.
-  config.threadsafe! unless $rails_rake_task
+  # config.threadsafe! unless $rails_rake_task
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)

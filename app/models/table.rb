@@ -539,9 +539,7 @@ class Table
     )
 
     member.store
-    member.map.recalculate_bounds!
-    member.map.recenter_using_bounds!
-    member.map.recalculate_zoom!
+    member.map.set_default_boundaries!
 
     CartoDB::Visualization::Overlays.new(member).create_default_overlays
   end
@@ -1098,18 +1096,14 @@ class Table
              :trigger_name => trigger_name).count > 0
   end
 
-  def get_index_name(prefix)
-    "#{prefix}_#{UUIDTools::UUID.timestamp_create.to_s.gsub('-', '_')}"
-  end # get_index_name
-
   def has_index?(column_name)
-    pg_indexes.include? column_name
+    pg_indexes.any? { |i| i[:column] == column_name }
   end
 
   def pg_indexes
-    owner.in_database(:as => :superuser).fetch(%Q{
+    owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname
+        a.attname as column, i.relname as name
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a
       WHERE
@@ -1118,8 +1112,17 @@ class Table
         AND a.attrelid = t.oid
         AND a.attnum = ANY(ix.indkey)
         AND t.relkind = 'r'
-        AND t.relname = '#{self.name}';
-    }).all.map { |t| t[:attname] }
+        AND t.relname = '#{name}';
+    }).all
+  end
+
+  def create_index(column, prefix = '', concurrent: false)
+    concurrently = concurrent ? 'CONCURRENTLY' : ''
+    owner.in_database.execute(%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")})
+  end
+
+  def drop_index(column, prefix = '')
+    owner.in_database.execute(%{DROP INDEX "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy
@@ -1225,10 +1228,12 @@ class Table
             layer.rename_table(@name_changed_from, name).save
           end
         end
-      rescue exception
-        CartoDB::report_exception(exception,
-                                  "Failed while renaming visualization #{@name_changed_from} to #{name}",
-                                  user: owner)
+      rescue => exception
+        CartoDB::Logger.error(exception: exception,
+                              message: "Failed while renaming visualization",
+                              user: owner,
+                              from_name: @name_changed_from,
+                              to_name: name)
         raise exception
       end
     end
@@ -1318,6 +1323,11 @@ class Table
     sequel.count
   end
 
+  def pg_stats
+    owner.in_database.fetch('SELECT * FROM pg_stats where schemaname = ? AND tablename = ?',
+                            owner.database_schema, name).all
+  end
+
   def beautify_name(name)
     return name unless name
     name.tr('_', ' ').split.map(&:capitalize).join(' ')
@@ -1335,6 +1345,10 @@ class Table
   end
 
   private
+
+  def index_name(column, prefix)
+    "#{prefix}#{name}_#{column}"
+  end
 
   def external_source_visualization
     @user_table.

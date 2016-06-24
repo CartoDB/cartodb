@@ -22,6 +22,7 @@ describe Carto::DataExporter do
       FileUtils.mkdir_p tmp_dir
 
       begin
+        Carto::Http::Request.any_instance.stubs(:run)
         file = File.new(Carto::DataExporter.new.export_table(user_table, tmp_dir, format))
         file.path.should match(/.#{format}$/)
         file.close
@@ -46,7 +47,8 @@ describe Carto::VisualizationExport do
       @touched_files = []
     end
 
-    def get_file(url, exported_file)
+    # Mock needs not url nor Typhoeus options
+    def get_file(_, exported_file, _)
       @touched_files << exported_file
       touch(exported_file)
     end

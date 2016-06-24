@@ -20,7 +20,7 @@ shared_examples_for 'vizjson generator' do
     TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @api_key = @user_1.api_key
@@ -41,7 +41,7 @@ shared_examples_for 'vizjson generator' do
     end
 
     it 'tests privacy of vizjsons' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
@@ -213,7 +213,7 @@ shared_examples_for 'vizjson generator' do
 
     describe 'get vizjson' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
         delete_user_data(@user_1)
       end
 
@@ -245,24 +245,8 @@ shared_examples_for 'vizjson generator' do
         last_response.status.should == 404
       end
 
-      it 'returns children (slides) vizjson' do
-        parent = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
-        child = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_SLIDE, parent_id: parent.id })
-
-        get api_vx_visualizations_vizjson_url(id: parent.id, api_key: @api_key), {}, @headers
-
-        last_response.status.should eq 200
-        response = JSON.parse(last_response.body)
-        slides = response.fetch('slides')
-        slides.count.should eq 1
-        slide = slides[0]
-        slide['id'].should eq child.id
-        slide['title'].should eq child.name
-        slide['version'].should eq vizjson_vx_version
-      end
-
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+        Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
 

@@ -6,6 +6,9 @@ require_relative './carto_json_serializer'
 class Carto::Analysis < ActiveRecord::Base
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
   validates :analysis_definition, carto_json_symbolizer: true
+  validate :validate_user_not_viewer
+
+  before_destroy :validate_user_not_viewer
 
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
@@ -26,7 +29,7 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   def analysis_definition_for_api
-    filter_valid_properties(analysis_definition)
+    filter_valid_properties(analysis_node)
   end
 
   def natural_id
@@ -40,21 +43,33 @@ class Carto::Analysis < ActiveRecord::Base
     visualization.map
   end
 
+  def analysis_node
+    Carto::AnalysisNode.new(analysis_definition)
+  end
+
   private
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
   # This methods extract the needed ones.
   VALID_ANALYSIS_PROPERTIES = [:id, :type, :params].freeze
 
-  def filter_valid_properties(definition)
-    valid = definition.select { |property, _| VALID_ANALYSIS_PROPERTIES.include?(property) }
-    if valid[:params] && valid[:params][:source]
-      valid[:params][:source] = filter_valid_properties(valid[:params][:source])
+  def filter_valid_properties(node)
+    valid = node.definition.select { |property, _| VALID_ANALYSIS_PROPERTIES.include?(property) }
+    node.children_and_location.each do |location, child|
+      child_in_hash = location.reduce(valid, :[])
+      child_in_hash.replace(filter_valid_properties(child))
     end
     valid
   end
 
   def notify_map_change
     map.notify_map_change if map
+  end
+
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, "Viewer users can't edit analyses")
+      return false
+    end
   end
 end

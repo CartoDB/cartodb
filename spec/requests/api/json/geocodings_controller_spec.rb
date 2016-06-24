@@ -19,14 +19,14 @@ describe Api::Json::GeocodingsController do
     end
 
     after(:all) do
-      stub_named_maps_calls
+      bypass_named_maps
       @user.destroy
     end
 
     let(:params) { { api_key: @user.api_key, kind: 'ipaddress', formatter: '{some_column}' } }
 
     before(:each) do
-      stub_named_maps_calls
+      bypass_named_maps
       delete_user_data @user
       host! "#{@user.username}.localhost.lan"
       login_as(@user, scope: @user.username)

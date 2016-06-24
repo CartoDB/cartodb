@@ -680,6 +680,14 @@ module CartoDB
         @map ||= ::Map.where(id: map_id).first
       end
 
+      def mapcaps
+        Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
+      end
+
+      def latest_mapcap
+        mapcaps.first
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -917,14 +925,6 @@ module CartoDB
 
       def carto_visualization
         Carto::Visualization.where(id: id).first
-      end
-
-      def mapcaps
-        Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
-      end
-
-      def latest_mapcap
-        mapcaps.first
       end
     end
   end

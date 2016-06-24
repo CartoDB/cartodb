@@ -471,6 +471,8 @@ module CartoDB
       end
 
       def invalidate_cache
+        return if latest_mapcap
+
         invalidate_redis_cache
         invalidate_varnish_vizjson_cache
 

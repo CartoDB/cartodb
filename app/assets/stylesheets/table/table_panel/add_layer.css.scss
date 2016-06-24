@@ -1,6 +1,6 @@
 
   /**
-   *  Trick 'add layer' panel styles
+   *  Trick 'layer title' panel styles
    */
 
   @import "compass/css3/inline-block";
@@ -12,7 +12,7 @@
   @import "../../old_common/mixins";
 
 
-  .add_layer {
+  .change_title {
     position:relative;
     height:55px;
     margin-top:-15px;
@@ -25,8 +25,8 @@
       text-decoration: none;
     }
 
-    // Add layer
-    // (Add layer button)
+    // Change title
+    // (Add change title button)
     .add {
       @include inline-block();
       width:16px;
@@ -41,7 +41,7 @@
       @include background(sprite($table-sprites, add_layer, $offset-x:0, $offset-y:0) no-repeat);
     }
 
-    // (Add layer text)
+    // (Title layer text)
     .action {
       @include inline-block();
       margin:0 0 0 27px;

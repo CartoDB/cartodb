@@ -682,7 +682,7 @@
           "none": "None",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
-          "infowindow_light_header_blue": "Color",
+          "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
         "items": {

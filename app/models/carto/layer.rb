@@ -26,7 +26,7 @@ module Carto
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-    }
+    }.freeze
 
     def public_values
       {

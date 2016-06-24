@@ -81,7 +81,8 @@ class CommonData
         connecttimeout: CONNECT_TIMEOUT,
         timeout: DEFAULT_TIMEOUT,
         params: { per_page: NO_PAGE_LIMIT },
-        followlocation: true
+        followlocation: true,
+        ssl_verifypeer: 0
       )
       is_https_request = (request.url =~ /^https:\/\//)
       cached_data = redis_cache.get(is_https_request)

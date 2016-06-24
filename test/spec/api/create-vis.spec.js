@@ -5,23 +5,41 @@ var createVis = require('../../../src/api/create-vis');
 var fakeVizJSON = require('./fake-vizjson');
 
 describe('src/api/create-vis', function () {
-  it('should throw errors if required params are not set', function () {
+  beforeEach(function () {
+    this.container = $('<div id="map">').css('height', '200px');
+    this.containerId = this.container[0].id;
+    $('body').append(this.container);
+  });
+
+  afterEach(function () {
+    this.container.remove();
+  });
+
+  it('should throw errors', function () {
     expect(function () {
       createVis();
-    }).toThrowError('a DOM element must be provided');
+    }).toThrowError('a valid DOM element or selector must be provided');
 
     expect(function () {
       createVis('something');
-    }).toThrowError('a vizjson URL or object must be provided');
+    }).toThrowError('a valid DOM element or selector must be provided');
 
     expect(function () {
-      createVis('domId', 'http://example.com/vizjson');
-    }).not.toThrowError();
+      createVis(this.containerId);
+    }.bind(this)).toThrowError('a vizjson URL or object must be provided');
+
+    expect(function () {
+      createVis(this.container[0], 'vizjson');
+    }.bind(this)).not.toThrowError();
+
+    expect(function () {
+      createVis(this.containerId, 'vizjson');
+    }.bind(this)).not.toThrowError();
   });
 
   it('should load the vizjson file from a URL', function (done) {
     spyOn(Loader, 'get');
-    var vis = createVis('domId', 'http://example.com/vizjson');
+    var vis = createVis(this.containerId, 'http://example.com/vizjson');
 
     // Simulate a successful response from Loader.get
     var loaderCallback = Loader.get.calls.mostRecent().args[1];
@@ -36,7 +54,7 @@ describe('src/api/create-vis', function () {
 
   it('should use the given vizjson object', function () {
     spyOn(Loader, 'get');
-    var vis = createVis('domId', fakeVizJSON);
+    var vis = createVis(this.containerId, fakeVizJSON);
     expect(Loader.get).not.toHaveBeenCalled();
     vis.done(function (vis, layers) {
       expect(vis).toBeDefined();
@@ -50,7 +68,7 @@ describe('src/api/create-vis', function () {
       center_lon: '89'
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
     expect(vis.map.get('center')).toEqual([43.3, 89.0]);
   });
@@ -61,7 +79,7 @@ describe('src/api/create-vis', function () {
       center_lon: 'ham'
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
     expect(vis.map.get('center')).toEqual([ 41.40578459184651, 2.2230148315429688 ]);
   });
@@ -74,7 +92,7 @@ describe('src/api/create-vis', function () {
       ne_lon: '0'
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
     expect(vis.map.get('view_bounds_sw')).toEqual([43.3, 12]);
     expect(vis.map.get('view_bounds_ne')).toEqual([12, 0]);
@@ -88,7 +106,7 @@ describe('src/api/create-vis', function () {
       ne_lon: '0'
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
     expect(vis.map.get('view_bounds_sw')).toEqual([
       41.340989240001214,
@@ -100,26 +118,33 @@ describe('src/api/create-vis', function () {
     ]);
   });
 
-  it('should add header', function () {
+  it('should add header', function (done) {
     fakeVizJSON.title = 'title';
 
     var opts = {
       title: true
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
-    expect(vis.$('.cartodb-header').length).toEqual(1);
+    createVis(this.containerId, fakeVizJSON, opts);
+
+    _.defer(function () {
+      expect(this.container.find('.cartodb-header').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
-  it('should add layer selector', function () {
+  it('should add layer selector', function (done) {
     var opts = {
       title: true,
       layer_selector: true
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.cartodb-layer-selector-box').length).toEqual(1);
+    _.defer(function () {
+      expect(this.container.find('.cartodb-layer-selector-box').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
   it('should add header without link in the title', function () {
@@ -130,101 +155,92 @@ describe('src/api/create-vis', function () {
       title: true
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.cartodb-header').length).toEqual(1);
-    expect(vis.$('.cartodb-header h1 > a').length).toEqual(0);
+    _.defer(function () {
+      expect(this.container.find('.cartodb-header').length).toEqual(1);
+      expect(this.container.find('.cartodb-header h1 > a').length).toEqual(0);
+    }.bind(this));
   });
 
-  it('should add zoom', function () {
+  it('should add zoom', function (done) {
     fakeVizJSON.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
 
-    var vis = createVis('domId', fakeVizJSON, {});
+    createVis(this.containerId, fakeVizJSON, {});
 
-    expect(vis.$('.CDB-Zoom').length).toEqual(1);
+    _.defer(function () {
+      expect(this.container.find('.CDB-Zoom').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
-  it("should enable zoom if it's specified by zoomControl option", function () {
+  it("should enable zoom if it's specified by zoomControl option", function (done) {
     fakeVizJSON.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
     var opts = {
       zoomControl: true
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.CDB-Zoom').length).toEqual(1);
+    _.defer(function () {
+      expect(this.container.find('.CDB-Zoom').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
-  it("should disable zoom if it's specified by zoomControl option", function () {
+  it("should disable zoom if it's specified by zoomControl option", function (done) {
     fakeVizJSON.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
     var opts = {
       zoomControl: false
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.CDB-Zoom').length).toEqual(0);
+    _.defer(function () {
+      expect(this.container.find('.CDB-Zoom').length).toEqual(0);
+      done();
+    }.bind(this));
   });
 
-  it('should add search', function () {
+  it('should add search', function (done) {
     fakeVizJSON.overlays = [{ type: 'search' }];
 
-    var vis = createVis('domId', fakeVizJSON, {});
+    createVis(this.containerId, fakeVizJSON, {});
 
-    expect(vis.$('.CDB-Search').length).toEqual(1);
+    _.defer(function () {
+      expect(this.container.find('.CDB-Search').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
-  it("should enable search if it's specified by searchControl", function () {
+  it("should enable search if it's specified by searchControl", function (done) {
     fakeVizJSON.overlays = [{ type: 'search' }];
 
     var opts = {
       searchControl: true
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.CDB-Search').length).toEqual(1);
+    _.defer(function () {
+      expect(this.container.find('.CDB-Search').length).toEqual(1);
+      done();
+    }.bind(this));
   });
 
-  it("should disable search if it's specified by searchControl", function () {
+  it("should disable search if it's specified by searchControl", function (done) {
     fakeVizJSON.overlays = [{ type: 'search' }];
 
     var opts = {
       searchControl: false
     };
 
-    var vis = createVis('domId', fakeVizJSON, opts);
+    createVis(this.containerId, fakeVizJSON, opts);
 
-    expect(vis.$('.CDB-Search').length).toEqual(0);
-  });
-
-  it('should use zoom', function () {
-    var opts = {
-      zoom: 10,
-      bounds: [[24.206889622398023, -84.0234375], [76.9206135182968, 169.1015625]]
-    };
-
-    var vis = createVis('domId', fakeVizJSON, opts);
-
-    expect(vis.map.getZoom()).toEqual(10);
-  });
-
-  it('should force GMaps', function () {
-    fakeVizJSON.map_provider = 'leaflet';
-    fakeVizJSON.layers = [{
-      type: 'tiled',
-      options: {
-        urlTemplate: 'https://dnv9my2eseobd.cloudfront.net/v3/{z}/{x}/{y}.png'
-      }
-    }];
-
-    var opts = {
-      gmaps_base_type: 'dark_roadmap'
-    };
-
-    var vis = createVis('domId', fakeVizJSON, opts);
-
-    expect(vis.map.layers.at(0).get('type')).toEqual('GMapsBase');
+    _.defer(function () {
+      expect(this.container.find('.CDB-Search').length).toEqual(0);
+      done();
+    }.bind(this));
   });
 
   var mapInstantiationRequestDone = function () {
@@ -240,7 +256,7 @@ describe('src/api/create-vis', function () {
     });
 
     it('should instantiate map', function (done) {
-      this.vis = createVis('domId', fakeVizJSON, {});
+      this.vis = createVis(this.containerId, fakeVizJSON, {});
 
       setTimeout(function () {
         expect(mapInstantiationRequestDone()).toEqual(true);
@@ -249,7 +265,7 @@ describe('src/api/create-vis', function () {
     });
 
     it('should NOT instantiate map if skipMapInstantiation options is set to true', function (done) {
-      this.vis = createVis('domId', fakeVizJSON, {
+      this.vis = createVis(this.containerId, fakeVizJSON, {
         skipMapInstantiation: true
       });
 

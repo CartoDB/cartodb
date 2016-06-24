@@ -1150,7 +1150,7 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          it 'uses v3 infowindows and tooltips templates' do
+          it 'uses v3 infowindows and tooltips templates removing "table/views/" from template_name' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
@@ -1175,7 +1175,8 @@ describe Carto::Api::VisualizationsController do
 
               layer_definition = first_layer_definition_from_response(response)
               response_infowindow = layer_definition['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
+              infowindow['template_name'].should eq "table/views/infowindow_light"
+              response_infowindow['template_name'].should eq "infowindow_light"
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 
@@ -1195,7 +1196,7 @@ describe Carto::Api::VisualizationsController do
             @table.save
           end
 
-          it 'uses v3 infowindows templates at named maps' do
+          it 'uses v3 infowindows templates at named maps removing "table/views/" from template_name' do
             # vizjson v2 doesn't change
             get_json api_v2_visualizations_vizjson_url(user_domain: @user_1.username,
                                                        id: @visualization.id,
@@ -1219,7 +1220,8 @@ describe Carto::Api::VisualizationsController do
 
               layer_named_map = first_layer_named_map_from_response(response)
               response_infowindow = layer_named_map['layers'][0]['infowindow']
-              response_infowindow['template_name'].should eq infowindow['template_name']
+              infowindow['template_name'].should eq "table/views/infowindow_light"
+              response_infowindow['template_name'].should eq 'infowindow_light'
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 

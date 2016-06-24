@@ -40,28 +40,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis_data = add_default_privacy(vis_data)
 
         param_tables = params[:tables]
-        subdomain = CartoDB.extract_subdomain(request)
         current_user_id = current_user.id
 
         vis = if params[:source_visualization_id]
-                # Copy visualization
-                user = Carto::User.find(current_user_id)
-                source = Carto::Visualization.where(id: params[:source_visualization_id]).first
-                return head(403) unless source && source.is_viewable_by_user?(user) && source.derived?
-
-                visualization_copy_id = @stats_aggregator.timing('copy') do
-                  export_service = Carto::VisualizationsExportService2.new
-                  visualization_hash = export_service.export_visualization_json_hash(source, user)
-                  visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
-                  visualization_copy.name = name_candidate
-                  Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
-                  visualization_copy.id
-                end
-
-                CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
+                duplicate_derived_visualization(params[:source_visualization_id])
               elsif param_tables
-                viewed_user = ::User.find(username: subdomain)
-
                 tables = @stats_aggregator.timing('locate-table') do
                   tables = param_tables.map do |table_name|
                     Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
@@ -69,21 +52,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
                   tables.flatten
                 end
-
-                blender = Visualization::TableBlender.new(current_user, tables)
-                map = blender.blend
-
-                vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
-                                                               map_id: map.id,
-                                                               type: 'derived',
-                                                               privacy: blender.blended_privacy,
-                                                               user_id: current_user_id))
-
-                @stats_aggregator.timing('default-overlays') do
-                  Visualization::Overlays.new(vis).create_default_overlays
-                end
-
-                vis
+                create_visualization_from_tables(tables)
               else
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
@@ -339,6 +308,41 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   private
+
+  def duplicate_derived_visualization(source_id)
+    # Copy visualization
+    user = Carto::User.find(current_user_id)
+    source = Carto::Visualization.where(id: source_id).first
+    return head(403) unless source && source.is_viewable_by_user?(user) && source.derived?
+
+    visualization_copy_id = @stats_aggregator.timing('copy') do
+      export_service = Carto::VisualizationsExportService2.new
+      visualization_hash = export_service.export_visualization_json_hash(source, user)
+      visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+      visualization_copy.name = name_candidate
+      Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
+      visualization_copy.id
+    end
+
+    CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
+  end
+
+  def create_visualization_from_tables(tables)
+    blender = Visualization::TableBlender.new(current_user, tables)
+    map = blender.blend
+
+    vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
+                                                   map_id: map.id,
+                                                   type: 'derived',
+                                                   privacy: blender.blended_privacy,
+                                                   user_id: current_user_id))
+
+    @stats_aggregator.timing('default-overlays') do
+      Visualization::Overlays.new(vis).create_default_overlays
+    end
+
+    vis
+  end
 
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./

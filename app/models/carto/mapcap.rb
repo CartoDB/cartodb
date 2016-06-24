@@ -11,8 +11,8 @@ module Carto
 
     before_save :generate_export_json, :generate_ids_json
 
-    after_save :invalidate_visualization_cache
-    after_destroy :invalidate_visualization_cache
+    after_save :notify_map_change
+    after_destroy :notify_map_change
 
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_json_export(export_json)
@@ -60,8 +60,8 @@ module Carto
       regenerated_visualization
     end
 
-    def invalidate_visualization_cache
-      visualization.invalidate_cache
+    def notify_map_change
+      visualization.map.notify_map_change
     end
   end
 end

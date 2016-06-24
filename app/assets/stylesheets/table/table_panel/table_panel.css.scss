@@ -16,10 +16,9 @@ $corner_radius: 0px;
 .table_panel {
   position:fixed;
   right:-537px;
-  top:64px;
+  top:78px;
   bottom:0px;
   width:600px;
-  padding-top:25px;
   background:$DarkGrey3;
   letter-spacing:-4px;
   border:1px solid $Black;
@@ -44,9 +43,7 @@ $corner_radius: 0px;
     @include transition-duration(250ms);
     z-index:1;
 
-    &:hover {padding-bottom:15px}
     &:first-child {margin-top:0;}
-    &:last-child:hover {margin-top:-38px}
   }
 
 
@@ -101,11 +98,6 @@ $corner_radius: 0px;
       .name { color:$Grey1; }
     }
 
-    &:hover {
-      margin-bottom:20px;
-      padding-bottom:0;
-      margin-top:-25px;
-    }
   }
 
   // Active layer in visualization

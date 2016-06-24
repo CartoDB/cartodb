@@ -1,12 +1,31 @@
+var Backbone = require('Backbone');
 var createDashboard = require('../../src/api/create-dashboard');
 var APIDashboard = require('../../src/api/dashboard');
 var cdb = require('cartodb.js');
+
+var newVisMock = function () {
+  var visMock = new Backbone.Model();
+  visMock.map = {
+    layers: {
+      get: function () { return new Backbone.Model(); }
+    }
+  };
+  visMock.dataviews = jasmine.createSpyObj('dataviews', ['createFormulaModel']);
+  visMock.dataviews.createFormulaModel.and.returnValue(new Backbone.Model());
+  visMock.done = function (callback) { callback(); };
+  visMock.error = function (callback) { callback(); };
+  visMock.instantiateMap = jasmine.createSpy('instantiateMap');
+  visMock.centerMapToOrigin = jasmine.createSpy('centerMapToOrigin');
+
+  return visMock;
+};
 
 describe('create-dashboard', function () {
   describe('given a valid input', function () {
     beforeEach(function () {
       this.$el = document.createElement('div');
       this.$el.id = 'foobar';
+      this.selectorId = '#' + this.$el.id;
       document.body.appendChild(this.$el);
 
       this.vizJSON = {
@@ -34,32 +53,44 @@ describe('create-dashboard', function () {
           type: 'torque' // to be identified as an 'interactive' layer
         }]
       };
+
+      this.visMock = newVisMock();
+      // Stubbing cdb.createVis to return a mock of a vis object cause is was
+      // impossible to make tests pass in CI when using the real cdb.createVis
+      spyOn(cdb, 'createVis').and.returnValue(this.visMock);
     });
 
     afterEach(function () {
       document.body.removeChild(this.$el);
     });
 
-    it('should return an API dashboard object', function (done) {
-      var selector = '#' + this.$el.id;
-      createDashboard(selector, this.vizJSON, {}, function (error, dashboard) {
-        expect(error).toEqual(null);
-        if (error) return;
-        expect(dashboard).toBeDefined();
-        expect(dashboard instanceof APIDashboard).toBeTruthy();
+    it('should return an API dashboard object', function () {
+      var callback = jasmine.createSpy('callback');
 
-        done();
-      });
+      createDashboard(this.selectorId, this.vizJSON, {}, callback);
+
+      // visjson is loaded into the vis
+      this.visMock.trigger('load', this.visMock);
+
+      expect(callback).toHaveBeenCalled();
+      var error = callback.calls.argsFor(0)[0];
+      var dashboard = callback.calls.argsFor(0)[1];
+
+      expect(error).toBe(null);
+      expect(dashboard instanceof APIDashboard).toBeTruthy();
     });
 
-    it('should skip map instantiation', function () {
-      spyOn(cdb, 'createVis').and.callThrough();
-      createDashboard('#' + this.$el.id, this.vizJSON, {}, function (error, dashboard) {
-        if (error) return;
-      });
-      expect(cdb.createVis).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), jasmine.objectContaining({
-        skipMapInstantiation: true
-      }));
+    it('should skip map instantiation and explictely isntantiate the map after everything has been loaded', function () {
+      var callback = jasmine.createSpy('callback');
+
+      createDashboard(this.selectorId, this.vizJSON, {}, callback);
+
+      expect(this.visMock.instantiateMap).not.toHaveBeenCalled();
+
+      // visjson is loaded into the vis
+      this.visMock.trigger('load', this.visMock);
+
+      expect(this.visMock.instantiateMap).toHaveBeenCalled();
     });
   });
 });

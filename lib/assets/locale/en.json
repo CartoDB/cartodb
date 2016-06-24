@@ -670,7 +670,8 @@
         "filter-column": "Filter column"
       },
       "infowindow": {
-        "placeholder-text": "Popups are disabled for this layer.",
+        "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
+        "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",

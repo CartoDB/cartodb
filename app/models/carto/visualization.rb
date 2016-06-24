@@ -347,6 +347,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def invalidate_cache
+    return if latest_mapcap
+
     redis_vizjson_cache.invalidate(id)
     embed_redis_cache.invalidate(id)
     CartoDB::Varnish.new.purge(varnish_vizjson_key)
@@ -358,6 +360,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def mapcaps
     Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
+  end
+
+  def latest_mapcap
+    mapcaps.first
   end
 
   private

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../services/carto/visualizations_export_service_2'
+require_dependency 'carto/named_maps/api'
 
 module Carto
   class Mapcap < ActiveRecord::Base
@@ -11,7 +12,7 @@ module Carto
 
     before_save :generate_export_json, :generate_ids_json
 
-    after_save :notify_map_change
+    after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
     def regenerate_visualization
@@ -62,6 +63,10 @@ module Carto
 
     def notify_map_change
       visualization.map.notify_map_change
+    end
+
+    def update_named_map
+      Carto::NamedMaps::Api.new(regenerate_visualization).update
     end
   end
 end

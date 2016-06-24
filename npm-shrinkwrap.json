@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.27.22",
+  "version": "3.27.30",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -936,7 +936,7 @@
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.2",
-                      "from": "core-util-is@>=1.0.0 <1.1.0",
+                      "from": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
                       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
                     },
                     "isarray": {
@@ -982,7 +982,7 @@
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.2",
-                      "from": "core-util-is@>=1.0.0 <1.1.0",
+                      "from": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
                       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
                     },
                     "isarray": {
@@ -1120,12 +1120,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#79358436a42bff0bd7d1309aa79df31a929a734b",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#9e4382f68c094bb111e3754a7cfcb4b2c76d084c",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#c54ca5d6343eeeb3e613ddf28efdf324f3aadb5e",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#da3cbe930b2653fcaab1ff0571db82d37846a159",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1251,7 +1251,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c54ca5d6343eeeb3e613ddf28efdf324f3aadb5e",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#da3cbe930b2653fcaab1ff0571db82d37846a159",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

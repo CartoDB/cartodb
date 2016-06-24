@@ -20,8 +20,6 @@ module Carto
                   Carto::UnprocesableEntityError,
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
-      after_filter :invalidate_visualization_cache, only: [:create, :destroy]
-
       def index
         render_jsonp(@visualization.mapcaps.map { |mapcap| Carto::Api::MapcapPresenter.new(mapcap).to_poro }, 201)
       end
@@ -62,10 +60,6 @@ module Carto
         @mapcap = Carto::Mapcap.find(mapcap_id)
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new("Mapcap not found: #{mapcap_id}")
-      end
-
-      def invalidate_visualization_cache
-        @visualization.invalidate_cache
       end
     end
   end

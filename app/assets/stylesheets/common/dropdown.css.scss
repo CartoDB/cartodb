@@ -30,8 +30,8 @@
     display: block !important;
     width: 10px;
     height: 10px;
-    background-color: #cfcfcf;
-    @include transform(rotate(45deg));
+    background-color: #cfcfcf; 
+    @include transforms(rotate(45deg));
   }
   &:after {
     content: ' ';

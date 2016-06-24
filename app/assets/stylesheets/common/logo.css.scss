@@ -21,7 +21,7 @@ $size: 36px;
   border: 2px solid rgba(#FFFFFF, 0.7);
   border-radius: $size;
   border-bottom-color: transparent;
-  background: transparent;
+  background: transparent; 
   content: '';
 }
 .Logo--text {
@@ -93,28 +93,28 @@ $size: 36px;
 
 @include keyframes(spin) {
   100% {
-    @include transform(rotate(360deg));
+    @include transforms(rotate(360deg));
   }
-}
+} 
 
 @include keyframes(fade-and-bounce-up) {
   0% {
     @include opacity(0);
-    @include transform(translateY(6px));
+    @include transforms(translateY(6px));
   }
   15% {
     @include opacity(0.8);
-    @include transform(translateY(-3px));
+    @include transforms(translateY(-3px));
   }
   45% {
     @include opacity(1);
-    @include transform(translateY(2px));
+    @include transforms(translateY(2px));
   }
   70% {
-    @include transform(translateY(-1px));
+    @include transforms(translateY(-1px));
   }
   100% {
     @include opacity(1);
-    @include transform(translateY(0));
+    @include transforms(translateY(0));
   }
 }

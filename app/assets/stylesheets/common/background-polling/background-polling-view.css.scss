@@ -80,51 +80,51 @@ $radius: 4px;
 @include keyframes(fade-and-scale-in) {
   0% {
     @include opacity(0.0);
-    @include transform(scale(2.0));
+    @include transforms(scale(2.0));
   }
   10% {
     @include opacity(0.9);
-    @include transform(scale(1.1));
-  }
-  100% {
+    @include transforms(scale(1.1));
+  } 
+  100% { 
     @include opacity(1.0);
-    @include transform(scale(1.0));
+    @include transforms(scale(1.0));
   }
 }
 
 @include keyframes(fade-and-bounce-up) {
   0% {
     @include opacity(0.0);
-    @include transform(translateY(6px));
+    @include transforms(translateY(6px));
   }
   15% {
     @include opacity(0.8);
-    @include transform(translateY(-3px));
+    @include transforms(translateY(-3px));
   }
   45% {
     @include opacity(1.0);
-    @include transform(translateY(2px));
+    @include transforms(translateY(2px));
   }
   70% {
-    @include transform(translateY(-1px));
+    @include transforms(translateY(-1px));
   }
   100% {
     @include opacity(1.0);
-    @include transform(translateY(0));
+    @include transforms(translateY(0));
   }
 }
 
 @include keyframes(fade-and-scale-out) {
   0% {
     @include opacity(1.0);
-    @include transform(scale(1.0));
+    @include transforms(scale(1.0));
   }
   80% {
     @include opacity(0.05);
-    @include transform(scale(1.40));
+    @include transforms(scale(1.40));
   }
   100% {
     @include opacity(0.0);
-    @include transform(scale(2.0));
+    @include transforms(scale(2.0));
   }
 }

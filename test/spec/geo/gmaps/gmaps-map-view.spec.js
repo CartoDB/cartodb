@@ -11,10 +11,7 @@ var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-
 var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
 var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
 
-// Skipping this tests that are failing in CI, due to:
-// -> TypeError: 'undefined' is not an object (evaluating 'a.addEventListener') in
-//    http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12 (line 88)
-xdescribe('geo/gmaps/gmaps-map-view', function () {
+describe('geo/gmaps/gmaps-map-view', function () {
   var mapView;
   var map;
   var spy;

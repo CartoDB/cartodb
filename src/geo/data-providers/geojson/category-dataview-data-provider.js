@@ -1,13 +1,13 @@
 var _ = require('underscore');
-var GeoJSONDataProviderBase = require('./geojson-data-provider-base');
+var DataviewDataProviderBase = require('./dataview-data-provider-base');
 
-var CategoryGeoJSONDataProvider = function (vectorLayerView, layerIndex) {
-  GeoJSONDataProviderBase.apply(this, arguments);
+var CategoryDataviewDataProvider = function (vectorLayerView, layerIndex) {
+  DataviewDataProviderBase.apply(this, arguments);
 };
 
-_.extend(CategoryGeoJSONDataProvider.prototype, GeoJSONDataProviderBase.prototype);
+_.extend(CategoryDataviewDataProvider.prototype, DataviewDataProviderBase.prototype);
 
-CategoryGeoJSONDataProvider.prototype.getData = function () {
+CategoryDataviewDataProvider.prototype.getData = function () {
   var options = this._dataview.attributes;
   var columnName = options.column;
   var filterEnabled = options.filterEnabled;
@@ -71,7 +71,7 @@ CategoryGeoJSONDataProvider.prototype.getData = function () {
   return data;
 };
 
-CategoryGeoJSONDataProvider.prototype.applyFilter = function (filter) {
+CategoryDataviewDataProvider.prototype.applyFilter = function (filter) {
   var columnName = this._dataview.get('column');
   var filterType;
   var filterOptions;
@@ -91,4 +91,4 @@ CategoryGeoJSONDataProvider.prototype.applyFilter = function (filter) {
   this._vectorLayerView.applyFilter(this._layerIndex, filterType, filterOptions);
 };
 
-module.exports = CategoryGeoJSONDataProvider;
+module.exports = CategoryDataviewDataProvider;

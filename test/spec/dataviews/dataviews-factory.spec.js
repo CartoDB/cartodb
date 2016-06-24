@@ -57,5 +57,25 @@ describe('dataviews/dataviews-factory', function () {
 
       expect(model.get('apiKey')).toEqual('THE_API_KEY');
     });
+
+    it(factoryMethod + " should set a default source using the layer's id when not given one", function () {
+      this.factory = new DataviewsFactory({
+        apiKey: 'THE_API_KEY'
+      }, {
+        dataviewsCollection: this.dataviewsCollection,
+        map: {}
+      });
+
+      var layer = jasmine.createSpyObj('layer', ['getDataProvider']);
+
+      // Set fake attributes
+      var attributes = _.reduce(requiredAttributes, function (object, attributeName) {
+        object[attributeName] = 'something';
+        return object;
+      }, {});
+      var model = this.factory[factoryMethod](layer, attributes);
+
+      expect(model.get('source')).toEqual({ id: layer.id });
+    });
   }, this);
 });

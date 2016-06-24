@@ -13,59 +13,57 @@ var DEFAULT_OPTIONS = {
   show_empty_infowindow_fields: false
 };
 
-var createVis = function (el, vizjson, options, callback) {
+var createVis = function (el, vizjson, options) {
+  if (typeof el === 'string') {
+    el = document.getElementById(el);
+  }
   if (!el) {
-    throw new TypeError('a DOM element must be provided');
+    throw new TypeError('a valid DOM element or selector must be provided');
   }
   if (!vizjson) {
     throw new TypeError('a vizjson URL or object must be provided');
   }
 
-  var args = arguments;
-  var fn = args[args.length - 1];
-
-  if (_.isFunction(fn)) {
-    callback = fn;
-  }
-  if (typeof el === 'string') {
-    el = document.getElementById(el);
-  }
-
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var visModel = new VisModel();
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
 
-  var visView = new VisView({
+  var visModel = new VisModel({
+    title: options.title || vizjson.title,
+    description: options.description || vizjson.description,
+    apiKey: options.apiKey,
+    showLegends: options.legends === true || vizjson.legends === true,
+    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true
+  });
+
+  new VisView({ // eslint-disable-line
     el: el,
     model: visModel
   });
-
-  if (callback) {
-    visView.done(callback);
-  }
 
   if (typeof vizjson === 'string') {
     var url = vizjson;
     Loader.get(url, function (vizjson) {
       if (vizjson) {
-        loadVizJSON(visView, vizjson, options);
+        loadVizJSON(visModel, vizjson, options);
       } else {
         throw new Error('error fetching viz.json file');
       }
     });
   } else {
-    loadVizJSON(visView, vizjson, options);
+    loadVizJSON(visModel, vizjson, options);
   }
 
-  return visView;
+  return visModel;
 };
 
-var loadVizJSON = function (vis, vizjsonData, options) {
+var loadVizJSON = function (visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
-  vis.load(vizjson, options);
+  visModel.load(vizjson);
   if (!options.skipMapInstantiation) {
-    vis.instantiateMap();
+    visModel.instantiateMap();
   }
 };
 

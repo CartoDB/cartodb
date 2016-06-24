@@ -3,7 +3,7 @@ require('d3.cartodb');// TODO: The 'd3.cartodb' module doens't currently export 
 // Check out: https://github.com/CartoDB/d3.cartodb/issues/93 for more info
 var CartoDBd3Layer = window.L.CartoDBd3Layer;
 var LeafletLayerView = require('./leaflet-layer-view');
-var GeoJSONDataProviderFactory = require('../data-providers/geojson/geojson-data-provider-factory');
+var GeoJSONDataProvider = require('../data-providers/geojson/data-provider');
 
 var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   includes: [
@@ -57,7 +57,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
 
   _onLayerAdded: function (layerModel, layersCollection) {
     var layerIndex = layersCollection.indexOf(layerModel);
-    layerModel.setDataProvider(new GeoJSONDataProviderFactory(this, layerIndex));
+    layerModel.setDataProvider(new GeoJSONDataProvider(this, layerIndex));
   },
 
   _onTileJSONChanged: function () {

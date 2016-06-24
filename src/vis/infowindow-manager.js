@@ -18,6 +18,7 @@ InfowindowManager.prototype.manage = function (mapView, map) {
   this._map.layers.bind('reset', function (layers) {
     layers.each(this._addInfowindowForLayer, this);
   }, this);
+  this._map.layers.each(this._addInfowindowForLayer, this);
   this._map.layers.bind('add', this._addInfowindowForLayer, this);
 };
 
@@ -65,15 +66,22 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
       visibility: true
     });
 
-    if (this._currentFeatureId !== data.cartodb_id) {
-      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
-    }
+    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
 
     if (layerView.tooltipView) {
       layerView.tooltipView.setFilter(function (feature) {
         return feature.cartodb_id !== data.cartodb_id;
       }).hide();
     }
+
+    var clearFilter = function (infowindowModel) {
+      if (!infowindowModel.get('visibility')) {
+        layerView.tooltipView.setFilter(null);
+      }
+    };
+
+    this._infowindowModel.unbind('change:visibility', clearFilter);
+    this._infowindowModel.once('change:visibility', clearFilter);
   }, this);
 };
 
@@ -105,22 +113,35 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
   }, this);
 
   layerModel.infowindow.fields.bind('reset', function () {
-    var needsNewAttributes = false;
-    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
-      this._updateInfowindowModel(layerModel.infowindow);
-      if (this._infowindowModel.get('visibility') === true) {
-        needsNewAttributes = true;
+    if (layerModel.infowindow.hasFields()) {
+      if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
+        this._updateInfowindowModel(layerModel.infowindow);
+        if (this._infowindowModel.get('visibility')) {
+          this._reloadMapAndFetchAttributes(layerView, layerModel);
+          return;
+        }
+      }
+
+      this._reloadMap();
+    } else {
+      if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
+        this._infowindowModel.set('visibility', false);
       }
     }
-
-    var options = {};
-    if (needsNewAttributes) {
-      options.success = function () {
-        this._fetchAttributes(layerView, layerModel);
-      }.bind(this);
-    }
-    this._map.reload(options);
   }, this);
+};
+
+InfowindowManager.prototype._reloadMap = function (options) {
+  options = options || {};
+  this._map.reload(options);
+};
+
+InfowindowManager.prototype._reloadMapAndFetchAttributes = function (layerView, layerModel) {
+  this._reloadMap({
+    success: function () {
+      this._fetchAttributes(layerView, layerModel);
+    }.bind(this)
+  });
 };
 
 module.exports = InfowindowManager;

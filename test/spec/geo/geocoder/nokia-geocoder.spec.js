@@ -36,7 +36,7 @@ describe('geo/geocoder/nokia-geocoder', function() {
 
   it("we shouldn't get a direction that doesn't exist", function(done) {
     var data;
-    NOKIA.geocode('ASDF1234567890', function(d) {
+    NOKIA.geocode('68461092610314965639', function(d) {
       data = d;
       expect(data.length).toEqual(0);
       done();

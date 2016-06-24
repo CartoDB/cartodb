@@ -30,7 +30,28 @@ describe('src/vis/tooltip-manager.js', function () {
     };
   });
 
-  it('should add a new tooltip view to the map view when new layers are reseted', function () {
+  it('should add a new tooltip view to the map view when layers were previously reset', function () {
+    spyOn(this.mapView, 'addOverlay');
+
+    var layer = new CartoDBLayer({
+      tooltip: {
+        fields: [{
+          'name': 'name',
+          'title': true,
+          'position': 1
+        }]
+      }
+    });
+
+    this.map.layers.reset([ layer ]);
+
+    var tooltipManager = new TooltipManager(this.vis);
+    tooltipManager.manage(this.mapView, this.map);
+
+    expect(this.mapView.addOverlay).toHaveBeenCalled();
+  });
+
+  it('should add a new tooltip view to the map view when new layers are reset', function () {
     spyOn(this.mapView, 'addOverlay');
 
     var layer = new CartoDBLayer({

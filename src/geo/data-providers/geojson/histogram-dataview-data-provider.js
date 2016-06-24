@@ -1,14 +1,14 @@
 var d3 = require('d3');
 var _ = require('underscore');
-var GeoJSONDataProviderBase = require('./geojson-data-provider-base');
+var DataviewDataProviderBase = require('./dataview-data-provider-base');
 
-var HistogramGeoJSONDataProvider = function (vectorLayerView, layerIndex) {
-  GeoJSONDataProviderBase.apply(this, arguments);
+var HistogramDataviewDataProvider = function (vectorLayerView, layerIndex) {
+  DataviewDataProviderBase.apply(this, arguments);
 };
 
-_.extend(HistogramGeoJSONDataProvider.prototype, GeoJSONDataProviderBase.prototype);
+_.extend(HistogramDataviewDataProvider.prototype, DataviewDataProviderBase.prototype);
 
-HistogramGeoJSONDataProvider.prototype.getData = function () {
+HistogramDataviewDataProvider.prototype.getData = function () {
   var options = this._dataview.attributes;
   var filter = this._vectorLayerView.getFilter(this._layerIndex);
   var columnName = options.column;
@@ -58,7 +58,7 @@ HistogramGeoJSONDataProvider.prototype.getData = function () {
   return histogram;
 };
 
-HistogramGeoJSONDataProvider.prototype.applyFilter = function (filter) {
+HistogramDataviewDataProvider.prototype.applyFilter = function (filter) {
   var columnName = this._dataview.get('column');
   var filterOptions;
   if (filter.isEmpty()) {
@@ -70,4 +70,4 @@ HistogramGeoJSONDataProvider.prototype.applyFilter = function (filter) {
   this._vectorLayerView.applyFilter(this._layerIndex, 'range', filterOptions);
 };
 
-module.exports = HistogramGeoJSONDataProvider;
+module.exports = HistogramDataviewDataProvider;

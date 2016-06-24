@@ -117,13 +117,13 @@ var Map = Model.extend({
 
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
-    var silent = options.silent;
     var layerModel = LayersFactory.create(type, attrs, {
       map: this
     });
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {
-      silent: silent
+      silent: options.silent,
+      at: options.at
     });
 
     return layerModel;
@@ -155,9 +155,9 @@ var Map = Model.extend({
     }
   },
 
-  instantiateMap: function () {
+  instantiateMap: function (options) {
     this._initBinds();
-    this.reload();
+    this.reload(_.pick(options, ['success', 'error']));
   },
 
   _onLayersResetted: function () {

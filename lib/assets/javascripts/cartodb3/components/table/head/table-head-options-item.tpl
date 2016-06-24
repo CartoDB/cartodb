@@ -29,7 +29,7 @@
   </div>
 <% } else { %>
   <div class="CDB-ListDecoration-itemLink
-    <% if (isDestructive) { %>  u-alertTextColor <% } else { %> u-actionTextColor <% } %>
+    <% if (isDestructive) { %>  u-errorTextColor <% } else { %> u-actionTextColor <% } %>
     <% if (val === 'change') { %> u-flex <% } %>
     " title="<%- name %>">
     <%- name %>

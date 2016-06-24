@@ -1,4 +1,4 @@
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var createDashboard = require('../../src/api/create-dashboard');
 var APIDashboard = require('../../src/api/dashboard');
 var cdb = require('cartodb.js');

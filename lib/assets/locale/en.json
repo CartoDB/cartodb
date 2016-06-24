@@ -9,6 +9,9 @@
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
+    "filter": "Filter",
+    "kmeans": "Cluster",
+    "filter-by-node-column": "Link to layer"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -225,6 +228,10 @@
             "title": "Intersection",
             "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
           },
+          "filter": {
+            "title": "Filter",
+            "desc": "Transform your data into coordinates"
+          },
           "moran-cluster": {
             "title": "Moran cluster",
             "desc": "Finds areas which have similar values and also outliers"
@@ -236,6 +243,10 @@
           "weighted-centroid": {
             "title": "Weighted centroid",
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+          },
+          "filter-by-node-column": {
+            "title": "Merge by column",
+            "desc": "Merge two layers matching column names"
           }
         }
       },
@@ -620,13 +631,17 @@
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
+        "filter": "Filter",
+        "hide": "Hide",
         "filter-aggregate": "Filter or aggregate your results",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "max": "Max",
         "meters": "m",
         "miles": "mi",
+        "min": "Min",
         "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
@@ -638,15 +653,21 @@
         "polygons_source": "Polygon source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "result": "Result",
+        "select-column": "Select a column",
+        "show": "Show",
         "significance": "Significance",
         "time": "Time",
+        "top-range": "Top range",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
         "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "source-column": "Source column",
+        "filter-column": "Filter column"
       },
       "infowindow": {
         "placeholder-text": "Popups are disabled for this layer.",
@@ -658,7 +679,7 @@
           "none": "None",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
-          "infowindow_light_header_blue": "Color",
+          "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
         "items": {
@@ -676,6 +697,14 @@
           "title-label": "Show items",
           "description": "Add items"
         }
+      },
+      "filter-options": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "between": "Between",
+        "is-equal-to": "Is equal to",
+        "is-greater-than": "Is greater than",
+        "is-less-than": "Is less than"
       }
     },
     "data": {

@@ -42,6 +42,7 @@
   @include flex(1);
   min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
+  word-break: break-all;
 }
 
 .Notifier-actions {

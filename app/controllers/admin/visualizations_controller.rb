@@ -61,9 +61,9 @@ class Admin::VisualizationsController < Admin::AdminController
     table_action = request.original_fullpath =~ %r{/tables/}
     unless current_user.present?
       if table_action
-        return(redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id]}))
+        return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
       else
-        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
       end
     end
 
@@ -72,9 +72,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
     unless @visualization.has_write_permission?(current_user)
       if table_action
-        return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
+        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       else
-        return redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
+        return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
+                                       id: request.params[:id], redirected: true)
       end
     end
 

@@ -14,6 +14,7 @@ FactoryGirl.define do
     table_quota            5
     quota_in_bytes         5000000
     id                     { UUIDTools::UUID.timestamp_create.to_s }
+    builder_enabled        'no-redirect'
 
     trait :admin_privileges do
 

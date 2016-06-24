@@ -133,7 +133,7 @@
         </div>
       <% end %>
 
-      <% if (@user.has_feature_flag?('editor-3'))  %>
+      <% if (@user.builder_enabled?)  %>
       <span class="FormAccount-separator"></span>
 
       <div class="FormAccount-row">

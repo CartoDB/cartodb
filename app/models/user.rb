@@ -1565,11 +1565,16 @@ class User < Sequel::Model
     mobile_max_open_users > 0
   end
 
+  def builder_enabled?
+    user = has_organization? ? organization.owner : self
+    user.has_feature_flag?('editor-3')
+  end
+
   def force_builder?
     builder_enabled.nil? || builder_enabled == FORCE_BUILDER
   end
 
-  def forced_editor?
+  def force_editor?
     builder_enabled == FORCE_EDITOR
   end
 

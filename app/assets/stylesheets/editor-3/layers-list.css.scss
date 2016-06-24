@@ -6,6 +6,8 @@
 @import 'cdb-variables/colors';
 
 .Editor-ListLayer-item {
+  @include transition(opacity 2s ease-in);
+  box-sizing: border-box;
   position: relative;
   width: auto;
   margin-bottom: $baseSize;
@@ -14,6 +16,10 @@
   border-radius: $halfBaseSize;
   background: #FFF;
 }
+.Editor-ListLayer-item.is-hidden {
+  opacity: 0.64;
+}
+
 .Editor-ListLayer-item--placeholder {
   border-color: $cSecondaryBackground;
   background: $cSecondaryBackground;
@@ -32,6 +38,8 @@
   @include opacity(0.6);
 }
 .Editor-ListLayer-item.ui-sortable-helper {
+  // scss-lint:disable ImportantRule
+  left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
   min-width: 290px;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
@@ -61,13 +69,11 @@
   border-radius: $baseSize / 2;
   cursor: pointer;
 }
+
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;
 }
 
-.Editor-ListLayer-media.is-hide {
-  opacity: 0.24;
-}
 
 .Editor-ListLayer-title {
   @include display-flex();

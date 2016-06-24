@@ -26,7 +26,7 @@ module Carto
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-    }
+    }.freeze
 
     def public_values
       {
@@ -111,6 +111,10 @@ module Carto
       map.visualization
     end
 
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
     def wrapped_sql(user)
       query = options[:query]
 
@@ -154,10 +158,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def user
-      @user ||= maps.first.user
     end
 
   end

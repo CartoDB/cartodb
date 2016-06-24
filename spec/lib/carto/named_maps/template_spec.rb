@@ -59,9 +59,41 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
           end
 
-          describe 'with infowindows' do
+          describe 'with popups' do
+            let(:dummy_infowindow) do
+              {
+                "fields" => [
+                  {
+                    "name" => "click_status",
+                    "title" => true,
+                    "position" => 8
+                  }],
+                "template_name" => "table/views/infowindow_light",
+                "template" => "",
+                "alternative_names" => {},
+                "width" => 226,
+                "maxHeight" => 180
+              }
+            end
+
+            let(:dummy_tooltip) do
+              {
+                "fields" => [
+                  {
+                    "name" => "hover_status",
+                    "title" => true,
+                    "position" => 8
+                  }],
+                "template_name" => "table/views/infowindow_light",
+                "template" => "",
+                "alternative_names" => {},
+                "width" => 226,
+                "maxHeight" => 180
+              }
+            end
+
             before(:all) do
-              @carto_layer.options[:interactivity] = 'cartodb_id,manolo_status'
+              @carto_layer.options[:interactivity] = 'cartodb_id,click_status'
               @carto_layer.save
 
               @visualization.reload
@@ -74,44 +106,43 @@ module Carto
               @visualization.reload
             end
 
-            describe 'triggered on hover' do
-              it 'interactivity should be present' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+            describe 'triggered on hover only' do
+              before(:all) do
+                @carto_layer.tooltip = dummy_tooltip
+                @carto_layer.save
 
-                layer_options_hash[:interactivity].should be_present
+                @visualization.reload
+
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
               end
 
-              it 'interactivity should be correct' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+              after(:all) do
+                @carto_layer.tooltip = nil
+                @carto_layer.save
 
-                layer_options_hash[:interactivity].should eq @carto_layer.options[:interactivity]
+                @visualization.reload
+                @layer_options_hash = nil
+              end
+
+              it 'interactivity contain fields but not cartodb_id' do
+                @layer_options_hash[:interactivity].should eq 'hover_status'
+              end
+
+              it 'should not contain attributes' do
+                @layer_options_hash[:attributes].should be_nil
               end
             end
 
-            describe 'triggered onclick' do
-              let(:dummy_infowindow) do
-                {
-                  "fields" => [
-                    {
-                      "name" => "manolo_status",
-                      "title" => true,
-                      "position" => 8
-                    }],
-                  "template_name" => "table/views/infowindow_light",
-                  "template" => "",
-                  "alternative_names" => {},
-                  "width" => 226,
-                  "maxHeight" => 180
-                }
-              end
-
+            describe 'triggered onclick only' do
               before(:all) do
                 @carto_layer.infowindow = dummy_infowindow
                 @carto_layer.save
 
                 @visualization.reload
+
+                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
               end
 
               after(:all) do
@@ -119,22 +150,66 @@ module Carto
                 @carto_layer.save
 
                 @visualization.reload
+                @layer_options_hash = nil
               end
 
-              it 'attributes should be present' do
-                template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
-
-                layer_options_hash[:attributes].should be_present
+              it 'interactivity should only contain cartodb_id' do
+                @layer_options_hash[:interactivity].should eq 'cartodb_id'
               end
 
-              it 'attributes should be correct' do
+              it 'should have attributes' do
+                @layer_options_hash[:attributes].should_not be_nil
+                @layer_options_hash[:attributes].should_not be_empty
+              end
+
+              it 'attributes should have id: cartodb_id' do
+                @layer_options_hash[:attributes][:id].should eq 'cartodb_id'
+              end
+
+              it 'attributes should contain correct columns' do
+                @layer_options_hash[:attributes][:columns].should eq ['click_status']
+              end
+            end
+
+            describe 'triggered onclick and onhover' do
+              before(:all) do
+                @carto_layer.infowindow = dummy_infowindow
+                @carto_layer.tooltip = dummy_tooltip
+                @carto_layer.save
+
+                @visualization.reload
+
                 template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-                layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+                @layer_options_hash = template_hash[:layergroup][:layers].second[:options]
+              end
 
-                expected_attributes = { id: 'cartodb_id', columns: ['manolo_status'] }
+              after(:all) do
+                @carto_layer.infowindow = nil
+                @carto_layer.save
 
-                layer_options_hash[:attributes].should eq expected_attributes
+                @visualization.reload
+                @layer_options_hash = nil
+              end
+
+              it 'interactivity should contain cartodb_id and selected columns' do
+                @layer_options_hash[:interactivity].should include 'cartodb_id'
+                @layer_options_hash[:interactivity].should_not include 'click_status'
+                @layer_options_hash[:interactivity].should include 'hover_status'
+              end
+
+              it 'should have attributes' do
+                @layer_options_hash[:attributes].should_not be_nil
+                @layer_options_hash[:attributes].should_not be_empty
+              end
+
+              it 'attributes should have id: cartodb_id' do
+                @layer_options_hash[:attributes][:id].should eq 'cartodb_id'
+              end
+
+              it 'attributes should contain correct columns but not cartodb_id' do
+                @layer_options_hash[:attributes][:columns].should include 'click_status'
+                @layer_options_hash[:attributes][:columns].should_not include 'hover_status'
+                @layer_options_hash[:attributes][:columns].should_not include 'cartodb_id'
               end
             end
           end
@@ -162,7 +237,6 @@ module Carto
 
           describe 'with analyses' do
             before(:all) do
-              @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
               @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
               @visualization.reload
 
@@ -174,7 +248,8 @@ module Carto
 
             after(:all) do
               @analysis.destroy
-              @carto_layer.destroy
+              @carto_layer.options.delete(:source)
+              @carto_layer.save
               @visualization.reload
               @template_hash = nil
             end

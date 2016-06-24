@@ -8,7 +8,12 @@ module Carto
       end
 
       def builder_user?(user)
-        user.has_feature_flag?('editor-3')
+        manager_user(user).has_feature_flag?('editor-3')
+      end
+
+      def manager_user(user)
+        org = user.organization
+        org ? org.owner : user
       end
     end
   end

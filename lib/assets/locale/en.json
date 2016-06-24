@@ -616,6 +616,13 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "aggregate-functions": {
+        "avg": "AVG",
+        "count": "COUNT",
+        "max": "MAX",
+        "min": "MIN",
+        "sum": "SUM"
+      },
       "analysis-form": {
         "aggregate": "Aggregate",
         "apply-btn": "Apply",
@@ -633,12 +640,13 @@
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter": "Filter",
-        "hide": "Hide",
         "filter-aggregate": "Filter or aggregate your results",
+        "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "loading": "loading…",
         "max": "Max",
         "meters": "m",
         "miles": "mi",

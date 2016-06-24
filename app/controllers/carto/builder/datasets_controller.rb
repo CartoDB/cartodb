@@ -9,6 +9,7 @@ module Carto
 
       ssl_required :show
 
+      before_filter :redirect_to_editor_if_forced, only: [:show]
       before_filter :load_canonical_visualization, only: [:show]
       before_filter :authors_only
       before_filter :load_user_table, only: [:show]
@@ -25,6 +26,10 @@ module Carto
       end
 
       private
+
+      def redirect_to_editor_if_forced
+        redirect_to CartoDB.url(self, 'public_visualizations_show', id: params[:id]) if forced_editor?(current_user)
+      end
 
       def load_canonical_visualization
         @canonical_visualization = load_visualization_from_id_or_name(params[:id])

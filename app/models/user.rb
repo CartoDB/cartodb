@@ -91,6 +91,9 @@ class User < Sequel::Model
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
+  FORCE_BUILDER = 'force-builder'.freeze
+  FORCE_EDITOR  = 'force-editor'.freeze
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -1560,6 +1563,14 @@ class User < Sequel::Model
 
   def open_apps_enabled?
     mobile_max_open_users > 0
+  end
+
+  def force_builder?
+    builder_enabled.nil? || builder_enabled == FORCE_BUILDER
+  end
+
+  def forced_editor?
+    builder_enabled == FORCE_EDITOR
   end
 
   private

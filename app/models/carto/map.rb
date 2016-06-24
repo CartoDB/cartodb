@@ -104,6 +104,12 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def notify_map_change
+    return if visualization.latest_mapcap
+
+    force_notify_map_change unless visualization.latest_mapcap
+  end
+
+  def force_notify_map_change
     map = ::Map[id]
     map.notify_map_change if map
   end

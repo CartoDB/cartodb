@@ -41,6 +41,7 @@
 .Notifier-info {
   @include flex(1);
   padding-right: $baseSize * 2;
+  word-break: break-all;
 }
 
 .Notifier-actions {

@@ -1,8 +1,11 @@
 # encoding: UTF-8
 
+require_dependency 'carto/api/infowindow_migrator'
+
 module Carto
   module Api
     class LayerPresenter
+      include InfowindowMigrator
 
       PUBLIC_VALUES = %W{ options kind infowindow tooltip id order }
 
@@ -45,8 +48,12 @@ module Carto
         @with_style_properties = options.fetch(:with_style_properties, false)
       end
 
-      def to_poro
-        base_poro(@layer)
+      def to_poro(migrate_builder_infowindows: false)
+        poro = base_poro(@layer)
+        if migrate_builder_infowindows && poro['infowindow'].present?
+          poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
+        end
+        poro
       end
 
       def to_json
@@ -156,7 +163,7 @@ module Carto
         template = infowindow['template']
         return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
-        infowindow.merge!(template: File.read(path))
+        infowindow[:template] = File.read(path)
         infowindow
       end
 

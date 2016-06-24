@@ -10,7 +10,7 @@ var Sanitize = require('../../../core/sanitize');
  *
  */
 
-var Attribution = View.extend({
+module.exports = View.extend({
   className: 'CDB-Attribution',
 
   events: {
@@ -23,14 +23,14 @@ var Attribution = View.extend({
       visible: false
     });
     this.map = this.options.map;
-    this.model.bind('change:visible', function (mdl, isVisible) {
-      this[ isVisible ? '_showAttributions' : '_hideAttributions' ]();
-    }, this);
-    _.bindAll(this, '_onKeyDown', '_toggleAttributions');
+
+    this._onDocumentClick = this._onDocumentClick.bind(this);
+    this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
+
+    this._initBinds();
   },
 
   render: function () {
-    this._disableBinds();
     var attributions = _.compact(this.map.get('attribution')).join(', ');
     var isGMaps = this.map.get('provider') !== 'leaflet';
     this.$el.html(
@@ -43,44 +43,51 @@ var Attribution = View.extend({
   },
 
   _initBinds: function () {
-    $(document).bind('keydown', this._onKeyDown);
-    $(document).bind('click', this._toggleAttributions);
+    this.model.bind('change:visible', function (mdl, isVisible) {
+      this[ isVisible ? '_showAttributions' : '_hideAttributions' ]();
+    }, this);
     this.map.bind('change:attribution', this.render, this);
+    this.add_related_model(this.map);
   },
 
-  _disableBinds: function () {
-    $(document).unbind('keydown', this._onKeyDown);
-    $(document).unbind('click', this._toggleAttributions);
-    this.map.unbind(null, null, this);
+  _enableDocumentBinds: function () {
+    $(document).bind('keydown', this._onDocumentKeyDown);
+    $(document).bind('click', this._onDocumentClick);
   },
 
-  _onKeyDown: function (e) {
-    if (e && e.keyCode === 27) {
+  _disableDocumentBinds: function () {
+    $(document).unbind('keydown', this._onDocumentKeyDown);
+    $(document).unbind('click', this._onDocumentClick);
+  },
+
+  _onDocumentKeyDown: function (ev) {
+    if (ev && ev.keyCode === 27) {
       this._toggleAttributions();
     }
   },
 
   _showAttributions: function () {
     this.$el.addClass('is-active');
-    this._initBinds();
+    this._enableDocumentBinds();
   },
 
   _hideAttributions: function () {
     this.$el.removeClass('is-active');
-    this._disableBinds();
+    this._disableDocumentBinds();
   },
 
-  _toggleAttributions: function (e) {
-    if (e && e.stopPropagation) {
-      this.killEvent(e);
-    }
+  _toggleAttributions: function () {
     this.model.set('visible', !this.model.get('visible'));
   },
 
+  _onDocumentClick: function (ev) {
+    if (!$(ev.target).closest(this.el).length) {
+      this._toggleAttributions();
+    }
+  },
+
   clean: function () {
-    this._disableBinds();
+    this._disableDocumentBinds();
     View.prototype.clean.call(this);
   }
 });
-
-module.exports = Attribution;

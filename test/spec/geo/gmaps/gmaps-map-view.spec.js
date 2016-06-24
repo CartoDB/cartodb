@@ -227,7 +227,16 @@ describe('geo/gmaps/gmaps-map-view', function () {
 
     google.maps.event.trigger(mapView._gmapsMap, 'dragend');
 
-    expect(map.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
-    expect(mapView.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
+    expect(map.trigger).toHaveBeenCalledWith('moveend', jasmine.any(Object));
+
+    map.trigger.calls.reset();
+    mapView.trigger.calls.reset();
+
+    google.maps.event.trigger(mapView._gmapsMap, 'zoom_changed');
+
+    expect(map.trigger).toHaveBeenCalledWith('moveend', jasmine.any(Object));
+
+    map.trigger.calls.reset();
+    mapView.trigger.calls.reset();
   });
 });

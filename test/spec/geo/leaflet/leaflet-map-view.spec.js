@@ -460,11 +460,9 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
 
     spyOn(map, 'trigger');
-    spyOn(mapView, 'trigger');
 
-    mapView._leafletMap.fire('dragend');
+    mapView._leafletMap.fire('moveend');
 
-    expect(map.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
-    expect(mapView.trigger).toHaveBeenCalledWith('dragend', jasmine.any(Object));
+    expect(map.trigger).toHaveBeenCalledWith('moveend', jasmine.any(Object));
   });
 });

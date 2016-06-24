@@ -1574,6 +1574,7 @@ class User < Sequel::Model
   end
 
   def force_editor?
+    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
     builder_enabled == false
   end
 

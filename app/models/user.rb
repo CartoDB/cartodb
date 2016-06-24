@@ -827,7 +827,7 @@ class User < Sequel::Model
   end
 
   def arcgis_datasource_enabled?
-    self.arcgis_datasource_enabled == true
+    true
   end
 
   def soft_twitter_datasource_limit?
@@ -1016,8 +1016,6 @@ class User < Sequel::Model
   end
 
   def remaining_twitter_quota
-    # HOTFIX block remaining quota for free users
-    return 0 if self.account_type == 'FREE'
     if organization.present?
       remaining = organization.remaining_twitter_quota
     else

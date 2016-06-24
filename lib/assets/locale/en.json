@@ -4,10 +4,14 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "point-in-polygon": "Point in polygon",
     "cluster": "Cluster",
+    "intersection": "Intersection",
+    "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
-    "kmeans": "Cluster"
+    "point-in-polygon": "Point in polygon",
+    "filter": "Filter",
+    "kmeans": "Cluster",
+    "filter-by-node-column": "Link to layer"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -220,6 +224,14 @@
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
           },
+          "intersection": {
+            "title": "Intersection",
+            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+          },
+          "filter": {
+            "title": "Filter",
+            "desc": "Transform your data into coordinates"
+          },
           "moran-cluster": {
             "title": "Moran cluster",
             "desc": "Finds areas which have similar values and also outliers"
@@ -231,6 +243,10 @@
           "weighted-centroid": {
             "title": "Weighted centroid",
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+          },
+          "filter-by-node-column": {
+            "title": "Merge by column",
+            "desc": "Merge two layers matching column names"
           }
         }
       },
@@ -443,12 +459,56 @@
       "syntax-error": "Syntax error",
       "line": "Line"
     },
+    "undo-redo": {
+      "clear": "CLEAR",
+      "apply": "APPLY"
+    },
     "table": {
       "columns": {
+        "change-type": {
+          "confirm": "ok, change it",
+          "cancel": "cancel",
+          "desc": "Maps using this column will be affected, and unconvertible data will be lost. Are you sure?",
+          "error": "Error changing type of column %{columnName}: %{error}",
+          "loading": "Changing the type of %{columnName} column...",
+          "title": "%{columnName} column will change to %{newType}",
+          "success": "Column %{columnName} changed to %{newType}"
+        },
         "create": {
           "loading": "Adding new column...",
           "error": "Error adding new column: %{error}",
-          "success": "Column %{column_name} added"
+          "success": "Column %{columnName} added"
+        },
+        "destroy": {
+          "cancel": "cancel",
+          "confirm": "ok, delete it",
+          "desc": "Maps using this column will be affected, are you sure you want to delete it?",
+          "error": "Error deleting column %{columnName}: %{error}",
+          "loading": "Removing your column %{columnName}...",
+          "success": "Column %{columnName} deleted",
+          "title": "You are about to delete column %{columnName}"
+        },
+        "rename": {
+          "cancel": "cancel",
+          "confirm": "ok, rename it",
+          "desc": "Maps using this column will be affected, are you sure you want to rename it?",
+          "error": "Error renaming column %{columnName} to %{newName}: %{error}",
+          "loading": "Renaming your column %{columnName} to %{newName}...",
+          "success": "Column %{columnName} renamed to %{newName}",
+          "title": "You are about to rename column %{columnName} to %{newName}"
+        },
+        "options": {
+          "order": "Order",
+          "rename": "Rename column",
+          "change": "Change data type",
+          "create": "Add new column",
+          "delete": "Delete this column..."
+        },
+        "types": {
+          "boolean": "Boolean",
+          "date": "Date",
+          "number": "Number",
+          "string": "String"
         }
       },
       "rows": {
@@ -478,16 +538,13 @@
           "success": "New row added"
         },
         "destroy": {
-          "loading": "Deleting row...",
-          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
-          "success": "Row with cartodb_id %{cartodb_id} deleted"
-        },
-        "confirmation": {
-          "title": "You are about to delete row with cartodb_id %{cartodb_id}",
-          "desc": "Are you sure you want to delete it?",
-          "loading": "Removing your row...",
+          "cancel": "cancel",
           "confirm": "ok, delete",
-          "cancel": "cancel"
+          "desc": "Are you sure you want to delete it?",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
+          "success": "Row with cartodb_id %{cartodb_id} deleted",
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
         },
         "paginator": {
           "error": "There was an error with pagination: %{error}",
@@ -563,6 +620,13 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "aggregate-functions": {
+        "avg": "AVG",
+        "count": "COUNT",
+        "max": "MAX",
+        "min": "MIN",
+        "sum": "SUM"
+      },
       "analysis-form": {
         "aggregate": "Aggregate",
         "apply-btn": "Apply",
@@ -575,15 +639,22 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "data-values": "Data values",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
+        "filter": "Filter",
+        "filter-aggregate": "Filter or aggregate your results",
+        "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "loading": "loading…",
+        "max": "Max",
         "meters": "m",
         "miles": "mi",
+        "min": "Min",
         "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
@@ -595,15 +666,22 @@
         "polygons_source": "Polygon source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "result": "Result",
+        "select-column": "Select a column",
+        "show": "Show",
         "significance": "Significance",
+        "target": "Target layer",
         "time": "Time",
+        "top-range": "Top range",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
         "define-columns": "Define column to find similarities with",
         "type": "Type",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "source-column": "Source column",
+        "filter-column": "Filter column"
       },
       "infowindow": {
         "style": {
@@ -614,7 +692,7 @@
           "none": "None",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
-          "infowindow_light_header_blue": "Color",
+          "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
         "items": {
@@ -632,6 +710,14 @@
           "title-label": "Show items",
           "description": "Add items"
         }
+      },
+      "filter-options": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "between": "Between",
+        "is-equal-to": "Is equal to",
+        "is-greater-than": "Is greater than",
+        "is-less-than": "Is less than"
       }
     },
     "data": {
@@ -639,6 +725,7 @@
         "add-widget": "Add as a widget",
         "style": "STYLE",
         "top-cat": "% in top 10 cat.",
+        "trues": "% true",
         "null": "% null"
       },
       "data-toggle": {
@@ -658,12 +745,12 @@
     },
     "style": {
       "types": {
-        "none": "none",
-        "simple": "simple",
+        "none": "-",
+        "simple": "none",
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "heatmap"
+        "heatmap": "pixel"
       },
       "style-form": {
         "type": {

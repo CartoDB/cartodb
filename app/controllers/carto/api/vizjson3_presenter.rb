@@ -1,4 +1,5 @@
 require_dependency 'carto/api/layer_vizjson_adapter'
+require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
 
 module Carto
@@ -425,6 +426,7 @@ module Carto
 
     class VizJSON3LayerPresenter
       include ApiTemplates
+      include InfowindowMigrator
 
       EMPTY_CSS = '#dummy{}'.freeze
 
@@ -442,7 +444,9 @@ module Carto
         visible
       ).freeze
 
-      INFOWINDOW_AND_TOOLTIP_KEYS = %w(fields template_name template alternative_names width maxHeight).freeze
+      INFOWINDOW_AND_TOOLTIP_KEYS = %w(
+        fields template_name template alternative_names width maxHeight headerColor
+      ).freeze
 
       def initialize(layer, options = {}, configuration = {}, decoration_data = {})
         @layer            = layer
@@ -460,8 +464,8 @@ module Carto
           {
             id:         @layer.id,
             type:       'CartoDB',
-            infowindow: whitelisted_attrs(with_template(@layer.infowindow, 'infowindows')),
-            tooltip:    whitelisted_attrs(with_template(@layer.tooltip, 'tooltips')),
+            infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
+            tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
             legend:     @layer.legend,
             order:      @layer.order,
             visible:    @layer.public_values[:options]['visible'],
@@ -517,35 +521,6 @@ module Carto
                        end
 
         torque
-      end
-
-      MUSTACHE_ROOT_PATH = 'lib/assets/javascripts/cartodb3/mustache-templates'.freeze
-
-      def with_template(templated_element, mustache_dir)
-        return nil if templated_element.nil?
-
-        template = templated_element['template']
-        return templated_element if !template.nil? && !template.empty?
-
-        templated_sym = templated_element.deep_symbolize_keys
-        templated_element[:template] = get_template(
-          templated_sym[:template_name],
-          templated_sym[:template],
-          "#{MUSTACHE_ROOT_PATH}/#{mustache_dir}/#{get_template_name(templated_sym[:template_name])}.jst.mustache")
-        templated_element
-      end
-
-      def get_template_name(name)
-        Carto::Layer::TEMPLATES_MAP.fetch(name, name)
-      end
-
-      def get_template(template_name, fallback_template, template_path)
-        if template_name.present?
-          path = Rails.root.join(template_path)
-          File.read(path)
-        else
-          fallback_template
-        end
       end
 
       def options_data

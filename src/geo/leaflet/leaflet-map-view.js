@@ -92,6 +92,11 @@ var LeafletMapView = MapView.extend({
       this.trigger('dragend', [c.lat, c.lng]);
     }, this);
 
+    this._leafletMap.on('moveend', function() {
+      var c = self._leafletMap.getCenter();
+      self.map.trigger('moveend', [c.lat, c.lng]);
+    }, this);
+
     this._leafletMap.on('drag', function() {
       var c = self._leafletMap.getCenter();
       self._setModelProperty({

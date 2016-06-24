@@ -73,6 +73,8 @@ var GoogleMapsMapView = MapView.extend({
       self._setModelProperty({
         zoom: self._gmapsMap.getZoom()
       });
+      var c = self._gmapsMap.getCenter();
+      self.map.trigger('moveend', [c.lat(), c.lng()]);
     });
 
     google.maps.event.addListener(this._gmapsMap, 'click', function(e) {
@@ -81,7 +83,8 @@ var GoogleMapsMapView = MapView.extend({
 
     google.maps.event.addListener(this._gmapsMap, 'dragend', function(e) {
       var c = self._gmapsMap.getCenter();
-      self.trigger('dragend', e, [c.lat(), c.lng()]);
+      self.trigger('dragend', [c.lat(), c.lng()]);
+      self.map.trigger('moveend', [c.lat(), c.lng()]);
     });
 
     google.maps.event.addListener(this._gmapsMap, 'dblclick', function(e) {

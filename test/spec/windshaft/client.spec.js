@@ -147,13 +147,8 @@ describe('windshaft/client', function () {
         forceCors: false
       });
 
-      var mapDefinition = { key: '' };
-      for (var i = 0; i < 3000; i++) {
-        mapDefinition.key += 'x';
-      }
-
       this.client.instantiateMap({
-        mapDefinition: mapDefinition,
+        mapDefinition: { something: new Array(3000).join('x') },
         params: {
           a: 'b'
         }
@@ -185,6 +180,43 @@ describe('windshaft/client', function () {
       });
 
       expect(this.ajaxParams.method).toEqual('GET');
+    });
+
+    describe('cancelling previous requests', function () {
+      beforeEach(function () {
+        this.fakeXHR = jasmine.createSpyObj('fakeXHR', [ 'abort' ]);
+        $.ajax.and.returnValues(this.fakeXHR, undefined);
+      });
+
+      it('should cancel previous requests when using GET requests', function () {
+        this.client.instantiateMap({
+          mapDefinition: { some: 'json that must be encoded' }
+        });
+
+        expect($.ajax.calls.argsFor(0)[0].method).toEqual('GET');
+        expect(this.fakeXHR.abort).not.toHaveBeenCalled();
+
+        this.client.instantiateMap({
+          mapDefinition: { some: 'json that must be encoded' }
+        });
+
+        expect(this.fakeXHR.abort).toHaveBeenCalled();
+      });
+
+      it('should cancel previous requests when using POST requests', function () {
+        this.client.instantiateMap({
+          mapDefinition: { something: new Array(3000).join('x') }
+        });
+
+        expect($.ajax.calls.argsFor(0)[0].method).toEqual('POST');
+        expect(this.fakeXHR.abort).not.toHaveBeenCalled();
+
+        this.client.instantiateMap({
+          mapDefinition: { something: new Array(3000).join('x') }
+        });
+
+        expect(this.fakeXHR.abort).toHaveBeenCalled();
+      });
     });
   });
 });

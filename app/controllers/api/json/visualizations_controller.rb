@@ -42,9 +42,20 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         param_tables = params[:tables]
         current_user_id = current_user.id
 
-        vis = if params[:source_visualization_id]
-                duplicate_derived_visualization(params[:source_visualization_id])
+        source_id = params[:source_visualization_id]
+        vis = if source_id
+                user = Carto::User.find(current_user_id)
+                source = Carto::Visualization.where(id: source_id).first
+                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+                if source.derived?
+                  duplicate_derived_visualization(params[:source_visualization_id])
+                else
+                  tables = [UserTable.find(id: source.user_table.id)]
+                  create_visualization_from_tables(tables, vis_data)
+                end
               elsif param_tables
+                subdomain = CartoDB.extract_subdomain(request)
+                viewed_user = ::User.find(username: subdomain)
                 tables = @stats_aggregator.timing('locate-table') do
                   tables = param_tables.map do |table_name|
                     Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
@@ -52,7 +63,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
                   tables.flatten
                 end
-                create_visualization_from_tables(tables)
+                create_visualization_from_tables(tables, vis_data)
               else
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
@@ -309,12 +320,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   private
 
-  def duplicate_derived_visualization(source_id)
-    # Copy visualization
-    user = Carto::User.find(current_user_id)
-    source = Carto::Visualization.where(id: source_id).first
-    return head(403) unless source && source.is_viewable_by_user?(user) && source.derived?
-
+  def duplicate_derived_visualization(source)
     visualization_copy_id = @stats_aggregator.timing('copy') do
       export_service = Carto::VisualizationsExportService2.new
       visualization_hash = export_service.export_visualization_json_hash(source, user)
@@ -327,7 +333,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
   end
 
-  def create_visualization_from_tables(tables)
+  def create_visualization_from_tables(tables, vis_data)
     blender = Visualization::TableBlender.new(current_user, tables)
     map = blender.blend
 
@@ -335,7 +341,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                                                    map_id: map.id,
                                                    type: 'derived',
                                                    privacy: blender.blended_privacy,
-                                                   user_id: current_user_id))
+                                                   user_id: current_user.id))
 
     @stats_aggregator.timing('default-overlays') do
       Visualization::Overlays.new(vis).create_default_overlays

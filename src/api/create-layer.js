@@ -140,7 +140,7 @@ module.exports = function(map, layer, options, callback) {
     if(!viz) {
       var mapView = new MapType({
         map_object: map,
-        map: new Map({}, { parse: true })
+        map: new Map()
       });
 
       map.viz = viz = new Vis({

@@ -25,33 +25,6 @@ var Map = Model.extend({
 
   RELOAD_DEBOUNCE_TIME: 10,
 
-  parse: function (r) {
-    var attrs = r || {};
-
-    attrs.center = attrs.center || this.defaults.center;
-    if (typeof attrs.center === 'string') {
-      attrs.center = JSON.parse(attrs.center);
-    }
-    attrs.original_center = attrs.center;
-
-    if (attrs.bounds) {
-      attrs = _.extend(
-        attrs,
-        {
-          view_bounds_sw: attrs.bounds[0],
-          view_bounds_ne: attrs.bounds[1],
-          original_view_bounds_sw: attrs.bounds[0],
-          original_view_bounds_ne: attrs.bounds[1]
-        }
-      );
-      delete attrs.bounds;
-    } else {
-      attrs.zoom = attrs.zoom || this.defaults.zoom;
-    }
-
-    return attrs;
-  },
-
   initialize: function (attrs, options) {
     options = options || {};
     this.layers = options.layersCollection || new Layers();
@@ -61,6 +34,31 @@ var Map = Model.extend({
 
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
+
+    attrs = attrs || {};
+
+    var center = attrs.center || this.defaults.center;
+    if (typeof center === 'string') {
+      center = JSON.parse(center);
+    }
+    this.set({
+      center: center,
+      original_center: center
+    });
+
+    if (attrs.bounds) {
+      this.set({
+        view_bounds_sw: attrs.bounds[0],
+        view_bounds_ne: attrs.bounds[1],
+        original_view_bounds_sw: attrs.bounds[0],
+        original_view_bounds_ne: attrs.bounds[1]
+      });
+      this.unset('bounds');
+    } else {
+      this.set({
+        zoom: attrs.zoom || this.defaults.zoom
+      });
+    }
 
     // This method is declared here so that we can spyOn _.debounce
     // in the tests that depend on this to work

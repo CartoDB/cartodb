@@ -79,7 +79,9 @@ class Map < Sequel::Model
   end
 
   def notify_map_change
-    force_notify_map_change unless visualizations.first.latest_mapcap
+    visualization = visualizations.first
+
+    force_notify_map_change unless visualization && visualization.latest_mapcap
   end
 
   def force_notify_map_change

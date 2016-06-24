@@ -805,7 +805,7 @@ module CartoDB
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update
+        Carto::NamedMaps::Api.new(carto_visualization).update unless latest_mapcap
       end
 
       def propagate_privacy_and_name_to(table)

@@ -208,6 +208,36 @@
       "gmt-convertion": "Date will be converted to GMT +0"
     },
     "modals": {
+      "share": {
+        "done-btn": "DONE",
+        "update-btn": "UPDATE",
+        "published": "Published %{when}",
+        "last-version": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "get-link": {
+          "title": "Get the link",
+          "body": "And send it to your friends, coworkers or post in your social networks.",
+          "link": "",
+          "copy": "COPY"
+        },
+        "embed": {
+          "title": "Embed it",
+          "body": "Get your map into your blog, website or simple application.",
+          "link": "Get a simple URL.",
+          "copy": "COPY"
+        },
+        "cartodbjs": {
+          "title": "CartoDB.js",
+          "body": "Add your map to your applications by using this URL.",
+          "link": "Read more.",
+          "copy": "COPY"
+        },
+        "mobile-sdk": {
+          "title": "CartoDB Mobile SDK",
+          "body": "Add your map to your native mobile applications by using this line of code.",
+          "link": "Read more.",
+          "copy": "COPY"
+        },
+      },
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",

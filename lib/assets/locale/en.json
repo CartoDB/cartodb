@@ -9,7 +9,9 @@
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "filter-by-node-column": "Merge by column"
+    "filter": "Filter",
+    "kmeans": "Cluster",
+    "filter-by-node-column": "Link to layer"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -225,6 +227,10 @@
           "intersection": {
             "title": "Intersection",
             "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+          },
+          "filter": {
+            "title": "Filter",
+            "desc": "Transform your data into coordinates"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -453,6 +459,10 @@
       "syntax-error": "Syntax error",
       "line": "Line"
     },
+    "undo-redo": {
+      "clear": "CLEAR",
+      "apply": "APPLY"
+    },
     "table": {
       "columns": {
         "change-type": {
@@ -610,6 +620,13 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "aggregate-functions": {
+        "avg": "AVG",
+        "count": "COUNT",
+        "max": "MAX",
+        "min": "MIN",
+        "sum": "SUM"
+      },
       "analysis-form": {
         "aggregate": "Aggregate",
         "apply-btn": "Apply",
@@ -622,16 +639,22 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "data-values": "Data values",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
+        "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
+        "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "loading": "loading…",
+        "max": "Max",
         "meters": "m",
         "miles": "mi",
+        "min": "Min",
         "neighbours": "Neighbours",
         "numerator": "Numerator",
         "operation": "Operation",
@@ -643,8 +666,13 @@
         "polygons_source": "Polygon source",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "result": "Result",
+        "select-column": "Select a column",
+        "show": "Show",
         "significance": "Significance",
+        "target": "Target layer",
         "time": "Time",
+        "top-range": "Top range",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
         "define-columns": "Define column to find similarities with",
@@ -664,7 +692,7 @@
           "none": "None",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
-          "infowindow_light_header_blue": "Color",
+          "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
         "items": {
@@ -682,6 +710,14 @@
           "title-label": "Show items",
           "description": "Add items"
         }
+      },
+      "filter-options": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "between": "Between",
+        "is-equal-to": "Is equal to",
+        "is-greater-than": "Is greater than",
+        "is-less-than": "Is less than"
       }
     },
     "data": {
@@ -709,12 +745,12 @@
     },
     "style": {
       "types": {
-        "none": "none",
-        "simple": "simple",
+        "none": "-",
+        "simple": "none",
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "heatmap"
+        "heatmap": "pixel"
       },
       "style-form": {
         "type": {

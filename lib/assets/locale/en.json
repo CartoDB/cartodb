@@ -233,7 +233,7 @@
           },
           "moran-cluster": {
             "title": "Moran cluster",
-            "desc": "Finds areas which have similar values and also outliers"
+            "desc": "Find areas which have similar values and identify outliers"
           },
           "kmeans": {
             "title": "Cluster",

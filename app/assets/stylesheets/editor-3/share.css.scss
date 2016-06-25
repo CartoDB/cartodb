@@ -1,0 +1,38 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Share-input {
+  position: relative;
+}
+
+.Share-input-field {
+  padding-right: 50px;
+}
+
+.Share-copy {
+  @include transform(translateY(-50%));
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.Share-info {
+  padding: $baseSize * 4 0;
+  text-align: center;
+}
+
+.Share-hr {
+  width: 80%;
+  max-width: 640px;
+  margin: $baseSize * 4 auto 0;
+  border: 0;
+  border-top: 1px solid $cMainLine;
+}
+
+.Share-user {
+  height: 16px;
+  border-radius: $halfBaseSize / 2;
+}

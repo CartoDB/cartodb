@@ -28,6 +28,20 @@
   margin-bottom: 16px;
 }
 
+.Modal-actions {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+}
+
+.Modal-actions-button {
+  margin-right: 20px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
 .ModalBlockList-item-header {
   @include display-flex();
   @include justify-content(space-between);

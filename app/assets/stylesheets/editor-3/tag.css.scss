@@ -1,0 +1,30 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Tag {
+  padding: 0 4px;
+  border-radius: $halfBaseSize / 2;
+  background-color: $cThirdBackground;
+  color: $cAltText;
+
+  // TODO backgrounds
+  &.is-blue {
+    color: $cBlue;
+  }
+
+  &.is-green {
+    color: $cPublic;
+  }
+
+  &.is-orange {
+    color: $cAlert;
+  }
+}
+
+.Tag--outline {
+  border: 1px solid;
+  background-color: transparent;
+}
+
+

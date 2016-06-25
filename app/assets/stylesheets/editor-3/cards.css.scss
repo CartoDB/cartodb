@@ -1,0 +1,25 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Card {
+  @include flex(1 0 0);
+  margin-right: $baseSize * 2;
+  padding: 20px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+  background-color: $cThirdBackground;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.Card-icon {
+  border: 1px solid $cMainLine;
+  background-color: $cWhite;
+}
+
+.Card-body {
+  text-align: center;
+}

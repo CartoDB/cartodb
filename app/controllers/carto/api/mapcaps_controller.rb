@@ -55,8 +55,10 @@ module Carto
         raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
       end
 
+      MAX_MAPCAPS_PER_MAP = 1
+
       def ensure_only_one_mapcap
-        Carto::Mapcap.where(visualization_id: @visualization.id).each(&:destroy)
+        @visualization.mapcaps[MAX_MAPCAPS_PER_MAP..-1].each(&:destroy)
       end
 
       def load_mapcap

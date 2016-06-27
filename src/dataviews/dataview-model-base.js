@@ -136,7 +136,7 @@ module.exports = Model.extend({
   _onChangeBinds: function () {
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
-    this.on('change:url', function (mdl, attrs, opts) {
+    this.on('change:url', function (model, value, opts) {
       if (this.get('sync_on_data_change')) {
         this._newDataAvailable = true;
       }
@@ -165,7 +165,7 @@ module.exports = Model.extend({
 
   _shouldFetchOnURLChange: function (sourceLayerId) {
     var urlChangeTriggeredBySameLayer = sourceLayerId && sourceLayerId === this.layer.get('id');
-    return this.get('sync_on_data_change') && this.get('enabled') && urlChangeTriggeredBySameLayer;
+    return this.get('sync_on_data_change') && this.get('enabled') && (!sourceLayerId || urlChangeTriggeredBySameLayer);
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

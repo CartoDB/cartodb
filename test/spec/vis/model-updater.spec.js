@@ -111,10 +111,12 @@ describe('src/vis/model-updater', function () {
       expect(dataview2.get('url')).toEqual('http://example2.com');
     });
 
-    it('should update analysis models', function () {
+    it('should update analysis models and "mark" them as ok', function () {
       var getParamNames = function () { return []; };
       var analysis1 = new Backbone.Model({ id: 'a1' });
+      analysis1.setOk = jasmine.createSpy('setOk');
       var analysis2 = new Backbone.Model({ id: 'a2' });
+      analysis2.setOk = jasmine.createSpy('setOk');
       this.analysisCollection.reset([ analysis1, analysis2 ]);
       analysis1.getParamNames = analysis2.getParamNames = getParamNames;
 
@@ -144,9 +146,11 @@ describe('src/vis/model-updater', function () {
       expect(analysis1.get('status')).toEqual('status_a1');
       expect(analysis1.get('query')).toEqual('query_a1');
       expect(analysis1.get('url')).toEqual('url_a1');
+      expect(analysis1.setOk).toHaveBeenCalled();
       expect(analysis2.get('status')).toEqual('status_a2');
       expect(analysis2.get('query')).toEqual('query_a2');
       expect(analysis2.get('url')).toEqual('url_a2');
+      expect(analysis2.setOk).toHaveBeenCalled();
     });
 
     it('should not update attributes that are original params (eg: query)', function () {
@@ -193,6 +197,27 @@ describe('src/vis/model-updater', function () {
       });
 
       expect(this.visModel.setError).toHaveBeenCalledWith('something went wrong!');
+    });
+
+    it('should "mark" analysis as erroneous', function () {
+      var analysis = new Backbone.Model({
+        id: 'ANALYSIS_ID'
+      });
+      analysis.setError = jasmine.createSpy('setError');
+
+      this.analysisCollection.reset([ analysis ]);
+
+      this.modelUpdater.setErrors({
+        errors_with_context: [{
+          type: 'analysis',
+          message: 'Missing required param "radius"',
+          analysis: {
+            id: 'ANALYSIS_ID'
+          }
+        }]
+      });
+
+      expect(analysis.setError).toHaveBeenCalledWith('Missing required param "radius"');
     });
   });
 });

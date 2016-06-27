@@ -81,6 +81,7 @@ ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
       };
       attrs = _.omit(attrs, analysisNode.getParamNames());
       analysisNode.set(attrs);
+      analysisNode.setOk();
     }
   }, this);
 };
@@ -99,12 +100,18 @@ ModelUpdater.prototype.setErrors = function (errors) {
 };
 
 var ERROR_TYPES = {
-  UNKNOWN: 'unknown'
+  UNKNOWN: 'unknown',
+  ANALYSIS: 'analysis'
 };
 
 ModelUpdater.prototype._setError = function (error) {
   if (error.type === ERROR_TYPES.UNKNOWN) {
     this._visModel.setError(error.message);
+  }
+  if (error.type === ERROR_TYPES.ANALYSIS) {
+    var analysisId = error.analysis.id;
+    var analysisModel = this._analysisCollection.get(analysisId);
+    analysisModel.setError(error.message);
   }
 };
 

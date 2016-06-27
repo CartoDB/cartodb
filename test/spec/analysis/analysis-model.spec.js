@@ -265,4 +265,26 @@ describe('src/analysis/analysis-model.js', function () {
       expect(this.analysisModel.isDone()).toEqual(false);
     });
   });
+
+  describe('.setOk', function () {
+    it("should trigger 'ok' event", function () {
+      var callback = jasmine.createSpy('callback');
+      this.analysisModel.on('ok', callback);
+
+      this.analysisModel.setOk();
+
+      expect(callback).toHaveBeenCalled();
+    });
+  });
+
+  describe('.setError', function () {
+    it("should trigger 'error' event", function () {
+      var callback = jasmine.createSpy('callback');
+      this.analysisModel.on('error', callback);
+
+      this.analysisModel.setError();
+
+      expect(callback).toHaveBeenCalled();
+    });
+  });
 });

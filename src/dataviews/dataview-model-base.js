@@ -229,7 +229,11 @@ module.exports = Model.extend({
 
   remove: function () {
     if (this.filter) {
+      var isFilterEmpty = this.filter.isEmpty();
       this.filter.remove();
+      if (!isFilterEmpty) {
+        this._reloadMap();
+      }
     }
     this.trigger('destroy', this);
     this.stopListening();

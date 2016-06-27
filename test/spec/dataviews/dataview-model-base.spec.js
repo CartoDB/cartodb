@@ -274,7 +274,9 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      this.model.filter = jasmine.createSpyObj('filter', ['remove']);
+      spyOn(this.model, '_reloadMap');
+      this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);
+      this.model.filter.isEmpty.and.returnValue(false);
       this.model.remove();
     });
 
@@ -284,6 +286,10 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should remove filter', function () {
       expect(this.model.filter.remove).toHaveBeenCalled();
+    });
+
+    it('should reload the map if there is a filter and it is not empty', function () {
+      expect(this.model._reloadMap).toHaveBeenCalled();
     });
 
     it('should stop listening to events', function () {

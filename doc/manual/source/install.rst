@@ -3,13 +3,13 @@ Installation
 ============
 
 .. warning::
-  CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes de process to install CartoDB in this specific OS version.
+  CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes the process to install CartoDB in this specific OS version.
 
   However this doesn't mean that it won't work with other Operating Systems or other Ubuntu. There are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
 
 System requirements
 -------------------
-Besides the OS version mentioned in the introduction, there are some systems requirements needed before starting with the installation of the stack. Also this process assumes that you have enough permissions in the system to run successfully most part of the commands of this doc.
+Besides the OS version mentioned in the introduction, there are some system requirements needed before starting with the installation of the stack. Also this process assumes that you have enough permissions in the system to run successfully most part of the commands of this doc.
 
 System locales
 ~~~~~~~~~~~~~~
@@ -24,7 +24,7 @@ Installations assume you use UTF8. You can set the locale by doing this:
 Build essentials
 ~~~~~~~~~~~~~~~~
 
-Althoug we try to maintain packaged versions of almost every part of the stack, there are some parts like gems or npm packages that need some development tools in the system in order to compile. You can install all the needed build tools by doing this:
+Although we try to maintain packaged versions of almost every part of the stack, there are some parts like gems or npm packages that need some development tools in the system in order to compile. You can install all the needed build tools by doing this:
 
 .. code-block:: bash
  
@@ -77,12 +77,6 @@ PostgreSQL
                          postgresql-plpython-9.3
 
   
-* Install schema triggers. This is a extension of packaged by cartodb needed for other postgresql extensions
-
-  .. code-block:: bash
-  
-    sudo add-apt-repository ppa:cartodb/pg-schema-trigger && sudo apt-get update
-    sudo apt-get install postgresql-9.3-pg-schema-triggers
 
 
 PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.3/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps. 
@@ -151,7 +145,7 @@ GIS dependencies
   .. code-block:: bash
       
     sudo apt-get install gdal-bin libgdal1-dev libgdal-dev
-    sudo apt-get install ogr2ogr2-static-bin
+    sudo apt-get install gdal2.1-static-bin
 
 
 PostGIS
@@ -179,18 +173,6 @@ PostGIS
       
    sudo PGUSER=postgres make installcheck # to run tests
 
-.. warning::
-    if test_ddl_triggers fails it's likely due to an incomplete installation of schema_triggers.
-    You need to add schema_triggers.so to the shared_preload_libraries setting in postgresql.conf :
-
-    ::
-
-        $ sudo vim /etc/postgresql/9.3/main/postgresql.conf
-         shared_preload_libraries = 'schema_triggers.so'
-        $ sudo service postgresql restart # restart postgres
-
-  After this change the 2nd installcheck of cartodb-postresql should be OK.
-  
   Check https://github.com/cartodb/cartodb-postgresql for further reference
 
 * Restart PostgreSQL after all this process
@@ -240,7 +222,7 @@ NodeJS is required by different parts of the stack. The more significant are the
    
     sudo apt-get install nodejs 
 
-  Note this should install both NodeJS 0.10.26 and npm 1.4.3. You can verify the installation went as expected with:
+  Note this should install both NodeJS 0.10.26 and npm 2.14.16. You can verify the installation went as expected with:
   
   .. code-block:: bash
    
@@ -339,17 +321,17 @@ Ruby
 
     sudo apt-get install libreadline6-dev openssl
   
-* Install ruby 1.9.3. CartoDB has been deeply tested with Ruby 1.9.3. It should safely work with ruby 2.2 but it's not fully guaranteed.
+* Install ruby 2.2.3. CartoDB has been deeply tested with Ruby 2.2.
 
   .. code-block:: bash
 
-    sudo ruby-install ruby 1.9.3
+    sudo ruby-install ruby 2.2.3
 
-* Ruby-install will leave everything in /opt/rubies/ruby-1.9.3-p547/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 1.9.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
+* Ruby-install will leave everything in /opt/rubies/ruby-2.2.3/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 2.2.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
 
   .. code-block:: bash
 
-    export PATH=$PATH:/opt/rubies/ruby-1.9.3-p547/bin
+    export PATH=$PATH:/opt/rubies/ruby-2.2.3/bin
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
 
@@ -441,8 +423,12 @@ Editor
   .. code-block:: bash
 
     RAILS_ENV=development bundle exec rake db:migrate
-    RAILS_ENV=development bundle exec rake db:setup
 
+* Create an admin user
+
+  .. code-block:: bash
+
+    RAILS_ENV=development bundle exec rake db:setup_user
 
 * Start the redis-server that allows access to the SQL and Maps APIs:
 

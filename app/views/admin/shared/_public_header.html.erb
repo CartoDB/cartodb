@@ -3,9 +3,9 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>">
+          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://cartodb.com" %>">
             <span class="Logo Logo--avatar">
-              <i class="iconFont iconFont-CartoFante"></i>
+              <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
             </span>
           </a>
         </li>
@@ -16,23 +16,23 @@
           </li>
         <% else %>
           <li class="Header-navigationItem js-user-tour u-hideOnTablet">
-            <a href="http://cartodb.com" class="Header-navigationLink js-dropdown-target">Product <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+            <a href="https://cartodb.com" class="Header-navigationLink js-dropdown-target">Product <i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
           </li>
 
           <li class="Header-navigationItem js-user-industries u-hideOnTablet">
-            <a href="#/industries" class="Header-navigationLink js-dropdown-target">Solutions <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+            <a href="#/industries" class="Header-navigationLink js-dropdown-target">Solutions <i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
           </li>
 
           <li class="Header-navigationItem js-user-discover u-hideOnTablet">
-            <a href="#/discover" class="Header-navigationLink js-dropdown-target">Discover <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+            <a href="#/discover" class="Header-navigationLink js-dropdown-target">Discover <i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
           </li>
 
           <li class="Header-navigationItem js-user-resources u-hideOnTablet">
-            <a href="#/resources" class="Header-navigationLink js-dropdown-target">Learn <i class="Header-darrow iconFont iconFont-ArrowMenu"></i></a>
+            <a href="#/resources" class="Header-navigationLink js-dropdown-target">Learn <i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
           </li>
 
           <li class="Header-navigationItem u-hideOnTablet">
-            <a href="http://cartodb.com/pricing/" class="Header-navigationLink">Pricing</a>
+            <a href="https://cartodb.com/pricing/" class="Header-navigationLink">Pricing</a>
           </li>
         <% end %>
       </ul>
@@ -41,12 +41,12 @@
     <div class="Header-settings">
       <ul class="Header-settingsList js-user-settings">
         <li class="Header-settingsItem js-login">
-          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink">Login</a>
+          <a href="<%= CartoDB.url(self, 'login') %>" class="Header-settingsLink Header-settingsLink Header-settingsLink--public">Login</a>
         </li>
 
         <% unless cartodb_com_hosted? %>
           <li class="Header-settingsItem">
-            <a href="http://cartodb.com/signup" class="PublicButton PublicButton--sMedium PublicButton--cWhite is-hover">
+            <a href="https://cartodb.com/signup" class="PublicButton PublicButton--sMedium PublicButton--cWhite is-hover PublicButton--public">
               <span>Sign up</span>
             </a>
           </li>

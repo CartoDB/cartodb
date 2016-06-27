@@ -4,25 +4,26 @@ require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'
 require_relative '../../../app/models/visualization/tags'
 require_relative '../../../app/models/visualization/collection'
+require 'helpers/unique_names_helper'
 
+include UniqueNamesHelper
 include CartoDB
 
 describe Visualization::Tags do
+  include CartoDB::Factories
+
   before(:each) do
     Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Rails::Sequel.connection
-    Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
 
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     # For relator->permission
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
     user_apikey = '123'
-    @user_mock = mock
-    @user_mock.stubs(:id).returns(user_id)
-    @user_mock.stubs(:username).returns(user_name)
-    @user_mock.stubs(:api_key).returns(user_apikey)
+    @user_mock = create_mocked_user(user_id: user_id, user_name: user_name, user_apikey: user_apikey)
     Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
   end
 
@@ -63,19 +64,19 @@ describe Visualization::Tags do
       v3 = Visualization::Member.new(random_attributes(user_id: @user_mock.id, name: 'v3', locked:false, tags: [manolo_escobar_tag, manoloescobar_tag])).store
 
       vqb1 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_tag.upcase]).build.map(&:id)
-      
+
       vqb1.should include v1.id
       vqb1.should include v2.id # Searching for 'manolo' should bring up 'manoloescobar' as well
       vqb1.should include v3.id
 
       vqb2 = Carto::VisualizationQueryBuilder.new.with_tags([manoloescobar_tag.upcase]).build.map(&:id)
-      
+
       vqb2.should include v1.id
       vqb2.should_not include v2.id # 'manoloescobar' is not a substring of 'manolo'
       vqb2.should include v3.id
 
       vqb3 = Carto::VisualizationQueryBuilder.new.with_tags([manolo_escobar_tag.upcase]).build.map(&:id)
-      
+
       vqb3.should include v1.id
       vqb3.should_not include v2.id
       vqb3.should include v3.id
@@ -83,9 +84,9 @@ describe Visualization::Tags do
   end
 
   def random_attributes(attributes={})
-    random = rand(999)
+    random = unique_name('viz')
     {
-      name:         attributes.fetch(:name, "name #{random}"),
+      name:         attributes.fetch(:name, random),
       description:  attributes.fetch(:description, "description #{random}"),
       privacy:      attributes.fetch(:privacy, 'public'),
       tags:         attributes.fetch(:tags, ['tag 1']),

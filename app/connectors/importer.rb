@@ -22,6 +22,7 @@ module CartoDB
       # @param destination_schema String|nil
       # @param public_user_roles Array|nil
       def initialize(runner, table_registrar, quota_checker, database, data_import_id,
+                     overviews_creator,
                      destination_schema = DESTINATION_SCHEMA, public_user_roles=[CartoDB::PUBLIC_DB_USER])
         @aborted                = false
         @runner                 = runner
@@ -29,6 +30,7 @@ module CartoDB
         @quota_checker          = quota_checker
         @database               = database
         @data_import_id         = data_import_id
+        @overviews_creator      = overviews_creator
         @destination_schema     = destination_schema
         @support_tables_helper  = CartoDB::Visualization::SupportTables.new(database,
                                                                             {public_user_roles: public_user_roles})
@@ -51,10 +53,11 @@ module CartoDB
           results.select(&:success?).each { |result|
             register(result)
           }
+          results.select(&:success?).each { |result|
+            create_overviews(result)
+          }
 
-          if data_import.create_visualization
-            create_visualization
-          end
+          create_visualization if data_import.create_visualization
         end
 
         self
@@ -64,18 +67,22 @@ module CartoDB
         @support_tables_helper.reset
 
         # Sanitizing table name if it corresponds with a PostgreSQL reseved word
-        result.name = "#{result.name}_t" if CartoDB::POSTGRESQL_RESERVED_WORDS.map(&:downcase).include?(result.name.downcase)
+        result.name = Carto::DB::Sanitize.sanitize_identifier(result.name)
 
         runner.log.append("Before renaming from #{result.table_name} to #{result.name}")
         name = rename(result, result.table_name, result.name)
         result.name = name
+
         runner.log.append("Before moving schema '#{name}' from #{ORIGIN_SCHEMA} to #{@destination_schema}")
         move_to_schema(result, name, ORIGIN_SCHEMA, @destination_schema)
+
         runner.log.append("Before persisting metadata '#{name}' data_import_id: #{data_import_id}")
         persist_metadata(result, name, data_import_id)
+
         runner.log.append("Table '#{name}' registered")
       rescue => exception
         if exception.message =~ /canceling statement due to statement timeout/i
+          drop("#{ORIGIN_SCHEMA}.#{result.table_name}")
           raise CartoDB::Importer2::StatementTimeoutError.new(
             exception.message,
             CartoDB::Importer2::ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError]
@@ -85,15 +92,38 @@ module CartoDB
         end
       end
 
+      def create_overviews(result)
+        dataset = @overviews_creator.dataset(result.name)
+        if dataset.should_create_overviews?
+          dataset.create_overviews!
+        end
+      end
+
       def create_visualization
+        if runner.visualizations.empty?
+          create_default_visualization
+        else
+          user = Carto::User.find(data_import.user_id)
+          runner.visualizations.each do |visualization|
+            vis = Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization)
+            bind_visualization_to_data_import(vis)
+          end
+        end
+      end
+
+      def create_default_visualization
         tables = get_imported_tables
         if tables.length > 0
           user = ::User.where(id: data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
-          data_import.visualization_id = vis.id
-          data_import.save
-          data_import.reload
+          bind_visualization_to_data_import(vis)
         end
+      end
+
+      def bind_visualization_to_data_import(vis)
+        data_import.visualization_id = vis.id
+        data_import.save
+        data_import.reload
       end
 
       def get_imported_tables
@@ -114,8 +144,10 @@ module CartoDB
       end
 
       def drop(table_name)
-        database.execute(%Q(DROP TABLE #{table_name}))
-      rescue
+        Carto::OverviewsService.new(database).delete_overviews table_name
+        database.execute(%(DROP TABLE #{table_name}))
+      rescue => exception
+        runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self
       end
 
@@ -131,38 +163,16 @@ module CartoDB
           { schema: origin_schema, name: table }
         }
         @support_tables_helper.change_schema(destination_schema, table_name)
+      rescue => e
+        drop("#{origin_schema}.#{table_name}")
+        raise e
       end
 
-      def rename(result, current_name, new_name, rename_attempts=0)
-        target_new_name = new_name
-        new_name = table_registrar.get_valid_table_name(new_name)
-        if rename_attempts > 0
-          new_name = "#{new_name}_#{rename_attempts}"
-        end
-        rename_attempts = rename_attempts + 1
+      def rename(result, current_name, new_name)
+        new_name = Carto::ValidTableNameProposer.new(table_registrar.user.id)
+                                                .propose_valid_table_name(new_name)
 
-        if data_import
-          user_id = data_import.user_id
-          if exists_user_table_for_user_id(new_name, user_id)
-            # Since get_valid_table_name should only return nonexisting table names (with a retry limit)
-            # this is likely caused by a table deletion, so we run ghost tables to cleanup and retry
-            if rename_attempts == 1
-              runner.log.append("Triggering ghost tables for #{user_id} because collision on #{new_name}")
-              ::User.where(id: user_id).first.link_ghost_tables
-
-              if exists_user_table_for_user_id(new_name, user_id)
-                runner.log.append("Ghost tables didn't fix the collision.")
-                raise "Existing #{new_name} already registered for #{user_id}. Running ghost tables did not help."
-              else
-                runner.log.append("Ghost tables fixed the collision.")
-              end
-            else
-              raise "Existing #{new_name} already registered for #{user_id}"
-            end
-          end
-        end
-
-        database.execute(%Q{
+        database.execute(%{
           ALTER TABLE "#{ORIGIN_SCHEMA}"."#{current_name}" RENAME TO "#{new_name}"
         })
 
@@ -171,8 +181,9 @@ module CartoDB
         @support_tables_helper.tables = result.support_tables.map { |table|
           { schema: ORIGIN_SCHEMA, name: table }
         }
+
         # Delay recreation of constraints until schema change
-        results = @support_tables_helper.rename(current_name, new_name, recreate_constraints=false)
+        results = @support_tables_helper.rename(current_name, new_name, false)
 
         if results[:success]
           result.update_support_tables(results[:names])
@@ -181,15 +192,6 @@ module CartoDB
         end
 
         new_name
-      rescue => exception
-        CartoDB.notify_debug('Error while renaming at importer', { current_name: current_name, new_name: new_name, rename_attempts: rename_attempts, result: result.inspect, error: exception.inspect}) if rename_attempts == 1
-        message = "Silently retrying renaming #{current_name} to #{target_new_name} (current: #{new_name}). ERROR: #{exception}"
-        runner.log.append(message)
-        if rename_attempts <= MAX_RENAME_RETRIES
-          rename(result, current_name, target_new_name, rename_attempts)
-        else
-          raise CartoDB::Importer2::InvalidNameError.new("#{message} #{rename_attempts} attempts. Data import: #{data_import_id}. ERROR: #{exception}")
-        end
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)
@@ -237,4 +239,3 @@ module CartoDB
     end
   end
 end
-

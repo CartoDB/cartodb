@@ -8,7 +8,6 @@ require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/locator'
 require_relative '../../../app/models/visualization'
 require_relative '../../../app/models/visualization/member'
-require_relative '../../../app/models/visualization/migrator'
 require_relative '../../doubles/support_tables.rb'
 
 include CartoDB
@@ -23,7 +22,7 @@ describe Visualization::Locator do
   end
 
   before do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     @db = Rails::Sequel.connection
     Sequel.extension(:pagination)
@@ -35,16 +34,7 @@ describe Visualization::Locator do
     @map_id = UUIDTools::UUID.timestamp_create.to_s
 
     # For relator->permission
-    user_id = UUIDTools::UUID.timestamp_create.to_s
-    user_name = 'whatever'
-    user_apikey = '123'
-    @user_mock = mock
-    @user_mock.stubs(:id).returns(user_id)
-    @user_mock.stubs(:username).returns(user_name)
-    @user_mock.stubs(:api_key).returns(user_apikey)
-    @user_mock.stubs(:invalidate_varnish_cache).returns(nil)
-    @user_mock.stubs(:has_feature_flag?)
-      .returns(false)
+    @user_mock = create_mocked_user
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     @visualization  = Visualization::Member.new(
@@ -126,4 +116,3 @@ describe Visualization::Locator do
     model_klass
   end #model_fake
 end # Visualization::Locator
-

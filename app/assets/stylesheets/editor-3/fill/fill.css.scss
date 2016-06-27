@@ -1,0 +1,48 @@
+@import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
+
+.Form-InputFill.is-disabled {
+  border-color: $cSecondaryLine;
+  background: $cThirdBackground;
+  cursor: default;
+}
+.Editor-FormDialog {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 248px;
+  z-index: 100;
+}
+
+.Editor-FormDialog .CustomList {
+  display: block;
+  position: relative;
+  top: auto;
+  right: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.Editor-fillContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+.CDB-OptionInput-item--categories .InputColor {
+  padding: 0;
+}
+.CDB-ColorBar.is-link {
+  cursor: pointer;
+}
+.CDB-OptionInput-container {
+  height: 100%;
+}
+
+.InputColor-modalHeader {
+  @include display-flex();
+  @include justify-content(space-between);
+}

@@ -2,6 +2,9 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'
+require_dependency 'carto/uuidhelper'
+
+include Carto::UUIDHelper
 
 describe Carto::Api::InvitationsController do
   include_context 'organization with users helper'
@@ -52,7 +55,7 @@ describe Carto::Api::InvitationsController do
       }
       post_api_v1_organization_invitations(@org_user_owner, invitation) do |response|
         response.status.should == 400
-        response.body[:errors]['users_emails'].length.should == 1
+        response.body[:errors][:users_emails].length.should == 1
 
         invitation = Carto::Invitation.find_by_welcome_text(welcome_text).should == nil
       end

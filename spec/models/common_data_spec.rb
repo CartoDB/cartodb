@@ -44,7 +44,13 @@ describe CommonData do
     stub_valid_api_response
     CartoDB.expects(:notify_error).times(0)
 
-    @common_data.datasets.first['display_name'] = @common_data.datasets.first['name']
+    @common_data.datasets.first['display_name'].should eq @common_data.datasets.first['name']
+  end
+
+  it 'reads the source and attributions' do
+    stub_valid_api_response
+    @common_data.datasets.first['source'].should eq '[Los Angeles opendata](http://datos.losangeles.com/)'
+    @common_data.datasets.first['attributions'].should eq 'CartoDB Inc.'
   end
 
   it 'categories should be an array' do
@@ -154,7 +160,7 @@ describe CommonData do
             "title": null,
             "parent_id": null,
             "license": "apache",
-            "attributions": null,
+            "attributions": "CartoDB Inc.",
             "kind": "geom",
             "likes": 0,
             "prev_id": null,

@@ -50,6 +50,12 @@ module Carto
           poro.merge!(groups: @user.groups ? @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : [])
         end
 
+        if @options[:current_user] && @options[:current_user].organization_owner? && @user.belongs_to_organization?(@options[:current_user].organization)
+          poro[:email] = @user.email
+          poro[:table_count] = @user.table_count
+          poro[:all_visualization_count] = @user.all_visualization_count
+        end
+
         poro
       end
 
@@ -90,6 +96,24 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_geocoding_calls : @user.get_geocoding_calls,
             hard_limit:  @user.hard_geocoding_limit?
           },
+          here_isolines: {
+            quota:       @user.organization_user? ? @user.organization.here_isolines_quota : @user.here_isolines_quota,
+            block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
+            hard_limit:  @user.hard_here_isolines_limit?
+          },
+          obs_snapshot: {
+            quota:       @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_snapshot_block_price : @user.obs_snapshot_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_snapshot_calls : @user.get_obs_snapshot_calls,
+            hard_limit:  @user.hard_obs_snapshot_limit?
+          },
+          obs_general: {
+            quota:       @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_general_block_price : @user.obs_general_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_general_calls : @user.get_obs_general_calls,
+            hard_limit:  @user.hard_obs_general_limit?
+          },
           twitter: {
             enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
@@ -98,11 +122,14 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
+          salesforce: {
+            enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
-            },
+          },
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
@@ -128,7 +155,7 @@ module Carto
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?
+          needs_password_confirmation: @user.needs_password_confirmation?,
         }
 
         if @user.organization.present?
@@ -138,6 +165,17 @@ module Carto
 
         if !@user.groups.nil?
           data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+        end
+
+        if @user.mobile_sdk_enabled?
+          data[:mobile_apps] = {
+            mobile_xamarin: @user.mobile_xamarin,
+            mobile_custom_watermark: @user.mobile_custom_watermark,
+            mobile_offline_maps: @user.mobile_offline_maps,
+            mobile_gis_extension: @user.mobile_gis_extension,
+            mobile_max_open_users: @user.mobile_max_open_users,
+            mobile_max_private_users: @user.mobile_max_private_users
+          }
         end
 
         if options[:extended]

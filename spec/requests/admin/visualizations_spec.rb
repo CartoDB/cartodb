@@ -4,41 +4,60 @@ require 'rack/test'
 require 'json'
 require_relative '../../spec_helper'
 require_relative '../../support/factories/organizations'
-require_relative '../../../app/models/visualization/migrator'
 require_relative '../../../app/controllers/admin/visualizations_controller'
+require 'helpers/unique_names_helper'
 
 def app
   CartoDB::Application.new
 end #app
 
 describe Admin::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include Carto::Factories::Visualizations
+
+  # Mock for a Rails context
+  class ContextMock
+    def initialize(global_context)
+      @global_context = global_context
+    end
+
+    def request
+      nil
+    end
+
+    def polymorphic_path(*args)
+      @global_context.polymorphic_path(*args)
+    end
+  end
 
   before(:all) do
-    @api_key = $user_1.api_key
-    $user_1.stubs(:should_load_common_data?).returns(false)
+    @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
-    @db = Rails::Sequel.connection
-    Sequel.extension(:pagination)
-
-    CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
+    @api_key = @user.api_key
+    @user.stubs(:should_load_common_data?).returns(false)
 
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
+    @mock_context = ContextMock.new(self)
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-    delete_user_data $user_1
-    host! "#{$user_1.username}.localhost.lan"
+    bypass_named_maps
+    delete_user_data @user
+    host! "#{@user.username}.localhost.lan"
   end
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
       last_response.status.should == 200
@@ -53,7 +72,7 @@ describe Admin::VisualizationsController do
   describe 'GET /viz:id' do
     it 'returns a visualization' do
       id = factory.fetch('id')
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{id}", {}, @headers
       last_response.status.should == 200
@@ -167,7 +186,7 @@ describe Admin::VisualizationsController do
 
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
       get public_visualizations_show_map_url(id: id), {}, @headers
       last_response.status.should == 200
     end
@@ -187,7 +206,7 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ %r{<title>CartoDB - 404 Error</title>}
+      last_response.body.should =~ %r{<title>404 Error — CartoDB</title>}
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
@@ -239,7 +258,7 @@ describe Admin::VisualizationsController do
       name = table.table_visualization.name
       name = URI::encode(name)
 
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
@@ -247,7 +266,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'renders embed map error when an exception is raised' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
@@ -300,14 +319,14 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz/:name/track_embed' do
     it 'renders the view by passing a visualization name' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
     end
 
     it 'doesnt serve X-Frame-Options: DENY for track_embed' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/track_embed", {}, @headers
       last_response.status.should == 200
@@ -317,7 +336,7 @@ describe Admin::VisualizationsController do
 
   describe 'non existent visualization' do
     it 'returns 404' do
-      login_as($user_1, scope: $user_1.username)
+      login_as(@user, scope: @user.username)
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
@@ -332,18 +351,7 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-          host:     db_config.fetch('host'),
-          port:     db_config.fetch('port'),
-          database: db_config.fetch('database'),
-          username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository  = DataRepository::Backend::Sequel.new(db, :visualizations)
-
-      CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
+      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
           :propagate_to_varnish => nil
@@ -371,17 +379,16 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      Table.any_instance.stubs(
-          :perform_cartodb_function => nil,
-          :update_cdb_tablemetadata => nil,
-          :update_table_pg_stats => nil,
-          :create_table_in_database! => nil,
-          :get_table_id => 1,
-          :grant_select_to_tiler_user => nil,
-          :cartodbfy => nil,
-          :set_the_geom_column! => nil
-      )
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+
+      Table.any_instance.stubs(perform_cartodb_function: nil,
+                               update_cdb_tablemetadata: nil,
+                               update_table_pg_stats: nil,
+                               create_table_in_database!: nil,
+                               get_table_id: 1,
+                               grant_select_to_tiler_user: nil,
+                               cartodbfy: nil,
+                               set_the_geom_column!: nil)
 
       # --------TEST ITSELF-----------
 
@@ -407,52 +414,41 @@ describe Admin::VisualizationsController do
 
       login_host(user_b, org)
 
-      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should be(404)
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(403), "#{forbidden_endpoint} is #{last_response.status}"
-      }
+      end
 
       perm = vis.permission
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
       url = CartoDB.base_url(org.name, user_b.username) +
-        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
+            CartoDB.path(self, 'public_visualizations_show', id: "#{user_a.username}.#{vis.name}") + "?redirected=true"
       last_response.location.should eq url
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
         last_response.length.should >= 100
-      }
+      end
       org.destroy
     end
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
-      db_config   = Rails.configuration.database_configuration[Rails.env]
-      # Why not passing db_config directly to Sequel.postgres here ?
-      # See https://github.com/CartoDB/cartodb/issues/421
-      db = Sequel.postgres(
-        host:     db_config.fetch('host'),
-        port:     db_config.fetch('port'),
-        database: db_config.fetch('database'),
-        username: db_config.fetch('username')
-      )
-      CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(db, :visualizations)
-
-      CartoDB::UserOrganization.any_instance.stubs(:move_user_tables_to_schema).returns(nil)
+      CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,
         propagate_to_varnish: nil
@@ -480,7 +476,7 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
       Table.any_instance.stubs(
         perform_cartodb_function: nil,
         update_cdb_tablemetadata: nil,
@@ -518,12 +514,12 @@ describe Admin::VisualizationsController do
 
       # dirty but effective trick, generate the url as if were for a non-org user, then replace usernames
       # to respect format and just have no organization
-      destination_url = CartoDB.url(self, 'public_visualizations_public_map', { id: vis.name }, user_b)
+      destination_url = CartoDB.url(@mock_context, 'public_visualizations_public_map', { id: vis.name }, user_b)
                                .sub(user_b.username, user_a.username)
 
       get destination_url
       last_response.status.should be(302)
-      last_response.headers["Location"].should eq CartoDB.url(self, 'public_visualizations_public_map',
+      last_response.headers["Location"].should eq CartoDB.url(@mock_context, 'public_visualizations_public_map',
                                                               { id: vis.id, redirected: true }, user_a)
       follow_redirect!
       last_response.status.should be(200)
@@ -534,13 +530,62 @@ describe Admin::VisualizationsController do
 
   describe '#index' do
     before(:each) do
-      $user_1.stubs(:should_load_common_data?).returns(false)
+      @user.stubs(:should_load_common_data?).returns(false)
     end
 
     it 'invokes user metadata redis caching' do
-      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with($user_1).once
-      login_as($user_1, scope: $user_1.username)
+      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
+      login_as(@user, scope: @user.username)
       get dashboard_path, {}, @headers
+    end
+  end
+
+  describe 'find visualizations by name' do
+    before(:all) do
+      @organization = create_organization_with_users(name: 'vizzuality')
+      @org_user = @organization.users.first
+      bypass_named_maps
+      @table = new_table(user_id: @org_user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+      @faketable = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
+    end
+
+    it 'finds visualization by org and name' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: @table.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside org' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
+    end
+
+    it 'finds visualization by user and public.name' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.table_visualization.name}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'finds visualization by user and public.id' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.table_visualization.id}" }, @org_user)
+
+      get url
+      last_response.status.should == 200
+    end
+
+    it 'does not find visualizations outside user with public schema' do
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" },
+                        @org_user)
+      url = url.sub("/u/#{@org_user.username}", '')
+
+      get url
+      last_response.status.should == 404
     end
   end
 
@@ -556,10 +601,10 @@ describe Admin::VisualizationsController do
   end
 
   def factory(owner=nil)
-    owner = $user_1 if owner.nil?
+    owner = @user if owner.nil?
     map     = Map.create(user_id: owner.id)
     payload = {
-      name:         "visualization #{rand(9999)}",
+      name:         unique_name('viz'),
       tags:         ['foo', 'bar'],
       map_id:       map.id,
       description:  'bogus',
@@ -575,7 +620,7 @@ describe Admin::VisualizationsController do
   end
 
   def table_factory(attrs = {})
-    new_table(attrs.merge(user_id: $user_1.id)).save.reload
+    new_table(attrs.merge(user_id: @user.id)).save.reload
   end
 
 end # Admin::VisualizationsController

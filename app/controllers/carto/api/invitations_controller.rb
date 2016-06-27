@@ -9,6 +9,8 @@ module Carto
       before_filter :load_organization
 
       def create
+        @organization.update_attribute(:auth_username_password_enabled, true) if params[:enable_organization_signup] === true
+
         invitation = Carto::Invitation.create_new(
           Carto::User.find(current_user.id),
           params[:users_emails],

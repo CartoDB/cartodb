@@ -37,6 +37,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def handle_unverified_request
+    render_403
+  end
+
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
     warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
@@ -147,8 +151,8 @@ class ApplicationController < ActionController::Base
 
   def render_403
     respond_to do |format|
-      format.html { render :file => 'public/403.html', :status => 403, :layout => false }
-      format.all  { head :forbidden }
+      format.html { render(file: 'public/403.html', status: 403, layout: false) }
+      format.all  { head(:forbidden) }
     end
   end
 
@@ -343,6 +347,12 @@ class ApplicationController < ActionController::Base
       end
     end
     @current_viewer
+  end
+
+  def update_user_last_activity
+    return false if current_user.nil?
+    current_user.set_last_active_time
+    current_user.set_last_ip_address request.remote_ip
   end
 
   protected :current_user

@@ -3,7 +3,7 @@ module HttpAuthenticationHelper
     'auth_header'
   end
 
-  def authentication_headers(value = $user_1.email)
+  def authentication_headers(value)
     { "#{authenticated_header}" => value }
   end
 

@@ -5,7 +5,6 @@
 rm config/database_*
 rm config/redis_*
 #sudo killall redis-server
-truncate -s 0 *.log
 
 # Start redis servers
 port=6001
@@ -17,6 +16,7 @@ do
         fi
         touch redis.conf.test
         truncate -s 0 redis.conf.test
+        echo "bind 127.0.0.1" >> redis.conf.test
         echo "port $port" >> redis.conf.test
         echo "daemonize yes" >> redis.conf.test
         echo "pidfile /tmp/redis-test-$port.tmp" >> redis.conf.test
@@ -41,6 +41,7 @@ fi
 # Start default redis on port 6335
 touch redis.conf.test
 truncate -s 0 redis.conf.test
+echo "bind 127.0.0.1" >> redis.conf.test
 echo "port 6335" >> redis.conf.test
 echo "daemonize yes" >> redis.conf.test
 echo "pidfile /tmp/redis-test-6335.tmp" >> redis.conf.test
@@ -77,4 +78,3 @@ done
 touch specfailed.log
 touch specsuccess.log
 echo "# Wrapper finished"
-

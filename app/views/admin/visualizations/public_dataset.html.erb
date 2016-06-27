@@ -75,8 +75,8 @@
 
     <div class="navigation u-showOnTablet">
       <ul>
-        <li><a href="#/table" class=" tab selected u-valign"><i class="Navmenu-tableIcon iconFont iconFont-Table u-iblock u-malign"></i></a></li>
-        <li><a href="#/map" class="u-valign"><i class="iconFont iconFont-Map u-iblock u-malign"></i></a></li>
+        <li><a href="#/table" class=" tab selected u-valign"><i class="Navmenu-tableIcon CDB-IconFont CDB-IconFont-table u-iblock u-malign"></i></a></li>
+        <li><a href="#/map" class="u-valign"><i class="CDB-IconFont CDB-IconFont-map u-iblock u-malign"></i></a></li>
       </ul>
     </div>
   </div>
@@ -115,7 +115,7 @@
 
             <% unless @is_data_library %>
               <li class="Navmenu-item">
-                <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
+                <i class="Navmenu-rarrow CDB-IconFont CDB-IconFont-rArrowLight"></i>
                 <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
               </li>
             <% end %>
@@ -139,12 +139,12 @@
             <li class="Navmenu-item Navmenu-item--action Navmenu-item--withsep u-hideOnTablet">
               <div class="Navmenu-sep"></div>
 
-              <i class="Navmenu-actionIcon iconFont iconFont-Markup"></i>
+              <i class="Navmenu-actionIcon CDB-IconFont CDB-IconFont-markup"></i>
               <a href="#" class="Navmenu-link Navmenu-link--action js-Navmenu-link--api">API call</a>
             </li>
 
             <li class="Navmenu-item Navmenu-item--action u-hideOnTablet">
-              <i class="Navmenu-actionIcon iconFont iconFont-Floppy"></i>
+              <i class="Navmenu-actionIcon CDB-IconFont CDB-IconFont-floppy"></i>
               <a href="#" class="Navmenu-link Navmenu-link--action js-Navmenu-link--download">Download</a>
             </li>
 
@@ -172,13 +172,13 @@
 
             <div class="PublicMap-meta">
               <ul class="PublicMap-metaList">
-                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i>  <span title="<%= time_ago_in_words(@visualization.updated_at) %> ago"><%= time_ago_in_words(@visualization.updated_at) %> ago</span></li>
+                <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-calendar"></i>  <span title="<%= time_ago_in_words(@visualization.updated_at) %> ago"><%= time_ago_in_words(@visualization.updated_at) %> ago</span></li>
               </ul>
 
               <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
                 <% if !@table.rows_counted.blank? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-Rows RowsIndicator-icon"></i>
+                    <i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-rows RowsIndicator-icon"></i>
                     <% if @table.rows_counted < 10000 %>
                       <%= number_with_delimiter(@table.rows_counted) %>
                     <% else %>
@@ -191,7 +191,7 @@
                 <% if !@visualization.visualization.license_info.nil? %>
                   <li class="PublicMap-metaItem">
                     <%# Defaulting on CC icon for license https://github.com/CartoDB/cartodb/issues/6413 %>
-                    <i class="PublicMap-metaIcon iconFont iconFont-CreativeCommons iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
+                    <i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-creativeCommons iconFont-License iconFont-License<%= @visualization.visualization.license_info.id.to_s.gsub(/_/,"").downcase %>"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
                     <span title="<%= @visualization.visualization.license_info.name %>"><%= @visualization.visualization.license_info.name %></span>
                   </li>
@@ -199,7 +199,7 @@
 
                 <% if @visualization.visualization.source.present? %>
                   <li class="PublicMap-metaItem">
-                    <i class="PublicMap-metaIcon iconFont iconFont-Anchor"></i>
+                    <i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-anchor"></i>
                     <%# Keep on one line to avoid unwanted spaces %>
                     <span title="<%= @visualization.visualization.source %>"><%= raw @visualization.source_html_safe %></span>
                   </li>
@@ -225,7 +225,7 @@
         <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-vis-id="<%= vis.id %>" data-vis-owner-name="<%= vis.user[:username] %>">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
               <div class="MapCard-content MapCard-content--compact">
@@ -236,7 +236,7 @@
                     </h3>
                   </div>
                   <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
-                    <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                    <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                     <%= time_ago_in_words(vis.updated_at) %> ago
                   </div>
                 </div>

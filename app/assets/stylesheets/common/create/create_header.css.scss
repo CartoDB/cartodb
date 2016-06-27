@@ -28,8 +28,12 @@
   border-color: #CCC;
   line-height: 42px;
 }
-.CreateDialog-header .Dialog-headerIcon .iconFont { color: #CCC }
-.CreateDialog-header .iconFont-Add { font-size: 20px }
+.CreateDialog-header .Dialog-headerIcon .CDB-IconFont {
+  color: #CCC;
+}
+.CreateDialog-header .CDB-IconFont-add {
+  font-size: 20px;
+}
 .CreateDialog-header .Dialog-headerTitle {
   line-height: $sLineHeight-large;
   font-size: $sFontSize-larger;
@@ -52,7 +56,7 @@
   border-radius: 15px;
   background: white;
 }
-.CreateDialog-header .Dialog-headerIconBadge .iconFont {
+.CreateDialog-header .Dialog-headerIconBadge .CDB-IconFont {
   color: $cTypography-secondary;
   font-size: $sFontSize-smaller;
   vertical-align: top;
@@ -84,7 +88,9 @@
 .CreateDialog-headerStep.is-selected,
 .CreateDialog-headerStep.is-selectable:hover {
   .Dialog-headerIcon { border-color: $cIcons-active }
-  .iconFont { color: $cIcons-active }
+  .CDB-IconFont {
+    color: $cIcons-active;
+  }
   .Dialog-headerText,
   .Dialog-headerTitle {
     color: $cTypography-paragraphs;

@@ -169,7 +169,9 @@ module CartoDB
       end
 
       def single_column?
-        ::CSV.parse(first_line, csv_options).first.length < 2
+        columns = ::CSV.parse(first_line, csv_options)
+        raise EmptyFileError.new if !columns.any?
+        columns.first.length < 2
       end
 
       def multiple_column(row)
@@ -208,8 +210,9 @@ module CartoDB
       def first_line
         return @first_line if @first_line
         stream.rewind
-        @first_line ||= stream.gets
+        @first_line ||= stream.gets || ''
         stream.rewind
+        @first_line
       end
 
       def release

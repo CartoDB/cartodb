@@ -3,25 +3,25 @@
 require 'spec_helper'
 
 describe "Geocodings API" do
-
   before(:all) do
-  end
+    @user = FactoryGirl.create(:valid_user, table_quota: 50)
 
-  before(:each) do
-    stub_named_maps_calls
-    delete_user_data $user_1
-    host! "#{$user_1.username}.localhost.lan"
+    delete_user_data @user
+    host! "#{@user.username}.localhost.lan"
   end
 
   after(:all) do
-    stub_named_maps_calls
-    delete_user_data($user_1)
+    @user.destroy
   end
 
-  let(:params) { { :api_key => $user_1.api_key } }
+  before(:each) do
+    bypass_named_maps
+  end
+
+  let(:params) { { :api_key => @user.api_key } }
 
   describe 'POST /api/v1/geocodings' do
-    let(:table) { create_table(user_id: $user_1.id) }
+    let(:table) { create_table(user_id: @user.id) }
 
     it 'creates a new geocoding' do
       Geocoding.any_instance.stubs("run!").returns(true)
@@ -29,7 +29,7 @@ describe "Geocodings API" do
       post_json api_v1_geocodings_create_url(payload) do |response|
         response.status.should eq 200
         response.body[:id].should_not be_nil
-        response.body[:user_id].should eq $user_1.id
+        response.body[:user_id].should eq @user.id
         response.body[:table_id].should eq table.id
         response.body[:formatter].should eq 'name, description'
         response.body[:created_at].should_not be_nil
@@ -150,19 +150,8 @@ describe "Geocodings API" do
   end
 
   describe 'PUT /api/v1/geocodings/:id' do
-    it 'cancels a geocoding job' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: $user_1)
-      Geocoding.any_instance.stubs(:cancel).returns(true)
-
-      put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|
-        response.status.should be_success
-        geocoding.reload.state.should eq 'cancelled'
-        response.body[:state].should eq 'cancelled' 
-      end
-    end
-
     it 'fails gracefully on job cancel failure' do
-      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: $user_1)
+      geocoding = FactoryGirl.create(:geocoding, table_id: UUIDTools::UUID.timestamp_create.to_s, formatter: 'b', user: @user)
       Geocoding.any_instance.stubs(:cancel).raises('wadus')
 
       put_json api_v1_geocodings_update_url(params.merge(id: geocoding.id)), { state: 'cancelled' } do |response|

@@ -36,9 +36,27 @@ module CartoDB
       end
     end
 
+    class TooManyNamedMapTemplatesError < BaseImportError
+      def initialize(message="User reached the limit on number of templates")
+        super(message, 6670)
+      end
+    end
+
     class DownloadTimeoutError < BaseImportError
       def initialize(message="Data download timed out. Check the source is not running slow and/or try again.")
         super(message, 1020)
+      end
+    end
+
+    class CartoDBfyError < BaseImportError
+      def initialize(message="Error CartoDBFying table")
+        super(message, 2010)
+      end
+    end
+
+    class CartoDBfyInvalidID < BaseImportError
+      def initialize(message="Invalid cartodb_id")
+        super(message, 2011)
       end
     end
 
@@ -72,8 +90,10 @@ module CartoDB
     class NotFoundDownloadError                 < DownloadError; end
     class UnauthorizedDownloadError             < DownloadError; end
     class CouldntResolveDownloadError           < DownloadError; end
+    class PartialDownloadError                  < DownloadError; end
 
     class TooManyNodesError                     < StandardError; end
+    class NotAFileError                         < StandardError; end
     class EncodingDetectionError                < StandardError; end
     class MalformedXLSException                 < StandardError; end
     class XLSXFormatError                       < StandardError; end
@@ -96,6 +116,7 @@ module CartoDB
       NotFoundDownloadError                 => 1100,
       UnauthorizedDownloadError             => 1101,
       CouldntResolveDownloadError           => 1102,
+      PartialDownloadError                  => 1103,
 
       UnsupportedFormatError                => 1002,
       ExtractionError                       => 1003,
@@ -103,6 +124,7 @@ module CartoDB
       EmptyFileError                        => 1005,
       InvalidShpError                       => 1006,
       TooManyNodesError                     => 1007,
+      NotAFileError                         => 1010,
       InvalidNameError                      => 1014,
       PasswordNeededForExtractionError      => 1018,
       TooManyLayersError                    => 1019,
@@ -131,7 +153,7 @@ module CartoDB
       TableQuotaExceededError               => 8002,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,
-      CartoDB::Datasources::AuthError                             => 1011,
+      CartoDB::Datasources::AuthError                             => 1012,
       CartoDB::Datasources::TokenExpiredOrInvalidError            => 1012,
       CartoDB::Datasources::InvalidServiceError                   => 1012,
       CartoDB::Datasources::DataDownloadError                     => 1011,
@@ -140,7 +162,7 @@ module CartoDB
       CartoDB::Datasources::NoResultsError                        => 1015,
       CartoDB::Datasources::ParameterError                        => 99999,
       CartoDB::Datasources::ServiceDisabledError                  => 99999,
-      CartoDB::Datasources::OutOfQuotaError                       => 8001,
+      CartoDB::Datasources::OutOfQuotaError                       => 8006,
       CartoDB::Datasources::InvalidInputDataError                 => 1012,
       CartoDB::Datasources::ResponseError                         => 1011,
       CartoDB::Datasources::ExternalServiceError                  => 1012,

@@ -31,7 +31,6 @@ gem 'addressable',             '2.3.2', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
-gem 'therubyracer',            '0.12.1' # Required by ejs
 
 gem 'net-ldap',                '0.11'
 
@@ -42,7 +41,7 @@ group :production, :staging do
 end
 
 group :assets do
-  gem "compass",               "0.12.3"
+  gem "compass",               "1.0.3"
 end
 
 # Importer & sync tables
@@ -63,19 +62,18 @@ gem 'eventmachine',            '1.0.4'
 gem 'em-pg-client',            '0.2.1'
 
 # Service components (/services)
-gem 'virtus',                   '1.0.0.beta3' #, git: 'https://github.com/solnic/virtus.git'
-gem 'aequitas',                 '0.0.2'
+gem 'virtus',                   '1.0.5'
 gem 'uuidtools',                '2.1.5'
 
 # Markdown
-gem 'redcarpet', '3.3.2'
+gem 'redcarpet', '3.3.3'
 
 # TODO we should be able to remove this using the new
 #      Rails routes DSL
 gem 'bartt-ssl_requirement',   '~>1.4.0', require: 'ssl_requirement'
 
 # TODO Production gems, put them in :production group
-gem 'rollbar',               '0.12.14'
+gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
 
@@ -84,6 +82,8 @@ gem 'test-unit'
 
 group :test do
   gem 'simplecov',                       require: false
+  gem 'simplecov-json'
+  gem 'simplecov-rcov'
   gem 'db-query-matchers',     '0.4.0'
   gem 'rack-test',             '0.6.2',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
@@ -98,6 +98,13 @@ group :test do
   # Need to use specific branch from this fork as original gem is broken and outdated
   gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
   gem 'mock_redis'
+end
+
+# Profiling
+gem 'rbtrace',                 '0.4.8'
+group :test, :development do
+  gem 'gc_tracer',             '1.5.1'
+  gem 'memory_profiler'
 end
 
 group :development, :test do

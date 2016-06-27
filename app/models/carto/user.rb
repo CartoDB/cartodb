@@ -4,23 +4,27 @@ require 'active_record'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
-require_relative '../../helpers/geocoder_metrics_helper'
+require_relative '../../helpers/data_services_metrics_helper'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
-  include GeocoderMetricsHelper
+  include DataServicesMetricsHelper
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
+  HERE_ISOLINES_BLOCK_SIZE = 1000
+  OBS_SNAPSHOT_BLOCK_SIZE = 1000
+  OBS_GENERAL_BLOCK_SIZE = 1000
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
-  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," +
-                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," +
-                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key"
+  DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
+                   "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
+                   "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
+                   "users.viewer".freeze
 
-  SELECT_WITH_DATABASE = DEFAULT_SELECT + ", users.quota_in_bytes, users.database_host"
+  SELECT_WITH_DATABASE = "#{DEFAULT_SELECT}, users.quota_in_bytes, users.database_host".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -232,9 +236,36 @@ class Carto::User < ActiveRecord::Base
 
   def remaining_geocoding_quota(options = {})
     if organization.present?
-      remaining = organization.geocoding_quota.to_i - organization.get_geocoding_calls(options)
+      remaining = organization.remaining_geocoding_quota(options)
     else
       remaining = geocoding_quota - get_geocoding_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_here_isolines_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_here_isolines_quota(options)
+    else
+      remaining = here_isolines_quota - get_here_isolines_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_snapshot_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_obs_snapshot_quota(options)
+    else
+      remaining = obs_snapshot_quota - get_obs_snapshot_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_obs_general_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_obs_general_quota(options)
+    else
+      remaining = obs_general_quota - get_obs_general_calls(options)
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -290,6 +321,24 @@ class Carto::User < ActiveRecord::Base
     get_user_geocoding_data(self, date_from, date_to)
   end
 
+  def get_here_isolines_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_here_isolines_data(self, date_from, date_to)
+  end
+
+  def get_obs_snapshot_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_obs_snapshot_data(self, date_from, date_to)
+  end
+
+  def get_obs_general_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_obs_general_data(self, date_from, date_to)
+  end
+
   #TODO: Remove unused param `use_total`
   def remaining_quota(use_total = false, db_size = service.db_size_in_bytes)
     self.quota_in_bytes - db_size
@@ -307,6 +356,10 @@ class Carto::User < ActiveRecord::Base
     self.organization.present?
   end
 
+  def belongs_to_organization?(organization)
+    self.organization_user? && organization != nil && self.organization_id == organization.id
+  end
+
   def soft_geocoding_limit?
     Carto::AccountType.new.soft_geocoding_limit?(self)
   end
@@ -316,6 +369,36 @@ class Carto::User < ActiveRecord::Base
     !self.soft_geocoding_limit?
   end
   alias_method :hard_geocoding_limit, :hard_geocoding_limit?
+
+  def soft_here_isolines_limit?
+    Carto::AccountType.new.soft_here_isolines_limit?(self)
+  end
+  alias_method :soft_here_isolines_limit, :soft_here_isolines_limit?
+
+  def hard_here_isolines_limit?
+    !self.soft_here_isolines_limit?
+  end
+  alias_method :hard_here_isolines_limit, :hard_here_isolines_limit?
+
+  def soft_obs_snapshot_limit?
+    Carto::AccountType.new.soft_obs_snapshot_limit?(self)
+  end
+  alias_method :soft_obs_snapshot_limit, :soft_obs_snapshot_limit?
+
+  def hard_obs_snapshot_limit?
+    !self.soft_obs_snapshot_limit?
+  end
+  alias_method :hard_obs_snapshot_limit, :hard_obs_snapshot_limit?
+
+  def soft_obs_general_limit?
+    Carto::AccountType.new.soft_obs_general_limit?(self)
+  end
+  alias_method :soft_obs_general_limit, :soft_obs_general_limit?
+
+  def hard_obs_general_limit?
+    !self.soft_obs_general_limit?
+  end
+  alias_method :hard_obs_general_limit, :hard_obs_general_limit?
 
   def soft_twitter_datasource_limit?
     self.soft_twitter_datasource_limit  == true
@@ -339,7 +422,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def arcgis_datasource_enabled?
-    self.arcgis_datasource_enabled == true
+    true
   end
 
   def private_maps_enabled?
@@ -363,6 +446,30 @@ class Carto::User < ActiveRecord::Base
     organization && organization.owner_id == id
   end
 
+  def mobile_sdk_enabled?
+    mobile_max_open_users > 0 || mobile_max_private_users > 0
+  end
+
+  def get_auth_tokens
+    tokens = [get_auth_token]
+
+    tokens << organization.get_auth_token if has_organization?
+
+    tokens
+  end
+
+  def get_auth_token
+    # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
+    auth_token = Carto::User.select(:auth_token).find(id).auth_token
+
+    auth_token.present? ? auth_token : generate_auth_token
+  end
+
   private
 
+  def generate_auth_token
+    update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+
+    auth_token
+  end
 end

@@ -1,11 +1,11 @@
 module AcceptanceHelpers
 
-  def geometry_type_for(runner)
+  def geometry_type_for(runner, user)
     result      = runner.results.first
     table_name  = result.tables.first
     schema      = result.schema
 
-    @db[%Q{
+    user.in_database[%Q{
       SELECT public.GeometryType(the_geom)
       FROM "#{schema}"."#{table_name}"
     }].first.fetch(:geometrytype)

@@ -1,10 +1,11 @@
 require 'active_record'
+require_relative './carto_json_serializer'
 
 module Carto
   class Layer < ActiveRecord::Base
-    serialize :options, JSON
-    serialize :infowindow, JSON
-    serialize :tooltip, JSON
+    serialize :options, CartoJsonSerializer
+    serialize :infowindow, CartoJsonSerializer
+    serialize :tooltip, CartoJsonSerializer
 
     has_many :layers_maps
     has_many :maps, through: :layers_maps
@@ -12,8 +13,10 @@ module Carto
     has_many :layers_user
     has_many :users, through: :layers_user
 
-    has_many :layers_user_table, foreign_key: :layer_id
+    has_many :layers_user_table
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
+
+    has_many :widgets, class_name: Carto::Widget, order: '"order"'
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -23,10 +26,29 @@ module Carto
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-    }
+    }.freeze
+
+    def public_values
+      {
+        options: options,
+        kind: kind,
+        infowindow: infowindow,
+        tooltip: tooltip,
+        id: id,
+        order: order
+      }
+    end
 
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
+    end
+
+    def affected_tables_readable_by(user)
+      affected_tables.select { |ut| ut.readable_by?(user) }
+    end
+
+    def data_readable_by?(user)
+      affected_tables.all? { |ut| ut.readable_by?(user) }
     end
 
     def legend
@@ -37,6 +59,7 @@ module Carto
       "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
     end
 
+    # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def infowindow_template_path
       if self.infowindow.present? && self.infowindow['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
@@ -46,6 +69,7 @@ module Carto
       end
     end
 
+    # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def tooltip_template_path
       if self.tooltip.present? && self.tooltip['template_name'].present?
         template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
@@ -59,8 +83,51 @@ module Carto
       ["gmapsbase", "tiled"].include?(kind)
     end
 
+    def base?
+      ['tiled', 'background', 'gmapsbase', 'wms'].include?(kind)
+    end
+
+    def torque?
+      kind == 'torque'
+    end
+
+    def data_layer?
+      !base?
+    end
+
+    def carto_layer?
+      kind == 'carto'
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
+    end
+
+    def map
+      maps.first
+    end
+
+    def visualization
+      map.visualization
+    end
+
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
+    def wrapped_sql(user)
+      query = options[:query]
+
+      sql = if query.present?
+              query
+            else
+              "SELECT * FROM #{qualified_table_name(user)}"
+            end
+
+      query_wrapper = options[:query_wrapper]
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+
+      sql
     end
 
     private
@@ -91,10 +158,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def user
-      @user ||= maps.first.user
     end
 
   end

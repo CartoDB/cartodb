@@ -21,18 +21,23 @@ describe 'geojson regression tests' do
   include AcceptanceHelpers
   include_context "no stats"
 
-  before do
-    @pg_options  = ::CartoDB::Importer2::Factories::PGConnection.new.pg_options
+  before(:all) do
+    @user = create_user
+    @user.save
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   it 'imports a file exported from CartoDB' do
     filepath    = path_to('tm_world_borders_simpl_0_8.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
   end
@@ -42,10 +47,10 @@ describe 'geojson regression tests' do
                   '/bars.geojson?foo=bar'
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
   end
@@ -54,10 +59,10 @@ describe 'geojson regression tests' do
     filepath    = path_to('invalid.geojson')
     downloader  = ::CartoDB::Importer2::Downloader.new(filepath)
     runner      = ::CartoDB::Importer2::Runner.new({
-                               pg: @pg_options,
+                               pg: @user.db_service.db_configuration_for,
                                downloader: downloader,
-                               log: CartoDB::Importer2::Doubles::Log.new,
-                               user: CartoDB::Importer2::Doubles::User.new
+                               log: CartoDB::Importer2::Doubles::Log.new(@user),
+                               user: @user
                              })
     runner.run
 

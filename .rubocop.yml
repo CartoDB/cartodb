@@ -1,4 +1,5 @@
 AllCops:
+  TargetRubyVersion: 2.2
   Include:
   - "**/*.gemspec"
   - "**/*.podspec"
@@ -30,7 +31,6 @@ AllCops:
   - "script"
   - "tmp"
   - "vendor"
-  RunRailsCops: false
   DisplayCopNames: false
   StyleGuideCopsOnly: false
 Style/AccessModifierIndentation:
@@ -114,8 +114,8 @@ Style/CollectionMethods:
   PreferredMethods:
     collect: map
     collect!: map!
-    find: detect
     find_all: select
+    detect: find
     reduce: inject
 Style/CommentAnnotation:
   Description: Checks formatting of special comments (TODO, FIXME, OPTIMIZE, HACK,
@@ -143,7 +143,7 @@ Style/EmptyLineBetweenDefs:
   AllowAdjacentOneLineDefs: false
 Style/EmptyLinesAroundBlockBody:
   Description: Keeps track of empty lines around block bodies.
-  Enabled: true
+  Enabled: false
   EnforcedStyle: no_empty_lines
   SupportedStyles:
   - empty_lines
@@ -446,14 +446,26 @@ Style/TrailingBlankLines:
   SupportedStyles:
   - final_newline
   - final_blank_line
-Style/TrailingComma:
-  Description: Checks for trailing comma in parameter lists and literals.
-  StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas
-  Enabled: false
+Style/TrailingCommaInArguments:
+  # If `comma`, the cop requires a comma after the last argument, but only for
+  # parenthesized method calls where each argument is on its own line.
+  # If `consistent_comma`, the cop requires a comma after the last argument,
+  # for all parenthesized method calls with arguments.
   EnforcedStyleForMultiline: no_comma
   SupportedStyles:
-  - comma
-  - no_comma
+    - comma
+    - consistent_comma
+    - no_comma
+Style/TrailingCommaInLiteral:
+  # If `comma`, the cop requires a comma after the last item in an array or
+  # hash, but only when each item is on its own line.
+  # If `consistent_comma`, the cop requires a comma after the last item of all
+  # non-empty array and hash literals.
+  EnforcedStyleForMultiline: no_comma
+  SupportedStyles:
+    - comma
+    - consistent_comma
+    - no_comma
 Style/TrivialAccessors:
   Description: Prefer attr_* methods to trivial readers/writers.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#attr_family
@@ -502,7 +514,7 @@ Metrics/AbcSize:
   Description: A calculated magnitude based on number of assignments, branches, and
     conditions.
   Enabled: true
-  Max: 25
+  Max: 35
 Metrics/BlockNesting:
   Description: Avoid excessive block nesting
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#three-is-the-number-thou-shalt-count
@@ -533,6 +545,8 @@ Metrics/MethodLength:
   Enabled: false
   CountComments: false
   Max: 10
+Metrics/ModuleLength:
+  Enabled: false
 Metrics/ParameterLists:
   Description: Avoid parameter lists longer than three or four parameters.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#too-many-params
@@ -572,11 +586,6 @@ Rails/ActionFilter:
   - filter
   Include:
   - app/controllers/**/*.rb
-Rails/DefaultScope:
-  Description: Checks if the argument passed to default_scope is a block.
-  Enabled: true
-  Include:
-  - app/models/**/*.rb
 Rails/HasAndBelongsToMany:
   Description: Prefer has_many :through to has_and_belongs_to_many.
   Enabled: true
@@ -657,11 +666,27 @@ Style/BlockComments:
 Style/BlockEndNewline:
   Description: Put end statement of multiline block on its own line.
   Enabled: true
-Style/Blocks:
-  Description: Avoid using {...} for multi-line blocks (multiline chaining is always
-    ugly). Prefer {...} over do...end for single-line blocks.
-  StyleGuide: https://github.com/bbatsov/ruby-style-guide#single-line-blocks
-  Enabled: true
+Style/BlockDelimiters:
+  EnforcedStyle: braces_for_chaining
+  SupportedStyles:
+    # The `line_count_based` style enforces braces around single line blocks and
+    # do..end around multi-line blocks.
+    - line_count_based
+    # The `semantic` style enforces braces around functional blocks, where the
+    # primary purpose of the block is to return a value and do..end for
+    # procedural blocks, where the primary purpose of the block is its
+    # side-effects.
+    #
+    # This looks at the usage of a block's method to determine its type (e.g. is
+    # the result of a `map` assigned to a variable or passed to another
+    # method) but exceptions are permitted in the `ProceduralMethods`,
+    # `FunctionalMethods` and `IgnoredMethods` sections below.
+    - semantic
+    # The `braces_for_chaining` style enforces braces around single line blocks
+    # and do..end around multi-line blocks, except for multi-line blocks whose
+    # return value is being chained with another method (in which case braces
+    # are enforced).
+    - braces_for_chaining
 Style/CaseEquality:
   Description: Avoid explicit use of the case equality operator(===).
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-case-equality
@@ -852,7 +877,7 @@ Style/SelfAssignment:
     used.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#self-assignment
   Enabled: false
-Style/SingleSpaceBeforeFirstArg:
+Style/SpaceBeforeFirstArg:
   Description: Checks that exactly one space is used between a method name and the
     first argument for method calls without parentheses.
   Enabled: true
@@ -864,7 +889,7 @@ Style/SpaceAfterComma:
   Description: Use spaces after commas.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#spaces-operators
   Enabled: true
-Style/SpaceAfterControlKeyword:
+Style/SpaceAroundKeyword:
   Description: Use spaces after if/elsif/unless/while/until/case/when.
   Enabled: true
 Style/SpaceAfterMethodName:
@@ -892,9 +917,6 @@ Style/SpaceBeforeSemicolon:
 Style/SpaceAroundOperators:
   Description: Use spaces around operators.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#spaces-operators
-  Enabled: true
-Style/SpaceBeforeModifierKeyword:
-  Description: Put a space before the modifier keyword.
   Enabled: true
 Style/SpaceInsideBrackets:
   Description: No spaces after [ or before ].
@@ -934,10 +956,6 @@ Style/UnneededCapitalW:
 Style/UnneededPercentQ:
   Description: Checks for %q/%Q when single quotes or double quotes would do.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#percent-q
-  Enabled: true
-Style/UnneededPercentX:
-  Description: Checks for %x when `` would do.
-  StyleGuide: https://github.com/bbatsov/ruby-style-guide#percent-x
   Enabled: true
 Style/VariableInterpolation:
   Description: Don't interpolate global, instance and class variables directly in
@@ -1031,7 +1049,7 @@ Lint/ShadowingOuterLocalVariable:
   Description: Do not use the same name as outer local variable for block arguments
     or block local variables.
   Enabled: true
-Lint/SpaceBeforeFirstArg:
+Style/SpaceBeforeFirstArg:
   Description: Put a space between a method name and the first argument in a method
     call without parentheses.
   Enabled: true

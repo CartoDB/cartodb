@@ -4,7 +4,8 @@ module CartoDB
   module Importer2
     module Doubles
       class Log
-        def initialize
+        def initialize(user)
+          @user = user
           clear
         end
 
@@ -23,6 +24,10 @@ module CartoDB
 
         def store
           nil
+        end
+
+        def user_id
+          @user.id
         end
       end
     end

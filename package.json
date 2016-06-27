@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.24",
+  "version": "3.27.36",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -8,30 +8,50 @@
   },
   "author": {
     "name": "CartoDB",
-    "url": "http://cartodb.com/",
+    "url": "https://cartodb.com/",
     "email": "wadus@cartodb.com"
   },
   "contributors": [],
-  "licenses": [
-    {
-      "type": "BSD"
-    }
-  ],
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "backbone": "1.2.3",
+    "backbone-forms": "^0.14.0",
+    "backbone-model-file-upload": "^1.0.0",
+    "browserify-shim": "3.8.12",
+    "camshaft-reference": "<2.0",
+    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+    "cartodb-deep-insights.js": "cartodb/deep-insights.js#master",
+    "cartodb-pecan": "0.2.x",
+    "cartodb.js": "cartodb/cartodb.js#v4",
+    "jquery": "2.1.4",
+    "moment": "2.10.6",
+    "node-polyglot": "1.0.0",
+    "perfect-scrollbar": "0.6.7",
+    "queue-async": "^1.0.7",
+    "torque.js": "^2.15",
+    "underscore": "1.8.3"
+  },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",
     "aws-sdk": "2.0.0-rc11",
-    "browserify": "11.0.1",
-    "browserify-shim": "3.8.10",
-    "cartodb-pecan": "0.2.x",
+    "backbone-undo": "0.2.5",
+    "bootstrap-colorpicker": "^2.3.3",
+    "brfs": "^1.4.3",
+    "browserify": "13.0.0",
+    "browserify-resolutions": "1.1.0",
+    "cartoassets": "cartodb/CartoAssets#master",
+    "cartocolor": "1.1.0",
+    "clipboard": "^1.5.12",
+    "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",
     "grunt-available-tasks": "0.5.4",
     "grunt-aws": "0.3.0",
-    "grunt-browserify": "4.0.0",
+    "grunt-browserify": "5.0.0",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-clean": "0.6.0",
-    "grunt-contrib-compass": "0.7.2",
+    "grunt-contrib-compass": "1.0.4",
     "grunt-contrib-compress": "0.13.0",
     "grunt-contrib-concat": "0.5.1",
     "grunt-contrib-connect": "0.11.2",
@@ -45,36 +65,92 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "gulp": "3.8.10",
-    "gulp-iconfont": "1.0.0",
-    "gulp-iconfont-css": "0.0.9",
-    "gulp-install": "0.2.0",
-    "gulp-sketch": "0.0.7",
+    "jasmine": "^2.4.1",
+    "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
-    "moment": "2.10.6",
     "open": "0.0.5",
-    "queue-async": "^1.0.7",
-    "shelljs": "0.5.3",
-    "source-map-support": "0.3.2",
+    "semistandard": "7.0.4",
+    "source-map-support": "0.4.0",
     "uglify-js": "2.4.x",
-    "underscore": "1.8.3",
     "watchify": "3.1.1"
   },
-  "files": [
-    "dist"
-  ],
   "browserify": {
     "transform": [
-      "browserify-shim"
+      "browserify-shim",
+      [
+        "jstify",
+        {
+          "minifierOpts": false
+        }
+      ],
+      "brfs"
     ]
   },
+  "browser": {
+    "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
+    "markdown": "./vendor/assets/javascripts/markdown.js",
+    "dragster": "./vendor/assets/javascripts/dragster.js",
+    "dropzone": "./vendor/assets/javascripts/dropzone.js",
+    "datepicker": "./vendor/assets/javascripts/datepicker.js"
+  },
   "browserify-shim": {
-    "jquery": "global:$",
-    "underscore": "global:_",
+    "jquery-cdb-v3": "global:$",
+    "underscore-cdb-v3": "global:_",
     "cdb.admin": "global:cdb.admin",
     "cdb.Utils": "global:cdb.Utils",
-    "cartodb.js": "global:cdb",
-    "backbone": "global:Backbone",
-    "moment": "global:moment"
+    "cartodb.js-v3": "global:cdb",
+    "backbone-cdb-v3": "global:Backbone",
+    "moment-v3": "global:moment"
+  },
+  "semistandard": {
+    "globals": [
+      "alert",
+      "cartodb",
+      "_t",
+      "jasmine",
+      "describe",
+      "xdescribe",
+      "beforeAll",
+      "beforeEach",
+      "afterAll",
+      "afterEach",
+      "spyOn",
+      "it",
+      "xit",
+      "expect",
+      "localStorage"
+    ],
+    "ignore": [
+      "/.grunt",
+      "/*.js",
+      "/app",
+      "/config",
+      "/db",
+      "/doc",
+      "/engines",
+      "/lib/assets/javascripts/cdb",
+      "/lib/assets/javascripts/utils",
+      "/lib/assets/test/lib",
+      "/lib/build",
+      "/lib/carto",
+      "/lib/cartodb",
+      "/lib/importer",
+      "/lib/resque",
+      "/lib/sql",
+      "/lib/tasks",
+      "/lib/varnish",
+      "/log",
+      "/public",
+      "/script",
+      "/services",
+      "/spec",
+      "/tmp",
+      "/vendor"
+    ]
+  },
+  "scripts": {
+    "test": "jasmine",
+    "test-debug": "node debug --",
+    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }
 }

@@ -1,65 +1,21 @@
+cache: false
 language: node_js
 node_js:
-  - "0.10"
+  - "4.1"
+
 before_install:
-  - lsb_release -a
-  - sudo mv /etc/apt/sources.list.d/pgdg-source.list* /tmp
-  - sudo apt-get -qq purge postgis* postgresql*
-  - sudo rm -Rf /var/lib/postgresql /etc/postgresql
-  - sudo apt-add-repository --yes ppa:cartodb/postgresql-9.3
-  - sudo apt-add-repository --yes ppa:cartodb/gis
-  - sudo apt-get update 
-  - sudo apt-get install gdal-bin libgdal1-dev python-gdal
-  - sudo apt-get install postgresql-9.3-postgis-2.1 postgresql-plpython-9.3 
-  - sudo apt-get install postgis
-  - sudo apt-get install -q unp zip ruby1.9.3 ruby1.9.1-dev python-pip ruby-rspec libicu-dev 
-  - sudo apt-get install postgresql-contrib-9.3
-  - echo -e "local\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust" |sudo tee /etc/postgresql/9.3/main/pg_hba.conf
-  - sudo service postgresql restart
-  - sudo su postgres -c "createdb template_postgis"
-  - echo "SELECT VERSION();" | sudo su postgres -c "psql template_postgis"
-  - sudo su postgres -c "echo 'CREATE EXTENSION postgis;' | psql template_postgis"
-  - sudo su postgres -c "echo 'SELECT POSTGIS_FULL_VERSION();' | psql template_postgis"
-  # Needed to build PostgreSQL extensions 
-  - sudo apt-get install postgresql-server-dev-9.3
-  # Install schema_triggers
-  - hg clone https://bitbucket.org/malloclabs/pg_schema_triggers &&
-    cd pg_schema_triggers && make && sudo make install && cd -
-  # Preload schema_triggers module
-  # NOTE: might change if we make it part of the installcheck instead
-  - echo "shared_preload_libraries = 'schema_triggers.so'" |
-    sudo tee -a /etc/postgresql/9.3/main/postgresql.conf &&
-    sudo service postgresql restart
-  # Install cartodb-postgresql from the submodule dir
-  - cd lib/sql
-  - make all && sudo make install 
-  - PGUSER=postgres make installcheck || cat regression.diffs
-  - cd -
+  - git submodule update --init --recursive
+
+install:
+  - npm install
 
 before_script:
   - npm install -g grunt-cli
 
-install:
-  - gdal-config --version
-  - ruby --version
-  - sudo gem install bundler
-  # http://stackoverflow.com/questions/10916784/error-installing-debugger-linecache-in-ruby-1-9-3
-  - gem install debugger-linecache -v '1.1.2' -- --with-ruby-include=$rvm_path/src/ruby-1.9.3-p484/
-  - bundle install
-  - cp config/app_config.yml.testing config/app_config.yml
-  - cp config/database.yml.sample config/database.yml
-  # Needs fixing first some tests:
-  #- cp services/importer/spec/factories/database.json.sample services/importer/spec/factories/database.json
-  - cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
-  - npm install
-
 script:
-  - make travis
+  - grunt test
 
-env:
-
-#notifications:
-#  irc:
-#    channels:
-#      - "irc.freenode.org#cartodb"
-#    use_notice: true
+notifications:
+  email:
+    on_success: never
+    on_failure: change

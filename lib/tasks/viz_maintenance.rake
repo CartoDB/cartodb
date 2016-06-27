@@ -1,5 +1,5 @@
-require_relative "../../app/factories/layer_factory"
-require_relative "../../app/factories/map_factory"
+require_relative "../../app/model_factories/layer_factory"
+require_relative "../../app/model_factories/map_factory"
 
 namespace :cartodb do
   namespace :vizs do
@@ -112,6 +112,18 @@ namespace :cartodb do
       vis_export_service.import(args[:vis_id], skip_version_check)
 
       puts "Visualization #{args[:vis_id]} imported"
+    end
+
+    desc "Exports a .carto file including visualization metadata and the tables"
+    task :export_full_visualization, [:vis_id] => :environment do |_, args|
+      visualization_id = args[:vis_id]
+      raise "Missing visualization id argument" unless visualization_id
+
+      visualization = Carto::Visualization.where(id: visualization_id).first
+      raise "Visualization not found" unless visualization
+
+      file = Carto::VisualizationExport.new.export(visualization, visualization.user)
+      puts "Visualization exported: #{file}"
     end
 
     desc "Purges old visualization backups"

@@ -68,15 +68,19 @@ module Carto
     end
 
     def private?
-      self.privacy == PRIVACY_PRIVATE
+      privacy == PRIVACY_PRIVATE
     end
 
     def public?
-      self.privacy == PRIVACY_PUBLIC
+      privacy == PRIVACY_PUBLIC
     end
 
     def public_with_link_only?
-      self.privacy == PRIVACY_LINK
+      privacy == PRIVACY_LINK
+    end
+
+    def readable_by?(user)
+      !private? || is_owner?(user) || visualization_readable_by?(user)
     end
 
     def estimated_row_count
@@ -87,10 +91,14 @@ module Carto
       service.actual_row_count
     end
 
+    def sync_table_id
+      self.table_id = service.get_table_id
+    end
+
     private
 
     def fully_qualified_name
-      "#{user.database_schema}.#{name}"
+      "\"#{user.database_schema}\".#{name}"
     end
 
     def is_owner?(user)
@@ -121,6 +129,9 @@ module Carto
       Carto::Synchronization.where(user_id: user_id, name: name).first
     end
 
+    def visualization_readable_by?(user)
+      user && visualization && visualization.permission && visualization.permission.user_has_read_permission?(user)
+    end
   end
 
 end

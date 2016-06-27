@@ -7,6 +7,7 @@ module CartoDB
   module Visualization
 
     class ExternalSource < Sequel::Model
+      many_to_one :visualization
 
       def validate
         validates_presence :visualization_id
@@ -39,6 +40,5 @@ module CartoDB
       end
 
     end
-  
   end
 end

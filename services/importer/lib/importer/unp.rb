@@ -12,12 +12,11 @@ module CartoDB
   module Importer2
     class Unp
       HIDDEN_FILE_REGEX     = /^(\.|\_{2})/
-      UNP_READ_ERROR_REGEX  = /.*Cannot read.*/
-      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar }
+      COMPRESSED_EXTENSIONS = %w{ .zip .gz .tgz .tar.gz .bz2 .tar .kmz .rar .carto }.freeze
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
-        .js .json .tar .gz .tgz .osm .bz2 .geojson
-        .gpx .sql .tab .tsv .txt
+        .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
+        .gpx .tab .tsv .txt
       }
       SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
 
@@ -37,6 +36,14 @@ module CartoDB
         @temporal_subfolder_path ||= DEFAULT_IMPORTER_TMP_SUBFOLDER
       end
 
+      # Uncompress, yields the block with the files as argument, and cleanups
+      def open(compressed_file_path)
+        run(compressed_file_path)
+        yield(source_files)
+      ensure
+        clean_up
+      end
+
       def run(path)
         return without_unpacking(path) unless compressed?(path)
         extract(path)
@@ -46,6 +53,8 @@ module CartoDB
       end
 
       def without_unpacking(path)
+        raise NotAFileError if !File.file?(path)
+
         local_path = "#{temporary_directory}/#{File.basename(path)}"
         FileUtils.cp(path, local_path)
         self.source_files.push(source_file_for(normalize(local_path)))
@@ -63,6 +72,7 @@ module CartoDB
 
       def crawl(path, files=[])
         Dir.foreach(path) do |subpath|
+          raise EncodingError unless filename_valid_encoding?(subpath)
           next if hidden?(subpath)
           next if subpath =~ /.*readme.*\.txt/i
           next if subpath =~ /\.version\.txt/i
@@ -95,7 +105,7 @@ module CartoDB
           if stderr =~ /incorrect password/
             raise PasswordNeededForExtractionError
           else
-            raise ExtractionError
+            raise ExtractionError.new(stderr)
           end
         end
         FileUtils.rm(path)
@@ -130,8 +140,12 @@ module CartoDB
         command
       end
 
-     def supported?(filename)
+      def supported?(filename)
         SUPPORTED_FORMATS.include?(File.extname(filename).downcase)
+      end
+
+      def filename_valid_encoding?(filename)
+        filename.force_encoding("UTF-8").valid_encoding?
       end
 
       def normalize(filename)
@@ -177,7 +191,7 @@ module CartoDB
       end
 
       def unp_failure?(output, exit_code)
-        !!(output =~ UNP_READ_ERROR_REGEX) || (exit_code != 0)
+        (exit_code != 0)
       end
 
       # Return a new temporary file contained inside a tmp subfolder

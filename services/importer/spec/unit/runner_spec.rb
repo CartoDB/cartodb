@@ -14,23 +14,27 @@ require_relative '../doubles/user'
 require_relative '../doubles/input_file_size_limit'
 require_relative '../doubles/table_row_count_limit'
 
-include CartoDB::Importer2
-
-describe Runner do
+describe CartoDB::Importer2::Runner do
   before(:all) do
     @filepath       = '/var/tmp/foo.txt'
     @filepath = File.open(@filepath, 'w+')
     @filepath.write('...')
     @filepath.close
-    @pg_options      = Factories::PGConnection.new.pg_options
+    @user = create_user
+    @user.save
+    @pg_options = @user.db_service.db_configuration_for
 
-    @fake_log = CartoDB::Importer2::Doubles::Log.new
-    @downloader = Downloader.new(@filepath)
+    @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
+    @downloader = CartoDB::Importer2::Downloader.new(@filepath)
     @fake_multiple_downloader_2 = CartoDB::Importer2::Doubles::MultipleDownloaderFake.instance(2)
   end
 
   before(:each) do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+  end
+
+  after(:all) do
+    @user.destroy
   end
 
   describe '#initialize' do
@@ -46,7 +50,7 @@ describe Runner do
 
   describe '#run' do
     it 'calls import for each file to process' do
-      source_file = SourceFile.new(@filepath)
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
 
       fake_loader = self.fake_loader_for(nil, source_file)
       def fake_loader.run(args); end
@@ -55,7 +59,7 @@ describe Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_loader
                           })
 
@@ -71,7 +75,7 @@ describe Runner do
                            pg: @pg_options,
                            downloader: @downloader,
                            log: @fake_log,
-                           user: CartoDB::Importer2::Doubles::User.new,
+                           user: @user,
                            unpacker: fake_unpacker
                          })
       runner.run
@@ -86,7 +90,7 @@ describe Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_unpacker
                           })
 
@@ -99,7 +103,7 @@ describe Runner do
 
   describe '#import' do
     it 'creates a sucessful result if all import steps completed' do
-      source_file = SourceFile.new(@filepath)
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
 
       job = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
       def job.success_status; true; end
@@ -108,7 +112,7 @@ describe Runner do
                             pg: @pg_options,
                             downloader: Object.new,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             job: job
                           })
       fake_loader = self.fake_loader_for(job, source_file)
@@ -120,14 +124,14 @@ describe Runner do
     end
 
     it 'creates a failed result if an exception raised during import' do
-      source_file = SourceFile.new(@filepath)
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
       job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 user: @user,
                                  job: job
                                })
 
@@ -140,7 +144,7 @@ describe Runner do
     end
 
     it 'checks the platform limits regarding file size' do
-      source_file = SourceFile.new(@filepath)
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
 
       job         = CartoDB::Importer2::Job.new({
                                                   pg_options: @pg_options,
@@ -157,7 +161,7 @@ describe Runner do
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
-                                                     user: CartoDB::Importer2::Doubles::User.new,
+                                                     user: @user,
                                                      limits: {
                                                        import_file_size_instance: input_file_size_limit_checker,
                                                        table_row_count_limit_instance: table_row_count_limit_checker
@@ -175,7 +179,7 @@ describe Runner do
                                                      pg: @pg_options,
                                                      downloader: Object.new,
                                                      log: @fake_log,
-                                                     user: CartoDB::Importer2::Doubles::User.new,
+                                                     user: @user,
                                                      limits: {
                                                        import_file_size_instance: input_file_size_limit_checker,
                                                        table_row_count_limit_instance: table_row_count_limit_checker
@@ -204,7 +208,7 @@ describe Runner do
                              pg: @pg_options,
                              downloader: @downloader,
                              log: @fake_log,
-                             user: CartoDB::Importer2::Doubles::User.new,
+                             user: @user,
                              unpacker: fake_unpacker
                           })
 
@@ -216,14 +220,14 @@ describe Runner do
     it 'does not fail if loader does not support logging' do
       table_row_count_limit_checker = CartoDB::Importer2::Doubles::TableRowCountLimit.new
 
-      source_file = SourceFile.new(@filepath)
+      source_file = CartoDB::Importer2::SourceFile.new(@filepath)
       job         = CartoDB::Importer2::Job.new({ pg_options: @pg_options, logger: @fake_log })
 
       runner      = CartoDB::Importer2::Runner.new({
                                  pg: @pg_options,
                                  downloader: Object.new,
                                  log: @fake_log,
-                                 user: CartoDB::Importer2::Doubles::User.new,
+                                 user: @user,
                                  job: job,
                                  limits: {
                                    table_row_count_limit_instance: table_row_count_limit_checker
@@ -241,7 +245,7 @@ describe Runner do
                             pg: @pg_options,
                             downloader: @downloader,
                             log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new,
+                            user: @user,
                             unpacker: fake_unpacker
                           })
 
@@ -303,7 +307,7 @@ describe Runner do
   def fake_unpacker
     Class.new {
       def initialize
-        @sourcefile = SourceFile.new('/var/tmp/foo.txt')
+        @sourcefile = CartoDB::Importer2::SourceFile.new('/var/tmp/foo.txt')
       end
       def run(*args)
       end

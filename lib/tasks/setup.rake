@@ -19,6 +19,9 @@ Setup cartodb database and creates a new user from environment variables:
   - ENV['SUBDOMAIN']: user subdomain
 DESC
     task :setup => ["rake:db:create", "rake:db:migrate", "cartodb:db:create_publicuser"] do
+    end
+
+    task :setup_user => :environment do
       raise "You should provide a valid e-mail"    if ENV['EMAIL'].blank?
       raise "You should provide a valid password"  if ENV['PASSWORD'].blank?
       raise "You should provide a valid subdomain" if ENV['SUBDOMAIN'].blank?

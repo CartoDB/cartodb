@@ -40,8 +40,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1005 => {
-      title: 'Zero byte file',
-      what_about: "The file appears to have no information. Double check using a local tool such as QGIS that the file is indeed correct. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Zero byte file'>contact us</a>.",
+      title: 'Empty file',
+      what_about: "The file appears to have no processable information. Double check that the file is indeed correct and it contains supported data. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Empty file'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     1006 => {
@@ -134,6 +134,11 @@ module CartoDB
       what_about: "Provided URL can't be resolved to a known server. Maybe that URL is wrong or behind a private network. Please provide a valid, public URL and try again.",
       source: ERROR_SOURCE_USER
     },
+    1103 => {
+      title: 'Partial file error',
+      what_about: "The resource you are trying to reach is accessible but the file transfer was shorter or larger than expected. This happens when the server first reports an expected transfer size, and then delivers data that doesn't match the previously given size. Please, try again.",
+      source: ERROR_SOURCE_USER
+    },
     2001 => {
       title: 'Unable to load data',
       what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",
@@ -177,6 +182,16 @@ module CartoDB
     2009 => {
       title: 'KML without style Id',
       what_about: "The KML file you tried to import failed because a style element doesn't have an ID attribute. To fix this error, please open the file and add an ID to all the style tags.",
+      source: ERROR_SOURCE_USER
+    },
+    2010 => {
+      title: 'Incompatible CartoDB table',
+      what_about: "There was an error when converting your table into a CartoDB table. Please <a href='mailto:support@cartodb.com?subject=CartoDBfy error'>contact us</a> and we will help you to load your data.",
+      source: ERROR_SOURCE_USER
+    },
+    2011 => {
+      title: 'Invalid cartodb_id column',
+      what_about: "The import failed because your table contains an invalid cartodb_id column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current cartodb_id column.",
       source: ERROR_SOURCE_USER
     },
     3007 => {
@@ -234,6 +249,12 @@ module CartoDB
       what_about: "You can't add more layers to your map. Please upgrade your account.",
       source: ERROR_SOURCE_USER
     },
+    8006 => {
+      title: "Not enough Twitter credits",
+      what_about: "Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@cartodb.com?subject=Exceeded%20Twitter%20quota'>" \
+                  "Sales</a> if you have questions about how to obtain more credits.",
+      source: ERROR_SOURCE_USER
+    },
     6666 => {
       title: 'Dataset too big',
       what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
@@ -254,6 +275,11 @@ module CartoDB
     6669 => {
       title: 'Too many concurrent imports',
       what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>.",
+      source: ERROR_SOURCE_USER
+    },
+    6670 => {
+      title: 'Too many named map templates',
+      what_about: "You reached the limit on the number of named map templates.",
       source: ERROR_SOURCE_USER
     },
     99999 => {

@@ -34,7 +34,7 @@
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
       <div class="FormAccount-rowInfo">
         <p class="FormAccount-rowInfoText">Learn more about <%= link_to "using oauth in CartoDB", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
@@ -47,7 +47,7 @@
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
 
@@ -59,7 +59,7 @@
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
 
@@ -69,13 +69,13 @@
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
-        <i data-title="Copy this" class="iconFont iconFont-Anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
+        <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
 
     <div class="FormAccount-footer">
       <p class="FormAccount-footerText">
-        <i class="iconFont iconFont-Info FormAccount-footerIcon"></i>
+        <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
         <span>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/documentation/apis-overview.html" %> in CartoDB</span>
       </p>
       <p class="FormAccount-footerText">

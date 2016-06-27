@@ -3,10 +3,10 @@
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <% logo_url = cartodb_com_hosted? ? CartoDB.url(self, 'root') : "http://cartodb.com" %>
+          <% logo_url = cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://cartodb.com" %>
           <a href="<%= logo_url %>">
             <span class="Logo Logo--avatar">
-              <i class="iconFont iconFont-CartoFante"></i>
+              <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
             </span>
           </a>
         </li>
@@ -14,7 +14,7 @@
         <% unless cartodb_com_hosted? %>
           <li class="Header-navigationItem"><a href="http://docs.cartodb.com/" class="Header-navigationLink u-hideOnMobile" target="_blank">Learn</a></li>
           <li class="Header-navigationItem js-user-support"><a href="mailto:support@cartodb.com" class="Header-navigationLink u-hideOnMobile" target="_blank">Support</a></li>
-          <li class="Header-navigationItem"><a href="http://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile" target="_blank">Gallery</a></li>
+          <li class="Header-navigationItem"><a href="https://cartodb.com/gallery/" class="Header-navigationLink u-hideOnMobile" target="_blank">Gallery</a></li>
         <% end %>
       </ul>
     </div>
@@ -32,14 +32,14 @@
         <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
           <a href="#/notifications" class="UserNotifications">
-            <i class="UserNotifications-Icon iconFont iconFont-Alert"></i>
+            <i class="UserNotifications-Icon CDB-IconFont CDB-IconFont-alert"></i>
           </a>
         </li>
         <% end %>
 
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
-            <%= image_tag current_user.avatar, :class => 'UserAvatar-img UserAvatar-img--medium' %>
+              <img src="<%= current_user.avatar %>" class='UserAvatar-img UserAvatar-img--medium' />
           </button>
         </li>
       </ul>

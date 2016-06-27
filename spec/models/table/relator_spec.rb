@@ -3,24 +3,32 @@ require 'rspec/core'
 require 'rspec/expectations'
 require 'rspec/mocks'
 require_relative '../../spec_helper'
+require 'helpers/unique_names_helper'
 
 describe CartoDB::TableRelator do
+  include UniqueNamesHelper
   describe '.rows_and_size' do
-    before(:each) do
+    before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+
+      @user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user.destroy
     end
 
     before do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
     end
 
     it 'checks row_count_and_size relator method' do
-      $user_1.in_database { |database| @db = database }
+      @user.in_database { |database| @db = database }
 
-      table_name  = "test_#{rand(999)}"
+      table_name = unique_name('table')
 
       table = create_table({
-                               :user_id => $user_1.id,
+                               user_id: @user.id,
                                name: table_name
                            })
 
@@ -33,7 +41,7 @@ describe CartoDB::TableRelator do
 
   describe '.serialize_dependent_visualizations' do
     before :each do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       table = mock('Table')
       table.stubs(:id).returns(2)
@@ -62,7 +70,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are at least one dependent visualization' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        bypass_named_maps
 
         CartoDB::Visualization::Member.any_instance.stubs(:dependent?).returns(true, false, true)
         @dependents = @table_relator.serialize_dependent_visualizations
@@ -86,7 +94,7 @@ describe CartoDB::TableRelator do
 
   describe '.serialize_non_dependent_visualizations' do
     before :each do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       table = mock('Table')
       table.stubs(:id).returns(2)
@@ -106,7 +114,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are no dependent visualizations' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        bypass_named_maps
 
         @non_dependents = @table_relator.serialize_non_dependent_visualizations
       end
@@ -118,7 +126,7 @@ describe CartoDB::TableRelator do
 
     describe 'given there are at least one non_dependent visualization' do
       before :each do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+        bypass_named_maps
 
         CartoDB::Visualization::Member.any_instance.stubs(:non_dependent?).returns(true, false, false)
         @non_dependents = @table_relator.serialize_non_dependent_visualizations
@@ -136,4 +144,3 @@ describe CartoDB::TableRelator do
     end
   end
 end
-

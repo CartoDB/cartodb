@@ -159,7 +159,7 @@ module Carto
 
     def add_overlays(visualization, exported_data)
       exported_data["overlays"].each do |exported_overlay|
-        CartoDB::Overlay::Member.new(exported_overlay.merge('visualization_id' => visualization.id)).store
+        Carto::Overlay.new(exported_overlay.merge('visualization_id' => visualization.id)).save
       end
 
       true
@@ -200,14 +200,14 @@ module Carto
       # Basemap/base layer is always the first layer
       layer_data = exported_data["layers"].select { |layer| ::Layer::BASE_LAYER_KINDS.include?(layer["type"]) }.first
       if layer_data.nil?
-        CartoDB::Factories::LayerFactory.get_default_base_layer(user)
+        ::ModelFactories::LayerFactory.get_default_base_layer(user)
       else
-        CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+        ::ModelFactories::LayerFactory.get_new(prepare_layer_data(layer_data))
       end
     end
 
     def add_data_layer(map, layer_data)
-      data_layer = CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(layer_data))
+      data_layer = ::ModelFactories::LayerFactory.get_new(prepare_layer_data(layer_data))
       map.add_layer(data_layer)
       data_layer
     end
@@ -223,14 +223,14 @@ module Carto
         add_default_labels_layer(map, base_layer)
       else
         # ...And labels layer is always last one
-        labels_layer = CartoDB::Factories::LayerFactory.get_new(prepare_layer_data(base_layers.last))
+        labels_layer = ::ModelFactories::LayerFactory.get_new(prepare_layer_data(base_layers.last))
         map.add_layer(labels_layer)
         labels_layer
       end
     end
 
     def create_map(user, base_layer)
-      map = CartoDB::Factories::MapFactory.get_map(base_layer, user.id)
+      map = ::ModelFactories::MapFactory.get_map(base_layer, user.id)
       map.add_layer(base_layer)
       map
     end
@@ -252,7 +252,7 @@ module Carto
     end
 
     def add_default_labels_layer(map, base_layer)
-      labels_layer = CartoDB::Factories::LayerFactory.get_default_labels_layer(base_layer)
+      labels_layer = ::ModelFactories::LayerFactory.get_default_labels_layer(base_layer)
       map.add_layer(labels_layer)
       labels_layer
     end

@@ -25,6 +25,8 @@ describe DatasourcesFactory do
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Box::DATASOURCE_NAME, user_mock)
       dropbox_provider.is_a?(Url::Box).should eq true
 
+      # Stubs Google Drive client for connectionless testing
+      Google::APIClient.any_instance.stubs(:discovered_api)
       gdrive_provider = DatasourcesFactory.get_datasource(Url::GDrive::DATASOURCE_NAME, user_mock)
       gdrive_provider.is_a?(Url::GDrive).should eq true
 
@@ -44,4 +46,3 @@ describe DatasourcesFactory do
   end
 
 end
-

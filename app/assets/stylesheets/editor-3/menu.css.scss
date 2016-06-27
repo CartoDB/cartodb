@@ -1,0 +1,69 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.EditorMenu {
+  @include flex(0 0 72px);
+  position: relative;
+  width: 72px;
+  min-height: 450px;
+  box-sizing: border-box;
+  padding: 20px 0 $baseSize * 2;
+  background: $cBlue;
+}
+
+.EditorMenu-navigation {
+  @include display-flex();
+  @include align-items(center);
+  @include flex-direction(column);
+}
+
+.EditorMenu-navigationItem {
+  @include transition(background, 300ms, ease-in);
+  width: $baseSize * 4;
+  height: $baseSize * 4;
+  margin-bottom: $baseSize;
+  border-radius: 4px;
+}
+.EditorMenu-navigationItem.is-selected,
+.EditorMenu-navigationItem.is-selected:hover,
+.EditorMenu-navigationItem.is-selected:active {
+  background: rgba($cMainBg, 0.32);
+}
+.EditorMenu-navigationItem:hover {
+  background: rgba($cMainBg, 0.16);
+}
+.EditorMenu-navigationItem:active {
+  background: rgba($cMainBg, 0.48);
+}
+
+.EditorMenu-navigationLink {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.EditorMenu-navigationIcon {
+  color: $cWhite;
+  font-size: 18px;
+}
+
+.EditorMenu-logo {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 48px;
+}
+
+.EditorMenu-avatar {
+  position: absolute;
+  bottom: $baseSize * 2;
+  left: $baseSize * 2;
+  width: 40px;
+  height: 40px;
+}
+.EditorMenu-avatarImage {
+  width: 100%;
+  border-radius: $baseSize / 2;
+}

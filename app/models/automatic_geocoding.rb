@@ -1,4 +1,4 @@
-# encoding: UTF-8'
+# encoding: UTF-8
 class AutomaticGeocoding < Sequel::Model
 
   MAX_RETRIES = 5

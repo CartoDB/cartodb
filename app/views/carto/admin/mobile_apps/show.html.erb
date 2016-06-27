@@ -1,0 +1,55 @@
+<% content_for(:page_title) do %>
+  Edit mobile application |
+<% end %>
+<%= content_for(:js) do %>
+  <script type="text/javascript">
+    var config = <%= safe_js_object frontend_config %>;
+    var user_data = <%= safe_js_object current_user.data.to_json %>;
+    var mobile_app_data = <%= safe_js_object @mobile_app.data(current_user).to_json %>;
+    var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
+    var authenticity_token = "<%= form_authenticity_token %>";
+  </script>
+  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
+<% end %>
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'mobile_apps.css', :media => 'all' %>
+<% end %>
+
+<%= render :partial => 'shared/flash_message' %>
+
+<div class="FormAccount-Section u-inner">
+  <%= render :partial => 'admin/shared/pages_subheader' %>
+
+  <div class="FormAccount-Content">
+
+    <div class="Filters is-relative">
+      <div class="Filters-inner">
+        <span class="Filters-separator"></span>
+        <div class="Filters-row">
+          <ul class="Filters-group">
+            <li>
+              <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+              </a>
+            </li>
+            <li class="Filters-typeItem">
+              <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink is-selected">
+                App info
+              </a>
+            </li>
+            <li class="Filters-typeItem">
+              <a href="<%= CartoDB.url(self, 'api_keys_mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink">
+                API keys
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <%= render :partial => 'carto/admin/mobile_apps/form' %>
+  </div>
+
+</div>
+
+<%= render 'admin/shared/footer' %>

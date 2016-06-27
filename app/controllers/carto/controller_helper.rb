@@ -2,17 +2,18 @@ require_dependency 'carto/uuidhelper'
 
 module Carto
   class CartoError < StandardError
-    attr_reader :message, :status
+    attr_reader :message, :status, :user_message
 
-    def initialize(message, status)
+    def initialize(message, status, user_message = message)
       @message = message
       @status = status
+      @user_message = user_message
     end
   end
 
   class UUIDParameterFormatError < CartoError
-    def initialize(parameter, status = 400)
-      super("Parameter not UUID format: #{parameter}", status)
+    def initialize(parameter:, value:, status: 400)
+      super("Parameter not UUID format. Parameter: #{parameter}. Value: #{value}", status)
     end
   end
 
@@ -28,6 +29,12 @@ module Carto
     end
   end
 
+  class UnprocesableEntityError < CartoError
+    def initialize(message, status = 422)
+      super(message, status)
+    end
+  end
+
   module ControllerHelper
     include Carto::UUIDHelper
 
@@ -36,7 +43,7 @@ module Carto
       if is_uuid?(param)
         param
       else
-        raise Carto::UUIDParameterFormatError.new(parameter)
+        raise Carto::UUIDParameterFormatError.new(parameter: parameter, value: param)
       end
     end
 
@@ -47,6 +54,15 @@ module Carto
       respond_to do |format|
         format.html { render text: message, status: status }
         format.json { render json: { errors: message }, status: status }
+      end
+    end
+
+    def rescue_from_standard_error(error)
+      CartoDB::Logger.error(exception: error)
+      message = error.message
+      respond_to do |format|
+        format.html { render text: message, status: 500 }
+        format.json { render json: { errors: message }, status: 500 }
       end
     end
   end

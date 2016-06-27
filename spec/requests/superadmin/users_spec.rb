@@ -21,8 +21,8 @@ feature "Superadmin's users API" do
 
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 422
-      response.body[:errors]['email'].should be_present
-      response.body[:errors]['email'].should include("is not present")
+      response.body[:errors][:email].should be_present
+      response.body[:errors][:email].should include("is not present")
     end
   end
 
@@ -31,6 +31,7 @@ feature "Superadmin's users API" do
     @user_atts.delete(:salt)
     @user_atts.merge!(password: "this_is_a_password")
 
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -48,6 +49,7 @@ feature "Superadmin's users API" do
   end
 
   scenario "user create with crypted_password and salt success" do
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
@@ -70,6 +72,8 @@ feature "Superadmin's users API" do
     @user_atts[:map_view_quota] = 80
     t = Time.now
     @user_atts[:upgraded_at] = t
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
@@ -99,8 +103,15 @@ feature "Superadmin's users API" do
     @user_atts[:map_view_block_price] = 15
     @user_atts[:geocoding_quota] = 15
     @user_atts[:geocoding_block_price] = 2
+    @user_atts[:here_isolines_quota] = 100
+    @user_atts[:here_isolines_block_price] = 5
+    @user_atts[:obs_snapshot_quota] = 100
+    @user_atts[:obs_snapshot_block_price] = 5
+    @user_atts[:obs_general_quota] = 100
+    @user_atts[:obs_general_block_price] = 5
     @user_atts[:notification] = 'Test'
 
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000
@@ -112,6 +123,12 @@ feature "Superadmin's users API" do
       response.body[:map_view_block_price].should == 15
       response.body[:geocoding_quota].should == 15
       response.body[:geocoding_block_price].should == 2
+      response.body[:here_isolines_quota].should == 100
+      response.body[:here_isolines_block_price].should == 5
+      response.body[:obs_snapshot_quota].should == 100
+      response.body[:obs_snapshot_block_price].should == 5
+      response.body[:obs_general_quota].should == 100
+      response.body[:obs_general_block_price].should == 5
       response.body[:notification].should == 'Test'
 
       # Double check that the user has been created properly
@@ -124,6 +141,12 @@ feature "Superadmin's users API" do
       user.map_view_block_price.should == 15
       user.geocoding_quota.should == 15
       user.geocoding_block_price.should == 2
+      user.here_isolines_quota.should == 100
+      user.here_isolines_block_price.should == 5
+      user.obs_snapshot_quota.should == 100
+      user.obs_snapshot_block_price.should == 5
+      user.obs_general_quota.should == 100
+      user.obs_general_block_price.should == 5
       user.notification.should == 'Test'
     end
     ::User.where(username: @user_atts[:username]).first.destroy
@@ -144,6 +167,12 @@ feature "Superadmin's users API" do
                      map_view_block_price: 200,
                      geocoding_quota: 230,
                      geocoding_block_price: 5,
+                     here_isolines_quota: 250,
+                     here_isolines_block_price: 10,
+                     obs_snapshot_quota: 250,
+                     obs_snapshot_block_price: 10,
+                     obs_general_quota: 250,
+                     obs_general_block_price: 10,
                      notification: 'Test',
                      available_for_hire: true,
                      disqus_shortname: 'abc' }
@@ -165,6 +194,12 @@ feature "Superadmin's users API" do
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
     user.geocoding_block_price.should == 5
+    user.here_isolines_quota.should == 250
+    user.here_isolines_block_price.should == 10
+    user.obs_snapshot_quota.should == 250
+    user.obs_snapshot_block_price.should == 10
+    user.obs_general_quota.should == 250
+    user.obs_general_block_price.should == 10
     user.notification.should == 'Test'
     user.disqus_shortname.should == 'abc'
     user.available_for_hire.should == true
@@ -178,6 +213,12 @@ feature "Superadmin's users API" do
     user.map_view_block_price.should == 200
     user.geocoding_quota.should == 230
     user.geocoding_block_price.should == 5
+    user.here_isolines_quota.should == 250
+    user.here_isolines_block_price.should == 10
+    user.obs_snapshot_quota.should == 250
+    user.obs_snapshot_block_price.should == 10
+    user.obs_general_quota.should == 250
+    user.obs_general_block_price.should == 10
     user.notification.should == 'Test'
 
     user.destroy
@@ -318,7 +359,27 @@ feature "Superadmin's users API" do
       response.body[:id].should == user.id
     end
 
+    get_json superadmin_user_path(user.id), {}, superadmin_headers do |response|
+      response.status.should == 200
+      response.body[:id].should == user.id
+    end
+
+    get_json superadmin_user_path(user.username), {}, superadmin_headers do |response|
+      response.status.should == 200
+      response.body[:id].should == user.id
+    end
+
     user.destroy
+  end
+
+  scenario "user get info fail" do
+    get_json superadmin_user_path('7b77546f-79cb-4662-9439-9ebafd9627cb'), {}, superadmin_headers do |response|
+      response.status.should == 404
+    end
+
+    get_json superadmin_user_path('nonexistinguser'), {}, superadmin_headers do |response|
+      response.status.should == 404
+    end
   end
 
   describe "GET /superadmin/users" do
@@ -342,6 +403,7 @@ feature "Superadmin's users API" do
 
     it "gets overquota users" do
       ::User.stubs(:overquota).returns [@user]
+      ::User.stubs(:get_stored_overquota_users).returns [@user.data]
       get_json superadmin_users_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
         response.body[0]["username"].should == @user.username

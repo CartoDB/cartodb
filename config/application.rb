@@ -74,6 +74,10 @@ module CartoDB
       public_map.js
       public_map_deps.js
       editor.js
+      vendor_editor3.js
+      common_editor3.js
+      editor3.js
+      public_editor3.js
       account_templates.js
       account_deps.js
       account.js
@@ -87,7 +91,7 @@ module CartoDB
       table.js
       public_dashboard.js
       public_like.js
-      deep_insights_embed.js
+      cartod1b.js
       common.js
       old_common.js
       old_common_without_core.js
@@ -100,6 +104,10 @@ module CartoDB
       confirmation.js
       new_public_table.js
 
+      mobile_apps.js
+      mobile_apps_templates.js
+      mobile_apps_deps.js
+
       explore_deps.js
       explore.js
 
@@ -110,6 +118,7 @@ module CartoDB
       modernizr.js
       statsc.js
 
+      deep_insights.css
       cdb.css
       cdb/themes/css/cartodb.css
       cdb/themes/css/cartodb.ie.css
@@ -121,6 +130,8 @@ module CartoDB
       fonts.css
       front.css
       editor.css
+      editor3.css
+      public_editor3.css
       table.css
       leaflet.css
       map.css
@@ -133,9 +144,10 @@ module CartoDB
       data_library.css
       public_table.css
       sessions.css
-      deep_insights_embed.css
+      cartod1b.css
       user_feed.css
       explore.css
+      mobile_apps.css
 
       plugins/tipsy.css
 
@@ -171,7 +183,7 @@ require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
 require 'cartodb/central'
-#require 'importer/lib/cartodb-importer'
+# require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new

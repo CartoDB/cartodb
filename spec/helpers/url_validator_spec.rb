@@ -1,3 +1,4 @@
+require_relative '../simplecov_helper'
 require_relative '../rspec_configuration'
 require_relative '../../lib/carto/url_validator'
 
@@ -25,7 +26,21 @@ describe 'UUIDHelper' do
       .to raise_error(Carto::UrlValidator::InvalidUrlError)
   end
 
+  it 'raises an error if the IP is blacklisted' do
+    @url_validator.instance_variable_set("@blacklisted_ip_ranges", [IPAddr.new("169.254.169.1")])
+    expect { @url_validator.validate_url!("http://169.254.169.1/blob/blub.csv") }
+      .to raise_error(Carto::UrlValidator::InvalidUrlError)
+  end
+
+  it 'raises an error if the IP belongs to a blacklisted range' do
+    @url_validator.instance_variable_set("@blacklisted_ip_ranges", [IPAddr.new("10.0.0.0/8")])
+    expect { @url_validator.validate_url!("http://10.0.0.92/blob/blub.csv") }
+      .to raise_error(Carto::UrlValidator::InvalidUrlError)
+  end
+
   it 'does nothing if everything is ok' do
+    @url_validator.instance_variable_set("@blacklisted_ip_ranges", [IPAddr.new("169.254.169.1")])
+    @url_validator.validate_url!("http://169.254.169.2/foo.csv")
     @url_validator.validate_url!("http://example.com/foo.csv")
     @url_validator.validate_url!("https://example.com/bar.kml")
     @url_validator.validate_url!("http://example.com/foo.csv:80")

@@ -18,7 +18,7 @@ module CartoDB
 
         api_templates_type = options.fetch(:https_request, false) ? 'private' : 'public'
 
-        { 
+        {
           type:               'layergroup',
           options:            {
             user_name:          options.fetch(:user_name),
@@ -55,4 +55,3 @@ module CartoDB
     end
   end
 end
-

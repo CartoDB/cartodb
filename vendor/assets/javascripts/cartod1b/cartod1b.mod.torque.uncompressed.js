@@ -28,7 +28,7 @@
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
   } else if (typeof exports !== 'undefined') {
     var _ = require('underscore'), $;
-    try { $ = require('jquery'); } catch(e) {}
+    try { $ = require('jquery-cdb-v3'); } catch(e) {}
     factory(root, exports, _, $);
 
   // Finally, as a browser global.
@@ -4760,7 +4760,7 @@ function hasOwnProperty(obj, prop) {
 
 },{}],10:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * base layer for all google maps
@@ -4941,7 +4941,7 @@ module.exports = GMapsTorqueLayerView;
 
 },{"cdb/geo/gmaps/gmaps-layer-view":10,"torque.js":25}],12:[function(require,module,exports){
 var _ = require('underscore');
-var Backbone = require('backbone');
+var Backbone = require('backbone-cdb-v3');
 
 /**
  * base layer for all leaflet layers

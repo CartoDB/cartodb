@@ -3,6 +3,7 @@
 require_relative '../../../spec_helper'
 require_relative 'visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/visualizations_controller'
+require_relative '.././../../factories/organizations_contexts'
 
 describe Api::Json::VisualizationsController do
   it_behaves_like 'visualization controllers' do
@@ -17,20 +18,44 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
   # let(:params) { { api_key: @user.api_key } }
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     host! "#{@user.username}.localhost.lan"
   end
 
   after(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data @user
+  end
+
+  describe '#create' do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'correctly creates a visualization from two dataset of different users' do
+      table1 = create_table(user_id: @org_user_1.id)
+      table2 = create_table(user_id: @org_user_2.id)
+      share_table_with_user(table1, @org_user_2)
+      payload = {
+        type: 'derived',
+        tables: ["#{@org_user_1.username}.#{table1.name}", table2.name]
+      }
+      post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                payload) do |response|
+        response.status.should eq 200
+        vid = response.body[:id]
+        v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+        v.user.should eq @org_user_2
+        v.map.user.should eq @org_user_2
+      end
+    end
   end
 
   describe "#update" do
@@ -45,9 +70,9 @@ describe Api::Json::VisualizationsController do
 
       table = new_table(user_id: @user.id, privacy: ::UserTable::PRIVACY_PUBLIC).save.reload
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance
-                                          .stubs(:create)
-                                          .raises(CartoDB::NamedMapsWrapper::HTTPResponseError)
+      Carto::NamedMaps::Api.any_instance
+                           .stubs(:create)
+                           .raises('manolos')
 
       put_json api_v1_visualizations_update_url(id: table.table_visualization.id),
       {
@@ -65,6 +90,68 @@ describe Api::Json::VisualizationsController do
       @user.save
     end
 
+  end
+
+  describe '#duplicate map' do
+    before(:all) do
+      @other_user = create_user(username: 'other-user')
+    end
+
+    before(:each) do
+      bypass_named_maps
+
+      @map = Map.create(user_id: @user.id, table_id: create_table(user_id: @user.id).id)
+      @visualization = Carto::Visualization.where(map_id: @map.id).first
+    end
+
+    after(:each) do
+      @map.destroy
+    end
+
+    after(:all) do
+      @other_user.destroy
+    end
+
+    it 'duplicates a map' do
+      new_name = @visualization.name + ' patatas'
+
+      post_json api_v1_visualizations_create_url(api_key: @user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should be_success
+
+      Carto::Visualization.exists?(user_id: @user.id, type: 'derived', name: new_name).should be_true
+    end
+
+    it "duplicates someone else's map if has at least read permission to it" do
+      new_name = @visualization.name + ' patatas'
+
+      CartoDB::Visualization::Member.any_instance
+                                    .stubs(:has_permission?)
+                                    .with(@other_user, Visualization::Member::PERMISSION_READONLY)
+                                    .returns(true)
+
+      post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should be_success
+
+      Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_true
+    end
+
+    it "doesn't duplicate someone else's map without permission" do
+      new_name = @visualization.name + ' patatas'
+
+      post_json api_v1_visualizations_create_url(user_domain: @other_user.username, api_key: @other_user.api_key),
+                source_visualization_id: @visualization.id,
+                name: new_name
+
+      last_response.status.should == 403
+
+      Carto::Visualization.exists?(user_id: @other_user.id, type: 'derived', name: new_name).should be_false
+    end
   end
 
   describe '#likes' do
@@ -121,6 +208,6 @@ describe Api::Json::VisualizationsController do
   end
 
   def table_factory(attrs = {})
-    new_table(attrs.merge(user_id: $user_1.id)).save.reload
+    new_table(attrs.merge(user_id: @user_1.id)).save.reload
   end
 end

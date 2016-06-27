@@ -1,6 +1,9 @@
 require_relative '../../../lib/carto/http/client'
+require_dependency 'carto/uuidhelper'
 
 class Superadmin::UsersController < Superadmin::SuperadminController
+  include Carto::UUIDHelper
+
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
@@ -15,7 +18,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def index
     if params[:overquota].present?
-      @users =  ::User.overquota(0.20)
+      users = ::User.get_stored_overquota_users(Date.today)
+      respond_with(:superadmin, users)
     elsif params[:db_size_in_bytes_change].present?
       # This use case is specific: we only return cached db_size_in_bytes, which is
       # much faster and doesn't add load to the database.
@@ -24,9 +28,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
         { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }
       end) and return
     else
-      @users = ::User.all
+      users = ::User.all
+      respond_with(:superadmin, users.map(&:data))
     end
-    respond_with(:superadmin, @users.map { |user| user.data })
   end
 
   def create
@@ -56,7 +60,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     respond_with(:superadmin, @user)
   rescue => e
     Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
-    respond_with(:superadmin, @user, status: 500)
+    render json: { "error": "Error destroying user: #{e.message}" }, status: 422
   end
 
   def dump
@@ -134,7 +138,14 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   private
 
   def get_user
-    @user = ::User[params[:id]]
+    id = params[:id]
+
+    @user = if is_uuid?(id)
+              ::User[params[:id]]
+            else
+              ::User.where(username: id).first
+            end
+
     render json: { error: 'User not found' }, status: 404 unless @user
   end
 

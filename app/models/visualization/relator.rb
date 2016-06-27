@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative './stats'
 require_relative '../visualization/collection'
-require_relative '../overlay/collection'
 require_relative './support_tables'
 require_relative '../map'
 require_relative '../layer'
@@ -9,22 +8,21 @@ require_relative '../layer'
 module CartoDB
   module Visualization
     class Relator
-      LAYER_SCOPES  = {
-                        base:             :user_layers,
-                        cartodb:          :data_layers,
-                        carto_and_torque: :carto_and_torque_layers,
-                        others:           :other_layers,
-                        named_map:        :named_maps_layers
-                      }
+      LAYER_SCOPES = {
+        base:             :user_layers,
+        cartodb:          :data_layers,
+        carto_and_torque: :carto_and_torque_layers,
+        others:           :other_layers,
+        named_map:        :named_maps_layers
+      }.freeze
 
-      INTERFACE     = %w{ overlays map user table related_templates related_tables related_canonical_visualizations
-                          layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
-                          parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
-                          estimated_row_count actual_row_count }
+      INTERFACE = %w{ overlays user table related_templates related_tables related_canonical_visualizations
+                      layers stats mapviews total_mapviews single_data_layer? synchronization is_synced? permission
+                      parent children support_tables prev_list_item next_list_item likes likes_count reload_likes
+                      estimated_row_count actual_row_count }.freeze
 
-      def initialize(attributes={})
+      def initialize(map, attributes = {})
         @id             = attributes.fetch(:id)
-        @map_id         = attributes.fetch(:map_id)
         @user_id        = attributes.fetch(:user_id)
         @permission_id  = attributes.fetch(:permission_id)
         @parent_id      = attributes.fetch(:parent_id)
@@ -33,6 +31,7 @@ module CartoDB
         @likes          = nil
         @prev_id        = attributes.fetch(:prev_id)
         @next_id        = attributes.fetch(:next_id)
+        @map            = map
       end
 
       # @return []
@@ -72,11 +71,7 @@ module CartoDB
       end
 
       def overlays
-        @overlays ||= Overlay::Collection.new(visualization_id: id).fetch
-      end
-
-      def map
-        @map ||= ::Map.where(id: map_id).first
+        @overlays ||= Carto::Overlay.where(visualization_id: id).all
       end
 
       def user
@@ -84,8 +79,8 @@ module CartoDB
       end
 
       def table
-        return nil if map_id.nil?
-        @table ||= ::UserTable.from_map_id(map_id).try(:service)
+        return nil if map.nil?
+        @table ||= ::UserTable.from_map_id(map.id).try(:service)
       end
 
       def estimated_row_count
@@ -102,7 +97,8 @@ module CartoDB
 
       def related_tables
         @related_tables ||= layers(:carto_and_torque)
-          .flat_map{|layer| layer.affected_tables.map{|t| t.service}}.uniq
+                            .flat_map { |layer| layer.affected_tables.map(&:service) }
+                            .uniq(&:id)
       end
 
       def related_canonical_visualizations
@@ -157,7 +153,7 @@ module CartoDB
         likes
       end
 
-      attr_reader :id, :map_id
+      attr_reader :id, :map
 
       private
 
@@ -177,4 +173,3 @@ module CartoDB
     end
   end
 end
-

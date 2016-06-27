@@ -15,7 +15,6 @@ require_relative '../../lib/cartodb/stats/importer'
 require_relative '../../config/initializers/redis'
 require_relative '../../services/importer/lib/importer'
 require_relative '../connectors/importer'
-
 require_relative '../../services/importer/lib/importer/datasource_downloader'
 require_relative '../../services/datasources/lib/datasources'
 require_relative '../../services/importer/lib/importer/unp'
@@ -23,7 +22,10 @@ require_relative '../../services/importer/lib/importer/post_import_handler'
 require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
+require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../lib/cartodb/event_tracker'
+
+require_dependency 'carto/valid_table_name_proposer'
 
 include CartoDB::Datasources
 
@@ -31,6 +33,9 @@ class DataImport < Sequel::Model
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_accessor   :log, :results
+
+  one_to_many :external_data_imports
+  many_to_one :user
 
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
@@ -196,12 +201,19 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
     self
+  rescue CartoDB::CartoDBfyInvalidID
+    invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
+    log.append "Exception: #{invalid_cartodb_id_exception}"
+    CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
+    handle_failure(invalid_cartodb_id_exception)
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
-    Rollbar.report_message('Import error', 'error', error_info: stacktrace)
+    CartoDB.report_exception(exception, 'Import error', error_info: stacktrace)
     handle_failure(exception)
+    raise exception
     self
   end
 
@@ -292,16 +304,12 @@ class DataImport < Sequel::Model
                                                                          })
                                                                     .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
 
-    begin
-      track_new_datasets(results)
-    rescue => exception
-      CartoDB::notify_exception(exception)
-    end
+    Cartodb::EventTracker.new.track_import(current_user, id, results, visualization_id, from_common_data?)
 
     self
   end
@@ -324,7 +332,7 @@ class DataImport < Sequel::Model
                                                                          })
       .decrement!
     rescue => exception
-      CartoDB::Logger.info('Error decreasing concurrent import limit',
+      CartoDB::StdoutLogger.info('Error decreasing concurrent import limit',
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
@@ -341,6 +349,16 @@ class DataImport < Sequel::Model
     # so no need to change to a Visualization::Collection based load
     # TODO better to use an association for this
     ::Table.new(user_table: UserTable.where(id: table_id, user_id: user_id).first)
+  end
+
+  def tables
+    table_names_array.map do |table_name|
+      UserTable.where(name: table_name, user_id: user_id).first.service
+    end
+  end
+
+  def table_names_array
+    table_names.present? ? table_names.split(' ') : []
   end
 
   def is_raster?
@@ -362,6 +380,10 @@ class DataImport < Sequel::Model
     (user.quota_in_bytes / assumed_kb_sec).round
   end
 
+  def validate
+    super
+    errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
+  end
 
   private
 
@@ -372,7 +394,7 @@ class DataImport < Sequel::Model
     new_importer
   rescue => exception
     puts exception.to_s + exception.backtrace.join("\n")
-    raise
+    raise exception
   end
 
   def running_import_ids
@@ -456,17 +478,14 @@ class DataImport < Sequel::Model
 
     self.data_type    = TYPE_QUERY
     self.data_source  = query
-    self.save
+    save
 
-    candidates =  current_user.tables.select_map(:name)
-    table_name = ::Table.get_valid_table_name(name, {
-        connection: current_user.in_database,
-        database_schema: current_user.database_schema
-    })
-    current_user.in_database.run(%Q{CREATE TABLE #{table_name} AS #{query}})
+    table_name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(name)
+
+    current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
-      current_user.in_database.run(%Q{DROP TABLE #{table_name}})
+      current_user.in_database.run(%{DROP TABLE #{table_name}})
       self.error_code = 8001
       self.state      = STATE_FAILURE
       save
@@ -525,7 +544,7 @@ class DataImport < Sequel::Model
   def pg_options
     Rails.configuration.database_configuration[Rails.env].symbolize_keys
       .merge(
-        user:     current_user.database_username,
+        username: current_user.database_username,
         password: current_user.database_password,
         database: current_user.database_name,
         host:     current_user.database_host
@@ -583,6 +602,12 @@ class DataImport < Sequel::Model
         error_code: 1013,
         log_info: ex.to_s
       }
+    rescue InvalidInputDataError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1012,
+        log_info: ex.to_s
+      }
     rescue CartoDB::Importer2::FileTooBigError => ex
       had_errors = true
       manual_fields = {
@@ -632,7 +657,9 @@ class DataImport < Sequel::Model
       database      = current_user.in_database
       destination_schema = current_user.database_schema
       public_user_roles = current_user.db_service.public_user_roles
+      overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
       importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
+                                                       overviews_creator,
                                                        destination_schema, public_user_roles)
       log.append 'Before importer run'
       importer.run(tracker)
@@ -872,7 +899,7 @@ class DataImport < Sequel::Model
     rescue => ex
       log.append "Exception: #{ex.message}"
       log.append ex.backtrace, truncate = false
-      Rollbar.report_message('Import error: ', 'error', error_info: ex.message + ex.backtrace.join)
+      CartoDB.report_exception(ex, 'Import error: ', error_info: ex.message + ex.backtrace.join)
       raise CartoDB::DataSourceError.new("Datasource #{datasource_name} could not be instantiated")
     end
     if service_item_id.nil?
@@ -913,25 +940,4 @@ class DataImport < Sequel::Model
       datasource.set_audit_to_failed
     end
   end
-
-  def track_new_datasets(results)
-    return unless current_user
-
-    results.each do |result|
-      if result.success?
-        if result.name != nil
-          map_id = UserTable.where(data_import_id: self.id, name: result.name).first.map_id
-          origin = self.from_common_data? ? 'common-data' : 'import'
-        else
-          map_id = UserTable.where(data_import_id: self.id).first.map_id
-          origin = 'copy'
-        end
-        vis = Carto::Visualization.where(map_id: map_id).first
-
-        custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id, 'origin' => origin}
-        Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
-      end
-    end
-  end
-
 end

@@ -6,6 +6,14 @@ require_relative './http_authentication_helper'
 describe ApplicationController do
   include HttpAuthenticationHelper
 
+  before(:all) do
+    @user = FactoryGirl.create(:valid_user)
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
   # This filter should always be invoked if http_header_authentication is set,
   # tests are based in dashboard requests because of genericity.
   describe '#http_header_authentication' do
@@ -17,7 +25,7 @@ describe ApplicationController do
       it 'enabled if http_header_authentication is configured and header is sent' do
         stub_http_header_authentication_configuration
         ApplicationController.any_instance.expects(:http_header_authentication)
-        get dashboard_url, {}, authentication_headers
+        get dashboard_url, {}, authentication_headers('oso@panda.com')
       end
 
       it 'disabled if http_header_authentication is configured and header is not set' do
@@ -29,7 +37,7 @@ describe ApplicationController do
       it 'disabled if http_header_authentication is not configured' do
         ApplicationController.any_instance.expects(:http_header_authentication).never
         get dashboard_url, {}, {}
-        get dashboard_url, {}, authentication_headers
+        get dashboard_url, {}, authentication_headers('oso@panda.com')
       end
     end
 
@@ -40,7 +48,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user email' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.email)
+        get dashboard_url, {}, authentication_headers(@user.email)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
@@ -51,7 +59,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for a known user username' do
-        get dashboard_url, {}, authentication_headers($user_1.username)
+        get dashboard_url, {}, authentication_headers(@user.username)
         response.status.should == 302
       end
     end
@@ -63,7 +71,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user username' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.username)
+        get dashboard_url, {}, authentication_headers(@user.username)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
@@ -74,7 +82,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for a known user id' do
-        get dashboard_url, {}, authentication_headers($user_1.id)
+        get dashboard_url, {}, authentication_headers(@user.id)
         response.status.should == 302
       end
     end
@@ -86,7 +94,7 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user id' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.id)
+        get dashboard_url, {}, authentication_headers(@user.id)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
@@ -97,7 +105,7 @@ describe ApplicationController do
       end
 
       it 'does not load the dashboard for a known user email' do
-        get dashboard_url, {}, authentication_headers($user_1.email)
+        get dashboard_url, {}, authentication_headers(@user.email)
         response.status.should == 302
       end
     end
@@ -109,21 +117,21 @@ describe ApplicationController do
 
       it 'loads the dashboard for a known user id' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.id)
+        get dashboard_url, {}, authentication_headers(@user.id)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'loads the dashboard for a known user username' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.username)
+        get dashboard_url, {}, authentication_headers(@user.username)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end
 
       it 'loads the dashboard for a known user email' do
         stub_load_common_data
-        get dashboard_url, {}, authentication_headers($user_1.email)
+        get dashboard_url, {}, authentication_headers(@user.email)
         response.status.should == 200
         response.body.should_not include("Login to Carto")
       end

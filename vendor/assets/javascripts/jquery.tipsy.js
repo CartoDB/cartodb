@@ -4,7 +4,8 @@
 // released under the MIT license
 //
 //  Changes:
-//  June 3 2013: Added the custom class before the calc of the position. @javier
+//  April 27 2016: fixed problem with element size.
+//  June 3 2013: Added the custom class before the calc of the position.
 
 (function($) {
 
@@ -38,15 +39,15 @@
             $tip[0].className = 'tipsy'; // reset classname in case of dynamic gravity
             $tip.remove().css({top: 0, left: 0, visibility: 'hidden', display: 'block'}).prependTo(document.body);
 
-            // Modified by @javier so we can use custom class names
+            // Modified so we can use custom class names
             if (this.options.className) {
               $tip.addClass(maybeCall(this.options.className, this.$element[0]));
             }
 
-            //  Fixed by Arce
+            // Modified
             var pos = $.extend({}, this.$element.offset(), {
-              width: this.$element[0].offsetWidth,
-              height: this.$element[0].offsetHeight
+              width: this.$element[0].getBoundingClientRect().width,
+              height: this.$element[0].getBoundingClientRect().height
             });
 
             var actualWidth = $tip[0].offsetWidth,

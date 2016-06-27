@@ -3,6 +3,7 @@ require 'tmpdir'
 require 'fileutils'
 require 'csv'
 require_relative '../../../spec/rspec_configuration'
+require_relative '../../../spec/spec_helper'
 require_relative '../lib/hires_geocoder'
 
 
@@ -19,13 +20,17 @@ describe CartoDB::HiresGeocoder do
   before(:each) do
     @working_dir = Dir.mktmpdir
     @input_csv_file = path_to '../../table-geocoder/spec/fixtures/nokia_input.csv'
+    @log = mock
+    @log.stubs(:append)
+    @log.stubs(:append_and_store)
     CartoDB::HiresGeocoder.any_instance.stubs(:config).returns({
         'non_batch_base_url' => 'batch.example.com',
         'app_id' => '',
         'token' => '',
         'mailto' => ''
       })
-    @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir)
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
+    @geocoder = CartoDB::HiresGeocoder.new(@input_csv_file, @working_dir, @log, @geocoding_model)
   end
 
   after(:each) do

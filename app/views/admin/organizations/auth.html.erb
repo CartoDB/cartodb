@@ -71,7 +71,22 @@
               <%= label_tag(:auth_google_enabled, '') %>
             </div>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText">Allow users to signup with their own username & email submission</p>
+              <p class="FormAccount-rowInfoText">Allow users to signup with their own Google domain account</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Strong Passwords</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="Toggler">
+              <%= f.check_box :strong_passwords_enabled, :id => "strong_passwords_enabled" %>
+              <%= label_tag(:strong_passwords_enabled, '') %>
+            </div>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="FormAccount-rowInfoText">Passwords must contain 8 characters, and require a combination of letters, numbers, and/or special characters.</p>
             </div>
           </div>
         </div>

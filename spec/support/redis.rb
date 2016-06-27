@@ -33,7 +33,7 @@ module CartoDB
         new_logfile = "/tmp/redis-#{ENV['REDIS_PORT']}/stdout"
         Dir.mkdir "/tmp/redis-#{ENV['REDIS_PORT']}" unless File.exists?("/tmp/redis-#{ENV['REDIS_PORT']}")
       else
-        port = Cartodb.config[:redis]["port"] 
+        port = Cartodb.config[:redis]["port"]
       end
       print "[redis] Starting test server on port #{port}... "
       redis_options = {
@@ -48,7 +48,7 @@ module CartoDB
       }.map { |k, v| "#{k} #{v}" }.join("\n")
       output = `printf '#{redis_options}' | redis-server - 2>&1`
       if $?.success?
-        puts('done') 
+        puts('done')
         sleep 2
       else
         raise "Error starting test Redis server: #{output}"

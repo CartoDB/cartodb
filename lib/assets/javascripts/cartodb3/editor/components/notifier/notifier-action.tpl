@@ -1,0 +1,1 @@
+<span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small" data-action="<%- button %>"><%- button %></span>

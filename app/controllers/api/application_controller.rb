@@ -3,8 +3,12 @@
 require_relative '../../../lib/cartodb/stats/editor_apis'
 
 class Api::ApplicationController < ApplicationController
+  protect_from_forgery with: :null_session
+
   # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?, :verify_authenticity_token
+  skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?
+  skip_before_filter :verify_authenticity_token if :json_request?
+
   before_filter :api_authorization_required
   before_filter :ensure_account_has_been_activated
 

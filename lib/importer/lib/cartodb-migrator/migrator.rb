@@ -59,7 +59,7 @@ module CartoDB
       # attempt to transform the_geom to 4326
       if column_names.include? "the_geom"
         begin
-          if srid = @db_connection["select st_srid(the_geom) from #{@suggested_name} limit 1"].first
+          if srid = @db_connection["select st_srid(the_geom::geometry) from #{@suggested_name} limit 1"].first
             srid = srid[:st_srid] if srid.is_a?(Hash)
             begin
               if srid.to_s != "4326"
@@ -108,11 +108,6 @@ module CartoDB
 
     private
 
-    def get_valid_name(name)
-      ::Table.get_valid_table_name(name,
-        name_candidates: @db_connection.tables.map(&:to_s))
-    end
-
     def log(str)
       if @@debug
         puts str
@@ -136,7 +131,7 @@ module CartoDB
 
       sanitization_map = sanitization_map.inject({}) { |memo, pair|
         if memo.values.include?(pair.last) || correct_columns.include?(pair.last)
-          sanitization_count += 1 
+          sanitization_count += 1
           memo.merge(pair.first => "#{pair.last}_#{sanitization_count}")
         else
           memo.merge(pair.first => pair.last)

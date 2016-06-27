@@ -6,7 +6,8 @@ class Admin::TablesController < Admin::AdminController
 
   skip_before_filter :browser_is_html5_compliant?, :only => [:embed_map]
   before_filter      :login_required,              :only => [:index]
-  after_filter       :update_user_last_activity,   :only => [:index, :show]
+
+  after_filter :update_user_last_activity, only: [:index, :show]
 
   def index
   end
@@ -35,7 +36,7 @@ class Admin::TablesController < Admin::AdminController
     if @table.blank? || @table.private? || ((current_user && current_user.id != @table.user_id) && @table.private?)
       render_403
     else
-      @vizzjson = CartoDB::Map::Presenter.new(
+      @vizjson = CartoDB::Map::Presenter.new(
         @table.map,
         { full: true },
         Cartodb.config
@@ -59,11 +60,5 @@ class Admin::TablesController < Admin::AdminController
   def send_data_conf table, type, ext
     { :type => "application/#{type}; charset=binary; header=present",
       :disposition => "attachment; filename=#{table.name}.#{ext}" }
-  end
-
-  def update_user_last_activity
-    return true unless current_user.present?
-    current_user.set_last_active_time
-    current_user.set_last_ip_address request.remote_ip
   end
 end

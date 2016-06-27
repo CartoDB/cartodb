@@ -17,7 +17,7 @@
 
   // NodeJS/CommonJS
   } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore'), $ = require('jquery'), Backbone = require('backbone');
+    var _ = require('underscore'), $ = require('jquery-cdb-v3'), Backbone = require('backbone-cdb-v3');
     factory(root, _, $, Backbone);
 
   // Browser global

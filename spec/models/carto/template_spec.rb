@@ -1,7 +1,9 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
+require 'helpers/unique_names_helper'
 
 describe Carto::Template do
+  include UniqueNamesHelper
   include_context 'organization with users helper'
 
   after(:each) do
@@ -146,7 +148,7 @@ describe Carto::Template do
 
   it 'tests you cannot see tables outside the organization' do
     org2 = test_organization.save
-    org2_user_owner = create_test_user("o2#{random_username}")
+    org2_user_owner = create_test_user(unique_name('user'))
     user_org = CartoDB::UserOrganization.new(org2.id, org2_user_owner.id)
     user_org.promote_user_to_admin
     org2.reload
@@ -185,6 +187,7 @@ describe Carto::Template do
         })
     template.save.should eq true
 
+    template.destroy
     delete_user_data org2_user_owner
     org2.destroy_cascade
   end

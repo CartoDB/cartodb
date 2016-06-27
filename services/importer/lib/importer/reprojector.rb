@@ -35,7 +35,7 @@ module CartoDB
       def transform(table_name, origin_column, destination_column)
         db.run(%Q{
           UPDATE #{table_name}
-          SET the_geom = public.ST_Force_2D(
+          SET the_geom = public.ST_Force2D(
             public.ST_Transform(#{origin_column}, #{DEFAULT_SRID})
           ) 
           WHERE #{origin_column} IS NOT NULL

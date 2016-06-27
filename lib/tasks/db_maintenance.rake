@@ -1,5 +1,5 @@
 require_relative 'thread_pool'
-require_relative '../../services/table-geocoder/lib/table_geocoder_factory'
+require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
 require 'timeout'
 require 'date'
 
@@ -755,46 +755,6 @@ namespace :cartodb do
       puts "\n>Finished :create_default_vis_permissions"
     end
 
-    desc "Check all visualizations and populate their Permission object's entity_id and entity_type"
-    task :populate_permission_entity_id, [:page_size, :page] => :environment do |t, args|
-      page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
-      page = args[:page].blank? ? 1 : args[:page].to_i
-
-      require_relative '../../app/models/visualization/collection'
-
-      progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
-      collection = CartoDB::Visualization::Collection.new
-
-
-      begin
-        items = collection.fetch(page: page, per_page: page_size)
-
-        count = items.count
-        puts "\n>Running :populate_permission_entity_id for page #{page} (#{count} vis)" if count > 0
-        items.each_with_index { |vis, i|
-          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
-          unless vis.permission_id.nil?
-            begin
-              raise 'No owner' if vis.user.nil?
-              if vis.permission.entity_id.nil?
-                perm = vis.permission
-                perm.entity = vis
-                perm.save
-              end
-            rescue => e
-              owner_id = vis.user.nil? ? 'nil' : vis.user.id
-              message = "FAIL u:#{owner_id} v:#{vis.id}: #{e.message}"
-              puts message
-              log(message, :populate_permission_entity_id.to_s)
-            end
-          end
-        }
-        page += 1
-      end while count > 0
-
-      puts "\n>Finished :populate_permission_entity_id"
-    end
-
     # Executes a ruby code proc/block on all existing users, outputting some info
     # @param task_name string
     # @param block Proc
@@ -1276,7 +1236,8 @@ namespace :cartodb do
         begin
           # We are working on the v2 which is only Nokia
           next if user.google_maps_geocoder_enabled?
-          usage_metrics = Carto::TableGeocoderFactory.get_geocoder_metrics_instance(user)
+          orgname = user.organization.nil? ? nil : user.organization.name
+          usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
           geocoding_calls = user.get_not_aggregated_geocoding_calls({from: date_from, to: date_to})
           geocoding_calls.each do |metric|
             usage_metrics.incr(:geocoder_here, :success_responses, metric[:processed_rows], metric[:date])
@@ -1305,6 +1266,60 @@ namespace :cartodb do
         user = ::User.where(username: args[:username]).first
         update_user_metadata(user)
         update_organization_metadata(user)
+      end
+    end
+
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[username]
+    desc 'Connect aggregation tables through FDW to user'
+    task :connect_aggregation_fdw_tables_to_user, [:username] => [:environment] do |task, args|
+      args.with_defaults(:username => nil)
+      raise 'Not a valid username' if args[:username].blank?
+      user = ::User.find(username: args[:username])
+      user.db_service.connect_to_aggregation_tables
+    end
+
+    # usage:
+    #   bundle exec rake cartodb:db:connect_aggregation_fdw_tables[orgname]
+    desc 'Connect aggregation tables through FDW to orgname'
+    task :connect_aggregation_fdw_tables_to_org, [:orgname] => [:environment] do |task, args|
+      args.with_defaults(:orgname => nil)
+      raise 'Not a valid orgname' if args[:orgname].blank?
+      org = ::Organization.find(name: args[:orgname])
+      org.users.each do |u|
+        begin
+          u.db_service.connect_to_aggregation_tables
+        rescue => e
+          puts "Error trying to connect  #{u.username}: #{e.message}"
+        end
+      end
+    end
+    
+    # usage:
+    #   bundle exec rake cartodb:db:obs_quota_enterprise[1000]
+    desc 'Give data observatory quota to all the enterprise users'
+    task :obs_quota_enterprise, [:quota] => [:environment] do |task, args|
+      args.with_defaults(:quota => 1000)
+      raise 'Not a valid quota' if args[:quota].blank?
+      do_quota = args[:quota]
+      users = User.where("account_type ilike 'enterprise%' or account_type ilike 'partner'").all
+      puts "Number of enterprise users to process: #{users.size}"
+      users.each do |u|
+        begin
+          if u.organization_owner? && !u.organization.nil?
+            u.organization.obs_general_quota = do_quota if u.organization.obs_general_quota.to_i == 0
+            u.organization.obs_snapshot_quota = do_quota if u.organization.obs_snapshot_quota.to_i == 0
+            u.organization.save
+            puts "Organization #{u.organization.name} processed OK"
+          else
+            u.obs_general_quota = do_quota if u.obs_general_quota.to_i == 0
+            u.obs_snapshot_quota = do_quota if u.obs_snapshot_quota.to_i == 0
+            u.save
+            puts "User #{u.username} processed OK"
+          end
+        rescue => e
+          puts "Error trying to give DO quota to #{u.username}: #{e.message}"
+        end
       end
     end
 

@@ -50,7 +50,7 @@
               </li>
 
               <li class="Navmenu-item">
-                <i class="Navmenu-rarrow iconFont iconFont-Rarrow"></i>
+                <i class="Navmenu-rarrow CDB-IconFont CDB-IconFont-rArrowLight"></i>
                 <a href="<%= CartoDB.url(self, 'public_maps_home', {}, @visualization.user) %>" class="Navmenu-link">Maps</a>
               </li>
             </ul>
@@ -62,7 +62,7 @@
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
                     <a href="<%= CartoDB.url(self, 'public_visualizations_embed_map', {id: @visualization.id}, @visualization.user) %>" target="_blank" class="Navmenu-link">
-                      <i class="iconFont iconFont-Fullscreen Navmenu-icon"></i>
+                      <i class="CDB-IconFont CDB-IconFont-fullscreen Navmenu-icon"></i>
                     </a>
                   </li>
 
@@ -73,6 +73,12 @@
                       data-likes-size="big">
                     </a>
                   </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="#" class="Navmenu-link js-Navmenu-link--download-map">
+                      <i class="CDB-IconFont CDB-IconFont-downloadCircle Navmenu-icon"></i>
+                    </a>
+                  </li>
                 </ul>
               </li>
 
@@ -80,7 +86,7 @@
                 <div class="Navmenu-sep u-showOnTablet"></div>
 
                 <a href="#" class="Navmenu-link Navmenu-shareLink js-Navmenu-shareLink">
-                  <i class="iconFont iconFont-Share Navmenu-icon"></i>
+                  <i class="CDB-IconFont CDB-IconFont-share Navmenu-icon"></i>
                 </a>
               </li>
             </ul>
@@ -92,25 +98,25 @@
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
                     <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
-                      <i class="iconFont iconFont-Twitter Navmenu-icon Navmenu-icon--twitter"></i>
+                      <i class="CDB-IconFont CDB-IconFont-twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
                   </li>
 
                   <li class="Navmenu-subItem">
                     <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>" target="_blank" class="Navmenu-link js-Navmenu-link--facebook">
-                      <i class="iconFont iconFont-FacebookSquare Navmenu-icon"></i>
+                      <i class="CDB-IconFont CDB-IconFont-facebookSquare Navmenu-icon"></i>
                     </a>
                   </li>
 
                   <li class="Navmenu-subItem">
                     <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB") %>&source=CartoDB" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
-                      <i class="iconFont iconFont-Linkedin Navmenu-icon"></i>
+                      <i class="CDB-IconFont CDB-IconFont-linkedin Navmenu-icon"></i>
                     </a>
                   </li>
 
                   <li class="Navmenu-subItem u-showOnTablet">
                     <button class="ImportItem-closeButton Navmenu-link js-Navmenu-closeLink Navmenu-closeLink">
-                      <i class="iconFont iconFont-Close ImportItem-closeButtonIcon"></i>
+                      <i class="CDB-IconFont CDB-IconFont-close ImportItem-closeButtonIcon"></i>
                     </button>
                   </li>
                 </ul>
@@ -139,15 +145,15 @@
 
               <div class="PublicMap-meta">
                 <ul class="PublicMap-metaList">
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-calendar"></i> <%= time_ago_in_words(@visualization.updated_at) %> ago</li>
                 </ul>
 
                 <ul class="PublicMap-metaList PublicMap-metaList--mobile js-PublicMap-metaList--mobile">
-                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon iconFont iconFont-Stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
+                  <li class="PublicMap-metaItem"><i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-stats"></i> <%= number_with_delimiter(@mapviews) %> <%= 'mapview'.pluralize(@mapviews) %></li>
 
                   <% if @visualization.tags.size > 0 %>
                     <li class="PublicMap-metaItem">
-                      <i class="PublicMap-metaIcon iconFont iconFont-Label"></i>
+                      <i class="PublicMap-metaIcon CDB-IconFont CDB-IconFont-label"></i>
                       <%# Keep on one line to avoid unwanted spaces %>
                       <% formatted_tags(@visualization.tags) do |tag| %><a class="PublicMap-metaLink" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, @visualization.user) %>"><%= tag %></a><% end %>
                     </li>
@@ -197,12 +203,12 @@
                         </a>
                         <% if (vis.table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
-                            <i class="iconFont iconFont-Rows RowsIndicator-icon"></i>
+                            <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon"></i>
                             <%= "#{number_to_human(vis.table.service.rows_counted, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.table.service.rows_counted.size == 1 ? "" : "s"}" %>
                           </span>
                         <% end %>
                         <span class="DatasetsList-itemTimeDiff DefaultTimeDiff u-hideOnTablet">
-                          <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                          <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                           <%= time_ago_in_words(vis.updated_at) %> ago
                           <% if vis.user.username != @visualization.user.username %>
                             by
@@ -221,7 +227,7 @@
             <% if @nonpublic_tables_count.present? && @nonpublic_tables_count > 0 %>
               <li class="DatasetsList-item">
                 <div class="LayoutIcon">
-                  <i class="iconFont iconFont-Lock"></i>
+                  <i class="CDB-IconFont CDB-IconFont-lock"></i>
                 </div>
                 <div class="DefaultTitle PublicMap-privateDatasets"><%= pluralize(@nonpublic_tables_count, 'private dataset') %></div>
               </li>
@@ -270,7 +276,7 @@
                       </h3>
                     </div>
                     <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
-                      <i class="iconFont iconFont-Clock DefaultTimeDiff-icon"></i>
+                      <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                       <%= time_ago_in_words(vis.updated_at) %> ago
                     </div>
                   </div>

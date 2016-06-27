@@ -11,7 +11,6 @@ module CartoDB
 
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
-
         @source_file = nil
         @datasource = datasource
         @item_metadata = item_metadata
@@ -68,12 +67,11 @@ module CartoDB
         false
       end
 
-      # @return Bool
       def multi_resource_import_supported?
         @datasource.multi_resource_import_supported?(@item_metadata[:id])
       end
 
-      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
+      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository, :etag, :checksum, :last_modified
 
       private
 

@@ -32,10 +32,13 @@ module Resque
             retry
           else
             raise e
-          end  
+          end
         else
           raise e
         end
+      rescue => e
+        CartoDB.notify_exception(e)
+        raise e
       end
     end #self.perform
 

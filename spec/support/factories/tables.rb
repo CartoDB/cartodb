@@ -1,5 +1,10 @@
+# encoding: UTF-8
+require_relative '../../helpers/unique_names_helper'
+
 module CartoDB
   module Factories
+    include UniqueNamesHelper
+
     def new_table(attributes = {})
       attributes = attributes.dup
       table = ::Table.new(attributes)
@@ -13,9 +18,9 @@ module CartoDB
         attributes.delete(:name)
         nil
       else
-        attributes[:name] || String.random(10)
+        attributes[:name] || unique_name('table')
       end
-      
+
       table
     end
 
@@ -27,15 +32,16 @@ module CartoDB
 
     def create_visualization(user, attributes = {})
       headers = {'CONTENT_TYPE'  => 'application/json'}
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-      post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), visualization_template(user, attributes).to_json, headers
-      id = JSON.parse(last_response.body).fetch('id')
-      CartoDB::Visualization::Member.new(id: id).fetch
+      bypass_named_maps
+      post_json api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), visualization_template(user, attributes) do |response|
+        id = response.body[:id]
+        CartoDB::Visualization::Member.new(id: id).fetch
+      end
     end
 
     def visualization_template(user, attributes = {})
       {
-        name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+        name:                     attributes.fetch(:name, unique_name('viz')),
         display_name:             attributes.fetch(:display_name, nil),
         tags:                     attributes.fetch(:tags, ['foo', 'bar']),
         map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: user.id).id),

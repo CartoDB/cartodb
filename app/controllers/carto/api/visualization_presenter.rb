@@ -53,7 +53,7 @@ module Carto
           license: @visualization.license,
           attributions: @visualization.attributions,
           kind: @visualization.kind,
-          likes: @visualization.likes.count,
+          likes: @visualization.likes_count,
           prev_id: @visualization.prev_id,
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,

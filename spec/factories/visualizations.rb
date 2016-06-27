@@ -1,17 +1,34 @@
-FactoryGirl.define do
+require 'uuidtools'
+require_dependency 'carto/uuidhelper'
 
-  random = UUIDTools::UUID.timestamp_create.to_s
+include Carto::UUIDHelper
+
+FactoryGirl.define do
 
   factory :derived_visualization, class: CartoDB::Visualization::Member do
     type 'derived'
-    name "visualization #{random}"
+    name "visualization #{random_uuid}"
     privacy 'public'
   end
 
   factory :table_visualization, class: CartoDB::Visualization::Member do
     type 'table'
-    name "visualization_#{random}"
+    name "visualization_#{random_uuid}"
     privacy 'public'
+  end
+
+  factory :carto_visualization, class: Carto::Visualization do
+    id { random_uuid }
+    type 'derived'
+    name 'factory visualization'
+    privacy 'public'
+
+    association :user, factory: :carto_user
+    permission { FactoryGirl.create :carto_permission, owner: user }
+
+    factory :carto_private_visualization do
+      privacy Carto::Visualization::PRIVACY_PRIVATE
+    end
   end
 
 end

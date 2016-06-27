@@ -45,6 +45,27 @@ CartoDB::Application.routes.draw do
   get '/google_plus' => 'google_plus#google_plus', as: :google_plus
   post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
 
+  # Editor v3
+  scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
+    namespace :builder, path: '/' do
+      # Visualizations
+      resources :visualizations, only: :show, path: '/builder', constraints: { id: /[0-z\.\-]+/ } do
+        namespace :public, path: '/' do
+          match 'embed', to: 'embeds#show', via: :get
+          match 'embed_protected', to: 'embeds#show_protected', via: :post
+        end
+      end
+
+      resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
+    end
+
+    namespace :editor do
+      match '(*path)', to: redirect { |params, request|
+        CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s
+      }
+    end
+  end
+
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
   scope :module => :admin do
 
@@ -290,16 +311,19 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map'  => 'visualizations#show_protected_public_map', constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
     post '(/user/:user_domain)(/u/:user_domain)/viz/:id/protected_public_map' => 'visualizations#show_protected_public_map', as: :protected_public_map, constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
 
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
-    post   '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate' => 'client_applications#regenerate_api_key', as: :regenerate_api_key
-    match  '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
-    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'   => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
-
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps'                    => 'client_applications#api_key',            as: :api_key_credentials
+    post '(/user/:user_domain)(/u/:user_domain)/your_apps/api_key/regenerate'  => 'client_applications#regenerate_api_key', as: :regenerate_api_key
+    match '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth'              => 'client_applications#oauth',              as: :oauth_credentials
+    delete '(/user/:user_domain)(/u/:user_domain)/your_apps/oauth/regenerate'  => 'client_applications#regenerate_oauth',   as: :regenerate_oauth
   end
 
   scope :module => 'carto/admin' do
     # 1b Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
+
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit] do
+      get 'api_keys', on: :member
+    end
   end
 
   scope :module => 'carto/api', :format => :json do
@@ -355,10 +379,6 @@ CartoDB::Application.routes.draw do
     # Maps
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'                          => 'maps#show',    as: :api_v1_maps_show
 
-    # Overlays
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#index',    as: :api_v1_visualizations_overlays_index,  constraints: { visualization_id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#show',     as: :api_v1_visualizations_overlays_show,   constraints: { visualization_id: /[^\/]+/ }
-
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
@@ -386,11 +406,32 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
-    # Organization user management
-    post '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users' => 'organization_users#create', as: :api_v1_organization_users_create
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#show', as: :api_v1_organization_users_show
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#destroy', as: :api_v1_organization_users_delete
-    put '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:name/users/:u_username' => 'organization_users#update', as: :api_v1_organization_users_update
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
+      # Organization user management
+      scope 'organization/:id_or_name/' do
+        post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
+      end
+
+      # Overlays
+      scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
+        resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+      end
+    end
+
+    # Using v2 to add index to EUMAPI since /users is taken in v1
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v2/' do
+      # Organization user management
+      scope 'organization/:id_or_name/' do
+        get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
+        post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
+      end
+    end
 
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
@@ -441,6 +482,24 @@ CartoDB::Application.routes.draw do
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
 
+    # V3
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
+      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+      end
+
+      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
+        resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
+        get 'download' => 'visualization_exports#download', as: :download
+      end
+    end
   end
 
   scope :module => 'api/json', :format => :json do
@@ -498,9 +557,6 @@ CartoDB::Application.routes.draw do
     post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#create',          as: :api_v1_visualizations_create
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
     delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays'     => 'overlays#create',                as: :api_v1_visualizations_overlays_create, constraints: { visualization_id: /[^\/]+/ }
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#update',                as: :api_v1_visualizations_overlays_update, constraints: { visualization_id: /[^\/]+/ }
-    delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:visualization_id/overlays/:id' => 'overlays#destroy',               as: :api_v1_visualizations_overlays_destroy, constraints: { visualization_id: /[^\/]+/ }
     # TODO: deprecate?
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
     put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }

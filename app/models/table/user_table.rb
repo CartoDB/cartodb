@@ -48,8 +48,6 @@ class UserTable < Sequel::Model
     values
   }
 
-  RESERVED_TABLE_NAMES = %W{ layergroup all }
-
   PRIVACY_PRIVATE = 0
   PRIVACY_PUBLIC = 1
   PRIVACY_LINK = 2
@@ -68,6 +66,8 @@ class UserTable < Sequel::Model
                         reciprocal: :user_tables
   one_to_one   :automatic_geocoding, key: :table_id
   one_to_many  :geocodings, key: :table_id
+  many_to_one  :data_import, key: :data_import_id
+  many_to_one  :user
 
   plugin :association_dependencies, map:                  :destroy,
                                     layers:               :nullify,
@@ -106,6 +106,10 @@ class UserTable < Sequel::Model
   # Lazy initialization of service if not present
   def service
     @service ||= ::Table.new(user_table: self)
+  end
+
+  def sync_table_id
+    self.table_id = service.get_table_id
   end
 
   # Helper methods encapsulating queries. Move to query object?
@@ -160,9 +164,11 @@ class UserTable < Sequel::Model
     # tables must have a user
     errors.add(:user_id, "can't be blank") if user_id.blank?
 
+    errors.add(:user, "Viewer users can't create tables") if user && user.viewer
+
     errors.add(
       :name, 'is a reserved keyword, please choose a different one'
-    ) if RESERVED_TABLE_NAMES.include?(self.name) 
+    ) if Carto::DB::Sanitize::RESERVED_TABLE_NAMES.include?(name)
 
     # TODO this kind of check should be moved to the DB
     # privacy setting must be a sane value
@@ -200,6 +206,7 @@ class UserTable < Sequel::Model
   end
 
   def before_destroy
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user.viewer
     service.before_destroy
     super
   end
@@ -221,11 +228,8 @@ class UserTable < Sequel::Model
 
   # --------------------------------------------------------------------------------
 
-
-  # TODO This is called from other models but should probably never be done outside this class
-  # it depends on the table relator
-  def invalidate_varnish_cache(propagate_to_visualizations=true)
-    service.invalidate_varnish_cache(propagate_to_visualizations)
+  def update_cdb_tablemetadata
+    service.update_cdb_tablemetadata
   end
 
   def table_visualization
@@ -291,7 +295,4 @@ class UserTable < Sequel::Model
   def actual_row_count
     service.actual_row_count
   end
-
-  private
-
 end

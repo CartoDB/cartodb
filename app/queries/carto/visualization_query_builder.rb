@@ -48,6 +48,8 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_id_or_name(id_or_name)
+    raise 'VisualizationQueryBuilder: id or name supplied is nil' if id_or_name.nil?
+
     if is_uuid?(id_or_name)
       with_id(id_or_name)
     else
@@ -186,8 +188,17 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_organization_id(organization_id)
+    @organization_id = organization_id
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
+
+    if @name && !(@id || @user_id || @organization_id)
+      CartoDB.notify_debug("VQB query by name without user_id nor org_id", stack: caller.take(25))
+    end
 
     if @id
       query = query.where(id: @id)
@@ -228,11 +239,14 @@ class Carto::VisualizationQueryBuilder
     if @owned_by_or_shared_with_user_id
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
-      query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
-          @owned_by_or_shared_with_user_id,
-          ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(@owned_by_or_shared_with_user_id)
-                                            .build.uniq.pluck('visualizations.id')
-        )
+      shared_with_viz_ids = ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(
+        @owned_by_or_shared_with_user_id).build.uniq.pluck('visualizations.id')
+      if shared_with_viz_ids.empty?
+        query = query.where(' "visualizations"."user_id" = (?)', @owned_by_or_shared_with_user_id)
+      else
+        query = query.where(' ("visualizations"."user_id" = (?) or "visualizations"."id" in (?))',
+                            @owned_by_or_shared_with_user_id, shared_with_viz_ids)
+      end
     end
 
     if @exclude_synced_external_sources
@@ -292,6 +306,10 @@ class Carto::VisualizationQueryBuilder
 
     if @only_with_display_name
       query = query.where("display_name is not null")
+    end
+
+    if @organization_id
+      query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
     @include_associations.each { |association|

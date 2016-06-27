@@ -57,6 +57,7 @@ class CommonData
         "name" => row["name"],
         "display_name" => row["display_name"].nil? ? row["name"] : row["display_name"],
         "tabname" => row["name"],
+        "attributions" => row["attributions"],
         "description" => row["description"],
         "source" => row["source"],
         "license" => row["license"],

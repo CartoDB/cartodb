@@ -35,6 +35,15 @@ describe Carto::Builder::DatasetsController do
       response.status.should == 404
     end
 
+    it 'redirects to editor if disabled' do
+      @user.stubs(:builder_enabled).returns(false)
+
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should eq 302
+      response.location.should include '/tables/' + @visualization.id
+    end
+
     it 'returns 404 for non-existent visualizations' do
       get builder_dataset_url(id: UUIDTools::UUID.timestamp_create.to_s)
 

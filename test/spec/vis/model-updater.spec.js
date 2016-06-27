@@ -156,6 +156,7 @@ describe('src/vis/model-updater', function () {
     it('should not update attributes that are original params (eg: query)', function () {
       var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
       analysis1.getParamNames = function () { return ['query']; };
+      analysis1.setOk = jasmine.createSpy('setOk');
       this.analysisCollection.reset([ analysis1 ]);
 
       this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {

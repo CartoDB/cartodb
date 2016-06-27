@@ -15,7 +15,7 @@ $corner_radius: 6px;
 .table_panel {
   position:fixed;
   right:-537px;
-  top:64px;
+  top:80px;
   bottom:0px;
   width:600px;
   padding-top:25px;
@@ -92,7 +92,7 @@ $corner_radius: 6px;
 
   // Active layer
   .layer_panel.active {
-    margin-bottom:20px;
+    margin-bottom:5px;
     padding-bottom:0;
 
     .layer-info .info {

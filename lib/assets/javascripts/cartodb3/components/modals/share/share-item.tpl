@@ -4,7 +4,12 @@
 
 <div class="Card-body CDB-Text is-light u-bSpace--xl">
   <div class="CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></div>
-  <div class="CDB-Size-medium u-altTextColor"><%- body %> <a href="#" class="Share-link js-link"><%- link %></a></div>
+  <div class="CDB-Size-medium u-altTextColor">
+    <%- body %>
+    <% if (url) { %>
+    <a href="<%- url %>" class="Share-link js-link"><%- link %></a>
+    <% } %>
+  </div>
 </div>
 
 <div class="Share-input">

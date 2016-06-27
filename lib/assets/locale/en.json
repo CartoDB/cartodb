@@ -217,25 +217,29 @@
           "title": "Get the link",
           "body": "And send it to your friends, coworkers or post in your social networks.",
           "link": "",
-          "copy": "COPY"
+          "copy": "COPY",
+          "select": "SELECT"
         },
         "embed": {
           "title": "Embed it",
           "body": "Get your map into your blog, website or simple application.",
           "link": "Get a simple URL.",
-          "copy": "COPY"
+          "copy": "COPY",
+          "select": "SELECT"
         },
         "cartodbjs": {
           "title": "CartoDB.js",
           "body": "Add your map to your applications by using this URL.",
           "link": "Read more.",
-          "copy": "COPY"
+          "copy": "COPY",
+          "select": "SELECT"
         },
         "mobile-sdk": {
           "title": "CartoDB Mobile SDK",
           "body": "Add your map to your native mobile applications by using this line of code.",
           "link": "Read more.",
-          "copy": "COPY"
+          "copy": "COPY",
+          "select": "SELECT"
         },
       },
       "add-analysis": {
@@ -598,6 +602,7 @@
     "map_name": "%{name} map",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
+    "button_share": "SHARE",
     "tab-pane": {
       "layers": {
         "title-label": "Layers"

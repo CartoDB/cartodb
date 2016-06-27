@@ -7,7 +7,7 @@
       <%- attribute %>
     </li>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor u-flex">
-      <%- quantification %>
+      <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>
       <button class="CDB-Shape u-lSpace js-quantification">
         <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
           <div class="CDB-Shape-threePointsItem"></div>

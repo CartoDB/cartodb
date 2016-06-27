@@ -37,7 +37,7 @@ describe Organization do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     begin
       @user.destroy
     rescue
@@ -276,7 +276,7 @@ describe Organization do
 
   describe '#org_shared_vis' do
     it "checks fetching all shared visualizations of an organization's members " do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)

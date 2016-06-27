@@ -44,7 +44,7 @@
 
   <div class="Filters-typeItem Filters-typeItem--searchField js-search-field">
     <form class="Filters-searchForm js-search-form">
-      <input class="Filters-searchInput js-search-input" type="text" value="<%- ( tag && (':' + tag) ) || q %>" placeholder="<%- _t('components.modals.add-layer.navigation.search-placeholder') %>" />
+      <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- ( tag && (':' + tag) ) || q %>" placeholder="<%- _t('components.modals.add-layer.navigation.search-placeholder') %>" />
       <% if (tag || q) { %>
         <button type="button" class="Filters-cleanSearch js-clean-search">
           <i class="CDB-IconFont CDB-IconFont-close"></i>

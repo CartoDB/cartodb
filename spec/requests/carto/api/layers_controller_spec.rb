@@ -10,12 +10,15 @@ describe Carto::Api::LayersController do
   it_behaves_like 'layers controllers' do
   end
 
+  before(:each) do
+    bypass_named_maps
+  end
+
   describe 'attribution changes' do
     include Rack::Test::Methods
     include Warden::Test::Helpers
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
 
       @headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -94,8 +97,6 @@ describe Carto::Api::LayersController do
     include_context 'users helper'
 
     it 'fetches layers from shared visualizations' do
-      # TODO: refactor this with helpers (pending to merge)
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true, delete: true)
       CartoDB::Visualization::Member.any_instance.stubs(:invalidate_cache).returns(nil)
       @headers = { 'CONTENT_TYPE' => 'application/json' }
 
@@ -207,13 +208,13 @@ describe Carto::Api::LayersController do
     end
 
     before(:each) do
-      stub_named_maps_calls
+      bypass_named_maps
       delete_user_data @user
       @table = create_table user_id: @user.id
     end
 
     after(:all) do
-      stub_named_maps_calls
+      bypass_named_maps
       @user.destroy
     end
 

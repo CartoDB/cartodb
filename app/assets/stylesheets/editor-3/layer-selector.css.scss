@@ -1,0 +1,13 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.SelectorLayer {
+  position: relative;
+}
+.SelectorLayer.is-disabled {
+  background-color: $cThirdBackground;
+}
+.SelectorLayer-letter {
+  padding: 1px 5px;
+  border-radius: $halfBaseSize;
+}

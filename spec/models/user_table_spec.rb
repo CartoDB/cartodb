@@ -37,4 +37,40 @@ describe UserTable do
 
     @user_table.sync_table_id.should eq @user_table.service.get_table_id
   end
+
+  context 'viewer users' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't create new user tables" do
+      bypass_named_maps
+      @user.viewer = true
+      @user.save
+
+      @user_table = ::UserTable.new
+      @user_table.user_id = @user.id
+      @user_table.name = 'user_table_2'
+      expect { @user_table.save }.to raise_error(Sequel::ValidationFailed, /Viewer users can't create tables/)
+    end
+
+    it "can't delete user tables" do
+      bypass_named_maps
+      @user_table = ::UserTable.new
+      @user_table.user_id = @user.id
+      @user_table.name = 'user_table_2'
+      @user_table.save
+      @user.viewer = true
+      @user.save
+      @user_table.reload
+
+      expect { @user_table.destroy }.to raise_error(CartoDB::InvalidMember, /Viewer users can't destroy tables/)
+
+      @user.viewer = false
+      @user.save
+      @user_table.reload
+      @user_table.destroy
+    end
+  end
 end

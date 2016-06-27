@@ -10,7 +10,8 @@
   position: absolute;
   top: 36px;
   right: 0;
-  width: 246px;
+  min-width: 246px;
+  max-width: 272px;
   z-index: 100;
 }
 .CustomList--small {
@@ -35,9 +36,14 @@
   padding: 16px;
   text-align: center;
 }
-
 .CustomList-item.is-highlighted,
 .CustomList-item:hover {
   background: rgba($cHighlight, 0.16);
   cursor: pointer;
+}
+.CustomList-item.is-disabled {
+  &:hover {
+    background: inherit;
+    cursor: default;
+  }
 }

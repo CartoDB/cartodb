@@ -34,9 +34,9 @@ module Carto
     end
 
     def static_maps_image_url_fragment(visualization_id, width, height)
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(visualization_id)
+      template_name = Carto::NamedMaps::Template.new(Carto::Visualization.find(visualization_id)).name
 
-      "/api/v1/map/static/named/#{template_id}/#{width}/#{height}.png"
+      "/api/v1/map/static/named/#{template_name}/#{width}/#{height}.png"
     end
 
   end

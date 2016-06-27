@@ -5,7 +5,8 @@ require_relative 'bolt.rb'
 module Carto
   class GhostTablesManager
     MUTEX_REDIS_KEY = 'ghost_tables_working'.freeze
-    MUTEX_TTL_MS = 60000
+    MUTEX_TTL_MS = 600000
+    MAX_TABLES_FOR_SYNC_RUN = 8
 
     def initialize(user_id)
       @user_id = user_id
@@ -18,10 +19,10 @@ module Carto
     def link_ghost_tables
       return if user_tables_synced_with_db?
 
-      if safe_async?
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, @user_id)
-      else
+      if should_run_synchronously?
         link_ghost_tables_synchronously
+      else
+        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
       end
     end
 
@@ -41,11 +42,15 @@ module Carto
         (cartodbfied_tables - user_tables).empty?
     end
 
-    # Check if any unsafe stale (dropped or renamed) tables will be shown to the user
-    def safe_async?
+    # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
+    # the workers for more that 180 seconds
+    def should_run_synchronously?
       cartodbfied_tables = fetch_cartodbfied_tables
 
-      find_dropped_tables(cartodbfied_tables).empty? && find_stale_tables(cartodbfied_tables).empty?
+      dropped_and_stale_tables = find_dropped_tables(cartodbfied_tables) + find_stale_tables(cartodbfied_tables)
+      total_tables_to_be_linked = dropped_and_stale_tables + find_new_tables(cartodbfied_tables)
+
+      dropped_and_stale_tables.count != 0 && total_tables_to_be_linked.count < MAX_TABLES_FOR_SYNC_RUN
     end
 
     def sync_user_tables_with_db
@@ -57,6 +62,8 @@ module Carto
     end
 
     def sync
+      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage start', user: user)
+
       cartodbfied_tables = fetch_cartodbfied_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
@@ -70,6 +77,8 @@ module Carto
 
       # Unlink tables that have been created trhought the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
+
+      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage end', user: user)
     end
 
     # Any UserTable that has been renamed or regenerated.
@@ -85,8 +94,7 @@ module Carto
       user_table_ids = user_tables.map(&:id)
 
       cartodbfied_tables.select do |cartodbfied_table|
-        user_table_ids.include?(cartodbfied_table.id) &&
-          !user_table_names.include?(cartodbfied_table.name)
+        user_table_ids.include?(cartodbfied_table.id) && !user_table_names.include?(cartodbfied_table.name)
       end
     end
 
@@ -98,8 +106,7 @@ module Carto
       user_table_ids = user_tables.map(&:id)
 
       cartodbfied_tables.select do |cartodbfied_table|
-        user_table_names.include?(cartodbfied_table.name) &&
-          !user_table_ids.include?(cartodbfied_table.id)
+        !user_table_ids.include?(cartodbfied_table.id) && user_table_names.include?(cartodbfied_table.name)
       end
     end
 
@@ -138,6 +145,7 @@ module Carto
                  count(column_name::text) cdb_columns_count
           FROM information_schema.columns c, pg_tables t, pg_trigger tg
           WHERE
+            t.tablename !~ '^importer_' AND
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND

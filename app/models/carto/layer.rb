@@ -154,24 +154,6 @@ module Carto
       sql
     end
 
-    def options
-      raw_options = self[:options]
-
-      raw_options.with_indifferent_access if raw_options
-    end
-
-    def infowindow
-      raw_infowindow = self[:infowindow]
-
-      raw_infowindow.with_indifferent_access if raw_infowindow
-    end
-
-    def tooltip
-      raw_tooltip = self[:tooltip]
-
-      raw_tooltip.with_indifferent_access if raw_tooltip
-    end
-
     private
 
     def tables_from_query_option

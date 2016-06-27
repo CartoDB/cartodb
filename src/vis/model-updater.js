@@ -34,7 +34,6 @@ ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceLayerId, for
   this._updateDataviewModels(windhsaftMap, sourceLayerId, forceFetch);
   this._updateAnalysisModels(windhsaftMap);
 
-
   this._visModel.setOk();
 };
 

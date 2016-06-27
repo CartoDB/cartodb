@@ -11,8 +11,12 @@ module.exports = WidgetModel.extend({
     {
       autoStyle: false,
       normalized: false,
-      min: null,
-      max: null
+      min: function () {
+        return this.dataviewModel.get('start');
+      },
+      max: function () {
+        return this.dataviewModel.get('end');
+      }
     },
     WidgetModel.prototype.defaultState
   ),

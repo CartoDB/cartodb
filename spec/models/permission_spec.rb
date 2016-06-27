@@ -182,35 +182,34 @@ describe CartoDB::Permission do
     end
 
     it 'fails granting write permission for viewer users' do
-        user2_mock = mock
-        user2_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
-        user2_mock.stubs(:username).returns('user2')
-        user2_mock.stubs(:organization).returns(nil)
-        user2_mock.stubs(:viewer).returns(true)
+      user2 = create_user(viewer: true)
 
-        # Don't check/handle DB permissions
-        Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
-        Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-        # No need to check for real DB visualizations
-        prepare_vis_mock_in_permission
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      prepare_vis_mock_in_permission
 
-        permission = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username
-        ).save
-        permission.acl = [
-          {
-            type: Permission::TYPE_USER,
-            entity: {
-              id: user2_mock.id,
-              username: user2_mock.username
-            },
-            access: Permission::ACCESS_READWRITE
-          }
-        ]
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username
+      ).save
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READWRITE
+        }
+      ]
 
-        permission.save.should eq false
-        permission.errors[:user].should eq "Viewers can't get write permission"
+      expect do
+        permission.save
+      end.to raise_error(Sequel::ValidationFailed, "access_control_list grants write to viewers: #{user2.username}")
+
+      user2.destroy
     end
 
     it 'supports groups' do

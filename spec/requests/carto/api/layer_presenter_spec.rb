@@ -500,11 +500,15 @@ describe Carto::Api::LayerPresenter do
             properties['properties']['geometry_type'] = 'polygon'
             properties['properties'].merge!(line_category_properties)
             layer = build_layer_with_wizard_properties(properties)
-            options = presenter_with_style_properties(layer).to_poro['options']
-            @fill_color = options['style_properties']['properties']['fill']['color']
-            @fill_size = options['style_properties']['properties']['fill']['size']
-            @stroke_color = options['style_properties']['properties']['stroke']['color']
-            @stroke_size = options['style_properties']['properties']['stroke']['size']
+            @options = presenter_with_style_properties(layer).to_poro['options']
+            @fill_color = @options['style_properties']['properties']['fill']['color']
+            @fill_size = @options['style_properties']['properties']['fill']['size']
+            @stroke_color = @options['style_properties']['properties']['stroke']['color']
+            @stroke_size = @options['style_properties']['properties']['stroke']['size']
+          end
+
+          it 'sets "none" as default blending' do
+            @options['style_properties']['properties']['blending'].should eq 'none'
           end
 
           it 'line-width becomes fixed stroke size' do

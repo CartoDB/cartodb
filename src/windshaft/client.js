@@ -45,17 +45,23 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   var ajaxOptions = {
     success: function (data) {
       if (data.errors) {
-        errorCallback(data.errors[0]);
+        errorCallback(data);
       } else {
         successCallback(data);
       }
     },
     error: function (xhr) {
-      var err = { errors: ['Unknown error'] };
+      var errors = {
+        errors: [ 'Unknown error' ],
+        errors_with_context: [{
+          type: 'unknown',
+          message: 'Unknown error'
+        }]
+      };
       try {
-        err = JSON.parse(xhr.responseText);
+        errors = JSON.parse(xhr.responseText);
       } catch (e) {}
-      errorCallback(err.errors[0]);
+      errorCallback(errors);
     }
   };
 

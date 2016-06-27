@@ -95,11 +95,11 @@ var WindshaftMap = Backbone.Model.extend({
         this.trigger('instanceCreated');
         options.success && options.success(this);
       }.bind(this),
-      error: function (error) {
-        this._trackRequest(request, error);
-        var errorMsg = 'Request to Maps API failed: ' + error;
-        log.error(errorMsg);
-        options.error && options.error(errorMsg);
+      error: function (errors) {
+        this._trackRequest(request, errors);
+        log.error('Request to Maps API failed: ' + errors);
+        this._modelUpdater.setErrors(errors);
+        options.error && options.error();
       }.bind(this)
     });
   },

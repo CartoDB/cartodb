@@ -48,7 +48,7 @@ describe('windshaft/map-base', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
-    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
+    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
     this.client = new WindshaftClient({
       endpoint: 'v1',
       urlTemplate: 'http://{user}.wadus.com',
@@ -324,7 +324,7 @@ describe('windshaft/map-base', function () {
       });
 
       it('should invoke a given error callback', function () {
-        expect(this.errorCallback).toHaveBeenCalledWith('Request to Maps API failed: something went wrong');
+        expect(this.errorCallback).toHaveBeenCalledWith();
       });
     });
   });

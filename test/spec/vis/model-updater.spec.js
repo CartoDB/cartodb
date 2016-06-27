@@ -11,12 +11,16 @@ describe('src/vis/model-updater', function () {
       return 'tileJSON';
     };
 
+    this.visModel = new Backbone.Model();
+    this.visModel.setOk = jasmine.createSpy('setOk');
+    this.visModel.setError = jasmine.createSpy('setError');
     this.layerGroupModel = new Backbone.Model();
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
     this.dataviewsCollection = new Backbone.Collection();
 
     this.modelUpdater = new ModelUpdater({
+      visModel: this.visModel,
       layerGroupModel: this.layerGroupModel,
       layersCollection: this.layersCollection,
       dataviewsCollection: this.dataviewsCollection,
@@ -167,6 +171,28 @@ describe('src/vis/model-updater', function () {
       expect(analysis1.get('status')).toEqual('new_status');
       expect(analysis1.get('query')).toEqual('original_query');
       expect(analysis1.get('url')).toEqual('new_url');
+    });
+
+    it('should set vis state to ok', function () {
+      this.modelUpdater.updateModels(this.windshaftMap);
+
+      expect(this.visModel.setOk).toHaveBeenCalled();
+    });
+  });
+
+  describe('.setErrors', function () {
+    it('should set vis state to error', function () {
+      this.modelUpdater.setErrors({
+        errors: [],
+        errors_with_context: [
+          {
+            type: 'unknown',
+            message: 'something went wrong!'
+          }
+        ]
+      });
+
+      expect(this.visModel.setError).toHaveBeenCalledWith('something went wrong!');
     });
   });
 });

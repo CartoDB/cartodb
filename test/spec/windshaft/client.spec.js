@@ -88,11 +88,17 @@ describe('windshaft/client', function () {
         error: errorCallback
       });
 
-      this.ajaxParams.success({
-        errors: [ 'something went wrong!' ]
-      });
+      var errors = {
+        errors: [ 'the error message' ],
+        errors_with_context: {
+          type: 'unknown',
+          message: 'the error message'
+        }
+      };
 
-      expect(errorCallback).toHaveBeenCalledWith('something went wrong!');
+      this.ajaxParams.success(errors);
+
+      expect(errorCallback).toHaveBeenCalledWith(errors);
     });
 
     it('should invoke the error callback if ajax request goes wrong', function () {
@@ -106,7 +112,17 @@ describe('windshaft/client', function () {
 
       this.ajaxParams.error({ responseText: 'something went wrong!' });
 
-      expect(errorCallback).toHaveBeenCalledWith('Unknown error');
+      expect(errorCallback).toHaveBeenCalledWith(
+        {
+          errors: [ 'Unknown error' ],
+          errors_with_context: [
+            {
+              type: 'unknown',
+              message: 'Unknown error'
+            }
+          ]
+        }
+      );
     });
 
     it('should use POST if forceCors is true', function () {

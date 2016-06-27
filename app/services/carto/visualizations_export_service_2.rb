@@ -98,12 +98,20 @@ module Carto
         options[option_key] = nil if options.has_key?(option_key)
       end
 
+      options_with_indifferent_access = options.with_indifferent_access
+
+      infowindow = exported_layer[:infowindow]
+      infowindow_with_indifferent_access = infowindow.with_indifferent_access if infowindow
+
+      tooltip = exported_layer[:tooltip]
+      tooltip_with_indifferent_access = tooltip.with_indifferent_access if tooltip
+
       layer = Carto::Layer.new(
-        options: options,
+        options: options_with_indifferent_access,
         kind: exported_layer[:kind],
-        infowindow: exported_layer[:infowindow],
+        infowindow: infowindow_with_indifferent_access,
         order: order,
-        tooltip: exported_layer[:tooltip]
+        tooltip: tooltip_with_indifferent_access
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
       layer

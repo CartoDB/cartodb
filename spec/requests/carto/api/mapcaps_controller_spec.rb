@@ -61,6 +61,20 @@ describe Carto::Api::MapcapsController do
       end
     end
 
+    it 'should only allow MAX_MAPCAPS_PER_MAP mapcaps' do
+      max_mapcaps_per_map = Carto::Api::MapcapsController::MAX_MAPCAPS_PER_MAP
+
+      (max_mapcaps_per_map + 1).times do
+        post_json create_mapcap_url, {} do |response|
+          response.status.should eq 201
+
+          mapcap_should_be_correct(response)
+        end
+      end
+
+      Carto::Mapcap.where(visualization_id: @visualization.id).count == max_mapcaps_per_map
+    end
+
     it 'returns 403 if user does not own the visualization' do
       post_json create_mapcap_url(user: @intruder), {} do |response|
         response.status.should eq 403

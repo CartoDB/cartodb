@@ -137,6 +137,9 @@
   }
 }
 .HorizontalBlockList-item-actionBlock {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
   width: 100%;
   height: 100%;
 }

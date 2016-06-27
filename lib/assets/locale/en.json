@@ -3,7 +3,6 @@
     "you": "You"
   },
   "analyses": {
-    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",
@@ -216,7 +215,7 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "trade-area": {
+          "area-of-influence": {
             "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
@@ -234,7 +233,7 @@
           },
           "moran-cluster": {
             "title": "Moran cluster",
-            "desc": "Finds areas which have similar values and also outliers"
+            "desc": "Find areas which have similar values and identify outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -459,6 +458,10 @@
       "syntax-error": "Syntax error",
       "line": "Line"
     },
+    "undo-redo": {
+      "clear": "CLEAR",
+      "apply": "APPLY"
+    },
     "table": {
       "columns": {
         "change-type": {
@@ -616,6 +619,13 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "aggregate-functions": {
+        "avg": "AVG",
+        "count": "COUNT",
+        "max": "MAX",
+        "min": "MIN",
+        "sum": "SUM"
+      },
       "analysis-form": {
         "aggregate": "Aggregate",
         "apply-btn": "Apply",
@@ -628,16 +638,18 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "data-values": "Data values",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter": "Filter",
-        "hide": "Hide",
         "filter-aggregate": "Filter or aggregate your results",
+        "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "loading": "loading…",
         "max": "Max",
         "meters": "m",
         "miles": "mi",
@@ -657,6 +669,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "target": "Target layer",
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
@@ -678,7 +691,7 @@
           "none": "None",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
-          "infowindow_light_header_blue": "Color",
+          "infowindow_color": "Color",
           "infowindow_header_with_image": "Image"
         },
         "items": {
@@ -726,17 +739,21 @@
           "title": "SQL ONLY READ",
           "body": "You just applied analysis to this layer and the SQL passed to only read.",
           "accept": "CLOSE"
+        },
+        "empty-data": {
+          "title": "NO DATA AVAILABLE",
+          "body": "There is no data available to be displayed."
         }
       }
     },
     "style": {
       "types": {
-        "none": "none",
-        "simple": "simple",
+        "none": "-",
+        "simple": "none",
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "heatmap"
+        "heatmap": "pixel"
       },
       "style-form": {
         "type": {

@@ -3,7 +3,6 @@
     "you": "You"
   },
   "analyses": {
-    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",
@@ -216,7 +215,7 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "trade-area": {
+          "area-of-influence": {
             "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
@@ -234,7 +233,7 @@
           },
           "moran-cluster": {
             "title": "Moran cluster",
-            "desc": "Finds areas which have similar values and also outliers"
+            "desc": "Find areas which have similar values and identify outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -740,6 +739,10 @@
           "title": "SQL ONLY READ",
           "body": "You just applied analysis to this layer and the SQL passed to only read.",
           "accept": "CLOSE"
+        },
+        "empty-data": {
+          "title": "NO DATA AVAILABLE",
+          "body": "There is no data available to be displayed."
         }
       }
     },

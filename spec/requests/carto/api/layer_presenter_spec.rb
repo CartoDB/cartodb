@@ -301,7 +301,8 @@ describe Carto::Api::LayerPresenter do
 
       describe 'bubble' do
         let(:property) { "actor_foll" }
-        let(:qfunction) { "Quantile" }
+        let(:quantile_function) { "Quantile" }
+        let(:qfunction) { quantile_function }
         let(:radius_min) { 10 }
         let(:radius_max) { 25 }
         let(:marker_comp_op) { "multiply" }
@@ -353,8 +354,8 @@ describe Carto::Api::LayerPresenter do
             expect(@fill_size).to include('bins' => 10)
           end
 
-          it 'qfunction becomes quantification' do
-            expect(@fill_size).to include('quantification' => qfunction)
+          it 'qfunction becomes quantification, and Quantile is translated to quantiles' do
+            expect(@fill_size).to include('quantification' => 'quantiles')
           end
 
           it 'include animated disabled' do
@@ -424,8 +425,8 @@ describe Carto::Api::LayerPresenter do
             expect(@fill_color).to include('bins' => number_of_buckets)
           end
 
-          it 'qfunction becomes quantification' do
-            expect(@fill_color).to include('quantification' => qfunction)
+          it 'qfunction becomes quantification, and Quantile is translated to quantiles' do
+            expect(@fill_color).to include('quantification' => 'quantiles')
           end
 
           it 'takes opacity from marker-* or polygon-*' do
@@ -499,11 +500,15 @@ describe Carto::Api::LayerPresenter do
             properties['properties']['geometry_type'] = 'polygon'
             properties['properties'].merge!(line_category_properties)
             layer = build_layer_with_wizard_properties(properties)
-            options = presenter_with_style_properties(layer).to_poro['options']
-            @fill_color = options['style_properties']['properties']['fill']['color']
-            @fill_size = options['style_properties']['properties']['fill']['size']
-            @stroke_color = options['style_properties']['properties']['stroke']['color']
-            @stroke_size = options['style_properties']['properties']['stroke']['size']
+            @options = presenter_with_style_properties(layer).to_poro['options']
+            @fill_color = @options['style_properties']['properties']['fill']['color']
+            @fill_size = @options['style_properties']['properties']['fill']['size']
+            @stroke_color = @options['style_properties']['properties']['stroke']['color']
+            @stroke_size = @options['style_properties']['properties']['stroke']['size']
+          end
+
+          it 'sets "none" as default blending' do
+            @options['style_properties']['properties']['blending'].should eq 'none'
           end
 
           it 'line-width becomes fixed stroke size' do

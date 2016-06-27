@@ -335,31 +335,29 @@ describe Map do
       @table2.user_id = @user.id
       @table2.save
 
-      source  = @table1.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      visualization = @table1.table_visualization
 
-      derived.layers(:cartodb).length.should eq 1
+      visualization.layers(:cartodb).length.should eq 1
       @table1.privacy = UserTable::PRIVACY_PUBLIC
       @table1.save
-      derived.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
-      derived.store
+      visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
+      visualization.store
 
-      derived.fetch.private?.should be_false
+      visualization.fetch.private?.should be_false
 
       layer = Layer.create(
         kind:     'carto',
         options:  { table_name: @table2.name }
       )
-      layer.add_map(derived.map)
+      layer.add_map(visualization.map)
       layer.save
       layer.reload
       @user.reload
 
       layer.uses_private_tables?.should be_true
 
-      derived.map.process_privacy_in(layer)
-      derived.fetch.private?.should be_true
+      visualization.map.process_privacy_in(layer)
+      visualization.fetch.private?.should be_true
     end
   end
 

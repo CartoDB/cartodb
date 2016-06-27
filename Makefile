@@ -46,7 +46,6 @@ WORKING_SPECS_1 = \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
-	spec/models/visualization/copier_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
@@ -311,7 +310,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helpe
 
 check: prepare-test-db check-prepared
 check-frontend:
-	grunt test
+	./node_modules/.bin/grunt test
 
 
 # update cartodb.js submodule files

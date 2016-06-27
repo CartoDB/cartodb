@@ -230,7 +230,7 @@
           },
           "filter": {
             "title": "Filter",
-            "desc": "Transform your data into coordinates"
+            "desc": "Filter your rows depending on the values of a column"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -640,11 +640,13 @@
         "column": "Column",
         "create-btn": "Create",
         "data-values": "Data values",
+        "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
+        "filter-column": "Filter column",
         "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
@@ -670,18 +672,17 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "source-column": "Source column",
         "target": "Target layer",
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
-        "define-columns": "Define column to find similarities with",
         "type": "Type",
+        "value": "Value",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow",
-        "source-column": "Source column",
-        "filter-column": "Filter column"
+        "workflow": "Workflow"
       },
       "infowindow": {
         "style": {

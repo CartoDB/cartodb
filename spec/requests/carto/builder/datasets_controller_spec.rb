@@ -27,7 +27,7 @@ describe Carto::Builder::DatasetsController do
       @user.destroy
     end
 
-    it 'returns 404 for non-editor users requests' do
+    it 'returns 404 for non-builder users requests' do
       @user.stubs(:has_feature_flag?).with('editor-3').returns(false)
 
       get builder_dataset_url(id: @visualization.id)

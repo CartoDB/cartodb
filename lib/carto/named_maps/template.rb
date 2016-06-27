@@ -96,7 +96,7 @@ module Carto
           elsif layer.base?
             layer_options = layer.options
 
-            if layer_options[:type] == 'Plain'
+            if layer_options['type'] == 'Plain'
               layers.push(type: 'plain', options: options_for_plain_basemap_layers(layer_options))
             else
               layers.push(type: 'http', options: options_for_http_basemap_layers(layer_options))
@@ -113,14 +113,14 @@ module Carto
       end
 
       def options_for_plain_basemap_layers(layer_options)
-        layer_options[:image].present? ? { imageUrl: layer_options[:image] } : { color: layer_options[:color] }
+        layer_options['image'].present? ? { imageUrl: layer_options['image'] } : { color: layer_options['color'] }
       end
 
       def options_for_http_basemap_layers(layer_options)
         options = {}
 
-        options[:urlTemplate] = layer_options[:urlTemplate] if layer_options[:urlTemplate].present?
-        options[:subdomains] = layer_options[:subdomains] if layer_options[:subdomains]
+        options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
+        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains'].present?
 
         options
       end
@@ -141,8 +141,8 @@ module Carto
         layer_options = layer.options
 
         options = {
-          cartocss: layer_options.fetch(:tile_style).strip.empty? ? EMPTY_CSS : layer_options.fetch(:tile_style),
-          cartocss_version: layer_options.fetch(:style_version)
+          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
+          cartocss_version: layer_options.fetch('style_version')
         }
 
         layer_options_source = layer_options[:source]

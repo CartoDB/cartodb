@@ -407,6 +407,7 @@ module Carto
         return spp unless wpp
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
+        spp['blending'] == 'none' if spp['blending'].blank?
 
         merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 

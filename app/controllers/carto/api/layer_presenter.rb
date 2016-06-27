@@ -529,6 +529,13 @@ module Carto
         'qfunction' => 'quantification'
       }.freeze
 
+      QUANTIFICATION_MAPPING = {
+        'Jenks' => 'jenks',
+        'Equal Interval' => 'equal',
+        'Heads/Tails' => 'headtails',
+        'Quantile' => 'quantiles'
+      }.freeze
+
       COLOR_RANGE_SOURCE_TYPES = ['choropleth', 'density'].freeze
 
       def generate_dimension_properties(wpp)
@@ -541,6 +548,8 @@ module Carto
         end
 
         apply_direct_mapping(size, wpp, SIZE_DIRECT_MAPPING)
+        quantification = size['quantification']
+        size['quantification'] = QUANTIFICATION_MAPPING.fetch(quantification, quantification) if quantification.present?
 
         if %w{ bubble category }.include?(@source_type)
           size['bins'] = 10

@@ -575,47 +575,6 @@ describe Api::Json::VisualizationsController do
     end
   end
 
-  describe '#source_visualization_id_and_hierarchy' do
-    it 'checks proper working of parent_id' do
-      bypass_named_maps
-
-      map_id = ::Map.create(user_id: @user.id).id
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-       factory({
-                 name: "PARENT #{UUIDTools::UUID.timestamp_create.to_s}",
-                 type: CartoDB::Visualization::Member::TYPE_DERIVED
-               }).to_json, @headers
-      body = JSON.parse(last_response.body)
-      parent_vis_id = body.fetch('id')
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             parent_id: parent_vis_id,
-             map_id: map_id
-           }.to_json, @headers
-      vis_1_body = JSON.parse(last_response.body)
-
-      # This should also set as next sibiling of vis_1 as has no prev_id/next_id set
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 2 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             source_visualization_id: vis_1_body.fetch('id'),
-             parent_id: parent_vis_id
-           }.to_json, @headers
-      vis_2_body = JSON.parse(last_response.body)
-
-      vis_2_body.fetch('prev_id').should eq vis_1_body.fetch('id')
-
-      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
-      vis_1_body.fetch('parent_id').should eq parent_vis_id
-      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
-    end
-  end
-
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {

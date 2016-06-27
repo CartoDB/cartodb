@@ -7,8 +7,8 @@
         {{#content.fields}}
           {{^index}}
             <li class="CDB-infowindow-listItem">
-              {{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}
-              {{#value}}<h4 class="CDB-infowindow-title {{#type}}{{ type }}{{/type}}">{{{ value }}}</h4>{{/value}}
+              {{#title}}<h5 class="CDB-infowindow-subtitle">{{=<% %>=}}{{<%={{ }}=%>{{{ title }}}{{=<% %>=}}}}<%={{ }}=%></h5>{{/title}}
+              {{#value}}<h4 class="CDB-infowindow-title {{#type}}{{=<% %>=}}{{<%={{ }}=%>{{{ type }}}{{=<% %>=}}}}<%={{ }}=%>{{/type}}">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>{{/value}}
             </li>
             {{^value}}{{/value}}
           {{/index}}
@@ -23,15 +23,13 @@
         {{#content.fields}}
           {{#index}}
             <li class="CDB-infowindow-listItem">
-              {{#title}}
-                <h5 class="CDB-infowindow-subtitle">{{title}}</h5>
-              {{/title}}
-              {{#value}}
-                <h4 class="CDB-infowindow-title">{{{ value }}}</h4>
-              {{/value}}
-              {{^value}}
-                <h4 class="CDB-infowindow-title">NULL</h4>
-              {{/value}}
+              {{#alternative_name}}
+              <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
+              {{/alternative_name}}
+              {{^alternative_name}}
+              <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
+              {{/alternative_name}}
+              <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
             </li>
           {{/index}}
         {{/content.fields}}

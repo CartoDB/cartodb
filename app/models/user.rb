@@ -1594,12 +1594,12 @@ class User < Sequel::Model
   end
 
   def force_builder?
-    builder_enabled == true
+    builder_enabled? && builder_enabled == true
   end
 
   def force_editor?
     # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
-    builder_enabled == false
+    builder_enabled == false || !builder_enabled?
   end
 
   private

@@ -24,9 +24,9 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
   if (layerModel.tooltip) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
-    // layerModel.tooltip.fields.bind('reset', function () {
-    //   this._reloadMap();
-    // }, this);
+    layerModel.tooltip.fields.bind('reset', function () {
+      this._reloadMap();
+    }, this);
 
     if (!layerView.tooltipView) {
       this._addTooltipOverlay(layerView, layerModel);

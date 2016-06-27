@@ -121,11 +121,20 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).toHaveBeenCalled();
     });
 
+    it('should fetch if url changes and sourceLayerId is not defined', function () {
+      this.model.layer.get.and.returnValue('layerID');
+      spyOn(this.model, 'fetch');
+
+      this.model.set('url', 'http://somethingelese.com');
+
+      expect(this.model.fetch).toHaveBeenCalled();
+    });
+
     it('should not fetch if url changes and event was initiated by a different layer', function () {
       this.model.layer.get.and.returnValue('layerID');
       spyOn(this.model, 'fetch');
 
-      this.model.trigger('change:url', this.model, {
+      this.model.set('url', 'http://somethingelese.com', {
         sourceLayerId: 'differentLayerId'
       });
 

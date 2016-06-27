@@ -6,7 +6,7 @@
     <input class="Table-headItemName CDB-Text CDB-Size-medium is-semibold u-ellipsis js-attribute" value="<%- name %>" readonly />
 
     <% if (isOrderBy) { %>
-      <i class="CDB-Size CDB-Size-medium CDB-IconFont CDB-IconFont-arrowNext
+      <i class="CDB-Size CDB-Size-small CDB-IconFont CDB-IconFont-arrowNext
         Table-columnSorted
         Table-columnSorted--<% if (sortBy === 'asc') {%>asc<% } else {%>desc<% } %>
         u-rSpace u-altTextColor

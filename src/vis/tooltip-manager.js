@@ -24,11 +24,20 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
   if (layerModel.tooltip) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
+    layerModel.tooltip.fields.bind('reset', function () {
+      this._reloadMap();
+    }, this);
+
     if (!layerView.tooltipView) {
       this._addTooltipOverlay(layerView, layerModel);
       this._bindFeatureOverEvent(layerView);
     }
   }
+};
+
+TooltipManager.prototype._reloadMap = function (options) {
+  options = options || {};
+  this._map.reload(options);
 };
 
 TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {

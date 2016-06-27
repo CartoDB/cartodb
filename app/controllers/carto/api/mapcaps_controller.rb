@@ -12,6 +12,7 @@ module Carto
       before_filter :builder_users_only,
                     :load_visualization,
                     :owners_only
+      before_filter :ensure_only_one_mapcap, only: :create
       before_filter :load_mapcap, only: [:show, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error
@@ -52,6 +53,10 @@ module Carto
 
       def owners_only
         raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
+      end
+
+      def ensure_only_one_mapcap
+        Carto::Mapcap.where(visualization_id: @visualization.id).each(&:destroy)
       end
 
       def load_mapcap

@@ -408,6 +408,8 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
+        spp['blending'] = 'none' if spp['blending'].blank?
+
         merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 
         merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))

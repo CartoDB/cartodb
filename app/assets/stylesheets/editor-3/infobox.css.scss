@@ -14,7 +14,12 @@
   }
 
   &.is-alert {
-    background: rgba($cHighlightYellow, 0.6);
+    background: rgba($cHighlightYellow, 0.64);
+  }
+
+  &.is-dark {
+    background: rgba(40, 44, 47, 0.64);
+    color: $cHighlightYellow;
   }
 }
 

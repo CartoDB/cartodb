@@ -683,6 +683,8 @@
         "filter-column": "Filter column"
       },
       "infowindow": {
+        "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
+        "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -745,6 +747,26 @@
           "body": "There is no data available to be displayed."
         }
       }
+    },
+    "infowindow": {
+      "apply": "APPLY",
+      "html-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can\'t be empty."
+        }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "CUSTOM HTML APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "CONTINUE"
+        }
+      },
     },
     "style": {
       "types": {

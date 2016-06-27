@@ -691,6 +691,7 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
+          "custom": "Custom",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
           "infowindow_color": "Color",
@@ -704,6 +705,7 @@
       "tooltip": {
         "style": {
           "none": "None",
+          "custom": "Custom",
           "tooltip_light": "Light",
           "tooltip_dark": "Dark"
         },

@@ -24,6 +24,15 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 404
     end
 
+    it 'redirects to editor if disabled' do
+      @user1.stubs(:builder_enabled).returns(false)
+
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 302
+      response.location.should include '/viz/' + @visualization.id
+    end
+
     it 'returns 404 for non-existent visualizations' do
       get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
 

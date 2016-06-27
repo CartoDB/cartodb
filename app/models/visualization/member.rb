@@ -685,7 +685,7 @@ module CartoDB
       end
 
       def latest_mapcap
-        Carto::Mapcap.where(visualization_id: id).order('created_at DESC').first.limit(1).first
+        Carto::Mapcap.where(visualization_id: id).order('created_at DESC').limit(1).first
       end
 
       private

@@ -100,7 +100,8 @@ module Concerns
          :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
          :mobile_xamarin, :mobile_custom_watermark, :mobile_offline_maps,
-         :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users, :salesforce_datasource_enabled]
+         :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
+         :salesforce_datasource_enabled, :viewer]
       end
     end
 
@@ -125,7 +126,8 @@ module Concerns
           :arcgis_datasource_enabled, :google_sign_in, :last_password_change_date,
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
-          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit
+          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
+          :viewer
         )
         case action
         when :create

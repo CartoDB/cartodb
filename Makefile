@@ -46,7 +46,6 @@ WORKING_SPECS_1 = \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
-	spec/models/visualization/copier_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
@@ -253,6 +252,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
+	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \

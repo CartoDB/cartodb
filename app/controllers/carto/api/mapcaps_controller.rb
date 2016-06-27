@@ -58,7 +58,9 @@ module Carto
       MAX_MAPCAPS_PER_MAP = 1
 
       def ensure_only_one_mapcap
-        @visualization.mapcaps[MAX_MAPCAPS_PER_MAP..-1].each(&:destroy)
+        previous_mapcaps = @visualization.mapcaps # already ordered from newer to older
+
+        previous_mapcaps[MAX_MAPCAPS_PER_MAP..-1].each(&:destroy) unless previous_mapcaps.count <= MAX_MAPCAPS_PER_MAP
       end
 
       def load_mapcap

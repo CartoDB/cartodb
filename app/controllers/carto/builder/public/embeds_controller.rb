@@ -36,7 +36,7 @@ module Carto
         end
 
         def load_vizjson
-          latest_mapcap = Carto::Mapcap.where(visualization_id: @visualization.id).order('created_at DESC').first
+          latest_mapcap = @visualization.latest_mapcap
 
           visulaization_for_vizjson = latest_mapcap ? latest_mapcap.regenerate_visualization : @visualization
 

@@ -361,7 +361,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def latest_mapcap
-    mapcaps.first
+    Carto::Mapcap.where(visualization_id: id).order('created_at DESC').limit(1).first
   end
 
   private

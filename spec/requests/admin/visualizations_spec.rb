@@ -93,6 +93,76 @@ describe Admin::VisualizationsController do
       follow_redirect!
       last_request.path.should =~ %r{/tables/}
     end
+
+    describe 'redirects to builder' do
+      describe 'for tables' do
+        before(:each) do
+          @id = table_factory.id
+        end
+        it 'if forced' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 302
+          follow_redirect!
+          last_request.path.should =~ %r{/dataset/}
+        end
+
+        it 'only if enabled' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'only if forced' do
+          @user.stubs(:builder_enabled).returns(nil)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+      end
+
+      describe 'for visualizations' do
+        before(:each) do
+          @id = factory.fetch('id')
+        end
+        it 'if forced' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 302
+          follow_redirect!
+          last_request.path.should =~ %r{/builder/}
+        end
+
+        it 'only if enabled' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'only if forced' do
+          @user.stubs(:builder_enabled).returns(nil)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+      end
+    end
   end # GET /viz/:id
 
   describe 'GET /tables/:id/public/table' do

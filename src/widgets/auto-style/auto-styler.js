@@ -22,7 +22,7 @@ var AutoStyler = cdb.core.Model.extend({
         if (originalWidth.length > 1) {
           return null;
         } else {
-          originalWidth = originalWidth[0].replace('marker-width:', '').replace(';', '');
+          originalWidth = originalWidth[0].trim().replace('marker-width:', '').replace(';', '');
         }
       }
     }

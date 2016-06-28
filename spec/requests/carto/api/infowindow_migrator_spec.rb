@@ -1,5 +1,5 @@
 require_relative '../../../spec_helper_min'
-require_relative '../../../../app/controllers/carto/api/infowindow_migrator'
+require_dependency 'carto/api/infowindow_migrator'
 
 describe Carto::Api::InfowindowMigrator do
   class TestInfowindowMigrator
@@ -16,15 +16,15 @@ describe Carto::Api::InfowindowMigrator do
       "width" => 226,
       "maxHeight" => 180
     }
-    let(:tooltip) do
-      {
-        "fields" => [],
-        "template_name" => "tooltip_light",
-        "template" => "",
-        "alternative_names" => {},
-        "maxHeight" => 180
-      }
-    end
+  end
+  let(:tooltip) do
+    {
+      "fields" => [],
+      "template_name" => "tooltip_light",
+      "template" => "",
+      "alternative_names" => {},
+      "maxHeight" => 180
+    }
   end
 
   describe '#migrate_builder_infowindow' do

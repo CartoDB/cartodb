@@ -1016,8 +1016,6 @@ class User < Sequel::Model
   end
 
   def remaining_twitter_quota
-    # HOTFIX block remaining quota for free users
-    return 0 if self.account_type == 'FREE'
     if organization.present?
       remaining = organization.remaining_twitter_quota
     else
@@ -1562,6 +1560,22 @@ class User < Sequel::Model
 
   def open_apps_enabled?
     mobile_max_open_users > 0
+  end
+
+  # The builder is enabled/disabled based on a feature flag
+  # The builder_enabled is used to allow the user to turn it on/off
+  def builder_enabled?
+    user = has_organization? ? organization.owner : self
+    user.has_feature_flag?('editor-3')
+  end
+
+  def force_builder?
+    builder_enabled? && builder_enabled == true
+  end
+
+  def force_editor?
+    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
+    builder_enabled == false || !builder_enabled?
   end
 
   private

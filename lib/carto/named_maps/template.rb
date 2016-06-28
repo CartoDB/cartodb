@@ -113,7 +113,7 @@ module Carto
       end
 
       def options_for_plain_basemap_layers(layer_options)
-        layer_options['image'].empty? ? { color: layer_options['color'] } : { imageUrl: layer_options['image'] }
+        layer_options['image'].present? ? { imageUrl: layer_options['image'] } : { color: layer_options['color'] }
       end
 
       def options_for_http_basemap_layers(layer_options)

@@ -122,6 +122,9 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
+          salesforce: {
+            enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|

@@ -16,7 +16,7 @@ describe UserOrganization do
     end
 
     after(:each) do
-      stub_named_maps_calls
+      bypass_named_maps
       @organization.destroy_cascade if @organization
       @owner = ::User.where(id: @owner.id).first if @owner
       @owner.destroy if @owner

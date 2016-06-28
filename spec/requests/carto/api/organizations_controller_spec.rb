@@ -28,7 +28,7 @@ describe Carto::Api::OrganizationsController do
 
     after(:all) do
       @group_1.destroy
-      stub_named_maps_calls
+      bypass_named_maps
       delete_user_data(@org_user_3)
       @org_user_3.destroy
     end

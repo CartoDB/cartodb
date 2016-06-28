@@ -8,6 +8,7 @@ module CartoDB
       SCHEMA                        = 'cdb_importer'
       PROJECTION                    = 3857
       BLOCKSIZE                     = '128x128'
+      DOWNSAMPLED_FILENAME          = '%s_downsampled.tif'
       WEBMERCATOR_FILENAME          = '%s_webmercator.tif'
       ALIGNED_WEBMERCATOR_FILENAME  = '%s_aligned_webmercator.tif'
       SQL_FILENAME                  = '%s%s.sql'
@@ -20,6 +21,7 @@ module CartoDB
         self.basepath             = filepath.slice(0, filepath.rindex('/')+1)
         self.webmercator_filepath = WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
         self.aligned_filepath     = ALIGNED_WEBMERCATOR_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
+        self.downsampled_filepath = DOWNSAMPLED_FILENAME % [ filepath.gsub(/\.tif$/, '') ]
         self.pg_options           = pg_options
         self.table_name           = table_name
         self.exit_code            = nil
@@ -32,6 +34,7 @@ module CartoDB
       attr_reader   :exit_code, :command_output
 
       def run
+        downsample_raster
         reproject_raster
 
         size = extract_raster_size
@@ -60,10 +63,20 @@ module CartoDB
 
       attr_writer   :exit_code, :command_output
       attr_accessor :filepath, :pg_options, :table_name, :webmercator_filepath, :aligned_filepath, \
-                    :basepath, :additional_tables, :db, :base_table_fqtn
+                    :basepath, :additional_tables, :db, :base_table_fqtn, :downsampled_filepath
 
-      def align_raster(scale)
-        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
+      def downsample_raster
+        gdal_translate_command = %Q(#{gdal_translate_path} -scale -ot Byte #{GDALWARP_COMMON_OPTIONS} #{filepath} #{downsampled_filepath})
+
+        stdout, stderr, status  = Open3.capture3(gdal_translate_command)
+        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdal_translate_command}"
+        self.command_output << "\n#{output_message}"
+        self.exit_code = status.to_i
+        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
+      end
+
+      def reproject_raster
+        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{downsampled_filepath} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -72,8 +85,8 @@ module CartoDB
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
-      def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} -ot Byte #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{filepath} #{webmercator_filepath})
+      def align_raster(scale)
+        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -tr #{scale} -#{scale} #{webmercator_filepath} #{aligned_filepath} )
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -236,6 +249,10 @@ module CartoDB
 
       def gdalwarp_path
         `which gdalwarp`.strip
+      end
+
+      def gdal_translate_path
+        `which gdal_translate`.strip
       end
 
       def gdalinfo_path

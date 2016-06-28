@@ -4,14 +4,13 @@ require_relative '../../../models/visualization/member'
 require_relative '../../../models/visualization/collection'
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../models/visualization/locator'
-require_relative '../../../models/visualization/copier'
 require_relative '../../../models/visualization/name_generator'
 require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
-require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
 require_relative '../../../../lib/static_maps_url_helper'
 require_relative '../../../../lib/cartodb/event_tracker'
+require_dependency 'carto/visualizations_export_service_2'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
@@ -41,31 +40,22 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         vis_data = add_default_privacy(vis_data)
 
         param_tables = params[:tables]
-        subdomain = CartoDB.extract_subdomain(request)
         current_user_id = current_user.id
 
-        vis = if params[:source_visualization_id]
-                source, = @stats_aggregator.timing('locate') do
-                  locator.get(params.fetch(:source_visualization_id), subdomain)
-                end
-
-                return head(403) unless source && source.can_copy?(current_user)
-
-                copy_overlays = params.fetch(:copy_overlays, true)
-                copy_layers = params.fetch(:copy_layers, true)
-
-                additional_fields = {
-                  type:       params.fetch(:type, Visualization::Member::TYPE_DERIVED),
-                  parent_id:  params.fetch(:parent_id, nil)
-                }
-
-                @stats_aggregator.timing('copy') do
-                  Visualization::Copier.new(current_user, source, name_candidate)
-                                       .copy(copy_overlays, copy_layers, additional_fields)
+        source_id = params[:source_visualization_id]
+        vis = if source_id
+                user = Carto::User.find(current_user_id)
+                source = Carto::Visualization.where(id: source_id).first
+                return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
+                if source.derived?
+                  duplicate_derived_visualization(params[:source_visualization_id], user)
+                else
+                  tables = [UserTable.find(id: source.user_table.id)]
+                  create_visualization_from_tables(tables, vis_data)
                 end
               elsif param_tables
+                subdomain = CartoDB.extract_subdomain(request)
                 viewed_user = ::User.find(username: subdomain)
-
                 tables = @stats_aggregator.timing('locate-table') do
                   tables = param_tables.map do |table_name|
                     Helpers::TableLocator.new.get_by_id_or_name(table_name, viewed_user) if viewed_user
@@ -73,21 +63,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
                   tables.flatten
                 end
-
-                blender = Visualization::TableBlender.new(current_user, tables)
-                map = blender.blend
-
-                vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
-                                                               map_id: map.id,
-                                                               type: 'derived',
-                                                               privacy: blender.blended_privacy,
-                                                               user_id: current_user_id))
-
-                @stats_aggregator.timing('default-overlays') do
-                  Visualization::Overlays.new(vis).create_default_overlays
-                end
-
-                vis
+                create_visualization_from_tables(tables, vis_data)
               else
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
@@ -115,13 +91,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors }, 400)
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
       end
     end
   end
@@ -177,13 +146,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         head(404)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
       rescue => e
         render_jsonp({ errors: ['Unknown error'] }, 400)
       end
@@ -216,15 +178,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head 204
       rescue KeyError
         head(404)
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-
     end
   end
 
@@ -267,13 +221,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     head(404)
   rescue CartoDB::InvalidMember
     render_jsonp({ errors: ['Error saving next slide position'] }, 400)
-  rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-    CartoDB.notify_exception(exception, { user: current_user, template_data: exception.template_data })
-    render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-  rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-    render_jsonp({ errors: { named_map: exception } }, 400)
-  rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-    render_jsonp({ errors: { named_maps: exception } }, 400)
   rescue
     render_jsonp({ errors: ['Unknown error'] }, 400)
   end
@@ -372,6 +319,36 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   private
+
+  def duplicate_derived_visualization(source, user)
+    visualization_copy_id = @stats_aggregator.timing('copy') do
+      export_service = Carto::VisualizationsExportService2.new
+      visualization_hash = export_service.export_visualization_json_hash(source, user)
+      visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
+      visualization_copy.name = name_candidate
+      Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
+      visualization_copy.id
+    end
+
+    CartoDB::Visualization::Member.new(id: visualization_copy_id).fetch
+  end
+
+  def create_visualization_from_tables(tables, vis_data)
+    blender = Visualization::TableBlender.new(current_user, tables)
+    map = blender.blend
+
+    vis = Visualization::Member.new(vis_data.merge(name: name_candidate,
+                                                   map_id: map.id,
+                                                   type: 'derived',
+                                                   privacy: blender.blended_privacy,
+                                                   user_id: current_user.id))
+
+    @stats_aggregator.timing('default-overlays') do
+      Visualization::Overlays.new(vis).create_default_overlays
+    end
+
+    vis
+  end
 
   def table_and_schema_from_params
     if params.fetch('id', nil) =~ /\./

@@ -9,5 +9,10 @@
       </button>
     </div>
   </div>
-  <p class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis"><%- layerName %></p>
+  <div class="u-flex">
+    <span
+      class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace--m u-upperCase"
+      style="background-color: <%- sourceColor %>;"><%- source %></span>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis"><%- layerName %></p>
+  </div>
 </div>

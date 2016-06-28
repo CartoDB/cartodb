@@ -9,6 +9,7 @@
       <%- type === 'number' && columnName !== 'cartodb_id' ? 'is-number' : '' %>
       <%- value === null ? 'is-null' : '' %>
       <%- columnName === 'cartodb_id' ? 'is-cartodbId' : '' %>
+      js-value
     ">
       <%- value === null ? 'null' : formattedValue %>
     </p>

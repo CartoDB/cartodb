@@ -11,8 +11,8 @@ module Carto
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
 
-    serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
-    serialize :export_json, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :ids_json, ::Carto::CartoJsonSerializer
+    serialize :export_json, ::Carto::CartoJsonSerializer
 
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
@@ -23,7 +23,7 @@ module Carto
     validates :export_json, carto_json_symbolizer: true
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_hash_export(export_json.deep_symbolize_keys)
+      regenerated_visualization = build_visualization_from_hash_export(export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
 

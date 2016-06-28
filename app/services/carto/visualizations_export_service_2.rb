@@ -98,6 +98,8 @@ module Carto
         options[option_key] = nil if options.has_key?(option_key)
       end
 
+      # Indifferent access is used to keep symbol/string hash coherence with Layer serializers.
+
       options_with_indifferent_access = options.with_indifferent_access
 
       infowindow = exported_layer[:infowindow]

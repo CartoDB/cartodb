@@ -68,7 +68,7 @@ describe Carto::Builder::VisualizationsController do
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 403
+      response.status.should == 404
     end
 
     it 'does not show slide type visualizations' do

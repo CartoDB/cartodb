@@ -684,6 +684,10 @@ module CartoDB
         Carto::Mapcap.latest_for_visualization(id)
       end
 
+      def latest_mapcap
+        mapcaps.limit(1).first
+      end
+
       def mapcaped?
         mapcaps.exists?
       end

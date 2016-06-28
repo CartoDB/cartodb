@@ -210,7 +210,13 @@ class User < Sequel::Model
       self.sync_tables_enabled ||= true
     end
 
-    set_viewer_quotas if viewer
+    if viewer
+      # Enforce quotas
+      set_viewer_quotas
+      if column_changed?(:viewer)
+        revoke_rw_permission_on_shared_entities
+      end
+    end
   end
 
   def twitter_datasource_enabled
@@ -219,20 +225,6 @@ class User < Sequel::Model
     else
       super
     end
-  end
-
-  def set_viewer_quotas
-    self.quota_in_bytes = 0 unless quota_in_bytes == 0
-    self.geocoding_quota = 0 unless geocoding_quota == 0
-    self.soft_geocoding_limit = false if soft_geocoding_limit
-    self.twitter_datasource_quota = 0 unless twitter_datasource_quota == 0
-    self.soft_twitter_datasource_limit = false if soft_twitter_datasource_limit
-    self.here_isolines_quota = 0 unless here_isolines_quota == 0
-    self.soft_here_isolines_limit = false if soft_here_isolines_limit
-    self.obs_snapshot_quota = 0 unless obs_snapshot_quota == 0
-    self.soft_obs_snapshot_limit = false if soft_obs_snapshot_limit
-    self.obs_general_quota = 0 unless obs_general_quota == 0
-    self.soft_obs_general_limit = false if soft_obs_general_limit
   end
 
   def after_create
@@ -1676,5 +1668,39 @@ class User < Sequel::Model
 
   def set_last_password_change_date
     self.last_password_change_date = Time.zone.now unless new?
+  end
+
+  def set_viewer_quotas
+    self.quota_in_bytes = 0 unless quota_in_bytes == 0
+    self.geocoding_quota = 0 unless geocoding_quota == 0
+    self.soft_geocoding_limit = false if soft_geocoding_limit
+    self.twitter_datasource_quota = 0 unless twitter_datasource_quota == 0
+    self.soft_twitter_datasource_limit = false if soft_twitter_datasource_limit
+    self.here_isolines_quota = 0 unless here_isolines_quota == 0
+    self.soft_here_isolines_limit = false if soft_here_isolines_limit
+    self.obs_snapshot_quota = 0 unless obs_snapshot_quota == 0
+    self.soft_obs_snapshot_limit = false if soft_obs_snapshot_limit
+    self.obs_general_quota = 0 unless obs_general_quota == 0
+    self.soft_obs_general_limit = false if soft_obs_general_limit
+  end
+
+  def revoke_rw_permission_on_shared_entities
+    rw_permissions = visualizations_shared_with_this_user
+                     .map(&:permission)
+                     .select { |p| p.permission_for_user(self) == CartoDB::Permission::ACCESS_READWRITE }
+
+    rw_permissions.each do |p|
+      p.remove_user_permission(self)
+      p.set_user_permission(self, CartoDB::Permission::ACCESS_READONLY)
+    end
+    rw_permissions.map(&:save)
+  end
+
+  def visualizations_shared_with_this_user
+    Carto::VisualizationQueryBuilder
+      .new
+      .with_shared_with_user_id(id)
+      .build
+      .map { |v| CartoDB::Visualization::Member.new(id: v.id).fetch }
   end
 end

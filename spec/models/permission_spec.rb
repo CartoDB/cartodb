@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 include CartoDB
 
 describe CartoDB::Permission do
+  include Carto::Factories::Visualizations
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
@@ -210,6 +211,44 @@ describe CartoDB::Permission do
       end.to raise_error(Sequel::ValidationFailed, "access_control_list grants write to viewers: #{user2.username}")
 
       user2.destroy
+    end
+
+    it 'changes RW to RO permission to builders becoming viewers' do
+      user = create_user
+      user2 = create_user(viewer: false)
+
+      map, table, table_visualization, visualization = create_full_visualization(Carto::User.find(user.id))
+
+      permission = CartoDB::Permission[table_visualization.permission.id]
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READWRITE
+        }
+      ]
+      Table.any_instance.expects(:add_read_write_permission).once.returns(true)
+      permission.save
+      permission.reload
+
+      permission.permission_for_user(user2).should eq CartoDB::Permission::ACCESS_READWRITE
+
+      user2.viewer = true
+      Table.any_instance.expects(:remove_access).once.returns(true)
+      Table.any_instance.expects(:add_read_permission).once.returns(true)
+      user2.save
+      user2.reload
+
+      permission.reload
+      permission.permission_for_user(user2).should eq CartoDB::Permission::ACCESS_READONLY
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+
+      user2.destroy
+      user.destroy
     end
 
     it 'supports groups' do

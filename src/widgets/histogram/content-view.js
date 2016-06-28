@@ -443,7 +443,9 @@ module.exports = cdb.core.View.extend({
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
-      hi_index: null
+      hi_index: null,
+      min: this._dataviewModel.start,
+      max: this._dataviewModel.end
     });
     this._dataviewModel.disableFilter();
     this.filter.unsetRange();

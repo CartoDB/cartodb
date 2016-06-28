@@ -11,16 +11,19 @@ module Carto
 
     belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
 
-    before_save :generate_export_json, :generate_ids_json
+    serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :export_json, ::Carto::CartoJsonSymbolizerSerializer
 
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
-    serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
+    before_validation :generate_export_json, :generate_ids_json
+
     validates :ids_json, carto_json_symbolizer: true
+    validates :export_json, carto_json_symbolizer: true
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_hash_export(export_json)
+      regenerated_visualization = build_visualization_from_hash_export(export_json.deep_symbolize_keys)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
 
@@ -42,12 +45,12 @@ module Carto
         visualization_id: visualization.id,
         map_id: visualization.map.id,
         layers: visualization.layers.map { |layer| { layer_id: layer.id, widgets: layer.widgets.map(&:id) } }
-      }.to_json
+      }
     end
 
     def repopulate_ids(regenerated_visualization)
       regenerated_visualization.id = ids_json[:visualization_id]
-      regenerated_visualization.map.id = ids_json[:map_id]
+      regenerated_visualization.map_id = regenerated_visualization.map.id = ids_json[:map_id]
 
       regenerated_visualization.map.layers.each_with_index do |layer, index|
         stored_layer_ids = ids_json[:layers][index]

@@ -7,6 +7,7 @@
       <button class="u-rSpace--xl u-actionTextColor js-privacy">
         <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </button>
+      <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></span>
     </div>
   </div>
 </div>

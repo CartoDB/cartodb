@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../services/carto/visualizations_export_service_2'
+require_relative './carto_json_serializer'
 require_dependency 'carto/named_maps/api'
 
 module Carto
@@ -15,16 +16,15 @@ module Carto
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
+    serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
+    validates :ids_json, carto_json_symbolizer: true
+
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_json_export(export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
 
       repopulate_ids(regenerated_visualization)
-    end
-
-    def ids_json
-      JSON.load(self[:ids_json]).with_indifferent_access
     end
 
     def self.latest_for_visualization(visualization_id)

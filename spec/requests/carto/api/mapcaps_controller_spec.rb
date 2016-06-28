@@ -169,7 +169,8 @@ describe Carto::Api::MapcapsController do
 
     it 'destroy a mapcap' do
       get destroy_mapcap_url, {} do |response|
-        response.status.should eq 200
+        response.status.should eq 204
+        response.body.should be_empty
 
         Carto::Mapcap.exists?(response.body[:id]).should_not be_true
       end

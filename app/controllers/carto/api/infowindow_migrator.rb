@@ -14,6 +14,12 @@ module Carto
         old_template_name = templated_sym[:template_name]
         return templated_element if old_template_name == 'none'
 
+        fields = templated_element['fields']
+        unless fields.present?
+          templated_element['template_name'] = 'none'
+          return templated_element
+        end
+
         if MIGRATED_TEMPLATES.include?(old_template_name)
           new_template_name = 'infowindow_color'
 

@@ -37,7 +37,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def carto_and_torque_layers
-    layers.select(&:carto?) + layers.select(&:torque?)
+    layers.select { |layer| layer.carto? || layer.torque? }
   end
 
   def torque_layers

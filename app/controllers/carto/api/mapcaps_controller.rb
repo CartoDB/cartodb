@@ -7,7 +7,7 @@ module Carto
       include Carto::ControllerHelper
       include Carto::Builder::BuilderUsersModule
 
-      ssl_required :show, :create, :destroy
+      ssl_required :show, :create, :destroy, :index
 
       before_filter :builder_users_only,
                     :load_visualization,

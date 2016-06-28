@@ -183,10 +183,6 @@ module CartoDB
         # @throws InvalidServiceError
         # @throws ServiceDisabledError
         def get_resource_metadata(id)
-          unless @user.nil?
-            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.arcgis_datasource_enabled?
-          end
-
           if is_multiresource?(id)
             @url = sanitize_id(id)
             {
@@ -358,7 +354,7 @@ module CartoDB
 
         # NOTE: Assumes url is valid
         # NOTE: Returned ids are sorted so they can be chunked into blocks to
-        #       be requested by range queries: `(OBJECTID >= ... AND OBJECTID <= ... )`        
+        #       be requested by range queries: `(OBJECTID >= ... AND OBJECTID <= ... )`
         # @param url String
         # @return Array
         # @throws DataDownloadError

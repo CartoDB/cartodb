@@ -425,10 +425,6 @@ class Carto::User < ActiveRecord::Base
     Carto::AccountType.new.dedicated_support?(self)
   end
 
-  def arcgis_datasource_enabled?
-    true
-  end
-
   def private_maps_enabled?
     flag_enabled = self.private_maps_enabled
     return true if flag_enabled.present? && flag_enabled == true

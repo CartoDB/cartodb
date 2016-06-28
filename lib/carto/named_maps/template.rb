@@ -20,7 +20,7 @@ module Carto
       DATAVIEW_TEMPLATE_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column, :operation].freeze
 
       def initialize(visualization)
-        # TODO: Remove when it's safe to assume thais confussion won't happen.
+        # TODO: Remove when it's safe to assume this confussion won't happen.
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
 
         @visualization = visualization

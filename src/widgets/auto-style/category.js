@@ -1,5 +1,4 @@
 var AutoStyler = require('./auto-styler');
-var _ = require('underscore');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('meta').cartocss;
@@ -12,7 +11,7 @@ var CategoryAutoStyler = AutoStyler.extend({
   _generateCategoryRamp: function (sym) {
     var ramp;
     var cats = this.dataviewModel.get('allCategoryNames');
-    ramp = 'marker-fill: ' + this.colors.getColorByCategory('OTHER') + ';';
+    ramp = sym + ': ' + this.colors.getColorByCategory('OTHER') + ';';
     ramp += cats.map(function (c, i) {
       var color = this.colors.getColorByCategory(c);
       return '[' + this.dataviewModel.get('column') + '=\'' + cats[i] + '\']{\n' + sym + ': ' + color + ';\n}';

@@ -56,35 +56,35 @@
   margin: 0 auto 48px;
 
   .arrow {
-    transform: translateX(30px) translateY(15px);
-    transform-origin: left center;
-    transition: all 250ms ease-out 100ms;
-    opacity: 0;
+    @include opacity(0);
+    @include transition(all 250ms ease-out 100ms);
+    @include transform(translateX(30px) translateY(15px));
+    @include css3-prefix(transform-origin, left center);
   }
   .point {
-    transition: all 250ms ease-out;
-    transform-origin: 50% 50%;
+    @include transition(all 250ms ease-out);
+    @include css3-prefix(transform-origin, 50%);
   }
   .imago:hover .point {
-    transform: scale(3);
+    @include transform(scale(3));
   }
   .imago:hover .arrow {
-    transform: translateX(10px) translateY(15px);
-    opacity: 1;
+    @include opacity(1);
+    @include transform(translateX(10px) translateY(15px));
   }
 
   .imago .arrowTop,
   .imago .arrowBottom {
-    transform-origin: left center;
-    transform: rotate(0deg);
-    transition: all 100ms ease-out 300ms;
+    @include transition(all 100ms ease-out 300ms);
+    @include transform(rotate(0deg));
+    @include css3-prefix(left center);
   }
 
   .imago:hover .arrowTop {
-    transform: rotate(45deg);
+    @include transform(rotate(45deg));
   }
   .imago:hover .arrowBottom {
-    transform: rotate(-45deg);
+    @include transform(rotate(-45deg));
   }
 }
 

@@ -44,7 +44,7 @@ module Carto
       private
 
       def load_visualization
-        visualization_id = uuid_parameter(params[:visualization_id])
+        visualization_id = uuid_parameter(:visualization_id)
 
         @visualization = Carto::Visualization.find(visualization_id)
       rescue ActiveRecord::RecordNotFound
@@ -64,7 +64,7 @@ module Carto
       end
 
       def load_mapcap
-        mapcap_id = uuid_parameter(params[:id])
+        mapcap_id = uuid_parameter(:id)
 
         @mapcap = Carto::Mapcap.find(mapcap_id)
       rescue ActiveRecord::RecordNotFound

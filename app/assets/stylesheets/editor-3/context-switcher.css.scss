@@ -1,0 +1,17 @@
+// Context switcher styles (map view, table view)
+// ----------------------------------------------
+
+@import 'cdb-utilities/mixins';
+
+.CDB-Overlay.Editor-contextSwitcher {
+  position: fixed;
+  right: 70px;
+  bottom: 20px;
+}
+.CDB-Overlay.Editor-contextSwitcher > button {
+  @include display-flex();
+  @include align-items(center);
+  width: 32px;
+  height: 100%;
+  text-align: center;
+}

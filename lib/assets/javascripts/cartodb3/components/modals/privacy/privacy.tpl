@@ -1,9 +1,9 @@
 <div class="Dialog-header Dialog-header--expanded Modal-header js-header">
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
-    <i class="CDB-IconFont"></i>
+    <i class="CDB-IconFont CDB-IconFont-unlock"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace"><%- name %> <%- _t('components.modals.privacy.privacy') %></h2>
-  <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.privacy.subtitle') %></h3>
+  <h3 class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.privacy.subtitle') %></h3>
 </div>
 
 <div class="Modal-body">

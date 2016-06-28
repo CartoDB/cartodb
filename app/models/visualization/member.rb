@@ -648,7 +648,7 @@ module CartoDB
       end
 
       def save_named_map
-        return if type == TYPE_REMOTE || latest_mapcap
+        return if type == TYPE_REMOTE || latest_mapcap_exists?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do
@@ -681,11 +681,11 @@ module CartoDB
       end
 
       def mapcaps
-        Carto::Mapcap.where(visualization_id: id).order('created_at DESC')
+        Carto::Mapcap.latest_for_visualization(id)
       end
 
-      def latest_mapcap
-        Carto::Mapcap.where(visualization_id: id).order('created_at DESC').limit(1).first
+      def latest_mapcap_exists?
+        mapcaps.exists?
       end
 
       private
@@ -805,7 +805,7 @@ module CartoDB
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update unless latest_mapcap
+        Carto::NamedMaps::Api.new(carto_visualization).update unless latest_mapcap_exists?
       end
 
       def propagate_privacy_and_name_to(table)

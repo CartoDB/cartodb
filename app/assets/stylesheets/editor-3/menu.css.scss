@@ -54,6 +54,38 @@
   width: 32px;
   height: 32px;
   margin: 0 auto 48px;
+
+  .arrow {
+    transform: translateX(30px) translateY(15px);
+    transform-origin: left center;
+    transition: all 250ms ease-out 100ms;
+    opacity: 0;
+  }
+  .point {
+    transition: all 250ms ease-out;
+    transform-origin: 50% 50%;
+  }
+  .imago:hover .point {
+    transform: scale(3);
+  }
+  .imago:hover .arrow {
+    transform: translateX(10px) translateY(15px);
+    opacity: 1;
+  }
+
+  .imago .arrowTop,
+  .imago .arrowBottom {
+    transform-origin: left center;
+    transform: rotate(0deg);
+    transition: all 100ms ease-out 300ms;
+  }
+
+  .imago:hover .arrowTop {
+    transform: rotate(45deg);
+  }
+  .imago:hover .arrowBottom {
+    transform: rotate(-45deg);
+  }
 }
 
 .EditorMenu-avatar {

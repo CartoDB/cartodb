@@ -77,7 +77,7 @@
   .imago .arrowBottom {
     @include transition(all 100ms ease-out 300ms);
     @include transform(rotate(0deg));
-    @include css3-prefix(left center);
+    @include css3-prefix(ltransform-origin, left center);
   }
 
   .imago:hover .arrowTop {

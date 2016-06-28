@@ -2,6 +2,20 @@
   "user": {
     "you": "You"
   },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "analyses": {
     "cluster": "Cluster",
     "intersection": "Intersection",
@@ -278,8 +292,8 @@
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
-            "title": "Merge by column",
-            "desc": "Merge two layers matching column names"
+            "title": "Link to layer",
+            "desc": "Link two layers matching column names"
           }
         }
       },
@@ -570,6 +584,11 @@
           "error": "Error adding new row: %{error}",
           "success": "New row added"
         },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+        },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",
@@ -714,8 +733,13 @@
         "weight-column": "Weight column",
         "weight-type": "Weight type",
         "workflow": "Workflow",
-        "source-column": "Source column",
-        "filter-column": "Filter column"
+        "link-layer": "Source col.",
+        "linked-layer": "Linked layer",
+        "link-layer-desc": "Specify which layer you want to link to this",
+        "source-column": "Source col.",
+        "filter-column": "Linked layer col.",
+        "key-columns": "Key columns",
+        "key-columns-desc": "Define how to link them"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -726,6 +750,7 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
+          "custom": "Custom",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
           "infowindow_color": "Color",
@@ -739,6 +764,7 @@
       "tooltip": {
         "style": {
           "none": "None",
+          "custom": "Custom",
           "tooltip_light": "Light",
           "tooltip_dark": "Dark"
         },

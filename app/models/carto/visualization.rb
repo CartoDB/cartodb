@@ -342,7 +342,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
-    return if type == TYPE_REMOTE || mapcaped?
+    return if type == TYPE_REMOTE || mapcapped?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
@@ -357,7 +357,7 @@ class Carto::Visualization < ActiveRecord::Base
     permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
   end
 
-  def mapcaped?
+  def mapcapped?
     mapcaps.exists?
   end
 

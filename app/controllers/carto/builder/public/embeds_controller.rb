@@ -37,7 +37,7 @@ module Carto
         end
 
         def load_vizjson
-          visualization_for_vizjson = if @visualization.mapcaped?
+          visualization_for_vizjson = if @visualization.mapcapped?
                                         @visualization.latest_mapcap.regenerate_visualization
                                       else
                                         @visualization

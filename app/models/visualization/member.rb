@@ -648,7 +648,7 @@ module CartoDB
       end
 
       def save_named_map
-        return if type == TYPE_REMOTE || mapcaped?
+        return if type == TYPE_REMOTE || mapcapped?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do
@@ -688,7 +688,7 @@ module CartoDB
         mapcaps.limit(1).first
       end
 
-      def mapcaped?
+      def mapcapped?
         mapcaps.exists?
       end
 
@@ -809,7 +809,7 @@ module CartoDB
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update unless mapcaped?
+        Carto::NamedMaps::Api.new(carto_visualization).update unless mapcapped?
       end
 
       def propagate_privacy_and_name_to(table)

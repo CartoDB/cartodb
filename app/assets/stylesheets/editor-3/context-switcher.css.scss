@@ -8,6 +8,9 @@
   right: 70px;
   bottom: 20px;
 }
+.CDB-Overlay.Editor-contextSwitcher.is-moved {
+  right: 430px;
+}
 .CDB-Overlay.Editor-contextSwitcher > button {
   @include display-flex();
   @include align-items(center);

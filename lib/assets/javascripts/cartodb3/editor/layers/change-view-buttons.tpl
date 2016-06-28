@@ -1,4 +1,6 @@
-<div class="u-bSpace--xl CDB-Overlay Editor-contextSwitcher">
+<div class="u-bSpace--xl CDB-Overlay Editor-contextSwitcher js-mapTableView
+  <% if (isThereWidgets) { %>is-moved<% } %>
+  ">
   <button class="js-showTable">
     <svg width="11px" height="10px" viewBox="505 436 11 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <path d="M505,437 L505,437 L506,436 L506,446 L505,445 L508,445 L507,446 L507,436 L508,437 L505,437 Z M505,436 L508,436 L508,446 L505,446 L505,436 L505,436 Z M509,437 L509,437 L510,436 L510,446 L509,445 L512,445 L511,446 L511,436 L512,437 L509,437 Z M509,436 L512,436 L512,446 L509,446 L509,436 L509,436 Z M515,436 L515,436 L516,437 L513,437 L514,436 L514,446 L513,445 L516,445 L515,446 L515,436 Z M516,436 L516,446 L513,446 L513,436 L516,436 L516,436 Z" id="table" stroke="none" fill="#2E3C43 " fill-rule="evenodd"></path>

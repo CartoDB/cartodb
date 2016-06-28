@@ -2,6 +2,20 @@
   "user": {
     "you": "You"
   },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "analyses": {
     "cluster": "Cluster",
     "intersection": "Intersection",
@@ -120,7 +134,7 @@
         "continue-btn": "Continue",
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as Layers",
-        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps.",
+        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -207,6 +221,73 @@
       "gmt-convertion": "Date will be converted to GMT +0"
     },
     "modals": {
+      "privacy": {
+        "privacy": "privacy",
+        "cancel-btn": "CANCEL",
+        "save-btn": "SAVE",
+        "back-btn": "GO BACK",
+        "public": {
+          "type": "PUBLIC",
+          "title": "Public",
+          "body": "Everyone can view your table and download it"
+        },
+        "link": {
+          "type": "LINK",
+          "title": "Link",
+          "body": "Only the people with a shared link can view the data"
+        },
+        "password": {
+          "type": "PASSWORD",
+          "title": "Password",
+          "body": "Set a password and share only with specific people"
+        },
+        "private": {
+          "type": "PRIVATE",
+          "title": "Private",
+          "body": "Nobody can access this dataset"
+        },
+        "share": "Hey, maybe it's a good time to <a href=\"#\">share with your colleagues</a>.",
+        "subtitle": "Althought we really believe in the power of open data, you can also protect your tables",
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+        },
+        "loading": "Saving your data..."
+      },
+      "share": {
+        "done-btn": "DONE",
+        "update-btn": "UPDATE",
+        "published": "Published %{when}",
+        "last-version": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "get-link": {
+          "title": "Get the link",
+          "body": "And send it to your friends, coworkers or post in your social networks.",
+          "link": "",
+          "copy": "COPY",
+          "select": "SELECT"
+        },
+        "embed": {
+          "title": "Embed it",
+          "body": "Get your map into your blog, website or simple application.",
+          "link": "Get a simple URL.",
+          "copy": "COPY",
+          "select": "SELECT"
+        },
+        "cartodbjs": {
+          "title": "CartoDB.js",
+          "body": "Add your map to your applications by using this URL.",
+          "link": "Read more.",
+          "copy": "COPY",
+          "select": "SELECT"
+        },
+        "mobile-sdk": {
+          "title": "CartoDB Mobile SDK",
+          "body": "Add your map to your native mobile applications by using this line of code.",
+          "link": "Read more.",
+          "copy": "COPY",
+          "select": "SELECT"
+        },
+      },
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",
@@ -244,8 +325,8 @@
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
-            "title": "Merge by column",
-            "desc": "Merge two layers matching column names"
+            "title": "Link to layer",
+            "desc": "Link two layers matching column names"
           }
         }
       },
@@ -536,6 +617,11 @@
           "error": "Error adding new row: %{error}",
           "success": "New row added"
         },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+        },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",
@@ -565,6 +651,7 @@
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
+    "published": "Published %{when}",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "tab-pane": {
@@ -679,8 +766,13 @@
         "weight-column": "Weight column",
         "weight-type": "Weight type",
         "workflow": "Workflow",
-        "source-column": "Source column",
-        "filter-column": "Filter column"
+        "link-layer": "Source col.",
+        "linked-layer": "Linked layer",
+        "link-layer-desc": "Specify which layer you want to link to this",
+        "source-column": "Source col.",
+        "filter-column": "Linked layer col.",
+        "key-columns": "Key columns",
+        "key-columns-desc": "Define how to link them"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -691,6 +783,7 @@
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
+          "custom": "Custom",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
           "infowindow_color": "Color",
@@ -704,6 +797,7 @@
       "tooltip": {
         "style": {
           "none": "None",
+          "custom": "Custom",
           "tooltip_light": "Light",
           "tooltip_dark": "Dark"
         },

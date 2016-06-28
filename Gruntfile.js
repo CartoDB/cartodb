@@ -21,8 +21,6 @@
       throw grunt.util.error(env +' file is missing! See '+ env +'.sample for how it should look like');
     }
 
-    env.tape_tests = 'lib/assets/test/tape/**/*-test.js';
-
     var aws = {};
     if (grunt.file.exists('./lib/build/grunt-aws.json')) {
       aws = grunt.file.readJSON('./lib/build/grunt-aws.json');

@@ -50,8 +50,13 @@ module Carto
 
       def to_poro(migrate_builder_infowindows: false)
         poro = base_poro(@layer)
-        if migrate_builder_infowindows && poro['infowindow'].present?
-          poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
+        if migrate_builder_infowindows
+          if poro['infowindow'].present?
+            poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
+          end
+          if poro['tooltip'].present?
+            poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'])
+          end
         end
         poro
       end

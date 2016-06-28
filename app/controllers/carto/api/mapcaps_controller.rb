@@ -38,7 +38,7 @@ module Carto
       def destroy
         @mapcap.destroy
 
-        render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro)
+        render_jsonp({}, 204)
       end
 
       private

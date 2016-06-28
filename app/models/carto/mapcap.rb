@@ -20,7 +20,7 @@ module Carto
     validates :ids_json, carto_json_symbolizer: true
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_json_export(export_json)
+      regenerated_visualization = build_visualization_from_hash_export(export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
 
@@ -34,7 +34,7 @@ module Carto
     private
 
     def generate_export_json
-      self.export_json = export_visualization_json_string(visualization_id, visualization.user)
+      self.export_json = export_visualization_json_hash(visualization_id, visualization.user)
     end
 
     def generate_ids_json

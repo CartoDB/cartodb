@@ -27,7 +27,7 @@ module Carto
       JSON.load(self[:ids_json]).with_indifferent_access
     end
 
-    def self.latest_for_visualizaiton(visualization_id)
+    def self.latest_for_visualization(visualization_id)
       where(visualization_id: visualization_id).order('created_at DESC')
     end
 

@@ -237,7 +237,8 @@
         "error": {
           "title": "We couldn't save your data",
           "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
-        }
+        },
+        "loading": "Saving your data..."
       },
       "share": {
         "done-btn": "DONE",

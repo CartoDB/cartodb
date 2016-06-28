@@ -180,13 +180,6 @@ $tableBorderColor: $cSecondaryLine;
   height: $height;
   resize: vertical;
 }
-.Table-editorDate {
-  $width: 280px;
-  $height: 96px;
-  width: $width;
-  height: $height;
-  resize: vertical;
-}
 .Table-cell {
   @include align-items(center);
   width: $elementWidth;

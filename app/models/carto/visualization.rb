@@ -361,6 +361,10 @@ class Carto::Visualization < ActiveRecord::Base
     mapcaps.exists?
   end
 
+  def latest_mapcap
+    mapcaps.limit(1).first
+  end
+
   private
 
   def named_maps_api

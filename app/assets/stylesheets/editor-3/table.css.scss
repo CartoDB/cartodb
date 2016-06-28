@@ -20,7 +20,7 @@ $tableBorderColor: $cSecondaryLine;
   left: $baseSize * 2;
   overflow-x: auto;
   overflow-y: hidden;
-  background: $cWhite;
+  background: $cThirdBackground;
   z-index: 2;
 }
 .Table-head {
@@ -99,6 +99,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body {
   @include display-flex();
   @include flex(1);
+  background: $cWhite;
 }
 .Table-body table {
   position: absolute;

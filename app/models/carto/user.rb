@@ -67,6 +67,10 @@ class Carto::User < ActiveRecord::Base
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
 
+  def self.columns
+    super.reject { |c| c.name == "arcgis_datasource_enabled" }
+  end
+
   def name_or_username
     self.name.present? ? self.name : self.username
   end

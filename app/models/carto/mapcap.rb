@@ -66,7 +66,7 @@ module Carto
     end
 
     def notify_map_change
-      visualization.map.notify_map_change
+      visualization.map.force_notify_map_change
     end
 
     def update_named_map

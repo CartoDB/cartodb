@@ -47,6 +47,8 @@ module Carto
         visualization_id = uuid_parameter(:visualization_id)
 
         @visualization = Carto::Visualization.find(visualization_id)
+
+        raise ActiveRecord::RecordNotFound if @visualization.canonical?
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new("Visualization not found: #{visualization_id}")
       end

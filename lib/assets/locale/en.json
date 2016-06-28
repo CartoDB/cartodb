@@ -2,8 +2,21 @@
   "user": {
     "you": "You"
   },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "analyses": {
-    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",
@@ -216,7 +229,7 @@
         "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "trade-area": {
+          "area-of-influence": {
             "title": "Area of influence",
             "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
           },
@@ -234,7 +247,7 @@
           },
           "moran-cluster": {
             "title": "Moran cluster",
-            "desc": "Finds areas which have similar values and also outliers"
+            "desc": "Find areas which have similar values and identify outliers"
           },
           "kmeans": {
             "title": "Cluster",
@@ -245,8 +258,8 @@
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
-            "title": "Merge by column",
-            "desc": "Merge two layers matching column names"
+            "title": "Link to layer",
+            "desc": "Link two layers matching column names"
           }
         }
       },
@@ -537,6 +550,11 @@
           "error": "Error adding new row: %{error}",
           "success": "New row added"
         },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+        },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",
@@ -620,6 +638,13 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "aggregate-functions": {
+        "avg": "AVG",
+        "count": "COUNT",
+        "max": "MAX",
+        "min": "MIN",
+        "sum": "SUM"
+      },
       "analysis-form": {
         "aggregate": "Aggregate",
         "apply-btn": "Apply",
@@ -632,16 +657,18 @@
         "clusters-num": "# Clusters",
         "column": "Column",
         "create-btn": "Create",
+        "data-values": "Data values",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter": "Filter",
-        "hide": "Hide",
         "filter-aggregate": "Filter or aggregate your results",
+        "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
         "kilometers": "km",
+        "loading": "loading…",
         "max": "Max",
         "meters": "m",
         "miles": "mi",
@@ -661,6 +688,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "target": "Target layer",
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
@@ -670,16 +698,24 @@
         "weight-column": "Weight column",
         "weight-type": "Weight type",
         "workflow": "Workflow",
-        "source-column": "Source column",
-        "filter-column": "Filter column"
+        "link-layer": "Source col.",
+        "linked-layer": "Linked layer",
+        "link-layer-desc": "Specify which layer you want to link to this",
+        "source-column": "Source col.",
+        "filter-column": "Linked layer col.",
+        "key-columns": "Key columns",
+        "key-columns-desc": "Define how to link them"
       },
       "infowindow": {
+        "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
+        "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
           "window-size": "Window size",
           "header-color": "Header color",
           "none": "None",
+          "custom": "Custom",
           "infowindow_light": "Light",
           "infowindow_dark": "Dark",
           "infowindow_color": "Color",
@@ -693,6 +729,7 @@
       "tooltip": {
         "style": {
           "none": "None",
+          "custom": "Custom",
           "tooltip_light": "Light",
           "tooltip_dark": "Dark"
         },
@@ -730,8 +767,32 @@
           "title": "SQL ONLY READ",
           "body": "You just applied analysis to this layer and the SQL passed to only read.",
           "accept": "CLOSE"
+        },
+        "empty-data": {
+          "title": "NO DATA AVAILABLE",
+          "body": "There is no data available to be displayed."
         }
       }
+    },
+    "infowindow": {
+      "apply": "APPLY",
+      "html-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can\'t be empty."
+        }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "CUSTOM HTML APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "CONTINUE"
+        }
+      },
     },
     "style": {
       "types": {

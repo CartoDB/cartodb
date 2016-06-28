@@ -37,11 +37,13 @@ module Carto
         end
 
         def load_vizjson
-          latest_mapcap = @visualization.latest_mapcap
+          visualization_for_vizjson = if @visualization.mapcaped?
+                                        @visualization.latest_mapcap.regenerate_visualization
+                                      else
+                                        @visualization
+                                      end
 
-          visulaization_for_vizjson = latest_mapcap ? latest_mapcap.regenerate_visualization : @visualization
-
-          @vizjson = generate_named_map_vizjson3(visulaization_for_vizjson, params)
+          @vizjson = generate_named_map_vizjson3(visualization_for_vizjson, params)
         end
 
         def ensure_viewable

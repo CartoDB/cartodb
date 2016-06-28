@@ -2,6 +2,20 @@
   "user": {
     "you": "You"
   },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
   "analyses": {
     "cluster": "Cluster",
     "intersection": "Intersection",
@@ -602,6 +616,11 @@
           "loading": "Adding new row...",
           "error": "Error adding new row: %{error}",
           "success": "New row added"
+        },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
         },
         "destroy": {
           "cancel": "cancel",

@@ -1,4 +1,4 @@
-<div class="Dialog-headerIcon Card-icon u-bSpace--xl">
+<div class="Card-icon u-bSpace--xl">
   <i class="CDB-IconFont <%- icon %>"></i>
 </div>
 

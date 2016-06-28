@@ -377,5 +377,37 @@ describe CartoDB::Connector::Importer do
       data_import.destroy
       visualization.destroy
     end
+
+    it 'imports a visualization export without data' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_without_tables.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      # Fixture file checks
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      visualization.name.should eq "map with two layers"
+      layers = visualization.layers
+      visualization.layers.count.should eq 3 # basemap + 2 data layers
+      layers[0].options['name'].should eq "CartoDB World Eco"
+      layer1 = visualization.layers[1]
+      layer1.options['type'].should eq "CartoDB"
+      layer1.options['table_name'].should eq "guess_country"
+      layer2 = visualization.layers[2]
+      layer2.options['type'].should eq "CartoDB"
+      layer2.options['table_name'].should eq "twitter_t3chfest_reduced"
+      data_import.tables.map(&:destroy)
+      data_import.destroy
+      visualization.destroy
+    end
   end
 end

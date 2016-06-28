@@ -20,6 +20,10 @@
   &.is-orange {
     color: $cAlert;
   }
+
+  &.is-red {
+    color: $cError;
+  }
 }
 
 .Tag--outline {

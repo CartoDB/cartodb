@@ -32,3 +32,17 @@
 .Card-body {
   text-align: center;
 }
+
+.Card--privacy {
+  @include display-flex;
+  @include flex-direction(column);
+  @include justify-content(flex-end);
+  padding: 25px;
+  cursor: pointer;
+
+  &:hover,
+  &.is-selected {
+    border: 1px solid $cBlue;
+    background-color: $cWhite;
+  }
+}

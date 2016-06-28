@@ -145,7 +145,7 @@ module CartoDB
       def success?
         # TODO: Change this, "runner" can be ok even if no data has changed, should expose "data_changed" attribute
         return true unless remote_data_updated?
-        results.select(&:success?).length > 0
+        (results.count(&:success?) + @visualizations.count) > 0
       end
 
       attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations

@@ -1,7 +1,7 @@
 var AutoStyler = require('./auto-styler');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
-    var style = this.layer.get('meta').cartocss;
+    var style = this.layer.get('initialStyle');
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       style = style.replace(new RegExp('\\' + 's' + item + ':.*?;', 'g'), this._generateCategoryRamp(item));
     }.bind(this));

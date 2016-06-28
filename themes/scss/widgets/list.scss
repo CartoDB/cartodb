@@ -69,8 +69,8 @@
 }
 .CDB-Widget-listGroup {
   @include flex-grow(1);
-  min-width: $desktopLayout;
-  max-width: $desktopLayout;
+  /*min-width: $desktopLayout;
+  max-width: $desktopLayout;*/
 }
 .CDB-Widget-listItem {
   display: block;

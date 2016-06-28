@@ -104,26 +104,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   text-transform: uppercase;
   text-align: center;
 }
-.UserRoleIndicator {
-  display: inline-block;
-  height: 18px;
-  margin-left: 4px;
-  padding: 0 8px;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 5px;
-  background: #FFF;
-  font-size: $sFontSize-smaller;
-  line-height: 18px;
-  text-align: center;
-  text-transform: uppercase;
-}
-.UserRoleIndicator.Builder {
-  color: #2E3C43;
-}
-.UserRoleIndicator.Viewer {
-  color: #979EA1;
-}
 .OrganizationList-userInfoData {
   @include display-flex();
   @include flex-direction(row);

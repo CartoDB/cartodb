@@ -1,3 +1,5 @@
+@import "../variables/sizes";
+
 .UserRoleIndicator {
   display: inline-block;
   height: 18px;
@@ -7,12 +9,13 @@
   border-style: solid;
   border-radius: 5px;
   background: #FFF;
-  font-size: 10px;
+  font-size: $sFontSize-smaller;
   line-height: 18px;
   text-align: center;
   text-transform: uppercase;
-}
+  color: #2E3C43;
 
-.ContentFooter {
-  background: red;
+  &.Viewer {
+    color: #979EA1;
+  }
 }

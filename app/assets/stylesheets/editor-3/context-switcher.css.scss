@@ -11,7 +11,11 @@
   z-index: 4;
 }
 .Editor-contextSwitcher.is-moved {
-  right: 452px;
+  right: 396px;
+}
+.Editor-contextSwitcher.in-table {
+  right: 42px;
+  bottom: 42px;
 }
 .Editor-contextSwitcherButton {
   @include display-flex();

@@ -1,7 +1,6 @@
 <div class="Editor-contextSwitcher js-mapTableView
   <% if (isThereWidgets) { %>is-moved<% } %>
   ">
-<div class="Editor-contextSwitcher">
   <ul class="CDB-Overlay u-flex u-alignCenter">
     <li class="Editor-contextSwitcherItem">
       <button class="Editor-contextSwitcherButton js-showTable">

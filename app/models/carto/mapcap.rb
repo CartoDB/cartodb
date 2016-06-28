@@ -50,7 +50,7 @@ module Carto
 
     def repopulate_ids(regenerated_visualization)
       regenerated_visualization.id = ids_json[:visualization_id]
-      regenerated_visualization.map_id = regenerated_visualization.map.id = ids_json[:map_id]
+      regenerated_visualization.map.id = ids_json[:map_id]
 
       regenerated_visualization.map.layers.each_with_index do |layer, index|
         stored_layer_ids = ids_json[:layers][index]

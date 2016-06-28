@@ -108,6 +108,11 @@ class Carto::Map < ActiveRecord::Base
     map.notify_map_change if map
   end
 
+  def force_notify_map_change
+    map = ::Map[id]
+    map.force_notify_map_change if map
+  end
+
   def visualization
     visualizations.first
   end

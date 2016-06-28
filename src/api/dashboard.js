@@ -49,12 +49,13 @@ Dashboard.prototype = {
     var upperLon = initialState.center[1] * 0.01;
     var inside = (Math.abs(initialState.center[0] - currentCenter[0]) < upperLat) && (Math.abs(initialState.center[1] - currentCenter[1]) < upperLon);
     if (inside && _.isEqual(currentZoom, initialState.zoom)) {
+      return {};
+    } else {
       return {
         center: currentCenter,
         zoom: currentZoom
       };
     }
-    else return {};
   },
 
   setState: function (state) {

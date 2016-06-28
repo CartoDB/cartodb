@@ -7,7 +7,7 @@ describe Carto::Api::InfowindowMigrator do
   end
 
   let(:migrator) { TestInfowindowMigrator.new }
-  let(:templated_element) do
+  let(:infowindow) do
     {
       "fields" => [],
       "template_name" => "table/views/infowindow_light",
@@ -16,11 +16,24 @@ describe Carto::Api::InfowindowMigrator do
       "width" => 226,
       "maxHeight" => 180
     }
+    let(:tooltip) do
+      {
+        "fields" => [],
+        "template_name" => "tooltip_light",
+        "template" => "",
+        "alternative_names" => {},
+        "maxHeight" => 180
+      }
+    end
   end
 
   describe '#migrate_builder_infowindow' do
     it 'sets template_name "none" if fields are empty' do
-      migrated = migrator.migrate_builder_infowindow(templated_element)
+      migrated = migrator.migrate_builder_infowindow(infowindow)
+      migrated['template_name'].should eq 'none'
+      migrated['template'].should eq ''
+
+      migrated = migrator.migrate_builder_infowindow(tooltip)
       migrated['template_name'].should eq 'none'
       migrated['template'].should eq ''
     end

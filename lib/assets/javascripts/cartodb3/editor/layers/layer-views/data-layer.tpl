@@ -13,7 +13,10 @@
   </div>
   <div class="Editor-ListLayer-inner">
     <div class="Editor-ListLayer-title">
-      <h2 class="Editor-ListLayer-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
+      <h2 class="Editor-ListLayer-titleText Inline-editor">
+        <div class="CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></div>
+        <input type="text" name="text" class="Inline-editor-input Inline-editor-input--small CDB-Text CDB-InputText js-input" value="<%- title %>">
+      </h2>
       <ul class="Editor-HeaderInfo-actions">
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="js-toggle">

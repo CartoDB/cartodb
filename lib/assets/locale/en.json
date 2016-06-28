@@ -598,6 +598,17 @@
       }
     },
     "layers": {
+      "options": {
+        "rename": "Rename",
+        "delete": "Delete layer…",
+        "collapse": "Collapse",
+        "expand": "Expand",
+      },
+      "rename": {
+        "loading": "Renaming layer...",
+        "success": "Layer renamed to %{name}",
+        "error": "Error renaming layer %{name}"
+      },
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",

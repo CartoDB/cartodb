@@ -223,6 +223,7 @@
           "body": "Only the people with a shared link can view the data"
         },
         "password": {
+          "type": "PASSWORD",
           "title": "Password",
           "body": "Set a password and share only with specific people"
         },

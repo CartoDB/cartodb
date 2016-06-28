@@ -54,7 +54,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
-  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy
+  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -355,10 +355,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def all_users_with_read_permission
     permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
-  end
-
-  def mapcaps
-    Carto::Mapcap.latest_for_visualization(id)
   end
 
   def mapcaped?

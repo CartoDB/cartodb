@@ -609,6 +609,12 @@
         "success": "Layer renamed to %{name}",
         "error": "Error renaming layer %{name}"
       },
+      "delete": {
+        "confirm": "ok, delete it",
+        "cancel": "cancel",
+        "desc": "Maps will be affected, are you sure you want to delete it?",
+        "title": "You are about to delete layer %{layerName}"
+      },
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",

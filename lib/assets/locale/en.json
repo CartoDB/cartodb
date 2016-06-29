@@ -657,7 +657,16 @@
     }
   },
   "dataset": {
-    "updated": "Updated %{ago}"
+    "updated": "Updated %{ago}",
+    "rename": {
+      "cancel": "cancel",
+      "confirm": "ok, rename it",
+      "desc": "If you are accessing this dataset via API don't forget to use the new name in your API calls afterwards.",
+      "error": "Error renaming %{tableName}: %{error}",
+      "loading": "Renaming your table %{tableName}...",
+      "success": "Dataset %{tableName} renamed",
+      "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
+    }
   },
   "editor": {
     "map": "map",

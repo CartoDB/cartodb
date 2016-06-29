@@ -59,6 +59,11 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
           end
 
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:options][:id].should eq @carto_layer.id
+          end
+
           describe 'with popups' do
             let(:dummy_infowindow) do
               {

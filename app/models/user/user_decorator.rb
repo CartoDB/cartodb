@@ -80,7 +80,6 @@ module CartoDB
           dedicated_support: self.dedicated_support?,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
-          arcgis_datasource: self.arcgis_datasource_enabled?,
           google_maps_geocoder_enabled: self.google_maps_geocoder_enabled?,
           google_maps_enabled: self.google_maps_enabled?
         },

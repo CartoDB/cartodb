@@ -834,10 +834,6 @@ class User < Sequel::Model
     self[:soft_obs_general_limit] = !val
   end
 
-  def arcgis_datasource_enabled?
-    true
-  end
-
   def soft_twitter_datasource_limit?
     self.soft_twitter_datasource_limit  == true
   end

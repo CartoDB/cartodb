@@ -109,6 +109,20 @@ describe('windshaft/client', function () {
       expect(errorCallback).toHaveBeenCalledWith('Unknown error');
     });
 
+    it('should ignore the error callback if request was aborted', function () {
+      var errorCallback = jasmine.createSpy('errorCallback');
+
+      this.client.instantiateMap({
+        mapDefinition: 'mapDefinition',
+        filters: {},
+        error: errorCallback
+      });
+
+      $.ajax.calls.argsFor(0)[0].error({ xhr: { responseText: 'something' } }, 'abort');
+
+      expect(errorCallback).not.toHaveBeenCalled();
+    });
+
     it('should use POST if forceCors is true', function () {
       spyOn(util, 'isCORSSupported').and.returnValue(true);
 

@@ -452,16 +452,19 @@ module Carto
       end
 
       describe '#layergroup' do
-        it 'should not have any dataview if no widgets are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+        before (:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
+        after  (:all) { @layergroup_hash = nil }
 
-          template_hash[:layergroup][:dataviews].should be_empty
+        it 'should have version according to Map Config' do
+          @layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
+        end
+
+        it 'should not have any dataview if no widgets are present' do
+          @layergroup_hash[:dataviews].should be_empty
         end
 
         it 'should not have any analysis if no analyses are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-
-          template_hash[:layergroup][:analyses].should be_empty
+          @layergroup_hash[:analyses].should be_empty
         end
 
         describe 'dataviews' do

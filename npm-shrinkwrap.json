@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.7",
+  "version": "3.28.5",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -936,7 +936,7 @@
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.2",
-                      "from": "core-util-is@>=1.0.0 <1.1.0",
+                      "from": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
                       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
                     },
                     "isarray": {
@@ -982,7 +982,7 @@
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.2",
-                      "from": "core-util-is@>=1.0.0 <1.1.0",
+                      "from": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz",
                       "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.2.tgz"
                     },
                     "isarray": {
@@ -1085,7 +1085,7 @@
     },
     "camshaft-reference": {
       "version": "0.16.0",
-      "from": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.16.0.tgz",
+      "from": "camshaft-reference@0.16.0",
       "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.16.0.tgz"
     },
     "carto": {

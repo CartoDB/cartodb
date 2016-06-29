@@ -362,7 +362,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def latest_mapcap
-    mapcaps.limit(1).first
+    mapcaps.first
   end
 
   private

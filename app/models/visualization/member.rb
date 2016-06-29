@@ -685,7 +685,7 @@ module CartoDB
       end
 
       def latest_mapcap
-        mapcaps.limit(1).first
+        mapcaps.first
       end
 
       def mapcapped?

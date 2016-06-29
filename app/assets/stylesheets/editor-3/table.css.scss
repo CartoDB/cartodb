@@ -121,6 +121,9 @@ $tableBorderColor: $cSecondaryLine;
   padding-bottom: 60px;
   overflow-y: scroll;
 }
+.Table-body--relative tbody {
+  height: calc(100vh - 324px);
+}
 .Table-row {
   height: 40px;
   min-height: 40px;

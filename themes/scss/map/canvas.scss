@@ -46,12 +46,11 @@
   }
 }
 
-@include media-query-mobile() {
+@media (max-width: 759px) {
   .CDB-Dashboard-canvas {
-    padding: 8px;
+    padding: 0;
   }
   .CDB-Dashboard-mapWrapper--withMenu {
-    margin-top: 48px;
     margin-left: 0;
   }
 }

@@ -244,15 +244,18 @@
     opacity: 1;
   }
 }
-@include media-query-mobile() {
+@media (max-width: 750px) {
   .CDB-Dashboard-menuInner {
-    right: 40px;
-    width: auto;
-    max-width: 100%;
-    transform: translateX(-100%);
-    overflow: visible;
+    padding: 16px;
+    background: #1181FB;
+    overflow: hidden;
+    box-sizing: border-box;
     z-index: 2;
+    position: static;
+    max-width: 100%;
+    width: 100%;
   }
+  /*
   .CDB-Dashboard-menu.is-active {
     .CDB-Dashboard-menuInner {
       width: auto;
@@ -273,5 +276,5 @@
   }
   .CDB-Dashboard-menuTexts {
     top: 100px;
-  }
+  }*/
 }

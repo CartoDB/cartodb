@@ -270,6 +270,7 @@
     margin-bottom: 0;
     border-radius: 4px;
     line-height: 16px;
+    margin-left: 16px;
   }
   .CDB-Dashboard-menuLogo i {
     font-size: 11px;
@@ -292,5 +293,15 @@
   }
   .CDB-Dashboard-menuAvatar img {
     display: block;
+  }
+  .CDB-Dashboard-menuActions {
+    position: static;
+    opacity: 1;
+    width: auto;
+  }
+  .CDB-Dashboard-menuHeader {
+    display: flex;
+    flex-direction: inherit;
+    align-items: center;
   }
 }

@@ -23,10 +23,17 @@ $tableBorderColor: $cSecondaryLine;
   background: $cThirdBackground;
   z-index: 2;
 }
+.Table--relative {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 .Table-head {
   background: $cThirdBackground;
 }
 .Table-head tr {
+  border-top: 1px solid $cMainLine;
   border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {

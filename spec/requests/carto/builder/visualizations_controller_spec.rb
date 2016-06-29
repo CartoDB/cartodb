@@ -39,6 +39,14 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 404
     end
 
+    it 'returns 404 for non-derived visualizations' do
+      @visualization.type = Carto::Visualization::TYPE_CANONICAL
+      @visualization.save
+      get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
+
+      response.status.should == 404
+    end
+
     it 'returns 403 for visualizations not writable by user' do
       @other_visualization = FactoryGirl.create(:carto_visualization)
 
@@ -60,7 +68,7 @@ describe Carto::Builder::VisualizationsController do
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 403
+      response.status.should == 404
     end
 
     it 'does not show slide type visualizations' do
@@ -69,7 +77,7 @@ describe Carto::Builder::VisualizationsController do
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 403
+      response.status.should == 404
     end
 
     it 'defaults to generate vizjson with vector=false' do

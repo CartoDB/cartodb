@@ -264,14 +264,22 @@
           "body": "And send it to your friends, coworkers or post in your social networks.",
           "link": "",
           "copy": "COPY",
-          "select": "SELECT"
+          "select": "SELECT",
+          "private": {
+            "title": "Your map is private",
+            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+          }
         },
         "embed": {
           "title": "Embed it",
           "body": "Get your map into your blog, website or simple application.",
           "link": "Get a simple URL.",
           "copy": "COPY",
-          "select": "SELECT"
+          "select": "SELECT",
+          "private": {
+            "title": "Your map is private",
+            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+          }
         },
         "cartodbjs": {
           "title": "CartoDB.js",
@@ -286,7 +294,7 @@
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
-        },
+        }
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -310,7 +318,7 @@
           },
           "filter": {
             "title": "Filter",
-            "desc": "Transform your data into coordinates"
+            "desc": "Filter your rows depending on the values of a column"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -648,12 +656,16 @@
       }
     }
   },
+  "dataset": {
+    "updated": "Updated %{ago}"
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
+    "button_share": "SHARE",
     "tab-pane": {
       "layers": {
         "title-label": "Layers"
@@ -666,6 +678,26 @@
       }
     },
     "layers": {
+      "options": {
+        "rename": "Rename",
+        "delete": "Delete layer…",
+        "collapse": "Collapse",
+        "expand": "Expand",
+      },
+      "rename": {
+        "loading": "Renaming layer...",
+        "success": "Layer renamed to %{name}",
+        "error": "Error renaming layer %{name}: %{error}"
+      },
+      "delete": {
+        "confirm": "ok, delete it",
+        "cancel": "cancel",
+        "desc": "Maps will be affected, are you sure you want to delete it?",
+        "title": "You are about to delete layer %{layerName}",
+        "error": "Error deleting layer %{name}: %{error}",
+        "loading": "Removing the layer %{name}...",
+        "success": "Layer %{name} deleted"
+      },
       "layer": {
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
@@ -726,16 +758,24 @@
         "column": "Column",
         "create-btn": "Create",
         "data-values": "Data values",
+        "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
         "dissolved": "Dissolved",
         "distance": "Distance",
         "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
+        "filter-column": "Filter column",
+        "filter-column": "Linked layer col.",
         "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
+        "key-columns": "Key columns",
+        "key-columns-desc": "Define how to link them",
         "kilometers": "km",
+        "link-layer": "Source col.",
+        "link-layer-desc": "Specify which layer you want to link to this",
+        "linked-layer": "Linked layer",
         "loading": "loading…",
         "max": "Max",
         "meters": "m",
@@ -756,23 +796,18 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "source-column": "Source col.",
+        "source-column": "Source column",
         "target": "Target layer",
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
         "tune-clusters": "Tune your clusters",
-        "define-columns": "Define column to find similarities with",
         "type": "Type",
+        "value": "Value",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow",
-        "link-layer": "Source col.",
-        "linked-layer": "Linked layer",
-        "link-layer-desc": "Specify which layer you want to link to this",
-        "source-column": "Source col.",
-        "filter-column": "Linked layer col.",
-        "key-columns": "Key columns",
-        "key-columns-desc": "Define how to link them"
+        "workflow": "Workflow"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

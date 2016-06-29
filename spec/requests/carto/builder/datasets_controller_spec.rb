@@ -72,5 +72,13 @@ describe Carto::Builder::DatasetsController do
 
       response.status.should == 404
     end
+
+    it 'does not show raster visualizations' do
+      Carto::Visualization.any_instance.stubs(:kind).returns(Carto::Visualization::KIND_RASTER)
+
+      get builder_dataset_url(id: @visualization.id)
+
+      response.status.should == 404
+    end
   end
 end

@@ -4,6 +4,7 @@ module Carto
   module NamedMaps
     class Template
       NAMED_MAPS_VERSION = '0.0.1'.freeze
+      MAP_CONFIG_VERSION = '1.5.1'.freeze
       NAME_PREFIX = 'tpl_'.freeze
       AUTH_TYPE_OPEN = 'open'.freeze
       AUTH_TYPE_SIGNED = 'token'.freeze
@@ -34,6 +35,7 @@ module Carto
             version: NAMED_MAPS_VERSION,
             placeholders: placeholders,
             layergroup: {
+              version: MAP_CONFIG_VERSION,
               layers: layers,
               stat_tag: @visualization.id,
               dataviews: dataviews,

@@ -52,5 +52,9 @@
       width: 100%;
       position: relative;
       overflow-y: scroll;
+
+      div.dropdown.map_options_dropdown {
+        display: block;
+      }
     }
   }

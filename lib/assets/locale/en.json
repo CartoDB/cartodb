@@ -648,6 +648,9 @@
       }
     }
   },
+  "dataset": {
+    "updated": "Updated %{ago}"
+  },
   "editor": {
     "map": "map",
     "map_name": "%{name} map",

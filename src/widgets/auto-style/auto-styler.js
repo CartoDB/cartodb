@@ -15,12 +15,16 @@ var AutoStyler = cdb.core.Model.extend({
 
   getPreservedWidth: function () {
     var originalWidth;
-    var startingStyle = this.layer.get && this.layer.get('cartocss');
+    var startingStyle = this.layer.get && (this.layer.get('cartocss') || this.layer.get('meta').cartocss);
     if (startingStyle) {
       originalWidth = startingStyle.match(/marker-width:.*?;\s/g);
       if (originalWidth) {
         if (originalWidth.length > 1) {
-          return null;
+          var variableWidths = startingStyle.match(/\[.*?[><=].*?].*?{\s*?marker\-width\:\s*?\d.*?;\s*?}/g).join('\n');
+          return {
+            ramp: variableWidths,
+            fixed: originalWidth[0].trim().replace('marker-width:', '').replace(';', '')
+          };
         } else {
           originalWidth = originalWidth[0].trim().replace('marker-width:', '').replace(';', '');
         }
@@ -52,6 +56,7 @@ AutoStyler.STYLE_TEMPLATE_LIGHT = {
          '  marker-line-width: 1;',
          '  marker-line-opacity: 0.8;',
          '  {{ramp}}',
+         '  {{wramp}}',
          '}'].join('\n'),
   line: ['{{layername}}',
           '  line-color: {{defaultColor}};',
@@ -82,6 +87,7 @@ AutoStyler.STYLE_TEMPLATE_DARK = {
         '  marker-line-width: 1;',
         '  marker-line-opacity: 0.5;',
         '  {{ramp}}',
+        '  {{wramp}}',
          '}'].join('\n'),
   line: ['{{layername}}',
           '  line-color: {{defaultColor}};',

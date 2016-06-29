@@ -5,9 +5,7 @@ describe('auto-style', function () {
     var vis = specHelper.createDefaultVis();
     var layer = vis.map.layers.first();
     layer.restoreCartoCSS = jasmine.createSpy('restore');
-    layer.getGeometryType = function () {
-      return 'polygon';
-    };
+    layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
     this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
@@ -23,8 +21,8 @@ describe('auto-style', function () {
 
   it('should generate category ramps', function () {
     this.dataviewModel.set('allCategoryNames', ['manolo', 'jacinto', 'eustaquio']);
-    expect(this.autoStyler._generateCategoryRamp('marker').indexOf('marker-fill')).not.toBeLessThan(0);
-    expect(this.autoStyler._generateCategoryRamp('polygon').indexOf('polygon-fill')).not.toBeLessThan(0);
-    expect(this.autoStyler._generateCategoryRamp('line').indexOf('line-color')).not.toBeLessThan(0);
+    expect(this.autoStyler._generateCategoryRamp('marker-fill').indexOf('marker-fill')).not.toBeLessThan(0);
+    expect(this.autoStyler._generateCategoryRamp('polygon-fill').indexOf('polygon-fill')).not.toBeLessThan(0);
+    expect(this.autoStyler._generateCategoryRamp('line-color').indexOf('line-color')).not.toBeLessThan(0);
   });
 });

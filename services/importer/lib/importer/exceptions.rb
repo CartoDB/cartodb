@@ -172,7 +172,6 @@ module CartoDB
       CartoDB::Datasources::BoxPermissionError                    => 1021,
       CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008,
       CartoDB::Importer2::Connector::ConnectorError               => 1500,
-      CartoDB::Importer2::Connector::InvalidChannelError          => 1501,
       CartoDB::Importer2::Connector::InvalidParametersError       => 1502
     }
   end

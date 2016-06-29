@@ -213,7 +213,7 @@ class User < Sequel::Model
     if viewer
       # Enforce quotas
       set_viewer_quotas
-      if column_changed?(:viewer)
+      if !new? && column_changed?(:viewer)
         revoke_rw_permission_on_shared_entities
       end
     end

@@ -656,7 +656,7 @@
     "button_add": "Add",
     "maps": {
       "rename": "Rename",
-      "delete": "Delete map…",
+      "remove": "Delete map…",
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",

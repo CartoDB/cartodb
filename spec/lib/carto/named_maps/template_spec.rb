@@ -31,6 +31,12 @@ module Carto
         end
       end
 
+      it 'should have correct Named Maps version' do
+        template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+        template_hash[:version].should eq Carto::NamedMaps::Template::NAMED_MAPS_VERSION
+      end
+
       describe '#layers' do
         describe 'carto layers' do
           before(:all) do

@@ -61,7 +61,7 @@ module Concerns
       if self.is_a?(Organization)
         case action
         when :create
-          [:name, :seats, :quota_in_bytes, :display_name, :description, :website,
+          [:name, :seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
@@ -71,7 +71,7 @@ module Concerns
           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
           :obs_general_block_price, :salesforce_datasource_enabled]
         when :update
-          [:seats, :quota_in_bytes, :display_name, :description, :website,
+          [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
@@ -111,7 +111,7 @@ module Concerns
         when :create
           raise "Can't create organizations from editor"
         when :update
-          self.values.slice(:seats, :display_name, :description, :website,
+          self.values.slice(:seats, :viewer_seats, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)

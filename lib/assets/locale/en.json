@@ -264,14 +264,22 @@
           "body": "And send it to your friends, coworkers or post in your social networks.",
           "link": "",
           "copy": "COPY",
-          "select": "SELECT"
+          "select": "SELECT",
+          "private": {
+            "title": "Your map is private",
+            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+          }
         },
         "embed": {
           "title": "Embed it",
           "body": "Get your map into your blog, website or simple application.",
           "link": "Get a simple URL.",
           "copy": "COPY",
-          "select": "SELECT"
+          "select": "SELECT",
+          "private": {
+            "title": "Your map is private",
+            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+          }
         },
         "cartodbjs": {
           "title": "CartoDB.js",
@@ -286,7 +294,7 @@
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
-        },
+        }
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -657,6 +665,7 @@
     "published": "Published %{when}",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
+    "button_share": "SHARE",
     "tab-pane": {
       "layers": {
         "title-label": "Layers"

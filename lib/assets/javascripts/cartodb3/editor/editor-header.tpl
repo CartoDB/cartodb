@@ -12,8 +12,8 @@
       </div>
 
     </div>
-    <div class="u-bSpace--xl">
-      <button class="u-rSpace--xl u-actionTextColor js-privacy">
+    <div class="u-bSpace--xl u-flex u-alignCenter">
+      <button class="u-rSpace--m u-actionTextColor js-privacy">
         <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </button>
       <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></span>

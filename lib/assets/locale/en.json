@@ -675,13 +675,16 @@
       "rename": {
         "loading": "Renaming layer...",
         "success": "Layer renamed to %{name}",
-        "error": "Error renaming layer %{name}"
+        "error": "Error renaming layer %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
-        "title": "You are about to delete layer %{layerName}"
+        "title": "You are about to delete layer %{layerName}",
+        "error": "Error deleting layer %{name}: %{error}",
+        "loading": "Removing the layer %{name}...",
+        "success": "Layer %{name} deleted"
       },
       "layer": {
         "analysis": "Analysis",

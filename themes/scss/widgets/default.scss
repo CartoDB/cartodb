@@ -111,17 +111,11 @@
   }
 }
 
-
-@media only screen and (min-width: 320px) and (max-width: 759px)  {
+@media (max-width:759px) {
   .CDB-Widget {
     border-left-width: 2px;
     border-left-style: solid;
-  }
-}
-
-@include media-query-mobile() {
-  .CDB-Widget {
-    width: 232px;
+    width: auto;
     min-width: 232px;
     padding: $baseSize + 4 0;
   }

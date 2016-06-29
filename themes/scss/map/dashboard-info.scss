@@ -246,7 +246,7 @@
 }
 @media (max-width: 759px) {
   .CDB-Dashboard-menu {
-    order: 3;
+    order: 4;
   }
   .CDB-Dashboard-menuInner {
     padding: 16px;
@@ -258,26 +258,4 @@
     max-width: 100%;
     width: 100%;
   }
-  /*
-  .CDB-Dashboard-menu.is-active {
-    .CDB-Dashboard-menuInner {
-      width: auto;
-      transform: translateX(0);
-      box-shadow: 300px 0 0 rgba($cMainBg, 0.45);
-    }
-    .CDB-Dashboard-menuHeaderMobile {
-      .CDB-Dashboard-menuMedia {
-        opacity: 0;
-      }
-    }
-  }
-  .CDB-Dashboard-menuInfo {
-    position: absolute;
-    top: 32px;
-    right: 24px;
-    margin: 0;
-  }
-  .CDB-Dashboard-menuTexts {
-    top: 100px;
-  }*/
 }

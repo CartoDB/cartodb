@@ -9,11 +9,12 @@ describe Carto::Mapcap do
   before(:all) do
     @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
 
-    @map, _, _, @visualization = create_full_visualization(@user)
+    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end
 
   after(:all) do
-    @map.destroy
+    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+
     @user.destroy
   end
 

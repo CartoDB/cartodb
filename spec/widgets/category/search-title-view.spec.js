@@ -13,6 +13,7 @@ describe('widgets/category/search-title-view', function () {
     this.dataviewModel = vis.dataviews.createCategoryModel(layer, {
       column: 'col'
     });
+    this.dataviewModel.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

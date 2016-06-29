@@ -19,7 +19,7 @@ describe Carto::Api::MapcapsController do
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
 
-    _, _, _, @visualization = create_full_visualization(@user)
+    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
   end
 
   before(:each) { bypass_named_maps }
@@ -27,7 +27,7 @@ describe Carto::Api::MapcapsController do
   after(:all) do
     Carto::FeatureFlag.destroy_all
 
-    @visualization.destroy
+    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
 
     @user.destroy
     @intruder.destroy

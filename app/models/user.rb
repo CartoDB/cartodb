@@ -246,7 +246,7 @@ class User < Sequel::Model
   end
 
   def should_load_common_data?
-    builder? && last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
+    builder? && common_data_outdated?
   end
 
   def load_common_data(visualizations_api_url)
@@ -1595,6 +1595,10 @@ class User < Sequel::Model
   end
 
   private
+
+  def common_data_outdated?
+    last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day
+  end
 
   def destroy_shared_with
     CartoDB::SharedEntity.where(recipient_id: id).each do |se|

@@ -26,6 +26,7 @@ module Carto
       regenerated_visualization = build_visualization_from_hash_export(export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
+      regenerated_visualization.permission = visualization.permission
 
       repopulate_ids(regenerated_visualization)
     end

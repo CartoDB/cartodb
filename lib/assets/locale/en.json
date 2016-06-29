@@ -655,8 +655,10 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "maps": {
-      "rename": "Rename",
-      "remove": "Delete map…",
+      "options": {
+        "rename": "Rename",
+        "remove": "Delete map…"
+      },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
@@ -665,6 +667,11 @@
         "error": "Error deleting map %{name}: %{error}",
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"
+      },
+      "rename": {
+        "loading": "Renaming map...",
+        "success": "Map renamed to %{name}",
+        "error": "Error renaming map %{name}: %{error}"
       }
     },
     "tab-pane": {

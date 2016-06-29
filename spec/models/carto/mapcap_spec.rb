@@ -121,6 +121,14 @@ describe Carto::Mapcap do
       @regenerated_visualization.id.should eq @visualization.id
     end
 
+    it 'should preserve user' do
+      @regenerated_visualization.user.id.should eq @visualization.user.id
+    end
+
+    it 'should preserve permission' do
+      @regenerated_visualization.permission.id.should eq @visualization.permission.id
+    end
+
     describe 'with layers' do
       before(:all) do
         @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])

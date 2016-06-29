@@ -40,14 +40,10 @@
   margin-top: 8px;
 }
 
-@include media-query() {
-  .CDB-Dashboard-canvas {
-    @include flex-direction(column);
-  }
-}
 
 @media (max-width: 759px) {
   .CDB-Dashboard-canvas {
+    @include flex-direction(column);
     padding: 0;
   }
   .CDB-Dashboard-mapWrapper--withMenu {

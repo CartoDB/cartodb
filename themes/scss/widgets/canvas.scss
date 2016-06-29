@@ -105,3 +105,9 @@
     margin-left: 0;
   }
 }
+
+@media (max-height: 420px) {
+  .CDB-Widget-canvas {
+    display: none !important;
+  }
+}

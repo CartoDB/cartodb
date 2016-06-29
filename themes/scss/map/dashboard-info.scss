@@ -249,6 +249,7 @@
     order: 4;
   }
   .CDB-Dashboard-menuInner {
+    @include display-flex();
     padding: 16px;
     background: $cThirdBackground;
     overflow: hidden;
@@ -257,5 +258,8 @@
     position: static;
     max-width: 100%;
     width: 100%;
+  }
+  .CDB-Dashboard-menuMedia {
+    width: 16px;
   }
 }

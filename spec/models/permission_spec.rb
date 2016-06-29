@@ -206,9 +206,9 @@ describe CartoDB::Permission do
         }
       ]
 
-      expect do
+      expect {
         permission.save
-      end.to raise_error(Sequel::ValidationFailed, "access_control_list grants write to viewers: #{user2.username}")
+      }.to raise_error(Sequel::ValidationFailed, "access_control_list grants write to viewers: #{user2.username}")
 
       user2.destroy
     end

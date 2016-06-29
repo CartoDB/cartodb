@@ -6,34 +6,9 @@
 @import '../variables/colors';
 @import '../variables/sizes';
 
-$width: 620px;
+$width: 443px;
 
 // Gradients
-.EditVisMetadata .Dialog-expandedSubContent {
-  position: relative;
-
-  &:before,
-  &:after {
-    position: fixed;
-    left: 50%;
-    width: $width;
-    height: 18px;
-    margin-left: -310px;
-    content: '';
-    z-index: 5;
-  }
-
-  &:before {
-    @include background-gradient(rgba(#F9F9F9, 1), rgba(#F9F9F9, 0));
-    top: 157px;
-    background-color: transparent!important;
-  }
-
-  &:after {
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
-    bottom: 97px;
-  }
-}
 .EditVisMetadata-header {
   @include flex-grow(1);
   min-height: 100px;
@@ -81,7 +56,7 @@ $width: 620px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  background: #F9F9F9;
+
 }
 .EditVisMetadata .Dialog-stickyFooter {
   left: 0;

@@ -278,12 +278,6 @@ $sStickyHeight: 97px;
 .Dialog-bodyInnerExpandedWithSubFooter { padding-bottom: $sStickyHeight }
 .Dialog-bodyInnerExpandedWithPreFooter { padding-bottom: $sStickyHeight + 100px }
 
-.Dialog-stickyFooter {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: $sStickyHeight;
-}
 .Dialog-contentSubHeader {
   @include display-flex();
   @include justify-content(space-between, justify);

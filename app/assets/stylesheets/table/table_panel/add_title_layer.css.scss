@@ -53,6 +53,39 @@
       position: relative;
       overflow-y: scroll;
 
+      div.metadata-form {
+        letter-spacing: 0;
+        display: table;
+        margin-bottom: 20px;
+
+        .title {
+          margin: 0 10%;
+        }
+
+        .Form-row {
+          width: 430px;
+
+          .Form-input--long {
+            width: 100%;
+          }
+
+        }
+
+        .Dialog-stickyFooter {
+          width: 100%;
+          position: relative;
+          display: block;
+          background: #F9F9F9;
+
+          .EditVisMetadata-formFooter {
+            width: 100%;
+            display: block;
+            border-bottom: 1px solid #ddd;
+          }
+        }
+
+      }
+
       div.dropdown.map_options_dropdown {
         display: block;
       }

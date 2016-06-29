@@ -7,6 +7,7 @@
   border-radius: $halfBaseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
+  line-height: 16px;
 
   // TODO backgrounds
   &.is-blue {
@@ -30,5 +31,3 @@
   border: 1px solid;
   background-color: transparent;
 }
-
-

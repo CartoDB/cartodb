@@ -1,5 +1,5 @@
 <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
-  <i class="CDB-IconFont"></i>
+  <i class="CDB-IconFont CDB-IconFont-outside"></i>
 </div>
 <h2 class="CDB-Text CDB-Size-large u-bSpace"><%- name %></h2>
 <div class="Share-details">

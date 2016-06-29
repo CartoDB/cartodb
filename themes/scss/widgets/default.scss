@@ -77,21 +77,25 @@
   margin-right: -7px;
 }
 
+
 // Widget media query
-@include media-query() {
+@media (max-width: 1000px) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
-    margin-right: 2px;
-    border-right: 2px solid transparent;
-    border-bottom: 0;
   }
   .CDB-Widget--timeSeries {
     width: 100%; // override default width
+  }
+}
+
+@include media-query() {
+  .CDB-Widget--timeSeries {
     height: $baseSize * 8;
     min-height: $baseSize * 8; // override default min-height
     max-height: $baseSize * 8;
   }
+
   .CDB-Widget-body--timeSeries {
     @include display-flex();
     @include justify-content(flex-start, start);
@@ -104,6 +108,14 @@
   .CDB-Widget-content--timeSeries {
     width: 100%;
     margin-top: 0; // override default
+  }
+}
+
+
+@media only screen and (min-width: 320px) and (max-width: 759px)  {
+  .CDB-Widget {
+    border-left-width: 2px;
+    border-left-style: solid;
   }
 }
 

@@ -224,6 +224,10 @@ $tableBorderColor: $cSecondaryLine;
   z-index: 10;
   box-sizing: border-box;
 }
+.Table-paginator--relative {
+  position: absolute;
+  left: calc(50% - 71px);
+}
 .Table-paginatorText {
   min-width: 76px;
   text-align: center;

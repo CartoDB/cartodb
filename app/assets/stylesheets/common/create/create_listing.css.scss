@@ -7,7 +7,6 @@
 .CreateDialog-listing {
   display: block;
   padding-top: 52px; // padded on top of the normal Dialog-body it seems, for content to appear below the subheader (.Filters) fold
-  padding-bottom: 100px;
 }
 .CreateDialog-listing.CreateDialog-listing--withFlashMessage { padding-top: 126px }
 .CreateDialog-listing.CreateDialog-listing--noPaddingTop { padding-top: 0 }

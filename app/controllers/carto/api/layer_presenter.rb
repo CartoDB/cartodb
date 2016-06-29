@@ -1,8 +1,11 @@
 # encoding: UTF-8
 
+require_dependency 'carto/api/infowindow_migrator'
+
 module Carto
   module Api
     class LayerPresenter
+      include InfowindowMigrator
 
       PUBLIC_VALUES = %W{ options kind infowindow tooltip id order }
 
@@ -45,8 +48,17 @@ module Carto
         @with_style_properties = options.fetch(:with_style_properties, false)
       end
 
-      def to_poro
-        base_poro(@layer)
+      def to_poro(migrate_builder_infowindows: false)
+        poro = base_poro(@layer)
+        if migrate_builder_infowindows
+          if poro['infowindow'].present?
+            poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
+          end
+          if poro['tooltip'].present?
+            poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'])
+          end
+        end
+        poro
       end
 
       def to_json
@@ -156,7 +168,7 @@ module Carto
         template = infowindow['template']
         return infowindow if (!template.nil? && !template.empty?) || path.nil?
 
-        infowindow.merge!(template: File.read(path))
+        infowindow[:template] = File.read(path)
         infowindow
       end
 
@@ -401,6 +413,8 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
+        spp['blending'] = 'none' if spp['blending'].blank?
+
         merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 
         merge_into_if_present(spp, drawing_property(wpp), generate_drawing_properties(wpp))
@@ -522,6 +536,13 @@ module Carto
         'qfunction' => 'quantification'
       }.freeze
 
+      QUANTIFICATION_MAPPING = {
+        'Jenks' => 'jenks',
+        'Equal Interval' => 'equal',
+        'Heads/Tails' => 'headtails',
+        'Quantile' => 'quantiles'
+      }.freeze
+
       COLOR_RANGE_SOURCE_TYPES = ['choropleth', 'density'].freeze
 
       def generate_dimension_properties(wpp)
@@ -534,6 +555,8 @@ module Carto
         end
 
         apply_direct_mapping(size, wpp, SIZE_DIRECT_MAPPING)
+        quantification = size['quantification']
+        size['quantification'] = QUANTIFICATION_MAPPING.fetch(quantification, quantification) if quantification.present?
 
         if %w{ bubble category }.include?(@source_type)
           size['bins'] = 10

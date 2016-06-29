@@ -20,7 +20,7 @@ shared_examples_for 'vizjson generator' do
     TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
 
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       @user_1 = FactoryGirl.create(:valid_user, private_tables_enabled: false)
       @api_key = @user_1.api_key
@@ -41,7 +41,7 @@ shared_examples_for 'vizjson generator' do
     end
 
     it 'tests privacy of vizjsons' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
@@ -213,7 +213,7 @@ shared_examples_for 'vizjson generator' do
 
     describe 'get vizjson' do
       before(:each) do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+        Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
         delete_user_data(@user_1)
       end
 
@@ -246,16 +246,13 @@ shared_examples_for 'vizjson generator' do
       end
 
       it "comes with proper surrogate-key" do
-        CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+        Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
         table                 = table_factory(privacy: 1)
         source_visualization  = table.fetch('table_visualization')
+        map_id = source_visualization[:map_id]
 
-        payload = { source_visualization_id: source_visualization.fetch(:id), privacy: 'PUBLIC' }
-
-        post api_v1_visualizations_create_url(user_domain: @user_1.username, api_key: @api_key),
-             payload.to_json, @headers
-        last_response.status.should == 200
-        viz_id = JSON.parse(last_response.body).fetch('id')
+        derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user_1.id, map_id: map_id)
+        viz_id = derived_visualization.id
 
         put api_v1_visualizations_show_url(user_domain: @user_1.username, id: viz_id, api_key: @api_key),
             { privacy: 'PUBLIC', id: viz_id }.to_json, @headers

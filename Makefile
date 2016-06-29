@@ -34,6 +34,7 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
 	spec/requests/carto/api/groups_controller_spec.rb \
 	spec/requests/carto/api/grantables_controller_spec.rb \
+	spec/requests/carto/api/infowindow_migrator_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/overlay_presenter_spec.rb \
 	spec/requests/carto/api/presenter_cache_spec.rb \
@@ -46,7 +47,6 @@ WORKING_SPECS_1 = \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
-	spec/models/visualization/copier_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
@@ -58,7 +58,6 @@ WORKING_SPECS_1 = \
 	spec/models/visualization/table_blender_spec.rb \
 	spec/models/visualization/tags_spec.rb \
 	spec/models/visualization/watcher_spec.rb \
-	spec/models/named_maps_spec.rb \
 	spec/models/data_import_spec.rb \
 	spec/models/geocoding_spec.rb \
 	spec/models/common_data_spec.rb \
@@ -254,6 +253,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
+	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
@@ -263,6 +263,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/strong_password_validator_spec.rb \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
+	spec/lib/carto/named_maps/template_spec.rb \
 	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	$(NULL)
 
@@ -310,7 +311,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helpe
 
 check: prepare-test-db check-prepared
 check-frontend:
-	grunt test
+	./node_modules/.bin/grunt test
 
 
 # update cartodb.js submodule files

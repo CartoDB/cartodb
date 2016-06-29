@@ -122,6 +122,9 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
+          salesforce: {
+            enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
@@ -137,7 +140,6 @@ module Carto
             dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
-            arcgis_datasource: @user.arcgis_datasource_enabled?,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
             google_maps_enabled: @user.google_maps_enabled?
           },

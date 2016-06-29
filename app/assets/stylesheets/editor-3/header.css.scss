@@ -5,6 +5,13 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
+.Editor-HeaderInfoEditor {
+  @include display-flex();
+  @include align-items(baseline);
+  height: 64px;
+  margin-bottom: 21px;
+}
+
 .Editor-HeaderInfo {
   @include display-flex();
   @include align-items(baseline);
@@ -34,6 +41,7 @@
 .Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
+  margin-bottom: 7px;
 }
 .Editor-HeaderInfo-titleText {
   @include flex(1);
@@ -63,6 +71,10 @@
   line-height: 23px;
   text-align: center;
   box-sizing: border-box;
+}
+
+.Editor-headerLayerName {
+  @include flex(1);
 }
 
 .Editor-HeaderInfo.is-dark {

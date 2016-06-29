@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'map/copier'
+
 module CartoDB
   module Visualization
     class TableBlender
@@ -9,6 +11,8 @@ module CartoDB
       end
 
       def blend
+        raise "Viewer users can't blend tables" if user.viewer
+
         maps            = tables.map(&:map)
         copier          = CartoDB::Map::Copier.new
         destination_map = copier.new_map_from(maps.first).save

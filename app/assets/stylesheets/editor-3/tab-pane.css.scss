@@ -5,4 +5,5 @@
   @include display-flex();
   @include flex(1);
   @include flex-direction(column);
+  min-height: 0;
 }

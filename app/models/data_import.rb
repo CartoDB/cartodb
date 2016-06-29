@@ -36,6 +36,7 @@ class DataImport < Sequel::Model
   attr_accessor   :log, :results
 
   one_to_many :external_data_imports
+  many_to_one :user
 
   # @see store_results() method also when adding new fields
   PUBLIC_ATTRIBUTES = [
@@ -200,12 +201,6 @@ class DataImport < Sequel::Model
   rescue CartoDB::QuotaExceeded => quota_exception
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
-    self
-  rescue CartoDB::NamedMapsWrapper::TooManyTemplatesError
-    templates_exception = CartoDB::Importer2::TooManyNamedMapTemplatesError.new
-    log.append "Exception: #{templates_exception}"
-    CartoDB::notify_warning_exception(templates_exception)
-    handle_failure(templates_exception)
     self
   rescue CartoDB::CartoDBfyInvalidID
     invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
@@ -384,6 +379,11 @@ class DataImport < Sequel::Model
     end
 
     (user.quota_in_bytes / assumed_kb_sec).round
+  end
+
+  def validate
+    super
+    errors.add(:user, "Viewer users can't create data imports") if user && user.viewer
   end
 
   private

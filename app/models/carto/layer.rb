@@ -26,7 +26,7 @@ module Carto
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-    }
+    }.freeze
 
     def public_values
       {
@@ -95,6 +95,10 @@ module Carto
       !base?
     end
 
+    def carto_layer?
+      kind == 'carto'
+    end
+
     def supports_labels_layer?
       basemap? && options["labels"] && options["labels"]["url"]
     end
@@ -105,6 +109,25 @@ module Carto
 
     def visualization
       map.visualization
+    end
+
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
+    def wrapped_sql(user)
+      query = options[:query]
+
+      sql = if query.present?
+              query
+            else
+              "SELECT * FROM #{qualified_table_name(user)}"
+            end
+
+      query_wrapper = options[:query_wrapper]
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+
+      sql
     end
 
     private
@@ -135,10 +158,6 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
-    end
-
-    def user
-      @user ||= maps.first.user
     end
 
   end

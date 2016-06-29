@@ -132,4 +132,51 @@ describe Carto::Analysis do
     end
   end
 
+  context 'viewer users' do
+    include Carto::Factories::Visualizations
+    include HelperMethods
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      # This avoids connection leaking.
+      ::User[@user.id].destroy
+      @analysis.destroy if @analysis
+    end
+
+    before(:each) do
+      bypass_named_maps
+    end
+
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't create a new analysis" do
+      @user.viewer = true
+      @user.save
+
+      @analysis = FactoryGirl.build(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+
+      @analysis.save.should be_false
+      @analysis.errors[:user].should eq(["Viewer users can't edit analyses"])
+    end
+
+    it "can't delete analyses" do
+      @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+
+      @user.viewer = true
+      @user.save
+      @analysis.reload
+
+      @analysis.destroy.should eq false
+      Carto::Analysis.exists?(@analysis.id).should eq true
+      @analysis.errors[:user].should eq(["Viewer users can't edit analyses"])
+    end
+  end
 end

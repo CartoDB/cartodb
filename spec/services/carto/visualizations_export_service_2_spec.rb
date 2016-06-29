@@ -58,7 +58,8 @@ describe Carto::VisualizationsExportService2 do
                 aggregation_column: "category_t"
               },
               title: "Category category_t",
-              type: "category"
+              type: "category",
+              source_id: "a1"
             }
           ]
         },
@@ -278,6 +279,7 @@ describe Carto::VisualizationsExportService2 do
     widget.title.should eq widget_export[:title]
     widget.options.symbolize_keys.should eq widget_export[:options]
     widget.layer.should_not be_nil
+    widget.source_id.should eq widget_export[:source_id]
   end
 
   def verify_analyses_vs_export(analyses, analyses_export)
@@ -388,6 +390,42 @@ describe Carto::VisualizationsExportService2 do
         end
       end
 
+      it 'builds base vis with symbols in name that can be persisted by VisualizationsExportPersistenceService' do
+        export_hash = export
+        export_hash[:visualization][:name] = %{A name' with" special!"·$% symbols&/()"}
+        json_export = export_hash.to_json
+        json_export
+        imported_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported_viz)
+        # Let's make sure everything is persisted
+        visualization = Carto::Visualization.find(visualization.id)
+
+        visualization_export = export[:visualization]
+        verify_visualization_vs_export(visualization, visualization_export, importing_user: @user)
+
+        visualization.id.should_not be_nil
+        visualization.user_id.should eq @user.id
+        visualization.created_at.should_not be_nil
+        visualization.updated_at.should_not be_nil
+
+        map = visualization.map
+        map.id.should_not be_nil
+        map.updated_at.should_not be_nil
+        map.user_id.should eq @user.id
+
+        visualization.layers.each do |layer|
+          layer.updated_at.should_not be_nil
+          layer.id.should_not be_nil
+        end
+
+        visualization.analyses.each do |analysis|
+          analysis.id.should_not be_nil
+          analysis.user_id.should_not be_nil
+          analysis.created_at.should_not be_nil
+          analysis.updated_at.should_not be_nil
+        end
+      end
+
       it 'is backwards compatible with old models' do
         json_export = export.to_json
         imported_viz = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
@@ -456,6 +494,23 @@ describe Carto::VisualizationsExportService2 do
         layer_with_table.should_not be_nil
         layer_with_table.affected_tables.should_not be_empty
         layer_with_table.affected_tables.first.id.should eq user_table.id
+      end
+
+      describe 'maintains backwards compatibility with' do
+        it '2.0.0 (without Widget.source_id)' do
+          export_2_0_0 = export
+          export_2_0_0[:visualization][:layers].each do |layer|
+            if layer[:widgets]
+              layer[:widgets].each { |widget| widget.delete(:source_id) }
+            end
+          end
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_0.to_json)
+
+          visualization_export = export_2_0_0[:visualization]
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
       end
     end
   end
@@ -773,6 +828,7 @@ describe Carto::VisualizationsExportService2 do
       imported_widget.title.should eq original_widget.title
       imported_widget.options.should eq original_widget.options
       imported_widget.layer.should_not be_nil
+      imported_widget.source_id.should eq original_widget.source_id
     end
 
     def verify_analyses_match(imported_analyses, original_analyses)

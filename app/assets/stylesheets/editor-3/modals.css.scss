@@ -15,6 +15,10 @@
   @include align-items(baseline); /* todo when create new layout */
 }
 
+.Modal-header {
+  padding-bottom: 0;
+}
+
 .Modal-body {
   padding-top: 24px;
 }
@@ -26,6 +30,29 @@
 
 .Modal-body-header {
   margin-bottom: 16px;
+}
+
+.Modal-actions {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 80%;
+  max-width: 640px;
+  margin: $baseSize * 4 auto 0;
+  padding: $baseSize * 4 0 0;
+  border-top: 1px solid $cMainLine;
+
+  &.is-narrow {
+    margin: 0 auto;
+  }
+}
+
+.Modal-actions-button {
+  margin-right: 20px;
+
+  &:last-child {
+    margin-right: 0;
+  }
 }
 
 .ModalBlockList-item-header {

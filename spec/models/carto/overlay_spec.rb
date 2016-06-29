@@ -113,4 +113,33 @@ describe Carto::Overlay do
       overlay.options['display'].should be_true
     end
   end
+
+  context 'viewer users' do
+    before(:each) do
+      user = @visualization.user
+      user.viewer = true
+      user.save
+      @visualization.reload
+    end
+
+    after(:each) do
+      user = @visualization.user
+      user.viewer = false
+      user.save
+    end
+
+    it "can't create a new overlay" do
+      overlay = @visualization.overlays.new(type: 'header', template: 'wadus', order: 0)
+      overlay.save.should be_false
+      overlay.errors[:visualization].should eq(["Viewer users can't edit overlays"])
+    end
+
+    it "can't delete overlays" do
+      overlay = @visualization.overlays.first
+      overlay.destroy.should eq false
+      overlay.errors[:visualization].should include("Viewer users can't edit overlays")
+
+      Carto::Overlay.exists?(overlay.id).should eq true
+    end
+  end
 end

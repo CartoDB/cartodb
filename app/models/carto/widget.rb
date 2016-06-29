@@ -12,6 +12,9 @@ class Carto::Widget < ActiveRecord::Base
   belongs_to :layer, class_name: Carto::Layer
 
   validates :layer, :order, :type, :options, presence: true
+  validate :validate_user_not_viewer
+
+  before_destroy :validate_user_not_viewer
 
   after_save    :notify_maps_change, :auto_generate_indices
   after_destroy :notify_maps_change, :auto_generate_indices
@@ -68,5 +71,16 @@ class Carto::Widget < ActiveRecord::Base
     layer.user_tables.each do |ut|
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end
+  end
+
+  def validate_user_not_viewer
+    if user && user.viewer
+      errors.add(:layer, "Viewer users can't edit widgets")
+      false
+    end
+  end
+
+  def user
+    @user ||= layer.nil? ? nil : layer.user
   end
 end

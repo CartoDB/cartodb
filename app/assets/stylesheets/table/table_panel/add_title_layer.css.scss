@@ -1,0 +1,41 @@
+
+  /**
+   *  Trick 'layer title' panel styles
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/transform";
+  @import "compass/css3/transition";
+  @import "../../old_common/vars";
+  @import "../../old_common/mixins";
+
+  .title_layer {
+    position:relative;
+    height:55px;
+    margin-top:-15px;
+    line-height:35px;
+    @include transform-style("linear");
+    @include transition-property("height");
+    @include transition-duration(250ms);
+
+    a.info {
+      text-decoration: none;
+    }
+
+    // Change title
+    // (Title layer text)
+    .action.title {
+      @include inline-block();
+      margin:0 0 0 27px;
+      font:500 17px $text-fonts;
+      line-height:20px;
+      letter-spacing:0;
+    }
+
+    &:hover {
+      height:70px;
+      cursor:pointer;
+
+      .action.title { color: #3A77A6; }
+    }
+  }

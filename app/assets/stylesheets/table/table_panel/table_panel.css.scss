@@ -15,7 +15,7 @@ $corner_radius: 6px;
 .table_panel {
   position:fixed;
   right:-537px;
-  top:64px;
+  top:80px;
   bottom:0px;
   width:600px;
   padding-top:25px;
@@ -26,9 +26,23 @@ $corner_radius: 6px;
   border-right:0;
   background:#EDEDED;
   @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-  @include border-top-left-radius($corner_radius);
   z-index:20;
 
+  .collapse {
+    position: absolute;
+    width: 43px;
+    height: 43px;
+    top: -1px;
+    background-color: #EDEDED;
+    border-radius: 6px 0px 0px 6px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    @include table-sprite(wizard-arrows, $offset-x:0px);
+
+    &.open {
+      background-color: #EDEDED;
+      @include table-sprite(wizard-arrows, $offset-x:-43px);
+    }
+  }
 
   .layer_panel {
     position:relative;
@@ -92,7 +106,7 @@ $corner_radius: 6px;
 
   // Active layer
   .layer_panel.active {
-    margin-bottom:20px;
+    margin-bottom:5px;
     padding-bottom:0;
 
     .layer-info .info {

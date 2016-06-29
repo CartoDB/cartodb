@@ -10,9 +10,17 @@ Sequel.migration do
 
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
     end
+
+    alter_table :mapcaps do
+      add_index :visualization_id
+    end
   end
 
   down do
+    alter_table :mapcaps do
+      drop_index :visualization_id
+    end
+
     drop_table :mapcaps
   end
 end

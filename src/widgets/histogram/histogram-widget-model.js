@@ -35,7 +35,11 @@ module.exports = WidgetModel.extend({
   autoStyle: function () {
     var layer = this.dataviewModel.layer;
     if (!layer.get('initialStyle')) {
-      layer.set('initialStyle', layer.get('cartocss') || layer.get('meta').cartocss);
+      var initialStyle = layer.get('cartocss');
+      if (!initialStyle && layer.get('meta')) {
+        initialStyle = layer.get('meta').cartocss;
+      }
+      layer.set('initialStyle', initialStyle);
     }
     var style = this.autoStyler.getStyle();
     this.dataviewModel.layer.set('cartocss', style);

@@ -8,27 +8,14 @@ module CartoDB
       # Requirements:
       #   * odbc_fdw extension must be installed in the user database
 
-      # Temptative terminology
-      # * connector channel (ODBC, ...)
-      # * provider          (MySQL, ...)     [driver]
-      # * connection        (database/query) [specific data source]
-
       class ConnectorError < StandardError
-        attr_reader :channel_name, :user_name
+        attr_reader :user_name
 
-        def initialize(message = 'General error', channel = nil, user = nil)
-          @channel_name  = channel
-          @user_name     = user && user.username
+        def initialize(message = 'General error', user = nil)
+          @user_name = user && user.username
           message = message.to_s
-          message << " Channel: #{@channel_name}" if @channel_name
           message << " User: #{@user_name}" if @user_name
           super(message)
-        end
-      end
-
-      class InvalidChannelError < ConnectorError
-        def initialize(channel, user = nil)
-          super "Invalid channel", channel, user
         end
       end
 
@@ -46,9 +33,7 @@ module CartoDB
 
         @id = @job.id
         @unique_suffix = @id.delete('-')
-        channel, conn_str = connector_source.split(':')
-        raise InvalidChannelError.new(channel, @user) unless channel.casecmp('odbc') == 0
-        @conn_str = conn_str
+        @json_params = connector_source
         extract_params
         validate_params!
         @schema = @user.database_schema
@@ -59,7 +44,7 @@ module CartoDB
 
       def run(tracker = nil)
         @tracker = tracker
-        @job.log "Connector #{@conn_str}"
+        @job.log "Connector #{@json_params}"
         # TODO: deal with schemas, org users, etc.,
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
@@ -107,40 +92,21 @@ module CartoDB
 
       private
 
-      ACCEPTED_PARAMETERS = %w(dsn driver host port database table username password sql_query sql_count).freeze
+      ACCEPTED_PARAMETERS = %w(connection schema table sql_query sql_count encoding).freeze
       SERVER_OPTIONS = %w(dsn driver host port database).freeze
+      REQUIRED_PARAMETERS = %w(connection table).freeze
 
       def server_params
-        @params.slice(*SERVER_OPTIONS)
+        @params['connection'].slice(*SERVER_OPTIONS)
       end
 
       def table_params
-        @params.except(*SERVER_OPTIONS)
+        @params['connection'].except(*SERVER_OPTIONS).merge(@params.except('connection'))
       end
 
-      PARAM_SEP_TOKENS = {
-        '.eq.' => '=',
-        '.sc.' => ';'
-      }.freeze
-
-      # Parse connection string in @conn_str and extract @params and @columns
+      # Parse @json_params and extract @params
       def extract_params
-        # Convert into hash form: "p=v;..." -> { 'p' => v, ...}
-        @params = Hash[
-          @conn_str.split(';').map do |p|
-            param, value = p.split('=').map(&:strip)
-            [param.downcase, value]
-          end
-        ]
-
-        # Decode special tokens for the separator chars used.
-        # (this is to allow its use in parameters such as sql_query)
-        @params.each do |key, value|
-          PARAM_SEP_TOKENS.each do |token, symbol|
-            value = value.gsub(token, symbol)
-          end
-          @params[key] = value
-        end
+        @params = JSON.load(@json_params)
 
         # Extract columns of the result table from the parameters
         # Column definitions are expected in SQL syntax, e.g.
@@ -151,26 +117,40 @@ module CartoDB
 
       def validate_params!
         errors = []
-        if @params['dsn'].blank? &&
-           (@params['driver'].blank? || @params['database'].blank? || @params['table'].blank?)
-          errors << "Missing required parameters"
-        end
-        errors << "Missing columns definition" unless @columns.present?
         invalid_params = @params.keys - ACCEPTED_PARAMETERS
+        missing_parameters = REQUIRED_PARAMETERS - @params.keys
+        if missing_parameters.present?
+          errors << "Missing required parameters #{missing_parameters * ','}"
+        end
+        errors += connection_params_errors(@params['connection'])
         errors << "Invalid parameters: #{invalid_params * ', '}" if invalid_params.present?
         raise InvalidParametersError.new(errors * "\n") if errors.present?
       end
 
+      def connection_params_errors(params)
+        errors = []
+        if params.blank?
+          errors << "Connection parameters are missing"
+        elsif params['dsn'].blank? && (params['driver'].blank? || params['database'].blank?)
+          errors << "Missing required connection parameters"
+        end
+        errors
+      end
+
       def connector_name
-        @params['dsn'] || @params['driver']
+        @params['connection']['dsn'] || @params['connection']['driver']
       end
 
       def server_name
-        "connector_#{connector_name}_#{@unique_suffix}"
+        "connector_#{connector_name.downcase}_#{@unique_suffix}"
+      end
+
+      def foreign_prefix
+        "#{server_name}_"
       end
 
       def foreign_table_name
-        "#{server_name}_#{@params['table']}"
+        "#{foreign_prefix}#{@params['table'] || 'table'}"
       end
 
       def create_server_command
@@ -180,17 +160,31 @@ module CartoDB
             FOREIGN DATA WRAPPER odbc_fdw
             OPTIONS (#{options});
           CREATE USER MAPPING FOR "#{@user.database_username}" SERVER #{server_name};
+          CREATE USER MAPPING FOR postgres SERVER #{server_name};
         }
       end
 
       def create_foreign_table_command
-        options = table_params.map { |k, v| "#{k} '#{v}'" } * ",\n"
-        %{
-          CREATE FOREIGN TABLE #{foreign_table_name} (#{@columns * ','})
-            SERVER #{server_name}
-            OPTIONS (#{options});
-          GRANT SELECT ON #{foreign_table_name} TO "#{@user.database_username}";
-        }
+        options = table_params
+        if @columns.present?
+          options_list = options.map { |k, v| "#{k} '#{v}'" } * ",\n"
+          %{
+            CREATE FOREIGN TABLE #{foreign_table_name} (#{@columns * ','})
+              SERVER #{server_name}
+              OPTIONS (#{options_list});
+            GRANT SELECT ON #{foreign_table_name} TO "#{@user.database_username}";
+           }
+        else
+          options = options.merge(prefix: foreign_prefix)
+          options_list = options.map { |k, v| "#{k} '#{v}'" } * ",\n"
+          %{
+            IMPORT FOREIGN SCHEMA #{@params['schema'] || @params['connection']['database'] || 'schema'}
+              FROM SERVER #{server_name}
+              INTO #{@schema}
+              OPTIONS (#{options_list});
+            GRANT SELECT ON #{foreign_table_name} TO "#{@user.database_username}";
+           }
+        end
       end
 
       def drop_server_command

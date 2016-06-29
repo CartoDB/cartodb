@@ -244,7 +244,10 @@
     opacity: 1;
   }
 }
-@media (max-width: 750px) {
+@media (max-width: 759px) {
+  .CDB-Dashboard-menu {
+    order: 3;
+  }
   .CDB-Dashboard-menuInner {
     padding: 16px;
     background: #1181FB;

@@ -20,13 +20,20 @@ $tableBorderColor: $cSecondaryLine;
   left: $baseSize * 2;
   overflow-x: auto;
   overflow-y: hidden;
-  background: $cWhite;
+  background: $cThirdBackground;
   z-index: 2;
+}
+.Table--relative {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 .Table-head {
   background: $cThirdBackground;
 }
 .Table-head tr {
+  border-top: 1px solid $cMainLine;
   border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {
@@ -49,8 +56,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-headItemWrapper--short {
   width: $elementWidthShort;
 }
-
-
 .Table-headItemName {
   height: auto;
   margin: 0;
@@ -69,7 +74,6 @@ $tableBorderColor: $cSecondaryLine;
   background: $cWhite;
   box-sizing: border-box;
 }
-
 .Table-columnSorted--asc {
   @include transform(rotate(-90deg));
 }
@@ -102,6 +106,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body {
   @include display-flex();
   @include flex(1);
+  background: $cWhite;
 }
 .Table-body table {
   position: absolute;
@@ -134,6 +139,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cellItem:hover,
 .Table-cellItem.is-highlighted {
   background: rgba($cHighlight, 0.32);
+  cursor: pointer;
   .CDB-Shape-threePoints {
     display: block;
   }
@@ -156,7 +162,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-rowMenu--bottom {
   margin-top: -200px;
 }
-
 .Table-row:hover .Table-cellItem::before {
   display: block;
   position: absolute;
@@ -169,7 +174,12 @@ $tableBorderColor: $cSecondaryLine;
   pointer-events: none;
   content: '';
 }
-
+.Table-editor {
+  position: absolute;
+  min-width: 200px;
+  padding: 10px;
+  z-index: 5;
+}
 .Table-cell {
   @include align-items(center);
   width: $elementWidth;
@@ -183,7 +193,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text {
   @include flex(2);
 }
-
 .Table-cell--short {
   width: $elementWidthShort;
 }
@@ -234,4 +243,11 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-paginatorButton--next {
   border-left: 1px solid $cThirdBackground;
+}
+.Table-editorTextarea {
+  $width: 280px;
+  $height: 96px;
+  width: $width;
+  height: $height;
+  resize: vertical;
 }

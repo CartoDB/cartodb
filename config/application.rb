@@ -77,6 +77,7 @@ module CartoDB
       vendor_editor3.js
       common_editor3.js
       editor3.js
+      dataset.js
       public_editor3.js
       account_templates.js
       account_deps.js

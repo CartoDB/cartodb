@@ -140,7 +140,6 @@ module Carto
             dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
-            arcgis_datasource: @user.arcgis_datasource_enabled?,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
             google_maps_enabled: @user.google_maps_enabled?
           },

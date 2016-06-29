@@ -1,7 +1,7 @@
 <button type="button" class="CDB-ListDecoration-itemLink
     <% if (isSelected) { %> is-selected <% } %>
     <% if (isDestructive) { %>
-      u-alertTextColor
+      u-errorTextColor
     <% } if (isDisabled) { %>
       u-hintTextColor
     <% } else { %>

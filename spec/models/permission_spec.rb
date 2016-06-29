@@ -213,6 +213,38 @@ describe CartoDB::Permission do
       user2.destroy
     end
 
+    it 'allows granting read permission for viewer users' do
+      user2 = create_user(viewer: true)
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      prepare_vis_mock_in_permission
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username
+      ).save
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READONLY
+        }
+      ]
+
+      permission.save
+      permission.reload
+
+      permission.permission_for_user(user2).should eq Permission::ACCESS_READONLY
+
+      user2.destroy
+    end
+
     it 'changes RW to RO permission to builders becoming viewers' do
       user = create_user
       user2 = create_user(viewer: false)

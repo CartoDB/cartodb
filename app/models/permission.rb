@@ -458,13 +458,8 @@ module CartoDB
       end
     end
 
-    def users_with_permissions(permission_type)
-      user_ids = relevant_user_acl_entries(acl).select { |entry|
-        permission_type.include?(entry[:access])
-      }.map { |entry|
-          entry[:id]
-      }
-
+    def users_with_permissions(access)
+      user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
       ::User.where(id: user_ids).all
     end
 

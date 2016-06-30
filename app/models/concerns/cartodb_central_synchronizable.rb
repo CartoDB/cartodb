@@ -110,7 +110,7 @@ module Concerns
         when :create
           raise "Can't create organizations from editor"
         when :update
-          self.values.slice(:seats, :viewer_seats, :display_name, :description, :website,
+          values.slice(:seats, :viewer_seats, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)

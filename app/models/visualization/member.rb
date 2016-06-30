@@ -648,7 +648,8 @@ module CartoDB
       end
 
       def save_named_map
-        return if type == TYPE_REMOTE || mapcapped?
+        return if type == TYPE_REMOTE
+        return true if mapcapped?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do

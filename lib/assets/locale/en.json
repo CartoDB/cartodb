@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",

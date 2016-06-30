@@ -322,6 +322,11 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'torque'
           end
 
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:options][:id].should eq @torque_layer.id
+          end
+
           describe 'with aggregations' do
             before(:all) do
               @torque_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'

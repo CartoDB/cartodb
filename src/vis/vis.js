@@ -15,11 +15,9 @@ var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var Layers = require('./vis/layers');
 
-var STATES = {
-  INIT: 'init', // vis hasn't been sent to Windshaft
-  OK: 'ok', // vis has been sent to Windshaft and everything is ok
-  ERROR: 'error' // vis has been sent to Windshaft and there were some issues
-};
+var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
+var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
+var STATE_ERROR = 'error'; // vis has been sent to Windshaft and there were some issues
 
 var VisModel = Backbone.Model.extend({
   defaults: {
@@ -27,7 +25,7 @@ var VisModel = Backbone.Model.extend({
     https: false,
     showLegends: false,
     showEmptyInfowindowFields: false,
-    state: STATES.INIT
+    state: STATE_INIT
   },
 
   initialize: function () {
@@ -42,12 +40,12 @@ var VisModel = Backbone.Model.extend({
 
   setOk: function () {
     this.trigger('ok');
-    this.set('state', STATES.OK);
+    this.set('state', STATE_OK);
   },
 
   done: function (callback) {
     this.once('ok', function () {
-      if (this.get('state') === STATES.INIT) {
+      if (this.get('state') === STATE_INIT) {
         callback(this);
       }
     }, this);
@@ -56,12 +54,12 @@ var VisModel = Backbone.Model.extend({
 
   setError: function (error) {
     this.trigger('error', error);
-    this.set('state', STATES.ERROR);
+    this.set('state', STATE_ERROR);
   },
 
   error: function (callback) {
     this.once('error', function (error) {
-      if (this.get('state') === STATES.INIT) {
+      if (this.get('state') === STATE_INIT) {
         callback(error);
       }
     }, this);

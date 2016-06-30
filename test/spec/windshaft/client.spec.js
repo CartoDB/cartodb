@@ -219,8 +219,11 @@ describe('windshaft/client', function () {
       });
 
       it('should cancel previous requests when using GET requests', function () {
+        var errorCallback = jasmine.createSpy('errorCallback');
+
         this.client.instantiateMap({
-          mapDefinition: { some: 'json that must be encoded' }
+          mapDefinition: { some: 'json that must be encoded' },
+          error: errorCallback
         });
 
         expect($.ajax.calls.argsFor(0)[0].method).toEqual('GET');
@@ -231,6 +234,8 @@ describe('windshaft/client', function () {
         });
 
         expect(this.fakeXHR.abort).toHaveBeenCalled();
+        
+        expect(errorCallback).not.toHaveBeenCalled();
       });
 
       it('should cancel previous requests when using POST requests', function () {

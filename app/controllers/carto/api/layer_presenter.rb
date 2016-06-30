@@ -55,7 +55,7 @@ module Carto
             poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
           end
           if poro['tooltip'].present?
-            poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'])
+            poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'], mustache_dir: 'tooltips')
           end
         end
         poro

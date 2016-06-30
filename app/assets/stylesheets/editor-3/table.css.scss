@@ -213,7 +213,12 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text.is-disabled {
   color: $cAltText;
 }
-
+// Disabled state color
+.Table.is-disabled .Table-cell .CDB-Text,
+.Table.is-disabled .Table-cell .CDB-Text.is-number,
+.Table.is-disabled .Table-cell .CDB-Text.is-cartodbId {
+  color: $cAltText;
+}
 .Table-paginator {
   @include display-flex();
   @include align-items(center);

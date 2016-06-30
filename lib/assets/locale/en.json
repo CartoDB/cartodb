@@ -257,6 +257,7 @@
       "share": {
         "done-btn": "DONE",
         "update-btn": "UPDATE",
+        "back-btn": "GO BACK",
         "published": "Published %{when}",
         "last-version": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
@@ -294,7 +295,12 @@
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
-        }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+        },
+        "loading": "Saving your data..."
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",

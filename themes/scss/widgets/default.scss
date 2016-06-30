@@ -110,11 +110,11 @@
     margin-top: 0; // override default
   }
   .CDB-Widget {
-    border-left-width: 2px;
-    border-left-style: solid;
     width: auto;
     min-width: auto;
     padding: $baseSize + 4 0;
+    border-left-width: 2px;
+    border-left-style: solid;
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,

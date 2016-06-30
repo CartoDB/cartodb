@@ -172,7 +172,7 @@
 // Widget media query
 @media (max-width:759px) {
   .CDB-Widget-listItem {
-    width: 50%;
+    width: 33.33%;
   }
   .CDB-Widget-listGroup {
     @include display-flex();
@@ -180,18 +180,16 @@
   } 
   .CDB-Widget-listWrapper {
     overflow-x: hidden;
-    min-width: 300px;
+    min-width: 320px;
   }
   .CDB-Widget-inlineListItem {
     width: 47%;
   }
-  .CDB-Widget-listButton {;
-    padding-right: $sMargin-section / 3;
-    padding-left: $sMargin-section / 3;
+  .CDB-Widget-listButton {
+    padding: 2px 8px;
   }
   .CDB-Widget-listItemInner {
     margin: 0;
-    padding-right: $sMargin-section / 3;
-    padding-left: $sMargin-section / 3;
+    padding: 2px 8px;
   }
 }

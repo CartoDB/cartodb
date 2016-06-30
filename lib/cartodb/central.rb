@@ -26,7 +26,7 @@ module Cartodb
     end
 
     def build_request(path, body, method, timeout = 200)
-      http_client = Carto::Http::Client.get('central', log_requests: true, followlocation: true)
+      http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(
         "#{@host}/#{path}",
         method: method,
@@ -34,7 +34,8 @@ module Cartodb
         userpwd: "#{@auth[:username]}:#{@auth[:password]}",
         headers: { "Content-Type" => "application/json" },
         ssl_verifypeer: Rails.env.production?,
-        timeout: timeout
+        timeout: timeout,
+        followlocation: true
       )
     end
 

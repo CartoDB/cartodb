@@ -326,7 +326,7 @@
           },
           "kmeans": {
             "title": "Cluster",
-            "desc": "Group points so they are more similar to each other in that group than to those in other groups."
+            "desc": "Group points by proximity"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",

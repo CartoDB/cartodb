@@ -20,7 +20,7 @@
       <button type="submit" class="CDB-Text CDB-Size-small Form-inputSubmit u-upperCase u-actionTextColor Form-inputSubmit">
         <span><%- _t('components.modals.add-layer.imports.form-import.submit') %></span>
       </button>
-      <div class="Form-inputError"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>
+      <div class="Form-inputError CDB-Text"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>
     </div>
   </div>
 </form>

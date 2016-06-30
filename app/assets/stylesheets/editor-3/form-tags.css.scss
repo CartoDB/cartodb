@@ -1,51 +1,121 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+@import 'cdb-utilities/mixins';
+
+ul.tagit {
+  padding: 1px 5px;
+  overflow: auto;
+  margin-left: inherit; /* usually we don't want the regular ul margins. */
+  margin-right: inherit;
+}
+ul.tagit li {
+  display: block;
+  float: left;
+  margin: 2px 5px 2px 0;
+}
+ul.tagit li.tagit-choice {
+  padding: .2em 18px .2em .5em;
+  position: relative;
+  line-height: inherit;
+}
+ul.tagit li.tagit-new {
+  padding: .25em 4px .25em 0;
+}
+
+ul.tagit li.tagit-choice a.tagit-label {
+  cursor: pointer;
+  text-decoration: none;
+}
+ul.tagit li.tagit-choice .tagit-close {
+  cursor: pointer;
+  position: absolute;
+  right: .1em;
+  top: 50%;
+  margin-top: -8px;
+}
+
+/* used for some custom themes that don't need image icons */
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+  display: none;
+}
+
+ul.tagit li.tagit-choice input {
+  display: block;
+  float: left;
+  margin: 2px 5px 2px 0;
+}
+ul.tagit input[type="text"] {
+  box-sizing: border-box;
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: inherit;
+  background-color: inherit;
+  outline: none;
+}
+
 .Form-tags {
+  box-sizing: border-box;
+  font-size: $sFontSize-medium;
   position: relative;
   width: 100%;
   min-height: 38px;
   padding: 0;
   outline: none;
-  border: 1px solid #CCC;
+  border: 1px solid $cMainLine;
   border-radius: 4px;
-  background: white;
+  background: $cWhite;
   z-index: 2;
 }
-.Form-tagsList.tagit { padding: 0 5px 5px 5px }
+
+.Form-tagsList.tagit {
+  padding: 0 5px 5px;
+}
+
 .Form-tagsList.tagit .tagit-choice {
-  padding: 0 30px 0 11px;
   margin: 5px 5px 0 0;
-  line-height: 28px;
+  padding: 1px 24px 0 11px;
+  border-radius: 2px;
   background: #EFF8FF;
   color: #746E76;
-  border-radius: 2px;
+  line-height: 28px;
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close {
-  line-height: normal;
   right: 10px;
+  line-height: normal;
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
   display: inline-block;
   color: #C5CCD1;
-  &:hover { color: #AAA }
+
+  &:hover {
+    color: #AAA ;
+  }
 }
 .Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
 .Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
 .Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
 .Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
-  font-weight: $sFontWeight-normal;
+  color: #AAA;
   font-style: italic;
-  color: #AAA
+  font-weight: $sFontWeight-normal;
 }
-.Form-tags.is-focus { border-color: #999 }
+.Form-tags.is-hover {
+  border-color: $cHoverLine;
+}
+.Form-tags.is-focus {
+  border-color: $cBlue;
+}
 .Form-tags.is-disabled {
-  background: $cStructure-grayBkg;
+  background: rgba(#F9F9F9, 1);
 
   .tagit-choice { padding: 0 11px }
   .tagit-choice .tagit-close { display: none }

@@ -22,16 +22,16 @@ module Cartodb
     end
 
     def google_signup_url
-      "#{self.host}/google/signup"
+      "#{host}/google/signup"
     end
 
     def build_request(path, body, method, timeout = 200)
-      http_client = Carto::Http::Client.get('central', log_requests: true)
+      http_client = Carto::Http::Client.get('central', log_requests: true, followlocation: true)
       http_client.request(
-        "#{ @host }/#{ path }",
+        "#{@host}/#{path}",
         method: method,
         body: body.to_json,
-        userpwd: "#{ @auth[:username] }:#{ @auth[:password] }",
+        userpwd: "#{@auth[:username]}:#{@auth[:password]}",
         headers: { "Content-Type" => "application/json" },
         ssl_verifypeer: Rails.env.production?,
         timeout: timeout

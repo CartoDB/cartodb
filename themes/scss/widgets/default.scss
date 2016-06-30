@@ -79,7 +79,7 @@
 
 
 // Widget media query
-@media (max-width: 1000px) {
+@media (max-width: 1300px) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
@@ -89,7 +89,7 @@
   }
 }
 
-@include media-query() {
+@media (max-width:759px) {
   .CDB-Widget--timeSeries {
     height: $baseSize * 8;
     min-height: $baseSize * 8; // override default min-height
@@ -109,9 +109,6 @@
     width: 100%;
     margin-top: 0; // override default
   }
-}
-
-@media (max-width:759px) {
   .CDB-Widget {
     border-left-width: 2px;
     border-left-style: solid;

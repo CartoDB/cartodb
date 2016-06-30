@@ -252,13 +252,13 @@
     @include display-flex();
     @include justify-content(space-between);
     @include flex-direction(row-reverse);
+    position: static;
+    width: 100%;
+    max-width: 100%;
     padding: 8px;
     background: $cThirdBackground;
     overflow: hidden;
     box-sizing: border-box;
-    position: static;
-    max-width: 100%;
-    width: 100%;
   }
   .CDB-Dashboard-menuMedia {
     width: 16px;
@@ -268,24 +268,24 @@
     width: 16px;
     height: 16px;
     margin-bottom: 0;
+    margin-left: 16px;
     border-radius: 4px;
     line-height: 16px;
-    margin-left: 16px;
   }
   .CDB-Dashboard-menuLogo i {
     font-size: 11px;
   }
   .CDB-Dashboard-menuFooter {
-    width: auto;
     position: static;
+    width: auto;
   }
   .CDB-Dashboard-menuInfo {
     display: none;
   }
   .CDB-Dashboard-menuFooterItem {
+    @include display-flex();
+    @include align-items(center);
     margin-top: 0;
-    display: flex;
-    align-items: center;
   }
   .CDB-Dashboard-menuFooterTxt {
     font-size: 10px;
@@ -295,8 +295,8 @@
     display: block;
   }
   .CDB-Dashboard-menuActions {
+    @include opacity(1);
     position: static;
-    opacity: 1;
     width: auto;
   }
   .CDB-Dashboard-menuHeader {

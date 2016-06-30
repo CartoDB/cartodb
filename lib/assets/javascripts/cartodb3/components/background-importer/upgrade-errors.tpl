@@ -2,8 +2,8 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--negative">
     <i class="CDB-IconFont CDB-IconFont-barometer"></i>
   </div>
-  <p class="Dialog-headerTitle"><%- _t('import-error-messages.' + errorCode + '.title') %></p>
-  <p class="Dialog-headerText"><%- _t('import-error-messages.' + errorCode + '.description') %></p>
+  <p class="Dialog-headerTitle"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.title') %></p>
+  <p class="Dialog-headerText"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.description') %></p>
 </div>
 <div class="Dialog-body ErrorDetails-body ErrorDetails-body--no-line">
   <div class="UpgradeElement">
@@ -12,7 +12,7 @@
         <i class="CDB-IconFont CDB-IconFont-rocket"></i>
       </div>
       <p class="UpgradeElement-infoText u-ellipsLongText">
-        <%- _t('import-error-messages.' + errorCode + '.info') %>
+        <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.info') %>
       </p>
     </div>
     <% if (showTrial) { %>

@@ -5,6 +5,7 @@ var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAA
 var log = require('cdb.log');
 var Request = require('./request');
 var RequestTracker = require('./request-tracker');
+var WindshaftError = require('./error');
 
 var TILE_EXTENSIONS_BY_LAYER_TYPE = {
   'mapnik': '.png',
@@ -88,20 +89,38 @@ var WindshaftMap = Backbone.Model.extend({
     this.client.instantiateMap({
       mapDefinition: payload,
       params: params,
-      success: function (mapInstance) {
-        this._trackRequest(request, mapInstance);
-        this.set(mapInstance);
+      success: function (response) {
+        this._trackRequest(request, response);
+        this.set(response);
         this._modelUpdater.updateModels(this, options.sourceLayerId, options.forceFetch);
         this.trigger('instanceCreated');
         options.success && options.success(this);
       }.bind(this),
-      error: function (error) {
-        this._trackRequest(request, error);
-        var errorMsg = 'Request to Maps API failed: ' + error;
-        log.error(errorMsg);
-        options.error && options.error(errorMsg);
+      error: function (response) {
+        this._trackRequest(request, response);
+
+        var windshaftErrors = this._getErrorsFromResponse(response);
+        this._modelUpdater.setErrors(windshaftErrors);
+
+        log.error('Request to Maps API failed');
+        options.error && options.error();
       }.bind(this)
     });
+  },
+
+  _getErrorsFromResponse: function (response) {
+    if (response.errors_with_context) {
+      return _.map(response.errors_with_context, function (error) {
+        return new WindshaftError(error);
+      });
+    }
+    if (response.errors) {
+      return [
+        new WindshaftError({ message: response.errors[0] })
+      ];
+    }
+
+    return [];
   },
 
   _getParams: function () {

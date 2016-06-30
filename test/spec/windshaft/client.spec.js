@@ -88,11 +88,17 @@ describe('windshaft/client', function () {
         error: errorCallback
       });
 
-      this.ajaxParams.success({
-        errors: [ 'something went wrong!' ]
-      });
+      var errors = {
+        errors: [ 'the error message' ],
+        errors_with_context: {
+          type: 'unknown',
+          message: 'the error message'
+        }
+      };
 
-      expect(errorCallback).toHaveBeenCalledWith('something went wrong!');
+      this.ajaxParams.success(errors);
+
+      expect(errorCallback).toHaveBeenCalledWith(errors);
     });
 
     it('should invoke the error callback if ajax request goes wrong', function () {
@@ -104,9 +110,9 @@ describe('windshaft/client', function () {
         error: errorCallback
       });
 
-      this.ajaxParams.error({ responseText: 'something went wrong!' });
+      this.ajaxParams.error({ responseText: JSON.stringify({ something: 'else' }) });
 
-      expect(errorCallback).toHaveBeenCalledWith('Unknown error');
+      expect(errorCallback).toHaveBeenCalledWith({ something: 'else' });
     });
 
     it('should ignore the error callback if request was aborted', function () {
@@ -203,8 +209,11 @@ describe('windshaft/client', function () {
       });
 
       it('should cancel previous requests when using GET requests', function () {
+        var errorCallback = jasmine.createSpy('errorCallback');
+
         this.client.instantiateMap({
-          mapDefinition: { some: 'json that must be encoded' }
+          mapDefinition: { some: 'json that must be encoded' },
+          error: errorCallback
         });
 
         expect($.ajax.calls.argsFor(0)[0].method).toEqual('GET');
@@ -215,6 +224,8 @@ describe('windshaft/client', function () {
         });
 
         expect(this.fakeXHR.abort).toHaveBeenCalled();
+
+        expect(errorCallback).not.toHaveBeenCalled();
       });
 
       it('should cancel previous requests when using POST requests', function () {

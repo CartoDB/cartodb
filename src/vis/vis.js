@@ -15,12 +15,17 @@ var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var Layers = require('./vis/layers');
 
+var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
+var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
+var STATE_ERROR = 'error'; // vis has been sent to Windshaft and there were some issues
+
 var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
     https: false,
     showLegends: false,
-    showEmptyInfowindowFields: false
+    showEmptyInfowindowFields: false,
+    state: STATE_INIT
   },
 
   initialize: function () {
@@ -33,13 +38,31 @@ var VisModel = Backbone.Model.extend({
     this.overlaysCollection = new Backbone.Collection();
   },
 
+  setOk: function () {
+    this.trigger('ok');
+    this.set('state', STATE_OK);
+  },
+
   done: function (callback) {
-    this.on('done', callback);
+    this.once('ok', function () {
+      if (this.get('state') === STATE_INIT) {
+        callback(this);
+      }
+    }, this);
     return this;
   },
 
+  setError: function (error) {
+    this.trigger('error', error);
+    this.set('state', STATE_ERROR);
+  },
+
   error: function (callback) {
-    this.on('error', callback);
+    this.once('error', function (error) {
+      if (this.get('state') === STATE_INIT) {
+        callback(error);
+      }
+    }, this);
     return this;
   },
 
@@ -91,6 +114,7 @@ var VisModel = Backbone.Model.extend({
     });
 
     var modelUpdater = new ModelUpdater({
+      visModel: this,
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
@@ -227,16 +251,8 @@ var VisModel = Backbone.Model.extend({
    */
   instantiateMap: function (options) {
     options = options || {};
-    var self = this;
-
-    // TODO: invalidateSize
     this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
-    this.map.instantiateMap(_.pick(options, ['success', 'error']));
-
-    // Trigger 'done' event
-    _.defer(function () {
-      self.trigger('done', self, self.map.layers);
-    });
+    this.map.instantiateMap();
   },
 
   invalidateSize: function () {

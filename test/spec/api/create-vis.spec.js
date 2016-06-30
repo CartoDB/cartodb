@@ -2,6 +2,7 @@ var _ = require('underscore');
 var $ = require('jquery');
 var Loader = require('../../../src/core/loader');
 var createVis = require('../../../src/api/create-vis');
+var VizJSON = require('../../../src/api/vizjson');
 var fakeVizJSON = require('./fake-vizjson');
 
 describe('src/api/create-vis', function () {
@@ -37,29 +38,27 @@ describe('src/api/create-vis', function () {
     }.bind(this)).not.toThrowError();
   });
 
-  it('should load the vizjson file from a URL', function (done) {
+  it('should load the vizjson file from a URL', function () {
     spyOn(Loader, 'get');
-    var vis = createVis(this.containerId, 'http://example.com/vizjson');
+    var vis = createVis(this.containerId, 'http://example.com/vizjson', {
+      skipMapInstantiation: true
+    });
+    spyOn(vis, 'load');
 
     // Simulate a successful response from Loader.get
     var loaderCallback = Loader.get.calls.mostRecent().args[1];
     loaderCallback(fakeVizJSON);
 
-    vis.done(function (vis, layers) {
-      expect(vis).toBeDefined();
-      expect(layers).toBeDefined();
-      done();
-    });
+    expect(vis.load).toHaveBeenCalledWith(jasmine.any(VizJSON));
   });
 
   it('should use the given vizjson object', function () {
     spyOn(Loader, 'get');
-    var vis = createVis(this.containerId, fakeVizJSON);
-    expect(Loader.get).not.toHaveBeenCalled();
-    vis.done(function (vis, layers) {
-      expect(vis).toBeDefined();
-      expect(layers).toBeDefined();
+    createVis(this.containerId, fakeVizJSON, {
+      skipMapInstantiation: true
     });
+
+    expect(Loader.get).not.toHaveBeenCalled();
   });
 
   it('should set the given center if values are correct', function () {

@@ -36,6 +36,14 @@ module.exports = Model.extend({
     }
   },
 
+  setOk: function () {
+    this.trigger('ok');
+  },
+
+  setError: function (error) {
+    this.trigger('error', error);
+  },
+
   _initBinds: function () {
     this.bind('change:type', function () {
       this.unbind(null, null, this);

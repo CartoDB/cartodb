@@ -51,6 +51,14 @@ var MapLayer = Model.extend({
 
   // INTERNAL CartoDB.js METHODS
 
+  setOk: function () {
+    this.trigger('ok');
+  },
+
+  setError: function (error) {
+    this.trigger('error', error);
+  },
+
   /*
    * Compare the layer with the received one
    * @method isEqual

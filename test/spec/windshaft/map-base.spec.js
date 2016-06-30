@@ -48,7 +48,7 @@ describe('windshaft/map-base', function () {
     this.dataviewsCollection = new Backbone.Collection();
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
-    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels']);
+    this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
     this.client = new WindshaftClient({
       endpoint: 'v1',
       urlTemplate: 'http://{user}.wadus.com',
@@ -309,7 +309,9 @@ describe('windshaft/map-base', function () {
     describe('when request fails', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
-          options.error('something went wrong');
+          options.error({
+            errors: ['something went wrong']
+          });
         });
         spyOn(log, 'error');
         this.errorCallback = jasmine.createSpy('errorCallback');
@@ -320,11 +322,44 @@ describe('windshaft/map-base', function () {
       });
 
       it('should log the error', function () {
-        expect(log.error).toHaveBeenCalledWith('Request to Maps API failed: something went wrong');
+        expect(log.error).toHaveBeenCalledWith('Request to Maps API failed');
       });
 
       it('should invoke a given error callback', function () {
-        expect(this.errorCallback).toHaveBeenCalledWith('Request to Maps API failed: something went wrong');
+        expect(this.errorCallback).toHaveBeenCalledWith();
+      });
+
+      it('should should update models and use first error message', function () {
+        expect(this.modelUpdater.setErrors).toHaveBeenCalled();
+        var errors = this.modelUpdater.setErrors.calls.argsFor(0)[0];
+
+        expect(errors.length).toEqual(1);
+        expect(errors[0].message).toEqual('something went wrong');
+      });
+
+      it('should use errors with context when present', function () {
+        this.modelUpdater.setErrors.calls.reset();
+        this.client.instantiateMap.and.callFake(function (options) {
+          options.error({
+            errors_with_context: [{
+              type: 'layer',
+              subtype: 'layer-subtype',
+              message: 'Something is wrong with this layer',
+              layer: {
+                id: 'layerID'
+              }
+            }]
+          });
+        });
+
+        this.windshaftMap.createInstance();
+
+        var errors = this.modelUpdater.setErrors.calls.argsFor(0)[0];
+
+        expect(errors.length).toEqual(1);
+        expect(errors[0].type).toEqual('layer-subtype');
+        expect(errors[0].message).toEqual('Something is wrong with this layer');
+        expect(errors[0].layerId).toEqual('layerID');
       });
     });
   });

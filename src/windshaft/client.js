@@ -45,7 +45,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   var ajaxOptions = {
     success: function (data) {
       if (data.errors) {
-        errorCallback(data.errors[0]);
+        errorCallback(data);
       } else {
         successCallback(data);
       }
@@ -54,11 +54,11 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       // Ignore error if request was explicitly aborted
       if (textStatus === 'abort') return;
 
-      var err = { errors: ['Unknown error'] };
+      var errors = {};
       try {
-        err = JSON.parse(xhr.responseText);
+        errors = JSON.parse(xhr.responseText);
       } catch (e) {}
-      errorCallback(err.errors[0]);
+      errorCallback(errors);
     }
   };
 

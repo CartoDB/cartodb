@@ -5,6 +5,9 @@ var _ = require('underscore');
  * CartoDB.js models that are linked to a "resource" in the Maps API.
  */
 var ModelUpdater = function (deps) {
+  if (!deps.visModel) {
+    throw new Error('visModel is required');
+  }
   if (!deps.layerGroupModel) {
     throw new Error('layerGroupModel is required');
   }
@@ -18,6 +21,7 @@ var ModelUpdater = function (deps) {
     throw new Error('analysisCollection is required');
   }
 
+  this._visModel = deps.visModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
@@ -29,6 +33,8 @@ ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceLayerId, for
   this._updateLayerModels(windhsaftMap);
   this._updateDataviewModels(windhsaftMap, sourceLayerId, forceFetch);
   this._updateAnalysisModels(windhsaftMap);
+
+  this._visModel.setOk();
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
@@ -47,6 +53,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
     if (layerModel.get('type') === 'torque') {
       layerModel.set('urls', windshaftMap.getTiles('torque'));
     }
+    layerModel.setOk();
   }, this);
 };
 
@@ -75,6 +82,7 @@ ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
       };
       attrs = _.omit(attrs, analysisNode.getParamNames());
       analysisNode.set(attrs);
+      analysisNode.setOk();
     }
   }, this);
 };
@@ -86,6 +94,22 @@ ModelUpdater.prototype._getProtocol = function () {
     return 'http';
   }
   return window.location.protocol.replace(':', '');
+};
+
+ModelUpdater.prototype.setErrors = function (errors) {
+  _.each(errors, this._setError, this);
+};
+
+ModelUpdater.prototype._setError = function (error) {
+  if (error.isLayerError()) {
+    var layerModel = this._layersCollection.get(error.layerId);
+    layerModel && layerModel.setError(error);
+  } else if (error.isAnalysisError()) {
+    var analysisModel = this._analysisCollection.get(error.analysisId);
+    analysisModel && analysisModel.setError(error);
+  } else {
+    this._visModel.setError(error);
+  }
 };
 
 module.exports = ModelUpdater;

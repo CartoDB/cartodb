@@ -224,7 +224,7 @@ describe('windshaft/client', function () {
         });
 
         expect(this.fakeXHR.abort).toHaveBeenCalled();
-        
+
         expect(errorCallback).not.toHaveBeenCalled();
       });
 

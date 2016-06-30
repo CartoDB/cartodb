@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var WindshaftError = require('../windshaft/error');
 
 /**
  * This class exposes a method that knows how to set/update the metadata on internal

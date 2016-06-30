@@ -684,6 +684,7 @@
     "maps": {
       "options": {
         "rename": "Rename",
+        "export-map": "Export map",
         "remove": "Delete map…"
       },
       "delete": {

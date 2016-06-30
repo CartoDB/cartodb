@@ -49,7 +49,7 @@
       </ul>
 
       <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
-        <div class="CDB-Dashboard-menuTextInner">
+        <div class="CDB-Dashboard-menuTextInner js-content">
           <button class="js-toggle-view u-actionTextColor CDB-Dashboard-menuTextActions">
             <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
           </button>

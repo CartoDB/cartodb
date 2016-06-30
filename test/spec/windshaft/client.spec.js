@@ -110,19 +110,9 @@ describe('windshaft/client', function () {
         error: errorCallback
       });
 
-      this.ajaxParams.error({ responseText: 'something went wrong!' });
+      this.ajaxParams.error({ responseText: JSON.stringify({ something: 'else' }) });
 
-      expect(errorCallback).toHaveBeenCalledWith(
-        {
-          errors: [ 'Unknown error' ],
-          errors_with_context: [
-            {
-              type: 'unknown',
-              message: 'Unknown error'
-            }
-          ]
-        }
-      );
+      expect(errorCallback).toHaveBeenCalledWith({ something: 'else' });
     });
 
     it('should ignore the error callback if request was aborted', function () {

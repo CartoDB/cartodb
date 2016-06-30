@@ -54,13 +54,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       // Ignore error if request was explicitly aborted
       if (textStatus === 'abort') return;
 
-      var errors = {
-        errors: [ 'Unknown error' ],
-        errors_with_context: [{
-          type: 'unknown',
-          message: 'Unknown error'
-        }]
-      };
+      var errors = {};
       try {
         errors = JSON.parse(xhr.responseText);
       } catch (e) {}

@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var ModelUpdater = require('../../../src/vis/model-updater');
+var WindshaftError = require('../../../src/windshaft/error');
 
 describe('src/vis/model-updater', function () {
   beforeEach(function () {
@@ -46,8 +47,11 @@ describe('src/vis/model-updater', function () {
 
     it('should update layer models', function () {
       var layer0 = new Backbone.Model({ type: 'Tiled' });
+      layer0.setOk = jasmine.createSpy();
       var layer1 = new Backbone.Model({ type: 'CartoDB' });
+      layer1.setOk = jasmine.createSpy();
       var layer2 = new Backbone.Model({ type: 'torque' });
+      layer2.setOk = jasmine.createSpy();
       this.layersCollection.reset([ layer0, layer1, layer2 ]);
 
       this.windshaftMap.getLayerMetadata = function (index) {
@@ -67,9 +71,12 @@ describe('src/vis/model-updater', function () {
 
       this.modelUpdater.updateModels(this.windshaftMap);
 
+      expect(layer0.setOk).toHaveBeenCalled();
       expect(layer1.get('meta')).toEqual('metadataLayer0');
+      expect(layer1.setOk).toHaveBeenCalled();
       expect(layer2.get('meta')).toEqual('metadataLayer1');
       expect(layer2.get('urls')).toEqual('tileURLS');
+      expect(layer2.setOk).toHaveBeenCalled();
     });
 
     it('should update dataview models', function () {
@@ -187,17 +194,19 @@ describe('src/vis/model-updater', function () {
 
   describe('.setErrors', function () {
     it('should set vis state to error', function () {
-      this.modelUpdater.setErrors({
-        errors: [],
-        errors_with_context: [
-          {
-            type: 'unknown',
-            message: 'something went wrong!'
-          }
-        ]
-      });
+      this.modelUpdater.setErrors([
+        new WindshaftError({
+          type: 'unknown',
+          message: 'something went wrong!'
+        })
+      ]);
 
-      expect(this.visModel.setError).toHaveBeenCalledWith('something went wrong!');
+      expect(this.visModel.setError).toHaveBeenCalled();
+      var error = this.visModel.setError.calls.argsFor(0)[0];
+
+      expect(error.type).toBeUndefined();
+      expect(error.message).toEqual('something went wrong!');
+      expect(error.context).toBeUndefined();
     });
 
     it('should "mark" analysis as erroneous', function () {
@@ -208,17 +217,83 @@ describe('src/vis/model-updater', function () {
 
       this.analysisCollection.reset([ analysis ]);
 
-      this.modelUpdater.setErrors({
-        errors_with_context: [{
+      this.modelUpdater.setErrors([
+        new WindshaftError({
           type: 'analysis',
           message: 'Missing required param "radius"',
           analysis: {
-            id: 'ANALYSIS_ID'
+            id: 'ANALYSIS_ID',
+            context: {
+              something: 'else'
+            }
           }
-        }]
-      });
+        })
+      ]);
 
-      expect(analysis.setError).toHaveBeenCalledWith('Missing required param "radius"');
+      expect(analysis.setError).toHaveBeenCalled();
+      var error = analysis.setError.calls.argsFor(0)[0];
+
+      expect(error.type).toBeUndefined();
+      expect(error.analysisId).toEqual('ANALYSIS_ID');
+      expect(error.message).toEqual('Missing required param "radius"');
+      expect(error.context).toEqual({
+        something: 'else'
+      });
+    });
+
+    it('should "mark" layer as erroroneus', function () {
+      var layer = new Backbone.Model({
+        id: 'LAYER_ID'
+      });
+      layer.setError = jasmine.createSpy('setError');
+
+      this.layersCollection.reset([ layer ]);
+
+      this.modelUpdater.setErrors([
+        new WindshaftError({
+          type: 'layer',
+          subtype: 'turbo-carto',
+          message: 'turbo-carto: something went wrong',
+          layer: {
+            index: 0,
+            id: 'LAYER_ID',
+            type: 'cartodb',
+            context: {
+              selector: '#layer',
+              source: {
+                start: {
+                  line: 1,
+                  column: 10
+                },
+                end: {
+                  line: 1,
+                  column: 61
+                }
+              }
+            }
+          }
+        })
+      ]);
+
+      expect(layer.setError).toHaveBeenCalled();
+      var error = layer.setError.calls.argsFor(0)[0];
+
+      expect(error.type).toEqual('turbo-carto');
+      expect(error.layerId).toEqual('LAYER_ID');
+      expect(error.message).toEqual('turbo-carto: something went wrong');
+      expect(error.context).toEqual({
+        selector: '#layer',
+        source: {
+          start: {
+            line: 1,
+            column: 10
+          },
+          end: {
+            line: 1,
+            column: 61
+          }
+        }
+      });
     });
   });
 });

@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var WindshaftError = require('../windshaft/error');
 
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
@@ -53,6 +54,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
     if (layerModel.get('type') === 'torque') {
       layerModel.set('urls', windshaftMap.getTiles('torque'));
     }
+    layerModel.setOk();
   }, this);
 };
 
@@ -96,22 +98,18 @@ ModelUpdater.prototype._getProtocol = function () {
 };
 
 ModelUpdater.prototype.setErrors = function (errors) {
-  _.each(errors.errors_with_context, this._setError, this);
-};
-
-var ERROR_TYPES = {
-  UNKNOWN: 'unknown',
-  ANALYSIS: 'analysis'
+  _.each(errors, this._setError, this);
 };
 
 ModelUpdater.prototype._setError = function (error) {
-  if (error.type === ERROR_TYPES.UNKNOWN) {
-    this._visModel.setError(error.message);
-  }
-  if (error.type === ERROR_TYPES.ANALYSIS) {
-    var analysisId = error.analysis.id;
-    var analysisModel = this._analysisCollection.get(analysisId);
-    analysisModel.setError(error.message);
+  if (error.isLayerError()) {
+    var layerModel = this._layersCollection.get(error.layerId);
+    layerModel && layerModel.setError(error);
+  } else if (error.isAnalysisError()) {
+    var analysisModel = this._analysisCollection.get(error.analysisId);
+    analysisModel && analysisModel.setError(error);
+  } else {
+    this._visModel.setError(error);
   }
 };
 

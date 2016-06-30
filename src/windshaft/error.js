@@ -8,29 +8,23 @@ var WindshaftError = function (error) {
   this.message = error.message;
   this.context = error.context;
 
-  if (this._isLayerError(error.type)) {
+  if (this.isLayerError(error.type)) {
     this.context = error.layer && error.layer.context;
     this.layerId = error.layer.id;
   }
-  if (this._isAnalysisError(error.type)) {
+  if (this.isAnalysisError(error.type)) {
     this.context = error.analysis && error.analysis.context;
     this.analysisId = error.analysis.id;
   }
 };
 
-WindshaftError.prototype.isLayerError = function () {
-  return this._isLayerError(this._error.type);
-};
-
-WindshaftError.prototype._isLayerError = function (errorType) {
+WindshaftError.prototype.isLayerError = function (errorType) {
+  errorType = errorType || this._error.type;
   return errorType === ERROR_TYPE_LAYER;
 };
 
-WindshaftError.prototype.isAnalysisError = function () {
-  return this._isAnalysisError(this._error.type);
-};
-
-WindshaftError.prototype._isAnalysisError = function (errorType) {
+WindshaftError.prototype.isAnalysisError = function (errorType) {
+  errorType = errorType || this._error.type;
   return errorType === ERROR_TYPE_ANALYSIS;
 };
 

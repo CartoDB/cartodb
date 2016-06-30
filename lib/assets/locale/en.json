@@ -326,7 +326,7 @@
           },
           "kmeans": {
             "title": "Cluster",
-            "desc": "Group closer points into a single one or into a group with different colors"
+            "desc": "Group points by proximity"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",

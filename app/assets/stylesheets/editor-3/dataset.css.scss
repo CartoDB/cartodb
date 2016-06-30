@@ -1,7 +1,7 @@
 // Styles for dataset
 // --------------------------------------------------
 
-// @import 'cdb-variables/colors';
+@import 'cdb-variables/colors';
 // @import 'cdb-variables/sizes';
 @import 'cdb-utilities/mixins';
 
@@ -23,6 +23,12 @@
 }
 .Dataset-viewInfo .Editor-HeaderInfoEditor {
   max-width: 400px;
+}
+.Dataset-viewOptions {
+  height: 40px;
+  padding: 0 20px;
+  border-top: 1px solid $cMainLine;
+  background: $cThirdBackground;
 }
 .Dataset-viewTable {
   @include flex(1);

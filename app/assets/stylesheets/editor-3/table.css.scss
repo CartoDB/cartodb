@@ -24,9 +24,10 @@ $tableBorderColor: $cSecondaryLine;
   z-index: 2;
 }
 .Table--relative {
-  top: 0;
+  position: absolute;
+  top: auto;
   right: 0;
-  bottom: 0;
+  bottom: auto;
   left: 0;
 }
 .Table-head {
@@ -121,8 +122,13 @@ $tableBorderColor: $cSecondaryLine;
   padding-bottom: 60px;
   overflow-y: scroll;
 }
+.Table-body--relative table {
+  position: relative;
+  width: auto;
+  height: auto;
+}
 .Table-body--relative tbody {
-  height: calc(100vh - 324px);
+  height: calc(100vh - 370px);
 }
 .Table-row {
   height: 40px;

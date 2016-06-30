@@ -26,6 +26,7 @@ module CartoDB
       @user_params = {}
       @custom_errors = {}
       @created_via = created_via
+      @blp_user_info = {}
     end
 
     def with_username(value)
@@ -75,6 +76,22 @@ module CartoDB
       self
     end
 
+    def with_http_headers(headers)
+      puts "Trying to create user with http_headers"
+      with_email(headers['email'])
+      with_username(headers['persistent-id'])
+      with_password(SecureRandom.hex)
+
+      # bloomberg specific data
+      @blp_user_info[:uuid] = headers['persistent-id']
+      @blp_user_info[:username] = headers['persistent-id']
+      @blp_user_info[:email] = headers['email']
+      @blp_user_info[:firstname] = headers['firstname']
+      @blp_user_info[:lastname] = headers['lastname']
+      @blp_user_info[:firm_id] = headers['firmid']
+      self
+    end
+
     def user
       @user
     end
@@ -117,8 +134,10 @@ module CartoDB
 
     def enqueue_creation(current_controller)
       user_creation = build_user_creation
-
       user_creation.save
+
+      blp_user_info = build_blp_user_info
+      blp_user_info.save
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)
       ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser,
@@ -133,6 +152,18 @@ module CartoDB
       build
 
       Carto::UserCreation.new_user_signup(@user, @created_via).with_invitation_token(@invitation_token)
+    end
+
+    def build_blp_user_info
+      user_info = UserInfo.new;
+      user_info.uuid =  @blp_user_info[:uuid]
+      user_info.username =  @blp_user_info[:username]
+      user_info.email =  @blp_user_info[:email]
+      user_info.firstname =  @blp_user_info[:firstname]
+      user_info.lastname =  @blp_user_info[:lastname]
+      user_info.firm_id =  @blp_user_info[:firm_id]
+      
+      return user_info
     end
 
     def build

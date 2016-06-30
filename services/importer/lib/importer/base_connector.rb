@@ -268,6 +268,7 @@ module CartoDB
       end
 
       def result_for(schema, table_name, error = nil)
+        print "IMPORTER: RESULT #{schema}, #{table_name}, #{error}\n"
         @job.success_status = !error
         @job.logger.store
         Result.new(

@@ -58,6 +58,8 @@ module CartoDB
         execute_as_superuser %{ GRANT CREATE,USAGE ON SCHEMA "#{@schema}" TO postgres }
         execute_as_superuser %{ GRANT CREATE,USAGE ON SCHEMA "#{@schema}" TO "#{@user.database_username}" }
         execute_as_superuser %{ GRANT USAGE ON SCHEMA "#{@schema}" TO publicuser }
+        org_role = @user.in_database(as: :superuser).select{ CDB_Organization_Member_Group_Role_Member_Name{} }.first[:cdb_organization_member_group_role_member_name]
+        execute_as_superuser %{ GRANT USAGE ON SCHEMA "#{@schema}" to "#{org_role}" }
       end
 
       def create_server_command
@@ -88,13 +90,30 @@ module CartoDB
         end
       end
 
+      def run_create_foreign_table
+        begin
+          # If multiple users in an org account are importing this table, it will exist already in
+          # the @schema schema. This is ok. We create a separate proxy view in each user schema
+          # that requests access to this table
+          execute_as_superuser %{ SELECT '#{@schema}.#{foreign_table_name}'::regclass }
+        rescue => e
+          execute_as_superuser create_foreign_table_command
+        end
+        execute_as_superuser %{
+          CREATE VIEW "#{@user.database_schema}".#{foreign_table_name}
+            AS SELECT * FROM #{@schema}.#{foreign_table_name};
+        }
+        # Ensure view has proper permissions
+        execute_as_superuser %{ GRANT SELECT ON "#{@user.database_schema}".#{foreign_table_name} TO "#{@user.database_username}" }
+        execute_as_superuser %{ GRANT SELECT ON "#{@user.database_schema}".#{foreign_table_name} TO publicuser }
+      end
+
       def create_foreign_table_command
         %{
           IMPORT FOREIGN SCHEMA #{@schema} LIMIT TO (#{foreign_table_name})
             FROM SERVER #{server_name} INTO #{@schema};
           ALTER FOREIGN TABLE #{@schema}.#{foreign_table_name} OWNER TO "#{@user.database_username}";
           GRANT SELECT ON #{@schema}.#{foreign_table_name} TO publicuser;
-          CREATE VIEW #{@user.database_schema}.#{foreign_table_name} AS SELECT * FROM #{@schema}.#{foreign_table_name};
         }
       end
 

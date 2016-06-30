@@ -583,7 +583,15 @@ class Table
       rescue => e
         if e.message.include? "Use DROP VIEW"
           user_database.run(%{DROP VIEW IF EXISTS #{qualified_table_name}})
-          user_database.run(%{DROP FOREIGN TABLE IF EXISTS #{qualified_remote_table_name}})
+          begin
+            user_database.run(%{DROP FOREIGN TABLE IF EXISTS #{qualified_remote_table_name}})
+          rescue => e
+            # If the error is drop...cascade, we ignore because we don't want to delete the
+            # foreign table if there are other views referencing it
+            if !e.message.include? "Use DROP ... CASCADE"
+              raise e
+            end
+          end
         else
           raise e
         end
@@ -1192,7 +1200,7 @@ class Table
     record = owner.in_database.select(:pg_class__oid)
       .from(:pg_class)
       .join_table(:inner, :pg_namespace, :oid => :relnamespace)
-      .where(:relkind => ['r', 'f'], :nspname => owner.database_schema, :relname => name).first
+      .where(:relkind => ['r', 'f', 'v'], :nspname => owner.database_schema, :relname => name).first
     record.nil? ? nil : record[:oid]
   end # get_table_id
 

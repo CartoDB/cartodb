@@ -4,7 +4,7 @@ module Carto
   module NamedMaps
     class Template
       NAMED_MAPS_VERSION = '0.0.1'.freeze
-      MAP_CONFIG_VERSION = '1.5.1'.freeze
+      MAP_CONFIG_VERSION = '1.5.0'.freeze
       NAME_PREFIX = 'tpl_'.freeze
       AUTH_TYPE_OPEN = 'open'.freeze
       AUTH_TYPE_SIGNED = 'token'.freeze

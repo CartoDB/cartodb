@@ -47,7 +47,6 @@ describe('src/vis/model-updater', function () {
 
     it('should update layer models', function () {
       var layer0 = new Backbone.Model({ type: 'Tiled' });
-      layer0.setOk = jasmine.createSpy();
       var layer1 = new Backbone.Model({ type: 'CartoDB' });
       layer1.setOk = jasmine.createSpy();
       var layer2 = new Backbone.Model({ type: 'torque' });
@@ -71,7 +70,6 @@ describe('src/vis/model-updater', function () {
 
       this.modelUpdater.updateModels(this.windshaftMap);
 
-      expect(layer0.setOk).toHaveBeenCalled();
       expect(layer1.get('meta')).toEqual('metadataLayer0');
       expect(layer1.setOk).toHaveBeenCalled();
       expect(layer2.get('meta')).toEqual('metadataLayer1');

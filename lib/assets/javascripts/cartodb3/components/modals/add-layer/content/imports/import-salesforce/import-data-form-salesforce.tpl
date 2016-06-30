@@ -8,7 +8,7 @@
       <button type="submit" class="Button Button--secondary Form-inputSubmit">
         <span><%- _t('components.modals.add-layer.imports.form-import.submit') %></span>
       </button>
-      <div class="Form-inputError">
+      <div class="Form-inputError CDB-Text">
         <span><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></span>
       </div>
     </div>

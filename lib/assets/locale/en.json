@@ -332,7 +332,7 @@
           },
           "kmeans": {
             "title": "Cluster",
-            "desc": "Group closer points into a single one or into a group with different colors"
+            "desc": "Group points by proximity"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
@@ -683,6 +683,9 @@
         "title-label": "Widgets"
       }
     },
+    "elements": {
+      "message": "Unfortunately map overlays are not available yet, they will be very soon, stay tuned!"
+    },
     "layers": {
       "options": {
         "rename": "Rename",
@@ -902,6 +905,9 @@
           "accept": "CONTINUE"
         }
       },
+    },
+    "legend": {
+      "message": "Unfortunately legends are not available yet and they are disabled. But we will add them very soon, stay tuned!"
     },
     "style": {
       "types": {

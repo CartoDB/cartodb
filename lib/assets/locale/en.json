@@ -30,6 +30,13 @@
     "data-transformation": "Data transformation",
     "relationship-analysis":"Relationship Analysis"
   },
+  "import-error-messages": {
+    "2001": {
+      "title": "",
+      "description": "",
+      "info": ""
+    }
+  },
   "form-components": {
     "editors": {
       "fill": {

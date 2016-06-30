@@ -367,6 +367,10 @@ class Carto::Visualization < ActiveRecord::Base
     mapcaps.first
   end
 
+  def uses_builder_features?
+    analyses.any? || widgets.any? || mapcaps.any?
+  end
+
   private
 
   def named_maps_api

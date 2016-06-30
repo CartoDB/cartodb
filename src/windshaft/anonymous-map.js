@@ -22,6 +22,7 @@ var AnonymousMap = MapBase.extend({
   _calculateLayerJSON: function (layerModel) {
     if (layerModel.isVisible()) {
       return {
+        id: layerModel.get('id'),
         type: layerModel.get('type').toLowerCase(),
         options: this._calculateLayerOptions(layerModel)
       };

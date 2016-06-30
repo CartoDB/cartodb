@@ -83,6 +83,7 @@ describe('windshaft/anonymous-map', function () {
       expect(this.map.toJSON()).toEqual({
         'layers': [
           {
+            'id': 'layer1',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS1',
@@ -92,6 +93,7 @@ describe('windshaft/anonymous-map', function () {
             }
           },
           {
+            'id': 'layer2',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS2',
@@ -101,6 +103,7 @@ describe('windshaft/anonymous-map', function () {
             }
           },
           {
+            'id': 'layer3',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS3',
@@ -122,6 +125,7 @@ describe('windshaft/anonymous-map', function () {
       expect(this.map.toJSON()).toEqual({
         'layers': [
           {
+            'id': 'layer2',
             'type': 'cartodb',
             'options': {
               'sql': 'sql2',
@@ -140,6 +144,7 @@ describe('windshaft/anonymous-map', function () {
       this.cartoDBLayer1.set('sql_wrap', 'sql_wrap_1', { silent: true });
 
       expect(this.map.toJSON().layers[0]).toEqual({
+        'id': 'layer1',
         'type': 'cartodb',
         'options': {
           'cartocss': 'cartoCSS1',
@@ -157,6 +162,7 @@ describe('windshaft/anonymous-map', function () {
       expect(this.map.toJSON()).toEqual({
         'layers': [
           {
+            'id': 'layer1',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS1',
@@ -173,6 +179,7 @@ describe('windshaft/anonymous-map', function () {
             }
           },
           {
+            'id': 'layer2',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS2',
@@ -182,6 +189,7 @@ describe('windshaft/anonymous-map', function () {
             }
           },
           {
+            'id': 'layer3',
             'type': 'cartodb',
             'options': {
               'cartocss': 'cartoCSS3',
@@ -198,6 +206,7 @@ describe('windshaft/anonymous-map', function () {
 
     it('should NOT include interactivity and attributes options for "torque" layers', function () {
       this.layersCollection.reset(new TorqueLayer({
+        id: 'torqueId',
         sql: 'sql',
         cartocss: 'cartocss'
       }));
@@ -205,6 +214,7 @@ describe('windshaft/anonymous-map', function () {
       expect(this.map.toJSON()).toEqual({
         'layers': [
           {
+            'id': 'torqueId',
             'type': 'torque',
             'options': {
               'sql': 'sql',

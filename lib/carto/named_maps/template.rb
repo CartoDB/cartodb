@@ -130,8 +130,6 @@ module Carto
       def options_for_cartodb_layers(layer, index)
         options = common_options_for_carto_and_torque_layers(layer, index)
 
-        options[:id] = layer.id
-
         layer_options = layer.options
         layer_options_sql_wrap = layer_options[:sql_wrap]
         layer_options_query_wrapper = layer_options[:query_wrapper]
@@ -145,6 +143,7 @@ module Carto
         layer_options = layer.options
 
         options = {
+          id: layer.id,
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
           cartocss_version: layer_options.fetch('style_version')
         }

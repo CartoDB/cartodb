@@ -50,7 +50,10 @@ WindshaftClient.prototype.instantiateMap = function (options) {
         successCallback(data);
       }
     },
-    error: function (xhr) {
+    error: function (xhr, textStatus) {
+      // Ignore error if request was explicitly aborted
+      if (textStatus === 'abort') return;
+
       var errors = {
         errors: [ 'Unknown error' ],
         errors_with_context: [{

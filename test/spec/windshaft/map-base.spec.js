@@ -266,6 +266,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap = new WindshaftMap({
           apiKey: 'API_KEY',
+          authToken: 'AUTH_TOKEN',
           statTag: 'stat_tag'
         }, { // eslint-disable-line
           client: this.client,
@@ -283,6 +284,32 @@ describe('windshaft/map-base', function () {
         expect(args.params).toEqual({
           stat_tag: 'stat_tag',
           api_key: 'API_KEY'
+        });
+      });
+
+      it('should use the given AUTH_TOKEN when creating a new instance of the windshaft map', function () {
+        this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
+        spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
+
+        this.windshaftMap = new WindshaftMap({
+          authToken: 'AUTH_TOKEN',
+          statTag: 'stat_tag'
+        }, { // eslint-disable-line
+          client: this.client,
+          modelUpdater: this.modelUpdater,
+          dataviewsCollection: this.dataviewsCollection,
+          layersCollection: this.layersCollection,
+          analysisCollection: this.analysisCollection
+        });
+
+        this.windshaftMap.createInstance({
+          sourceLayerId: 'sourceLayerId'
+        });
+
+        var args = this.client.instantiateMap.calls.mostRecent().args[0];
+        expect(args.params).toEqual({
+          stat_tag: 'stat_tag',
+          auth_token: 'AUTH_TOKEN'
         });
       });
 
@@ -694,9 +721,10 @@ describe('windshaft/map-base', function () {
       });
     });
 
-    it('should encode and include the API key in the URLs if apiKey is set', function () {
+    it('should include the API key in the URLs', function () {
       var windshaftMap = new WindshaftMap({
         'apiKey': 'API_KEY',
+        'authToken': 'AUTH_TOKEN',
         'layergroupid': '0123456789',
         'metadata': {
           'layers': [
@@ -726,6 +754,42 @@ describe('windshaft/map-base', function () {
         tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?api_key=API_KEY' ],
         grids: [
           [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json?api_key=API_KEY' ]
+        ]
+      });
+    });
+
+    it('should include the AUTH token in the URLs', function () {
+      var windshaftMap = new WindshaftMap({
+        'authToken': 'AUTH_TOKEN',
+        'layergroupid': '0123456789',
+        'metadata': {
+          'layers': [
+            {
+              'type': 'mapnik',
+              'meta': {}
+            },
+            {
+              'type': 'torque',
+              'meta': {}
+            }
+          ]
+        }
+      }, {
+        client: new WindshaftClient({
+          urlTemplate: 'https://{user}.example.com:443',
+          userName: 'rambo',
+          endpoint: 'v2'
+        }),
+        modelUpdater: this.modelUpdater,
+        dataviewsCollection: this.dataviewsCollection,
+        layersCollection: this.layersCollection,
+        analysisCollection: this.analysisCollection
+      });
+
+      expect(windshaftMap.getTiles()).toEqual({
+        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN' ],
+        grids: [
+          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json?auth_token=AUTH_TOKEN' ]
         ]
       });
     });

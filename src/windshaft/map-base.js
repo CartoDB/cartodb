@@ -130,6 +130,8 @@ var WindshaftMap = Backbone.Model.extend({
 
     if (this.get('apiKey')) {
       params.api_key = this.get('apiKey');
+    } else if (this.get('authToken')) {
+      params.auth_token = this.get('authToken');
     }
 
     var filters = this._getFilterParamFromDataviews();
@@ -252,28 +254,47 @@ var WindshaftMap = Backbone.Model.extend({
   /**
    * Generates the URL template for a given tile.
    *
-   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1,2/{z}/{x}/{y}.png?
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1,2/{z}/{x}/{y}.png?api_key=...
    */
-  _getTileURLTemplate: function (subdomain, layerIndexes, layerType, params) {
+  _getTileURLTemplate: function (subdomain, layerIndexes, layerType) {
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
     var tileExtension = TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
-    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
+    var url = baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension;
 
-    return baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension + urlParams;
+    return this._appendAuthParamsToURL(url);
   },
 
   /**
    * Generates the URL template for the UTF-8 grid of a given tile and layer.
    *
-   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1/{z}/{x}/{y}.grid.json
+   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1/{z}/{x}/{y}.grid.json?api_key=...
    */
-  _getGridURLTemplate: function (subdomain, layerIndex, params) {
+  _getGridURLTemplate: function (subdomain, layerIndex) {
     var baseURL = this.getBaseURL(subdomain);
     var tileSchema = '{z}/{x}/{y}';
-    var urlParams = this.get('apiKey') ? '?api_key=' + this.get('apiKey') : '';
+    var url = baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json';
 
-    return baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json' + urlParams;
+    return this._appendAuthParamsToURL(url);
+  },
+
+  _appendAuthParamsToURL: function (url) {
+    var params = [];
+    if (this.get('apiKey')) {
+      params.push('api_key=' + this.get('apiKey'));
+    } else if (this.get('authToken')) {
+      params.push('auth_token=' + this.get('authToken'));
+    }
+
+    return this._appendParamsToURL(url, params);
+  },
+
+  _appendParamsToURL: function (url, params) {
+    if (params.length) {
+      return url + '?' + params.join('&');
+    }
+
+    return url;
   },
 
   getLayerMetadata: function (layerIndex) {

@@ -321,6 +321,10 @@
             "title": "Point in polygon",
             "desc": "Analyse points in polygon (or vice versa)"
           },
+          "georeference": {
+            "title": "Georeference",
+            "desc": "Transform textual descriptions into coordinates"
+          },
           "intersection": {
             "title": "Intersection",
             "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
@@ -782,13 +786,6 @@
       "infowindow-menu-tab-pane-labels": {
         "click": "Click",
         "hover": "Hover"
-      },
-      "aggregate-functions": {
-        "avg": "AVG",
-        "count": "COUNT",
-        "max": "MAX",
-        "min": "MIN",
-        "sum": "SUM"
       },
       "analysis-form": {
         "aggregate": "Aggregate",

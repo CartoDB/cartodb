@@ -91,7 +91,7 @@ describe Carto::UserCreation do
       user_data.organization = @organization
       user_data.google_sign_in = false
 
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!', false)
       invitation.save
 
       user_creation = Carto::UserCreation.

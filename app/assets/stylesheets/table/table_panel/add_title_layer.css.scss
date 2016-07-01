@@ -45,47 +45,45 @@
       }
     }
 
-    .title-layer-contents {
+     .title-layer-body {
+
+      background-color: white;
       height: 80%;
       width: 100%;
       position: relative;
       overflow-y: scroll;
+      margin-left: 65px;
 
-      div.metadata-form {
-        letter-spacing: 0;
-        display: table;
-        margin-bottom: 20px;
+      .title-layer-contents {
 
-        .title {
-          margin: 0 10%;
-        }
-
-        .Form-row {
-          width: 430px;
-
-          .Form-input--long {
-            width: 100%;
-          }
-
-        }
-
-        .Dialog-stickyFooter {
-          width: 100%;
-          position: relative;
+          width: 348px;
           display: block;
-          background: #F9F9F9;
 
-          .EditVisMetadata-formFooter {
-            width: 100%;
-            display: block;
-            border-bottom: 1px solid #ddd;
+        div.metadata-form {
+          letter-spacing: 0;
+
+          margin-bottom: 20px;
+
+          .Form-row {
+            .Form-input--long {
+              width: 100%;
+            }
+
           }
+
+          .Dialog-stickyFooter {
+            position: relative;
+            width: 385px;
+            background: #F9F9F9;
+
+            .EditVisMetadata-formFooter {
+              display: block;
+              width: 100%;
+              border-bottom: 1px solid #ddd;
+            }
+          }
+
         }
-
-      }
-
-      div.dropdown.map_options_dropdown {
-        display: block;
       }
     }
   }

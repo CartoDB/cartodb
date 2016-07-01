@@ -55,7 +55,12 @@
           </div>
           <div class="FormAccount-rowData FormAccount-userRole">
             <% if @user.viewer? %>
-              <span class="UserRoleIndicator Viewer">VIEWER</span>
+              <div>
+                <span class="UserRoleIndicator Viewer">VIEWER</span>
+                <% if @user.organization %>
+                  <a href="mailto:<%= @user.organization.admin_email %>">Become a Builder</a>
+                <% end %>
+              </div>
               <p class="FormAccount-rowInfoText">Read-only access for datasets and maps</p>
             <% end %>
             <% if @user.builder? %>

@@ -45,11 +45,17 @@ Dashboard.prototype = {
     var initialState = this._dashboard.dashboardView.getInitialMapState();
     var currentCenter = this._dashboard.vis.map.get('center');
     var currentZoom = this._dashboard.vis.map.getZoom();
-    if (_.isEqual(currentCenter, initialState.center) && _.isEqual(currentZoom, initialState.zoom)) return {};
-    return {
-      center: currentCenter,
-      zoom: currentZoom
-    };
+    var upperLat = initialState.center[0] * 0.01;
+    var upperLon = initialState.center[1] * 0.01;
+    var inside = (Math.abs(initialState.center[0] - currentCenter[0]) < upperLat) && (Math.abs(initialState.center[1] - currentCenter[1]) < upperLon);
+    if (inside && _.isEqual(currentZoom, initialState.zoom)) {
+      return {};
+    } else {
+      return {
+        center: currentCenter,
+        zoom: currentZoom
+      };
+    }
   },
 
   setState: function (state) {

@@ -690,6 +690,15 @@
       "error": "There was an error locking %{tableName}",
       "loading": "Locking your dataset %{tableName}...",
     },
+    "unlock": {
+      "cancel": "back to dashboard",
+      "confirm": "ok, unlock it",
+      "desc": "That means you need to unlock it before doing anything. Are you sure?",
+      "error": "Error unlocking %{tableName}: %{error}",
+      "loading": "Unlocking your dataset %{tableName}...",
+      "success": "Dataset %{tableName} unlocked",
+      "title": "Your dataset %{tableName} is locked."
+    },
     "rename": {
       "option": "Rename dataset",
       "cancel": "cancel",

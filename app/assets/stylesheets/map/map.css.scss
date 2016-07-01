@@ -238,6 +238,7 @@ div.map {
       float: right;
       text-transform: none;
     }
+    
 
     & > li {
 
@@ -872,6 +873,61 @@ div.cartodb-popup.dark  {
       &.remove {@include edit-bottom-states(-52, -16, #222, #222, #222, #222);}
     }
   }
+}
+
+div.search-result-dropdown {
+  border:1px solid #ff9e24;
+  border-radius:2px;
+  background-color:#202020;
+}
+
+.search-result-list {
+  list-style-type:none;
+}
+
+.search-result-list li.remote {
+  color: #D0BBA1;
+}
+
+.search-result-row {
+  padding:5px;
+  height:18px;
+  color: #FF9E24;
+
+  .name {
+    background: none;
+    width: 250px;
+    margin-right: 15px;
+    float: left;
+    text-transform: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tags {
+    background: none;
+    width: 300px;
+    float: right;
+    text-transform: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.search-result-row:hover {
+  background:#454545;
+  cursor: pointer;
+}
+
+.search-result-row.no-result:hover {
+  background:none;
+  cursor: default;
+}
+
+.search-result-row-selected {
+  background:#373737;
 }
 
 // Custom styles for Leaflet maps

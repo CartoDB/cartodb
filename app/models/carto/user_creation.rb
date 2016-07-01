@@ -141,8 +141,8 @@ class Carto::UserCreation < ActiveRecord::Base
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
   end
 
-  def unused_invitation
-    select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  def pertinent_invitation
+    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
   def valid_invitation
@@ -209,6 +209,10 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_obs_general_limit = soft_obs_general_limit unless soft_obs_general_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
 
+    if pertinent_invitation
+      @cartodb_user.viewer = pertinent_invitation.viewer
+    end
+
     @cartodb_user
   rescue => e
     handle_failure(e, mark_as_failure = true)
@@ -236,7 +240,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def use_invitation
     return unless invitation_token
-    invitation = unused_invitation
+    invitation = pertinent_invitation
     return unless invitation
 
     invitation.use(email, invitation_token)

@@ -12,7 +12,7 @@
 .BreadcrumbsDropdown-listItem {
   display: block;
   margin-top: 0!important;
-  padding: $sMargin-element !important;
+  padding: 16px;
 }
 .BreadcrumbsDropdown-listItem.is-dark {
   background: $cStructure-grayBkg;
@@ -31,8 +31,6 @@
 .BreadcrumbsDropdown-options {}
 .BreadcrumbsDropdown-optionsItem {
   display: block;
-  font-size: $sFontSize-large;
-  font-weight: $sFontWeight-normal;
 }
 .BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px }
 .BreadcrumbsDropdown-optionsItem.is-selected {

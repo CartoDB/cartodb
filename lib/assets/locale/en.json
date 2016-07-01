@@ -697,13 +697,18 @@
         "success": "Map %{name} deleted"
       },
       "export": {
-        "confirm": "Ok, export",
-        "cancel": "Cancel",
-        "desc": "This map, and the connected data, will be exported as a .carto file",
-        "title": "Export \"%{name}\"",
-        "error": "Error exporting map",
-        "loading": "Removing the map %{name}...",
-        "success": "Map %{name} deleted"
+        "confirmation": {
+          "confirm": "Ok, export",
+          "cancel": "Cancel",
+          "desc": "This map, and the connected data, will be exported as a .carto file",
+          "title": "Export \"%{name}\""
+        },
+        "download": {
+          "confirm": "Download",
+          "tip": "Tip: Allow pop-ups from CartoDB in your web browser.",
+          "desc": "Click Download to begin the .carto file download.",
+          "title": "Ready to Download"
+        }
       },
       "rename": {
         "loading": "Renaming map...",

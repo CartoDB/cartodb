@@ -138,7 +138,7 @@ class SignupController < ApplicationController
   def check_organization_quotas
     if @organization
       check_signup_errors = Sequel::Model::Errors.new
-      @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization).quota_in_bytes)
+      @organization.validate_for_signup(check_signup_errors, ::User.new_with_organization(@organization))
       @signup_source = 'Organization'
       render 'shared/signup_issue' and return false if check_signup_errors.length > 0
     end

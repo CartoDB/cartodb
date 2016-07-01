@@ -296,6 +296,10 @@ module CartoDB
       super
       errors.add(:owner_id, 'cannot be nil') if owner_id.nil? || owner_id.empty?
       errors.add(:owner_username, 'cannot be nil') if owner_username.nil? || owner_username.empty?
+      viewer_writers = users_with_permissions(ACCESS_READWRITE).select(&:viewer)
+      unless viewer_writers.empty?
+        errors.add(:access_control_list, "grants write to viewers: #{viewer_writers.map(&:username).join(',')}")
+      end
 
       if new?
         errors.add(:acl, 'must be empty on initial creation') if acl.present?
@@ -454,13 +458,8 @@ module CartoDB
       end
     end
 
-    def users_with_permissions(permission_type)
-      user_ids = relevant_user_acl_entries(acl).select { |entry|
-        permission_type.include?(entry[:access])
-      }.map { |entry|
-          entry[:id]
-      }
-
+    def users_with_permissions(access)
+      user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
       ::User.where(id: user_ids).all
     end
 

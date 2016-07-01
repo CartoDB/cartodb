@@ -666,6 +666,7 @@
   },
   "dataset": {
     "updated": "Updated %{ago}",
+    "create-map": "Create map",
     "delete": {
       "option": "Delete dataset...",
       "cancel": "cancel",

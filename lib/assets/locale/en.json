@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",
@@ -273,8 +274,10 @@
       "share": {
         "done-btn": "DONE",
         "update-btn": "UPDATE",
+        "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "last-version": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-version": "Last version of your map was updated <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
           "title": "Get the link",
           "body": "And send it to your friends, coworkers or post in your social networks.",
@@ -310,7 +313,12 @@
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
-        }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+        },
+        "loading": "Saving your data..."
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -342,7 +350,7 @@
           },
           "kmeans": {
             "title": "Cluster",
-            "desc": "Group closer points into a single one or into a group with different colors"
+            "desc": "Group points by proximity"
           },
           "weighted-centroid": {
             "title": "Weighted centroid",
@@ -673,7 +681,16 @@
     }
   },
   "dataset": {
-    "updated": "Updated %{ago}"
+    "updated": "Updated %{ago}",
+    "rename": {
+      "cancel": "cancel",
+      "confirm": "ok, rename it",
+      "desc": "If you are accessing this dataset via API don't forget to use the new name in your API calls afterwards.",
+      "error": "Error renaming %{tableName}: %{error}",
+      "loading": "Renaming your table %{tableName}...",
+      "success": "Dataset %{tableName} renamed",
+      "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
+    }
   },
   "editor": {
     "map": "map",
@@ -713,6 +730,9 @@
       "widgets": {
         "title-label": "Widgets"
       }
+    },
+    "elements": {
+      "message": "Unfortunately map overlays are not available yet, they will be very soon, stay tuned!"
     },
     "layers": {
       "options": {
@@ -933,6 +953,9 @@
           "accept": "CONTINUE"
         }
       },
+    },
+    "legend": {
+      "message": "Unfortunately legends are not available yet and they are disabled. But we will add them very soon, stay tuned!"
     },
     "style": {
       "types": {

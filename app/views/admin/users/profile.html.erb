@@ -31,19 +31,42 @@
 
       <span class="FormAccount-separator"></span>
 
-      <div class="FormAccount-row js-avatarSelector">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Avatar</label>
-        </div>
-        <div class="FormAccount-rowData FormAccount-avatar">
-          <div class="FormAccount-avatarPreview">
-            <img src="<%= @user.avatar %>" class="FormAccount-avatarPreviewImage" />
+      <div class="FormAccount-row FormAccount-rowHorizontal">
+        <div class="js-avatarSelector FormAccount-avatarSelector">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">Avatar</label>
           </div>
-          <div class="FormAccount-avatar--input">
-            <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+          <div class="FormAccount-rowData FormAccount-avatar">
+            <div class="FormAccount-avatarPreview">
+              <img src="<%= @user.avatar %>" class="FormAccount-avatarPreviewImage" />
             </div>
+            <div class="FormAccount-avatar--input">
+              <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+              <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="FormAccount-userType">
+          <div class="FormAccount-rowLabel">
+            <label class="FormAccount-label">User type</label>
+          </div>
+          <div class="FormAccount-rowData FormAccount-userRole">
+            <% if @user.viewer? %>
+              <div>
+                <span class="UserRoleIndicator Viewer">VIEWER</span>
+                <% if @user.organization %>
+                  <a href="mailto:<%= @user.organization.admin_email %>">Become a Builder</a>
+                <% end %>
+              </div>
+              <p class="FormAccount-rowInfoText">Read-only access for datasets and maps</p>
+            <% end %>
+            <% if @user.builder? %>
+              <span class="UserRoleIndicator Builder">BUILDER</span>
+              <p class="FormAccount-rowInfoText">Write access for editing and building datasets and maps</p>
+            <% end %>
           </div>
         </div>
       </div>

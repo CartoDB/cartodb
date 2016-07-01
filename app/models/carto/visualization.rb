@@ -54,6 +54,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
+  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -205,28 +206,36 @@ class Carto::Visualization < ActiveRecord::Base
     data_layers.count == 1 || related_tables.count == 1
   end
 
+  def layers
+    map ? map.layers : []
+  end
+
   def data_layers
-    map.nil? ? [] : map.data_layers
-  end
-
-  def base_layers
-    map.nil? ? [] : map.base_layers
-  end
-
-  def named_map_layers
-    map.nil? ? [] : map.named_map_layers
+    map ? map.data_layers : []
   end
 
   def user_layers
-    map.nil? ? [] : map.user_layers
+    map ? map.user_layers : []
+  end
+
+  def carto_and_torque_layers
+    map ? map.carto_and_torque_layers : []
+  end
+
+  def torque_layers
+    map ? map.torque_layers : []
   end
 
   def other_layers
-    map.nil? ? [] : map.other_layers
+    map ? map.other_layers : []
   end
 
-  def layers
-    map.nil? ? [] : map.layers
+  def base_layers
+    map ? map.base_layers : []
+  end
+
+  def named_map_layers
+    map ? map.named_map_layers : []
   end
 
   def password_valid?(password)
@@ -335,7 +344,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_named_map
-    return if type == TYPE_REMOTE
+    return if type == TYPE_REMOTE || mapcapped?
 
     get_named_map ? named_maps_api.update : named_maps_api.create
   end
@@ -348,6 +357,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   def all_users_with_read_permission
     permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
+  end
+
+  def mapcapped?
+    mapcaps.exists?
+  end
+
+  def latest_mapcap
+    mapcaps.first
   end
 
   private
@@ -402,7 +419,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_write_permission?(user)
-    user && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
+    user && !user.viewer? && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
   def owner?(user)

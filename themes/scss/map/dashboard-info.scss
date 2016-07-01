@@ -338,7 +338,10 @@
   }
   .CDB-Dashboard-menuTextActions {
     display: block;
-    margin-right: 8px;
+    margin-top: -8px;
+    margin-bottom: -8px;
+    margin-left: -8px;
+    padding: 8px 12px;
   }
   .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobileText {
     @include animation(fadeInDown 0.8s both);

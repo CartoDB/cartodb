@@ -183,10 +183,6 @@ module CartoDB
         # @throws InvalidServiceError
         # @throws ServiceDisabledError
         def get_resource_metadata(id)
-          unless @user.nil?
-            raise ServiceDisabledError.new(DATASOURCE_NAME, @user.username) unless @user.arcgis_datasource_enabled?
-          end
-
           if is_multiresource?(id)
             @url = sanitize_id(id)
             {
@@ -358,7 +354,7 @@ module CartoDB
 
         # NOTE: Assumes url is valid
         # NOTE: Returned ids are sorted so they can be chunked into blocks to
-        #       be requested by range queries: `(OBJECTID >= ... AND OBJECTID <= ... )`        
+        #       be requested by range queries: `(OBJECTID >= ... AND OBJECTID <= ... )`
         # @param url String
         # @return Array
         # @throws DataDownloadError
@@ -442,10 +438,11 @@ module CartoDB
           raise ExternalServiceError.new("#{prepared_url} : #{response.body}") if body.include?('error')
 
           begin
+            retrieved_items = body.fetch('features')
+            return [] if retrieved_items.nil? || retrieved_items.empty?
             retrieved_fields = body.fetch('fields')
             geometry_type = body.fetch('geometryType')
             spatial_reference = body.fetch('spatialReference')
-            retrieved_items = body.fetch('features')
           rescue => exception
             raise ResponseError.new("Missing data: #{exception.to_s} #{prepared_url} #{exception.backtrace}")
           end

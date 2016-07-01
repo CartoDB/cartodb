@@ -26,7 +26,7 @@ module Carto
       'table/views/infowindow_light_header_orange' => 'infowindow_light_header_orange',
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
-    }
+    }.freeze
 
     def public_values
       {
@@ -80,11 +80,11 @@ module Carto
     end
 
     def basemap?
-      ["gmapsbase", "tiled"].include?(kind)
+      gmapsbase? || tiled?
     end
 
     def base?
-      ['tiled', 'background', 'gmapsbase', 'wms'].include?(kind)
+      tiled? || background? || gmapsbase? || wms?
     end
 
     def torque?
@@ -93,6 +93,34 @@ module Carto
 
     def data_layer?
       !base?
+    end
+
+    def user_layer?
+      tiled? || background? || gmapsbase? || wms?
+    end
+
+    def named_map_layer?
+      tiled? || background? || gmapsbase? || wms? || carto?
+    end
+
+    def carto?
+      kind == 'carto'
+    end
+
+    def tiled?
+      kind == 'tiled'
+    end
+
+    def background?
+      kind == 'background'
+    end
+
+    def gmapsbase?
+      kind == 'gmapsbase'
+    end
+
+    def wms?
+      kind == 'wms'
     end
 
     def supports_labels_layer?
@@ -105,6 +133,25 @@ module Carto
 
     def visualization
       map.visualization
+    end
+
+    def user
+      @user ||= map.nil? ? nil : map.user
+    end
+
+    def wrapped_sql(user)
+      query = options[:query]
+
+      sql = if query.present?
+              query
+            else
+              "SELECT * FROM #{qualified_table_name(user)}"
+            end
+
+      query_wrapper = options[:query_wrapper]
+      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+
+      sql
     end
 
     private
@@ -136,10 +183,5 @@ module Carto
     def query
       options.symbolize_keys[:query]
     end
-
-    def user
-      @user ||= maps.first.user
-    end
-
   end
 end

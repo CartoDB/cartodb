@@ -18,6 +18,21 @@ describe Admin::VisualizationsController do
   include CacheHelper
   include Carto::Factories::Visualizations
 
+  # Mock for a Rails context
+  class ContextMock
+    def initialize(global_context)
+      @global_context = global_context
+    end
+
+    def request
+      nil
+    end
+
+    def polymorphic_path(*args)
+      @global_context.polymorphic_path(*args)
+    end
+  end
+
   before(:all) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
 
@@ -27,6 +42,7 @@ describe Admin::VisualizationsController do
     @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
+    @mock_context = ContextMock.new(self)
   end
 
   after(:all) do
@@ -34,7 +50,7 @@ describe Admin::VisualizationsController do
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+    bypass_named_maps
     delete_user_data @user
     host! "#{@user.username}.localhost.lan"
   end
@@ -76,6 +92,76 @@ describe Admin::VisualizationsController do
       get "/tables/#{id}", {}, @headers
       follow_redirect!
       last_request.path.should =~ %r{/tables/}
+    end
+
+    describe 'redirects to builder' do
+      describe 'for tables' do
+        before(:each) do
+          @id = table_factory.id
+        end
+        it 'if forced' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 302
+          follow_redirect!
+          last_request.path.should =~ %r{/dataset/}
+        end
+
+        it 'only if enabled' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'only if forced' do
+          @user.stubs(:builder_enabled).returns(nil)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/tables/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+      end
+
+      describe 'for visualizations' do
+        before(:each) do
+          @id = factory.fetch('id')
+        end
+        it 'if forced' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 302
+          follow_redirect!
+          last_request.path.should =~ %r{/builder/}
+        end
+
+        it 'only if enabled' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'only if forced' do
+          @user.stubs(:builder_enabled).returns(nil)
+          @user.stubs(:builder_enabled?).returns(false)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
+      end
     end
   end # GET /viz/:id
 
@@ -194,15 +280,9 @@ describe Admin::VisualizationsController do
     end
 
     it "redirects to embed_map if visualization is 'derived'" do
-      id                = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
-      payload           = { source_visualization_id: id }
-
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-      last_response.status.should == 200
-
-      derived_visualization = JSON.parse(last_response.body)
-      id = derived_visualization.fetch('id')
+      map = FactoryGirl.create(:map)
+      derived_visualization = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+      id = derived_visualization.id
 
       get "/viz/#{id}/public", {}, @headers
       last_response.status.should == 302
@@ -363,7 +443,7 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
       Table.any_instance.stubs(perform_cartodb_function: nil,
                                update_cdb_tablemetadata: nil,
@@ -398,35 +478,35 @@ describe Admin::VisualizationsController do
 
       login_host(user_b, org)
 
-      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should be(404)
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(403), "#{forbidden_endpoint} is #{last_response.status}"
-      }
+      end
 
       perm = vis.permission
       perm.set_user_permission(user_b, CartoDB::Permission::ACCESS_READONLY)
       perm.save
 
-      get CartoDB.url(self, 'public_table', {id: vis.name}, user_a)
+      get CartoDB.url(@mock_context, 'public_table', { id: vis.name }, user_a)
       last_response.status.should == 302
       # First we'll get redirected to the public map url
       follow_redirect!
       # Now url will get rewritten to current user
       last_response.status.should == 302
       url = CartoDB.base_url(org.name, user_b.username) +
-        CartoDB.path(self, 'public_visualizations_show', {id: "#{user_a.username}.#{vis.name}"}) + "?redirected=true"
+            CartoDB.path(self, 'public_visualizations_show', id: "#{user_a.username}.#{vis.name}") + "?redirected=true"
       last_response.location.should eq url
 
-      ['public_visualizations_public_map', 'public_tables_embed_map'].each { |forbidden_endpoint|
-        get CartoDB.url(self, forbidden_endpoint, {id: vis.name}, user_a)
+      ['public_visualizations_public_map', 'public_tables_embed_map'].each do |forbidden_endpoint|
+        get CartoDB.url(@mock_context, forbidden_endpoint, { id: vis.name }, user_a)
         follow_redirects
         last_response.status.should be(200), "#{forbidden_endpoint} is #{last_response.status}"
         last_response.length.should >= 100
-      }
+      end
       org.destroy
     end
 
@@ -460,7 +540,7 @@ describe Admin::VisualizationsController do
         enable_remote_db_user: nil
       )
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
       Table.any_instance.stubs(
         perform_cartodb_function: nil,
         update_cdb_tablemetadata: nil,
@@ -498,12 +578,12 @@ describe Admin::VisualizationsController do
 
       # dirty but effective trick, generate the url as if were for a non-org user, then replace usernames
       # to respect format and just have no organization
-      destination_url = CartoDB.url(self, 'public_visualizations_public_map', { id: vis.name }, user_b)
+      destination_url = CartoDB.url(@mock_context, 'public_visualizations_public_map', { id: vis.name }, user_b)
                                .sub(user_b.username, user_a.username)
 
       get destination_url
       last_response.status.should be(302)
-      last_response.headers["Location"].should eq CartoDB.url(self, 'public_visualizations_public_map',
+      last_response.headers["Location"].should eq CartoDB.url(@mock_context, 'public_visualizations_public_map',
                                                               { id: vis.id, redirected: true }, user_a)
       follow_redirect!
       last_response.status.should be(200)
@@ -534,7 +614,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'finds visualization by org and name' do
-      url = CartoDB.url(self, 'public_table', { id: @table.table_visualization.name }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: @table.table_visualization.name }, @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url
@@ -542,7 +622,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'does not find visualizations outside org' do
-      url = CartoDB.url(self, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: @faketable.table_visualization.name }, @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url
@@ -550,21 +630,22 @@ describe Admin::VisualizationsController do
     end
 
     it 'finds visualization by user and public.name' do
-      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.name}" }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.table_visualization.name}" }, @org_user)
 
       get url
       last_response.status.should == 200
     end
 
     it 'finds visualization by user and public.id' do
-      url = CartoDB.url(self, 'public_table', { id: "public.#{@table.table_visualization.id}" }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@table.table_visualization.id}" }, @org_user)
 
       get url
       last_response.status.should == 200
     end
 
     it 'does not find visualizations outside user with public schema' do
-      url = CartoDB.url(self, 'public_table', { id: "public.#{@faketable.table_visualization.name}" }, @org_user)
+      url = CartoDB.url(@mock_context, 'public_table', { id: "public.#{@faketable.table_visualization.name}" },
+                        @org_user)
       url = url.sub("/u/#{@org_user.username}", '')
 
       get url

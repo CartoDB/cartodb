@@ -35,7 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    stub_named_maps_calls
+    bypass_named_maps
 
     begin
       delete_user_data @user
@@ -51,7 +51,7 @@ describe Api::Json::VisualizationsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -417,7 +417,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 
@@ -572,47 +572,6 @@ describe Api::Json::VisualizationsController do
       body = JSON.parse(last_response.body)
       body.fetch('prev_id').should eq vis_b_id
       body.fetch('next_id').should eq nil
-    end
-  end
-
-  describe '#source_visualization_id_and_hierarchy' do
-    it 'checks proper working of parent_id' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-
-      map_id = ::Map.create(user_id: @user.id).id
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-       factory({
-                 name: "PARENT #{UUIDTools::UUID.timestamp_create.to_s}",
-                 type: CartoDB::Visualization::Member::TYPE_DERIVED
-               }).to_json, @headers
-      body = JSON.parse(last_response.body)
-      parent_vis_id = body.fetch('id')
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             parent_id: parent_vis_id,
-             map_id: map_id
-           }.to_json, @headers
-      vis_1_body = JSON.parse(last_response.body)
-
-      # This should also set as next sibiling of vis_1 as has no prev_id/next_id set
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 2 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             source_visualization_id: vis_1_body.fetch('id'),
-             parent_id: parent_vis_id
-           }.to_json, @headers
-      vis_2_body = JSON.parse(last_response.body)
-
-      vis_2_body.fetch('prev_id').should eq vis_1_body.fetch('id')
-
-      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
-      vis_1_body.fetch('parent_id').should eq parent_vis_id
-      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
     end
   end
 

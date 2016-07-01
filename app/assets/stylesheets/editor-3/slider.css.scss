@@ -36,6 +36,7 @@
   background: $cBlue;
 }
 .UISlider .ui-slider-handle {
+  @include transition(transform 200ms);
   position: absolute;
   top: 0;
   left: 1px;
@@ -44,16 +45,19 @@
   margin-top: -5px;
   margin-left: -5px;
   border: 1px solid $cBlue;
-  border-radius: 100%;
+  border-radius: 50%;
   outline: none;
   background: #FFF;
   box-shadow: none;
+  cursor: pointer;
   z-index: 3;
 
   &.ui-state-active,
-  &.ui-state-focus,
-  &.ui-state-hover {
-    border: 1px solid $cBlue;
+  &:hover {
+    transform: scale(1.5);
+    box-shadow: none;
+  }
+  &.ui-state-focus {
     box-shadow: none;
   }
 }

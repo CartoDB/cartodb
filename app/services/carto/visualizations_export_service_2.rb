@@ -5,9 +5,10 @@ require 'json'
 # 2: export full visualization. Limitations:
 #   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
 #   - Privacy is exported, but permissions are not.
+# 2.0.1: export Widget.source_id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.0'.freeze
+    CURRENT_VERSION = '2.0.1'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -97,12 +98,22 @@ module Carto
         options[option_key] = nil if options.has_key?(option_key)
       end
 
+      # Indifferent access is used to keep symbol/string hash coherence with Layer serializers.
+
+      options_with_indifferent_access = options.with_indifferent_access
+
+      infowindow = exported_layer[:infowindow]
+      infowindow_with_indifferent_access = infowindow.with_indifferent_access if infowindow
+
+      tooltip = exported_layer[:tooltip]
+      tooltip_with_indifferent_access = tooltip.with_indifferent_access if tooltip
+
       layer = Carto::Layer.new(
-        options: options,
+        options: options_with_indifferent_access,
         kind: exported_layer[:kind],
-        infowindow: exported_layer[:infowindow],
+        infowindow: infowindow_with_indifferent_access,
         order: order,
-        tooltip: exported_layer[:tooltip]
+        tooltip: tooltip_with_indifferent_access
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
       layer
@@ -147,7 +158,8 @@ module Carto
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
-        options: exported_widget[:options]
+        options: exported_widget[:options],
+        source_id: exported_widget[:source_id]
       )
     end
   end
@@ -237,7 +249,8 @@ module Carto
       {
         options: widget.options,
         type: widget.type,
-        title: widget.title
+        title: widget.title,
+        source_id: widget.source_id
       }
     end
 

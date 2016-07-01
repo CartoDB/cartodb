@@ -45,7 +45,7 @@ describe Table do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     Table.any_instance.stubs(:update_cdb_tablemetadata)
 
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do
@@ -208,7 +208,7 @@ describe Table do
       }
 
       # To forget about internals of zooming
-      ::Map.any_instance.stubs(:recalculate_zoom!).returns(nil)
+      ::Map.any_instance.stubs(:recalculate_zoom).returns(nil)
 
       visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
       table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
@@ -357,27 +357,28 @@ describe Table do
       table = create_table(user_id: @user.id)
       table.should be_private
       table.table_visualization.should be_private
-      derived_vis = CartoDB::Visualization::Copier.new(
-        @user, table.table_visualization
-      ).copy
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id,
+                                                               privacy: CartoDB::Visualization::Member::PRIVACY_PRIVATE)
+
+      bypass_named_maps
       derived_vis.store
       table.reload
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
 
-      table.affected_visualizations.map { |vis|
+      table.affected_visualizations.map do |vis|
         vis.public?.should == vis.table?
-      }
+      end
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       table.save
 
-      table.affected_visualizations.map { |vis|
+      table.affected_visualizations.map do |vis|
         vis.private?.should == true
-      }
+      end
     end
 
     it "doesn't propagates changes to affected visualizations if privacy set to public with link" do
@@ -388,11 +389,10 @@ describe Table do
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save
-      derived_vis = CartoDB::Visualization::Copier.new(
-          @user, table.table_visualization
-      ).copy
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived_vis = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
       derived_vis.store
       table.reload
 
@@ -400,12 +400,12 @@ describe Table do
       table.save
       table.reload
 
-      table.affected_visualizations.map { |vis|
-        vis.public?.should == vis.derived?  # Derived kept public
-        vis.private?.should == false  # None changed to private
-        vis.password_protected?.should == false  # None changed to password protected
-        vis.public_with_link?.should == vis.table?  # Table/canonical changed
-      }
+      table.affected_visualizations.map do |vis|
+        vis.public?.should eq vis.derived?         # Derived kept public
+        vis.private?.should eq false               # None changed to private
+        vis.password_protected?.should eq false    # None changed to password protected
+        vis.public_with_link?.should eq vis.table? # Table/canonical changed
+      end
     end
 
     it 'receives privacy changes from the associated visualization' do
@@ -707,7 +707,7 @@ describe Table do
   end
 
   it "should remove varnish cache when updating the table privacy" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
+    Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
 
     @user.private_tables_enabled = true
     @user.save
@@ -726,7 +726,7 @@ describe Table do
 
   context "when removing the table" do
     before(:all) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
       @doomed_table = create_table(user_id: @user.id)
@@ -735,7 +735,7 @@ describe Table do
     end
 
     before(:each) do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
     end
 
     it "should remove the automatic_geocoding" do
@@ -770,13 +770,12 @@ describe Table do
     end
 
     it 'deletes derived visualizations that depend on this table' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
-      table   = create_table(name: 'bogus_name', user_id: @user.id)
-      source  = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      bypass_named_maps
+      table = create_table(name: 'bogus_name', user_id: @user.id)
 
-      rehydrated = CartoDB::Visualization::Member.new(id: derived.id).fetch
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
+
       table.reload
 
       table.destroy
@@ -2268,10 +2267,10 @@ describe Table do
       table.save
       table.should be_private
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
-      source  = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Do not create all member objects anew to be able to set expectations
@@ -2293,10 +2292,9 @@ describe Table do
       table = create_table(user_id: @user.id, privacy: UserTable::PRIVACY_PUBLIC)
       table.save
 
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(get: nil, create: true, update: true)
-      source = table.table_visualization
-      derived = CartoDB::Visualization::Copier.new(@user, source).copy
-      derived.store
+      Carto::NamedMaps::Api.any_instance.stubs(get: nil, create: true, update: true)
+      map = CartoDB::Visualization::TableBlender.new(@user, [table]).blend
+      derived = FactoryGirl.create(:derived_visualization, user_id: @user.id, map_id: map.id)
       derived.type.should eq(CartoDB::Visualization::Member::TYPE_DERIVED)
 
       # Scenario 1: Fail at map saving (can happen due to Map handlers)
@@ -2305,9 +2303,7 @@ describe Table do
 
       ::Map.any_instance.stubs(:save).once.raises(StandardError)
 
-      expect do
-        table.save
-      end.to raise_exception StandardError
+      expect { table.save }.to raise_exception StandardError
 
       table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 
@@ -2327,14 +2323,14 @@ describe Table do
           @restore_called = true
           true
         else
-          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing canonical visualization named map update")
+          raise 'Manolo is a nice guy, this test is not.'
         end
       end
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       expect do
         table.save
-      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+      end.to raise_error 'Manolo is a nice guy, this test is not.'
 
       @restore_called.should eq true
 
@@ -2352,14 +2348,14 @@ describe Table do
           @restore_called = true
           true
         else
-          raise CartoDB::NamedMapsWrapper::HTTPResponseError.new("Failing affected visualization named map update")
+          raise 'Manolo is a nice guy, this test is not.'
         end
       end
 
       table.privacy = UserTable::PRIVACY_PRIVATE
       expect do
         table.save
-      end.to raise_exception CartoDB::NamedMapsWrapper::HTTPResponseError
+      end.to raise_error 'Manolo is a nice guy, this test is not.'
 
       table.reload.privacy.should eq UserTable::PRIVACY_PUBLIC
 

@@ -69,6 +69,7 @@ module CartoDB
       user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
+      user.viewer                = attributes[:viewer] || false
       if attributes[:organization_id]
         user.organization_id = attributes[:organization_id]
       end
@@ -81,10 +82,22 @@ module CartoDB
     def create_user(attributes = {})
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
-      # INFO: avoiding enable_remote_db_user
+      # INFO: avoiding enable_remote_db_user
       Cartodb.config[:signups] = nil
       user.save
       load_user_functions(user)
+      user
+    end
+
+    # Similar to create_user, but it doesn't raise error on validation error
+    def create_validated_user(attributes = {})
+      user = new_user(attributes)
+      # INFO: avoiding enable_remote_db_user
+      Cartodb.config[:signups] = nil
+      user.save
+      if user.valid?
+        load_user_functions(user)
+      end
       user
     end
 
@@ -120,13 +133,22 @@ module CartoDB
       user
     end
 
-    def create_mocked_user(user_id = UUIDTools::UUID.timestamp_create.to_s, user_name = 'whatever', user_apikey = '123')
+    def create_mocked_user(user_id: UUIDTools::UUID.timestamp_create.to_s,
+                           user_name: 'whatever',
+                           user_apikey: '123',
+                           groups: [],
+                           public_url: nil,
+                           avatar_url: nil)
       user_mock = mock
       user_mock.stubs(:id).returns(user_id)
       user_mock.stubs(:username).returns(user_name)
       user_mock.stubs(:api_key).returns(user_apikey)
       user_mock.stubs(:invalidate_varnish_cache).returns(nil)
       user_mock.stubs(:has_feature_flag?).returns(false)
+      user_mock.stubs(:viewer).returns(false)
+      user_mock.stubs(:groups).returns(groups)
+      user_mock.stubs(:public_url).returns(public_url)
+      user_mock.stubs(:avatar_url).returns(avatar_url)
       user_mock
     end
 
@@ -152,7 +174,7 @@ module CartoDB
       data_import
     end
 
-    def delete_user_data user
+    def delete_user_data(user)
       user.tables.destroy
       user.maps_dataset.destroy
       user.layers_dataset.destroy

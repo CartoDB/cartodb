@@ -40,5 +40,16 @@
 
 .Notifier-info {
   @include flex(1);
+  min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
+  word-break: break-all;
 }
+
+.Notifier-actions {
+  margin-left: $baseSize * 3;
+
+  &:first-of-type {
+    margin-left: 0;
+  }
+}
+

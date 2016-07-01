@@ -41,6 +41,7 @@ module Carto
           :map_view_block_price     => @organization.map_view_block_price,
           :geocoding_block_price    => @organization.geocoding_block_price,
           :seats                    => @organization.seats,
+          :viewer_seats             => @organization.viewer_seats,
           :twitter_username         => @organization.twitter_username,
           :location                 => @organization.location,
           :updated_at               => @organization.updated_at,

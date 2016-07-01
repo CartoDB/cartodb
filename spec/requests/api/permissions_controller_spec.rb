@@ -41,7 +41,7 @@ describe Api::Json::PermissionsController do
 
   before(:each) do
     @entity_id = UUIDTools::UUID.timestamp_create.to_s
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data @user
     delete_user_data @user2
     delete_user_data @user3
@@ -59,7 +59,7 @@ describe Api::Json::PermissionsController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
     @user2.destroy
     @user3.destroy
@@ -87,6 +87,7 @@ describe Api::Json::PermissionsController do
                   id:         @user2.id,
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url,
+                  viewer:     false,
                   base_url:   @user2.public_url,
                   groups:     []
               },

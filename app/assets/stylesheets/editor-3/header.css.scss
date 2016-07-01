@@ -35,6 +35,9 @@
   @include flex(1);
   max-width: calc(100% - 32px);
 }
+.Editor-HeaderInfo-inner--wide {
+  max-width: 100%;
+}
 .Editor-HeaderInfo-back {
   margin-top: 7px;
 }

@@ -24,7 +24,8 @@
     "point-in-polygon": "Point in polygon",
     "filter": "Filter",
     "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer"
+    "filter-by-node-column": "Link to layer",
+    "sampling": "Sampling"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -341,6 +342,10 @@
           "filter-by-node-column": {
             "title": "Link to layer",
             "desc": "Link two layers matching column names"
+          },
+          "sampling": {
+            "title": "Sampling",
+            "desc": "Return a percentage of your data"
           }
         }
       },
@@ -845,7 +850,10 @@
         "value": "Value",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data "
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

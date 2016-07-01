@@ -11,7 +11,7 @@
   </h3>
 </div>
 <div class="Dialog-footer--simple u-inner">
-  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-confirm">
+  <button class="CDB-Button CDB-Button--primary u-tSpace--m js-download">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('editor.maps.export.download.confirm') %>
     </span>

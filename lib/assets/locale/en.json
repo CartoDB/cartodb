@@ -666,7 +666,11 @@
   },
   "dataset": {
     "updated": "Updated %{ago}",
-    "create-map": "Create map",
+    "create-map": {
+      "title": "Create map",
+      "loading": "Creating a map from %{tableName}",
+      "error": "There was an error creating the map"
+    },
     "delete": {
       "option": "Delete dataset...",
       "cancel": "cancel",

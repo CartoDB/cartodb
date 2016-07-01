@@ -666,12 +666,32 @@
   },
   "dataset": {
     "updated": "Updated %{ago}",
+    "delete": {
+      "option": "Delete dataset...",
+      "cancel": "cancel",
+      "confirm": "ok, delete it",
+      "desc": "Are you sure?",
+      "error": "Error deleting %{tableName}",
+      "loading": "Renaming your dataset %{tableName}...",
+      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+    },
+    "duplicate": {
+      "option": "Duplicate dataset",
+      "error": "There was an error duplicating %{tableName}",
+      "loading": "Duplicating your dataset %{tableName}...",
+    },
+    "lock": {
+      "option": "Lock dataset",
+      "error": "There was an error locking %{tableName}",
+      "loading": "Locking your dataset %{tableName}...",
+    },
     "rename": {
+      "option": "Rename dataset",
       "cancel": "cancel",
       "confirm": "ok, rename it",
       "desc": "If you are accessing this dataset via API don't forget to use the new name in your API calls afterwards.",
       "error": "Error renaming %{tableName}: %{error}",
-      "loading": "Renaming your table %{tableName}...",
+      "loading": "Renaming your dataset %{tableName}...",
       "success": "Dataset %{tableName} renamed",
       "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
     }

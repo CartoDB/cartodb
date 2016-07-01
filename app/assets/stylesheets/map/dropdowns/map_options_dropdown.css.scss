@@ -11,12 +11,19 @@
 
 div.dropdown.map_options_dropdown {
 
+  display: block;
+  box-shadow: none;
+  border-radius: none;
+  width: 80%;
+
   ul {
 
     box-sizing: border-box;
     margin: 0;
-    width: 204px;
+    width: 100%;
     padding: 12px 15px;
+    line-height: 10px;
+    letter-spacing: 0px;
 
     li {
       @include display-flex();
@@ -94,12 +101,12 @@ div.dropdown.map_options_dropdown {
         @include map-sprite(map_options_legends);
       }
 
-      &:first-child { 
+      &:first-child {
         padding-top: 0;
         &:before { top: 2px; }
       }
 
-      &:last-child { 
+      &:last-child {
         border:none;
         padding-bottom: 0;
       }
@@ -108,7 +115,7 @@ div.dropdown.map_options_dropdown {
       p { margin-left: 17px; }
 
       &.active, &.active p { color: #666666; }
-      &, p { 
+      &, p {
         color: #b9b9b9;
         @include simple-transition(color, 100ms);
       }

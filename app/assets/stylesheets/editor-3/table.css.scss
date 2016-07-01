@@ -28,13 +28,10 @@ $tableBorderColor: $cSecondaryLine;
   right: 0;
   bottom: 0;
   left: 0;
+  border-top: 1px solid $cMainLine;
 }
 .Table-head {
   background: $cThirdBackground;
-}
-.Table-head tr {
-  border-top: 1px solid $cMainLine;
-  border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
@@ -106,6 +103,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body {
   @include display-flex();
   @include flex(1);
+  border-top: 1px solid $cMainLine;
   background: $cWhite;
 }
 .Table-body table {

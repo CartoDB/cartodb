@@ -19,13 +19,12 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "cluster": "Cluster",
+    "filter-by-node-column": "Link to layer analysis",
+    "filter": "Filter",
     "intersection": "Intersection",
-    "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "filter": "Filter",
-    "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer"
+    "weighted-centroid": "Weighted centroid"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",

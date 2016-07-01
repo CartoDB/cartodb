@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "area-of-influence": "Area of influence",
     "cluster": "Cluster",
     "intersection": "Intersection",
     "kmeans": "Cluster",
@@ -259,7 +260,8 @@
         "update-btn": "UPDATE",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "last-version": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-version": "Last version of your map was updated <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
           "title": "Get the link",
           "body": "And send it to your friends, coworkers or post in your social networks.",

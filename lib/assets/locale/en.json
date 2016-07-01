@@ -221,6 +221,22 @@
       "gmt-convertion": "Date will be converted to GMT +0"
     },
     "modals": {
+      "maps-metadata": {
+        "modal-title": "Map metadata",
+        "modal-desc": "Edit the attributtes of your map",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+        },
+        "loading": "Saving your data..."
+      },
       "privacy": {
         "privacy": "privacy",
         "cancel-btn": "CANCEL",
@@ -669,6 +685,7 @@
     "maps": {
       "options": {
         "rename": "Rename",
+        "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
       },
       "delete": {

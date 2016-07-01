@@ -4,7 +4,7 @@
   <% end %>
 
   <div class="SideMenu-progress">
-    <% per = (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
+    <% per = current_user.quota_in_bytes.to_i == 0 ? 100 : (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
     <% className = '' %>
     <% if (per > 80 && per < 90) %>
       <% className = 'caution' %>

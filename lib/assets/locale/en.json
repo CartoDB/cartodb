@@ -708,6 +708,10 @@
           "tip": "Tip: Allow pop-ups from CartoDB in your web browser.",
           "desc": "Click Download to begin the .carto file download.",
           "title": "Ready to Download"
+        },
+        "error": {
+          "title": "An error occured while exporting your map",
+          "desc": "Please try again. If the problem persists, please contact support"
         }
       },
       "rename": {

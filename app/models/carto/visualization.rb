@@ -402,7 +402,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_write_permission?(user)
-    user && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
+    user && !user.viewer? && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
   def owner?(user)

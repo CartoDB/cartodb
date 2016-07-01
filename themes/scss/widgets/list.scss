@@ -177,6 +177,8 @@
   .CDB-Widget-listGroup {
     @include display-flex();
     @include flex-wrap(wrap);
+    margin-right: 4px;
+    margin-left: 4px;
   }
   .CDB-Widget-listWrapper {
     overflow-x: hidden;

@@ -22,7 +22,7 @@
       
       <div class="CDB-Dashboard-menuInfo">
         <button class="js-toggle-view">
-          <i class="CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
+          <i class="CDB-Text CDB-Size-small CDB-IconFont CDB-IconFont-rows"></i>
         </button>
       </div>
       <ul class="CDB-Dashboard-menuActions">
@@ -51,7 +51,7 @@
       <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
         <div class="CDB-Dashboard-menuTextInner js-content">
           <button class="js-toggle-view u-actionTextColor CDB-Dashboard-menuTextActions">
-            <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
+            <i class="CDB-Text CDB-Size-small CDB-IconFont CDB-IconFont-rows"></i>
           </button>
           <div>
             <p class="CDB-Dashboard-menuTime CDB-Text CDB-Size-small u-upperCase u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>
@@ -81,7 +81,7 @@
       <button class="js-toggle-view u-actionTextColor CDB-Dashboard-menuHeaderMobileActions">
         <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
       </button>
-      <div class="CDB-Dashboard-menuHeaderMobileText u-lSpace--xl">
+      <div class="CDB-Dashboard-menuHeaderMobileText u-lSpace--xl u-ellipsis">
         <h1 class="CDB-Text CDB-Size-large u-ellipsis js-title u-bSpace--xl"><%- title %></h1>
         <h2 class="CDB-Text CDB-Size-medium u-secondaryTextColor js-description"><%= cdb.core.sanitize.html(description) %></h2>
       </div>

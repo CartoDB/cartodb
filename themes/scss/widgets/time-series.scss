@@ -47,8 +47,12 @@
   margin-bottom: $baseSize + 4;
 }
 
-@include media-query() {
+@media (max-width: 759px) {
   .CDB-Widget-timeSeriesFakeChart {
     height: $baseSize * 2;
+  }
+  .CDB-Widget-timeSeriesTimeInfo .CDB-Size-large {
+    font-size: 12px;
+    line-height: 16px;
   }
 }

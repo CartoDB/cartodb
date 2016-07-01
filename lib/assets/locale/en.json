@@ -700,7 +700,7 @@
         "confirm": "Ok, export",
         "cancel": "Cancel",
         "desc": "This map, and the connected data, will be exported as a .carto file",
-        "title": "Export map",
+        "title": "Export \"%{name}\"",
         "error": "Error exporting map",
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"

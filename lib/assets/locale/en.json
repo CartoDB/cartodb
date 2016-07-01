@@ -18,13 +18,15 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
-    "cluster": "Cluster",
-    "filter-by-node-column": "Link to layer analysis",
-    "filter": "Filter",
-    "intersection": "Intersection",
-    "moran-cluster": "Moran cluster",
     "centroid": "Centroid",
-    "point-in-polygon": "Point in polygon"
+    "cluster": "Cluster",
+    "filter": "Filter",
+    "filter-by-node-column": "Link to layer analysis",
+    "intersection": "Intersection",
+    "kmeans": "Cluster",
+    "moran-cluster": "Moran cluster",
+    "point-in-polygon": "Point in polygon",
+    "sampling": "Sampling"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -342,6 +344,10 @@
           "filter-by-node-column": {
             "title": "Link to layer",
             "desc": "Link two layers matching column names"
+          },
+          "sampling": {
+            "title": "Sampling",
+            "desc": "Return a percentage of your data"
           }
         }
       },
@@ -835,6 +841,9 @@
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data ",
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",

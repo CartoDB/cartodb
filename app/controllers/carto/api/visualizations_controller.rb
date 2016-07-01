@@ -17,7 +17,7 @@ module Carto
       include VisualizationsControllerHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map
+      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
@@ -119,6 +119,51 @@ module Carto
         response.headers['Cache-Control']   = "max-age=86400,must-revalidate, public"
 
         redirect_to Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, map_width, map_height)
+      end
+
+      def search
+        username = current_user.username
+        query = params[:q]
+        mapId = params[:map_id]
+        visId = params[:vis_id]
+        query.downcase!
+        queryLike = '%' + query + '%'
+        queryPrefix = query + ':*'
+        queryPrefix.tr!(' ', '+')
+
+        layers = Sequel::Model.db.fetch("
+            SELECT id, username, type, name, description, tags, on_map, (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 100000 ELSE pos_tags END)) AS rank FROM (
+              SELECT v.id, u.username, v.type, v.name, v.description, v.tags, false AS on_map,
+                COALESCE(position(? in lower(v.name)), 0) AS pos_name,
+                COALESCE(position(? in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
+              FROM visualizations AS v
+                  INNER JOIN users AS u ON u.id=v.user_id
+              WHERE v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
+              (
+                to_tsvector(coalesce(v.name, '')) @@ to_tsquery(?)
+                OR to_tsvector(array_to_string(v.tags, ' ')) @@ to_tsquery(?)
+                OR v.name ILIKE ?
+                OR array_to_string(v.tags, ' ') ILIKE ?
+              )
+            ) AS results
+            ORDER BY rank DESC, type DESC LIMIT 50",
+            query, query, username, queryPrefix, queryPrefix, queryLike, queryLike, query
+          ).all
+      
+        layersOnMap = Carto::Visualization.find(visId).related_tables.map(&:visualization).map(&:id)
+
+        layers.each do |layer|
+          if layersOnMap.include?(layer[:id]) then
+            layer[:on_map] = true
+          end
+        end
+
+        output = layers.to_json
+        #render :json => output
+
+
+        render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
+
       end
 
       private

@@ -20,7 +20,7 @@
   @include flex-grow(1);
 }
 .CDB-Dashboard-mapWrapper--withMenu {
-  margin-left: 72px;
+  margin-left: 56px;
 }
 .CDB-Map-canvas {
   @include flex-grow(1);
@@ -40,18 +40,26 @@
   margin-top: 8px;
 }
 
-@include media-query() {
-  .CDB-Dashboard-canvas {
-    @include flex-direction(column);
-  }
-}
 
-@include media-query-mobile() {
+@media (max-width: 1200px) {
   .CDB-Dashboard-canvas {
     padding: 8px;
   }
+}
+
+@media (max-width: 759px) {
+  .CDB-Dashboard-canvas {
+    @include flex-direction(column);
+    padding: 0;
+  }
   .CDB-Dashboard-mapWrapper--withMenu {
-    margin-top: 48px;
+    order: 1;
     margin-left: 0;
+  }
+  .CDB-Dashboard-belowMap {
+    margin-top: 2px;
+  }
+  .CDB-Map {
+    border-radius: 0;
   }
 }

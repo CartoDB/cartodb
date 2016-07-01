@@ -18,9 +18,9 @@ describe('../src/dashboard-menu-view', function () {
   });
 
   it('should render properly', function () {
-    expect(this.view.$el.find('.js-title').text()).toEqual('Mapaza');
-    expect(this.view.$el.find('.js-description').text()).toEqual('Lorem ipsum...');
-    expect(this.view.$el.find('.js-timeAgo').text()).toEqual('UPDATED a day ago');
+    expect(this.view.$el.find('.js-content .js-title').text()).toEqual('Mapaza');
+    expect(this.view.$el.find('.js-content .js-description').text()).toEqual('Lorem ipsum...');
+    expect(this.view.$el.find('.js-content .js-timeAgo').text()).toEqual('UPDATED a day ago');
   });
 
   it('should collapse the view', function () {

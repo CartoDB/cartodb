@@ -103,7 +103,6 @@ $tableBorderColor: $cSecondaryLine;
 .Table-body {
   @include display-flex();
   @include flex(1);
-  border-top: 1px solid $cMainLine;
   background: $cWhite;
 }
 .Table-body table {
@@ -117,6 +116,7 @@ $tableBorderColor: $cSecondaryLine;
   @include flex-direction(column);
   height: calc(100vh - 175px);
   padding-bottom: 60px;
+  border-top: 1px solid $cMainLine;
   overflow-y: scroll;
 }
 .Table-body--relative tbody {

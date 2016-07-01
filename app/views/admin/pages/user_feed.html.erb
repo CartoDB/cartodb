@@ -1,12 +1,12 @@
 <%= content_for(:title) do %>CartoDB &middot; <%= @name %> public feed<% end %>
 <%= content_for(:description) do %><%= @page_description %><% end %>
 
-<div class="PublicBody-content PublicBody--grey">
+<div class="CDB-Text PublicBody-content PublicBody--grey">
   <div class="PublicUserProfile">
     <div class="PublicUserProfile-profile">
 
       <div class="PublicUserProfile-bio">
-        <h2 class="PublicUserProfile-name u-breakLongWords"><%= @name %></h2>
+        <h2 class="CDB-Size-huge PublicUserProfile-name u-breakLongWords"><%= @name %></h2>
 
         <% unless @viewed_user.description.nil? || @tables_num == 0 %>
           <p class="PublicUserProfile-description"><%= @viewed_user.description %></p>

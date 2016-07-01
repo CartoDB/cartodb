@@ -19,14 +19,12 @@
   "analyses": {
     "area-of-influence": "Area of influence",
     "cluster": "Cluster",
+    "filter-by-node-column": "Link to layer analysis",
+    "filter": "Filter",
     "intersection": "Intersection",
-    "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "centroid": "Centroid",
-    "point-in-polygon": "Point in polygon",
-    "filter": "Filter",
-    "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer"
+    "point-in-polygon": "Point in polygon"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -851,9 +849,9 @@
         "type": "Type",
         "value": "Value",
         "weight": "Weight",
-        "weighted-by": "Weighted by",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
+        "weighted-by": "Weighted by",
         "workflow": "Workflow"
       },
       "infowindow": {

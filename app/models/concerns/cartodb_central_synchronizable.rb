@@ -61,7 +61,7 @@ module Concerns
       if self.is_a?(Organization)
         case action
         when :create
-          [:name, :seats, :quota_in_bytes, :display_name, :description, :website,
+          [:name, :seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
@@ -71,7 +71,7 @@ module Concerns
           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
           :obs_general_block_price, :salesforce_datasource_enabled]
         when :update
-          [:seats, :quota_in_bytes, :display_name, :description, :website,
+          [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
           :geocoding_block_price, :map_view_block_price,
           :twitter_datasource_enabled, :twitter_datasource_block_size,
@@ -99,7 +99,8 @@ module Concerns
          :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
          :mobile_xamarin, :mobile_custom_watermark, :mobile_offline_maps,
-         :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users, :salesforce_datasource_enabled]
+         :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
+         :salesforce_datasource_enabled, :viewer]
       end
     end
 
@@ -109,7 +110,7 @@ module Concerns
         when :create
           raise "Can't create organizations from editor"
         when :update
-          self.values.slice(:seats, :display_name, :description, :website,
+          values.slice(:seats, :viewer_seats, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)
@@ -124,7 +125,8 @@ module Concerns
           :google_sign_in, :last_password_change_date,
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
-          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit
+          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
+          :viewer
         )
         case action
         when :create

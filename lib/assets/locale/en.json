@@ -696,6 +696,15 @@
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"
       },
+      "export": {
+        "confirm": "Ok, export",
+        "cancel": "Cancel",
+        "desc": "This map, and the connected data, will be exported as a .carto file",
+        "title": "Export map",
+        "error": "Error exporting map",
+        "loading": "Removing the map %{name}...",
+        "success": "Map %{name} deleted"
+      },
       "rename": {
         "loading": "Renaming map...",
         "success": "Map renamed to %{name}",

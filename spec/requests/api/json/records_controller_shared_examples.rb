@@ -83,6 +83,33 @@ shared_examples_for "records controllers" do
       end
     end
 
+    it "Updates a row with id column" do
+      @table.add_column!(name: 'id', type: 'integer')
+      pk = @table.insert_row!(
+        name: String.random(10),
+        description: String.random(50),
+        the_geom: '{"type":"Point","coordinates":[0.966797,55.91843]}',
+        id: 12
+      )
+
+      payload = {
+        cartodb_id:   pk,
+        name:         "Name updated",
+        description:  "Description updated",
+        the_geom:     "{\"type\":\"Point\",\"coordinates\":[-3.010254,55.973798]}",
+        id:           5511
+      }
+
+      put_json api_v1_tables_record_update_url(params.merge(payload)) do |response|
+        response.status.should be_success
+        response.body[:cartodb_id].should == pk
+        response.body[:name].should == payload[:name]
+        response.body[:description].should == payload[:description]
+        response.body[:the_geom].should == payload[:the_geom]
+        response.body[:id].should == payload[:id]
+      end
+    end
+
     it "Remove a row" do
       pk = @table.insert_row!(
         name: String.random(10),

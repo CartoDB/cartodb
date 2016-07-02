@@ -273,6 +273,9 @@ describe Carto::Api::VisualizationsController do
       expected_visualization = JSON.parse(table1_visualization_hash.to_json)
       expected_visualization = normalize_hash(expected_visualization)
 
+      # This is only in the Carto::Visualization presenter (not in old member presenter)
+      expected_visualization['uses_builder_features'] = false
+
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
       response['visualizations'][0].delete('url')

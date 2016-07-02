@@ -547,7 +547,8 @@
     },
     "backbone-forms": {
       "select": {
-        "placeholder": "Select a %{keyAttr}"
+        "placeholder": "Select a %{keyAttr}",
+        "empty": "No values"
       },
       "operators": {
         "count-message": "If you select COUNT all columns are selected"
@@ -841,7 +842,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
-        "source-column": "Source col.",
+        "source": "Source",
         "source-column": "Source column",
         "target": "Target layer",
         "time": "Time",

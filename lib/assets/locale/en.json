@@ -222,7 +222,33 @@
       "hours-pluralize": "hour week |||| %{smart_count} hours",
       "gmt-convertion": "Date will be converted to GMT +0"
     },
+    "taglist": {
+      "none": "No tags",
+      "placeholder": "Add tags"
+    },
     "modals": {
+      "maps-metadata": {
+        "modal-title": "Map metadata",
+        "modal-desc": "Edit the attributtes of your map",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Map Name",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "tags": "Tags"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data..."
+      },
       "privacy": {
         "privacy": "privacy",
         "cancel-btn": "CANCEL",
@@ -690,9 +716,25 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "settings": {
+      "title": "Map options",
+      "options": {
+        "title": "Fixed title",
+        "description": "Fixed description",
+        "search": "Seach box",
+        "zoom": "Zoom controls",
+        "fullscreen": "Fullscreen",
+        "share": "Share options",
+        "scrollwheel": "Scroll wheel zoom",
+        "layer_selector": "Layer selector",
+        "legends": "Legends",
+        "logo": "CartoDB Logo"
+      }
+    },
     "maps": {
       "options": {
         "rename": "Rename",
+        "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
       },
       "delete": {

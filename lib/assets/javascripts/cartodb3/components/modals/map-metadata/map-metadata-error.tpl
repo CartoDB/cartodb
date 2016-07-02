@@ -1,6 +1,6 @@
 <div class="IntermediateInfo">
   <div class="Dialog-header Modal-header js-header">
-    <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
+    <div class="Dialog-headerIcon Dialog-headerIcon--negative">
       <i class="CDB-IconFont CDB-IconFont-cockroach"></i>
     </div>
     <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor"><%- _t('components.modals.maps-metadata.error.title') %></h2>

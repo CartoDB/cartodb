@@ -221,12 +221,22 @@
       "hours-pluralize": "hour week |||| %{smart_count} hours",
       "gmt-convertion": "Date will be converted to GMT +0"
     },
+    "taglist": {
+      "none": "No tags",
+      "placeholder": "Add tags"
+    },
     "modals": {
       "maps-metadata": {
         "modal-title": "Map metadata",
         "modal-desc": "Edit the attributtes of your map",
         "back-btn": "GO BACK",
         "save-btn": "Save",
+        "form": {
+          "name": "Map Name",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "tags": "Tags"
+        },
         "validation": {
           "error": {
             "name": "Name can't be blank"

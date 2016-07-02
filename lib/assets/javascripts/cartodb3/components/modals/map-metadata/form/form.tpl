@@ -22,10 +22,3 @@
 <div class="u-tSpace-xl CDB-Text u-flex u-alignCenter js-tags-field">
   <label class="Metadata-label CDB-Text CDB-Size-medium u-ellipsis">Tags</label>
 </div>
-
-<div class="u-tSpace-xl CDB-Text CDB-Fieldset">
-  <label class="Metadata-label CDB-Text CDB-Size-medium u-ellipsis">Privacy</label>
-  <button class="u-actionTextColor js-privacy">
-    <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
-  </button>
-</div>

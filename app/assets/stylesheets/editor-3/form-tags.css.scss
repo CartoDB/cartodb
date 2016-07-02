@@ -59,7 +59,7 @@ ul.tagit input[type="text"] {
   font-size: $sFontSize-medium;
   position: relative;
   width: 100%;
-  min-height: 38px;
+  min-height: 0;
   padding: 0;
   outline: none;
   border: 1px solid $cMainLine;
@@ -69,43 +69,65 @@ ul.tagit input[type="text"] {
 }
 
 .Form-tagsList.tagit {
-  padding: 0 5px 5px;
+  padding: 0 5px;
 }
 
 .Form-tagsList.tagit .tagit-choice {
+  font-size: $sFontSize-small;
   margin: 5px 5px 0 0;
-  padding: 1px 24px 0 11px;
+  padding: 0 20px 0 4px;
+  line-height: 14px;
+  border: 1px solid $cBlue;
   border-radius: 2px;
-  background: #EFF8FF;
-  color: #746E76;
-  line-height: 28px;
+  background: $cWhite;
+  color: $cBlue;
+  text-transform: uppercase;
+  overflow: hidden;
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close {
-  right: 10px;
-  line-height: normal;
-}
-.Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+  background-color: $cBlue;
+  right: 0;
   display: inline-block;
-  color: #C5CCD1;
+  width: 14px;
+  height: 14px;
+  overflow: hidden;
+  margin-top: -7px;
 
-  &:hover {
-    color: #AAA ;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: 10px;
+    top: 6px;
+    left: 2px;
+    background: $cWhite;
+  }
+  &::before {
+    @include transform(rotate(45deg));
+  }
+  &::after {
+    @include transform(rotate(-45deg));
   }
 }
-.Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
+.Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+  display: none;
+}
+.Form-tagsList.tagit li.tagit-new {
+  padding: 2px 4px 2px 7px;
+}
 .Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
   color: #AAA;
-  font-style: italic;
+  font-style: normal;
   font-weight: $sFontWeight-normal;
 }
 .Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
   color: #AAA;
-  font-style: italic;
+  font-style: normal;
   font-weight: $sFontWeight-normal;
 }
 .Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
   color: #AAA;
-  font-style: italic;
+  font-style: normal;
   font-weight: $sFontWeight-normal;
 }
 .Form-tags.is-hover {

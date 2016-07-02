@@ -182,9 +182,7 @@ $bannedColor: #E1A7A5;
 .DatasetsList-itemTags { margin-top: 4px }
 
   .DatasetsList-itemMeta > * {
-    width: auto;
-    margin-right: 18px;
-    text-align: center;
+    margin-right: 12px;
   }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }
@@ -209,20 +207,11 @@ $bannedColor: #E1A7A5;
 
 // Banned dataset
 .DatasetsList-item--banned {
-  .DatasetsList-itemTitle,
-  .DatasetsList-itemDescription,
-  .SizeIndicator,
-  .SizeIndicator .CDB-IconFont {
-    color: $bannedColor;
-  }
-
   .DatasetsList-itemCategory { @include geometry-type-icon(-160px, -80px) }
   .DatasetsList-itemCategory.is--lineDataset { @include geometry-type-icon(-40px, -80px) }
   .DatasetsList-itemCategory.is--polygonDataset { @include geometry-type-icon(-80px, -80px) }
   .DatasetsList-itemCategory.is--pointDataset { @include geometry-type-icon(0, -80px) }
   .DatasetsList-itemCategory.is--rasterDataset { @include geometry-type-icon(-120px, -80px) }
-
-  .DatasetsList-itemStatus { color: $bannedColor }
 }
 
 @media only screen and (max-width: $sMedia-mobile) and (max-width: 959px) {
@@ -276,7 +265,7 @@ $bannedColor: #E1A7A5;
   .DatasetsList-itemInfo {
     @include flex-direction(row);
     @include justify-content(space-between, justify);
-    @include align-items(flex-start, start);
+    @include align-items(center);
   }
   .DatasetsList-itemPrimaryInfo { width: 440px }
   .DatasetsList-itemSecondaryInfo {
@@ -291,9 +280,7 @@ $bannedColor: #E1A7A5;
     margin-bottom: 0;
   }
   .DatasetsList-itemMeta > * {
-    width: auto;
-    margin-right: 18px;
-    text-align: center;
+    margin-right: 12px;
   }
   .DatasetsList-itemMeta > *:last-child { margin-right: 0 }
   .DatasetsList-itemMeta > *:nth-child(2) { @include flex-order(2) }

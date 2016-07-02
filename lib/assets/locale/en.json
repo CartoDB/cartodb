@@ -709,6 +709,21 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "settings": {
+      "title": "Map options",
+      "options": {
+        "title": "Fixed title",
+        "description": "Fixed description",
+        "search": "Seach box",
+        "zoom": "Zoom controls",
+        "fullscreen": "Fullscreen",
+        "share": "Share options",
+        "scrollwheel": "Scroll wheel zoom",
+        "layer_selector": "Layer selector",
+        "legends": "Legends",
+        "logo": "CartoDB Logo"
+      }
+    },
     "maps": {
       "options": {
         "rename": "Rename",

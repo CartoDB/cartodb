@@ -175,8 +175,7 @@ $bannedColor: #E1A7A5;
 }
 .DatasetsList-itemMeta {
   @include display-flex();
-  @include justify-content(flex-start, start);
-  @include flex-wrap(wrap);
+  @include align-items(center);
   margin-bottom: 2 * $sMargin-min;
 }
 .DatasetsList-itemTags { margin-top: 4px }

@@ -244,7 +244,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
         "loading": "Saving your data..."
       },

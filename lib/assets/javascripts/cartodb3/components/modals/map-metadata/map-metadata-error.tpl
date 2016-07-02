@@ -4,7 +4,7 @@
       <i class="CDB-IconFont CDB-IconFont-cockroach"></i>
     </div>
     <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor"><%- _t('components.modals.maps-metadata.error.title') %></h2>
-    <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.maps-metadata.error.subtitle') %></h3>
+    <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%= error %></h3>
   </div>
 
   <div class="Modal-body">

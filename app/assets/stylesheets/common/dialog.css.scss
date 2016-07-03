@@ -1,6 +1,8 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
+@import 'cdb-variables/colors';
+
 
 $sSmallWidth: 670px;
 
@@ -191,8 +193,8 @@ body.is-inDialog {
   }
 }
 .Dialog-headerIcon--negative {
-  color: $cHighlight-negative;
-  border-color: $cHighlight-negative;
+  color: $cError;
+  border-color: $cError;
 }
 .Dialog-headerIcon--positive {
   color: $cHighlight-positive;

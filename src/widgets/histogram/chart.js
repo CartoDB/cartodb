@@ -196,6 +196,7 @@ module.exports = cdb.core.View.extend({
     this.chart.attr('height', height);
     this.leftHandle.attr('height', height);
     this.rightHandle.attr('height', height);
+    this.updateYScale();
 
     this.reset();
   },
@@ -320,7 +321,6 @@ module.exports = cdb.core.View.extend({
     this._removeChartContent();
     this._setupDimensions();
     this._calcBarWidth();
-    this.updateYScale();
     this._generateChartContent();
     this._generateShadowBars();
   },

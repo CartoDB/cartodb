@@ -320,6 +320,7 @@ module.exports = cdb.core.View.extend({
     this._removeChartContent();
     this._setupDimensions();
     this._calcBarWidth();
+    this.updateYScale();
     this._generateChartContent();
     this._generateShadowBars();
   },

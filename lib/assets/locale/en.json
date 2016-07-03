@@ -25,7 +25,8 @@
     "point-in-polygon": "Point in polygon",
     "filter": "Filter",
     "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer"
+    "filter-by-node-column": "Link to layer",
+    "sampling": "Sampling"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -221,7 +222,33 @@
       "hours-pluralize": "hour week |||| %{smart_count} hours",
       "gmt-convertion": "Date will be converted to GMT +0"
     },
+    "taglist": {
+      "none": "No tags",
+      "placeholder": "Add tags"
+    },
     "modals": {
+      "maps-metadata": {
+        "modal-title": "Map metadata",
+        "modal-desc": "Edit the attributtes of your map",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Map Name",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "tags": "Tags"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data..."
+      },
       "privacy": {
         "privacy": "privacy",
         "cancel-btn": "CANCEL",
@@ -343,6 +370,10 @@
           "filter-by-node-column": {
             "title": "Link to layer",
             "desc": "Link two layers matching column names"
+          },
+          "sampling": {
+            "title": "Sampling",
+            "desc": "Return a percentage of your data"
           }
         }
       },
@@ -542,7 +573,9 @@
     },
     "backbone-forms": {
       "select": {
-        "placeholder": "Select a %{keyAttr}"
+        "placeholder": "Select a %{keyAttr}",
+        "loading": "loading…",
+        "empty": "No values"
       },
       "operators": {
         "count-message": "If you select COUNT all columns are selected"
@@ -666,12 +699,48 @@
   },
   "dataset": {
     "updated": "Updated %{ago}",
+    "create-map": {
+      "title": "Create map",
+      "loading": "Creating a map from %{tableName}",
+      "error": "There was an error creating the map"
+    },
+    "delete": {
+      "option": "Delete dataset...",
+      "cancel": "cancel",
+      "confirm": "ok, delete it",
+      "desc": "Are you sure?",
+      "error": "Error deleting %{tableName}",
+      "loading": "Renaming your dataset %{tableName}...",
+      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+    },
+    "duplicate": {
+      "option": "Duplicate dataset",
+      "query": "applied query",
+      "customOption": "Duplicate query",
+      "error": "There was an error duplicating %{name}",
+      "loading": "Duplicating your dataset %{name}...",
+    },
+    "lock": {
+      "option": "Lock dataset",
+      "error": "There was an error locking %{tableName}",
+      "loading": "Locking your dataset %{tableName}...",
+    },
+    "unlock": {
+      "cancel": "back to dashboard",
+      "confirm": "ok, unlock it",
+      "desc": "That means you need to unlock it before doing anything. Are you sure?",
+      "error": "Error unlocking %{tableName}: %{error}",
+      "loading": "Unlocking your dataset %{tableName}...",
+      "success": "Dataset %{tableName} unlocked",
+      "title": "Your dataset %{tableName} is locked."
+    },
     "rename": {
+      "option": "Rename dataset",
       "cancel": "cancel",
       "confirm": "ok, rename it",
       "desc": "If you are accessing this dataset via API don't forget to use the new name in your API calls afterwards.",
       "error": "Error renaming %{tableName}: %{error}",
-      "loading": "Renaming your table %{tableName}...",
+      "loading": "Renaming your dataset %{tableName}...",
       "success": "Dataset %{tableName} renamed",
       "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
     }
@@ -683,9 +752,25 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "settings": {
+      "title": "Map options",
+      "options": {
+        "title": "Fixed title",
+        "description": "Fixed description",
+        "search": "Seach box",
+        "zoom": "Zoom controls",
+        "fullscreen": "Fullscreen",
+        "share": "Share options",
+        "scrollwheel": "Scroll wheel zoom",
+        "layer_selector": "Layer selector",
+        "legends": "Legends",
+        "logo": "CartoDB Logo"
+      }
+    },
     "maps": {
       "options": {
         "rename": "Rename",
+        "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
       },
       "delete": {
@@ -836,7 +921,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
-        "source-column": "Source col.",
+        "source": "Source",
         "source-column": "Source column",
         "target": "Target layer",
         "time": "Time",
@@ -847,7 +932,10 @@
         "value": "Value",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data "
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

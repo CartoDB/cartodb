@@ -145,16 +145,13 @@
 }
 
 .Dropdown > ul {
-  @include inline-block();
   position: relative;
   margin: 20px;
   padding: 0;
-  list-style: none;
   overflow: visible;
 }
 
 .Dropdown > ul > li {
-  margin-top: 10px;
 
   &:first-child {
     border-top: 0;
@@ -166,7 +163,6 @@
 }
 
 .Dropdown > ul > li > p {
-  margin-top: 10px;
 
   &:first-child {
     margin-top: 0;

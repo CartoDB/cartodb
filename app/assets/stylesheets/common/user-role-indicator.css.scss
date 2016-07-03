@@ -1,21 +1,12 @@
 @import '../variables/sizes';
+@import 'cdb-variables/colors';
+
 
 .UserRoleIndicator {
-  display: inline-block;
-  height: 18px;
-  margin-left: 4px;
-  padding: 0 8px;
-  border-width: 1px;
+  padding: 2px 8px;
+  border: 1px solid $cAltText;
+  color: $cAltText;
   border-style: solid;
-  border-radius: 5px;
-  background: #FFF;
-  color: #2E3C43;
-  font-size: $sFontSize-smaller;
-  line-height: 18px;
-  text-align: center;
-  text-transform: uppercase;
-
-  &.Viewer {
-    color: #979EA1;
-  }
+  border-radius: 2px;
+  background: $cWhite;
 }

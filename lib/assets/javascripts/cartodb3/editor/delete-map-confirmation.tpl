@@ -1,6 +1,6 @@
 <div class="Dialog-header">
-  <div class="Dialog-headerIcon Dialog-headerIcon--alert">
-    <i class="CDB-IconFont CDB-IconFont-question"></i>
+  <div class="Dialog-headerIcon Dialog-headerIcon--negative">
+    <i class="CDB-IconFont CDB-IconFont-trash"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace">
     <%- _t('editor.maps.delete.title', { name: name }) %>
@@ -15,7 +15,7 @@
       <%- _t('editor.maps.delete.cancel') %>
     </span>
   </button>
-  <button class="CDB-Button CDB-Button--alert u-tSpace--m js-confirm">
+  <button class="CDB-Button CDB-Button--error u-tSpace--m js-confirm">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('editor.maps.delete.confirm') %>
     </span>

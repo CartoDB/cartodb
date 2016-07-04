@@ -26,11 +26,13 @@
     "filter": "Filter",
     "kmeans": "Cluster",
     "filter-by-node-column": "Link to layer",
-    "sampling": "Sampling"
+    "sampling": "Sampling",
+    "spatial-markov-trend": "Temporal simulation"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship Analysis"
+    "relationship-analysis":"Relationship Analysis",
+    "predictive": "Predictive analysis"
   },
   "form-components": {
     "editors": {
@@ -374,6 +376,10 @@
           "sampling": {
             "title": "Sampling",
             "desc": "Return a percentage of your data"
+          },
+          "spatial-markov-trend": {
+            "title": "Temporal simulation",
+            "desc": "Predict trends based on temporal series"
           }
         }
       },
@@ -935,7 +941,9 @@
         "workflow": "Workflow",
         "sampling": "Sampling",
         "sampling-desc": "Select a sample of the data",
-        "sampling-rate": "% of data "
+        "sampling-rate": "% of data ",
+        "spatial-markov-trend-desc": "select the columns with temporal value series",
+        "spatial-markov-trend-time-columns": "time columns"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

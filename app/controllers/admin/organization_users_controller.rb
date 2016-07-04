@@ -20,13 +20,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def new
     @user = ::User.new
-    @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+    organization = current_user.organization
+    @user.quota_in_bytes = organization.unassigned_quota < 100.megabytes ? organization.unassigned_quota : 100.megabytes
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
     @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
     @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+
+    @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
 
     respond_to do |format|
       format.html { render 'new' }
@@ -54,13 +57,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
         :soft_obs_snapshot_limit, :soft_obs_general_limit
       ])
+    @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
     model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
 
-    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
@@ -111,6 +117,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
     @user.set_fields(attributes, [:location]) if attributes[:location].present?
 
+    @user.viewer = attributes[:viewer] == 'true'
+
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
@@ -124,13 +132,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
     if attributes[:password].present? || attributes[:password_confirmation].present?
       model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
     end
-    raise Sequel::ValidationFailed.new('Validation failed') unless model_validation_ok
+
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
+    # update_in_central is duplicated because we don't wan ta local save if Central fails,
+    # but before/after save at user can change some attributes that we also want to persist.
+    # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
     @user.update_in_central
 
     @user.save(raise_on_failure: true)
+
+    @user.update_in_central
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e

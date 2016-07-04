@@ -947,7 +947,7 @@
         "weight-column": "Weight column",
         "weight-type": "Weight type",
         "spatial-markov-trend-desc": "select the columns with temporal value series",
-        "spatial-markov-trend-time-columns": "time columns"
+        "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
         "workflow": "Workflow"
       },

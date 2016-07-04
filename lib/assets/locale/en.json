@@ -769,16 +769,13 @@
             "subtitle": "Change map elements"
           },
           "elements": {
-            "title": "Fixed title",
-            "description": "Fixed description",
             "search": "Seach box",
             "zoom": "Zoom controls",
             "fullscreen": "Fullscreen",
-            "share": "Share options",
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
-            "legends": "Legends",
-            "logo": "CartoDB Logo"
+            "logo": "CartoDB Logo",
+            "widgets": "Widgets column",
           }
         }
       },

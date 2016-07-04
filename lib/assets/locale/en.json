@@ -808,6 +808,8 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "hide": "Hide layer",
+        "show": "Show layer"
       },
       "rename": {
         "loading": "Renaming layer...",

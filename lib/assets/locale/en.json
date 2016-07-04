@@ -18,14 +18,14 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
+    "centroid": "Centroid",
     "cluster": "Cluster",
+    "filter": "Filter",
+    "filter-by-node-column": "Link to layer analysis",
     "intersection": "Intersection",
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "filter": "Filter",
-    "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer",
     "sampling": "Sampling",
     "spatial-markov-trend": "Temporal simulation"
   },
@@ -365,8 +365,8 @@
             "title": "Cluster",
             "desc": "Group points by proximity"
           },
-          "weighted-centroid": {
-            "title": "Weighted centroid",
+          "centroid": {
+            "title": "Centroid",
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
@@ -878,12 +878,15 @@
       },
       "analysis-form": {
         "aggregate": "Aggregate",
+        "aggregate-by": "Aggregate by",
+        "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
         "by": "By",
         "by-bike": "bike",
         "by-car": "car",
         "by-walk": "walk",
+        "categorize-by": "Categorize by",
         "category-column": "Category column",
         "clusters-num": "# Clusters",
         "column": "Column",
@@ -924,6 +927,9 @@
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data ",
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
@@ -933,17 +939,17 @@
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
+        "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
         "type": "Type",
         "value": "Value",
+        "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow",
-        "sampling": "Sampling",
-        "sampling-desc": "Select a sample of the data",
-        "sampling-rate": "% of data ",
         "spatial-markov-trend-desc": "select the columns with temporal value series",
         "spatial-markov-trend-time-columns": "time columns"
+        "weighted-by": "Weighted by",
+        "workflow": "Workflow"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

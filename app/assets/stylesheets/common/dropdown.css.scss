@@ -24,6 +24,8 @@
   /* x-offset, y-offset, blur, size, color */
   box-shadow: 0 0 5px 1px rgba(#000, 0.2), 0 0 1px 0 rgba(#000, 0.3);
   z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
 
   &:before {
     @include transform(rotate(45deg));

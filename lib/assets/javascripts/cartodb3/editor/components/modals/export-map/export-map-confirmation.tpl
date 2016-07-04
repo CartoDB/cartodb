@@ -1,5 +1,5 @@
 <div class="Dialog-header">
-  <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
+  <div class="Dialog-headerIcon Dialog-headerIcon--neutral u-flex u-alignCenter u-justifyCenter">
     <i class="CDB-IconFont CDB-IconFont-downloadCircle"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace">

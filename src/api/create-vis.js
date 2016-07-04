@@ -32,6 +32,7 @@ var createVis = function (el, vizjson, options) {
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
+    authToken: vizjson.auth_tokens && vizjson.auth_tokens.length && vizjson.auth_tokens[0],
     showLegends: options.legends === true || vizjson.legends === true,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true

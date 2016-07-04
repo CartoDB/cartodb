@@ -24,6 +24,8 @@ module.exports = Model.extend({
 
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
+    } else if (this.get('authToken')) {
+      params.push('auth_token=' + this.get('authToken'));
     }
     return this.get('url') + '?' + params.join('&');
   },

@@ -23,14 +23,9 @@ module.exports = Model.extend({
 
   createCategoryModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
-
-    attrs = _.pick(attrs, CategoryDataviewModel.ATTRS_NAMES);
+    attrs = this._generateAttrsForDataview(layerModel, attrs, CategoryDataviewModel.ATTRS_NAMES);
     attrs.aggregation = attrs.aggregation || 'count';
     attrs.aggregation_column = attrs.aggregation_column || attrs.column;
-    attrs.source = attrs.source || { id: layerModel.id };
-    if (this.get('apiKey')) {
-      attrs.apiKey = this.get('apiKey');
-    }
 
     var categoryFilter = new CategoryFilter({
       layer: layerModel
@@ -47,12 +42,7 @@ module.exports = Model.extend({
 
   createFormulaModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column', 'operation']);
-    attrs = _.pick(attrs, FormulaDataviewModel.ATTRS_NAMES);
-    attrs.source = attrs.source || { id: layerModel.id };
-    if (this.get('apiKey')) {
-      attrs.apiKey = this.get('apiKey');
-    }
-
+    attrs = this._generateAttrsForDataview(layerModel, attrs, FormulaDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
@@ -63,11 +53,7 @@ module.exports = Model.extend({
 
   createHistogramModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['column']);
-    attrs = _.pick(attrs, HistogramDataviewModel.ATTRS_NAMES);
-    attrs.source = attrs.source || { id: layerModel.id };
-    if (this.get('apiKey')) {
-      attrs.apiKey = this.get('apiKey');
-    }
+    attrs = this._generateAttrsForDataview(layerModel, attrs, HistogramDataviewModel.ATTRS_NAMES);
 
     var rangeFilter = new RangeFilter({
       layer: layerModel
@@ -84,18 +70,25 @@ module.exports = Model.extend({
 
   createListModel: function (layerModel, attrs) {
     _checkProperties(attrs, ['columns']);
-    attrs = _.pick(attrs, ListDataviewModel.ATTRS_NAMES);
-    attrs.source = attrs.source || { id: layerModel.id };
-    if (this.get('apiKey')) {
-      attrs.apiKey = this.get('apiKey');
-    }
-
+    attrs = this._generateAttrsForDataview(layerModel, attrs, ListDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new ListDataviewModel(attrs, {
         map: this._map,
         layer: layerModel
       })
     );
+  },
+
+  _generateAttrsForDataview: function (layerModel, attrs, whitelistedAttrs) {
+    attrs = _.pick(attrs, whitelistedAttrs);
+    attrs.source = attrs.source || { id: layerModel.id };
+    if (this.get('apiKey')) {
+      attrs.apiKey = this.get('apiKey');
+    }
+    if (this.get('authToken')) {
+      attrs.authToken = this.get('authToken');
+    }
+    return attrs;
   },
 
   _newModel: function (m) {

@@ -31,6 +31,27 @@ describe('src/analysis/analysis-model.js', function () {
     });
   });
 
+  describe('.url', function () {
+    it('should append the api_key param if present (and not use the authToken)', function () {
+      this.analysisModel.set({
+        url: 'http://example.com',
+        apiKey: 'THE_API_KEY',
+        authToken: 'THE_AUTH_TOKEN'
+      });
+
+      expect(this.analysisModel.url()).toEqual('http://example.com?api_key=THE_API_KEY');
+    });
+
+    it('should append the auth_token param if present (and not use the authToken)', function () {
+      this.analysisModel.set({
+        url: 'http://example.com',
+        authToken: 'THE_AUTH_TOKEN'
+      });
+
+      expect(this.analysisModel.url()).toEqual('http://example.com?auth_token=THE_AUTH_TOKEN');
+    });
+  });
+
   describe('bindings', function () {
     describe('on params change', function () {
       it('should reload the map', function () {

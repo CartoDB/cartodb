@@ -3,7 +3,7 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory');
 
 describe('src/analysis/analysis-factory.js', function () {
   beforeEach(function () {
-    var fakeCamshaftReference = {
+    this.fakeCamshaftReference = {
       getSourceNamesForAnalysisType: function (analysisType) {
         var map = {
           'trade-area': ['source'],
@@ -21,7 +21,7 @@ describe('src/analysis/analysis-factory.js', function () {
     };
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
-      camshaftReference: fakeCamshaftReference,
+      camshaftReference: this.fakeCamshaftReference,
       analysisCollection: this.analysisCollection,
       map: jasmine.createSpyObj('map', ['reload'])
     });
@@ -40,6 +40,25 @@ describe('src/analysis/analysis-factory.js', function () {
         type: 'source',
         query: 'SELECT * FROM subway_stops'
       });
+    });
+
+    it('should set attrs on the analysis models', function () {
+      this.analysisFactory = new AnalysisFactory({
+        apiKey: 'THE_API_KEY',
+        authToken: 'THE_AUTH_TOKEN',
+        camshaftReference: this.fakeCamshaftReference,
+        analysisCollection: this.analysisCollection,
+        map: jasmine.createSpyObj('map', ['reload'])
+      });
+
+      var analysisModel = this.analysisFactory.analyse({
+        id: 'a0',
+        type: 'source',
+        query: 'SELECT * FROM subway_stops'
+      });
+
+      expect(analysisModel.get('apiKey')).toEqual('THE_API_KEY');
+      expect(analysisModel.get('authToken')).toEqual('THE_AUTH_TOKEN');
     });
 
     it('should add new analysis to the collection of analysis', function () {

@@ -60,7 +60,7 @@
 .Filters-separator {
   position:absolute;
   left:0;
-  top:80px;
+  top:74px;
   width:100%;
   height:1px;
   background-color: $cStructure-softLine;
@@ -71,7 +71,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  height:80px;
+  height:74px;
 }
 .Filters-row--centered { @include justify-content(center) }
 .Filters-group {
@@ -192,7 +192,7 @@ a.Filters-cleanSearch { line-height:32px }
   &:before {
     content:'';
     position: absolute;
-    bottom: -32px;
+    bottom: -30px;
     left: 0;
     right: 0;
     width: 100%;

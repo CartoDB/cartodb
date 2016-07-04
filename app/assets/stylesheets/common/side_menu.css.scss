@@ -20,12 +20,6 @@
   @include align-items(center, center);
   margin: 30px 0;
 }
-.SideMenu-progressSize {
-  margin-left: $sMargin-elementInline;
-  color: $cTypography-secondary;
-  font-size: $sFontSize-smallUpperCase;
-  font-weight: $sFontWeight-lighter;
-}
 .SideMenu-progressBar {
   @include progress-bar(6px, 9px, true, false);
   width: 140px;
@@ -103,5 +97,4 @@
 
   color: $cTypography-paragraphs;
   margin-left: 15px;
-  font-size: 13px;
 }

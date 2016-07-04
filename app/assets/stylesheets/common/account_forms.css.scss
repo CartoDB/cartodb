@@ -28,14 +28,9 @@ $sLabel-width: 140px;
   padding-bottom: 12px;
   border-bottom: 1px solid $cStructure-mainLine;
   color: $cTypography-headers;
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-bold;
 }
 .FormAccount-titleText {
   color: $cTypography-paragraphs;
-  font-size: $sFontSize-large;
-  font-style: normal;
-  font-weight: $sFontWeight-lighter;
 }
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
@@ -48,8 +43,6 @@ $sLabel-width: 140px;
 }
 .FormAccount-listItem {
   color: $cTypography-paragraphs;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
 }
 .VerticalAligned--FormRow {
   @include display-flex();
@@ -60,7 +53,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start, start);
-  margin: 0 0 20px;
+  margin: 0 0 32px;
 }
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
@@ -83,9 +76,6 @@ $sLabel-width: 140px;
     border: 1px solid $cStructure-mainLine;
     border-radius: 50px;
     color: $cTypography-paragraphs;
-    font-size: $sFontSize-smallUpperCase;
-    font-weight: $sFontWeight-small;
-    line-height: $sLineHeight-small;
     content: '';
   }
   &:first-child:before {
@@ -138,8 +128,6 @@ $sLabel-width: 140px;
 }
 .FormAccount-label {
   color: $cTypography-paragraphs;
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-normal;
   text-transform: capitalize;
 }
 .FormAccount-label.FormAccount-label--verticalAlignTop {
@@ -183,8 +171,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   background-color: $cHighlight-positive;
   color: #FFFFFF;
-  font-size: 13px;
-  font-weight: normal;
 }
 
 .FormAccount-rowData.FormAccount-rowData--alignLeft {
@@ -236,7 +222,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   outline: none;
   color: #666666;
-  font-weight: $sFontWeight-lighter;
   z-index: 2;
 
   &:focus {
@@ -352,7 +337,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
-  font-size: $sFontSize-normal;
   line-height: 38px;
   z-index: 1;
 }

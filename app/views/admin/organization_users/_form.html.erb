@@ -215,19 +215,17 @@
   <div class="FormAccount-footer">
     <% if !@user.new? && current_user.organization_owner? -%>
       <% if @user != current_user %>
-        <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="Button Button--secondary js-deleteAccount">
-          <span>Delete this user</span>
-        </button>
+        <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="CDB-Button CDB-Button--primary js-deleteAccount">
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+      </button>
       <% else %>
-        <em></em>
       <% end %>
-      <button type="submit" class="Button Button--main">
-        <span>Save changes</span>
+      <button type="submit" class="CDB-Button CDB-Button--primary">
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
       </button>
     <% else %>
-      <em></em>
-      <button type="submit" class="Button Button--main">
-        <span>Create user</span>
+      <button type="submit" class="CDB-Button CDB-Button--primary">
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
       </button>
     <% end %>
   </div>

@@ -36,10 +36,13 @@
 }
 .SyncInfo-state--success {
   background: $cHighlight;
+  color: $cHighlight;
 }
 .SyncInfo-state--failure {
   background: $cError;
+  color: $cError;
 }
 .SyncInfo-state--syncing {
   background: #898989;
+  color: #898989;
 }

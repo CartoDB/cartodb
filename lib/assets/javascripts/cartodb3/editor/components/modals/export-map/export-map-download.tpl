@@ -3,7 +3,7 @@
     <i class="CDB-IconFont CDB-IconFont-download"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace">
-    <%- _t('editor.maps.export.download.title', { name: name }) %>
+    <%- _t('editor.maps.export.download.title') %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">
     <%- _t('editor.maps.export.download.tip') %></br>

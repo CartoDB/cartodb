@@ -28,13 +28,10 @@ $tableBorderColor: $cSecondaryLine;
   right: 0;
   bottom: 0;
   left: 0;
+  border-top: 1px solid $cMainLine;
 }
 .Table-head {
   background: $cThirdBackground;
-}
-.Table-head tr {
-  border-top: 1px solid $cMainLine;
-  border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
@@ -119,6 +116,7 @@ $tableBorderColor: $cSecondaryLine;
   @include flex-direction(column);
   height: calc(100vh - 175px);
   padding-bottom: 60px;
+  border-top: 1px solid $cMainLine;
   overflow-y: scroll;
 }
 .Table-body--relative tbody {

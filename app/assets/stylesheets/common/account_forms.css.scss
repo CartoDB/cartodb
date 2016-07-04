@@ -402,6 +402,17 @@ $sLabel-width: 140px;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-large;
 }
+.FormAccount-row.FormAccount-rowHorizontal {
+  @include flex-direction(row);
+  @include justify-content(space-between, justify);
+}
+.FormAccount-userRole {
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(baseline, baseline);
+  @include justify-content(space-between, justify);
+  padding-top: 10px;
+}
 .FormAccount-avatarPreview {
   @include display-flex();
   @include flex-direction(row);

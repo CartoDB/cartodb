@@ -6,12 +6,14 @@ ghost tables, importing common data and automatic index creation.
 
 ### Features
 * Automatic creation of indexes on columns affected by a widget
+* Viewer users for organizations.
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
 * Fix visualization not found error when exporting maps created from datasets
 * Performance improvements updating visualizations
 * Fixes for organization invitations
+* Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
 * Forward compatibility for infowindows at Builder
 

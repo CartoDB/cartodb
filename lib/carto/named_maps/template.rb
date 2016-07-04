@@ -4,6 +4,7 @@ module Carto
   module NamedMaps
     class Template
       NAMED_MAPS_VERSION = '0.0.1'.freeze
+      MAP_CONFIG_VERSION = '1.5.0'.freeze
       NAME_PREFIX = 'tpl_'.freeze
       AUTH_TYPE_OPEN = 'open'.freeze
       AUTH_TYPE_SIGNED = 'token'.freeze
@@ -34,6 +35,7 @@ module Carto
             version: NAMED_MAPS_VERSION,
             placeholders: placeholders,
             layergroup: {
+              version: MAP_CONFIG_VERSION,
               layers: layers,
               stat_tag: @visualization.id,
               dataviews: dataviews,
@@ -141,6 +143,7 @@ module Carto
         layer_options = layer.options
 
         options = {
+          id: layer.id,
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
           cartocss_version: layer_options.fetch('style_version')
         }

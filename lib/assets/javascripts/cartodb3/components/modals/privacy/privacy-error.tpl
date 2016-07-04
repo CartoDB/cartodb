@@ -1,4 +1,4 @@
-<div class="Dialog-header Dialog-header--expanded Modal-header js-header">
+<div class="Dialog-header Modal-header js-header">
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont"></i>
   </div>

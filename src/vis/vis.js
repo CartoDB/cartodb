@@ -124,6 +124,7 @@ var VisModel = Backbone.Model.extend({
     // Create the WindshaftMap
     this._windshaftMap = new WindshaftMapClass({
       apiKey: this.get('apiKey'),
+      authToken: this.get('authToken'),
       statTag: datasource.stat_tag
     }, {
       client: windshaftClient,
@@ -161,7 +162,8 @@ var VisModel = Backbone.Model.extend({
 
     // Create the public Dataview Factory
     this.dataviews = new DataviewsFactory({
-      apiKey: this.get('apiKey')
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     }, {
       dataviewsCollection: this._dataviewsCollection,
       map: this.map
@@ -170,6 +172,7 @@ var VisModel = Backbone.Model.extend({
     // Create the public Analysis Factory
     this.analysis = new AnalysisFactory({
       apiKey: this.get('apiKey'),
+      authToken: this.get('authToken'),
       analysisCollection: this._analysisCollection,
       map: this.map
     });

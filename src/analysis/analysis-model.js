@@ -31,6 +31,8 @@ module.exports = Model.extend({
     if (url) {
       if (this.get('apiKey')) {
         url += '?api_key=' + this.get('apiKey');
+      } else if (this.get('authToken')) {
+        url += '?auth_token=' + this.get('authToken');
       }
       return url;
     }

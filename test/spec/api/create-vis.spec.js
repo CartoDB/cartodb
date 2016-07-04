@@ -61,6 +61,28 @@ describe('src/api/create-vis', function () {
     expect(Loader.get).not.toHaveBeenCalled();
   });
 
+  it('should initialize the visModel correctly', function () {
+    var vizJSON = _.extend(fakeVizJSON, {
+      title: 'TITLE',
+      description: 'DESCRIPTION',
+      auth_tokens: ['AUTH_TOKEN'],
+      legends: true,
+      https: true
+    });
+    var visModel = createVis(this.containerId, vizJSON, {
+      apiKey: 'API_KEY',
+      show_empty_infowindow_fields: true,
+      skipMapInstantiation: true
+    });
+
+    expect(visModel.get('title')).toEqual('TITLE');
+    expect(visModel.get('description')).toEqual('DESCRIPTION');
+    expect(visModel.get('authToken')).toEqual('AUTH_TOKEN');
+    expect(visModel.get('showLegends')).toEqual(true);
+    expect(visModel.get('showEmptyInfowindowFields')).toEqual(true);
+    expect(visModel.get('https')).toEqual(true);
+  });
+
   it('should set the given center if values are correct', function () {
     var opts = {
       center_lat: 43.3,

@@ -37,17 +37,31 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d');
     });
 
-    it('should append an api_key param', function () {
+    it('should append an api_key param if apiKey attr is present (and not use the auth_token)', function () {
       this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
 
       this.model.set({
         url: 'http://example.com',
-        apiKey: 'THE_API_KEY'
+        apiKey: 'THE_API_KEY',
+        authToken: 'THE_AUTH_TOKEN'
       });
 
       spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
 
       expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&api_key=THE_API_KEY');
+    });
+
+    it('should append an auth_token param if authToken is present', function () {
+      this.map.getViewBounds.and.returnValue([['south', 'west'], ['north', 'east']]);
+
+      this.model.set({
+        url: 'http://example.com',
+        authToken: 'THE_AUTH_TOKEN'
+      });
+
+      spyOn(this.model, '_getDataviewSpecificURLParams').and.returnValue([ 'a=b', 'c=d' ]);
+
+      expect(this.model.url()).toEqual('http://example.com?bbox=west,south,east,north&a=b&c=d&auth_token=THE_AUTH_TOKEN');
     });
   });
 

@@ -2,6 +2,13 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewsFactory = require('../../../src/dataviews/dataviews-factory');
 
+var generateFakeAttributes = function (attrNames) {
+  return _.reduce(attrNames, function (object, attributeName) {
+    object[attributeName] = 'something';
+    return object;
+  }, {});
+};
+
 describe('dataviews/dataviews-factory', function () {
   beforeEach(function () {
     this.dataviewsCollection = new Backbone.Collection();
@@ -9,6 +16,7 @@ describe('dataviews/dataviews-factory', function () {
       dataviewsCollection: this.dataviewsCollection,
       map: {}
     });
+    this.layer = jasmine.createSpyObj('layer', ['getDataProvider']);
   });
 
   it('should create the factory as expected', function () {
@@ -31,10 +39,8 @@ describe('dataviews/dataviews-factory', function () {
     var requiredAttributes = element[1];
 
     it(factoryMethod + ' should throw an error if required attributes are not set', function () {
-      var layer = jasmine.createSpyObj('layer', ['getDataProvider']);
-
       expect(function () {
-        this.factory[factoryMethod](layer, {});
+        this.factory[factoryMethod](this.layer, {});
       }.bind(this)).toThrowError(requiredAttributes[0] + ' is required');
     });
 
@@ -46,14 +52,8 @@ describe('dataviews/dataviews-factory', function () {
         map: {}
       });
 
-      var layer = jasmine.createSpyObj('layer', ['getDataProvider']);
-
-      // Set fake attributes
-      var attributes = _.reduce(requiredAttributes, function (object, attributeName) {
-        object[attributeName] = 'something';
-        return object;
-      }, {});
-      var model = this.factory[factoryMethod](layer, attributes);
+      var attributes = generateFakeAttributes(requiredAttributes);
+      var model = this.factory[factoryMethod](this.layer, attributes);
 
       expect(model.get('apiKey')).toEqual('THE_API_KEY');
     });
@@ -66,16 +66,32 @@ describe('dataviews/dataviews-factory', function () {
         map: {}
       });
 
-      var layer = jasmine.createSpyObj('layer', ['getDataProvider']);
+      var attributes = generateFakeAttributes(requiredAttributes);
+      var model = this.factory[factoryMethod](this.layer, attributes);
 
-      // Set fake attributes
-      var attributes = _.reduce(requiredAttributes, function (object, attributeName) {
-        object[attributeName] = 'something';
-        return object;
-      }, {});
-      var model = this.factory[factoryMethod](layer, attributes);
+      expect(model.get('source')).toEqual({ id: this.layer.id });
+    });
 
-      expect(model.get('source')).toEqual({ id: layer.id });
+    it(factoryMethod + ' should set the authToken', function () {
+      this.factory.set({
+        authToken: 'AUTH_TOKEN'
+      });
+
+      var attributes = generateFakeAttributes(requiredAttributes);
+      var model = this.factory[factoryMethod](this.layer, attributes);
+
+      expect(model.get('authToken')).toEqual('AUTH_TOKEN');
+    });
+
+    it(factoryMethod + ' should set the apiKey', function () {
+      this.factory.set({
+        apiKey: 'API_KEY'
+      });
+
+      var attributes = generateFakeAttributes(requiredAttributes);
+      var model = this.factory[factoryMethod](this.layer, attributes);
+
+      expect(model.get('apiKey')).toEqual('API_KEY');
     });
   }, this);
 });

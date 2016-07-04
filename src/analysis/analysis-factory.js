@@ -14,6 +14,7 @@ var AnalysisFactory = function (opts) {
   this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
   this._apiKey = opts.apiKey;
+  this._authToken = opts.authToken;
   this._map = opts.map;
 };
 
@@ -33,6 +34,9 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   } else {
     if (this._apiKey) {
       analysisAttrs.apiKey = this._apiKey;
+    }
+    if (this._authToken) {
+      analysisAttrs.authToken = this._authToken;
     }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,

@@ -3,6 +3,7 @@ var template = require('./dashboard.tpl');
 var DashboardBelowMapView = require('./dashboard-below-map-view');
 var DashboardMenuView = require('./dashboard-menu-view');
 var DashboardSidebarView = require('./dashboard-sidebar-view');
+var $ = require('jquery');
 
 /**
  * Dashboard is a wrapper around the map canvas, which contains widget views for the map contdxt
@@ -48,7 +49,7 @@ module.exports = cdb.core.View.extend({
     });
     this.addView(view);
     this.$el.append(view.render().el);
-
+    $('body').addClass('CDB-Embed-container');
     return this;
   },
   getInitialMapState: function () {

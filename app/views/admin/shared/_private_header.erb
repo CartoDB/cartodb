@@ -10,24 +10,24 @@
           </a>
         </li>
         <li>
-          <ul class="Header-navigationBreadcrumb CDB-Text CDB-Size-large">
+          <ul class="Header-navigationBreadcrumb">
             <% if current_user.has_organization? %>
-              <li class="Header-navigationBreadcrumbItem"><p class="Header-navigationBreadcrumbParagraph"><%= current_user.organization.name %></p> /</li>
+              <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large is-light"><p class="Header-navigationBreadcrumbParagraph"><%= current_user.organization.name %></p> /</li>
             <% end %>
-            <li class="Header-navigationBreadcrumbItem">
+            <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large is-light">
               <% if params[:controller] != "admin/visualizations" %>
                 <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
               <% else %>
                 <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
               <% end %>
             </li>
-            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>
+            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown CDB-Text CDB-Size-large"></li>
           </ul>
         </li>
       </ul>
     </div>
     <div class="Header-settings">
-      <ul class="Header-settingsList">
+      <ul class="Header-settingsList CDB-Text CDB-Size-medium">
         <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem">
           <a target="_blank" href="https://cartodb.com/gallery/" class="Header-settingsLink Header-settingsLink--dashboard">Gallery</a>

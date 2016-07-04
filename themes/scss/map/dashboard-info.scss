@@ -318,13 +318,17 @@
     left: 0;
     z-index: 2;
   }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuTime {
+    display: block;
+  }
   .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobile {
     @include transform(translate(0));
     @include opacity(1);
   }
   .CDB-Dashboard-menuHeaderMobileActions {
     @include transform(rotate(180deg));
-    margin-top: 2px;
+    margin-top: 58px;
   }
   .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuLogo {
     @include transform(translateX(0));
@@ -347,6 +351,11 @@
     @include animation(fadeInDown 0.8s both);
     @include opacity(1);
     width: 100%;
+    margin-left: 16px;
   }
-
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobile svg {
+    width: auto;
+    height: auto;
+    margin-bottom: 32px;
+  }
 }

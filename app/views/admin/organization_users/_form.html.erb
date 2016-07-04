@@ -79,11 +79,10 @@
         <label class="RadioButton-label dark-color">Builder (<%= current_user.organization.assigned_seats %>/<%= current_user.organization.seats %>)</label>
       </div>
     </div>
-    <div class="FormAccount-rowInfo u-lspace-28">
+    <div class="FormAccount-rowInfo u-lspace-28 FormAccount-rowLabel">
       <p class="FormAccount-rowInfoText">Build and read</p>
     </div>
-  </div>
-  <div class="FormAccount-row">
+
     <div class="FormAccount-rowData">
       <div class="RadioButton">
         <input class="RadioButtonInput js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= current_user.organization.remaining_viewer_seats > 0 || @user.viewer? ? '' : 'disabled' %> required>
@@ -226,9 +225,16 @@
       </button>
     <% else %>
       <em></em>
-      <button type="submit" class="Button Button--main">
-        <span>Create user</span>
-      </button>
+      <% if current_user.organization.remaining_seats > 0 || current_user.organization.remaining_viewer_seats > 0 %>
+        <button type="submit" class="Button Button--main">
+          <span>Create user</span>
+        </button>
+      <% else %>
+        <p class="FormAccount-rowInfoText">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@cartodb.com">Contact support</a> for more information.</p>
+        <button type="submit" class="Button Button--main is-disabled">
+          <span>Create user</span>
+        </button>
+      <% end %>
     <% end %>
   </div>
 

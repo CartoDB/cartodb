@@ -19,6 +19,8 @@
 body {
   background: $cStructure-mainBkg;
   font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
 }
 
 ul { list-style: none }

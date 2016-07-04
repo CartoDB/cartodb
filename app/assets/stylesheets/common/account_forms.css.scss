@@ -20,7 +20,7 @@ $sLabel-width: 140px;
 .FormAccount-title {
   display: inline-block;
   width: 100%;
-  margin: 30px 0;
+  margin: 30px 0 24px 0;
 }
 .FormAccount-titleHeader {
   display: block;
@@ -150,7 +150,7 @@ $sLabel-width: 140px;
   position: relative;
   width: 100%;
   height: 1px;
-  margin-bottom: 25px;
+  margin-bottom: 16px;
   background-color: $cStructure-darkGrey;
   z-index: 0;
 }
@@ -540,7 +540,7 @@ $sLabel-width: 140px;
 
   &.FormAccount-rowInfo--marginLeft {
     margin-left: 12px;
-    width: 200px;
+    width: 224px;
   }
   &.FormAccount-rowInfoText--multipleLines {
     width: 500px;
@@ -680,12 +680,9 @@ $sLabel-width: 140px;
 
 .FormAccount-tagsList--placeholder {
   position: absolute;
-  left: 0;
-  padding: 0 0 0 12px;
-  color: #AAAAAA;
+  top: 12px;
+  left: 12px;
   font-style: italic;
-  font-weight: 300;
-  line-height: 38px;
 }
 
 .FormAccount-button--deleteAccount {

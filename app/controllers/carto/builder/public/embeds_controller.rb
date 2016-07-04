@@ -47,7 +47,7 @@ module Carto
         end
 
         def load_state
-          @state = @latest_mapcap ? @latest_mapcap.state_json : {}
+          @state_json = @latest_mapcap ? @latest_mapcap.state_json : {}
         end
 
         def ensure_viewable

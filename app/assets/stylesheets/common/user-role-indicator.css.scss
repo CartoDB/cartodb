@@ -3,10 +3,15 @@
 
 
 .UserRoleIndicator {
-  padding: 2px 8px;
-  border: 1px solid $cAltText;
-  color: $cAltText;
+  display: inline-block;
+  height: 18px;
+  padding: 0 8px;
+  border-width: 1px;
   border-style: solid;
   border-radius: 2px;
   background: $cWhite;
+}
+
+.SettingsDropdown .UserRoleIndicator {
+  margin-right: 10px;
 }

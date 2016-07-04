@@ -395,6 +395,7 @@ $sLabel-width: 140px;
   @include flex-direction(column);
   @include align-items(baseline, baseline);
   @include justify-content(space-between, justify);
+  padding-top: 10px;
 }
 .FormAccount-avatarPreview {
   @include display-flex();

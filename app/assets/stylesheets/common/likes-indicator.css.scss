@@ -8,7 +8,7 @@
 $cLiked: #D93F56;
 
 .LikesIndicator {
-  color: $cTypography-secondary;
+  @include display-flex();
 }
 .LikesIndicator-count {
   display: inline-block;

@@ -86,15 +86,10 @@
 .OptionCard-icon {
   margin-bottom: $sMargin-elementInline;
 }
-.OptionCard-title {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
+.OptionCard-title {;
   margin-bottom: $sMargin-min;
 }
 .OptionCard-desc {
-  font-size: $sFontSize-normal;
-  line-height: $sLineHeight-normal;
-  color: $cTypography-secondary;
   margin-bottom: $sMargin-elementInline;
 }
 .OptionCard-shadow {

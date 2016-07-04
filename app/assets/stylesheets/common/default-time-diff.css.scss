@@ -8,8 +8,6 @@
 .DefaultTimeDiff {
   @include display-flex();
   @include align-items(center, center);
-  font-size: $sFontSize-normal;  
-  color:$cTypography-secondary;
 }
 .DefaultTimeDiff-icon {
   margin-right: 5px;

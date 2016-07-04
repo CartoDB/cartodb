@@ -5,13 +5,16 @@
 @import "../variables/colors";
 @import "../variables/sizes";
 
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
 .Footer {
-  position: relative;
   display: block;
+  position: relative;
   width: 100%;
-  padding: $sMargin-section 0;
-  background: $cStructure-grayBkg;
-  box-shadow: inset 0 1px 0 0 rgba(black, 0.1);
+  padding: $baseSize * 5 0;
+  border-top: 1px solid $cSecondaryLine;
+  background: $cThirdBackground;
 }
 .Footer--light {
   background: white;
@@ -44,11 +47,7 @@
   left: auto;
   margin: 0;
 }
-.Footer-listItem {
-  display: block;
-  margin-top: $sMargin-element;
-  text-align: center;
-}
+
 .Footer-columns {
   padding-bottom: 20px;
   border-top: 1px solid #EEE;
@@ -197,9 +196,7 @@
     @include justify-content(flex-end, end);
   }
   .Footer-listItem {
-    margin: 0;
     padding: 0 $sMargin-elementInline;
-    text-align: auto;
   }
   .Footer-listItem:first-child { padding-left: 0 }
   .Footer-listItem:last-child { padding-right: 0 }

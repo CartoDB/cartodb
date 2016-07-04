@@ -33,7 +33,7 @@ var Vis = View.extend({
 
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
-    this.model.overlaysCollection.on('add remove', this._addOverlays, this);
+    this.model.overlaysCollection.on('add remove', this._resetOverlays, this);
 
     this.overlays = [];
 
@@ -90,7 +90,7 @@ var Vis = View.extend({
       this.addLegends();
     }
 
-    this._addOverlays(options);
+    this._resetOverlays(options);
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -216,7 +216,7 @@ var Vis = View.extend({
     }
   },
 
-  _addOverlays: function (options) {
+  _resetOverlays: function (options) {
     var overlays = this.model.overlaysCollection.toJSON();
     // Sort the overlays by its internal order
     overlays = _.sortBy(overlays, function (overlay) {

@@ -48,8 +48,8 @@
 }
 
 @media (max-width: 759px) {
-  .CDB-Embed-container {
-    overflow: hidden;
+  body {
+    overflow: hidden; // Avoid scroll in small screens
   }
   .CDB-Dashboard-canvas {
     @include flex-direction(column);

@@ -49,7 +49,6 @@ module.exports = cdb.core.View.extend({
     });
     this.addView(view);
     this.$el.append(view.render().el);
-    $('body').addClass('CDB-Embed-container');
     return this;
   },
   getInitialMapState: function () {

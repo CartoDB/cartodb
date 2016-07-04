@@ -6,6 +6,7 @@ ghost tables, importing common data and automatic index creation.
 
 ### Features
 * Automatic creation of indexes on columns affected by a widget
+* Viewer users for organizations.
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

@@ -753,19 +753,37 @@
     "button_add": "Add",
     "button_share": "SHARE",
     "settings": {
-      "title": "Map options",
-      "options": {
-        "title": "Fixed title",
-        "description": "Fixed description",
-        "search": "Seach box",
-        "zoom": "Zoom controls",
-        "fullscreen": "Fullscreen",
-        "share": "Share options",
-        "scrollwheel": "Scroll wheel zoom",
-        "layer_selector": "Layer selector",
-        "legends": "Legends",
-        "logo": "CartoDB Logo"
-      }
+      "menu-tab-pane-labels": {
+        "preview": "Preview",
+        "snapshots": "Snapshots"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mode"
+        },
+        "options": {
+          "title": "Map Options",
+          "subtitle": "Components that are shown in the map",
+          "description": {
+            "title": "Components",
+            "subtitle": "Change map elements"
+          },
+          "elements": {
+            "title": "Fixed title",
+            "description": "Fixed description",
+            "search": "Seach box",
+            "zoom": "Zoom controls",
+            "fullscreen": "Fullscreen",
+            "share": "Share options",
+            "scrollwheel": "Scroll wheel zoom",
+            "layer_selector": "Layer selector",
+            "legends": "Legends",
+            "logo": "CartoDB Logo"
+          }
+        }
+      },
+
+
     },
     "maps": {
       "options": {

@@ -13,7 +13,8 @@ module Carto
 
         {
           id: @mapcap.id,
-          related_ids: @mapcap.ids_json,
+          ids_json: @mapcap.ids_json,
+          state_json: @mapcap.state_json,
           created_at: @mapcap.created_at
         }
       end

@@ -745,7 +745,12 @@
       "error-code": "Error code %{errorCode}",
       "sync-now": "Sync now",
       "view-options": "View options",
-      "disabled": "You will be able to sync manually %{gap} minutes after your last synchronization"
+      "disabled": "You will be able to sync manually %{gap} minutes after your last synchronization",
+      "title": "Sync dataset options",
+      "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
+      "label": "Sync my data",
+      "error": "There was an error setting the interval",
+      "confirm": "Save settings"
     },
     "unlock": {
       "cancel": "back to dashboard",

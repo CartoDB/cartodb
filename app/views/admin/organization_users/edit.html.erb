@@ -26,14 +26,14 @@
         <span class="Filters-separator"></span>
         <div class="Filters-row">
           <ul class="Filters-group CDB-Text CDB-Size-medium">
-            <li>
-              <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
-                <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+            <li class="u-flex u-alignCenter">
+              <a href="<%= CartoDB.url(self, 'organization') %>" class="u-actionTextColor u-flex u-alignCenter">
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
             <li class="Filters-typeItem">
               <div class="FormAccount-title">
-                <p class="FormAccount-titleText"><%= @user.username.capitalize %></p>
+                <p class="CDB-Text CDB-Size-medium u-mainTextColor"><%= @user.username.capitalize %></p>
               </div>
             </li>
           </ul>

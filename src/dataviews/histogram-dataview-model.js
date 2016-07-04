@@ -29,7 +29,7 @@ module.exports = DataviewModelBase.extend({
       if (_.isNumber(this.get('end'))) {
         params.push('end=' + this.get('end'));
       }
-      if (_.isNumber(this.get('bins'))) {
+      if (_.isNumber(parseInt(this.get('bins'), 10))) {
         params.push('bins=' + this.get('bins'));
       }
     }

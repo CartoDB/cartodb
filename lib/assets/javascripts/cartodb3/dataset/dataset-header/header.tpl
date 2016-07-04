@@ -1,5 +1,8 @@
 <div class="Editor-HeaderInfo-inner">
-  <div class="Editor-HeaderInfo-title u-bSpace--m">
+  <div class="Editor-HeaderInfo-title u-bSpace--m u-flex u-alignCenter">
+    <% if (isSync) { %>
+      <span class="SyncInfo-state SyncInfo-state--<%- syncState %> u-rSpace--m js-syncState"></span>
+    <% } %>
     <div class="Editor-HeaderInfo-titleText js-name">
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>

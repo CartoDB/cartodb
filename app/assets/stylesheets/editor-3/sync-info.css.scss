@@ -1,0 +1,30 @@
+// Sync info styles
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.SyncInfo {
+  @include display-flex();
+  @include align-items(center);
+}
+.SyncInfo-state {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background: $cWhite;
+}
+.SyncInfo-state--small {
+  width: 8px;
+  height: 8px;
+}
+.SyncInfo-state--success {
+  background: $cHighlight;
+}
+.SyncInfo-state--failure {
+  background: $cError;
+}
+.SyncInfo-state--syncing {
+  background: #898989;
+}

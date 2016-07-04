@@ -148,7 +148,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_writable_by_user(user)
-    user_id == user.id || has_write_permission?(user)
+    (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 
   def varnish_key
@@ -367,6 +367,10 @@ class Carto::Visualization < ActiveRecord::Base
     mapcaps.first
   end
 
+  def uses_builder_features?
+    analyses.any? || widgets.any? || mapcapped?
+  end
+
   private
 
   def named_maps_api
@@ -419,7 +423,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_write_permission?(user)
-    user && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
+    user && !user.viewer? && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
   def owner?(user)

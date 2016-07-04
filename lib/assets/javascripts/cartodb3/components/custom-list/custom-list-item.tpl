@@ -1,4 +1,4 @@
-<button type="button" class="CDB-ListDecoration-itemLink
+<button type="button" class="CDB-ListDecoration-itemLink u-ellipsis
     <% if (isSelected) { %> is-selected <% } %>
     <% if (isDestructive) { %>
       u-errorTextColor

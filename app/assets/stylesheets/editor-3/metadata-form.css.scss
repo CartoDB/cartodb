@@ -1,0 +1,48 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Metadata-form {
+  max-width: 620px;
+  margin: $baseSize * 6 auto;
+}
+
+.Metadata-label {
+  @include flex(0 0 140px);
+  padding: $baseSize $baseSize * 2;
+  color: $cAltText;
+  line-height: 16px;
+  text-align: right;
+}
+
+.Metadata-textarea {
+  resize: none;
+  height: 100px;
+}
+
+// To be fixed in cartoassets
+.u-grow {
+  @include flex(1);
+}
+
+.Markdown {
+  color: $cHintText;
+  font-size: $sFontSize-small;
+  text-align: right;
+}
+.Markdown-tooltip {
+  cursor: pointer;
+}
+.Markdown-icon {
+  margin-right: $baseSize;
+  padding: 0 2px 2px 5px;
+  border-radius: 2px;
+  background: $cMainLine;
+  color: $cThirdBackground;
+}
+.Markdown-icon-text {
+  font-size: $sFontSize-small - 2;
+}
+.Markdown-icon-char {
+  font-size: $sFontSize-medium;
+}

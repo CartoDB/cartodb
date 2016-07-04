@@ -19,7 +19,11 @@ module Carto
         def show
           @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
 
-          render 'show'
+          if request.query_parameters[:state]
+            render 'show'
+          else
+            redirect_to builder_visualization_public_embed_url(state: @state_json)
+          end
         end
 
         def show_protected
@@ -47,7 +51,7 @@ module Carto
         end
 
         def load_state
-          @state_json = @latest_mapcap ? @latest_mapcap.state_json : {}
+          @state_json = (@latest_mapcap ? @latest_mapcap.state_json : {}).to_json
         end
 
         def ensure_viewable

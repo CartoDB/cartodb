@@ -539,7 +539,8 @@ $sLabel-width: 140px;
   @include display-flex();
 
   &.FormAccount-rowInfo--marginLeft {
-    margin-left: 20px;
+    margin-left: 12px;
+    width: 200px;
   }
   &.FormAccount-rowInfoText--multipleLines {
     width: 500px;

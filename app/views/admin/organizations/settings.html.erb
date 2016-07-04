@@ -64,7 +64,7 @@
         <div class="FormAccount-rowData">
           <%= f.text_field :display_name, :class => "CDB-InputText CDB-Text" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@
         <div class="FormAccount-rowData">
           <%= f.text_field :discus_shortname, :class => "CDB-InputText CDB-Text", :placeholder => "If empty, CartoDB will moderate them for you" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Be notified by new comments in your pages</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Be notified by new comments in your pages</p>
           </div>
         </div>
       </div>
@@ -124,7 +124,7 @@
         <div class="FormAccount-rowData">
           <%= f.text_field :admin_email, :class => "CDB-InputText CDB-Text", :placeholder => "if empty, we will use your email" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Email you will use to give support to your users</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Email you will use to give support to your users</p>
           </div>
         </div>
       </div>
@@ -134,12 +134,12 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Default new user quota</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>
               <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
             <% else %>
-              <p class="FormAccount-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Set (in MB) the quota of new users in your organization</p>
             <% end %>
           </div>
         </div>
@@ -170,7 +170,7 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Google Maps query string</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps query string</label>
           </div>
           <div class="FormAccount-rowData">
             <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
@@ -185,7 +185,7 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label FormAccount-label--multipleLines">Google Maps private key</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps private key</label>
           </div>
           <div class="FormAccount-rowData">
             <%= f.text_field :google_maps_private_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>

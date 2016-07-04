@@ -33,6 +33,8 @@ var Vis = View.extend({
 
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
+    this.model.overlaysCollection.on('add remove', this._addOverlays, this);
+
     this.overlays = [];
 
     _.bindAll(this, '_onResize');

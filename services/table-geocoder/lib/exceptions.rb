@@ -6,10 +6,10 @@ module Carto
   module GeocoderErrors
 
     GEOCODER_TIMED_OUT_TITLE = 'The geocoder timed out'
-    GEOCODER_TIMED_OUT_WHAT_ABOUT = %q{
+    GEOCODER_TIMED_OUT_WHAT_ABOUT = %{
       Your geocoding request timed out.
       Please <a href='mailto:support@cartob.com?subject=The geocoder timed out'>contact us</a>
-      and we'll try to fix it quickly.
+      if you need further help.
     }.squish
 
     class AdditionalInfo
@@ -65,29 +65,42 @@ module Carto
       GeocoderBaseError.get_info(error_code)
     end
 
-
+    class OverStorageQuotaError < GeocoderBaseError
+      register_additional_info(
+        1801,
+        'Over account storage limit',
+        %{Over account storage limit: The geocoding process was not able to finish because you ran out of quota.
+          To upgrade your account, go to your Dashboard and click Settings. Click
+          'Upgrade your server'. Follow the directions for choosing a larger size
+          and setting up your payment information.
+        }.squish,
+        AdditionalInfo::SOURCE_USER
+      )
+    end
 
     class MisconfiguredGmeGeocoderError < GeocoderBaseError
       register_additional_info(
         1000,
         'Google for Work account misconfigured',
-        %q{Your Google for Work account seems to be incorrectly configured.
+        %{Your Google for Work account seems to be incorrectly configured.
            Please <a href='mailto:sales@cartob.com?subject=Google for Work account misconfigured'>contact us</a>
-           and we'll try to fix it quickly.}.squish,
+           for further assistance.
+        }.squish,
         AdditionalInfo::SOURCE_USER
-        )
+      )
     end
 
     class GmeGeocoderTimeoutError < GeocoderBaseError
       register_additional_info(
         1010,
         'Google geocoder timed out',
-        %q{Your geocoding request timed out after several attempts.
+        %{Your geocoding request timed out after several attempts.
            Please check your quota usage in the <a href='https://console.developers.google.com/'>Google Developers Console</a>
            and <a href='mailto:support@cartodb.com?subject=Google geocoder timed out'>contact us</a>
-           if you are within the usage limits.}.squish,
+           if you are within the usage limits.
+        }.squish,
         AdditionalInfo::SOURCE_USER
-        )
+      )
     end
 
     class AddGeorefStatusColumnDbTimeoutError < GeocoderBaseError
@@ -96,7 +109,7 @@ module Carto
         GEOCODER_TIMED_OUT_TITLE,
         GEOCODER_TIMED_OUT_WHAT_ABOUT,
         AdditionalInfo::SOURCE_CARTODB
-        )
+      )
     end
 
     class GeocoderCacheDbTimeoutError < GeocoderBaseError
@@ -105,7 +118,7 @@ module Carto
         GEOCODER_TIMED_OUT_TITLE,
         GEOCODER_TIMED_OUT_WHAT_ABOUT,
         AdditionalInfo::SOURCE_CARTODB
-        )
+      )
     end
 
     class TableGeocoderDbTimeoutError < GeocoderBaseError
@@ -114,7 +127,7 @@ module Carto
         GEOCODER_TIMED_OUT_TITLE,
         GEOCODER_TIMED_OUT_WHAT_ABOUT,
         AdditionalInfo::SOURCE_CARTODB
-        )
+      )
     end
 
   end

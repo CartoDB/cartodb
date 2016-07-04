@@ -8,6 +8,21 @@
   @include display-flex();
   @include align-items(center);
 }
+.SyncInfo--separator {
+  position: relative;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+
+  &:after {
+    position: absolute;
+    right: -24px;
+    bottom: 0;
+    left: -24px;
+    height: 1px;
+    background: #EEE;
+    content: '';
+  }
+}
 .SyncInfo-state {
   display: inline-block;
   width: 10px;

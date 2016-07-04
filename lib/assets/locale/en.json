@@ -31,7 +31,7 @@
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship Analysis",
+    "relationship-analysis":"Relationship analysis",
     "predictive": "Predictive analysis"
   },
   "form-components": {
@@ -72,19 +72,19 @@
   "data": {
     "import-model": {
       "error-title": "There was an error",
-      "error-starting-import": "Unfortunately there was an error starting the import"
+      "error-starting-import": "Unfortunately, there was an error starting the import"
     },
     "upload-model": {
       "invalid-import": "Invalid import",
-      "one-file": "Unfortunately only one file is allowed per upload",
+      "one-file": "Unfortunately, only one file is allowed per upload",
       "file-defined": "File name should be defined",
-      "file-extension": "Unfortunately this file extension is not allowed",
-      "file-size": "Unfortunately the size of the file is bigger than your remaining quota",
+      "file-extension": "Unfortunately, this file extension is not allowed",
+      "file-size": "Unfortunately, the size of the file is bigger than your remaining quota",
       "visualization-id": "The remote visualization id was not specified",
-      "remote-file-size": "Unfortunately the size of the remote dataset is bigger than your remaining quota",
-      "url-invalid": "Unfortunately the URL provided is not valid",
+      "remote-file-size": "Unfortunately, the size of the remote dataset is bigger than your remaining quota",
+      "url-invalid": "Unfortunately, the URL provided is not valid",
       "error-happened": "There was an error",
-      "connection-error": "Unfortunately there was a connection error",
+      "connection-error": "Unfortunately, there was a connection error",
       "twitter-dates-invalid": "Twitter dates are not valid",
       "twitter-dates-empty": "Twitter dates are empty",
       "twitter-categories-invalid": "Twitter categories are not valid",
@@ -106,7 +106,7 @@
         "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
         "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
         "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
-        "explanation": "Rows that are not geocoded could have errors on their column values, or just doesn’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
+        "explanation": "Rows that are not geocoded could have errors in their column values, or don’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
         "no-extra-charge": "No extra charges have been done",
         "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
         "title": "Data geocoded",
@@ -137,7 +137,7 @@
         "find-connected-datasets": "You can find all the connected datasets under the datasets section.",
         "continue-btn": "Continue",
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
-        "unable-to-import-as-layers": "Unable to add all imported datasets as Layers",
+        "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
         "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
       },
       "error-details": {
@@ -153,8 +153,8 @@
         "upgrade": "upgrade",
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
-          "info": "Keep your data and get more quota by upgrading your plan",
-          "title": "You have run out of quota",
+          "info": "Keep your data and get a larger quota by upgrading your plan",
+          "title": "Your quota has run out",
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
@@ -170,7 +170,7 @@
         "twitter-import-title": "Your Twitter %{type} is created",
         "view-type": "view %{type}",
         "tweet-cost": {
-          "free": "No extra charges have been done",
+          "free": "No extra charges have been applied",
           "paid": "$%{tweetsCostFormatted} will be charged to your account"
         },
         "errors": {
@@ -191,15 +191,15 @@
             "without-dataset": "No rows geocoded",
             "in-dataset": "No rows geocoded in %{tableName} dataset",
           },
-          "geocoding-layer": "Ouch! Error geocoding %{tableName} layer"
+          "geocoding-layer": "Ouch! There was an error geocoding %{tableName} layer"
         }
       },
       "background-import-limit": {
         "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
-        "one-file": "Unfortunately you can only import up to %{importQuota} files at the same time"
+        "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
 
       },
-      "free-trial": "%{days} days Free trial",
+      "free-trial": "%{days} day free trial",
       "connecting": "Connecting",
       "dataset": "dataset…",
       "geocoding": "Geocoding",
@@ -277,10 +277,10 @@
           "body": "Nobody can access this dataset"
         },
         "share": "Hey, maybe it's a good time to <a href=\"#\">share with your colleagues</a>.",
-        "subtitle": "Althought we really believe in the power of open data, you can also protect your tables",
+        "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
         },
         "loading": "Saving your data..."
       },
@@ -289,11 +289,11 @@
         "update-btn": "UPDATE",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "last-version": "Last version of your map was updated <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-version": "The last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
           "title": "Get the link",
-          "body": "And send it to your friends, coworkers or post in your social networks.",
+          "body": "Send to your friends, coworkers, or post in your social networks.",
           "link": "",
           "copy": "COPY",
           "select": "SELECT",
@@ -304,7 +304,7 @@
         },
         "embed": {
           "title": "Embed it",
-          "body": "Get your map into your blog, website or simple application.",
+          "body": "Insert your map into your blog, website, or simple application.",
           "link": "Get a simple URL.",
           "copy": "COPY",
           "select": "SELECT",
@@ -315,21 +315,21 @@
         },
         "cartodbjs": {
           "title": "CartoDB.js",
-          "body": "Add your map to your applications by using this URL.",
+          "body": "Add your map to your applications using this URL.",
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
         },
         "mobile-sdk": {
           "title": "CartoDB Mobile SDK",
-          "body": "Add your map to your native mobile applications by using this line of code.",
+          "body": "Add your map to your native mobile applications using this line of code.",
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you to try again."
+          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
         },
         "loading": "Saving your data..."
       },
@@ -347,7 +347,7 @@
           },
           "point-in-polygon": {
             "title": "Point in polygon",
-            "desc": "Analyse points in polygon (or vice versa)"
+            "desc": "Analyze points in polygon (or vice versa)"
           },
           "intersection": {
             "title": "Intersection",
@@ -371,7 +371,7 @@
           },
           "filter-by-node-column": {
             "title": "Link to layer",
-            "desc": "Link two layers matching column names"
+            "desc": "Link two layers with matching column names"
           },
           "sampling": {
             "title": "Sampling",
@@ -403,7 +403,7 @@
         "modal-desc": "Select an existing dataset or connect a new one",
         "navigation": {
           "search": "Search",
-          "search-placeholder": "by name, description or :tag",
+          "search-placeholder": "by name, description, or :tag",
           "connect-dataset": "Connect dataset",
           "shared-with-you": "Shared with you",
           "data-library": "Data library",
@@ -412,19 +412,19 @@
           "create-empty-addLayer": "Add an empty layer",
           "dataset-pluralize": "Dataset |||| Datasets"
         },
-        "create-loading-title": "Creating empty dataset…",
+        "create-loading-title": "Creating an empty dataset…",
         "adding-new-layer": "Adding new layer…",
         "add-layer-error": "Could not add layer",
         "imports": {
           "ask-for-demo": "ask for demo",
           "connector": "connector",
           "demo-email-title": "I am interested in the %{name} connector",
-          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please, contact me to schedule a demo of this feature.",
+          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
           "tab-options-error": {
-            "no-key": "%{name} key is not specified and panel can't be enabled",
-            "not-allowed": "%{name} data source is not available in your plan. Please upgrade",
-            "limits-reached": "You've reached the limits for your account. Please upgrade",
-            "no-credits": "You've reached the available %{name} credits for your account this month"
+            "no-key": "%{name} key is not specified and the panel can't be enabled",
+            "not-allowed": "%{name} data source is not available for your plan. Please upgrade.",
+            "limits-reached": "You've reached the limits for your account. Please upgrade.",
+            "no-credits": "You've reached the available %{name} credits for your account this month."
           },
           "member-pluralize": "member |||| members",
           "item-pluralize": "item |||| items",
@@ -459,14 +459,14 @@
             "found-in": "%{size} %{pluralize} found in %{title}",
             "item-selected": "Item selected",
             "many-more-formats": "many more formats",
-            "no-results-title": "Oouch! There is no results",
+            "no-results-title": "Oouch! There are no results",
             "no-results-desc": "We haven't found any valid file from your account",
-            "state-idle-login": "Log in with your account and select any item.",
-            "state-error": "We are sorry, can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-idle-login": "Login to your account and select any item.",
+            "state-error": "We are sorry that you can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
             "state-token": "Checking Token.",
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
-            "state-selected-sync": "You can also choose when to sync the file.",
+            "state-selected-sync": "You can choose when to sync the file.",
             "state-selected-instagram": "A map containing all your georeferenced photos will be created",
             "state-selected-no-sync": "Sync options are not available.",
             "supported": "supported",
@@ -479,7 +479,7 @@
             "every-day": "Every day",
             "every-week": "Every week",
             "every-month": "Every month",
-            "free-trial": "%{days} days Free trial",
+            "free-trial": "%{days} day free trial",
             "more-features": "more features",
             "upgrade-desc": "Upgrade your account to get sync options and %{features}",
             "upgrade": "upgrade"
@@ -490,8 +490,8 @@
             "credits-left": "%{per}% of your %{remainingFormatted} Twitter credits left",
             "credits-no-limit": "No limits - %{extraTweets} will be charged",
             "extra-tweets": "extra tweets",
-            "fallback-title": "Enable the %{brand} Connector",
-            "fallback-desc": "The %{brand} Connector allows you to map %{brand} activity data related to your Brand, Event or any term you may be interested in.",
+            "fallback-title": "Enable the %{brand} connector",
+            "fallback-desc": "The %{brand} connector allows you to map %{brand} data activity related to your brand, event, or any term you may be interested in.",
             "from-to": "From / to",
             "terms-desc": "Enter up to four search terms using the category fields.",
             "terms-placeholder": "Insert your terms separated by commas",
@@ -502,9 +502,9 @@
           },
           "arcgis": {
             "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CartoDB and mantain it in sync with the source.",
-            "input-placeholder": "Paste here your %{brand} table URL",
+            "input-placeholder": "Paste your %{brand} table URL here",
             "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
-            "import-data": "Import your data from an %{brand} instance",
+            "import-data": "Import your data from a %{brand} instance",
             "sync-options": "Sync options only available for a layer"
           },
           "instagram": {
@@ -516,22 +516,22 @@
           "mailchimp": {
             "campaign-selected": "%{brand} campaign selected",
             "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
-            "map-campaign": "Map your %{brand} Campaigns",
+            "map-campaign": "Map your %{brand} campaigns",
             "state-idle": "Connect your %{brand} account to select any of your campaigns.",
-            "state-error": "We are sorry, It has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
-            "state-token": "Checking %{brand} Token.",
+            "state-error": "We are sorry, there has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking %{brand} token.",
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{brand} campaigns will be displayed in a moment.",
             "state-selected": "Campaign selected."
           },
           "salesforce": {
             "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
-            "input-placeholder": "Paste here your %{brand} URL"
+            "input-placeholder": "Paste your %{brand} URL here"
           }
         },
         "datasets": {
           "item": {
-            "sync-failed": "Sync failed, last attempt was",
+            "sync-failed": "Sync failed, the last attempt was",
             "syncing": "Syncing",
             "synced": "Synced",
             "read": "read",
@@ -584,7 +584,7 @@
         "empty": "No values"
       },
       "operators": {
-        "count-message": "If you select COUNT all columns are selected"
+        "count-message": "If you select 'COUNT' all columns are selected"
       },
       "interval-error": "Value must be between %{minValue} and %{maxValue}",
     },
@@ -603,25 +603,25 @@
         "change-type": {
           "confirm": "ok, change it",
           "cancel": "cancel",
-          "desc": "Maps using this column will be affected, and unconvertible data will be lost. Are you sure?",
-          "error": "Error changing type of column %{columnName}: %{error}",
-          "loading": "Changing the type of %{columnName} column...",
+          "desc": "Maps using this column will be affected and unconvertible data will be lost. Are you sure?",
+          "error": "There was an error changing %{columnName} column: %{error}",
+          "loading": "Changing %{columnName} column...",
           "title": "%{columnName} column will change to %{newType}",
           "success": "Column %{columnName} changed to %{newType}"
         },
         "create": {
           "loading": "Adding new column...",
           "error": "Error adding new column: %{error}",
-          "success": "Column %{columnName} added"
+          "success": "%{columnName} column added"
         },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete it",
           "desc": "Maps using this column will be affected, are you sure you want to delete it?",
-          "error": "Error deleting column %{columnName}: %{error}",
+          "error": "Error deleting %{columnName} column: %{error}",
           "loading": "Removing your column %{columnName}...",
-          "success": "Column %{columnName} deleted",
-          "title": "You are about to delete column %{columnName}"
+          "success": "%{columnName} column deleted",
+          "title": "You are about to delete %{columnName} column "
         },
         "rename": {
           "cancel": "cancel",
@@ -652,11 +652,11 @@
         },
         "error": {
           "title": "There was an error...",
-          "desc": "It was not possible to obtain any result, check the query applied"
+          "desc": "It was not possible to obtain any results, check the query applied"
         },
         "result": {
           "no-page-title": "Ouch! Sorry",
-          "no-page-desc": "This page %{page} doesn't contain any result...",
+          "no-page-desc": "This page %{page} doesn't contain any results...",
           "no-results-title": "There is no data",
           "no-results-desc": "",
           "no-results-button": ""
@@ -744,7 +744,7 @@
       "option": "Rename dataset",
       "cancel": "cancel",
       "confirm": "ok, rename it",
-      "desc": "If you are accessing this dataset via API don't forget to use the new name in your API calls afterwards.",
+      "desc": "If you are accessing this dataset via API, don't forget to use the new name in your API calls afterwards.",
       "error": "Error renaming %{tableName}: %{error}",
       "loading": "Renaming your dataset %{tableName}...",
       "success": "Dataset %{tableName} renamed",
@@ -905,14 +905,14 @@
         "key-columns-desc": "Define how to link them",
         "kilometers": "km",
         "link-layer": "Source col.",
-        "link-layer-desc": "Specify which layer you want to link to this",
+        "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
         "max": "Max",
         "meters": "m",
         "miles": "mi",
         "min": "Min",
-        "neighbours": "Neighbours",
+        "neighbours": "Neighbors",
         "numerator": "Numerator",
         "operation": "Operation",
         "parameters": "Parameters",
@@ -1004,7 +1004,7 @@
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
-          "body": "You just applied analysis to this layer and the SQL passed to only read.",
+          "body": "You just applied analysis to this layer and the SQL passed to reaad only.",
           "accept": "CLOSE"
         },
         "empty-data": {
@@ -1022,7 +1022,7 @@
       "code-mirror": {
         "save": "CMD + S to apply your html.",
         "errors": {
-          "empty": "Template can\'t be empty."
+          "empty": "Template can't be empty."
         }
       },
       "messages": {
@@ -1034,7 +1034,7 @@
       },
     },
     "legend": {
-      "message": "Unfortunately legends are not available yet and they are disabled. But we will add them very soon, stay tuned!"
+      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
     },
     "style": {
       "types": {
@@ -1072,7 +1072,7 @@
         "none": "Your styles were reset, choose new styles for your layer, or get back to your previous style.",
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
-          "body": "You just applied styles with CartoCSS editor. You can continue or clean all styles.",
+          "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
           "accept": "CONTINUE",
           "cancel": "CLEAR"
         }
@@ -1106,7 +1106,7 @@
         "aggregation-dataset": "Admin. level",
         "labels-enabled": {
           "label": "labels",
-          "not-with-animated": "It won't be available with animated"
+          "not-with-animated": "It won't be available with animations"
         },
         "labels-attribute": {
           "label": "column",

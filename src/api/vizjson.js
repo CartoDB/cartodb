@@ -20,6 +20,7 @@ VizJSON.OVERLAY_TYPES = {
   LOADER: 'loader',
   SEARCH: 'search',
   HEADER: 'header',
+  LOGO: 'logo',
   LAYER_SELECTOR: 'layer_selector'
 };
 
@@ -40,6 +41,14 @@ VizJSON.prototype.getOverlayByType = function (overlayType) {
   return _.find(this.overlays, function (overlay) {
     return overlay.type === overlayType;
   });
+};
+
+VizJSON.prototype.addLogoOverlay = function (overlayType) {
+  if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.LOGO)) {
+    this.overlays.push({
+      type: VizJSON.OVERLAY_TYPES.LOGO
+    });
+  }
 };
 
 VizJSON.prototype.addHeaderOverlay = function (showTitle, showDescription, isShareable) {

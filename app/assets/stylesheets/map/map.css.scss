@@ -926,8 +926,12 @@ div.search-result-dropdown {
   cursor: default;
 }
 
-.search-result-row-selected {
+.search-result-row.selected {
   background:#373737;
+}
+
+.search-result-row .found-sub {
+  font-weight: bold;
 }
 
 // Custom styles for Leaflet maps

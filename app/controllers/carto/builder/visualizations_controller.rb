@@ -41,11 +41,15 @@ module Carto
       end
 
       def authors_only
-        render_403 unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
+        unauthorized unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
       end
 
       def editable_visualizations_only
         render_404 unless @visualization.editable?
+      end
+
+      def unauthorized
+        redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: request.params[:id])
       end
     end
   end

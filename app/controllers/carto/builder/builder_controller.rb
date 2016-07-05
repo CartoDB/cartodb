@@ -6,6 +6,10 @@ module Carto
       include BuilderUsersModule
 
       before_filter :builder_users_only
+
+      def unauthorized
+        render_403
+      end
     end
   end
 end

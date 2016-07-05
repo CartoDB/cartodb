@@ -13,6 +13,20 @@ describe Carto::Api::MapcapsController do
     dummy
   end
 
+  let(:state_json) do
+    {
+      "map" => {
+        "center" => [27.68352808378776, -86.30859375],
+        "zoom" => 6
+      },
+      "widgets" => {
+        "8607099f-3740-4b56-bb9d-369aa52ada53" => {
+          "acceptedCategories" => ["Masonry"]
+        }
+      }
+    }
+  end
+
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
 
@@ -53,7 +67,15 @@ describe Carto::Api::MapcapsController do
       mapcaps_url(user_domain: user.subdomain, visualization_id: visualization.id, api_key: user.api_key)
     end
 
-    it 'creates new mapcap' do
+    it 'creates new mapcap with state' do
+      post_json create_mapcap_url, state_json: state_json do |response|
+        response.status.should eq 201
+
+        mapcap_should_be_correct(response)
+      end
+    end
+
+    it 'creates new mapcap without state' do
       post_json create_mapcap_url, {} do |response|
         response.status.should eq 201
 
@@ -65,7 +87,7 @@ describe Carto::Api::MapcapsController do
       max_mapcaps_per_map = Carto::Api::MapcapsController::MAX_MAPCAPS_PER_MAP
 
       (max_mapcaps_per_map + 1).times do
-        post_json create_mapcap_url, {} do |response|
+        post_json create_mapcap_url, state_json: state_json do |response|
           response.status.should eq 201
 
           mapcap_should_be_correct(response)
@@ -84,7 +106,7 @@ describe Carto::Api::MapcapsController do
 
   describe '#index' do
     before(:all) do
-      5.times { Carto::Mapcap.create(visualization_id: @visualization.id) }
+      5.times { Carto::Mapcap.create(visualization_id: @visualization.id, state_json: state_json) }
 
       @mapcaps = Carto::Mapcap.all
     end
@@ -119,7 +141,7 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#show' do
-    before (:all) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
+    before (:all) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id, state_json: state_json) }
     after  (:all) { @mapcap.destroy }
 
     def show_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)
@@ -155,7 +177,7 @@ describe Carto::Api::MapcapsController do
   end
 
   describe '#destroy' do
-    before (:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id) }
+    before (:each) { @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id, state_json: state_json) }
     after  (:each) { @mapcap.destroy if @mapcap }
 
     def destroy_mapcap_url(user: @user, visualization: @visualization, mapcap: @mapcap)

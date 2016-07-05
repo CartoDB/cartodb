@@ -1134,6 +1134,10 @@
       "code-mirror": {
         "save": "CMD + S to apply your query."
       },
+      "notifier": {
+        "sql-error": "Error in SQL query.",
+        "sql-success": "SQL query applied successfully."
+      },
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",

@@ -26,11 +26,13 @@
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "sampling": "Sampling"
+    "sampling": "Sampling",
+    "spatial-markov-trend": "Temporal simulation"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis"
+    "relationship-analysis":"Relationship analysis",
+    "predictive": "Predictive analysis"
   },
   "form-components": {
     "editors": {
@@ -374,6 +376,10 @@
           "sampling": {
             "title": "Sampling",
             "desc": "Return a percentage of your data"
+          },
+          "spatial-markov-trend": {
+            "title": "Temporal simulation",
+            "desc": "Predict trends based on temporal series"
           }
         }
       },
@@ -942,6 +948,8 @@
         "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
+        "spatial-markov-trend-desc": "select the columns with temporal value series",
+        "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
         "workflow": "Workflow"
       },

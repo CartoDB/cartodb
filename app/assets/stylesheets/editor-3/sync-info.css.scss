@@ -23,6 +23,15 @@
     content: '';
   }
 }
+.SyncInfo-message--success {
+  color: $cPublic;
+}
+.SyncInfo-message--failure {
+  color: $cError;
+}
+.SyncInfo-message--syncing {
+  color: #898989;
+}
 .SyncInfo-state {
   display: inline-block;
   width: 10px;

@@ -29,7 +29,8 @@
     "perfect-scrollbar": "0.6.7",
     "queue-async": "^1.0.7",
     "torque.js": "^2.15",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "urijs": "^1.17.1"
   },
   "devDependencies": {
     "autoprefixer-core": "5.2.1",

@@ -1,6 +1,7 @@
 require 'active_record'
 require_relative '../visualization/stats'
 require_relative '../../helpers/embed_redis_cache'
+require_relative './carto_json_serializer'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 
@@ -55,6 +56,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+
+  validates :state, carto_json_symbolizer: true
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }

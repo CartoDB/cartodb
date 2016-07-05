@@ -54,10 +54,6 @@ module.exports = cdb.core.Model.extend({
     for (var key in this.defaultState) {
       var attribute = this.get(key);
       var defaultValue = this.defaultState[key];
-      if (typeof defaultValue === 'function') {
-        defaultValue = defaultValue.call(this);
-      }
-      if (_.isNumber(attribute) && _.isNumber(defaultValue) && Math.abs(attribute - defaultValue) / attribute < 0.10) continue;
       if (typeof defaultValue !== 'undefined' && typeof attribute !== 'undefined' && !_.isEqual(attribute, defaultValue)) {
         state[key] = attribute;
       }

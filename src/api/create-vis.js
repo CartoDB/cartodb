@@ -27,7 +27,7 @@ var createVis = function (el, vizjson, options) {
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
   var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-console.log(options);
+
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
@@ -38,7 +38,6 @@ console.log(options);
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
-  console.log(visModel);
 
   new VisView({ // eslint-disable-line
     el: el,

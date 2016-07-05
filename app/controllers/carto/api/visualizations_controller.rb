@@ -124,16 +124,14 @@ module Carto
       def search
         username = current_user.username
         query = params[:q]
-        mapId = params[:map_id]
-        visId = params[:vis_id]
         query.downcase!
         queryLike = '%' + query + '%'
         queryPrefix = query + ':*'
         queryPrefix.tr!(' ', '+')
 
         layers = Sequel::Model.db.fetch("
-            SELECT id, username, type, name, description, tags, on_map, (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 100000 ELSE pos_tags END)) AS rank FROM (
-              SELECT v.id, u.username, v.type, v.name, v.description, v.tags, false AS on_map,
+            SELECT id, username, type, name, description, tags, (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 100000 ELSE pos_tags END)) AS rank FROM (
+              SELECT v.id, u.username, v.type, v.name, v.description, v.tags,
                 COALESCE(position(? in lower(v.name)), 0) AS pos_name,
                 COALESCE(position(? in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
               FROM visualizations AS v
@@ -149,21 +147,8 @@ module Carto
             ORDER BY rank DESC, type DESC LIMIT 50",
             query, query, username, queryPrefix, queryPrefix, queryLike, queryLike, query
           ).all
-      
-        layersOnMap = Carto::Visualization.find(visId).related_tables.map(&:visualization).map(&:id)
-
-        layers.each do |layer|
-          if layersOnMap.include?(layer[:id]) then
-            layer[:on_map] = true
-          end
-        end
-
-        output = layers.to_json
-        #render :json => output
-
 
         render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
-
       end
 
       private

@@ -62,9 +62,9 @@ module Carto
       def load_state_json
         state_json = params[:state_json]
 
-        @state_json = state_json.present? ? JSON::load(state_json) : {}
-      rescue JSON::ParserError
-        Carto::UnprocesableEntityError
+        @state_json = state_json.present? ? state_json : {}
+
+        raise Carto::UnprocesableEntityError unless @state_json.is_a?(Hash)
       end
 
       MAX_MAPCAPS_PER_MAP = 1

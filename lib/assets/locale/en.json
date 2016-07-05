@@ -1140,7 +1140,7 @@
             "overlay": "overlay"
           }
         },
-        "aggregation-value": "Value",
+        "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
           "help": "In pixels"

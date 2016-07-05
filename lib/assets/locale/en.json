@@ -1137,7 +1137,9 @@
             "color-burn": "color-burn",
             "multiply": "multiply",
             "screen": "screen",
-            "overlay": "overlay"
+            "overlay": "overlay",
+            "src-over": "src-over",
+            "xor": "xor"
           }
         },
         "aggregation-value": "Value",

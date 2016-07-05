@@ -12,9 +12,10 @@
 .Dataset-view {
   @include display-flex();
   @include flex-direction(column);
+  @include flex(1);
   position: relative;
   // Safari has a bug with height: 100%
-  height: 100vh;
+  // height: 100vh;
 }
 .Dataset-viewInfo {
   padding: 19px 25px 0;
@@ -43,4 +44,8 @@
 }
 .Dataset-options {
   border-top: 1px solid $cThirdBackground;
+}
+
+.Dataset-editor {
+  margin: 0 -25px;
 }

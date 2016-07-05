@@ -3,6 +3,7 @@ exclude:
   - 'lib/assets/stylesheets/old_common/**/*.css.scss'
   - 'app/assets/stylesheets/table/table_panel/layer-views-panels/filters_panel.css.scss'
   - 'app/assets/stylesheets/editor-3/codemirror.css.scss'
+  - 'app/assets/stylesheets/editor-3/form-tags.css.scss'
 linters:
   BangFormat:
     enabled: true

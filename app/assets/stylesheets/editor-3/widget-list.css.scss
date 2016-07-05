@@ -129,7 +129,7 @@
   border-top: 1px solid $cSecondaryLine;
   border-bottom: 1px solid $cSecondaryLine;
 }
-.Widget-histogramFake:before {
+.Widget-histogramFake::before {
   position: absolute;
   top: 50%;
   right: 0;

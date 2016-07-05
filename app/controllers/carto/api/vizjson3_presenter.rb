@@ -85,10 +85,7 @@ module Carto
         }
       end
 
-      def calculate_vizjson(https_request: false,
-                            vector: false,
-                            forced_privacy_version: nil,
-                            updated_at: map.viz_updated_at)
+      def calculate_vizjson(https_request: false, vector: false, forced_privacy_version: nil)
         options = default_options.merge(https_request: https_request, vector: vector)
 
         user = @visualization.user
@@ -106,7 +103,7 @@ module Carto
           bounds:         bounds_from(map),
           center:         map.center,
           zoom:           map.zoom,
-          updated_at:     updated_at,
+          updated_at:     @visualization.mapcapped? ? @visualization.latest_mapcap.created_at : map.viz_updated_at,
           layers:         layers_vizjson(options, forced_privacy_version),
           overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
           prev:           @visualization.prev_id,

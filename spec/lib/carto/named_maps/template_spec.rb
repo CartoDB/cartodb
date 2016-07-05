@@ -31,6 +31,12 @@ module Carto
         end
       end
 
+      it 'should have correct Named Maps version' do
+        template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+
+        template_hash[:version].should eq Carto::NamedMaps::Template::NAMED_MAPS_VERSION
+      end
+
       describe '#layers' do
         describe 'carto layers' do
           before(:all) do
@@ -57,6 +63,11 @@ module Carto
 
           it 'should be cartodb type' do
             @template_hash[:layergroup][:layers].second[:type].should eq 'cartodb'
+          end
+
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:options][:id].should eq @carto_layer.id
           end
 
           describe 'with popups' do
@@ -311,6 +322,11 @@ module Carto
             @template_hash[:layergroup][:layers].second[:type].should eq 'torque'
           end
 
+          it 'should contain layer id' do
+            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:options][:id].should eq @torque_layer.id
+          end
+
           describe 'with aggregations' do
             before(:all) do
               @torque_layer.options[:query_wrapper] = 'SELECT manolo FROM (<%= sql %>)'
@@ -447,16 +463,19 @@ module Carto
       end
 
       describe '#layergroup' do
-        it 'should not have any dataview if no widgets are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+        before (:all) { @layergroup_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup] }
+        after  (:all) { @layergroup_hash = nil }
 
-          template_hash[:layergroup][:dataviews].should be_empty
+        it 'should have version according to Map Config' do
+          @layergroup_hash[:version].should eq Carto::NamedMaps::Template::MAP_CONFIG_VERSION
+        end
+
+        it 'should not have any dataview if no widgets are present' do
+          @layergroup_hash[:dataviews].should be_empty
         end
 
         it 'should not have any analysis if no analyses are present' do
-          template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
-
-          template_hash[:layergroup][:analyses].should be_empty
+          @layergroup_hash[:analyses].should be_empty
         end
 
         describe 'dataviews' do

@@ -29,7 +29,8 @@ module CartoDB
       end
 
       def key(visualization_id, https_flag = false, vizjson_version = @vizjson_version)
-        "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:#{https_flag ? 'https' : 'http'}"
+        "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:" \
+        "#{https_flag ? 'https' : 'http'}:#{CartoDB.session_domain}"
       end
 
       def purge(vizs)

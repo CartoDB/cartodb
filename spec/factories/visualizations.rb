@@ -4,14 +4,15 @@ require_dependency 'carto/uuidhelper'
 include Carto::UUIDHelper
 
 FactoryGirl.define do
-
   factory :derived_visualization, class: CartoDB::Visualization::Member do
+    to_create(&:store)
     type 'derived'
     name "visualization #{random_uuid}"
     privacy 'public'
   end
 
   factory :table_visualization, class: CartoDB::Visualization::Member do
+    to_create(&:store)
     type 'table'
     name "visualization_#{random_uuid}"
     privacy 'public'

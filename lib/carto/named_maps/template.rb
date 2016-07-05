@@ -4,6 +4,7 @@ module Carto
   module NamedMaps
     class Template
       NAMED_MAPS_VERSION = '0.0.1'.freeze
+      MAP_CONFIG_VERSION = '1.5.0'.freeze
       NAME_PREFIX = 'tpl_'.freeze
       AUTH_TYPE_OPEN = 'open'.freeze
       AUTH_TYPE_SIGNED = 'token'.freeze
@@ -20,7 +21,7 @@ module Carto
       DATAVIEW_TEMPLATE_OPTIONS = [:column, :aggregation, :aggregationColumn, :aggregation_column, :operation].freeze
 
       def initialize(visualization)
-        # TODO: Remove when it's safe to assume thais confussion wont' happen.
+        # TODO: Remove when it's safe to assume this confussion won't happen.
         raise 'Carto::NamedMaps::Template needs a Carto::Visualization' unless visualization.is_a?(Carto::Visualization)
 
         @visualization = visualization
@@ -34,6 +35,7 @@ module Carto
             version: NAMED_MAPS_VERSION,
             placeholders: placeholders,
             layergroup: {
+              version: MAP_CONFIG_VERSION,
               layers: layers,
               stat_tag: @visualization.id,
               dataviews: dataviews,
@@ -57,9 +59,9 @@ module Carto
       def placeholders
         placeholders = {}
 
-        layers = @visualization.map.layers
+        layers = @visualization.layers
 
-        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto_layer?))
+        last_index, carto_layers_visibility_placeholders = layer_visibility_placeholders(layers.select(&:carto?))
         _, torque_layer_visibility_placeholders = layer_visibility_placeholders(layers.select(&:torque?),
                                                                                 starting_index: last_index)
 
@@ -88,7 +90,7 @@ module Carto
         layers = []
         layer_index = -1 # forgive me for I have sinned
 
-        @visualization.map.named_maps_layers.each do |layer|
+        @visualization.named_map_layers.each do |layer|
           if layer.data_layer?
             layer_index += 1
 
@@ -104,7 +106,7 @@ module Carto
           end
         end
 
-        @visualization.map.torque_layers.each do |layer|
+        @visualization.torque_layers.each do |layer|
           layer_index += 1
           layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
         end
@@ -113,14 +115,14 @@ module Carto
       end
 
       def options_for_plain_basemap_layers(layer_options)
-        layer_options['image'].empty? ? { color: layer_options['color'] } : { imageUrl: layer_options['image'] }
+        layer_options['image'].present? ? { imageUrl: layer_options['image'] } : { color: layer_options['color'] }
       end
 
       def options_for_http_basemap_layers(layer_options)
         options = {}
 
         options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
-        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains']
+        options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains'].present?
 
         options
       end
@@ -141,6 +143,7 @@ module Carto
         layer_options = layer.options
 
         options = {
+          id: layer.id,
           cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
           cartocss_version: layer_options.fetch('style_version')
         }

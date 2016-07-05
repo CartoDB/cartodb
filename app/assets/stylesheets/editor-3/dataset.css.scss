@@ -1,0 +1,46 @@
+// Styles for dataset
+// --------------------------------------------------
+
+@import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
+
+.Dataset {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex(1);
+}
+.Dataset-view {
+  @include display-flex();
+  @include flex-direction(column);
+  position: relative;
+  // Safari has a bug with height: 100%
+  height: 100vh;
+}
+.Dataset-viewInfo {
+  padding: 19px 25px 0;
+  box-sizing: content-box;
+}
+.Dataset-viewInfo .Editor-HeaderInfoEditor {
+  max-width: 400px;
+}
+.Dataset-viewOptions {
+  height: 40px;
+  padding: 0 20px;
+  border-top: 1px solid $cMainLine;
+  background: $cThirdBackground;
+}
+.Dataset-viewTable {
+  @include flex(1);
+  position: relative;
+  width: 100%;
+}
+.Dataset-viewTable .Table--relative {
+  top: 40px;
+}
+.Dataset-options,
+.Dataset-notifier {
+  padding: 0 25px;
+}
+.Dataset-options {
+  border-top: 1px solid $cThirdBackground;
+}

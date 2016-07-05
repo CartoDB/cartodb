@@ -34,6 +34,7 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
 	spec/requests/carto/api/groups_controller_spec.rb \
 	spec/requests/carto/api/grantables_controller_spec.rb \
+	spec/requests/carto/api/infowindow_migrator_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/overlay_presenter_spec.rb \
 	spec/requests/carto/api/presenter_cache_spec.rb \
@@ -46,7 +47,6 @@ WORKING_SPECS_1 = \
 	spec/models/map_spec.rb \
 	spec/models/map/copier_spec.rb \
 	spec/models/visualization/collection_spec.rb \
-	spec/models/visualization/copier_spec.rb \
 	spec/models/visualization/locator_spec.rb \
 	spec/models/visualization/member_spec.rb \
 	spec/models/visualization/name_checker_spec.rb \
@@ -253,6 +253,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
 	spec/requests/carto/admin/mobile_apps_controller_spec.rb \
+	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
@@ -264,6 +265,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
 	spec/lib/carto/named_maps/template_spec.rb \
 	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
+	spec/models/carto/mapcap_spec.rb \
+	spec/requests/carto/api/mapcaps_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
@@ -310,7 +313,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helpe
 
 check: prepare-test-db check-prepared
 check-frontend:
-	grunt test
+	./node_modules/.bin/grunt test
 
 
 # update cartodb.js submodule files

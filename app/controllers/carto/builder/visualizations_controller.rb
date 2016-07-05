@@ -10,7 +10,8 @@ module Carto
 
       ssl_required :show
 
-      before_filter :load_visualization, only: [:show]
+      before_filter :redirect_to_editor_if_forced, only: [:show]
+      before_filter :load_derived_visualization, only: [:show]
       before_filter :authors_only
       before_filter :editable_visualizations_only, only: [:show]
 
@@ -30,17 +31,25 @@ module Carto
 
       private
 
-      def load_visualization
+      def redirect_to_editor_if_forced
+        redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id]) if current_user.force_editor?
+      end
+
+      def load_derived_visualization
         @visualization = load_visualization_from_id_or_name(params[:id])
-        render_404 unless @visualization
+        render_404 unless @visualization && @visualization.derived?
       end
 
       def authors_only
-        render_403 unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
+        unauthorized unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
       end
 
       def editable_visualizations_only
-        render_403 unless @visualization.editable?
+        render_404 unless @visualization.editable?
+      end
+
+      def unauthorized
+        redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: request.params[:id])
       end
     end
   end

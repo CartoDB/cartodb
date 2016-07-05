@@ -13,7 +13,7 @@
   </div>
   <div class="Editor-ListLayer-inner">
     <div class="Editor-ListLayer-title">
-      <h2 class="Editor-ListLayer-titleText CDB-Text CDB-Size-large u-ellipsis js-title"><%- title %></h2>
+      <div class="Editor-ListLayer-titleText js-header"></div>
       <ul class="Editor-HeaderInfo-actions">
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="js-toggle">

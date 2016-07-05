@@ -16,12 +16,22 @@ describe Carto::Builder::VisualizationsController do
       login(@user1)
     end
 
-    it 'returns 404 for non-editor users requests' do
+    it 'redirects to embed for non-editor users requests' do
       @user1.stubs(:has_feature_flag?).with('editor-3').returns(false)
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 404
+      response.status.should eq 302
+      response.location.should end_with builder_visualization_public_embed_path(visualization_id: @visualization.id)
+    end
+
+    it 'redirects to editor if disabled' do
+      @user1.stubs(:builder_enabled).returns(false)
+
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 302
+      response.location.should include '/viz/' + @visualization.id
     end
 
     it 'returns 404 for non-existent visualizations' do
@@ -30,12 +40,40 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 404
     end
 
-    it 'returns 403 for visualizations not writable by user' do
+    it 'returns 404 for non-derived visualizations' do
+      @visualization.type = Carto::Visualization::TYPE_CANONICAL
+      @visualization.save
+      get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
+
+      response.status.should == 404
+    end
+
+    it 'redirects to embed for visualizations not writable by user' do
       @other_visualization = FactoryGirl.create(:carto_visualization)
 
       get builder_visualization_url(id: @other_visualization.id)
 
-      response.status.should == 403
+      response.status.should eq 302
+      response.location.should end_with builder_visualization_public_embed_path(visualization_id: @other_visualization.id)
+    end
+
+    describe 'viewer users' do
+      after(:each) do
+        if @user1.viewer
+          @user1.viewer = false
+          @user1.save
+        end
+      end
+
+      it 'redirected to embed for their visualizations at the builder' do
+        @user1.viewer = true
+        @user1.save
+
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 302
+        response.location.should end_with builder_visualization_public_embed_path(visualization_id: @visualization.id)
+      end
     end
 
     it 'returns visualization' do
@@ -51,7 +89,7 @@ describe Carto::Builder::VisualizationsController do
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 403
+      response.status.should == 404
     end
 
     it 'does not show slide type visualizations' do
@@ -60,7 +98,7 @@ describe Carto::Builder::VisualizationsController do
 
       get builder_visualization_url(id: @visualization.id)
 
-      response.status.should == 403
+      response.status.should == 404
     end
 
     it 'defaults to generate vizjson with vector=false' do

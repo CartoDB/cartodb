@@ -80,7 +80,6 @@ module CartoDB
           dedicated_support: self.dedicated_support?,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
-          arcgis_datasource: self.arcgis_datasource_enabled?,
           google_maps_geocoder_enabled: self.google_maps_geocoder_enabled?,
           google_maps_enabled: self.google_maps_enabled?
         },
@@ -95,7 +94,8 @@ module CartoDB
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
         base_url: self.public_url,
-        needs_password_confirmation: self.needs_password_confirmation?
+        needs_password_confirmation: self.needs_password_confirmation?,
+        viewer: viewer
       }
 
       if self.organization.present?

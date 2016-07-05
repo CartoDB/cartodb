@@ -280,7 +280,7 @@ var Vis = View.extend({
         overlay.show();
       }
 
-      if (type === 'logo' && (options[type] !== undefined || options[type] === true)) {
+      if (type === 'logo' && (options[type] === undefined || options[type] === true)) {
         overlay.show();
       }
 

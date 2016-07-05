@@ -756,17 +756,9 @@ describe Carto::Api::LayerPresenter do
         end
 
         describe 'torque-blend-mode' do
-          it 'turns xor into multiply' do
-            xor_torque_wizard_properties = torque_wizard_properties
-            xor_torque_wizard_properties['properties']['torque-blend-mode'] = 'xor'
-            layer = build_layer_with_wizard_properties(xor_torque_wizard_properties)
-            options = presenter_with_style_properties(layer).to_poro['options']
-            options['style_properties']['properties']['blending'].should eq 'multiply'
-          end
-
-          it 'turns source-over into multiply' do
+          it 'turns source-over into src-over' do
             source_over_torque_wizard_properties = torque_wizard_properties
-            source_over_torque_wizard_properties['properties']['torque-blend-mode'] = 'source-over'
+            source_over_torque_wizard_properties['properties']['torque-blend-mode'] = 'src-over'
             layer = build_layer_with_wizard_properties(source_over_torque_wizard_properties)
             options = presenter_with_style_properties(layer).to_poro['options']
             options['style_properties']['properties']['blending'].should eq 'multiply'

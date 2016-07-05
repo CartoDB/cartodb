@@ -223,6 +223,14 @@ var Vis = View.extend({
       return overlay.order === null ? Number.MAX_VALUE : overlay.order;
     });
 
+    // if logo is not included, let add it :)
+    var overlayNames = _.pluck(overlays, 'type');
+    if (!_.contains(overlayNames, 'logo')) {
+      overlays.push({
+        type: 'logo'
+      });
+    }
+
     // clean current overlays
     while (this.overlays.length !== 0) {
       this.overlays.pop().clean();
@@ -270,6 +278,10 @@ var Vis = View.extend({
 
       if (type === 'search' && options[type] || type === 'search' && opt.display && options[type] === undefined) {
         overlay.show();
+      }
+
+      if (type === 'logo') {
+        overlay[this.model.get('showLogo') ? 'show' : 'hide']();
       }
 
       if (type === 'header') {

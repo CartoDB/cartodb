@@ -201,3 +201,12 @@ $buttonColor: #636D72;
     }
   }
 }
+.CDB-Logo {
+  @include transform(translateX(-50%));
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  width: auto;
+  height: auto;
+  z-index: 10;
+}

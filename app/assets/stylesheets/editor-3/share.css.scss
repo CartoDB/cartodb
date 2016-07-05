@@ -20,6 +20,10 @@
 }
 
 .Share-info {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  height: 30px;
   padding: $baseSize * 4 0 0;
   text-align: center;
 }

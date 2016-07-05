@@ -2,7 +2,7 @@
     <% if (isSelected) { %> is-selected <% } %>
     <% if (isDestructive) { %>
       u-errorTextColor
-    <% } if (isDisabled) { %>
+    <% } else if (isDisabled) { %>
       u-hintTextColor
     <% } else { %>
       u-actionTextColor

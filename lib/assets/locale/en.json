@@ -586,7 +586,8 @@
       "select": {
         "placeholder": "Select a %{keyAttr}",
         "loading": "loading…",
-        "empty": "No values"
+        "empty": "No values",
+        "selected": "%{count} selected"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
@@ -782,6 +783,7 @@
     "maps": {
       "options": {
         "rename": "Rename",
+        "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
       },
@@ -793,6 +795,24 @@
         "error": "Error deleting map %{name}: %{error}",
         "loading": "Removing the map %{name}...",
         "success": "Map %{name} deleted"
+      },
+      "export": {
+        "confirmation": {
+          "confirm": "Ok, export",
+          "cancel": "Cancel",
+          "desc": "This map, and the connected data, will be exported as a .carto file",
+          "title": "Export \"%{name}\""
+        },
+        "download": {
+          "confirm": "Download",
+          "tip": "Tip: Allow pop-ups from CartoDB in your web browser.",
+          "desc": "Click Download to begin the .carto file download.",
+          "title": "Ready to Download"
+        },
+        "error": {
+          "title": "An error occured while exporting your map",
+          "desc": "Please try again. If the problem persists, please contact support"
+        }
       },
       "rename": {
         "loading": "Renaming map...",
@@ -1136,10 +1156,12 @@
             "color-burn": "color-burn",
             "multiply": "multiply",
             "screen": "screen",
-            "overlay": "overlay"
+            "overlay": "overlay",
+            "src-over": "src-over",
+            "xor": "xor"
           }
         },
-        "aggregation-value": "Value",
+        "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
           "help": "In pixels"

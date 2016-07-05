@@ -69,14 +69,32 @@ describe('create-dashboard', function () {
 
       createDashboard(this.selectorId, this.vizJSON, {}, callback);
 
-      // visjson is loaded into the vis
+      // visjson is loaded into the vis and map instantiation succeeded
       this.visMock.trigger('load', this.visMock);
+      this.visMock.instantiateMap.calls.argsFor(0)[0].success();
 
       expect(callback).toHaveBeenCalled();
       var error = callback.calls.argsFor(0)[0];
       var dashboard = callback.calls.argsFor(0)[1];
 
       expect(error).toBe(null);
+      expect(dashboard instanceof APIDashboard).toBeTruthy();
+    });
+
+    it('should return an API dashboard object and error if there was an error', function () {
+      var callback = jasmine.createSpy('callback');
+
+      createDashboard(this.selectorId, this.vizJSON, {}, callback);
+
+      // visjson is loaded into the vis and map instantiation failed
+      this.visMock.trigger('load', this.visMock);
+      this.visMock.instantiateMap.calls.argsFor(0)[0].error();
+
+      expect(callback).toHaveBeenCalled();
+      var error = callback.calls.argsFor(0)[0];
+      var dashboard = callback.calls.argsFor(0)[1];
+
+      expect(error).not.toBe(null);
       expect(dashboard instanceof APIDashboard).toBeTruthy();
     });
 

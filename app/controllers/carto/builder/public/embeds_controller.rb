@@ -19,11 +19,7 @@ module Carto
         def show
           @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
 
-          if request.query_parameters[:state]
-            render 'show'
-          else
-            redirect_to builder_visualization_public_embed_url(state: @state_json)
-          end
+          render 'show'
         end
 
         def show_protected

@@ -1142,7 +1142,7 @@
             "xor": "xor"
           }
         },
-        "aggregation-value": "Value",
+        "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",
           "help": "In pixels"

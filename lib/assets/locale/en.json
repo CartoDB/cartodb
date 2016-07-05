@@ -749,6 +749,7 @@
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
+    "unpublished": "Map not published yet",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",

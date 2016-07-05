@@ -1,6 +1,6 @@
 <div class="Editor-HeaderInfo-inner">
   <div class="Editor-HeaderInfo-title u-bSpace--m u-flex u-alignCenter">
-    <% if (isSync) { %>
+    <% if (isSync && isOwner) { %>
       <span class="SyncInfo-state SyncInfo-state--<%- syncState %> u-rSpace--m js-syncState"></span>
     <% } %>
     <div class="Editor-HeaderInfo-titleText js-name">

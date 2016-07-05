@@ -809,6 +809,8 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "hide": "Hide layer",
+        "show": "Show layer"
       },
       "rename": {
         "loading": "Renaming layer...",
@@ -1029,6 +1031,11 @@
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
     },
@@ -1074,6 +1081,11 @@
           "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
           "accept": "CONTINUE",
           "cancel": "CLEAR"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
       "components": {

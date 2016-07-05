@@ -38,7 +38,7 @@ module Carto
       end
 
       def authors_only
-        render_403 unless !current_user.nil? && @canonical_visualization.is_writable_by_user(current_user)
+        unauthorized unless current_user && @canonical_visualization.is_writable_by_user(current_user)
       end
 
       def load_user_table
@@ -48,6 +48,10 @@ module Carto
 
       def editable_visualizations_only
         render_404 unless @canonical_visualization.editable?
+      end
+
+      def unauthorized
+        redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id])
       end
     end
   end

@@ -20,7 +20,7 @@ $sLabel-width: 140px;
 .FormAccount-title {
   display: inline-block;
   width: 100%;
-  margin: 30px 0 24px 0;
+  margin: 30px 0 28px 0;
 }
 .FormAccount-titleHeader {
   display: block;
@@ -254,19 +254,19 @@ $sLabel-width: 140px;
 }
 // Sizes
 .FormAccount-input--totalwidth {
-  width: 100%;
+  width: 100% !important;
 }
 .FormAccount-input--longer {
-  width: 434px;
+  width: 434px !important;
 }
 .FormAccount-input--long {
-  width: 354px;
+  width: 354px !important;
 }
 .FormAccount-input--med {
-  min-width: 274px;
+  width: 274px !important;
 }
 .FormAccount-input--short {
-  width: 114px;
+  width: 114px !important;
 }
 // Types
 .FormAccount-input.has-icon {
@@ -395,7 +395,6 @@ $sLabel-width: 140px;
   @include flex-direction(column);
   @include align-items(baseline, baseline);
   @include justify-content(space-between, justify);
-  padding-top: 10px;
 }
 .FormAccount-avatarPreview {
   @include display-flex();
@@ -436,8 +435,8 @@ $sLabel-width: 140px;
 }
 .FormAccount-avatar .input-group {
   position: absolute;
-  top: 10px;
-  left: 120px;
+  top: 14px;
+  left: 114px;
 }
 .FormAccount-avatar .form-control {
   display: none;
@@ -452,8 +451,8 @@ $sLabel-width: 140px;
   position: absolute;
   top: 0;
   left: 0;
-  width: 85px;
-  margin-left: 2px;
+  width: 120px;
+  font-size: 12px;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkHover;
@@ -601,6 +600,7 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
+  line-height: 22px;
 }
 .FormAccount-footerIcon {
   width: 20px;

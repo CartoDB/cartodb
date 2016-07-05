@@ -62,7 +62,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Display name</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :display_name, :class => "CDB-InputText CDB-Text" %>
+          <%= f.text_field :display_name, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <p class="CDB-Text CDB-Size-small u-altTextColor">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>
@@ -74,7 +74,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Website</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :website, :class => "CDB-InputText CDB-Text" %>
+          <%= f.text_field :website, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -86,7 +86,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Description</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+          <%= f.text_area :description, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -98,7 +98,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Twitter username</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :twitter_username, :class => "CDB-InputText CDB-Text" %>
+          <%= f.text_field :twitter_username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -110,7 +110,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Disqus shortname</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :discus_shortname, :class => "CDB-InputText CDB-Text", :placeholder => "If empty, CartoDB will moderate them for you" %>
+          <%= f.text_field :discus_shortname, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <p class="CDB-Text CDB-Size-small u-altTextColor">Be notified by new comments in your pages</p>
           </div>
@@ -122,7 +122,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Internal support email</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :admin_email, :class => "CDB-InputText CDB-Text", :placeholder => "if empty, we will use your email" %>
+          <%= f.text_field :admin_email, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :placeholder => "if empty, we will use your email" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <p class="CDB-Text CDB-Size-small u-altTextColor">Email you will use to give support to your users</p>
           </div>
@@ -134,7 +134,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Default new user quota</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>
               <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>

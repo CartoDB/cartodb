@@ -4,12 +4,13 @@
 
 .UserRoleIndicator {
   display: inline-block;
-  height: 18px;
+  height: 16px;
   padding: 0 8px;
   border-width: 1px;
   border-style: solid;
   border-radius: 2px;
   background: $cWhite;
+  vertical-align: bottom;
 }
 
 .SettingsDropdown .UserRoleIndicator {

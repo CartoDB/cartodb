@@ -47,14 +47,13 @@
 .SideMenu-typeLink {
   display: inline-block;
   font-size: 14px;
-  color: $cTypography-link;
+  color: #1181FB;
   background: transparent;
   border: none;
   outline: none;
 
   &:hover {
-    color: $cTypography-linkHover;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 .SideMenu-typeLink.is-selected {

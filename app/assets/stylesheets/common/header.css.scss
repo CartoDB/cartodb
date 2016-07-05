@@ -45,6 +45,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   white-space: nowrap;
   overflow: hidden;
   vertical-align: bottom;
+  font-family: 'OpenSans'
 }
 .Header-navigationItem {
   margin-left: $sMargin-section;
@@ -65,19 +66,9 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 .Header-navigationBreadcrumbLink {
   color: $cWhite;
 
-  &:hover {
-    color: white;
-    text-decoration: underline;
-    &:after { border-top-color: white }
-  }
   &.is-disabled {
-    color: rgba(white, 0.6);
-
-    &:hover {
-      color: rgba(white, 0.6);
-      text-decoration: none;
-      cursor: default;
-    }
+    color: rgba(white, 0.8);
+    cursor: default;
   }
 }
 .Header-settingsList {
@@ -107,10 +98,11 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   }
 }
 .Header-settingsLink.Header-settingsLink--dashboard {
-  color: rgba(#fff, .6);
+  color: #FFF;
+  font-family: 'OpenSans-Semibold';
 }
 .Header-settingsLink.Header-settingsLink--dashboard:hover {
-  color: #fff;
+  text-decoration: underline;
 }
 .Header-darrow {
   position: relative;

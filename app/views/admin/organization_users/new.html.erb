@@ -26,12 +26,12 @@
           <ul class="Filters-group CDB-Text CDB-Size-medium">
             <li class="u-flex u-alignCenter">
               <a href="<%= CartoDB.url(self, 'organization') %>" class="u-actionTextColor u-flex u-alignCenter">
-                <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
             <li class="Filters-typeItem">
               <div class="FormAccount-title">
-                <p class="CDB-Text CDB-Size-medium u-mainTextColor">New user</p>
+                <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New user</p>
               </div>
             </li>
           </ul>
@@ -42,5 +42,7 @@
     <%= render partial: 'form' %>
   </div>
 </div>
+
+
 
 <%= render 'admin/shared/footer' %>

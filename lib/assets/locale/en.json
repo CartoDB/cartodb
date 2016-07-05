@@ -25,6 +25,7 @@
     "georeference": "Georeference",
     "intersection": "Intersection",
     "kmeans": "Cluster",
+    "merge": "Merge",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "sampling": "Sampling",
@@ -361,6 +362,10 @@
           "filter": {
             "title": "Filter",
             "desc": "Filter your rows depending on the values of a column"
+          },
+          "merge": {
+            "title": "Merge",
+            "desc": "Merge two layers"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -879,6 +884,10 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "keep-columns": "Select the columns you want to keep",
+        "foreign-keys": "Foreign Keys",
+        "no-coincidence": "When no coincidence no row will be added",
+        "columns": "Columns",
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -928,6 +937,10 @@
         "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
+        "left": 'Left',
+        "right": 'Right',
+        "inner": 'Inner',
+        "join-type": 'Join Type',
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",

@@ -930,6 +930,10 @@
         "add-layer": "Add layer",
         "delete": "Delete"
       },
+      "notifier": {
+        "layer-added": "Layer %{name} was added successfully."
+      },
+
       "basemap": {
         "title-label": "Basemap",
         "by": "by",

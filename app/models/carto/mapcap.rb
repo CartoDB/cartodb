@@ -13,14 +13,16 @@ module Carto
 
     serialize :ids_json, ::Carto::CartoJsonSerializer
     serialize :export_json, ::Carto::CartoJsonSerializer
+    serialize :state_json, ::Carto::CartoJsonSerializer
 
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
-    before_validation :generate_export_json, :generate_ids_json
+    before_validation :generate_export_json, :generate_ids_json, :ensure_state_json
 
     validates :ids_json, carto_json_symbolizer: true
     validates :export_json, carto_json_symbolizer: true
+    validates :state_json, carto_json_symbolizer: true
 
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_hash_export(export_json)
@@ -47,6 +49,10 @@ module Carto
         map_id: visualization.map.id,
         layers: visualization.layers.map { |layer| { layer_id: layer.id, widgets: layer.widgets.map(&:id) } }
       }
+    end
+
+    def ensure_state_json
+      self.state_json = {} if state_json.blank?
     end
 
     def repopulate_ids(regenerated_visualization)

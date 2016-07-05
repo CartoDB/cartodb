@@ -11,7 +11,8 @@ module Carto
 
       before_filter :builder_users_only,
                     :load_visualization,
-                    :owners_only
+                    :owners_only,
+                    :load_state_json
       before_filter :load_mapcap, only: [:show, :destroy]
 
       after_filter :ensure_only_one_mapcap, only: :create
@@ -27,7 +28,7 @@ module Carto
       end
 
       def create
-        @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+        @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id, state_json: @state_json)
 
         render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro, 201)
       end
@@ -56,6 +57,14 @@ module Carto
 
       def owners_only
         raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
+      end
+
+      def load_state_json
+        state_json = params[:state_json]
+
+        @state_json = state_json.present? ? state_json : {}
+
+        raise Carto::UnprocesableEntityError unless @state_json.is_a?(Hash)
       end
 
       MAX_MAPCAPS_PER_MAP = 1

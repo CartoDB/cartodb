@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.32",
+  "version": "3.28.33",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1125,7 +1125,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#57cdabc913ee1fa3e0d612dc2912b31fc51959be",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#9b68a6a7fd04aba29ef1889563b5ba11601a6f5f",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1235,11 +1235,6 @@
           "version": "3.5.8",
           "from": "d3@3.5.8",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.8.tgz"
-        },
-        "urijs": {
-          "version": "1.18.1",
-          "from": "urijs@>=1.17.1 <2.0.0",
-          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.18.1.tgz"
         }
       }
     },
@@ -1251,7 +1246,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#57cdabc913ee1fa3e0d612dc2912b31fc51959be",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#9b68a6a7fd04aba29ef1889563b5ba11601a6f5f",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1388,14 +1383,19 @@
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
-      "version": "2.15.1",
-      "from": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz",
-      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
+      "version": "2.15.2",
+      "from": "torque.js@2.15.2",
+      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.2.tgz"
     },
     "underscore": {
       "version": "1.8.3",
       "from": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz",
       "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
+    },
+    "urijs": {
+      "version": "1.18.1",
+      "from": "urijs@1.18.1",
+      "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.18.1.tgz"
     }
   }
 }

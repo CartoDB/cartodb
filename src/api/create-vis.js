@@ -27,16 +27,18 @@ var createVis = function (el, vizjson, options) {
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
   var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-
+console.log(options);
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: vizjson.auth_tokens && vizjson.auth_tokens.length && vizjson.auth_tokens[0],
     showLegends: options.legends === true || vizjson.legends === true,
+    showLogo: options.logo === undefined || options.logo === true || vizjson.logo === true,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
+  console.log(visModel);
 
   new VisView({ // eslint-disable-line
     el: el,

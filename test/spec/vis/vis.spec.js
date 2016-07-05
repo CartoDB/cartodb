@@ -830,94 +830,50 @@ describe('vis/vis', function () {
     });
   });
 
-  describe('.done', function () {
-    it('should invoke the callback once when model triggers the `ok` events and state is `init`', function () {
-      var callback = jasmine.createSpy('callback');
-      this.vis.done(callback);
+  describe('.setOk', function () {
+    it('should unset the error attribute', function () {
+      this.vis.set('error', 'error');
 
-      this.vis.trigger('ok');
+      this.vis.setOk();
 
-      expect(callback).toHaveBeenCalled();
-      callback.calls.reset();
-
-      this.vis.trigger('ok');
-
-      expect(callback).not.toHaveBeenCalled();
+      expect(this.vis.get('error')).toBeUndefined();
     });
 
-    it('should NOT invoke the callback when model triggers `ok` event and state is NOT `init`', function () {
+    it('should invoke the done callback only the first time', function () {
       var callback = jasmine.createSpy('callback');
       this.vis.done(callback);
-      this.vis.setError(); // Map couldn't be previously instantiated
 
-      this.vis.trigger('ok'); // Everything is fine now
+      this.vis.setOk();
 
-      // Done callback is not invoked cause error callback was called before
+      expect(callback).toHaveBeenCalled();
+
+      callback.calls.reset();
+
+      this.vis.setOk();
+
       expect(callback).not.toHaveBeenCalled();
     });
   });
 
-  describe('state', function () {
-    it("should be initialized to the 'init' state", function () {
-      expect(this.vis.get('state')).toEqual('init');
+  describe('.setError', function () {
+    it('should set the error attribute', function () {
+      this.vis.setError('something');
+
+      expect(this.vis.get('error')).toEqual('something');
     });
 
-    describe('.setOk', function () {
-      it("should change state to 'ok'", function () {
-        this.vis.setOk();
-        expect(this.vis.get('state')).toEqual('ok');
-      });
-
-      it("should trigger 'ok' event", function () {
-        var callback = jasmine.createSpy('callback');
-        this.vis.on('ok', callback);
-
-        this.vis.setOk();
-
-        expect(callback).toHaveBeenCalledWith();
-      });
-    });
-
-    describe('.setError', function () {
-      it("should change state to 'error'", function () {
-        this.vis.setError();
-        expect(this.vis.get('state')).toEqual('error');
-      });
-
-      it("should trigger 'error' event", function () {
-        var callback = jasmine.createSpy('callback');
-        this.vis.on('error', callback);
-
-        this.vis.setError('something went wrong!');
-
-        expect(callback).toHaveBeenCalledWith('something went wrong!');
-      });
-    });
-  });
-
-  describe('.error', function () {
-    it('should invoke the callback when model triggers the first `error` event and state is `init`', function () {
+    it('should invoke the error callback only the first time', function () {
       var callback = jasmine.createSpy('callback');
       this.vis.error(callback);
 
-      this.vis.trigger('error');
+      this.vis.setError('something');
 
       expect(callback).toHaveBeenCalled();
+
       callback.calls.reset();
 
-      this.vis.trigger('error');
+      this.vis.setError('something');
 
-      expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('should NOT invoke the callback when model triggers `error` event and state is NOT `init`', function () {
-      var callback = jasmine.createSpy('callback');
-      this.vis.error(callback);
-      this.vis.setOk(); // Map was correctly instantiated
-
-      this.vis.trigger('error'); // There are some errors now
-
-      // Error callback is not invoked cause done callback was called before
       expect(callback).not.toHaveBeenCalled();
     });
   });

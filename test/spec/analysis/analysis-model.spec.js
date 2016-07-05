@@ -288,24 +288,18 @@ describe('src/analysis/analysis-model.js', function () {
   });
 
   describe('.setOk', function () {
-    it("should trigger 'ok' event", function () {
-      var callback = jasmine.createSpy('callback');
-      this.analysisModel.on('ok', callback);
-
+    it('should unset error attribute', function () {
+      this.analysisModel.set('error', 'error');
       this.analysisModel.setOk();
-
-      expect(callback).toHaveBeenCalled();
+      expect(this.analysisModel.get('error')).toBeUndefined();
     });
   });
 
   describe('.setError', function () {
-    it("should trigger 'error' event", function () {
-      var callback = jasmine.createSpy('callback');
-      this.analysisModel.on('error', callback);
+    it('should set error attribute', function () {
+      this.analysisModel.setError('wadus');
 
-      this.analysisModel.setError();
-
-      expect(callback).toHaveBeenCalled();
+      expect(this.analysisModel.get('error')).toEqual('wadus');
     });
   });
 });

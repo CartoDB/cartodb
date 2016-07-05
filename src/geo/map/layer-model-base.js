@@ -52,11 +52,11 @@ var MapLayer = Model.extend({
   // INTERNAL CartoDB.js METHODS
 
   setOk: function () {
-    this.trigger('ok');
+    this.unset('error');
   },
 
   setError: function (error) {
-    this.trigger('error', error);
+    this.set('error', error);
   },
 
   /*

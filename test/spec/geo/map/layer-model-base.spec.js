@@ -63,4 +63,20 @@ describe('geo/map/layer-model-base.js', function () {
       expect(this.layer.get('visible')).toBeFalsy();
     });
   });
+
+  describe('.setOk', function () {
+    it('should unset error attribute', function () {
+      this.layer.set('error', 'error');
+      this.layer.setOk();
+      expect(this.layer.get('error')).toBeUndefined();
+    });
+  });
+
+  describe('.setError', function () {
+    it('should set error attribute', function () {
+      this.layer.setError('wadus');
+
+      expect(this.layer.get('error')).toEqual('wadus');
+    });
+  });
 });

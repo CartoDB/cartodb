@@ -39,11 +39,11 @@ module.exports = Model.extend({
   },
 
   setOk: function () {
-    this.trigger('ok');
+    this.unset('error');
   },
 
   setError: function (error) {
-    this.trigger('error', error);
+    this.set('error', error);
   },
 
   _initBinds: function () {

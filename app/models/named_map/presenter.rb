@@ -99,17 +99,25 @@ module CartoDB
       def data_for_carto_layer(layer_vizjson)
         # TODO: this id will probably be removed from named maps
         data = {
-            id: layer_vizjson[:id],
-            layer_name: layer_vizjson[:options][:layer_name],
-            interactivity: layer_vizjson[:options][:interactivity],
-            visible: layer_vizjson[:visible]
-          }
+          id: layer_vizjson[:id],
+          layer_name: layer_vizjson[:options][:layer_name],
+          interactivity: layer_vizjson[:options][:interactivity],
+          visible: layer_vizjson[:visible]
+        }
 
         vizjson_infowindow = layer_vizjson[:infowindow]
-        data[:infowindow] = vizjson_infowindow if vizjson_infowindow.present? && vizjson_infowindow[:fields]
+        vizjson_infowindow_fields = vizjson_infowindow['fields']
+
+        if vizjson_infowindow.present? && vizjson_infowindow_fields && !vizjson_infowindow_fields.empty?
+          data[:infowindow] = vizjson_infowindow
+        end
 
         vizjson_tooltip = layer_vizjson[:tooltip]
-        data[:tooltip] = vizjson_tooltip if vizjson_tooltip.present? && vizjson_tooltip[:fields]
+        vizjson_tooltip_fields = vizjson_tooltip['fields']
+
+        if vizjson_tooltip.present? && vizjson_tooltip_fields && !vizjson_tooltip_fields.empty?
+          data[:tooltip] = vizjson_tooltip
+        end
 
         vizjson_legend = layer_vizjson[:legend]
         data[:legend] = vizjson_legend if vizjson_legend.present? && vizjson_legend.fetch('type') != 'none'

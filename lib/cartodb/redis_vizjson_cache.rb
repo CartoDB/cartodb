@@ -42,7 +42,7 @@ module CartoDB
       def purge_ids(ids)
         return unless ids.count > 0
         keys = VIZJSON_VERSION_KEY.keys.map { |vizjson_version|
-          Cartodb.config[:vizjson_cache_domains].map { |domain|
+          Cartodb.config.fetch(:vizjson_cache_domains, [CartoDB.session_domain]).map { |domain|
             ids.map { |id| [key(id, false, vizjson_version), key(id, true, vizjson_version, domain)] }.flatten
           }.flatten
         }.flatten

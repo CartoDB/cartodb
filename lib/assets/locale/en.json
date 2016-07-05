@@ -18,19 +18,22 @@
   },
   "analyses": {
     "area-of-influence": "Area of influence",
+    "centroid": "Centroid",
     "cluster": "Cluster",
+    "filter": "Filter",
+    "filter-by-node-column": "Link to layer analysis",
+    "georeference": "Georeference",
     "intersection": "Intersection",
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "filter": "Filter",
-    "kmeans": "Cluster",
-    "filter-by-node-column": "Link to layer",
-    "sampling": "Sampling"
+    "sampling": "Sampling",
+    "spatial-markov-trend": "Temporal simulation"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis"
+    "relationship-analysis":"Relationship analysis",
+    "predictive": "Predictive analysis"
   },
   "form-components": {
     "editors": {
@@ -287,7 +290,7 @@
         "update-btn": "UPDATE",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "last-version": "The last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "unpublished": "Your map is not published yet.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
           "title": "Get the link",
@@ -347,6 +350,10 @@
             "title": "Point in polygon",
             "desc": "Analyze points in polygon (or vice versa)"
           },
+          "georeference": {
+            "title": "Georeference",
+            "desc": "Transform your data into coordinates"
+          },
           "intersection": {
             "title": "Intersection",
             "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
@@ -363,8 +370,8 @@
             "title": "Cluster",
             "desc": "Group points by proximity"
           },
-          "weighted-centroid": {
-            "title": "Weighted centroid",
+          "centroid": {
+            "title": "Centroid",
             "desc": "Calculate the centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
@@ -374,6 +381,10 @@
           "sampling": {
             "title": "Sampling",
             "desc": "Return a percentage of your data"
+          },
+          "spatial-markov-trend": {
+            "title": "Temporal simulation",
+            "desc": "Predict trends based on temporal series"
           }
         }
       },
@@ -575,7 +586,8 @@
       "select": {
         "placeholder": "Select a %{keyAttr}",
         "loading": "loading…",
-        "empty": "No values"
+        "empty": "No values",
+        "selected": "%{count} selected"
       },
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
@@ -749,6 +761,7 @@
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
+    "unpublished": "Map not published yet",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
@@ -827,6 +840,8 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "hide": "Hide layer",
+        "show": "Show layer"
       },
       "rename": {
         "loading": "Renaming layer...",
@@ -882,24 +897,26 @@
         "click": "Click",
         "hover": "Hover"
       },
-      "aggregate-functions": {
-        "avg": "AVG",
-        "count": "COUNT",
-        "max": "MAX",
-        "min": "MIN",
-        "sum": "SUM"
-      },
       "analysis-form": {
+        "admin-region": "Admin. Region",
+        "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
+        "aggregate-by": "Aggregate by",
+        "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
         "by": "By",
         "by-bike": "bike",
         "by-car": "car",
         "by-walk": "walk",
+        "categorize-by": "Categorize by",
         "category-column": "Category column",
+        "city": "City",
+        "city-help": "In which column are your city names stored?",
         "clusters-num": "# Clusters",
         "column": "Column",
+        "country": "Country",
+        "country-help": "In which column are your country names stored?",
         "create-btn": "Create",
         "data-values": "Data values",
         "define-columns": "Define column to find similarities with",
@@ -910,21 +927,32 @@
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "Linked layer col.",
+        "georeference-admin-region": "Admin. Regions",
+        "georeference-city": "City names",
+        "georeference-ip-address": "IP Addresses",
+        "georeference-long-lat": "Lon/Lat Columns",
+        "georeference-postal-code": "Postal Codes",
+        "georeference-street-address": "Street Addresses",
         "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
         "intact": "Intact",
+        "ip-address": "Col. IP AD.",
+        "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
         "key-columns-desc": "Define how to link them",
         "kilometers": "km",
+        "latitude": "Latitude",
         "link-layer": "Source col.",
         "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
+        "longitude": "Longitude",
         "max": "Max",
         "meters": "m",
         "miles": "mi",
         "min": "Min",
+        "mode": "Mode",
         "neighbours": "Neighbors",
         "numerator": "Numerator",
         "operation": "Operation",
@@ -934,27 +962,39 @@
         "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
         "points_source": "Point source",
         "polygons_source": "Polygon source",
+        "postal-code": "Postal Code",
+        "postal-code-help": "In which column are your postal codes stored?",
         "radius": "Radius",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data ",
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
         "source": "Source",
         "source-column": "Source column",
+        "state": "State",
+        "state-help": "In which column are your state names stored?",
+        "street-address": "COL. Street AD.",
+        "street-address-help": "In which column are your street addresses stored?",
         "target": "Target layer",
         "time": "Time",
         "top-range": "Top range",
         "tracts": "Tracts",
+        "tune-analysis": "Tune your analysis",
+        "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
         "type": "Type",
         "value": "Value",
+        "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "workflow": "Workflow",
-        "sampling": "Sampling",
-        "sampling-desc": "Select a sample of the data",
-        "sampling-rate": "% of data "
+        "spatial-markov-trend-desc": "select the columns with temporal value series",
+        "spatial-markov-trend-time-columns": "time columns",
+        "weighted-by": "Weighted by",
+        "workflow": "Workflow"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1041,6 +1081,11 @@
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
     },
@@ -1086,6 +1131,11 @@
           "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
           "accept": "CONTINUE",
           "cancel": "CLEAR"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
       "components": {

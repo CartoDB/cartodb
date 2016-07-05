@@ -55,6 +55,24 @@ describe Carto::Builder::VisualizationsController do
       response.status.should == 403
     end
 
+    describe 'viewer users' do
+      after(:each) do
+        if @user1.viewer
+          @user1.viewer = false
+          @user1.save
+        end
+      end
+
+      it 'get 403 for their visualizations at the builder' do
+        @user1.viewer = true
+        @user1.save
+
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 403
+      end
+    end
+
     it 'returns visualization' do
       get builder_visualization_url(id: @visualization.id)
 

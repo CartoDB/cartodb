@@ -12,9 +12,11 @@
           <li class="CDB-Shape-DatasetItem"></li>
         </ul>
       </div>
-      <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
-        <a href="#" title="<%- title %>" class="Editor-headerLayerName"><%- title %></a>
-      </p>
+      <% if (isTableSource) { %>
+        <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
+          <a href="<%- url %>" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
+        </p>
+      <% } %>
     </div>
   </div>
 

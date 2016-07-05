@@ -37,7 +37,7 @@ describe SignupController do
     it 'returns 200 for organizations without signup_page_enabled but with a valid invitation' do
       @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
       owner = Carto::User.find(@fake_organization.owner.id)
-      invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!')
+      invitation = Carto::Invitation.create_new(owner, ['wadus@wad.us'], 'Welcome!', false)
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url(invitation_token: invitation.token('wadus@wad.us'), email: 'wadus@wad.us')
       response.status.should == 200
@@ -159,7 +159,7 @@ describe SignupController do
         with(::Resque::UserJobs::Signup::NewUser, anything, anything, anything).
         never
       invited_email = 'invited_user@whatever.com'
-      invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'W!', false)
       invitation.save
 
       host! "#{@organization.name}.localhost.lan"
@@ -175,7 +175,7 @@ describe SignupController do
 
     it 'returns 400 if invitation token is for a different organization' do
       invited_email = 'invited_user@whatever.com'
-      invitation = Carto::Invitation.create_new(Carto::User.find(@org_2_user_owner.id), [invited_email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(Carto::User.find(@org_2_user_owner.id), [invited_email], 'W!', false)
       invitation.save
 
       ::Resque.expects(:enqueue).
@@ -194,7 +194,7 @@ describe SignupController do
 
     it 'triggers creation without validation email spending an invitation even if mail domain is not whitelisted' do
       invited_email = 'invited_user@whatever.com'
-      invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(Carto::User.find(@org_user_owner.id), [invited_email], 'W!', false)
       invitation.save
 
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)

@@ -3,7 +3,6 @@
 .UserRoleIndicator {
   display: inline-block;
   height: 18px;
-  margin-left: 4px;
   padding: 0 8px;
   border-width: 1px;
   border-style: solid;
@@ -18,4 +17,8 @@
   &.Viewer {
     color: #979EA1;
   }
+}
+
+.SettingsDropdown .UserRoleIndicator {
+  margin-right: 10px;
 }

@@ -255,7 +255,7 @@ var VisModel = Backbone.Model.extend({
   instantiateMap: function (options) {
     options = options || {};
     this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
-    this.map.instantiateMap();
+    this.map.instantiateMap(options);
   },
 
   invalidateSize: function () {

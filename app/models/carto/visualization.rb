@@ -148,7 +148,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_writable_by_user(user)
-    user_id == user.id || has_write_permission?(user)
+    (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 
   def varnish_key

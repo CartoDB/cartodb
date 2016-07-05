@@ -103,19 +103,24 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       vis.centerMapToOrigin();
     }
 
-    vis.done(function () {
-      callback && callback(null, {
-        dashboardView: dashboardView,
-        widgets: widgetsService,
-        vis: vis
-      });
+    vis.instantiateMap({
+      success: function () {
+        callback && callback(null, {
+          dashboardView: dashboardView,
+          widgets: widgetsService,
+          vis: vis
+        });
+      },
+      error: function () {
+        var error = new Error('Map instantiation failed');
+        console.log(error);
+        callback && callback(error, {
+          dashboardView: dashboardView,
+          widgets: widgetsService,
+          vis: vis
+        });
+      }
     });
-
-    vis.error(function (error) {
-      callback && callback(error);
-    });
-
-    vis.instantiateMap();
   });
 };
 
@@ -129,16 +134,14 @@ module.exports = function (selector, vizJSON, opts, callback) {
 
   function _load (vizJSON) {
     createDashboard(selector, vizJSON, opts, function (error, dashboard) {
-      if (error) {
-        throw new Error('Error creating dashboard: ' + error);
-      }
       var dash = new Dashboard(dashboard);
       if (opts.share_urls) {
         dash.onStateChanged(_.debounce(function (state, url) {
           window.history.replaceState('Object', 'Title', url);
         }, 500));
       }
-      callback && callback(null, dash);
+
+      callback && callback(error, dash);
     });
   }
 

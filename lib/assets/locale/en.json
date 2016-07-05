@@ -289,7 +289,7 @@
         "update-btn": "UPDATE",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "last-version": "The last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "unpublished": "Your map is not published yet.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
         "get-link": {
           "title": "Get the link",
@@ -755,6 +755,7 @@
     "map": "map",
     "map_name": "%{name} map",
     "published": "Published %{when}",
+    "unpublished": "Map not published yet",
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",

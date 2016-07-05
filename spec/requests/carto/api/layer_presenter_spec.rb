@@ -705,6 +705,7 @@ describe Carto::Api::LayerPresenter do
 
         let(:torque_blend_mode) { "lighter" }
         let(:property) { "fecha_date" }
+        let(:marker_width) { 6 }
         let(:torque_cumulative) { false }
         let(:torque_duration) { 30 }
         let(:torque_frame_count) { 256 }
@@ -719,7 +720,7 @@ describe Carto::Api::LayerPresenter do
                 "property" => property,
                 "marker-type" => "ellipse",
                 "layer-type" => "torque",
-                "marker-width" => 6,
+                "marker-width" => marker_width,
                 "marker-fill" => "#0F3B82",
                 "marker-opacity" => 0.9,
                 "marker-line-width" => 0,
@@ -748,6 +749,20 @@ describe Carto::Api::LayerPresenter do
 
         it 'torque-cumulative becomes overlap' do
           expect(@animated).to include('overlap' => torque_cumulative)
+        end
+
+        it 'marker-width becomes fill size fixed' do
+          expect(@fill_size).to include('fixed' => marker_width)
+        end
+
+        describe 'torque-blend-mode' do
+          it 'turns source-over into src-over' do
+            source_over_torque_wizard_properties = torque_wizard_properties
+            source_over_torque_wizard_properties['properties']['torque-blend-mode'] = 'source-over'
+            layer = build_layer_with_wizard_properties(source_over_torque_wizard_properties)
+            options = presenter_with_style_properties(layer).to_poro['options']
+            options['style_properties']['properties']['blending'].should eq 'src-over'
+          end
         end
       end
     end

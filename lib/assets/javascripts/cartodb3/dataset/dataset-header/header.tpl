@@ -6,7 +6,7 @@
     <div class="Editor-HeaderInfo-titleText js-name">
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
-    <% if (!isCustomQueryApplied) { %>
+    <% if (isCustomQueryApplied) { %>
       <span class="CDB-Tag CDB-Text CDB-Size-medium u-upperCase"><%- _t('dataset.sql') %></span>
     <% } %>
     <button class="CDB-Shape u-lSpace js-options">

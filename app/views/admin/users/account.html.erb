@@ -52,7 +52,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Email</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :email, class: "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
+          <%= f.text_field :email, class: "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
           <% if current_user.organization.present? %>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
               <p class="CDB-Text CDB-Size-small u-altTextColor">Your URL: <%= "#{current_user.organization.name}.#{CartoDB.account_host}/u/#{current_user.username}" %></p>
@@ -76,7 +76,7 @@
               <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Old password</label>
             </div>
             <div class="FormAccount-rowData">
-              <%= f.password_field :old_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+              <%= f.password_field :old_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
@@ -92,7 +92,7 @@
               <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New password</label>
             </div>
             <div class="FormAccount-rowData">
-              <%= f.password_field :new_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+              <%= f.password_field :new_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:new_password].present?) %>

@@ -75,7 +75,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Application ID</label>
     </div>
     <div class="FormAccount-rowData">
-      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
+      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
 
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <p class="CDB-Text CDB-Size-small u-altTextColor js-appPlatformsLegend"></p>

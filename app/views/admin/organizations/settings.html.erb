@@ -134,7 +134,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Default new user quota</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>
               <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>

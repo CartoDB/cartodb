@@ -933,7 +933,6 @@
       "notifier": {
         "layer-added": "Layer %{name} was added successfully."
       },
-
       "basemap": {
         "title-label": "Basemap",
         "by": "by",
@@ -1316,6 +1315,13 @@
       }
     },
     "widgets": {
+      "notifier": {
+        "delete": "Widget for column %{column} of type %{type} just removed.",
+        "success": "Widget for column %{column} of type %{type} added successfully.",
+        "error": "Error adding widget for %{column} of type %{type}: %{error}",
+        "loading": "Adding widget for %{column} of type %{type}",
+        "updating": "Updating widget for %{column} of type %{type}"
+      },
       "widgets-view": {
         "add_widget": "Add widget"
       },

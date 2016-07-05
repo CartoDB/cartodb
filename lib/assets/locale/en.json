@@ -26,11 +26,13 @@
     "kmeans": "Cluster",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
-    "sampling": "Sampling"
+    "sampling": "Sampling",
+    "spatial-markov-trend": "Temporal simulation"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis"
+    "relationship-analysis":"Relationship analysis",
+    "predictive": "Predictive analysis"
   },
   "form-components": {
     "editors": {
@@ -374,6 +376,10 @@
           "sampling": {
             "title": "Sampling",
             "desc": "Return a percentage of your data"
+          },
+          "spatial-markov-trend": {
+            "title": "Temporal simulation",
+            "desc": "Predict trends based on temporal series"
           }
         }
       },
@@ -808,6 +814,8 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "hide": "Hide layer",
+        "show": "Show layer"
       },
       "rename": {
         "loading": "Renaming layer...",
@@ -940,6 +948,8 @@
         "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
+        "spatial-markov-trend-desc": "select the columns with temporal value series",
+        "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
         "workflow": "Workflow"
       },
@@ -1028,6 +1038,11 @@
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
     },
@@ -1073,6 +1088,11 @@
           "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
           "accept": "CONTINUE",
           "cancel": "CLEAR"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
         }
       },
       "components": {

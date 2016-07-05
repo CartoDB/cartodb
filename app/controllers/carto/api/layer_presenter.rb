@@ -407,8 +407,7 @@ module Carto
       }.freeze
 
       BLENDING_ALIAS = {
-        'xor' => 'multiply',
-        'source-over' => 'multiply'
+        'source-over' => 'src-over'
       }.freeze
 
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)

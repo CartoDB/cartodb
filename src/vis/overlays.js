@@ -15,8 +15,12 @@ var TooltipView = require('../geo/ui/tooltip-view');
 var Zoom = require('../geo/ui/zoom/zoom-view');
 var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
 var AttributionView = require('../geo/ui/attribution/attribution-view');
+var LogoView = require('../geo/ui/logo-view');
 
-Overlay.register('logo', function (data, vis) {});
+Overlay.register('logo', function (data, vis) {
+  var overlay = new LogoView();
+  return overlay.render();
+});
 
 Overlay.register('attribution', function (data, vis) {
   var overlay = new AttributionView({

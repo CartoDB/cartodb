@@ -1207,6 +1207,10 @@
         "values": "VALUES",
         "cartocss": "CARTOCSS"
       },
+      "notifier": {
+        "css-error": "Error in CartoCSS styles.",
+        "css-success": "CartoCSS applied successfully."
+      },
       "messages": {
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",

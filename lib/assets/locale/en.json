@@ -884,6 +884,8 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "input-num": "Input #%{num}",
+        "define-two-layers": "Define two layers",
         "keep-columns": "Select the columns you want to keep",
         "foreign-keys": "Foreign Keys",
         "no-coincidence": "When no coincidence no row will be added",

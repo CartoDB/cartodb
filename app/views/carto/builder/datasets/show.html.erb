@@ -31,9 +31,9 @@
 
 <script>
   var frontendConfig = <%= safe_js_object frontend_config %>;
-  var visualizationData = <%= safe_js_object @canonical_visualization_data.to_json %>
-  var layersData = <%= safe_js_object @layers_data.to_json %>
-  var tableData = <%= safe_js_object @user_table_data.to_json %>
+  var visualizationData = <%= safe_js_object @canonical_visualization_data.to_json %>;
+  var layersData = <%= safe_js_object @layers_data.to_json %>;
+  var tableData = <%= safe_js_object @user_table_data.to_json %>;
   var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
   var ACTIVE_LOCALE = 'en';
 </script>

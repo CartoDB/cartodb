@@ -365,7 +365,7 @@
           },
           "merge": {
             "title": "Merge",
-            "desc": "Merge two layers"
+            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -938,6 +938,7 @@
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "Linked layer col.",
+        "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
         "georeference-ip-address": "IP Addresses",

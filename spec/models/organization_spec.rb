@@ -125,6 +125,50 @@ describe Organization do
       organization.destroy
     end
 
+    it 'validates viewer and builder quotas' do
+      quota = 1234567890
+      name = unique_name('org')
+      seats = 1
+      viewer_seats = 1
+
+      organization = Organization.new(name: name, quota_in_bytes: quota, seats: seats, viewer_seats: viewer_seats).save
+
+      user = create_validated_user
+      CartoDB::UserOrganization.new(organization.id, user.id).promote_user_to_admin
+      organization.reload
+      user.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 1
+      organization.users.should include(user)
+
+      viewer = create_validated_user(organization: organization, viewer: true)
+
+      viewer.valid? should be_true
+      viewer.reload
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should include(viewer)
+
+      builder = create_validated_user(organization: organization, viewer: false)
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should_not include(builder)
+
+      viewer2 = create_validated_user(organization: organization, viewer: true)
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should_not include(viewer2)
+
+      organization.destroy_cascade
+    end
+
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save

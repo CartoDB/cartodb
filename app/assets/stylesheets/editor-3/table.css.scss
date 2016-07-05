@@ -28,13 +28,10 @@ $tableBorderColor: $cSecondaryLine;
   right: 0;
   bottom: 0;
   left: 0;
+  border-top: 1px solid $cMainLine;
 }
 .Table-head {
   background: $cThirdBackground;
-}
-.Table-head tr {
-  border-top: 1px solid $cMainLine;
-  border-bottom: 1px solid $cMainLine;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;
@@ -119,7 +116,11 @@ $tableBorderColor: $cSecondaryLine;
   @include flex-direction(column);
   height: calc(100vh - 175px);
   padding-bottom: 60px;
+  border-top: 1px solid $cMainLine;
   overflow-y: scroll;
+}
+.Table-body--relative tbody {
+  height: calc(100vh - 324px);
 }
 .Table-row {
   height: 40px;
@@ -210,7 +211,12 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text.is-disabled {
   color: $cAltText;
 }
-
+// Disabled state color
+.Table.is-disabled .Table-cell .CDB-Text,
+.Table.is-disabled .Table-cell .CDB-Text.is-number,
+.Table.is-disabled .Table-cell .CDB-Text.is-cartodbId {
+  color: $cAltText;
+}
 .Table-paginator {
   @include display-flex();
   @include align-items(center);
@@ -223,6 +229,11 @@ $tableBorderColor: $cSecondaryLine;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   z-index: 10;
   box-sizing: border-box;
+}
+.Table-paginator--relative {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .Table-paginatorText {
   min-width: 76px;

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.14",
+  "version": "3.28.35",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -88,6 +88,7 @@
   },
   "browser": {
     "tipsy": "./vendor/assets/javascripts/jquery.tipsy.js",
+    "tagit": "./vendor/assets/javascripts/tag-it.js",
     "markdown": "./vendor/assets/javascripts/markdown.js",
     "dragster": "./vendor/assets/javascripts/dragster.js",
     "dropzone": "./vendor/assets/javascripts/dropzone.js",

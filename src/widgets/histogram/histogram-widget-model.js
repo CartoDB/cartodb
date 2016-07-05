@@ -10,13 +10,7 @@ module.exports = WidgetModel.extend({
   defaultState: _.extend(
     {
       autoStyle: false,
-      normalized: false,
-      min: function () {
-        return this.dataviewModel.get('start');
-      },
-      max: function () {
-        return this.dataviewModel.get('end');
-      }
+      normalized: false
     },
     WidgetModel.prototype.defaultState
   ),
@@ -53,6 +47,27 @@ module.exports = WidgetModel.extend({
   cancelAutoStyle: function () {
     this.dataviewModel.layer.restoreCartoCSS();
     this.set('autoStyle', false);
+  },
+
+  getState: function () {
+    var state = WidgetModel.prototype.getState.call(this);
+    var start = this.dataviewModel.get('start');
+    var end = this.dataviewModel.get('end');
+    var min = this.get('min');
+    var max = this.get('max');
+    var checkRoughEqual = function (a, b) {
+      if (_.isNumber(a) && _.isNumber(b) && Math.abs(start - min) > Number.EPSILON) {
+        return true;
+      }
+      return false;
+    };
+    if (checkRoughEqual(start, min)) {
+      state.min = min;
+    }
+    if (checkRoughEqual(end, max)) {
+      state.max = max;
+    }
+    return state;
   }
 
 });

@@ -304,9 +304,12 @@ describe CartoDB::Importer2::Overviews do
       data_import.stubs(:puts)
       CartoDB.stubs(:notify_error)
 
-      expect { data_import.run_import! }.to raise_error(Sequel::DatabaseError)
-      data_import.success.should eq false
-      data_import.log.entries.should match(/canceling statement due to statement timeout/)
+      # The overviews timeout should abort overviews creation but otherwise
+      # import the dataset correctly.
+      data_import.run_import!
+      data_import.success.should eq true
+      table_name = UserTable[id: data_import.table.id].name
+      has_overviews?(@user, table_name).should eq false
     end
   end
 end

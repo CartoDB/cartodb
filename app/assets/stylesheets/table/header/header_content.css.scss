@@ -203,7 +203,7 @@
         padding:0;
         margin:0;
 
-        a.share {
+        a.btn {
           line-height:20px;
           padding: 0 20px;
           text-shadow: none;
@@ -224,16 +224,22 @@
             span { text-decoration: underline; }
           }
 
-        }
+          &.dropdown {
+            padding-right: 20px;
 
-        &.dropdown { padding-right: 12px; }
+            &:before, &:after {
+              margin-right: 10px;
+            }
+          }
+
+        }
 
         &:after {
           position:absolute;
           content:'';
           top:0px;
           right:0;
-          margin:0;
+          margin:0 10px 0 0;
           width: 1px;
           height: 16px;
         }

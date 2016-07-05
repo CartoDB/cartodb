@@ -704,6 +704,7 @@
     }
   },
   "dataset": {
+    "sql": "SQL",
     "updated": "Updated %{ago}",
     "create-map": {
       "title": "Create map",

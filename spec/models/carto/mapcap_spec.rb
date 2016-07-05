@@ -129,7 +129,11 @@ describe Carto::Mapcap do
     end
 
     it 'should create empty state_json by default' do
-      Carto::Mapcap.create!(visualization_id: @visualization.id).state_json.should eq {}
+      stateless_mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+
+      stateless_mapcap.state_json.should eq Hash.new
+
+      stateless_mapcap.destroy
     end
   end
 

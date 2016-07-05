@@ -42,6 +42,8 @@ class Api::ApplicationController < ApplicationController
   end
 
   def json_formatted_request?
-    request.format.json?
+    format = request.format
+
+    format.json? if format
   end
 end

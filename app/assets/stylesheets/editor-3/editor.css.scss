@@ -44,6 +44,7 @@
   @include display-flex();
   @include flex(1);
   @include flex-direction(column);
+  position: relative;
   min-height: 0;
 }
 .Editor-panelWrapper {

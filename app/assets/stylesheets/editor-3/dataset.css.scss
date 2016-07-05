@@ -3,6 +3,7 @@
 
 @import 'cdb-variables/colors';
 @import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
 
 .Dataset {
   @include display-flex();
@@ -12,6 +13,7 @@
 .Dataset-view {
   @include display-flex();
   @include flex-direction(column);
+  @include flex(1);
   position: relative;
   // Safari has a bug with height: 100%
   height: 100vh;
@@ -41,6 +43,30 @@
 .Dataset-notifier {
   padding: 0 25px;
 }
+.Dataset-options.is-dark {
+  background-color: #2B3C43;
+}
+
 .Dataset-options {
   border-top: 1px solid $cThirdBackground;
+}
+
+.Dataset-options-actions {
+  @include display-flex();
+}
+.Dataset-editor {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  padding-top: $baseSize * 3;
+  z-index: 100;
+}
+
+.Dataset-editor .CodeMirror-editor {
+  min-height: 200px;
+}
+
+.Dataset-editor .CodeMirror-message {
+  padding: 0 25px;
 }

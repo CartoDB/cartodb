@@ -29,7 +29,8 @@
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation"
+    "spatial-markov-trend": "Temporal simulation",
+    "data-observatory-measurement": "Data Observatory"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -390,6 +391,10 @@
           "spatial-markov-trend": {
             "title": "Temporal simulation",
             "desc": "Predict trends based on temporal series"
+          },
+          "data-observatory-measure": {
+            "title": "Data Observatory",
+            "desc": "Augment your table with data from Data Observatory"
           }
         }
       },
@@ -715,6 +720,7 @@
     }
   },
   "dataset": {
+    "sql": "SQL",
     "updated": "Updated %{ago}",
     "create-map": {
       "title": "Create map",
@@ -742,15 +748,6 @@
       "error": "There was an error locking %{tableName}",
       "loading": "Locking your dataset %{tableName}...",
     },
-    "unlock": {
-      "cancel": "back to dashboard",
-      "confirm": "ok, unlock it",
-      "desc": "That means you need to unlock it before doing anything. Are you sure?",
-      "error": "Error unlocking %{tableName}: %{error}",
-      "loading": "Unlocking your dataset %{tableName}...",
-      "success": "Dataset %{tableName} unlocked",
-      "title": "Your dataset %{tableName} is locked."
-    },
     "rename": {
       "option": "Rename dataset",
       "cancel": "cancel",
@@ -760,7 +757,33 @@
       "loading": "Renaming your dataset %{tableName}...",
       "success": "Dataset %{tableName} renamed",
       "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
-    }
+    },
+    "sync": {
+      "in-a-moment": "in a few moments",
+      "synced": "Synced %{ranAt}",
+      "syncing": "Syncing",
+      "loading": "Syncing dataset %{tableName}",
+      "sync-failed": "Sync failed",
+      "next": "Next will be %{runAt}",
+      "error-code": "Error code %{errorCode}",
+      "sync-now": "Sync now",
+      "view-options": "View options",
+      "disabled": "You will be able to sync manually %{gap} minutes after your last synchronization",
+      "title": "Sync dataset options",
+      "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
+      "label": "Sync my data",
+      "error": "There was an error setting the interval",
+      "confirm": "Save settings"
+    },
+    "unlock": {
+      "cancel": "back to dashboard",
+      "confirm": "ok, unlock it",
+      "desc": "That means you need to unlock it before doing anything. Are you sure?",
+      "error": "Error unlocking %{tableName}: %{error}",
+      "loading": "Unlocking your dataset %{tableName}...",
+      "success": "Dataset %{tableName} unlocked",
+      "title": "Your dataset %{tableName} is locked."
+    },
   },
   "editor": {
     "map": "map",
@@ -1010,7 +1033,12 @@
         "spatial-markov-trend-desc": "select the columns with temporal value series",
         "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "data-observatory-measurement-area": "Zone",
+        "data-observatory-measurement-column": "Column",
+        "data-observatory-measurement-measurement": "Measurement",
+        "data-observatory-measurement-desc": "enrich your data",
+        "data-observatory-measurement-refine": "refine your selection"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

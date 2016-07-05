@@ -406,6 +406,11 @@ module Carto
         "line-comp-op" => "blending"
       }.freeze
 
+      BLENDING_ALIAS = {
+        'xor' => 'multiply',
+        'source-over' => 'multiply'
+      }.freeze
+
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties)
         spp = {}
         wpp = wizard_properties_properties
@@ -413,7 +418,11 @@ module Carto
 
         apply_direct_mapping(spp, wpp, PROPERTIES_DIRECT_MAPPING)
 
-        spp['blending'] = 'none' if spp['blending'].blank?
+        if spp['blending'].blank?
+          spp['blending'] = 'none'
+        else
+          spp['blending'] = BLENDING_ALIAS.fetch(spp['blending'], spp['blending'])
+        end
 
         merge_into_if_present(spp, 'stroke', generate_stroke(wpp))
 
@@ -459,7 +468,7 @@ module Carto
         merge_into_if_present(fill, @source_type == 'bubble' ? 'size' : 'color', generate_dimension_properties(wpp))
 
         case @source_type
-        when 'polygon'
+        when 'polygon', 'torque', 'torque_cat'
           fill['size'] = { 'fixed' => wpp['marker-width'] }.merge(fill['size'] || {})
         when 'choropleth', 'category'
           fill['size'] = { 'fixed' => 10 }.merge(fill['size'] || {})

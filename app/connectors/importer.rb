@@ -57,7 +57,7 @@ module CartoDB
           }
           results.select(&:success?).each { |result|
             create_overviews(result)
-        }
+          }
 
           if data_import.create_visualization
             create_visualization
@@ -106,11 +106,99 @@ module CartoDB
       def create_visualization
         tables = get_imported_tables
         if tables.length > 0
+          print "IMPORTER imported tables #{tables}"
           user = ::User.where(id: data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
           data_import.visualization_id = vis.id
+          if (runner.instance_of? CartoDB::Importer2::CDBDataLibraryConnector) && tables[0].name == runner.foreign_table_name
+            # In this case, we only have one table
+            update_vis_with_remote_config(vis)
+          end
           data_import.save
           data_import.reload
+        end
+      end
+
+      def update_vis_with_remote_config(vis)
+        begin
+          remote_api_key = Cartodb.config[:common_data]['api_key']
+          if remote_api_key.blank?
+            runner.log.append("Skipping remote visualization copy for new FDW import due to missing Cartodb.config[:common_data]['api_key']")
+            return
+          end
+
+          # set some vars for use
+          user = ::User.where(id: data_import.user_id).first
+          http_client = Carto::Http::Client.get('fdw_vis_import', log_requests: true)
+
+          print "IMPORTER update vis for remote table #{runner.foreign_table_name}\n"
+
+          remote_protocol = Cartodb.config[:common_data]['protocol']
+
+          # Get visualization id of remote table so we can pull its layer configs
+          if Cartodb.config[:common_data]['base_url']
+            remote_base_url = Cartodb.config[:common_data]['base_url']
+          else
+            remote_protocol = Cartodb.config[:common_data]['protocol']
+            remote_user = Cartodb.config[:common_data]['username']
+            remote_base_url = "#{remote_protocol}://#{remote_user}.cartodb.com"
+          end
+          url = "#{remote_base_url}/api/v1/tables/#{runner.foreign_table_name}"
+          response = http_client.get(url, params: {
+            api_key: remote_api_key
+          })
+          if response.code != 200
+            runner.log.append("Skipping remote vis copy: Error fetching #{url} - #{response.code} #{response.body}")
+            return
+          end
+          data = JSON.parse(response.response_body)
+          table_visualization_map_id = data['table_visualization']['map_id']
+
+          # Get remote vis layer configs
+          url = "#{remote_base_url}/api/v1/maps/#{table_visualization_map_id}/layers"
+          response = http_client.get(url, params: {
+            api_key: remote_api_key
+          })
+          if response.code != 200
+            runner.log.append("Skipping remote vis copy: Error fetching #{url} - #{response.code} #{response.body}")
+            return
+          end
+          data = JSON.parse(response.response_body)
+          remote_layers = data['layers']
+
+          # Get local vis layer configs
+          url = "#{user.public_url}/api/v1/maps/#{vis.map_id}/layers"
+          response = http_client.get(url, params: {
+            api_key: user.api_key
+          })
+          if response.code != 200
+            runner.log.append("Skipping remote vis copy: Error fetching #{url} - #{response.code} #{response.body}")
+            return
+          end
+          data = JSON.parse(response.response_body)
+          vis_layers = data['layers']
+
+          # Update local vis layer configs with remote configs
+          if vis_layers.length != remote_layers.length
+            runner.log.append("Skipping remote vis copy: local and remote vis have different number of layers #{vis_layers.length} != #{remote_layers.length}")
+            return
+          end
+          vis_layers.each_with_index do |l, index|
+            url = "#{user.public_url}/api/v1/maps/#{vis.map_id}/layers/#{l['id']}"
+            print "IMPORTER layer url: #{url}\n"
+            body = JSON.dump(l.merge(remote_layers[index].except('id')))
+            print "IMPORTER layer body: \n#{body}\n\n"
+            headers = { 'Accept-Encoding' => 'application/json', 'Content-Type' => 'application/json'}
+            params = { api_key: user.api_key }
+            response = http_client.put(url, headers: headers, body: body, params: params)
+            if response.code != 200
+              runner.log.append("WARNING: Failed to PUT #{url}, remote vis params not copied")
+            end
+            print "IMPORTER response for layer update: #{response.body}\n"
+          end
+        rescue => e
+          print "IMPORTER error #{e}"
+          runner.log.append("Skipping remote vis copy: Generic error #{e}")
         end
       end
 

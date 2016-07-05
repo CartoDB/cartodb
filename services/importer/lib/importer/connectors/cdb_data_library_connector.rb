@@ -15,6 +15,10 @@ module CartoDB
         'postgres_fdw'
       end
 
+      def foreign_table_name
+        @params['table']
+      end
+
       private
 
       def accepted_parameters
@@ -31,10 +35,6 @@ module CartoDB
                          server_params['database']].join(';')
         server_hash = Digest::SHA1.hexdigest server_string
         "connector_#{channel_name}_#{server_hash}"
-      end
-
-      def foreign_table_name
-        @params['table']
       end
 
       def run_pre_create

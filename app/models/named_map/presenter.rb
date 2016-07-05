@@ -105,20 +105,15 @@ module CartoDB
             visible: layer_vizjson[:visible]
           }
 
-        if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-             !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
-          data[:infowindow] = layer_vizjson[:infowindow]
-        end
+        vizjson_infowindow = layer_vizjson[:infowindow]
+        data[:infowindow] = vizjson_infowindow if vizjson_infowindow.present?
 
-        if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-             !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
-          data[:tooltip] = layer_vizjson[:tooltip]
-        end
+        vizjson_tooltip = layer_vizjson[:tooltip]
+        data[:tooltip] = vizjson_tooltip if vizjson_tooltip.present?
 
-        if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
-             layer_vizjson[:legend].fetch('type') != 'none'
-          data[:legend] = layer_vizjson[:legend]
-        end
+        vizjson_legend = layer_vizjson[:legend]
+        data[:legend] = vizjson_legend if vizjson_legend.present? && vizjson_legend.fetch('type') != 'none'
+
         data
       end
     end

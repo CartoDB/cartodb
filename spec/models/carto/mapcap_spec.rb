@@ -101,6 +101,38 @@ describe Carto::Mapcap do
     end
   end
 
+  describe '#state_json' do
+    let(:state_json) do
+      {
+        "map" => {
+          "center" => [27.68352808378776, -86.30859375],
+          "zoom" => 6
+        },
+        "widgets" => {
+          "8607099f-3740-4b56-bb9d-369aa52ada53" => {
+            "acceptedCategories" => ["Masonry"]
+          }
+        }
+      }
+    end
+
+    before(:all) do
+      @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id, state_json: state_json)
+    end
+
+    after(:all) do
+      @mapcap.destroy
+    end
+
+    it 'should preserve the state' do
+      @mapcap.state_json.should eq state_json
+    end
+
+    it 'should create empty state_json by default' do
+      Carto::Mapcap.create!(visualization_id: @visualization.id).state_json.should eq {}
+    end
+  end
+
   describe '#regenerate_visualization' do
     before(:all) do
       @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)

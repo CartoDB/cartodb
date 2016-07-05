@@ -5,7 +5,7 @@
       <div class="Editor-HeaderInfo-title u-bSpace--m">
         <h2 class="CDB-Text CDB-HeaderInfo-titleText CDB-Size-large"><%- _t('analyses.merge') %></h2>
       </div>
-      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.merge') %></p>
+      <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.define-two-layers') %></p>
     </div>
   </div>
   <% if (right_source) { %>

@@ -6,6 +6,9 @@ var _ = require('underscore');
  * Model for a histogram widget
  */
 module.exports = WidgetModel.extend({
+  defaults: {
+    normalized: true
+  },
 
   defaultState: _.extend(
     {

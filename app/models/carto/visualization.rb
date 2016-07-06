@@ -60,6 +60,8 @@ class Carto::Visualization < ActiveRecord::Base
   serialize :state, ::Carto::CartoJsonSerializer
   validates :state, carto_json_symbolizer: true
 
+  before_validation :ensure_state
+
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end
@@ -436,5 +438,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_vizjson_key
     ".*#{id}:vizjson"
+  end
+
+  def ensure_state
+    self.state = {} unless state
   end
 end

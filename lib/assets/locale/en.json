@@ -17,20 +17,18 @@
     "december": "December"
   },
   "analyses": {
-    "area-of-influence": "Area of influence",
-    "centroid": "Centroid",
-    "cluster": "Cluster",
-    "filter": "Filter",
-    "filter-by-node-column": "Link to layer analysis",
     "georeference": "Georeference",
-    "intersection": "Intersection",
-    "kmeans": "Cluster",
+    "data-observatory-measurement": "Enrich with the Data Observatory",
     "merge": "Merge",
-    "moran-cluster": "Moran cluster",
-    "point-in-polygon": "Point in polygon",
+    "filter-by-node-column": "Link to layer analysis",
+    "centroid": "Centroid",
+    "area-of-influence": "Area of influence",
+    "intersection": "Intersection",
+    "filter": "Filter",
     "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation",
-    "data-observatory-measurement": "Data Observatory"
+    "kmeans": "Cluster",
+    "moran-cluster": "Moran cluster",
+    "spatial-markov-trend": "Temporal simulation"
   },
   "analysis-category": {
     "create-clean": "Create and clean",

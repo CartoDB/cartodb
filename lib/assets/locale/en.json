@@ -360,31 +360,31 @@
           },
           "georeference": {
             "title": "Georeference",
-            "desc": "Transform your data into coordinates"
+            "desc": "Use textual descriptions of places (street addresses, city names, country names, etc.) to generate point geometries."
           },
           "intersection": {
-            "title": "Intersection",
-            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+            "title": "Filter or aggregate by intersection",
+            "desc": "Filter rows based intersection with second layer. Aggregate data in a second layer and add as a new column."
           },
           "filter": {
-            "title": "Filter",
-            "desc": "Filter your rows depending on the values of a column"
+            "title": "Filter rows by column value",
+            "desc": "Filter rows by column value"
           },
           "merge": {
-            "title": "Merge",
-            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
+            "title": "Append rows from second layer",
+            "desc": "Join the rows from two layers by adding rows of a second layer underneith the rows of the current layer."
           },
           "moran-cluster": {
             "title": "Detect outliers and hotspots",
             "desc": "Use Moran's I to calculate high (HL) and low (LH) outliers and high (HH) and low (LL) hotspots"
           },
           "kmeans": {
-            "title": "Cluster",
-            "desc": "Group points by proximity"
+            "title": "Calculate clusters of points",
+            "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Centroid",
-            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+            "title": "Generate centroid for each geometry",
+            "desc": "Calculate the spatial centroid of a geometry based on the values of a weight column"
           },
           "filter-by-node-column": {
             "title": "Link to layer",

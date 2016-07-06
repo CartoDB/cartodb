@@ -9,7 +9,8 @@ module Carto
         ssl_required :show, :show_protected
 
         before_filter :load_visualization, only: [:show, :show_protected]
-        before_filter :load_vizjson,
+        before_filter :load_visualization_for_vizjson_and_state,
+                      :load_vizjson,
                       :load_state, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
 
@@ -37,18 +38,20 @@ module Carto
           render_404 unless @visualization
         end
 
-        def load_vizjson
-          visualization_for_vizjson = if @visualization.mapcapped?
-                                        @visualization.latest_mapcap.regenerate_visualization
-                                      else
-                                        @visualization
-                                      end
+        def load_visualization_for_vizjson_and_state
+          @visualization_for_vizjson_and_state = if @visualization.mapcapped?
+                                                   @visualization.latest_mapcap.regenerate_visualization
+                                                 else
+                                                   @visualization
+                                                 end
+        end
 
-          @vizjson = generate_named_map_vizjson3(visualization_for_vizjson, params)
+        def load_vizjson
+          @vizjson = generate_named_map_vizjson3(@visualization_for_vizjson_and_state, params)
         end
 
         def load_state
-          @state = @visualization.state
+          @state = @visualization_for_vizjson_and_state.state
         end
 
         def ensure_viewable

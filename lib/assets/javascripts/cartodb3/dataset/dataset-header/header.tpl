@@ -7,7 +7,7 @@
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
     <% if (isCustomQueryApplied) { %>
-      <span class="CDB-Tag CDB-Text CDB-Size-medium u-upperCase"><%- _t('dataset.sql') %></span>
+      <span class="CDB-Tag CDB-Tag--opaque CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
     <% } %>
     <button class="CDB-Shape u-lSpace js-options">
       <div class="CDB-Shape-threePoints is-blue is-small">
@@ -18,7 +18,7 @@
     </button>
   </div>
   <div class="u-bSpace--xl">
-    <<%- privacyDOMElement %> class="u-rSpace--xl u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
+    <<%- privacyDOMElement %> class="u-rSpace--m u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
       <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
     </<%- privacyDOMElement %>>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>

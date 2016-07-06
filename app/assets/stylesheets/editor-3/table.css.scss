@@ -120,7 +120,7 @@ $tableBorderColor: $cSecondaryLine;
   overflow-y: scroll;
 }
 .Table-body--relative tbody {
-  height: calc(100vh - 324px);
+  height: calc(100vh - 360px);
 }
 .Table-row {
   height: 40px;
@@ -136,6 +136,7 @@ $tableBorderColor: $cSecondaryLine;
   position: relative;
   box-sizing: content-box;
   border-right: 1px solid $tableBorderColor;
+  vertical-align: top;
 }
 .Table-cellItem:hover,
 .Table-cellItem.is-highlighted {
@@ -194,6 +195,7 @@ $tableBorderColor: $cSecondaryLine;
 .Table-cell .CDB-Text {
   @include flex(2);
 }
+
 .Table-cell--short {
   width: $elementWidthShort;
 }
@@ -221,8 +223,8 @@ $tableBorderColor: $cSecondaryLine;
   @include display-flex();
   @include align-items(center);
   position: fixed;
-  bottom: 45px;
-  left: calc(50% + 142px);
+  right: 40px;
+  bottom: 40px;
   padding: 1px;
   border-radius: $halfBaseSize;
   background: $cWhite;
@@ -232,8 +234,9 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-paginator--relative {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 25px;
+  bottom: 25px;
+  left: auto;
 }
 .Table-paginatorText {
   min-width: 76px;
@@ -262,3 +265,23 @@ $tableBorderColor: $cSecondaryLine;
   height: $height;
   resize: vertical;
 }
+.Table-editorDate {
+  margin-left: -8px;
+}
+.Table-editorDate .Editor-formInner {
+  display: inline-block;
+  margin: 0 0 0 8px;
+  vertical-align: top;
+}
+.Table-editorDate input[name="day"] {
+  width: 32px;
+}
+.Table-editorDate input[name="year"] {
+  width: 48px;
+}
+.Table-editorDate input[name="time"] {
+  width: 68px;
+}
+
+
+

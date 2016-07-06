@@ -1024,7 +1024,7 @@
         "min": "Min",
         "mode": "Mode",
         "neighbours": "Size Neighborhood",
-        "numerator": "Attribute column",
+        "numerator": "Attribute col.",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",

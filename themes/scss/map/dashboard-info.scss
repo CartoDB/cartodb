@@ -4,7 +4,7 @@
 /* CartoLogo */
 
 
-.CDB-Logo-text {
+.CDB-EmbedLogo-text {
   opacity: 0;
 }
 
@@ -12,7 +12,7 @@
   @include transition(transform, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   @include transform(translateX(56px))
 }
-.CDB-Dashboard-menu.is-active .CDB-Logo-point {
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-point {
   @include animation(fadeInDown 0.8s both);
   fill: rgb(22, 41, 69);
 }
@@ -288,15 +288,15 @@
   .CDB-Dashboard-menuInfo {
     margin-bottom: 0;
   }
-  .CDB-Logo-text {
+  .CDB-EmbedLogo-text {
     @include opacity(1);
     display: none;
     fill: rgb(22, 41, 69);
   }
-  .CDB-Logo-halo {
+  .CDB-EmbedLogo-halo {
     fill: rgba(22, 41, 69, 0.1);
   }
-  .CDB-Logo-point {
+  .CDB-EmbedLogo-point {
     fill: rgb(22, 41, 69);
   }
   .CDB-Dashboard-menuLogo svg {

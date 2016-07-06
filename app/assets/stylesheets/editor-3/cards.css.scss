@@ -8,13 +8,21 @@
   @include align-items(center);
   @include flex-direction(column);
   margin-right: $baseSize * 2;
-  padding: 20px;
+  padding: 20px 25px;
   border: 1px solid $cMainLine;
   border-radius: $halfBaseSize;
   background-color: $cThirdBackground;
 
   &:last-child {
     margin-right: 0;
+  }
+
+  &.is-disabled {
+    opacity: 0.6;
+  }
+
+  &.is-disabled a {
+    display: none;
   }
 }
 

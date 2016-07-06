@@ -51,7 +51,8 @@
             "jenks": "Jenks",
             "equal": "Equal Interval",
             "headtails": "Heads/Tails",
-            "quantiles": "Quantiles"
+            "quantiles": "Quantiles",
+            "category": "Category"
           }
         },
         "bins": "Buckets",

@@ -7,7 +7,7 @@
         <p class="WidgetPlaceHolder-text"></p>
     </div>
   </div>
-  <button class="CDB-Button CDB-Button--primary js-add-widget">
+  <button class="CDB-Button CDB-Button--primary js-add">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('editor.widgets.widgets-view.add_widget') %></span>
   </button>
 </div>

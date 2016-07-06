@@ -51,8 +51,16 @@
 .Dataset-options {
   position: relative;
   border-top: 1px solid $cThirdBackground;
-  box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.64);
   z-index: 2;
+}
+.Dataset-options::before {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  left: 0;
+  height: 18px;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), transparent 88%);
+  content: '';
 }
 
 .Dataset-options-actions {

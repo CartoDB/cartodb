@@ -56,7 +56,7 @@ module.exports = WidgetModel.extend({
     var min = this.get('min');
     var max = this.get('max');
     var checkRoughEqual = function (a, b) {
-      if (_.isNumber(a) && _.isNumber(b) && Math.abs(start - min) > Number.EPSILON) {
+      if (_.isNumber(a) && _.isNumber(b) && Math.abs(a - b) > Math.abs(start - end) * 0.01) {
         return true;
       }
       return false;

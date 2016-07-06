@@ -215,7 +215,6 @@ var fakeVizJSON = function () {
 describe('vis/vis', function () {
   beforeEach(function () {
     this.vis = new Vis();
-    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
   });
 
   it('.trackLoadingObject .untrackLoadingObject and .clearLoadingObjects should change the loading attribute', function () {

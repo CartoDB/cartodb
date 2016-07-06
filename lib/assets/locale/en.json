@@ -931,7 +931,7 @@
         "delete": "Delete"
       },
       "notifier": {
-        "layer-added": "Layer %{name} was added successfully."
+        "layer-added": "%{name} <span class='CDB-Text is-semibold u-mainTextColor'>layer was added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1138,8 +1138,8 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
-        "sql-error": "Error in SQL query.",
-        "sql-success": "SQL query applied successfully."
+        "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
+        "sql-success": "<span class='CDB-Text is-semibold u-mainTextColor'>SQL query applied successfully.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1211,8 +1211,8 @@
         "cartocss": "CARTOCSS"
       },
       "notifier": {
-        "css-error": "Error in CartoCSS styles.",
-        "css-success": "CartoCSS applied successfully."
+        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "<span class='CDB-Text is-semibold u-mainTextColor'>CartoCSS applied successfully.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",

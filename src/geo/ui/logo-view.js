@@ -11,6 +11,7 @@ module.exports = View.extend({
     img.setAttribute('src', LOGO_URL);
     img.setAttribute('alt', URL);
     img.setAttribute('title', URL);
+    img.setAttribute('target', '_blank');
     this.$el.html(img);
     this.$el.attr('href', URL);
     return this;

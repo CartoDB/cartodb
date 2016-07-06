@@ -302,11 +302,13 @@
       },
       "share": {
         "done-btn": "DONE",
-        "update-btn": "UPDATE",
+        "publish-btn": "PUBLISH",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "unpublished": "Your map is not published yet.",
+        "unpublished": "Never published.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "unpublished-header": "Click on Publish to start shareing your map on the web",
+        "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
           "title": "Get the link",
           "body": "Send to your friends, coworkers, or post in your social networks.",
@@ -314,8 +316,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
           }
         },
         "embed": {
@@ -325,8 +326,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
           }
         },
         "cartodbjs": {
@@ -815,6 +815,7 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "unpublished-changes": "Unpublished changes",
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",

@@ -262,3 +262,21 @@ $tableBorderColor: $cSecondaryLine;
   height: $height;
   resize: vertical;
 }
+
+.Table-editorDate .Editor-formInner {
+  display: inline-block;
+  margin: 0 0 0 8px;
+  vertical-align: top;
+}
+.Table-editorDate input[name="day"] {
+  width: 32px;
+}
+.Table-editorDate input[name="year"] {
+  width: 48px;
+}
+.Table-editorDate input[name="time"] {
+  width: 68px;
+}
+
+
+

@@ -18,7 +18,7 @@
     </button>
   </div>
   <div class="u-bSpace--xl">
-    <<%- privacyDOMElement %> class="u-rSpace--xl u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
+    <<%- privacyDOMElement %> class="u-rSpace--m u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
       <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
     </<%- privacyDOMElement %>>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>

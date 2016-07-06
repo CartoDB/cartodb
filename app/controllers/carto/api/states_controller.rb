@@ -1,6 +1,6 @@
 module Carto
   module Api
-    class StateController < ::Api::ApplicationController
+    class StatesController < ::Api::ApplicationController
       include Carto::ControllerHelper
 
       ssl_required :show, :update
@@ -17,7 +17,7 @@ module Carto
 
       def update
         @visualization.update_attributes(state: params[:state])
-        @widget.save!
+        @visualization.save!
 
         render_jsonp(@visualization.state)
       rescue => exception

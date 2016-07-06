@@ -358,10 +358,6 @@
             "title": "Expand points into polygons",
             "desc": "Use travel time (walking, biking, or driving) or euclidean distance to calculate polygon boundaries around point locations."
           },
-          "point-in-polygon": {
-            "title": "Point in polygon",
-            "desc": "Analyze points in polygon (or vice versa)"
-          },
           "georeference": {
             "title": "Georeference",
             "desc": "Transform your data into coordinates"

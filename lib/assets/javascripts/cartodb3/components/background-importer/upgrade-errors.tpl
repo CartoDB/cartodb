@@ -2,7 +2,7 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--negative">
     <i class="CDB-IconFont CDB-IconFont-barometer"></i>
   </div>
-  <p class="Dialog-headerTitle"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.title') %></p>
+  <p class="Dialog-headerTitle u-errorTextColor"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.title') %></p>
   <p class="Dialog-headerText"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.description') %></p>
 </div>
 <div class="Dialog-body ErrorDetails-body ErrorDetails-body--no-line">

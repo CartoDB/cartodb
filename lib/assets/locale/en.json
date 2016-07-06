@@ -19,8 +19,8 @@
   "analyses": {
     "georeference": "Georeference",
     "data-observatory-measurement": "Enrich from Data Observatory",
-    "merge": "Append rows from second layer",
-    "filter-by-node-column": "Join columns from second layer",
+    "merge": "Append rows from 2nd layer",
+    "filter-by-node-column": "Join columns from 2nd layer",
     "centroid": "Centroid from geometries",
     "area-of-influence": "Expand points into polygons",
     "intersection": "Intersection",

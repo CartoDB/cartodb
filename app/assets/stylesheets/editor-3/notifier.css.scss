@@ -22,7 +22,7 @@
   padding: $baseSize + 4 0;
   border-top: 1px solid $cSecondaryLine;
 
-  &.is-dark {
+  .is-dark & {
     border-color: #3A484E;
   }
 

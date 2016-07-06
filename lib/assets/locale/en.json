@@ -19,7 +19,7 @@
   "analyses": {
     "georeference": "Georeference",
     "data-observatory-measurement": "Enrich from Data Observatory",
-    "merge": "Append rows from 2nd layer",
+    "merge": "Join columns from 2nd layer",
     "filter-by-node-column": "Join columns from 2nd layer",
     "centroid": "Centroid from geometries",
     "area-of-influence": "Expand points into polygons",
@@ -371,8 +371,8 @@
             "desc": "Filter rows by column value"
           },
           "merge": {
-            "title": "Append rows from second layer",
-            "desc": "Append the rows from a second layer to the bottom of current layer."
+            "title": "Join columns from 2nd layer",
+            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "moran-cluster": {
             "title": "Detect outliers and clusters",

@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<% if (!isPrivate) { %>
+<% if (!isPrivate && isPublished) { %>
 <div class="Share-input">
   <input type="text" id="<%- id %>" value="<%- content %>" class="Share-input-field CDB-InputText CDB-Text CDB-Size-medium u-ellipsis js-input">
   <button class="Share-copy CDB-Button CDB-Button--small js-copy" data-clipboard-target="#<%- id %>">

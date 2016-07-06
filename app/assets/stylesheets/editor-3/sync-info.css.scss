@@ -1,0 +1,57 @@
+// Sync info styles
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.SyncInfo {
+  @include display-flex();
+  @include align-items(center);
+}
+.SyncInfo--separator {
+  position: relative;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+
+  &::after {
+    position: absolute;
+    right: -24px;
+    bottom: 0;
+    left: -24px;
+    height: 1px;
+    background: #EEE;
+    content: '';
+  }
+}
+.SyncInfo-message--success {
+  color: $cPublic;
+}
+.SyncInfo-message--failure {
+  color: $cError;
+}
+.SyncInfo-message--syncing {
+  color: #898989;
+}
+.SyncInfo-state {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background: $cWhite;
+}
+.SyncInfo-state--small {
+  width: 8px;
+  height: 8px;
+}
+.SyncInfo-state--success {
+  background: $cHighlight;
+  color: $cHighlight;
+}
+.SyncInfo-state--failure {
+  background: $cError;
+  color: $cError;
+}
+.SyncInfo-state--syncing {
+  background: #898989;
+  color: #898989;
+}

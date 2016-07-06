@@ -1316,11 +1316,11 @@
     },
     "widgets": {
       "notifier": {
-        "delete": "Widget for column %{column} of type %{type} just removed.",
-        "success": "Widget for column %{column} of type %{type} added successfully.",
-        "error": "Error adding widget for %{column} of type %{type}: %{error}",
-        "loading": "Adding widget for %{column} of type %{type}",
-        "updating": "Updating widget for %{column} of type %{type}"
+        "delete": "%{column} <span class='CDB-Text is-semibold u-mainTextColor'>widget deleted correctly.</span>",
+        "success": "%{column} <span class='CDB-Text is-semibold u-mainTextColor'>widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget: %{error}",
+        "loading": "<span class='CDB-Text is-semibold u-mainTextColor'>Adding widget</span> for %{column}...",
+        "updating": "<span class='CDB-Text is-semibold u-mainTextColor'>Updating widget...</span>"
       },
       "widgets-view": {
         "add_widget": "Add widget"

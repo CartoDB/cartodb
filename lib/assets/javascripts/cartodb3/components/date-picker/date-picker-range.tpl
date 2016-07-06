@@ -1,8 +1,8 @@
-<button class="DatePicker-dates js-dates has-icon">
+<button class="DatePicker-dates js-dates has-icon CDB-Text CDB-Size-medium">
   <%- _t('components.datepicker.from') %> <strong><%- fromDate %> <%- pad(fromHour,2) %>:<%- pad(fromMin,2) %></strong> <%- _t('components.datepicker.to') %> <strong><%- toDate %> <%- pad(toHour,2) %>:<%- pad(toMin,2) %></strong>
   <i class="CDB-IconFont CDB-IconFont-calendar DatePicker-datesIcon"></i>
 </button>
-<div class="DatePicker-dropdown">
+<div class="DatePicker-dropdown CDB-Text">
   <div class="DatePicker-calendar"></div>
   <div class="DatePicker-timers js-timers"></div>
   <div class="DatePicker-shortcuts">

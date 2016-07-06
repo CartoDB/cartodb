@@ -1,4 +1,4 @@
-<div class="SideMenu">
+<div class="SideMenu CDB-Text CDB-Size-medium">
   <% if !Cartodb.config[:cartodb_com_hosted].present? %>
     <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
   <% end %>
@@ -16,7 +16,7 @@
         <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
       </div>
     </div>
-    <span class="SideMenu-progressSize"><%= number_to_human_size(current_user.db_size_in_bytes, precision: 2, significant: false).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %> of <%= number_to_human_size(current_user.quota_in_bytes).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %></span>
+    <span class="CDB-Text CDB-Size-medium u-altTextColor"><%= number_to_human_size(current_user.db_size_in_bytes, precision: 2, significant: false).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %> of <%= number_to_human_size(current_user.quota_in_bytes).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %></span>
   </div>
 
   <span class="SideMenu-separator"></span>
@@ -35,7 +35,7 @@
     </ul>
   </div>
 
-  <div class="SideMenu-helpSegment">
+  <div class="SideMenu-helpSegment CDB-Text CDB-Size-medium u-flex u-alignCenter">
     <div class="LayoutIcon LayoutIcon--darkGrey">
       <i class="CDB-IconFont CDB-IconFont-boss"></i>
     </div>

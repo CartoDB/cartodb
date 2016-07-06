@@ -13,7 +13,7 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="FormAccount-Section u-inner">
+<div class="CDB-Text FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="FormAccount-Content">
@@ -24,17 +24,17 @@
       <div class="Filters-row">
         <ul class="Filters-group">
           <li>
-            <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
+            <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="u-mainTextColor u-rSpace--xl">
               <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
             </a>
           </li>
           <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink">
+            <a href="<%= CartoDB.url(self, 'mobile_app', id: @mobile_app.id) %>" class="CDB-Text CDB-Size-medium Filters-typeLink">
               App info
             </a>
           </li>
           <li class="Filters-typeItem">
-            <a href="<%= CartoDB.url(self, 'api_keys_mobile_app', id: @mobile_app.id) %>" class="Filters-typeLink is-selected">
+            <a href="<%= CartoDB.url(self, 'api_keys_mobile_app', id: @mobile_app.id) %>" class="CDB-Text CDB-Size-medium Filters-typeLink is-selected">
               API keys
             </a>
           </li>
@@ -47,22 +47,22 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="FormAccount-label">Your API Key</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your API Key</label>
     </div>
     <div class="FormAccount-rowData">
-      <textarea class="FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
+      <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
     </div>
   </div>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="FormAccount-label">User key (same as CartoDB key)</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User key (same as CartoDB key)</label>
     </div>
     <div class="FormAccount-rowData">
-      <input type="text" value="<%= current_user.api_key %>" class="FormAccount-input FormAccount-input--long" readonly />
+      <input type="text" value="<%= current_user.api_key %>" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long" readonly />
 
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-        <p class="FormAccount-rowInfoText">You need to add this as a user_key URL parameter for direct API access.</p>
+        <p class="CDB-Text CDB-Size-small u-altTextColor">You need to add this as a user_key URL parameter for direct API access.</p>
       </div>
     </div>
   </div>

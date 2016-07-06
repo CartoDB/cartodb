@@ -753,7 +753,7 @@
         },
         "lodash": {
           "version": "2.4.2",
-          "from": "lodash@>=2.4.1 <2.5.0",
+          "from": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz",
           "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz"
         }
       }

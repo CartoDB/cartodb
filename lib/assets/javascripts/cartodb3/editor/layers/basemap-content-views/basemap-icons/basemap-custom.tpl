@@ -1,0 +1,3 @@
+<svg width="22px" height="24px" viewBox="966 769 22 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <path d="M973.5,791.5 L966.5,786.5 L966.5,770.5 L973.5,775.5 L980.5,770.5 L987.5,775.5 L987.5,791.5 L980.5,786.5 L973.5,791.5 Z M973.5,775.5 L973.5,791.5 L973.5,775.5 Z M980.5,786.5 L980.5,770.531 L980.5,786.5 Z" id="Shape" stroke="#AAAAAA" stroke-width="1" fill="none"></path>
+</svg>

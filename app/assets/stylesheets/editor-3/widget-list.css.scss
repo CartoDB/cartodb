@@ -98,6 +98,56 @@
   background-image: image-url('layout/widgets/timeSeries_color.svg');
 }
 
+.Widget-selectTitle {
+  width: 124px;
+}
+
+.Widget-categoryFake {
+  height: 4px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: $cSecondaryBackground;
+  box-sizing: border-box;
+}
+.Widget-categoryFakeText {
+  width: 100px;
+  height: 4px;
+  margin: 7px 0;
+  border-radius: 10px;
+  background: #F2F6F9;
+}
+.Widget-histogramFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
+}
+.Widget-histogramFakeContainer .Widget-categoryFakeText {
+  margin-bottom: 9px;
+}
+.Widget-histogramFake {
+  position: relative;
+  height: 20px;
+  border-top: 1px solid $cSecondaryLine;
+  border-bottom: 1px solid $cSecondaryLine;
+}
+.Widget-histogramFake::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: $cSecondaryLine;
+  content: '';
+}
+.Widget-formulaFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
+}
+.Widget-formulaFake {
+  position: relative;
+  width: 96px;
+  height: 20px;
+  background: $cSecondaryLine;
+}
 
 
 

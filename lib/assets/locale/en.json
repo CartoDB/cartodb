@@ -1336,7 +1336,9 @@
           "suffix": "Suffix",
           "title": "Title",
           "title-label": "Data",
-          "value": "Value"
+          "value": "Value",
+          "aggregate-by": "aggregate by",
+          "operation-column": "operation column"
         },
         "style": {
           "title-label": "Style",

@@ -26,7 +26,7 @@ describe Carto::VisualizationsExportService2 do
       title: 'the title',
       kind: 'geom', # geom / raster
       attributions: 'the attributions',
-      state: { manolo: 'escobar' },
+      state: { 'manolo' => 'escobar' },
       bbox: '0103000000010000000500000031118AC72D246AC1A83916DE775E51C131118AC72D246AC18A9C928550D5614101D5E410F03E7' +
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
       display_name: 'the display_name',

@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "source": "Source",
     "area-of-influence": "Area of influence",
     "centroid": "Centroid",
     "cluster": "Cluster",

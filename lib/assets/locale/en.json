@@ -793,6 +793,7 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "unpublished-changes": "Unpublished changes",
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",

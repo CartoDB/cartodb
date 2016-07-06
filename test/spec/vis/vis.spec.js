@@ -215,6 +215,7 @@ var fakeVizJSON = function () {
 describe('vis/vis', function () {
   beforeEach(function () {
     this.vis = new Vis();
+    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
   });
 
   it('.trackLoadingObject .untrackLoadingObject and .clearLoadingObjects should change the loading attribute', function () {
@@ -452,8 +453,6 @@ describe('vis/vis', function () {
 
     describe('polling', function () {
       beforeEach(function () {
-        spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-
         this.vizjson = {
           'id': '70af2a72-0709-11e6-a834-080027880ca6',
           'version': '3.0.0',
@@ -875,6 +874,19 @@ describe('vis/vis', function () {
       this.vis.setError('something');
 
       expect(callback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('.instantiateMap', function () {
+    it('should trigger a `reload` event', function () {
+      var reloadCallback = jasmine.createSpy('reloadCallback');
+
+      this.vis.load(new VizJSON(fakeVizJSON()));
+      this.vis.on('reload', reloadCallback);
+
+      this.vis.instantiateMap();
+
+      expect(reloadCallback).toHaveBeenCalled();
     });
   });
 

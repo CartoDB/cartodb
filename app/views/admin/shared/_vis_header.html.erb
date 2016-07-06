@@ -3,18 +3,22 @@
 
     <div class="header_content">
 
-      <div class="vis_navigation">
-        <nav>
-          <%= link_to "Map",  "#/map",   :class => "smaller strong tab" %>
-          <%= link_to "Table", "#/table", :class => "smaller strong tab hidden" %>
 
-        </nav>
-      </div>
 
       <div class="left">
         <ul class="actions">
-          <li><%= link_to "Back", CartoDB.path(self, 'root'), :class => "back" %></li>
           <li><a class="privacy" href="#/visualize"><i class="privacy-status"></i></a></li>
+          <li><form>
+              <input type="text" />
+              <input type="submit" />
+          </li></form>
+          <li><a class="dropdown add_overlay button" href="#">Annotate</a></li>
+          <li><div class="vis_navigation">
+            <nav>
+              <%= link_to "Map",  "#/map",   :class => "smaller strong tab" %>
+              <%= link_to "Table", "#/table", :class => "smaller strong tab hidden" %>
+            </nav>
+          </div></li>
         </ul>
       </div>
 

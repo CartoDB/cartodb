@@ -58,7 +58,7 @@ module Carto
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
-        state: exported_visualization[:state]
+        state: exported_visualization[:state].deep_symbolize_keys
       )
 
       active_layer_order = exported_layers.index { |l| l['active_layer'] }

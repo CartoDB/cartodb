@@ -57,7 +57,9 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def viz_updated_at
-    get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
+    latest_mapcap = visualization.latest_mapcap
+
+    latest_mapcap ? latest_mapcap.created_at : get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
   def self.provider_for_baselayer_kind(kind)

@@ -383,7 +383,7 @@
             "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Calculate centroid for a set of geometries",
+            "title": "Calculate centroid of geometries",
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {

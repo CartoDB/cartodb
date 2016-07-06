@@ -21,9 +21,8 @@ describe('windshaft/map-base', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    // Disable ajax and debounce for these tests
+    // Disable ajax for these tests
     spyOn($, 'ajax').and.callFake(function () {});
-    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
     this.windshaftMapInstance = {
       layergroupid: 'layergroupid',

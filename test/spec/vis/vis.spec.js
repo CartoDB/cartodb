@@ -453,6 +453,8 @@ describe('vis/vis', function () {
 
     describe('polling', function () {
       beforeEach(function () {
+        spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
         this.vizjson = {
           'id': '70af2a72-0709-11e6-a834-080027880ca6',
           'version': '3.0.0',
@@ -878,6 +880,10 @@ describe('vis/vis', function () {
   });
 
   describe('.instantiateMap', function () {
+    beforeEach(function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+    });
+
     it('should trigger a `reload` event', function () {
       var reloadCallback = jasmine.createSpy('reloadCallback');
 

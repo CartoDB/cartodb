@@ -37,31 +37,12 @@
       </li>
       <li class="u-lSpace--xl">
         <button class="u-flex u-alignCenter CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addColumn">
-          <svg width="16px" height="7px" viewBox="0 0 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <defs>
-                  <rect id="path-1" x="3" y="0" width="1" height="7"></rect>
-                  <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="1" height="7" fill="white">
-                      <use xlink:href="#path-1"></use>
-                  </mask>
-                  <rect id="path-3" x="0" y="3" width="7" height="1"></rect>
-                  <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="7" height="1" fill="white">
-                      <use xlink:href="#path-3"></use>
-                  </mask>
-                  <rect id="path-5" x="9" y="0" width="3" height="7"></rect>
-                  <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="3" height="7" fill="white">
-                      <use xlink:href="#path-5"></use>
-                  </mask>
-                  <rect id="path-7" x="13" y="0" width="3" height="7"></rect>
-                  <mask id="mask-8" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="3" height="7" fill="white">
-                      <use xlink:href="#path-7"></use>
-                  </mask>
-              </defs>
-              <g id="Add-Column" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                  <use id="Rectangle-1416" stroke="#1181FB" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
-                  <use id="Rectangle-1417" stroke="#1181FB" mask="url(#mask-4)" stroke-width="2" xlink:href="#path-3"></use>
-                  <use id="Rectangle-1418" stroke="#1181FB" mask="url(#mask-6)" stroke-width="2" xlink:href="#path-5"></use>
-                  <use id="Rectangle-1418" stroke="#1181FB" mask="url(#mask-8)" stroke-width="2" xlink:href="#path-7"></use>
-              </g>
+          <svg width="16px" height="7px" viewBox="565 455 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <g id="Add-Column" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(565.000000, 455.000000)">
+              <path d="M3,7 L4,7 L4,0 L3,0 L3,7 Z M7,4 L7,3 L0,3 L0,4 L7,4 Z" id="Combined-Shape" fill="#1181FB"></path>
+              <path d="M9,1 L9,1 L10,0 L10,7 L9,6 L12,6 L11,7 L11,0 L12,1 L9,1 Z M9,0 L12,0 L12,7 L9,7 L9,0 L9,0 Z" id="Rectangle-1418" fill="#1181FB"></path>
+              <path d="M13,1 L13,1 L14,0 L14,7 L13,6 L16,6 L15,7 L15,0 L16,1 L13,1 Z M13,0 L16,0 L16,7 L13,7 L13,0 L13,0 Z" id="Rectangle-1418" fill="#1181FB"></path>
+            </g>
           </svg>
           <span class="u-lSpace">
             <%- _t('dataset.options.add-column') %>

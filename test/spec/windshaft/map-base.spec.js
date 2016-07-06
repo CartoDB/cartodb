@@ -21,9 +21,8 @@ describe('windshaft/map-base', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    // Disable ajax and debounce for these tests
+    // Disable ajax for these tests
     spyOn($, 'ajax').and.callFake(function () {});
-    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
     this.windshaftMapInstance = {
       layergroupid: 'layergroupid',
@@ -216,6 +215,14 @@ describe('windshaft/map-base', function () {
         });
 
         expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
+      });
+
+      it('should trigger the `instanceRequested` event', function () {
+        var instanceRequestedCallback = jasmine.createSpy('instanceRequestedCallback');
+        this.windshaftMap.bind('instanceRequested', instanceRequestedCallback);
+        this.windshaftMap.createInstance();
+
+        expect(instanceRequestedCallback).toHaveBeenCalled();
       });
 
       it('should trigger the `instanceCreated` event', function () {

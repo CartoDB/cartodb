@@ -86,6 +86,8 @@ var WindshaftMap = Backbone.Model.extend({
     var params = request.params;
     var options = request.options;
 
+    this.trigger('instanceRequested');
+
     this.client.instantiateMap({
       mapDefinition: payload,
       params: params,
@@ -98,10 +100,8 @@ var WindshaftMap = Backbone.Model.extend({
       }.bind(this),
       error: function (response) {
         this._trackRequest(request, response);
-
         var windshaftErrors = this._getErrorsFromResponse(response);
         this._modelUpdater.setErrors(windshaftErrors);
-
         log.error('Request to Maps API failed');
         options.error && options.error();
       }.bind(this)

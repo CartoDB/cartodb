@@ -38,32 +38,38 @@ var VisModel = Backbone.Model.extend({
     this.overlaysCollection = new Backbone.Collection();
   },
 
-  setOk: function () {
-    this.trigger('ok');
-    this.set('state', STATE_OK);
+  done: function (callback) {
+    this._doneCallback = callback;
+    return this;
   },
 
-  done: function (callback) {
-    this.once('ok', function () {
-      if (this.get('state') === STATE_INIT) {
-        callback(this);
-      }
-    }, this);
+  setOk: function () {
+    // Invoke this._doneCallback if present, the first time
+    // the vis is instantiated correctly
+    if (this.get('state') === STATE_INIT) {
+      this._doneCallback && this._doneCallback(this);
+    }
+
+    this.set('state', STATE_OK);
+    this.unset('error');
+  },
+
+  error: function (callback) {
+    this._errorCallback = callback;
     return this;
   },
 
   setError: function (error) {
-    this.trigger('error', error);
-    this.set('state', STATE_ERROR);
-  },
+    // Invoke this._errorCallback if present, the first time
+    // the vis is instantiated and the're some errors
+    if (this.get('state') === STATE_INIT) {
+      this._errorCallback && this._errorCallback(error);
+    }
 
-  error: function (callback) {
-    this.once('error', function (error) {
-      if (this.get('state') === STATE_INIT) {
-        callback(error);
-      }
-    }, this);
-    return this;
+    this.set({
+      state: STATE_ERROR,
+      error: error
+    });
   },
 
   /**
@@ -177,6 +183,7 @@ var VisModel = Backbone.Model.extend({
       map: this.map
     });
 
+    this._windshaftMap.bind('instanceRequested', this._onMapInstanceRequested, this);
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
@@ -197,6 +204,10 @@ var VisModel = Backbone.Model.extend({
     _.defer(function () {
       this.trigger('load', this);
     }.bind(this));
+  },
+
+  _onMapInstanceRequested: function () {
+    this.trigger('reload');
   },
 
   _onMapInstanceCreated: function () {

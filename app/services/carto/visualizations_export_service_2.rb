@@ -8,7 +8,7 @@ require 'json'
 # 2.0.1: export Widget.source_id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.1'.freeze
+    CURRENT_VERSION = '2.0.2'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -57,7 +57,8 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
+        state: exported_visualization[:state]
       )
 
       active_layer_order = exported_layers.index { |l| l['active_layer'] }
@@ -205,7 +206,8 @@ module Carto
         map: export_map(visualization.map),
         layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
-        analyses: visualization.analyses.map { |a| exported_analysis(a) }
+        analyses: visualization.analyses.map { |a| exported_analysis(a) },
+        state: visualization.state
       }
     end
 

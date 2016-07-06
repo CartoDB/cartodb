@@ -28,7 +28,7 @@
     "sampling": "Subsample percent of rows",
     "kmeans": "Calculate clusters of points",
     "moran-cluster": "Detect outliers and hotspots",
-    "spatial-markov-trend": "Predict trend and volatility"
+    "spatial-markov-trend": "Predict trends and volatility"
   },
   "analysis-category": {
     "create-clean": "Create and clean",

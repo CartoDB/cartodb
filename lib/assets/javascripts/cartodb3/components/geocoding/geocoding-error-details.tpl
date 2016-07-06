@@ -3,7 +3,7 @@
     <i class="CDB-IconFont CDB-IconFont-<%- geometryType && geometryType === "point" ? 'streets' : 'globe' %>"></i>
     <span class="Badge Badge--negative">!</span>
   </div>
-  <p class="Dialog-headerTitle"><%- _t('components.geocoding.geocoding-error-details.title') %></p>
+  <p class="Dialog-headerTitle u-errorTextColor"><%- _t('components.geocoding.geocoding-error-details.title') %></p>
   <p class="Dialog-headerText Dialog-headerText--centered Dialog-narrowerContent">
     <%- errorDescription || _t('components.geocoding.geocoding-error-details.description') %>.
     <% if (!customHosted && id) { %>

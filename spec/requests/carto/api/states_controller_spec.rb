@@ -84,7 +84,7 @@ describe Carto::Api::StatesController do
       )
     end
 
-    it 'update a mapcap' do
+    it 'update a state' do
       put update_state_url, state: state do |response|
         response.status.should eq 200
 

@@ -1,7 +1,14 @@
 <% if (!loading) { %>
-<div class="CDB-Text CDB-Size-medium">
-  <%= updatedOn %>
-</div>
+  <% if (isPublished) { %>
+  <div class="CDB-Text CDB-Size-medium">
+    <%= updatedOn %>
+  </div>
+  <% } else { %>
+  <div>
+    <h2 class="CDB-Text CDB-Size-large u-secondaryTextColor u-bSpace is-light"><%- _t('components.modals.share.unpublished-header') %></h2>
+    <p class="CDB-Text CDB-Size-medium is-light"><%- _t('components.modals.share.unpublished-subheader') %></p>
+  </div>
+  <% } %>
 <% } else { %>
 <div class="CDB-LoaderIcon is-dark">
   <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">

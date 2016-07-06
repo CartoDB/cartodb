@@ -44,7 +44,7 @@ shared_examples_for "organization models" do
   describe "#signup_page_enabled" do
 
     it 'is true if domain whitelist is not empty' do
-      get_organization.whitelisted_email_domains = ['cartodb.com']
+      get_organization.whitelisted_email_domains = ['carto.com']
       get_organization.signup_page_enabled.should == true
     end
 
@@ -57,4 +57,3 @@ shared_examples_for "organization models" do
   end
 
 end
-

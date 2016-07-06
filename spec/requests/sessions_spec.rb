@@ -171,4 +171,3 @@ feature "Sessions" do
   end
 
 end
-

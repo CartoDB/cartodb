@@ -15,7 +15,7 @@
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-form">
-              <h1 class="Sessions-title u-vspace-xs">Login to CartoDB</h1>
+              <h1 class="Sessions-title u-vspace-xs">Login to CARTO</h1>
               <p class="Sessions-description">Help other people understand the world we live in, with maps.</p>
 
               <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
@@ -86,12 +86,12 @@
       </div>
     </div>
   </div>
-  
+
   <% unless cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin">
-          <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://cartodb.com/signup" %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://carto.com/signup" %></p>
         </div>
       </div>
     </footer>

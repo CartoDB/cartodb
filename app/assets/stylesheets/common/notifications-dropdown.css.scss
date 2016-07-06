@@ -10,37 +10,29 @@
 .NotificationsList-item {
   position: relative;
   margin: 0!important;
-  padding: $sMargin-element $sMargin-element $sMargin-element 53px!important;
+  padding: 16px;
   background: $cStructure-grayBkg;
 }
 .NotificationsList-item:last-child {
   border-radius: 0 0 2px 2px;
 }
 .NotificationsList-icon {
-  position: absolute;
-  top: 22px;
-  left: 20px;
   width: 18px;
+  min-width: 18px;
   height: 18px;
   border: 1px solid $cTypography-help;
   border-radius: 20px;
   font-size: $sFontSize-small;
   line-height: 17px;
-  color: $cTypography-help;
-  text-align: center;
+  margin-right: 8px;
 }
 .NotificationsList-title {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
   text-transform: capitalize;
-  color: $cTypography-headers;
 }
 .NotificationsList-text {
   margin-top: 0!important;
-  color: $cTypography-secondary;
 }
 .Notifications-iconCount {
-  top:21px;
   width: $sLineHeight-normal;
   height: $sLineHeight-normal;
   background: rgba(#CCC, 1);
@@ -61,12 +53,9 @@
   background: none;
 }
 .NotificationsList-item.is-new {
-  margin: 0 $sMargin-element $sMargin-element!important;
-  padding: $sMargin-element 0 0 33px!important;
   border-top: 1px solid $cStructure-mainLine;
   background: white;
 
-  .NotificationsList-text { color:$cTypography-headers }
   .NotificationsList-icon {
     color: inherit;
     left: 0

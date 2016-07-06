@@ -25,6 +25,7 @@
     "georeference": "Georeference",
     "intersection": "Intersection",
     "kmeans": "Cluster",
+    "merge": "Merge",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "sampling": "Sampling",
@@ -362,6 +363,10 @@
           "filter": {
             "title": "Filter",
             "desc": "Filter your rows depending on the values of a column"
+          },
+          "merge": {
+            "title": "Merge",
+            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
           },
           "moran-cluster": {
             "title": "Moran cluster",
@@ -921,6 +926,12 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "input-num": "Input #%{num}",
+        "define-two-layers": "Define two layers",
+        "keep-columns": "Select the columns you want to keep",
+        "foreign-keys": "Foreign Keys",
+        "no-coincidence": "When no coincidence no row will be added",
+        "columns": "Columns",
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -950,6 +961,7 @@
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "Linked layer col.",
+        "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
         "georeference-ip-address": "IP Addresses",
@@ -970,6 +982,10 @@
         "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
+        "left": 'Left',
+        "right": 'Right',
+        "inner": 'Inner',
+        "join-type": 'Join Type',
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",

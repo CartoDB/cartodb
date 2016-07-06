@@ -14,6 +14,15 @@
         <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.column') %></p>
         <div class="Editor-formInput" data-editors="column"></div>
       </div>
+
+      <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
+        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"></p>
+        <div class="js-Histogram"></div>
+        <div class="js-min"></div>
+        <div class="js-max"></div>
+      </div>
+
+
     </div>
   </div>
   <% if (column) { %>

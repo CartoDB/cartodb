@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "source": "Source",
     "area-of-influence": "Area of influence",
     "centroid": "Centroid",
     "cluster": "Cluster",
@@ -988,7 +989,7 @@
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
-        "create-btn": "Create",
+        "create-btn": "Apply",
         "data-values": "Data values",
         "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",

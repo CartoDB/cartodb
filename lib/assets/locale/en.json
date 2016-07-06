@@ -20,7 +20,7 @@
     "georeference": "Georeference",
     "data-observatory-measurement": "Enrich from Data Observatory",
     "merge": "Join columns from 2nd layer",
-    "filter-by-node-column": "Join columns from 2nd layer",
+    "filter-by-node-column": "Link 2 layers in 1 widget",
     "centroid": "Centroid from geometries",
     "area-of-influence": "Expand points into polygons",
     "intersection": "Intersection",
@@ -387,8 +387,8 @@
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Add columns from second layer",
-            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
+            "title": "Link 2 layers in 1 widget",
+            "desc": "Join two layers by shared values in a column such that filters will effect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",

@@ -827,7 +827,7 @@
             "subtitle": "Change map elements"
           },
           "elements": {
-            "search": "Seach box",
+            "search": "Search box",
             "zoom": "Zoom controls",
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",

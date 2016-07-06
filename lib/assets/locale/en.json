@@ -40,10 +40,6 @@
   "form-components": {
     "editors": {
       "fill": {
-        "switch": {
-          "to-categories": "Switch to categories",
-          "to-ramps": "Switch to ramps"
-        },
         "customize": "Custom color set",
         "quantification": {
           "title": "Quantification",
@@ -51,7 +47,8 @@
             "jenks": "Jenks",
             "equal": "Equal Interval",
             "headtails": "Heads/Tails",
-            "quantiles": "Quantiles"
+            "quantiles": "Quantiles",
+            "category": "Category"
           }
         },
         "bins": "Buckets",
@@ -232,6 +229,21 @@
       "placeholder": "Add tags"
     },
     "modals": {
+      "export-data": {
+        "title": "Export data",
+        "desc": "Select the preferred file format",
+        "no-geometry": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+        "loading": {
+          "geometry": "Checking geometries...",
+          "preparing": "Preparing content..."
+        },
+        "errors": {
+          "title": "There was an error",
+          "geometry-error": "We can't reach data geometries",
+          "unknown": "An error occurred"
+        },
+        "cancel": "Cancel"
+      },
       "maps-metadata": {
         "modal-title": "Map metadata",
         "modal-desc": "Edit the attributtes of your map",
@@ -722,6 +734,15 @@
   "dataset": {
     "sql": "SQL",
     "updated": "Updated %{ago}",
+    "options": {
+      "add-row": "Add row",
+      "add-column": "Add column",
+      "export": "Export"
+    },
+    "preview-map": {
+      "preview": "preview",
+      "back": "back"
+    },
     "create-map": {
       "title": "Create map",
       "loading": "Creating a map from %{tableName}",
@@ -810,7 +831,7 @@
             "subtitle": "Change map elements"
           },
           "elements": {
-            "search": "Seach box",
+            "search": "Search box",
             "zoom": "Zoom controls",
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",
@@ -883,6 +904,7 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer"
       },
@@ -1315,7 +1337,9 @@
           "suffix": "Suffix",
           "title": "Title",
           "title-label": "Data",
-          "value": "Value"
+          "value": "Value",
+          "aggregate-by": "aggregate by",
+          "operation-column": "operation column"
         },
         "style": {
           "title-label": "Style",

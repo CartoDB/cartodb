@@ -57,6 +57,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
+  serialize :state, ::Carto::CartoJsonSerializer
   validates :state, carto_json_symbolizer: true
 
   def self.columns

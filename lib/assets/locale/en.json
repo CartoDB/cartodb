@@ -355,8 +355,8 @@
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
-            "title": "Area of influence",
-            "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
+            "title": "Expand points into polygons",
+            "desc": "Use travel time (walking, biking, or driving) or euclidean distance to calculate polygon boundaries around point locations."
           },
           "point-in-polygon": {
             "title": "Point in polygon",
@@ -379,8 +379,8 @@
             "desc": "Takes two layers and returns a layer with the result of joining both datasets"
           },
           "moran-cluster": {
-            "title": "Moran cluster",
-            "desc": "Find areas which have similar values and identify outliers"
+            "title": "Detect outliers and hotspots",
+            "desc": "Use Moran's I to calculate high (HL) and low (LH) outliers and high (HH) and low (LL) hotspots"
           },
           "kmeans": {
             "title": "Cluster",

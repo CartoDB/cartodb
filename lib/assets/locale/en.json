@@ -25,10 +25,12 @@
     "georeference": "Georeference",
     "intersection": "Intersection",
     "kmeans": "Cluster",
+    "merge": "Merge",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation"
+    "spatial-markov-trend": "Temporal simulation",
+    "data-observatory-measurement": "Data Observatory"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -362,6 +364,10 @@
             "title": "Filter",
             "desc": "Filter your rows depending on the values of a column"
           },
+          "merge": {
+            "title": "Merge",
+            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
+          },
           "moran-cluster": {
             "title": "Moran cluster",
             "desc": "Find areas which have similar values and identify outliers"
@@ -385,6 +391,10 @@
           "spatial-markov-trend": {
             "title": "Temporal simulation",
             "desc": "Predict trends based on temporal series"
+          },
+          "data-observatory-measure": {
+            "title": "Data Observatory",
+            "desc": "Augment your table with data from Data Observatory"
           }
         }
       },
@@ -784,19 +794,34 @@
     "button_add": "Add",
     "button_share": "SHARE",
     "settings": {
-      "title": "Map options",
-      "options": {
-        "title": "Fixed title",
-        "description": "Fixed description",
-        "search": "Seach box",
-        "zoom": "Zoom controls",
-        "fullscreen": "Fullscreen",
-        "share": "Share options",
-        "scrollwheel": "Scroll wheel zoom",
-        "layer_selector": "Layer selector",
-        "legends": "Legends",
-        "logo": "CartoDB Logo"
-      }
+      "menu-tab-pane-labels": {
+        "preview": "Preview",
+        "snapshots": "Snapshots"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mode"
+        },
+        "options": {
+          "title": "Map Options",
+          "subtitle": "Components that are shown in the map",
+          "description": {
+            "title": "Components",
+            "subtitle": "Change map elements"
+          },
+          "elements": {
+            "search": "Seach box",
+            "zoom": "Zoom controls",
+            "fullscreen": "Fullscreen",
+            "scrollwheel": "Scroll wheel zoom",
+            "layer_selector": "Layer selector",
+            "logo": "CartoDB Logo",
+            "widgets": "Widgets column",
+          }
+        }
+      },
+
+
     },
     "maps": {
       "options": {
@@ -916,6 +941,12 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "input-num": "Input #%{num}",
+        "define-two-layers": "Define two layers",
+        "keep-columns": "Select the columns you want to keep",
+        "foreign-keys": "Foreign Keys",
+        "no-coincidence": "When no coincidence no row will be added",
+        "columns": "Columns",
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -945,6 +976,7 @@
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "Linked layer col.",
+        "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
         "georeference-ip-address": "IP Addresses",
@@ -965,6 +997,10 @@
         "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
+        "left": 'Left',
+        "right": 'Right',
+        "inner": 'Inner',
+        "join-type": 'Join Type',
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",
@@ -1012,7 +1048,12 @@
         "spatial-markov-trend-desc": "select the columns with temporal value series",
         "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "data-observatory-measurement-area": "Zone",
+        "data-observatory-measurement-column": "Column",
+        "data-observatory-measurement-measurement": "Measurement",
+        "data-observatory-measurement-desc": "enrich your data",
+        "data-observatory-measurement-refine": "refine your selection"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

@@ -1294,7 +1294,26 @@ namespace :cartodb do
         end
       end
     end
-    
+
+    desc 'Connect aggregation tables through FDW to builder users'
+    task :connect_aggregation_fdw_tables_to_builder_users => :environment do
+      unless Cartodb.get_config(:aggregation_tables).present?
+        raise "Aggregation tables not configured!"
+      end
+      # We're using a PostgreSQL cursor to avoid loading all the users
+      # in memory at once. (For ActiveRecord we'd use `find_each`)
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        if user.has_feature_flag?('editor-3')
+          begin
+            user.db_service.connect_to_aggregation_tables
+          rescue => e
+            puts "Error trying to connect #{user.username}: #{e.message}"
+            puts e.backtrace
+          end
+        end
+      end
+    end
+
     # usage:
     #   bundle exec rake cartodb:db:obs_quota_enterprise[1000]
     desc 'Give data observatory quota to all the enterprise users'

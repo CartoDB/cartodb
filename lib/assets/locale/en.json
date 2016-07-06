@@ -21,7 +21,7 @@
     "data-observatory-measurement": "Enrich with the Data Observatory",
     "merge": "Append rows from second layer",
     "filter-by-node-column": "Join columns from second layer",
-    "centroid": "Calculate centroid for sets of geometries",
+    "centroid": "Calculate centroid for a set of geometries",
     "area-of-influence": "Expand points into polygons",
     "intersection": "Filter or aggregate by intersection",
     "filter": "Filter by column value",
@@ -376,31 +376,31 @@
           },
           "moran-cluster": {
             "title": "Detect outliers and hotspots",
-            "desc": "Use Moran's I to calculate high (HL) and low (LH) outliers and high (HH) and low (LL) hotspots"
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) hotspots."
           },
           "kmeans": {
             "title": "Calculate clusters of points",
             "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Generate centroid for each geometry",
-            "desc": "Calculate the spatial centroid of a geometry based on the values of a weight column"
+            "title": "Calculate centroid for a set of geometries",
+            "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link to layer",
-            "desc": "Link two layers with matching column names"
+            "title": "Join columns from second layer",
+            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "sampling": {
-            "title": "Sampling",
-            "desc": "Return a percentage of your data"
+            "title": "Subsample percent of rows",
+            "desc": "Subsample the rows in a dataset based on a specified percent."
           },
           "spatial-markov-trend": {
-            "title": "Temporal simulation",
-            "desc": "Predict trends based on temporal series"
+            "title": "Predict trends and volatility",
+            "desc": "Use periodic temporal data to predict probability of upward and downward trend in next period."
           },
           "data-observatory-measure": {
-            "title": "Data Observatory",
-            "desc": "Augment your table with data from Data Observatory"
+            "title": "Enrich with the Data Observatory",
+            "desc": "Add a new column containing contextual demographic and economic measures for each row."
           }
         }
       },

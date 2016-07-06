@@ -82,3 +82,10 @@
 .Dataset-editor .CodeMirror-message {
   padding: 0 25px;
 }
+.Dataset-tablePreview {
+  color: $cBlue;
+}
+.is-dark .Dataset-tablePreview {
+  color: $cWhite;
+}
+

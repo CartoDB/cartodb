@@ -235,7 +235,10 @@
         "modal-desc": "Select from these great resources",
         "adding-new-basemap": "Adding new basemap…",
         "add-basemap-error": "Could not add basemap",
-        "add-btn": "Add basemap"
+        "add-btn": "Add basemap",
+        "validating": "Validating…",
+        "saving": "Saving layer…",
+        "fetching": "Fetching layers…",
       },
       "maps-metadata": {
         "modal-title": "Map metadata",

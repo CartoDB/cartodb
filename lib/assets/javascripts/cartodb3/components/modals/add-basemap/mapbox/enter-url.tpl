@@ -1,23 +1,25 @@
 <div class="ImportPanel">
   <div class="ImportPanel-header">
-    <h3 class="ImportPanel-headerTitle">Insert your XYZ URL</h3>
+    <h3 class="ImportPanel-headerTitle">Insert your Mapbox URL</h3>
   </div>
   <div class="Form-row">
     <div class="Form-rowLabel">
-      <label class="Form-label">Enter a URL</label>
+      <label class="Form-label">Enter your map ID/URL</label>
     </div>
     <div class="Form-rowData Form-rowData--longer">
-      <input type="text" class="Form-input Form-input--longerMorePadding has-icon XYZPanel-input js-url" value="" placeholder="E.g. http://{s}.cartodb.com/foobar/{z}/{x}/{y}.png">
-      <i class="Spinner XYZPanel-inputIcon XYZPanel-inputIcon--loader Spinner--formIcon Form-inputIcon js-validating" style="display: none;"></i>
-      <div class="Checkbox XYZPanel-inputCheckbox js-tms" data-title="Inverts Y axis numbering for tiles">
-        <button class="Checkbox-input"></button>
-        <label class="Checkbox-label">TMS</label>
-      </div>
-      <div class="Form-inputError js-error"></div>
+      <input type="text" class="Form-input Form-input--longer js-url" value="<%- url %>" placeholder="E.g. username.ab12cd3">
+    </div>
+  </div>
+  <div class="Form-row">
+    <div class="Form-rowLabel">
+      <label class="Form-label">Enter your access token</label>
+    </div>
+    <div class="Form-rowData Form-rowData--longer">
+      <input type="text" class="Form-input Form-input--longer js-access-token" value="<%- accessToken %>" placeholder="E.g. pk.bfg32ewdsadeyJ1Ijoi…">
+      <div class="Form-inputError js-error <%- lastErrorMsg ? 'is-visible' : '' %>"><%- lastErrorMsg %></div>
     </div>
   </div>
 </div>
-
 <div class="Dialog-footer Dialog-footer--expanded CreateDialog-footer">
   <div>
     <div class="CreateDialog-footerShadow"></div>

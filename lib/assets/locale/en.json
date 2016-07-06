@@ -356,15 +356,15 @@
         "option-types": {
           "area-of-influence": {
             "title": "Expand points into polygons",
-            "desc": "Use travel time (walking, biking, or driving) or euclidean distance to calculate polygon boundaries around point locations."
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate polygon from points."
           },
           "georeference": {
             "title": "Georeference",
-            "desc": "Use textual descriptions of places (street addresses, city names, country names, etc.) to generate point geometries."
+            "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "intersection": {
             "title": "Intersect second layer",
-            "desc": "Filter rows based intersection with second layer. Aggregate data in a second layer and add as a new column."
+            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
           },
           "filter": {
             "title": "Filter rows by column value",
@@ -372,7 +372,7 @@
           },
           "merge": {
             "title": "Append rows from second layer",
-            "desc": "Join the rows from two layers by adding rows of a second layer underneith the rows of the current layer."
+            "desc": "Append the rows from a second layer to the bottom of current layer."
           },
           "moran-cluster": {
             "title": "Detect outliers and hotspots",
@@ -400,7 +400,7 @@
           },
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
-            "desc": "Add a new column containing contextual demographic and economic measures for each row."
+            "desc": "Add a new columns with contextual demographic and economic measures."
           }
         }
       },

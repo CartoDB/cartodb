@@ -1,31 +1,34 @@
+var specHelper = require('../../spec-helper');
 var CategoryAutoStyler = require('../../../src/widgets/auto-style/category.js');
 var Backbone = require('backbone');
 
 describe('src/widgets/auto-style/category', function () {
   beforeEach(function () {
+    var vis = specHelper.createDefaultVis();
+    var layer = vis.map.layers.first();
     this.dataview = new Backbone.Model({
       allCategoryNames: ['a', 'b', 'c'],
       column: 'something'
     });
-
-    this.layer = this.dataview.layer = jasmine.createSpyObj('layer', ['getGeometryType']);
+    this.layer = this.dataview.layer = layer;
     this.categoryAutoStyler = new CategoryAutoStyler(this.dataview);
   });
 
   describe('.getStyle', function () {
     it('should generate the right styles when layer has polygons', function () {
-      this.layer.getGeometryType.and.returnValue('polygon');
-      expect(this.categoryAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{polygon-fill:#E1C221;polygon-opacity:0.6;line-color:#FFF;line-width:0.3;line-opacity:0.3;[something=\'a\']{polygon-fill:#E1C221;}[something=\'b\']{polygon-fill:#E1C221;}[something=\'c\']{polygon-fill:#E1C221;}}');
+      this.dataview.layer.set('initialStyle', '#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: #e49115;  polygon-fill-opacity: 0.9; }');
+      var style = this.categoryAutoStyler.getStyle();
+      expect(style.indexOf('[something=\'a\']{\npolygon-fill:')).not.toBeLessThan(0);
     });
 
     it('should generate the right styles when layer has points', function () {
-      this.layer.getGeometryType.and.returnValue('marker');
-      expect(this.categoryAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{marker-width:10;marker-fill-opacity:0.8;marker-fill:#E1C221;marker-line-color:#fff;marker-allow-overlap:true;marker-line-width:0.3;marker-line-opacity:0.8;[something=\'a\']{marker-fill:#E1C221;}[something=\'b\']{marker-fill:#E1C221;}[something=\'c\']{marker-fill:#E1C221;}}');
+      this.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+      expect(this.categoryAutoStyler.getStyle().indexOf('[something=\'a\']{\nmarker-fill:')).not.toBeLessThan(0);
     });
 
     it('should generate the right styles when layer has lines', function () {
-      this.layer.getGeometryType.and.returnValue('line');
-      expect(this.categoryAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{line-color:#E1C221;line-width:0.3;line-opacity:0.3;[something=\'a\']{line-color:#E1C221;}[something=\'b\']{line-color:#E1C221;}[something=\'c\']{line-color:#E1C221;}}');
+      this.dataview.layer.set('initialStyle', '#layer {  line-width: 0.5;  line-color: #fcfafa;  line-opacity: 1; }');
+      expect(this.categoryAutoStyler.getStyle().indexOf('[something=\'a\']{\nline-color:')).not.toBeLessThan(0);
     });
   });
 });

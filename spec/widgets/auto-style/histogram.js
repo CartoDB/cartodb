@@ -1,30 +1,34 @@
 var HistogramAutoStyler = require('../../../src/widgets/auto-style/histogram.js');
 var Backbone = require('backbone');
+var specHelper = require('../../spec-helper');
 
 describe('src/widgets/auto-style/histogram', function () {
   beforeEach(function () {
+    var vis = specHelper.createDefaultVis();
+    var layer = vis.map.layers.first();
     this.dataview = new Backbone.Model({
       column: 'something'
     });
 
-    this.layer = this.dataview.layer = jasmine.createSpyObj('layer', ['getGeometryType']);
+    this.dataview.getDistributionType = jasmine.createSpy('disttype').and.returnValue('F');
+    this.layer = this.dataview.layer = layer;
     this.histogramAutoStyler = new HistogramAutoStyler(this.dataview);
   });
 
   describe('.getStyle', function () {
     it('should generate the right styles when layer has polygons', function () {
-      this.layer.getGeometryType.and.returnValue('polygon');
-      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('#layer{polygon-fill:ramp([something]')).not.toBeLessThan(0);
+      this.dataview.layer.set('initialStyle', '#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: #e49115;  polygon-fill-opacity: 0.9; }');
+      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('{{')).toBeLessThan(0);
     });
 
     it('should generate the right styles when layer has points', function () {
-      this.layer.getGeometryType.and.returnValue('marker');
-      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{marker-width:ramp([something],1,20,undefined);marker-fill-opacity:0.8;marker-fill:#000;marker-line-color:#fff;marker-allow-overlap:true;marker-line-width:0.3;marker-line-opacity:0.8;}');
+      this.dataview.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
+      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('{{')).toBeLessThan(0);
     });
 
     it('should generate the right styles when layer has lines', function () {
-      this.layer.getGeometryType.and.returnValue('line');
-      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '')).toEqual('#layer{line-color:#000;line-width:0.3;line-opacity:0.3;}');
+      this.dataview.layer.set('initialStyle', '#layer {  line-width: 0.5;  line-color: #fcfafa;  line-opacity: 1; }');
+      expect(this.histogramAutoStyler.getStyle().replace(/\s/g, '').indexOf('{{')).toBeLessThan(0);
     });
   });
 });

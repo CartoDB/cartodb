@@ -25,9 +25,9 @@
   width: 100%;
 }
 
-@include media-query-mobile() {
+@media (max-width: 759px) {
   .CDB-Widget-contentSpaced--sideMargins {
-    margin-right: $sMargin-section / 3;
-    margin-left: $sMargin-section / 3;
+    margin-right: 12px;
+    margin-left: 12px;
   }
 }

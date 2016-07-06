@@ -1,33 +1,21 @@
 var AutoStyler = require('./auto-styler');
 var CategoryAutoStyler = AutoStyler.extend({
   getStyle: function () {
-    var style = '';
-    var defColor = this.colors.getColorByCategory('Other');
-    var stylesByGeometry = AutoStyler.STYLE_TEMPLATE;
-    var geometryType = this.layer.getGeometryType();
-    if (geometryType) {
-      var ramp = this._generateCategoryRamp(geometryType);
-      style = stylesByGeometry[geometryType]
-        .replace('{{ramp}}', ramp)
-        .replace('{{layername}}', '#layer{');
-    } else {
-      for (var symbol in stylesByGeometry) {
-        style += stylesByGeometry[symbol]
-          .replace('{{layername}}', this._getLayerHeader(symbol))
-          .replace('{{ramp}}', this._generateCategoryRamp(symbol));
-      }
-    }
-    return style
-      .replace(/{{defaultColor}}/g, defColor)
-      .replace('{{markerWidth}}', 10);
+    var style = this.layer.get('initialStyle');
+    if (!style) return;
+    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+      style = style.replace(new RegExp('\\' + 's' + item + ':.*?;', 'g'), this._generateCategoryRamp(item));
+    }.bind(this));
+    return style;
   },
 
   _generateCategoryRamp: function (sym) {
+    var ramp;
     var cats = this.dataviewModel.get('allCategoryNames');
-    var geomMap = { polygon: 'polygon-fill', marker: 'marker-fill', line: 'line-color' };
-    var ramp = cats.map(function (c, i) {
+    ramp = sym + ': ' + this.colors.getColorByCategory('OTHER') + ';';
+    ramp += cats.map(function (c, i) {
       var color = this.colors.getColorByCategory(c);
-      return '[' + this.dataviewModel.get('column') + '=\'' + cats[i] + '\']{\n' + geomMap[sym] + ': ' + color + ';\n}';
+      return '[' + this.dataviewModel.get('column') + '=\'' + cats[i] + '\']{\n' + sym + ': ' + color + ';\n}';
     }.bind(this)).join('\n');
     return ramp;
   }

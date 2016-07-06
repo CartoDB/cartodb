@@ -8,6 +8,7 @@ var template = require('./content.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
+var d3 = require('d3');
 
 /**
  * Widget content view for a histogram
@@ -37,7 +38,7 @@ module.exports = cdb.core.View.extend({
 
     var dropdown = new DropdownView({
       model: this.model,
-      target: this.$('.js-actions'),
+      target: '.js-actions',
       container: this.$('.js-header'),
       flags: {
         normalizeHistogram: true
@@ -74,6 +75,7 @@ module.exports = cdb.core.View.extend({
   _onFirstLoad: function () {
     this.render();
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
+    this._dataviewModel.once('change:data', function () {}, this);
     this.add_related_model(this._dataviewModel);
     this._dataviewModel.fetch();
   },
@@ -169,6 +171,17 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
+    this.histogramChartView.model.once('change:data', function () {
+      if (_.isNumber(this.model.get('min')) || _.isNumber(this.model.get('max'))) {
+        var scale = d3.scale.linear().domain([this._dataviewModel.get('start'), this._dataviewModel.get('end')]).range([0, this._dataviewModel.get('bins')]);
+        var lo = Math.round(scale(this.model.get('min')));
+        var hi = Math.round(scale(this.model.get('max')));
+        if (lo !== 0 && hi !== this._dataviewModel.get('bins') - 1) {
+          this.histogramChartView.selectRange(lo, hi);
+          this.model.set('filter_enabled', true);
+        }
+      }
+    }, this);
 
     this._updateStats();
   },
@@ -181,7 +194,8 @@ module.exports = cdb.core.View.extend({
       showOnWidthChange: false,
       data: this._dataviewModel.getData(),
       normalized: this.model.get('normalized'),
-      originalData: this._originalData
+      originalData: this._originalData,
+      widgetModel: this.model
     }));
 
     this.addView(this.miniHistogramChartView);
@@ -429,7 +443,9 @@ module.exports = cdb.core.View.extend({
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
-      hi_index: null
+      hi_index: null,
+      min: this._dataviewModel.start,
+      max: this._dataviewModel.end
     });
     this._dataviewModel.disableFilter();
     this.filter.unsetRange();

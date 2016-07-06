@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cluster/Outlier viz</title>
+  <meta name=viewport content="width=device-width initial-scale=1">
+  <link rel="stylesheet" href="../dist/themes/css/deep-insights.css" />
+  <script src="../dist/deep-insights.uncompressed.js"></script>
+  <style type="text/css">
+    html, body {
+      position:relative;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="Dashboard-canvas" id="dashboard"></div>
+
+  <script>
+    window.onload = function() {
+      var diJSON = {
+        "title": "NYPD: Stop, Question, and Frisk",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vulputate consequat vehicula. Sed eget leo a ex tempus cursus. Etiam consectetur cursus tortor, id dapibus elit condimentum id. Nulla sed gravida lorem, at ornare lectus. Aliquam quis erat porttitor, varius lectus eget, rhoncus mi...",
+        "user": {
+          "fullname": "Andy Eschbacher",
+          "avatar_url": "https://s3.amazonaws.com/com.cartodb.users-assets.production/production/piensaenpixel/assets/20150507074635Captura%20de%20pantalla%202015-05-07%20a%20la%28s%29%2009.46.28.png"
+        },
+        "updated_at": "2015-10-26T11:50:30+00:00",
+
+
+        "widgets": [
+          {
+            "type": "histogram",
+            "title": "Cluster Significance",
+            "layer_id": "71092ebd-2d45-4191-9b19-2eb987c857c7",
+            "options": {
+              "type": "histogram",
+              "column": "lisa_frisks_per_capita_sig",
+              "bins": 10
+            }
+          },
+          {
+            "type": "formula",
+            "title": "Number of Frisks",
+            "prefix": "",
+            "layer_id": "71092ebd-2d45-4191-9b19-2eb987c857c7",
+            "options": {
+              "column": "raw_num_points",
+              "operation": "sum",
+              "type": "formula"
+            }
+          },
+          {
+            "type": "formula",
+            "title": "Number of Frisks with Physical Force",
+            "prefix": "",
+            "layer_id": "71092ebd-2d45-4191-9b19-2eb987c857c7",
+            "options": {
+              "type": "formula",
+              "column": "n_pf_yes",
+              "operation": "sum"
+            }
+          },
+          {
+            "type": "formula",
+            "title": "Average age of people frisked",
+            "prefix": "",
+            "layer_id": "71092ebd-2d45-4191-9b19-2eb987c857c7",
+            "options": {
+              "type": "formula",
+              "column": "frisk_avg_age",
+              "operation": "avg",
+            }
+          },
+          {
+            "title": "Region type",
+            "type": "category",
+            "layer_id": "71092ebd-2d45-4191-9b19-2eb987c857c7",
+            "options": {
+              "type": "aggregation",
+              "column": "type_of_activity",
+              "aggregationColumn": "type_of_activity",
+              "aggregation": "count",
+              "sync": true
+            }
+          }
+        ],
+
+        "datasource": {
+          "type": "public_map",
+          "user_name": "editor3",
+          "maps_api_template": "https://{user}.cartodb.com",
+          "stat_tag": "f1355774-b86d-11e5-92a8-04013fc66a01",
+          "force_cors": true // This is sometimes set in the editor
+        },
+
+
+          "id":"f1355774-b86d-11e5-92a8-04013fc66a01","version":"0.1.0","title":"stop_frisk_augmented_clustered_v2_2_12_attributes 1","likes":0,"description":"<p>Andy E&#39;s</p>\n","scrollwheel":false,"legends":true,"url":null,"map_provider":"leaflet","bounds":[[40.43126897044754,-74.2792510986328],[40.84134650558101,-73.41407775878905]],"center":"[40.636622594719725, -73.84666442871094]","zoom":11,"updated_at":"2016-01-11T16:04:33+00:00","layers":[{"options":{"visible":true,"type":"Tiled","name":"Dark matter (lite)","className":"httpscartodbbasemapssglobalsslfastlynetdark_nolabelszxypng","base_type":"default","urlTemplate":"https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}.png","minZoom":"0","maxZoom":"18","attribution":"&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>","subdomains":"abcd","style":null,"read_only":true,"category":"CartoDB","order":0,"id":"ce9856a4-90f4-4b28-90d9-81d10fafb4e4"},"infowindow":null,"tooltip":null,"id":"ce9856a4-90f4-4b28-90d9-81d10fafb4e4","order":0,"type":"tiled"},{"type":"layergroup","options":{"user_name":"solutions-ded02","maps_api_template":"https://{user}.cartodb-staging.com:443","sql_api_template":"https://{user}.cartodb-staging.com:443","tiler_protocol":"http","tiler_domain":"cartodb-staging.com","tiler_port":"80","sql_api_protocol":"http","sql_api_domain":"cartodb-staging.com","sql_api_endpoint":"/api/v2/sql","sql_api_port":80,"filter":"mapnik","layer_definition":{"stat_tag":"f1355774-b86d-11e5-92a8-04013fc66a01","version":"1.0.1","layers":[{"id":"71092ebd-2d45-4191-9b19-2eb987c857c7","type":"CartoDB","infowindow":{"fields":[],"template_name":"table/views/infowindow_light","template":"<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n","alternative_names":{},"width":226,"maxHeight":180},"tooltip":{"fields":[{"name":"lisa_frisks_per_capita","title":true,"position":15},{"name":"lisa_frisks_per_capita_sig","title":true,"position":16}],"template_name":"tooltip_light","template":"<div class='CDB-Tooltip CDB-Tooltip--isLight'><ul class=\"CDB-Tooltip-list\">\n {{#fields}}\n <li class=\"CDB-Tooltip-listItem\">\n {{#title}}\n <h4 class=\"CDB-Tooltip-listTitle\">\n{{title}}</h4>\n {{/title}}\n <p class=\"CDB-Tooltip-listText\">\n{{{ value }}}</p>\n </li>\n {{/fields}}\n  </ul></div>","alternative_names":{},"maxHeight":180},"legend":{"type":"none","show_title":false,"title":"","template":"","visible":true},"order":1,"visible":true,"options":{"sql":"select * from stop_frisk_augmented_v2_5","layer_name":"stop_frisk_augmented_v2_5","cartocss":"@HH:#D96C40;\n@LL:#32348E;\n@HL:#e8b16c;\n@LH:#aad4ea;\n#layer {\n   polygon-opacity: 1;\n   line-color: darken(#edeae1,2);\n   line-width: 1;\n   line-opacity: 1;\n  [zoom<=11]{line-width: 0.75;}\n}\n//dark orange\n#layer[lisa_frisks_per_capita=\"HH\"] {\n   polygon-fill: @HH;\n   line-color: lighten(rgb(217,108,64),8);\n}\n//dark blue\n#layer[lisa_frisks_per_capita=\"LL\"] {\n   polygon-fill: @LL;\n   line-color: lighten(rgb(50,52,142),18);\n}\n#layer[lisa_frisks_per_capita=\"HL\"] {\n   polygon-fill: @HL;\n   line-color: lighten(rgb(235,173,95),18);\n  \n}\n#layer[lisa_frisks_per_capita=\"LH\"] {\n   polygon-fill: @LH;\n   line-color: lighten(rgb(184,218,236),2);\n}\n#layer[lisa_frisks_per_capita=\"Not significant\"] {\n   polygon-fill: #edeae1;\n}","cartocss_version":"2.1.1","interactivity":"cartodb_id,lisa_frisks_per_capita,lisa_frisks_per_capita_sig","table_name":"\"\"."}},{"id":"872b4025-3969-48ad-bc17-f35ec89500d4","type":"CartoDB","infowindow":{"fields":[],"template_name":"table/views/infowindow_light","template":"<div class=\"cartodb-popup v2\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#type}}class=\"{{ type }}\"{{/type}}>{{{ value }}}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n","alternative_names":{},"width":226,"maxHeight":180},"tooltip":{"fields":[],"template_name":"tooltip_light","template":"<div class=\"cartodb-tooltip-content-wrapper\">\n  <div class=\"cartodb-tooltip-content\">\n  {{#fields}}\n    {{#title}}\n    <h4>{{title}}</h4>\n    {{/title}}\n    <p>{{{ value }}}</p>\n  {{/fields}}\n  </div>\n</div>","alternative_names":{},"maxHeight":180},"legend":{"type":"none","show_title":false,"title":"","template":"","visible":true},"order":2,"visible":true,"options":{"sql":"select * from nyc_police_precincts","layer_name":"nyc_police_precincts","cartocss":"/** simple visualization */\n\n#nyc_police_precincts{\n  line-color: transparent;\n  line-width: 0;\n}\n\n#nyc_police_precincts::dash {\n  line-color: transparent;\n  line-dasharray: 0; \n}","cartocss_version":"2.1.1","interactivity":"cartodb_id","table_name":"\"\"."}}]},"attribution":""}}],"overlays":[{"type":"share","order":2,"options":{"display":true,"x":20,"y":20},"template":""},{"type":"search","order":3,"options":{"display":true,"x":60,"y":20},"template":""},{"type":"zoom","order":6,"options":{"display":true,"x":20,"y":20},"template":'<div class="CDB-Overlay"><button class="CDB-Zoom-action CDB-Zoom-action--out js-zoomOut"></button><button class="CDB-Zoom-action CDB-Zoom-action--in js-zoomIn"></button></div><div class="CDB-Zoom-info js-zoomInfo">-</div>'},{"type":"loader","order":8,"options":{"display":true,"x":20,"y":150},"template":"<div class=\"loader\" original-title=\"\"></div>"},{"type":"logo","order":9,"options":{"display":true,"x":10,"y":40},"template":""}],"prev":null,"next":null,"transition_options":{"time":0}
+      };
+
+      cartodb.deepInsights.createDashboard('#dashboard', diJSON, {
+        no_cdn: false
+      });
+    }
+  </script>
+</body>
+
+</html>

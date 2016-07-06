@@ -3,11 +3,9 @@
 
 .CDB-Widget-canvas {
   position: relative;
-  top: 0;
-  bottom: 0;
-  width: 352px;
-  min-width: 352px;
-  max-width: 352px;
+  width: $desktopLayout;
+  min-width: $desktopLayout;
+  max-width: $desktopLayout;
   margin-left: $baseSize;
   border-radius: $baseSize / 2;
 }
@@ -64,29 +62,17 @@
   background: #AAA;
 }
 
-// Widget media query
-@include media-query() {
+@media (max-width: 1300px) {
   .CDB-Widget-canvas {
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    height: auto;
-    margin-top: $baseSize;
-    margin-left: 0;
-    border-radius: 0;
-    overflow: hidden;
-    box-sizing: border-box;
+    width: $mobileLayout;
+    min-width: $mobileLayout;
+    max-width: $mobileLayout;
   }
-  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
-    $w: calc(100% - #{$baseSize} * 9);
-    width: $w;
-    min-width: $w;
-    max-width: $w;
-    margin-left: 0;
-  }
-  .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
-    margin-left: $baseSize * 9;
-  }
+}
+
+// Widget media query
+@media (max-width: 759px)  {
+
   .CDB-Map-canvas {
     @include display-flex();
     flex: 2;
@@ -107,16 +93,19 @@
     @include display-flex();
     position: relative;
   }
-}
 
-@include media-query-mobile() {
   .CDB-Widget-canvas,
   .CDB-Widget-canvas.CDB-Widget-canvas--withMenu {
+    order: 3;
     width: 100%;
     min-width: 100%;
     max-width: 100%;
-    height: 168px;
-    min-height: 168px;
     margin-left: 0;
+  }
+}
+
+@media (max-height: 420px) {
+  .CDB-Widget-canvas {
+    display: none !important;
   }
 }

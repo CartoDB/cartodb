@@ -47,3 +47,9 @@
     width: 0;
   }
 }
+
+@media (max-width:759px) {
+  .CDB-Widget-progressBar {
+    margin: 2px 0 4px;
+  }
+}

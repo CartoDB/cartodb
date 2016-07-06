@@ -34,10 +34,10 @@ module.exports = Backbone.Collection.extend({
 
   getStates: function () {
     var state = {};
-    this.each(function (widgetModel, index) {
+    this.each(function (widgetModel) {
       var widgetState = widgetModel.getState();
       if (!_.isEmpty(widgetState)) {
-        state[index] = widgetState;
+        state[widgetModel.get('id')] = widgetState;
       }
     });
     return state;

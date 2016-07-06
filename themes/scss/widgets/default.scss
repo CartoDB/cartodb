@@ -77,21 +77,26 @@
   margin-right: -7px;
 }
 
+
 // Widget media query
-@include media-query() {
+@media (max-width: 1300px) {
   .CDB-Widget {
     width: $mobileLayout;
     min-width: $mobileLayout;
-    margin-right: 2px;
-    border-right: 2px solid transparent;
-    border-bottom: 0;
   }
   .CDB-Widget--timeSeries {
     width: 100%; // override default width
-    height: $baseSize * 8;
-    min-height: $baseSize * 8; // override default min-height
-    max-height: $baseSize * 8;
   }
+}
+
+@media (max-width:759px) {
+  .CDB-Widget--timeSeries {
+    height: auto;
+    min-height: auto; // override default min-height
+    max-height: auto;
+    margin-bottom: 2px;
+  }
+
   .CDB-Widget-body--timeSeries {
     @include display-flex();
     @include justify-content(flex-start, start);
@@ -100,27 +105,33 @@
   }
   .CDB-Widget-header--timeSeries {
     margin-right: 0; //override default, set on header to avoid double margin for the torque use-case
+    margin-bottom: 0;
   }
   .CDB-Widget-content--timeSeries {
     width: 100%;
     margin-top: 0; // override default
   }
-}
-
-@include media-query-mobile() {
   .CDB-Widget {
-    width: 232px;
-    min-width: 232px;
-    padding: $baseSize + 4 0;
+    width: auto;
+    min-width: auto;
+    padding: 12px 0;
+    border-left-width: 2px;
+    border-left-style: solid;
   }
   .CDB-Widget-header,
   .CDB-Widget-footer,
   .CDB-Widget-content {
-    margin-right: $sMargin-section / 3;
-    margin-left: $sMargin-section / 3;
+    margin-right: 12px;
+    margin-left: 12px;
   }
   .CDB-Widget-content--noSidesMargin {
     margin-right: 0;
     margin-left: 0;
+  }
+  .CDB-Widget-content--histogram {
+    min-width: 232px;
+  }
+  .CDB-Widget-content--formula {
+    min-width: 180px;
   }
 }

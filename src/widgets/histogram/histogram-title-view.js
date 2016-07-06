@@ -2,7 +2,6 @@ var $ = require('jquery');
 var cdb = require('cartodb.js');
 var TooltipView = require('../widget-tooltip-view');
 var template = require('./histogram-title-template.tpl');
-var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  *  Show title + show if histogram sizes are applied or not
@@ -13,14 +12,13 @@ module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-title CDB-Widget-contentSpaced',
 
   events: {
-    'click .js-autoStyle': 'autoStyle',
-    'click .js-cancelAutoStyle': 'cancelAutoStyle'
+    'click .js-autoStyle': '_autoStyle',
+    'click .js-cancelAutoStyle': '_cancelAutoStyle'
   },
 
   initialize: function () {
     this.widgetModel = this.options.widgetModel;
     this.dataviewModel = this.options.dataviewModel;
-    this.autoStyler = AutoStylerFactory.get(this.dataviewModel);
     this._initBinds();
   },
 
@@ -51,15 +49,12 @@ module.exports = cdb.core.View.extend({
     this.addView(sizesTooltip);
   },
 
-  autoStyle: function () {
-    var style = this.autoStyler.getStyle();
-    this.dataviewModel.layer.set('cartocss', style);
-    this.widgetModel.set('autoStyle', true);
+  _autoStyle: function () {
+    this.widgetModel.autoStyle();
   },
 
-  cancelAutoStyle: function () {
-    this.dataviewModel.layer.restoreCartoCSS();
-    this.widgetModel.set('autoStyle', false);
+  _cancelAutoStyle: function () {
+    this.widgetModel.cancelAutoStyle();
   }
 
 });

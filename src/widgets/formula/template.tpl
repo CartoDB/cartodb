@@ -17,7 +17,7 @@
     </dl>
   <% } %>
 </div>
-<div class="CDB-Widget-content">
+<div class="CDB-Widget-content CDB-Widget-content--formula">
   <% if (_.isNumber(value)) { %>
     <h4 class="CDB-Text CDB-Size-huge <%- !isCollapsed ? 'js-value' : '' %>" title="<%- value %>">
       <%- prefix %><%- value %><%- suffix %>

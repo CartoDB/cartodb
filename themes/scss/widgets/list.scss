@@ -69,8 +69,6 @@
 }
 .CDB-Widget-listGroup {
   @include flex-grow(1);
-  min-width: $desktopLayout;
-  max-width: $desktopLayout;
 }
 .CDB-Widget-listItem {
   display: block;
@@ -172,31 +170,28 @@
 }
 
 // Widget media query
-@include media-query() {
-  .CDB-Widget-listWrapper {
-    overflow-x: hidden;
+@media (max-width:759px) {
+  .CDB-Widget-listItem {
+    width: 33.33%;
   }
   .CDB-Widget-listGroup {
-    min-width: $mobileLayout;
-    max-width: $mobileLayout;
+    @include display-flex();
+    @include flex-wrap(wrap);
+    margin-right: 4px;
+    margin-left: 4px;
+  }
+  .CDB-Widget-listWrapper {
+    overflow-x: hidden;
+    min-width: 320px;
   }
   .CDB-Widget-inlineListItem {
     width: 47%;
   }
-}
-
-@include media-query-mobile() {
   .CDB-Widget-listButton {
-    padding-right: $sMargin-section / 3;
-    padding-left: $sMargin-section / 3;
-  }
-  .CDB-Widget-listGroup {
-    min-width: 100%;
-    max-width: 100%;
+    padding: 2px 8px;
   }
   .CDB-Widget-listItemInner {
     margin: 0;
-    padding-right: $sMargin-section / 3;
-    padding-left: $sMargin-section / 3;
+    padding: 2px 8px;
   }
 }

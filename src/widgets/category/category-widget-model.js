@@ -17,6 +17,15 @@ module.exports = WidgetModel.extend({
     WidgetModel.prototype.defaults
   ),
 
+  defaultState: _.extend(
+    {
+      acceptedCategories: [],
+      locked: false,
+      autoStyle: false
+    },
+    WidgetModel.prototype.defaultState
+  ),
+
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();
@@ -24,6 +33,14 @@ module.exports = WidgetModel.extend({
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
+    this.dataviewModel.filter.on('change', function () {
+      this.set('acceptedCategories', this._acceptedCategories().pluck('name'));
+    }, this);
+    this.dataviewModel.once('change:allCategoryNames', function () {
+      if (this.get('autoStyle')) {
+        this.autoStyle();
+      }
+    }, this);
   },
 
   setupSearch: function () {
@@ -54,9 +71,17 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
+    var layer = this.dataviewModel.layer;
+    if (!layer.get('initialStyle')) {
+      var initialStyle = layer.get('cartocss');
+      if (!initialStyle && layer.get('meta')) {
+        initialStyle = layer.get('meta').cartocss;
+      }
+      layer.set('initialStyle', initialStyle);
+    }
     this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
     var style = this.autoStyler.getStyle();
-    this.dataviewModel.layer.set('cartocss', style);
+    layer.set('cartocss', style);
     this.set('autoStyle', true);
   },
 

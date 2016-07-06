@@ -33,9 +33,9 @@
     "data-observatory-measurement": "Data Observatory"
   },
   "analysis-category": {
-    "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis",
-    "predictive": "Predictive analysis"
+    "create-clean": "Create and clean",
+    "data-transformation": "Transform",
+    "analyze-predict": "Analyze and predict"
   },
   "form-components": {
     "editors": {

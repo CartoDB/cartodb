@@ -48,7 +48,10 @@
 }
 
 .Dataset-options {
+  position: relative;
   border-top: 1px solid $cThirdBackground;
+  box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.64);
+  z-index: 2;
 }
 
 .Dataset-options-actions {

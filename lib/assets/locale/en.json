@@ -363,7 +363,7 @@
             "desc": "Use textual descriptions of places (street addresses, city names, country names, etc.) to generate point geometries."
           },
           "intersection": {
-            "title": "Filter or aggregate by intersection",
+            "title": "Intersect second layer",
             "desc": "Filter rows based intersection with second layer. Aggregate data in a second layer and add as a new column."
           },
           "filter": {
@@ -383,11 +383,11 @@
             "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Calculate centroid of geometries",
+            "title": "Find centroid of geometries",
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Join columns from second layer",
+            "title": "Add columns from second layer",
             "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "sampling": {
@@ -399,7 +399,7 @@
             "desc": "Use periodic temporal data to predict probability of upward and downward trend in next period."
           },
           "data-observatory-measure": {
-            "title": "Enrich with the Data Observatory",
+            "title": "Enrich from Data Observatory",
             "desc": "Add a new column containing contextual demographic and economic measures for each row."
           }
         }

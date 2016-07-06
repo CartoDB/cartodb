@@ -27,7 +27,7 @@
     "filter": "Filter by column value",
     "sampling": "Subsample percent of rows",
     "kmeans": "Calculate clusters of points",
-    "moran-cluster": "Detect outliers and hotspots",
+    "moran-cluster": "Detect outliers and clusters",
     "spatial-markov-trend": "Predict trends and volatility"
   },
   "analysis-category": {
@@ -375,8 +375,8 @@
             "desc": "Append the rows from a second layer to the bottom of current layer."
           },
           "moran-cluster": {
-            "title": "Detect outliers and hotspots",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) hotspots."
+            "title": "Detect outliers and clusters",
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
           },
           "kmeans": {
             "title": "Calculate clusters of points",

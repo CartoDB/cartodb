@@ -18,7 +18,7 @@
   },
   "analyses": {
     "georeference": "Georeference",
-    "data-observatory-measurement": "Enrich with the Data Observatory",
+    "data-observatory-measurement": "Enrich from Data Observatory",
     "merge": "Append rows from second layer",
     "filter-by-node-column": "Join columns from second layer",
     "centroid": "Calculate centroid for a set of geometries",

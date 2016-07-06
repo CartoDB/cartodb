@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "source": "Source",
     "area-of-influence": "Area of influence",
     "centroid": "Centroid",
     "cluster": "Cluster",
@@ -25,10 +26,12 @@
     "georeference": "Georeference",
     "intersection": "Intersection",
     "kmeans": "Cluster",
+    "merge": "Merge",
     "moran-cluster": "Moran cluster",
     "point-in-polygon": "Point in polygon",
     "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation"
+    "spatial-markov-trend": "Temporal simulation",
+    "data-observatory-measurement": "Data Observatory"
   },
   "analysis-category": {
     "data-transformation": "Data transformation",
@@ -38,10 +41,6 @@
   "form-components": {
     "editors": {
       "fill": {
-        "switch": {
-          "to-categories": "Switch to categories",
-          "to-ramps": "Switch to ramps"
-        },
         "customize": "Custom color set",
         "quantification": {
           "title": "Quantification",
@@ -49,7 +48,8 @@
             "jenks": "Jenks",
             "equal": "Equal Interval",
             "headtails": "Heads/Tails",
-            "quantiles": "Quantiles"
+            "quantiles": "Quantiles",
+            "category": "Category"
           }
         },
         "bins": "Buckets",
@@ -230,6 +230,21 @@
       "placeholder": "Add tags"
     },
     "modals": {
+      "export-data": {
+        "title": "Export data",
+        "desc": "Select the preferred file format",
+        "no-geometry": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+        "loading": {
+          "geometry": "Checking geometries...",
+          "preparing": "Preparing content..."
+        },
+        "errors": {
+          "title": "There was an error",
+          "geometry-error": "We can't reach data geometries",
+          "unknown": "An error occurred"
+        },
+        "cancel": "Cancel"
+      },
       "maps-metadata": {
         "modal-title": "Map metadata",
         "modal-desc": "Edit the attributtes of your map",
@@ -362,6 +377,10 @@
             "title": "Filter",
             "desc": "Filter your rows depending on the values of a column"
           },
+          "merge": {
+            "title": "Merge",
+            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
+          },
           "moran-cluster": {
             "title": "Moran cluster",
             "desc": "Find areas which have similar values and identify outliers"
@@ -385,6 +404,10 @@
           "spatial-markov-trend": {
             "title": "Temporal simulation",
             "desc": "Predict trends based on temporal series"
+          },
+          "data-observatory-measure": {
+            "title": "Data Observatory",
+            "desc": "Augment your table with data from Data Observatory"
           }
         }
       },
@@ -710,7 +733,17 @@
     }
   },
   "dataset": {
+    "sql": "SQL",
     "updated": "Updated %{ago}",
+    "options": {
+      "add-row": "Add row",
+      "add-column": "Add column",
+      "export": "Export"
+    },
+    "preview-map": {
+      "preview": "preview",
+      "back": "back"
+    },
     "create-map": {
       "title": "Create map",
       "loading": "Creating a map from %{tableName}",
@@ -737,15 +770,6 @@
       "error": "There was an error locking %{tableName}",
       "loading": "Locking your dataset %{tableName}...",
     },
-    "unlock": {
-      "cancel": "back to dashboard",
-      "confirm": "ok, unlock it",
-      "desc": "That means you need to unlock it before doing anything. Are you sure?",
-      "error": "Error unlocking %{tableName}: %{error}",
-      "loading": "Unlocking your dataset %{tableName}...",
-      "success": "Dataset %{tableName} unlocked",
-      "title": "Your dataset %{tableName} is locked."
-    },
     "rename": {
       "option": "Rename dataset",
       "cancel": "cancel",
@@ -755,7 +779,33 @@
       "loading": "Renaming your dataset %{tableName}...",
       "success": "Dataset %{tableName} renamed",
       "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
-    }
+    },
+    "sync": {
+      "in-a-moment": "in a few moments",
+      "synced": "Synced %{ranAt}",
+      "syncing": "Syncing",
+      "loading": "Syncing dataset %{tableName}",
+      "sync-failed": "Sync failed",
+      "next": "Next will be %{runAt}",
+      "error-code": "Error code %{errorCode}",
+      "sync-now": "Sync now",
+      "view-options": "View options",
+      "disabled": "You will be able to sync manually %{gap} minutes after your last synchronization",
+      "title": "Sync dataset options",
+      "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
+      "label": "Sync my data",
+      "error": "There was an error setting the interval",
+      "confirm": "Save settings"
+    },
+    "unlock": {
+      "cancel": "back to dashboard",
+      "confirm": "ok, unlock it",
+      "desc": "That means you need to unlock it before doing anything. Are you sure?",
+      "error": "Error unlocking %{tableName}: %{error}",
+      "loading": "Unlocking your dataset %{tableName}...",
+      "success": "Dataset %{tableName} unlocked",
+      "title": "Your dataset %{tableName} is locked."
+    },
   },
   "editor": {
     "map": "map",
@@ -766,19 +816,34 @@
     "button_add": "Add",
     "button_share": "SHARE",
     "settings": {
-      "title": "Map options",
-      "options": {
-        "title": "Fixed title",
-        "description": "Fixed description",
-        "search": "Seach box",
-        "zoom": "Zoom controls",
-        "fullscreen": "Fullscreen",
-        "share": "Share options",
-        "scrollwheel": "Scroll wheel zoom",
-        "layer_selector": "Layer selector",
-        "legends": "Legends",
-        "logo": "CartoDB Logo"
-      }
+      "menu-tab-pane-labels": {
+        "preview": "Preview",
+        "snapshots": "Snapshots"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mode"
+        },
+        "options": {
+          "title": "Map Options",
+          "subtitle": "Components that are shown in the map",
+          "description": {
+            "title": "Components",
+            "subtitle": "Change map elements"
+          },
+          "elements": {
+            "search": "Search box",
+            "zoom": "Zoom controls",
+            "fullscreen": "Fullscreen",
+            "scrollwheel": "Scroll wheel zoom",
+            "layer_selector": "Layer selector",
+            "logo": "CartoDB Logo",
+            "widgets": "Widgets column",
+          }
+        }
+      },
+
+
     },
     "maps": {
       "options": {
@@ -840,6 +905,7 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer"
       },
@@ -898,6 +964,12 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "input-num": "Input #%{num}",
+        "define-two-layers": "Define two layers",
+        "keep-columns": "Select the columns you want to keep",
+        "foreign-keys": "Foreign Keys",
+        "no-coincidence": "When no coincidence no row will be added",
+        "columns": "Columns",
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -917,7 +989,7 @@
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
-        "create-btn": "Create",
+        "create-btn": "Apply",
         "data-values": "Data values",
         "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
@@ -927,6 +999,7 @@
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "Linked layer col.",
+        "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
         "georeference-ip-address": "IP Addresses",
@@ -947,6 +1020,10 @@
         "link-layer-desc": "Specify which layer you want to link this to",
         "linked-layer": "Linked layer",
         "loading": "loading…",
+        "left": 'Left',
+        "right": 'Right',
+        "inner": 'Inner',
+        "join-type": 'Join Type',
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",
@@ -994,7 +1071,12 @@
         "spatial-markov-trend-desc": "select the columns with temporal value series",
         "spatial-markov-trend-time-columns": "time columns",
         "weighted-by": "Weighted by",
-        "workflow": "Workflow"
+        "workflow": "Workflow",
+        "data-observatory-measurement-area": "Zone",
+        "data-observatory-measurement-column": "Column",
+        "data-observatory-measurement-measurement": "Measurement",
+        "data-observatory-measurement-desc": "enrich your data",
+        "data-observatory-measurement-refine": "refine your selection"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1256,7 +1338,9 @@
           "suffix": "Suffix",
           "title": "Title",
           "title-label": "Data",
-          "value": "Value"
+          "value": "Value",
+          "aggregate-by": "aggregate by",
+          "operation-column": "operation column"
         },
         "style": {
           "title-label": "Style",

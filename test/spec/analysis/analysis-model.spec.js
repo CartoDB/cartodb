@@ -301,5 +301,11 @@ describe('src/analysis/analysis-model.js', function () {
 
       expect(this.analysisModel.get('error')).toEqual('wadus');
     });
+
+    it('should set analyis as failed', function () {
+      this.analysisModel.setError('wadus');
+
+      expect(this.analysisModel.get('status')).toEqual(AnalysisModel.STATUS.FAILED);
+    });
   });
 });

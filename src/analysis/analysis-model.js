@@ -43,7 +43,10 @@ module.exports = Model.extend({
   },
 
   setError: function (error) {
-    this.set('error', error);
+    this.set({
+      error: error,
+      status: STATUS.FAILED
+    });
   },
 
   _initBinds: function () {

@@ -2,10 +2,16 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont CDB-IconFont-cloudDownArrow"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large u-bSpace">Export dataset</h2>
-  <h3 class="CDB-Text CDB-Size-medium u-altTextColor">Select the preferred file format.</h3>
+  <h2 class="CDB-Text CDB-Size-large u-bSpace">
+    <%- _t('components.modals.export-data.title') %>
+  </h2>
+  <h3 class="CDB-Text CDB-Size-medium u-altTextColor">
+    <%- _t('components.modals.export-data.desc') %>.
+  </h3>
   <% if (!isGeoreferenced) { %>
-    <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl">To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.</p>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl">
+      <%- _t('components.modals.export-data.no-geometry') %>
+    </p>
   <% } %>
 </div>
 
@@ -33,7 +39,7 @@
 <div class="Dialog-footer Dialog-footer--simple u-inner">
   <button class="CDB-Button CDB-Button--secondary u-rSpace--m u-tSpace-xl js-cancel">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-      cancel
+      <%- _t('components.modals.export-data.cancel') %>
     </span>
   </button>
 </div>

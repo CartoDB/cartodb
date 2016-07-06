@@ -233,6 +233,9 @@
     },
     "modals": {
       "export-data": {
+        "title": "Export data",
+        "desc": "Select the preferred file format",
+        "no-geometry": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
         "loading": {
           "geometry": "Checking geometries...",
           "preparing": "Preparing content..."
@@ -241,7 +244,8 @@
           "title": "There was an error",
           "geometry-error": "We can't reach data geometries",
           "unknown": "An error occurred"
-        }
+        },
+        "cancel": "Cancel"
       },
       "maps-metadata": {
         "modal-title": "Map metadata",

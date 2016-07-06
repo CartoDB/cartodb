@@ -39,6 +39,7 @@
   border-radius: 4px;
   background: $cThirdBackground;
   box-sizing: border-box;
+  overflow: hidden;
 
   &:last-child {
     margin-right: 0;

@@ -21,9 +21,9 @@
     "data-observatory-measurement": "Enrich from Data Observatory",
     "merge": "Append rows from second layer",
     "filter-by-node-column": "Join columns from second layer",
-    "centroid": "Calculate centroid for a set of geometries",
+    "centroid": "Centroid from geometries",
     "area-of-influence": "Expand points into polygons",
-    "intersection": "Filter or aggregate by intersection",
+    "intersection": "Intersection",
     "filter": "Filter by column value",
     "sampling": "Subsample percent of rows",
     "kmeans": "Calculate clusters of points",
@@ -356,15 +356,15 @@
         "option-types": {
           "area-of-influence": {
             "title": "Expand points into polygons",
-            "desc": "Use travel time (walking, biking, or driving) or euclidean distance to calculate polygon boundaries around point locations."
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate polygon from points."
           },
           "georeference": {
             "title": "Georeference",
-            "desc": "Use textual descriptions of places (street addresses, city names, country names, etc.) to generate point geometries."
+            "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "intersection": {
-            "title": "Filter or aggregate by intersection",
-            "desc": "Filter rows based intersection with second layer. Aggregate data in a second layer and add as a new column."
+            "title": "Intersect second layer",
+            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
           },
           "filter": {
             "title": "Filter rows by column value",
@@ -372,7 +372,7 @@
           },
           "merge": {
             "title": "Append rows from second layer",
-            "desc": "Join the rows from two layers by adding rows of a second layer underneith the rows of the current layer."
+            "desc": "Append the rows from a second layer to the bottom of current layer."
           },
           "moran-cluster": {
             "title": "Detect outliers and hotspots",
@@ -383,11 +383,11 @@
             "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Calculate centroid for a set of geometries",
+            "title": "Find centroid of geometries",
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Join columns from second layer",
+            "title": "Add columns from second layer",
             "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "sampling": {
@@ -399,8 +399,8 @@
             "desc": "Use periodic temporal data to predict probability of upward and downward trend in next period."
           },
           "data-observatory-measure": {
-            "title": "Enrich with the Data Observatory",
-            "desc": "Add a new column containing contextual demographic and economic measures for each row."
+            "title": "Enrich from Data Observatory",
+            "desc": "Add a new columns with contextual demographic and economic measures."
           }
         }
       },

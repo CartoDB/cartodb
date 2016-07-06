@@ -55,7 +55,11 @@
   @include transition(margin,150ms);
 }
 .Filters-inner.show-second-row {
-  margin-top: -81px;
+  margin-top: -75px;
+
+  .Filters-row:last-child {
+    margin-top: 4px;
+  }
 }
 .Filters-separator {
   position:absolute;
@@ -71,7 +75,7 @@
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
-  height:74px;
+  height:73px;
 }
 .Filters-row--centered { @include justify-content(center) }
 .Filters-group {
@@ -90,7 +94,7 @@
 .Filters-typeItem {
   position: relative;
   margin-right: 32px;
-  &:last-child { 
+  &:last-child {
     margin-right: 0;
   }
 }

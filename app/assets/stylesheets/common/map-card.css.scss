@@ -276,7 +276,7 @@ $sEditButtonSize: 50px;
   right: 18px;
   width: $sEditButtonSize;
   height: $sEditButtonSize;
-  background: #0090d7;
+  background: #1181FB;
   border-radius: $sEditButtonSize;
   color: $cWhite;
   text-decoration:none;
@@ -288,7 +288,7 @@ $sEditButtonSize: 50px;
   @include transition(opacity, $opacityTransition);
   @include transition(top, 200ms, ease-in);
   &:hover {
-    background: #0082C2;
+    background: #046ddf;
     text-decoration: none;
     color: $cWhite;
   }
@@ -300,7 +300,7 @@ $sEditButtonSize: 50px;
 }
 .MapCard:hover .MapCard-editButton {
   @include opacity(1);
-  top: -$sEditButtonSize/2; 
+  top: -$sEditButtonSize/2;
 }
 .MapCard-contentBodyRow--flex {
   @include display-flex();

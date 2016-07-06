@@ -9,7 +9,8 @@ module Carto
         ssl_required :show, :show_protected
 
         before_filter :load_visualization, only: [:show, :show_protected]
-        before_filter :load_vizjson, only: [:show, :show_protected]
+        before_filter :load_vizjson,
+                      :load_state, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
@@ -44,6 +45,10 @@ module Carto
                                       end
 
           @vizjson = generate_named_map_vizjson3(visualization_for_vizjson, params)
+        end
+
+        def load_state
+          @state = @visualization.state
         end
 
         def ensure_viewable

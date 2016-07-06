@@ -106,14 +106,14 @@ module CartoDB
         }
 
         vizjson_infowindow = layer_vizjson[:infowindow]
-        vizjson_infowindow_fields = vizjson_infowindow['fields']
+        vizjson_infowindow_fields = vizjson_infowindow['fields'] if vizjson_infowindow
 
         if vizjson_infowindow.present? && vizjson_infowindow_fields && !vizjson_infowindow_fields.empty?
           data[:infowindow] = vizjson_infowindow
         end
 
         vizjson_tooltip = layer_vizjson[:tooltip]
-        vizjson_tooltip_fields = vizjson_tooltip['fields']
+        vizjson_tooltip_fields = vizjson_tooltip['fields'] if vizjson_tooltip
 
         if vizjson_tooltip.present? && vizjson_tooltip_fields && !vizjson_tooltip_fields.empty?
           data[:tooltip] = vizjson_tooltip

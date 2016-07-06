@@ -21,7 +21,7 @@
     "data-observatory-measurement": "Enrich with the Data Observatory",
     "merge": "Append rows from second layer",
     "filter-by-node-column": "Join columns from second layer",
-    "centroid": "Generate centroid for each geometry",
+    "centroid": "Calculate centroid for sets of geometries",
     "area-of-influence": "Expand points into polygons",
     "intersection": "Filter or aggregate by intersection",
     "filter": "Filter by column value",

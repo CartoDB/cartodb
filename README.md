@@ -1,3 +1,4 @@
+
 # What is CartoDB?
 
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)

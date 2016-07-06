@@ -391,6 +391,7 @@ $sLabel-width: 140px;
   @include justify-content(space-between, justify);
 }
 .FormAccount-userRole {
+  margin-top: 20px;
   @include display-flex();
   @include flex-direction(column);
   @include align-items(baseline, baseline);

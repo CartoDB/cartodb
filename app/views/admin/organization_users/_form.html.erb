@@ -15,7 +15,7 @@
       <%= f.text_field :username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.new? } #{ 'has-error' if @user.errors[:username].present? }", :readonly => !@user.new? %>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <% if (@user.errors[:username].present?) %>
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error">Username not valid</p>
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace">Username not valid</p>
         <% elsif @user.new? %>
           <p class="CDB-Text CDB-Size-small u-altTextColor">Once you choose the username, you won't be able to change it</p>
         <% end %>
@@ -51,7 +51,7 @@
         </div>
         <div class="FormAccount-rowInfo">
           <% if (@user.errors[:password].present?) %>
-            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:password].first%></p>
+            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:password].first%></p>
           <% end %>
         </div>
       </div>
@@ -80,7 +80,7 @@
         <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Builder (<%= current_user.organization.assigned_seats %>/<%= current_user.organization.seats %>)</label>
       </div>
     </div>
-    <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--m">
+    <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--xl">
       <p class="FormAccount-rowInfoText">Build and read</p>
     </div>
 
@@ -91,7 +91,7 @@
         <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold">Viewer (<%= current_user.organization.assigned_viewer_seats %>/<%= current_user.organization.viewer_seats %>)</label>
       </div>
     </div>
-    <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--m">
+    <div class="FormAccount-rowInfo u-lspace-23">
       <p class="FormAccount-rowInfoText">
         <% if current_user.organization.remaining_viewer_seats == 0 %>
           You don't have viewer seats activated. <a href="mailto:enterprise-support@cartodb.com">Contact support</a> for more information.
@@ -137,7 +137,7 @@
             </li>
           </ul>
         </div>
-        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft OrganizationUser-quotaInfo js-userQuotaSliderInput CDB-Text CDB-Size-medium u-altTextColor">
+        <div class="FormAccount-rowInfo u-lSpace--xl OrganizationUser-quotaInfo js-userQuotaSliderInput CDB-Text CDB-Size-medium u-altTextColor">
           <span><%= text_field_tag nil, nil, :class => "CDB-InputText CDB-Text FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>">upgrade your account</a> if needed.<% end %></span>
         </div>
         <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>
@@ -218,30 +218,40 @@
     </div>
   <% end %>
 
-  <div class="FormAccount-footer">
-    <% if !@user.new? && current_user.organization_owner? -%>
-      <% if @user != current_user %>
+  <% if !@user.new? && current_user.organization_owner? -%>
+    <% if @user != current_user %>
+      <div class="FormAccount-footer">
         <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete user</span>
         </button>
-      <% else %>
-      <% end %>
-      <button type="submit" class="CDB-Button CDB-Button--primary">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
-      </button>
+
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
+      </div>
     <% else %>
-      <% if current_user.organization.remaining_seats > 0 || current_user.organization.remaining_viewer_seats > 0 %>
+      <div class="FormAccount-footer u-justifyEnd">
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
+      </div>
+    <% end %>
+  <% else %>
+    <% if current_user.organization.remaining_seats > 0 || current_user.organization.remaining_viewer_seats > 0 %>
+      <div class="FormAccount-footer u-justifyEnd">
         <button type="submit" class="CDB-Button CDB-Button--primary">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
-      <% else %>
-        <p class="FormAccount-rowInfoText">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@cartodb.com">Contact support</a> for more information.</p>
+      </div>
+    <% else %>
+      <div class="FormAccount-footer">
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@cartodb.com">Contact support</a> for more information.</p>
         <button type="submit" class="CDB-Button CDB-Button--primary is-disabled">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
-      <% end %>
+      </div>
     <% end %>
-  </div>
+  <% end %>
 
 <% end %>
 

@@ -61,7 +61,7 @@
         </div>
         <div class="FormAccount-rowInfo">
           <% if @user.errors[:email].present? %>
-            <p class="CDB-Text CDB-Size-small FormAccount-rowInfoText FormAccount-rowInfoText--error">Email not valid</p>
+            <p class="CDB-Text CDB-Size-small FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace">Email not valid</p>
           <% elsif @user.google_sign_in %>
             <p class="FormAccount-rowInfoText">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
           <% end %>
@@ -80,7 +80,7 @@
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
-                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:old_password].first%></p>
               <% end %>
             </div>
           </div>
@@ -96,7 +96,7 @@
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:new_password].present?) %>
-                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:new_password].first%></p>
               <% end %>
             </div>
           </div>

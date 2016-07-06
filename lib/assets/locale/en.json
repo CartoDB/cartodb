@@ -40,10 +40,6 @@
   "form-components": {
     "editors": {
       "fill": {
-        "switch": {
-          "to-categories": "Switch to categories",
-          "to-ramps": "Switch to ramps"
-        },
         "customize": "Custom color set",
         "quantification": {
           "title": "Quantification",
@@ -51,7 +47,8 @@
             "jenks": "Jenks",
             "equal": "Equal Interval",
             "headtails": "Heads/Tails",
-            "quantiles": "Quantiles"
+            "quantiles": "Quantiles",
+            "category": "Category"
           }
         },
         "bins": "Buckets",

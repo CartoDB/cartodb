@@ -152,7 +152,7 @@
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
           "info": "Keep your data and get a larger quota by upgrading your plan",
-          "title": "Your quota has run out",
+          "title": "Your quota has run out"
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",

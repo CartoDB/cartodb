@@ -69,7 +69,11 @@ module.exports = cdb.core.View.extend({
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
+    this._initResize();
+    return this;
+  },
 
+  _initResize: function () {
     $(window).on('resize', this._resizeHandler);
 
     var w = $(window).width();
@@ -80,7 +84,8 @@ module.exports = cdb.core.View.extend({
     if (w >= 759) {
       this._bounder = 'up';
     }
-    return this;
+
+    this._resizeHandler();
   },
 
   _$container: function () {
@@ -120,7 +125,7 @@ module.exports = cdb.core.View.extend({
 
   _renderShadows: function () {
     this.$shadowTop = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--top');
-    this.$shadowBottom = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom is-visible');
+    this.$shadowBottom = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom');
     this.$el.append(this.$shadowTop);
     this.$el.append(this.$shadowBottom);
   },
@@ -135,6 +140,7 @@ module.exports = cdb.core.View.extend({
     var max = $el.get(0).scrollHeight;
     var height = $el.outerHeight();
     var maxPos = max - height;
+
     this.$shadowTop.toggleClass('is-visible', currentPos > 0);
     this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
   },
@@ -156,6 +162,8 @@ module.exports = cdb.core.View.extend({
       this._bounder = 'up';
       this._updateScroll();
     }
+
+    this._onScroll();
   },
 
   _onScrollBottom: function () {

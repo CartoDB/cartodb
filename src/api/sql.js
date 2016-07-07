@@ -28,7 +28,7 @@ function SQL(options) {
     if(opts && opts.completeDomain) {
       template = opts.completeDomain;
     } else {
-      var host = opts.host || 'cartodb.com';
+      var host = opts.host || 'carto.com';
       var protocol = opts.protocol || 'https';
       template = protocol + '://{user}.' + host;
     }

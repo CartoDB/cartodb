@@ -1,6 +1,6 @@
 var View = require('../../core/view');
 var LOGO_URL = 'https://cartodb.s3.amazonaws.com/static/new_logo.png';
-var URL = 'http://cartodb.com';
+var URL = 'http://carto.com';
 
 module.exports = View.extend({
   className: 'CDB-Logo',

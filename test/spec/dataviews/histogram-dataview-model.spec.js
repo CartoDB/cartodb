@@ -19,7 +19,7 @@ describe('dataviews/histogram-dataview-model', function () {
   });
 
   it('should not listen any url change from the beginning', function () {
-    this.model.set('url', 'http://cartodb.com');
+    this.model.set('url', 'http://carto.com');
     expect(this.model.fetch).not.toHaveBeenCalled();
   });
 

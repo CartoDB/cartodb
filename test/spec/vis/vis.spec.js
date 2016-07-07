@@ -36,7 +36,7 @@ var fakeVizJSON = function () {
           'maxZoom': '18',
           'name': 'Positron',
           'className': 'positron_rainbow_labels',
-          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>',
+          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://carto.com/attributions\">CARTO</a>',
           'labels': {
             'url': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
           },
@@ -52,8 +52,8 @@ var fakeVizJSON = function () {
         'type': 'layergroup',
         'options': {
           'user_name': 'pabloalonso',
-          'maps_api_template': 'https://{user}.cartodb.com:443',
-          'sql_api_template': 'https://{user}.cartodb.com:443',
+          'maps_api_template': 'https://{user}.carto.com:443',
+          'sql_api_template': 'https://{user}.carto.com:443',
           'filter': 'mapnik',
           'layer_definition': {
             'stat_tag': '03a89434-379e-11e6-b2e3-0e674067d321',
@@ -117,7 +117,7 @@ var fakeVizJSON = function () {
           'subdomains': 'abcd',
           'minZoom': '0',
           'maxZoom': '18',
-          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://cartodb.com/attributions\">CartoDB</a>',
+          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://carto.com/attributions\">CARTO</a>',
           'urlTemplate': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
           'type': 'Tiled',
           'name': 'Positron Labels'
@@ -189,7 +189,7 @@ var fakeVizJSON = function () {
     'widgets': [],
     'datasource': {
       'user_name': 'pabloalonso',
-      'maps_api_template': 'https://{user}.cartodb.com:443',
+      'maps_api_template': 'https://{user}.carto.com:443',
       'stat_tag': '03a89434-379e-11e6-b2e3-0e674067d321'
     },
     'user': {
@@ -277,7 +277,7 @@ describe('vis/vis', function () {
           updated_at: 'cachebuster',
           title: 'irrelevant',
           description: 'not so irrelevant',
-          url: 'http://cartodb.com',
+          url: 'http://carto.com',
           center: [40.044, -101.95],
           zoom: 4,
           bounds: [[1, 2], [3, 4]],

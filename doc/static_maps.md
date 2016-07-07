@@ -8,7 +8,7 @@ The easiest way to generate an image is by using the following piece of code, wh
 
 ```javascript
 <script>
-var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
+var vizjson_url = 'https://documentation.carto.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 
 cartodb.Image(vizjson_url)
   .size(600, 400)
@@ -46,7 +46,7 @@ An `Image` object
 
 ```javascript
 <script>
-var vizjson_url = 'https://documentation.cartodb.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
+var vizjson_url = 'https://documentation.carto.com/api/v2/viz/008b3ec6-02c3-11e4-b687-0edbca4b5057/viz.json';
 var basemap = {
   type: "http",
   options: {

@@ -16,8 +16,8 @@ into account that the creation layer method and layer functions won't work as ex
 
 ## Creation
 
-You should follow the [instructions](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#adding-cartodb-layers-to-an-existing-map) we have in our [documentation](http://docs.cartodb.com/cartodb-platform/cartodb-js.html).
-You will find [layer available options](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#cartodbcreatelayermap-layersource--options--callback) and code examples there.
+You should follow the [instructions](http://docs.carto.com/cartodb-platform/cartodb-js.html#adding-cartodb-layers-to-an-existing-map) we have in our [documentation](http://docs.carto.com/cartodb-platform/cartodb-js.html).
+You will find [layer available options](http://docs.carto.com/cartodb-platform/cartodb-js.html#cartodbcreatelayermap-layersource--options--callback) and code examples there.
 
 ---
 
@@ -25,7 +25,7 @@ You will find [layer available options](http://docs.cartodb.com/cartodb-platform
 
 Following methods are not supported or have changed:
 
-- **setMap**: use [addTo](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#creating-visualizations-at-runtime) instead.
+- **setMap**: use [addTo](http://docs.carto.com/cartodb-platform/cartodb-js.html#creating-visualizations-at-runtime) instead.
 
   - _v1:_
   ```javascript
@@ -58,7 +58,7 @@ Following methods are not supported or have changed:
   ```
 
 
-- **setQuery**: use [setSQL](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetsqlsql) instead.
+- **setQuery**: use [setSQL](http://docs.carto.com/cartodb-platform/cartodb-js.html#sublayersetsqlsql) instead.
 
   - _v1:_
   ```javascript
@@ -76,7 +76,7 @@ Following methods are not supported or have changed:
   ```
 
 
-- **setStyle**: use [setCartoCSS](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sublayersetcartocsscss) instead.
+- **setStyle**: use [setCartoCSS](http://docs.carto.com/cartodb-platform/cartodb-js.html#sublayersetcartocsscss) instead.
 
   - _v1:_
   ```javascript
@@ -137,7 +137,7 @@ Following methods are not supported or have changed:
   ```
 
 
-- **setBounds**: you can get the needed info using CartoDB SQL ([example](http://docs.cartodb.com/cartodb-platform/cartodb-js.html#sqlgetboundssql-vars-options-callback)).
+- **setBounds**: you can get the needed info using CartoDB SQL ([example](http://docs.carto.com/cartodb-platform/cartodb-js.html#sqlgetboundssql-vars-options-callback)).
 
   - _v1:_
   ```javascript

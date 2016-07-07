@@ -124,7 +124,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "Ouch! Error connecting %{name}",
+        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },

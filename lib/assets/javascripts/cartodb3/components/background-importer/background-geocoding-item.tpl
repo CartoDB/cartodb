@@ -20,10 +20,10 @@
       <% } %>
   <% } %>
 <% } else { %>
+    <%- width %>%
     <% if (realRows > 0) { %>
     <%- _t('components.background-geocoding-item.geocoded', { realRowsFormatted: realRowsFormatted, processableRowsFormatted: processableRowsFormatted, smart_count: processableRows }) %>
     <% } else { %>
     <%- _t('components.background-geocoding-item.geocoding', { tableName: tableName }) %>
     <% } %>
-    <%- width %>%
 <% } %>

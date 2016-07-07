@@ -11,7 +11,9 @@ var DashboardMenuView = cdb.core.View.extend({
 
   render: function () {
     var shortTitle = this.model.get('title');
-    shortTitle = shortTitle.slice(0, 110) + ' %23 map';
+    if (shortTitle && shortTitle.length > 120) {
+      shortTitle = shortTitle.slice(0, 110) + '...' + ' %23 map';
+    }
 
     this.$el.html(
       template({

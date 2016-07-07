@@ -59,6 +59,9 @@ module CartoDB
             create_overviews(result)
           }
 
+          if runner.instance_of? CartoDB::Importer2::CDBDataLibraryConnector
+            update_table_vis_with_remote_config
+          end
           if data_import.create_visualization
             create_visualization
           end
@@ -106,21 +109,27 @@ module CartoDB
       def create_visualization
         tables = get_imported_tables
         if tables.length > 0
-          print "IMPORTER imported tables #{tables}"
           user = ::User.where(id: data_import.user_id).first
           vis, @rejected_layers = CartoDB::Visualization::DerivedCreator.new(user, tables).create
           data_import.visualization_id = vis.id
-          if (runner.instance_of? CartoDB::Importer2::CDBDataLibraryConnector) && tables[0].name == runner.foreign_table_name
-            # In this case, we only have one table
-            update_vis_with_remote_config(vis)
-          end
           data_import.save
           data_import.reload
         end
       end
 
-      def update_vis_with_remote_config(vis)
+      def update_table_vis_with_remote_config
         begin
+          tables = get_imported_tables
+          if tables.length != 1
+            runner.log.append("WARNING: Skipping remote vis metadata copy - imported more than one table")
+            return
+          end
+          table = tables[0]
+          if table.name != runner.foreign_table_name
+            runner.log.append("WARNING: Skipping remote vis metadata copy - local #{table.name} != remote #{runner.foreign_table_name}")
+            return
+          end
+
           remote_api_key = Cartodb.config[:common_data]['api_key']
           if remote_api_key.blank?
             runner.log.append("Skipping remote visualization copy for new FDW import due to missing Cartodb.config[:common_data]['api_key']")
@@ -130,8 +139,6 @@ module CartoDB
           # set some vars for use
           user = ::User.where(id: data_import.user_id).first
           http_client = Carto::Http::Client.get('fdw_vis_import', log_requests: true)
-
-          print "IMPORTER update vis for remote table #{runner.foreign_table_name}\n"
 
           remote_protocol = Cartodb.config[:common_data]['protocol']
 
@@ -166,39 +173,19 @@ module CartoDB
           data = JSON.parse(response.response_body)
           remote_layers = data['layers']
 
-          # Get local vis layer configs
-          url = "#{user.public_url}/api/v1/maps/#{vis.map_id}/layers"
-          response = http_client.get(url, params: {
-            api_key: user.api_key
-          })
-          if response.code != 200
-            runner.log.append("Skipping remote vis copy: Error fetching #{url} - #{response.code} #{response.body}")
-            return
-          end
-          data = JSON.parse(response.response_body)
-          vis_layers = data['layers']
-
-          # Update local vis layer configs with remote configs
-          if vis_layers.length != remote_layers.length
-            runner.log.append("Skipping remote vis copy: local and remote vis have different number of layers #{vis_layers.length} != #{remote_layers.length}")
-            return
-          end
-          vis_layers.each_with_index do |l, index|
-            url = "#{user.public_url}/api/v1/maps/#{vis.map_id}/layers/#{l['id']}"
-            print "IMPORTER layer url: #{url}\n"
-            body = JSON.dump(l.merge(remote_layers[index].except('id')))
-            print "IMPORTER layer body: \n#{body}\n\n"
-            headers = { 'Accept-Encoding' => 'application/json', 'Content-Type' => 'application/json'}
-            params = { api_key: user.api_key }
-            response = http_client.put(url, headers: headers, body: body, params: params)
-            if response.code != 200
-              runner.log.append("WARNING: Failed to PUT #{url}, remote vis params not copied")
+          table.map.layers.each_with_index do |layer, index|
+            layer_params = remote_layers[index]
+            if layer_params.include?('options') && layer_params['options'].include?('table_name')
+              layer_params['options']['table_name'] = layer.options['table_name']
             end
-            print "IMPORTER response for layer update: #{response.body}\n"
+            if layer_params.include?('options') && layer_params['options'].include?('user_name')
+              layer_params['options']['user_name'] = layer.options['user_name']
+            end
+            layer.raise_on_save_failure = true
+            layer.update(layer_params.slice('options', 'kind', 'infowindow', 'tooltip', 'order'))
           end
         rescue => e
-          print "IMPORTER error #{e}"
-          runner.log.append("Skipping remote vis copy: Generic error #{e}")
+          runner.log.append("WARNING: Failed to import remote vis metadata - #{e}")
         end
       end
 

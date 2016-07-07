@@ -8,4 +8,4 @@
     <% } %>
   </p>
 </div>
-<button class="CDB-Text CDB-Size-small u-upperCase js-options u-actionTextColor"><%- _t('dataset.sync.view-options') %></button>
+<button class="CDB-Text CDB-Size-small u-upperCase js-options SyncInfo-viewOptions"><%- _t('dataset.sync.view-options') %></button>

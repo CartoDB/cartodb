@@ -12,8 +12,8 @@ namespace :cartodb do
     desc 'Import all the common datasets from CartoDB into the local common data user account'
     task import_common_data: [:environment] do
       # temporarily set base URL to remote so dataset URLs will be correct
-      Cartodb.config[:common_data]["base_url"] = "https://common-data.cartodb.com"
-      common_data = CommonData.new('https://common-data.cartodb.com/api/v1/viz?type=table&privacy=public')
+      Cartodb.config[:common_data]["base_url"] = "https://common-data.carto.com"
+      common_data = CommonData.new('https://common-data.carto.com/api/v1/viz?type=table&privacy=public')
       username = Cartodb.config[:common_data]["username"]
       user = User.find(:username=>username)
       raise "User #{username} not found" if not user

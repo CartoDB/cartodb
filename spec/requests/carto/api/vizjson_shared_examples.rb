@@ -41,7 +41,10 @@ shared_examples_for 'vizjson generator' do
     end
 
     it 'tests privacy of vizjsons' do
-      Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+      Carto::NamedMaps::Api.any_instance.stubs(show: { template: { auth: { valid_tokens: ['mammas', 'pappas'] } } },
+                                               create: true,
+                                               update: true,
+                                               destroy: true)
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",

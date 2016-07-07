@@ -275,7 +275,7 @@
                         <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
                       </h3>
                     </div>
-                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">
                       <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                       <%= time_ago_in_words(vis.updated_at) %> ago
                     </div>

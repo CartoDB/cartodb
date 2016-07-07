@@ -51,7 +51,7 @@
           <div class="CDB-Dashboard-menuMedia CDB-Dashboard-menuAvatar">
             <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>
           </div>
-          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt"><%- userName %></p>
+          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt">Map by <%- userName %></p>
         </li>
       </ul>
     </div>

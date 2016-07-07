@@ -261,9 +261,9 @@
   .CDB-Dashboard-menuTexts {
     position: absolute;
     top: 16px;
-    right: auto;
+    right: 16px;
     left: 16px;
-    max-width: 344px;
+    max-width: calc(100% - 32px);
     padding: 8px;
     border-radius: 4px;
     background: $cWhite;

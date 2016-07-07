@@ -17,6 +17,17 @@
     border:none;
     @include box-shadow(rgba(0,0,0,0.2) 0 0 4px 1px);
     z-index:50;
+    min-width: 200px;
+
+    a {
+      color: #2483B4;
+      font-weight: 500;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+        color: #333;
+      }
+    }
 
     &:before {
       content:' ';

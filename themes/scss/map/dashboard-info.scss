@@ -275,9 +275,8 @@
   .CDB-Dashboard-menuTexts {
     position: absolute;
     top: 16px;
-    right: 16px;
+    right: auto;
     left: 16px;
-    max-width: 300px;
     padding: 8px;
     border-radius: 4px;
     background: $cWhite;
@@ -290,6 +289,10 @@
     font-size: 12px;
     line-height: 16px;
   }
+  .CDB-Dashboard-menuTitle--mobile {
+    max-width: 290px;
+  }
+
   .CDB-Dashboard-menuDescription,
   .CDB-Dashboard-menuTime {
     display: none;

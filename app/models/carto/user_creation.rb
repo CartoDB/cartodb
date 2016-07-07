@@ -205,6 +205,10 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_here_isolines_limit = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
 
+    # Bloomberg specific information from user_infos
+    blp_user = ::UserInfo.where(username: username).first
+    @cartodb_user.name = "#{blp_user.firstname} #{blp_user.lastname}"
+
     @cartodb_user
   rescue => e
     handle_failure(e, mark_as_failure = true)

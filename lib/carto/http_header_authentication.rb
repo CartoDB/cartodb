@@ -7,6 +7,7 @@ module Carto
 
     def valid?(request)
       value = header_value(request.headers)
+      puts "header authetication is valid ? #{value}"
       !value.nil? && !value.empty?
     end
 
@@ -22,7 +23,8 @@ module Carto
     end
 
     def autocreation_valid?(request)
-      autocreation_enabled? && field(request) == 'email'
+      autocreation_enabled? && field(request) == 'username'
+      #autocreation_enabled? && field(request) == 'email'
     end
 
     def identity(request)
@@ -45,6 +47,7 @@ module Carto
 
     def field(request)
       field = Cartodb.get_config(:http_header_authentication, 'field')
+      puts "The http headers field is #{field}" 
       field == 'auto' ? field_from_value(request) : field
     end
 
@@ -75,6 +78,7 @@ module Carto
 
     def header_value(headers)
       header = ::Cartodb.get_config(:http_header_authentication, 'header')
+      puts "Trying to extract value from headers for #{header}, value is #{headers[header]}"
       !header.nil? && !header.empty? ? headers[header] : nil
     end
   end

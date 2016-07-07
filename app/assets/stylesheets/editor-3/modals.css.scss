@@ -89,11 +89,6 @@
   cursor: pointer;
 }
 
-.ModalBlockList-inner {
-  @include flex(1);
-  width: 200px;
-}
-
 .ModalBlockList-itemInput {
   margin-right: 16px;
 }

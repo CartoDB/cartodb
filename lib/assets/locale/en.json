@@ -1,4 +1,5 @@
 {
+  "feedback": "Give us some feedback!",
   "user": {
     "you": "You"
   },
@@ -16,20 +17,62 @@
     "november": "November",
     "december": "December"
   },
+
   "analyses": {
-    "georeference": "Georeference",
-    "data-observatory-measurement": "Enrich from Data Observatory",
-    "merge": "Join columns from 2nd layer",
-    "filter-by-node-column": "Link two layers",
-    "centroid": "Centroid from geometries",
-    "area-of-influence": "Create areas of influence",
-    "intersection": "Intersection",
-    "filter": "Filter by column value",
-    "sampling": "Subsample percent of rows",
-    "kmeans": "Calculate clusters of points",
-    "moran-cluster": "Detect outliers and clusters",
-    "spatial-markov-trend": "Predict trends and volatility"
+    "georeference": {
+      "title": "Georeference",
+      "short-title": "Georeference"
+    },
+    "data-observatory-measurement": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data observatory"
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "title": "Link two layers",
+      "short-title": "Link to layer"
+    },
+    "centroid": {
+      "title": "Centroid from geometries",
+      "short-title": "Centroid"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "short-title": "AOI"
+    },
+    "intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "aggregate-intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "filter": {
+      "title": "Filter by column value",
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "title": "Subsample percent of rows",
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "title": "Calculate clusters of points",
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "title": "Detect outliers and clusters",
+      "short-title": "Outliers & clusters",
+    },
+    "spatial-markov-trend": {
+      "title": "Predict trends and volatility",
+      "short-title": "Trends"
+    },
   },
+
   "analysis-category": {
     "create-clean": "Create and clean",
     "data-transformation": "Transform",
@@ -925,7 +968,7 @@
         "delete": "Delete"
       },
       "notifier": {
-        "layer-added": "%{name} <span class='CDB-Text is-semibold'>layer was added successfully.</span>"
+        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1082,7 +1125,8 @@
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-refine": "Choose a measure"
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1142,7 +1186,7 @@
       },
       "notifier": {
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
-        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied successfully.</span>"
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1215,7 +1259,7 @@
       },
       "notifier": {
         "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied successfully.</span>"
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1319,11 +1363,11 @@
     },
     "widgets": {
       "notifier": {
-        "delete": "%{column} <span class='CDB-Text is-semibold'>widget deleted correctly.</span>",
-        "success": "%{column} <span class='CDB-Text is-semibold'>widget successfully added.</span>",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Adding widget</span> for %{column}...",
-        "updating": "<span class='CDB-Text is-semibold'>Updating widget...</span>"
+        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
+        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
       },
       "widgets-view": {
         "add_widget": "Add widget"

@@ -29,6 +29,7 @@ describe('create-dashboard', function () {
       document.body.appendChild(this.$el);
 
       this.vizJSON = {
+        title: 'testing',
         bounds: [[24.206889622398023, -84.0234375], [76.9206135182968, 169.1015625]],
         zoom: 4,
         center: '[50.56375157034741, 42.5390625]',

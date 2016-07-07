@@ -2,7 +2,7 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--alert">
     <i class="CDB-IconFont CDB-IconFont-question"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor">
+  <h2 class="CDB-Text CDB-Size-large u-bSpace">
     <%- _t('dataset.rename.title', { tableName: tableName }) %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">

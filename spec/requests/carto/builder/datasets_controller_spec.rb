@@ -27,12 +27,13 @@ describe Carto::Builder::DatasetsController do
       @user.destroy
     end
 
-    it 'returns 404 for non-builder users requests' do
+    it 'redirects to public view non-builder users requests' do
       @user.stubs(:has_feature_flag?).with('editor-3').returns(false)
 
       get builder_dataset_url(id: @visualization.id)
 
-      response.status.should == 404
+      response.status.should eq 302
+      response.location.should end_with public_table_map_path(id: @visualization.id)
     end
 
     it 'redirects to editor if disabled' do
@@ -50,12 +51,32 @@ describe Carto::Builder::DatasetsController do
       response.status.should == 404
     end
 
-    it 'returns 403 for visualizations not writable by user' do
+    it 'redirects to public view for visualizations not writable by user' do
       @other_visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL)
 
       get builder_dataset_url(id: @other_visualization.id)
 
-      response.status.should == 403
+      response.status.should eq 302
+      response.location.should end_with public_table_map_path(id: @other_visualization.id)
+    end
+
+    describe 'viewer users' do
+      after(:each) do
+        if @user.viewer
+          @user.viewer = false
+          @user.save
+        end
+      end
+
+      it 'redirected to public view for their datasets at the builder' do
+        @user.viewer = true
+        @user.save
+
+        get builder_dataset_url(id: @visualization.id)
+
+        response.status.should eq 302
+        response.location.should end_with public_table_map_path(id: @visualization.id)
+      end
     end
 
     it 'returns visualization' do

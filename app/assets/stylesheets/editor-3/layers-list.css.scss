@@ -20,6 +20,21 @@
   opacity: 0.64;
 }
 
+.Editor-ListLayer-item.has-error {
+  &::after {
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid $cWhite;
+    border-radius: 50px;
+    background-color: $cError;
+    content: ' ';
+  }
+}
+
 .Editor-ListLayer-item--placeholder {
   border-color: $cSecondaryBackground;
   background: $cSecondaryBackground;

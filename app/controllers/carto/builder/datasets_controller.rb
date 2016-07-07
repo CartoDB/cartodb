@@ -24,6 +24,9 @@ module Carto
           @canonical_visualization, current_viewer, self).to_poro
         @user_table_data = Carto::Api::UserTablePresenter.new(
           @user_table, @canonical_visualization.permission, current_viewer).to_poro
+        @layers_data = @canonical_visualization.layers.map do |l|
+          Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
+        end
       end
 
       private
@@ -38,7 +41,7 @@ module Carto
       end
 
       def authors_only
-        render_403 unless !current_user.nil? && @canonical_visualization.is_writable_by_user(current_user)
+        unauthorized unless current_user && @canonical_visualization.is_writable_by_user(current_user)
       end
 
       def load_user_table
@@ -48,6 +51,10 @@ module Carto
 
       def editable_visualizations_only
         render_404 unless @canonical_visualization.editable?
+      end
+
+      def unauthorized
+        redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id])
       end
     end
   end

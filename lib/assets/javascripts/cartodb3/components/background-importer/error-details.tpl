@@ -14,7 +14,6 @@
   </h3>
 </div>
 
-
 <div class="Dialog-body ErrorDetails-body">
   <ul class="Modal-containerList">
     <% if (httpResponseCode) { %>

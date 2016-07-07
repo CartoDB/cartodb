@@ -3,14 +3,28 @@
 
 /* CartoLogo */
 
-
 .CDB-EmbedLogo-text {
   opacity: 0;
 }
-
+.CDB-EmbedLogo-imago {
+  @include transform(translateX(0))
+}
 .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuLogo {
   @include transition(transform, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
   @include transform(translateX(56px))
+}
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-text {
+  @include animation(fadeInDown 0.8s both);
+  opacity: 1;
+  fill: rgb(22, 41, 69);
+}
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-imago {
+  @include transform(translateX(37px))
+}
+
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-halo {
+  @include animation(fadeInDown 0.8s both);
+  fill: rgba(22, 41, 69, 0.1);
 }
 .CDB-Dashboard-menu.is-active .CDB-EmbedLogo-point {
   @include animation(fadeInDown 0.8s both);
@@ -18,19 +32,18 @@
 }
 
 
-
-
 /* Dashboard menu */
 
 .CDB-Dashboard-menuTexts {
   position: absolute;
-  top: 80px;
+  top: 120px;
   right: 64px;
   left: 72px;
   opacity: 0;
 }
 .CDB-Dashboard-menuActions {
   @include display-flex();
+  @include align-items(center);
   position: absolute;
   top: 80px;
   right: 18px;
@@ -262,9 +275,8 @@
   .CDB-Dashboard-menuTexts {
     position: absolute;
     top: 16px;
-    right: 16px;
+    right: auto;
     left: 16px;
-    max-width: 300px;
     padding: 8px;
     border-radius: 4px;
     background: $cWhite;
@@ -277,12 +289,20 @@
     font-size: 12px;
     line-height: 16px;
   }
+  .CDB-Dashboard-menuTitle--mobile {
+    max-width: 290px;
+  }
+
   .CDB-Dashboard-menuDescription,
   .CDB-Dashboard-menuTime {
     display: none;
   }
+
+  .CDB-EmbedLogo-imago {
+    @include transform(translateX(37px))
+  }
+
   .CDB-Dashboard-menuLogo {
-    width: 16px; /* remove TODO */
     margin-bottom: 0;
     transform: translateX(0);
   }
@@ -291,7 +311,6 @@
   }
   .CDB-EmbedLogo-text {
     @include opacity(1);
-    display: none;
     fill: rgb(22, 41, 69);
   }
   .CDB-EmbedLogo-halo {
@@ -303,6 +322,7 @@
   .CDB-Dashboard-menuLogo svg {
     width: auto;
     height: 16px;
+    margin-bottom: -2px;
   }
   .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuInner {
     width: auto;

@@ -10,13 +10,22 @@ var DashboardMenuView = cdb.core.View.extend({
   },
 
   render: function () {
+    var shortTitle = this.model.get('title');
+    if (shortTitle && shortTitle.length > 120) {
+      shortTitle = shortTitle.slice(0, 110) + '...' + ' %23 map';
+    }
+
     this.$el.html(
       template({
         title: this.model.get('title'),
         description: this.model.get('description'),
         updatedAt: moment(this.model.get('updatedAt')).fromNow(),
         userName: this.model.get('userName'),
-        userAvatarURL: this.model.get('userAvatarURL')
+        url: window.location.href,
+        inIframe: (window.location !== window.parent.location),
+        shortTitle: shortTitle,
+        userAvatarURL: this.model.get('userAvatarURL'),
+        userProfileURL: this.model.get('userProfileURL')
       })
     );
 

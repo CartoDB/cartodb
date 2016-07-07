@@ -10,6 +10,7 @@ $sessions-text-color: rgba(white, 0.5);
 $sessions-link-color: rgba(white, 0.8);
 $shadow-color: rgba(black, 0.1);
 $cNavyBlue: #162945;
+$cDarkBlue: #0E1C2E;
 $cTypo3: #B1B8C1;
 $cLocationBlue: #1785FB;
 $cLocationRed: #F24440;
@@ -54,6 +55,14 @@ $cWhite: #FFFFFF;
   @include flex-direction(column);
   min-height: 100vh;
   background-color: #F9F9F9;
+  background-size: cover;
+}
+
+.Sessions-navy {
+  @include display-flex;
+  @include flex-direction(column);
+  min-height: 100vh;
+  background-color: $cNavyBlue;
   background-size: cover;
 }
 
@@ -156,19 +165,19 @@ $cWhite: #FFFFFF;
   border: 1px solid #eee;
 
   &::-webkit-input-placeholder {
-    color: #162746;
+    color: $cTypo3;
   }
 
   &:-moz-placeholder {
-    color: #162746;
+    color: $cTypo3;
   }
 
   &::-moz-placeholder {
-    color: #162746;
+    color: $cTypo3;
   }
 
   &:-ms-input-placeholder {
-    color: #162746;
+    color: $cTypo3;
   }
 
   &:focus {
@@ -184,16 +193,59 @@ $cWhite: #FFFFFF;
   }
 }
 
-.Sessions-input.topBorderRadius {
+.Sessions-navy-input {
+  padding: 10px;
+  width: 100%;
+  height: 48px;
+  font-weight: 300;
+  font-size: 14px;
+  background: $cDarkBlue;
+  color: $cWhite;
+  outline: none;
+  border: 1px solid $cDarkBlue;
+
+  &::-webkit-input-placeholder {
+    color: $cTypo3;
+  }
+
+  &:-moz-placeholder {
+    color: $cTypo3;
+  }
+
+  &::-moz-placeholder {
+    color: $cTypo3;
+  }
+
+  &:-ms-input-placeholder {
+    color: $cTypo3;
+  }
+
+  &:focus {
+    border: 1px solid $cLocationBlue;
+  }
+
+  &.inputWithError {
+    border-color: $cDarkBlue;
+
+    &:focus {
+      border: 1px solid $cLocationBlue;
+    }
+  }
+}
+
+.Sessions-input.topBorderRadius,
+.Sessions-navy-input.topBorderRadius {
   border-radius: 4px 4px 0 0;
 
 }
 
-.Sessions-input.bottomBorderRadius {
+.Sessions-input.bottomBorderRadius,
+.Sessions-navy-input.bottomBorderRadius {
   border-radius: 0 0 4px 4px;
 }
 
-.Sessions-input.withBorderRadius {
+.Sessions-input.withBorderRadius,
+.Sessions-navy-input.withBorderRadius {
   border-radius: 4px;
 }
 
@@ -234,6 +286,10 @@ $cWhite: #FFFFFF;
       text-decoration: underline;
     }
   }
+}
+
+.Sessions-navy .Sessions-text a {
+  color: #FFF;
 }
 
 .Sessions-inputLinkAside {

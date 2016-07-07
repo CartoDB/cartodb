@@ -6,7 +6,7 @@
   <%= javascript_include_tag 'cdb.js', 'sessions.js' %>
 <% end %>
 
-<div class="CDB-Text Sessions">
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
       <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
@@ -14,10 +14,10 @@
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">
               <picture class="Navbar-brand">
-                <% if @organization.avatar_url.present? %>
+                <% if @organization.present? && @organization.avatar_url.present? %>
                   <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
                 <% else %>
-                  <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
                 <% end %>
               </picture>
             </div>
@@ -33,7 +33,7 @@
                 <% if @organization.nil? || @organization.auth_username_password_enabled %>
 
                   <div class="Sessions-field">
-                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium Sessions-input topBorderRadius" %>
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -41,7 +41,7 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium Sessions-input bottomBorderRadius" %>
+                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

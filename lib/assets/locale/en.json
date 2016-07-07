@@ -28,11 +28,11 @@
     },
     "merge": {
       "title": "Join columns from 2nd layer",
-      "short-title": "Merge"
+      "short-title": "Join columns"
     },
     "filter-by-node-column": {
       "title": "Link two layers",
-      "short-title": "Link"
+      "short-title": "Link to layer"
     },
     "centroid": {
       "title": "Centroid from geometries",
@@ -40,7 +40,7 @@
     },
     "area-of-influence": {
       "title": "Create areas of influence",
-      "short-title": "Area of influence"
+      "short-title": "AOI"
     },
     "intersection": {
       "title": "Intersection",

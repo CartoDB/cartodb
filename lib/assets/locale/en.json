@@ -1379,7 +1379,8 @@
   },
   "notifications": {
     "analysis": {
-      "started": "Analysis %{nodeId} running",
+      "pending": "Analysis %{nodeId} waiting",
+      "waiting": "Analysis %{nodeId} enqueued",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted"

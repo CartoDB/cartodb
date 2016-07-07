@@ -50,7 +50,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   margin-left: $sMargin-section;
 }
 .Header-navigationLink {
-  font-weight: $sFontWeight-normal;
+  font-weight: $sFontWeight-bold;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-largest;
   color: #fff;
@@ -83,7 +83,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-settingsLink--public {
   font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-normal;
+  font-weight: $sFontWeight-bold;
   text-transform: none;
 }
 .Header-settingsItem--avatar {}

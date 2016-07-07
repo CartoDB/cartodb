@@ -9,7 +9,7 @@
 .MapsList {
   @include display-flex();
   @include justify-content(flex-start, start);
-  @include align-items(flex-start, start);
+  @include align-items(center);
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width + $sMargin-element;

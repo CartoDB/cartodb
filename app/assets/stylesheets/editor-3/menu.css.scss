@@ -88,9 +88,10 @@
   }
 }
 .EditorMenu-feedback {
+  @include transform(translateX(-50%));
   position: absolute;
-  bottom: $baseSize * 8;
-  left: $baseSize * 3;
+  bottom: 20px;
+  left: 50%;
 }
 .Editor-feedbackModal {
   position: absolute;

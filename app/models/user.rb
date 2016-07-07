@@ -1388,6 +1388,7 @@ class User < Sequel::Model
         db_service.new_non_organization_user_main_db_setup
       end
     end
+    setup_aggregation_tables
   end
 
   # return quoated database_schema when needed
@@ -1702,5 +1703,11 @@ class User < Sequel::Model
       .with_shared_with_user_id(id)
       .build
       .map { |v| CartoDB::Visualization::Member.new(id: v.id).fetch }
+  end
+
+  def setup_aggregation_tables
+    if Cartodb.get_config(:aggregation_tables).present?
+      db_service.connect_to_aggregation_tables
+    end
   end
 end

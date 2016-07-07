@@ -7,7 +7,7 @@
       <% } %>
       <h2 class="u-ellipsis CDB-Text CDB-Size-large u-rSpace--m is-light"><%- name %></h2>
       <% if (isCustomQueryApplied) { %>
-        <span class="CDB-Tag CDB-Text CDB-Size-medium u-upperCase"><%- _t('dataset.sql') %></span>
+        <span class="CDB-Tag CDB-Tag--opaque u-secondaryTextColor CDB-Text CDB-Size-medium u-upperCase"><%- _t('dataset.sql') %></span>
       <% } %>
     </div>
     <div class="PreviewMap-infoActions">

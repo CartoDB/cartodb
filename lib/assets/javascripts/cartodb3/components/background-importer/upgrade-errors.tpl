@@ -18,13 +18,11 @@
       </div>
       <div class="ErrorDetails-itemText">
         <p class="CDB-Text CDB-Size-medium">
+          <% if (showTrial) { %>
+            <%- _t('components.background-importer.free-trial', { days: 14 }) %> <br/>
+          <% } %>
           <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.info') %>
         </p>
-        <% if (showTrial) { %>
-          <p class="CDB-Text CDB-Size-small">
-            <%- _t('components.background-importer.free-trial', { days: 14 }) %>
-          </p>
-        <% } %>
       </div>
     </li>
   </ul>

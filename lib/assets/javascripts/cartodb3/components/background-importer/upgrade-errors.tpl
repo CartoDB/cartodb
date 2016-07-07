@@ -12,16 +12,17 @@
 
 <div class="Dialog-body ErrorDetails-body">
   <ul class="Modal-containerList">
-    <li class="ErrorDetails-itemStep">
-      <div class="ErrorDetails-itemIcon CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-justifyCenter">
+    <li class="ErrorDetails-item">
+      <div class="ErrorDetails-itemIcon ErrorDetails-itemIcon--success CDB-Size-big u-flex u-alignCenter u-justifyCenter u-rSpace--xl">
         <i class="CDB-IconFont CDB-IconFont-rocket"></i>
       </div>
       <div class="ErrorDetails-itemText">
         <p class="CDB-Text CDB-Size-medium">
-          <% if (showTrial) { %>
-            <%- _t('components.background-importer.free-trial', { days: 14 }) %> <br/>
-          <% } %>
           <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.info') %>
+          <% if (showTrial) { %>
+            <br/>
+            <a href="<%= upgradeUrl %>"><%- _t('components.background-importer.free-trial', { days: 14 }) %></a>
+          <% } %>
         </p>
       </div>
     </li>

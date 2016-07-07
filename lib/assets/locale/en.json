@@ -200,7 +200,7 @@
         "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
 
       },
-      "free-trial": "%{days} day free trial",
+      "free-trial": "Get a %{days} day free trial",
       "connecting": "Connecting",
       "dataset": "dataset…",
       "geocoding": "Geocoding",

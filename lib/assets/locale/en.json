@@ -926,7 +926,7 @@
         "delete": "Delete"
       },
       "notifier": {
-        "layer-added": "%{name} <span class='CDB-Text is-semibold'>layer was added successfully.</span>"
+        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1143,7 +1143,7 @@
       },
       "notifier": {
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
-        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied successfully.</span>"
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1216,7 +1216,7 @@
       },
       "notifier": {
         "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied successfully.</span>"
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1320,11 +1320,11 @@
     },
     "widgets": {
       "notifier": {
-        "delete": "%{column} <span class='CDB-Text is-semibold'>widget deleted correctly.</span>",
-        "success": "%{column} <span class='CDB-Text is-semibold'>widget successfully added.</span>",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Adding widget</span> for %{column}...",
-        "updating": "<span class='CDB-Text is-semibold'>Updating widget...</span>"
+        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
+        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
       },
       "widgets-view": {
         "add_widget": "Add widget"

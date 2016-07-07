@@ -11,6 +11,7 @@ namespace :cartodb do
 
     desc 'Import all the common datasets from CartoDB into the local common data user account'
     task import_common_data: [:environment] do
+      old_base_url = Cartodb.config[:common_data]["base_url"]
       # temporarily set base URL to remote so dataset URLs will be correct
       Cartodb.config[:common_data]["base_url"] = "https://common-data.carto.com"
       common_data = CommonData.new('https://common-data.carto.com/api/v1/viz?type=table&privacy=public')
@@ -38,7 +39,12 @@ namespace :cartodb do
         ActiveRecord::Base.connection.close
       end
       # unset base URL when done
-      Cartodb.config[:common_data].delete("base_url")
+      if old_base_url
+        Cartodb.config[:common_data]["base_url"] = old_base_url
+      else
+        Cartodb.config[:common_data].delete("base_url")
+      end
+
       if failed_imports > 0
         puts "Failed to import #{failed_imports} of #{datasets.size} common datasets."
         raise "Failed to import any common datasets" if failed_imports == datasets.size

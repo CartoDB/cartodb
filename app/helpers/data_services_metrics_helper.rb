@@ -11,7 +11,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_geocoding_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_geocoding_data(organization.owner, from, to)
   end
 
@@ -20,7 +20,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_here_isolines_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_here_isolines_data(organization.owner, from, to)
   end
 
@@ -29,7 +29,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_obs_snapshot_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_obs_snapshot_data(organization.owner, from, to)
   end
 
@@ -38,7 +38,7 @@ module DataServicesMetricsHelper
   end
 
   def get_organization_obs_general_data(organization, from, to)
-    return if organization.owner.nil?
+    organization.require_organization_owner_presence!
     get_obs_general_data(organization.owner, from, to)
   end
 

@@ -1,4 +1,5 @@
 {
+  "feedback": "Give us some feedback!",
   "user": {
     "you": "You"
   },
@@ -16,27 +17,66 @@
     "november": "November",
     "december": "December"
   },
+
   "analyses": {
-    "source": "Source",
-    "area-of-influence": "Area of influence",
-    "centroid": "Centroid",
-    "cluster": "Cluster",
-    "filter": "Filter",
-    "filter-by-node-column": "Link to layer analysis",
-    "georeference": "Georeference",
-    "intersection": "Intersection",
-    "kmeans": "Cluster",
-    "merge": "Merge",
-    "moran-cluster": "Moran cluster",
-    "point-in-polygon": "Point in polygon",
-    "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation",
-    "data-observatory-measurement": "Data Observatory"
+    "georeference": {
+      "title": "Georeference",
+      "short-title": "Georeference"
+    },
+    "data-observatory-measurement": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data observatory"
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "title": "Link two layers",
+      "short-title": "Link to layer"
+    },
+    "centroid": {
+      "title": "Centroid from geometries",
+      "short-title": "Centroid"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "short-title": "AOI"
+    },
+    "intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "aggregate-intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "filter": {
+      "title": "Filter by column value",
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "title": "Subsample percent of rows",
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "title": "Calculate clusters of points",
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "title": "Detect outliers and clusters",
+      "short-title": "Outliers & clusters",
+    },
+    "spatial-markov-trend": {
+      "title": "Predict trends and volatility",
+      "short-title": "Trends"
+    },
   },
+
   "analysis-category": {
-    "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis",
-    "predictive": "Predictive analysis"
+    "create-clean": "Create and clean",
+    "data-transformation": "Transform",
+    "analyze-predict": "Analyze and predict"
   },
   "form-components": {
     "editors": {
@@ -124,7 +164,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "Ouch! Error connecting %{name}",
+        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },
@@ -155,7 +195,7 @@
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
           "info": "Keep your data and get a larger quota by upgrading your plan",
-          "title": "Your quota has run out",
+          "title": "Your quota has run out"
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
@@ -358,56 +398,52 @@
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
-            "title": "Area of influence",
-            "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
-          },
-          "point-in-polygon": {
-            "title": "Point in polygon",
-            "desc": "Analyze points in polygon (or vice versa)"
+            "title": "Create areas of influence",
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
             "title": "Georeference",
-            "desc": "Transform your data into coordinates"
+            "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "intersection": {
-            "title": "Intersection",
-            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+            "title": "Intersect second layer",
+            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
           },
           "filter": {
-            "title": "Filter",
-            "desc": "Filter your rows depending on the values of a column"
+            "title": "Filter rows by column value",
+            "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
-            "title": "Merge",
-            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
+            "title": "Join columns from 2nd layer",
+            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "moran-cluster": {
-            "title": "Moran cluster",
-            "desc": "Find areas which have similar values and identify outliers"
+            "title": "Detect outliers and clusters",
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
           },
           "kmeans": {
-            "title": "Cluster",
-            "desc": "Group points by proximity"
+            "title": "Calculate clusters of points",
+            "desc": "Spatially separate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Centroid",
-            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+            "title": "Find centroid of geometries",
+            "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link to layer",
-            "desc": "Link two layers with matching column names"
+            "title": "Link two layers",
+            "desc": "Join two layers by shared values in a column such that widgets will effect both."
           },
           "sampling": {
-            "title": "Sampling",
-            "desc": "Return a percentage of your data"
+            "title": "Subsample percent of rows",
+            "desc": "Subsample the rows in a dataset based on a specified percent."
           },
           "spatial-markov-trend": {
-            "title": "Temporal simulation",
-            "desc": "Predict trends based on temporal series"
+            "title": "Predict trends and volatility",
+            "desc": "Predict probability of upward and downward trends using spatial Markov chains."
           },
           "data-observatory-measure": {
-            "title": "Data Observatory",
-            "desc": "Augment your table with data from Data Observatory"
+            "title": "Enrich from Data Observatory",
+            "desc": "Add a new column with contextual demographic and economic measures."
           }
         }
       },
@@ -911,18 +947,18 @@
         "show": "Show layer"
       },
       "rename": {
-        "loading": "Renaming layer...",
-        "success": "Layer renamed to %{name}",
-        "error": "Error renaming layer %{name}: %{error}"
+        "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
+        "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "Error deleting layer %{name}: %{error}",
-        "loading": "Removing the layer %{name}...",
-        "success": "Layer %{name} deleted"
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
+        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
       },
       "layer": {
         "analysis": "Analysis",
@@ -930,6 +966,9 @@
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
         "delete": "Delete"
+      },
+      "notifier": {
+        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -975,6 +1014,7 @@
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
+        "aggregate-by-help": "Will calculate aggregate values for each centroid",
         "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
@@ -983,23 +1023,25 @@
         "by-car": "car",
         "by-walk": "walk",
         "categorize-by": "Categorize by",
+        "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "city": "City",
         "city-help": "In which column are your city names stored?",
-        "clusters-num": "# Clusters",
+        "clusters-num": "# of clusters",
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
         "create-btn": "Apply",
-        "data-values": "Data values",
+        "type": "Type",
         "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
+        "denominator-help": "A column to normalize the target column",
         "dissolved": "Dissolved",
-        "distance": "Distance",
+        "distance": "Units",
         "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
-        "filter-column": "Linked layer col.",
+        "filter-column": "2nd. layer col.",
         "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
@@ -1014,12 +1056,12 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Define how to link them",
+        "key-columns-desc": "Choose similar columns to link them",
         "kilometers": "km",
         "latitude": "Latitude",
-        "link-layer": "Source col.",
-        "link-layer-desc": "Specify which layer you want to link this to",
-        "linked-layer": "Linked layer",
+        "link-layer": "Link to col.",
+        "link-layer-desc": "Specify a second layer to join",
+        "linked-layer": "Link to layer",
         "loading": "loading…",
         "left": 'Left',
         "right": 'Right',
@@ -1031,8 +1073,10 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
-        "neighbours": "Neighbors",
-        "numerator": "Numerator",
+        "neighbors": "Neighbors",
+        "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
+        "numerator": "Target column",
+        "numerator-help": "Measure spatial autocorrelation of this column",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
@@ -1042,7 +1086,7 @@
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
         "postal-code-help": "In which column are your postal codes stored?",
-        "radius": "Radius",
+        "radius": "Distance",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
         "sampling": "Sampling",
@@ -1051,6 +1095,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
         "source": "Source",
         "source-column": "Source column",
         "state": "State",
@@ -1064,20 +1109,24 @@
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
-        "type": "Type",
+        "type": "Measure by",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "spatial-markov-trend-desc": "select the columns with temporal value series",
-        "spatial-markov-trend-time-columns": "time columns",
+        "spatial-markov-trend-desc": "select a column for each time period",
+        "spatial-markov-trend-time-columns": "Input columns",
+        "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "weighted-by": "Weighted by",
+        "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Workflow",
-        "data-observatory-measurement-area": "Zone",
-        "data-observatory-measurement-column": "Column",
+        "data-observatory-measurement-area": "Country",
+        "data-observatory-measurement-column": "New col. name",
+        "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-refine": "refine your selection"
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1123,7 +1172,7 @@
     "data": {
       "stats": {
         "add-widget": "Add as a widget",
-        "style": "STYLE",
+        "edit": "EDIT",
         "top-cat": "% in top 10 cat.",
         "trues": "% true",
         "null": "% null"
@@ -1134,6 +1183,10 @@
       },
       "code-mirror": {
         "save": "CMD + S to apply your query."
+      },
+      "notifier": {
+        "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1203,6 +1256,10 @@
       "style-toggle": {
         "values": "VALUES",
         "cartocss": "CARTOCSS"
+      },
+      "notifier": {
+        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1305,6 +1362,13 @@
       }
     },
     "widgets": {
+      "notifier": {
+        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
+        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
+      },
       "widgets-view": {
         "add_widget": "Add widget"
       },

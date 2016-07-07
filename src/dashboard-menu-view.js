@@ -16,7 +16,8 @@ var DashboardMenuView = cdb.core.View.extend({
         description: this.model.get('description'),
         updatedAt: moment(this.model.get('updatedAt')).fromNow(),
         userName: this.model.get('userName'),
-        userAvatarURL: this.model.get('userAvatarURL')
+        userAvatarURL: this.model.get('userAvatarURL'),
+        userProfileURL: this.model.get('userProfileURL')
       })
     );
 

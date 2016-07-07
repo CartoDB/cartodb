@@ -35,6 +35,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     description: vizJSON.description,
     updatedAt: vizJSON.updated_at,
     userName: vizJSON.user.fullname,
+    userProfileURL: vizJSON.user.profile_url,
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
     initialPosition: {

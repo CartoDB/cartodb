@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: a2b8834622f2b4d3b849a7e810cff998d982844d
+// sha: b308a025d124af7b11144a95adf9bca8e47b7176
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -33318,8 +33318,6 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
 
 cdb.geo.ui.InsetMap = cdb.core.View.extend({
 
-  ANIMATION_DURATION_MS: 150,
-
   AIMING_RECT_OPTIONS: {
     color: '#000000',
     weight: 1,
@@ -33415,7 +33413,7 @@ cdb.geo.ui.InsetMap = cdb.core.View.extend({
     // TODO: No access to DEFAULT_BASEMAPS in cartodb.js. Used a static url for now,
     // consider other options, or maybe we can just remove this fallback?
     // var positron = cdb.admin.DEFAULT_BASEMAPS.CartoDB[0];
-    var positron = {url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'};
+    var positron = {url: ''};
     var url = baseLayer.get('url') || baseLayer.get('urlTemplate') || positron.url;
     var config = _.extend({}, positron, baseLayer);
     return new L.TileLayer(url, config);
@@ -33449,9 +33447,9 @@ cdb.geo.ui.InsetMap = cdb.core.View.extend({
     var x = this.model.get('x');
     var position = this.model.get('xPosition');
     if (position === 'left') {
-      this.$control.animate({ left: x }, this.ANIMATION_DURATION_MS);
+      this.$control.animate({ left: x }, 150);
     } else {
-      this.$control.animate({ right: x }, this.ANIMATION_DURATION_MS);
+      this.$control.animate({ right: x }, 150);
     }
 
     this.trigger('change_x', this);
@@ -33465,9 +33463,9 @@ cdb.geo.ui.InsetMap = cdb.core.View.extend({
     var y = this.model.get('y');
     var position = this.model.get('yPosition');
     if (position === 'top') {
-      this.$control.animate({ top: y }, this.ANIMATION_DURATION_MS);
+      this.$control.animate({ top: y }, 150);
     } else {
-      this.$control.animate({ bottom: y }, this.ANIMATION_DURATION_MS);
+      this.$control.animate({ bottom: y }, 150);
     }
 
     this.trigger('change_y', this);
@@ -33503,7 +33501,7 @@ cdb.geo.ui.InsetMap = cdb.core.View.extend({
 
   render: function () {
     // Don't attach to this.$el because then the inset map element ends up outside the
-    // leaflet-controls container which causes trouble
+    //  leaflet-controls container which causes trouble
 
     if (!this.miniMapControl) {
       return this;

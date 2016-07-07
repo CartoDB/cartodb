@@ -53,6 +53,8 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
     this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
+
+    this._resizeHandler = _.debounce(this._onResize.bind(this), 500);
   },
 
   render: function () {
@@ -67,8 +69,23 @@ module.exports = cdb.core.View.extend({
     this._renderScroll();
     this._renderShadows();
     this._bindScroll();
-
+    this._initResize();
     return this;
+  },
+
+  _initResize: function () {
+    $(window).on('resize', this._resizeHandler);
+
+    var w = $(window).width();
+    if (w < 759) {
+      this._bounder = 'down';
+    }
+
+    if (w >= 759) {
+      this._bounder = 'up';
+    }
+
+    this._resizeHandler();
   },
 
   _$container: function () {
@@ -108,7 +125,7 @@ module.exports = cdb.core.View.extend({
 
   _renderShadows: function () {
     this.$shadowTop = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--top');
-    this.$shadowBottom = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom is-visible');
+    this.$shadowBottom = $('<div>').addClass('CDB-Widget-canvasShadow CDB-Widget-canvasShadow--bottom');
     this.$el.append(this.$shadowTop);
     this.$el.append(this.$shadowBottom);
   },
@@ -123,8 +140,30 @@ module.exports = cdb.core.View.extend({
     var max = $el.get(0).scrollHeight;
     var height = $el.outerHeight();
     var maxPos = max - height;
+
     this.$shadowTop.toggleClass('is-visible', currentPos > 0);
     this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
+  },
+
+  _updateScroll: function () {
+    this._$container().scrollLeft = 0;
+    this._$container().scrollTop = 0;
+    Ps.update(this._container());
+  },
+
+  _onResize: function () {
+    var w = $(window).width();
+    if (w < 759 && this._bounder === 'up') {
+      this._bounder = 'down';
+      this._updateScroll();
+    }
+
+    if (w >= 759 && this._bounder === 'down') {
+      this._bounder = 'up';
+      this._updateScroll();
+    }
+
+    this._onScroll();
   },
 
   _onScrollBottom: function () {
@@ -132,6 +171,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _cleanScroll: function () {
+    $(window).off('resize', this._resizeHandler);
     if (this._container()) {
       this._$container().off('ps-scroll-y');
       Ps.destroy(this._container());

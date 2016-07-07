@@ -51,7 +51,7 @@
           </button>
           <div>
             <p class="CDB-Dashboard-menuTime CDB-Text CDB-Size-small u-upperCase u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>
-            <h1 class="CDB-Dashboard-menuTitle CDB-Dashboard-menuTitle--mobile CDB-Text CDB-Size-huge u-ellipsis js-title"><%- title %></h1>
+            <h1 class="CDB-Dashboard-menuTitle CDB-Dashboard-menuTitle--mobile CDB-Text CDB-Size-huge u-ellipsis js-title" title="<%- title %>"><%- title %></h1>
             <h2 class="CDB-Dashboard-menuDescription CDB-Text CDB-Size-large is-light u-secondaryTextColor js-description"><%= cdb.core.sanitize.html(description) %></h2>
           </div>
         </div>

@@ -68,6 +68,8 @@ module.exports = cdb.core.View.extend({
     this._renderShadows();
     this._bindScroll();
 
+    $(window).on('resize', this._onResize.bind(this));
+
     return this;
   },
 
@@ -125,6 +127,12 @@ module.exports = cdb.core.View.extend({
     var maxPos = max - height;
     this.$shadowTop.toggleClass('is-visible', currentPos > 0);
     this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
+  },
+
+  _onResize: function () {
+    this._$container().scrollLeft = 0;
+    this._$container().scrollTop = 0;
+    Ps.update(this._container());
   },
 
   _onScrollBottom: function () {

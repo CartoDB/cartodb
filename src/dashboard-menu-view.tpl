@@ -29,7 +29,9 @@
       <div class="CDB-Dashboard-menuTexts CDB-Dashboard-hideMobile">
         <div class="CDB-Dashboard-menuTextInner js-content">
           <button class="js-toggle-view u-actionTextColor CDB-Dashboard-menuTextActions">
-            <i class="CDB-Text CDB-Size-small CDB-IconFont CDB-IconFont-rows"></i>
+            <svg width="10px" height="7px" viewBox="12 13 10 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <path d="M12,13.5 C12,13.2238576 12.1908338,13 12.4169561,13 L21.5830439,13 C21.8133224,13 22,13.2319336 22,13.5 C22,13.7761424 21.8091662,14 21.5830439,14 L12.4169561,14 C12.1866776,14 12,13.7680664 12,13.5 L12,13.5 L12,13.5 Z M12,16.5 C12,16.2238576 12.1908338,16 12.4169561,16 L21.5830439,16 C21.8133224,16 22,16.2319336 22,16.5 C22,16.7761424 21.8091662,17 21.5830439,17 L12.4169561,17 C12.1866776,17 12,16.7680664 12,16.5 L12,16.5 L12,16.5 Z M12,19.5 C12,19.2238576 12.1908338,19 12.4169561,19 L21.5830439,19 C21.8133224,19 22,19.2319336 22,19.5 C22,19.7761424 21.8091662,20 21.5830439,20 L12.4169561,20 C12.1866776,20 12,19.7680664 12,19.5 L12,19.5 L12,19.5 Z" id="Combined-Shape" stroke="none" fill="#1785fB" fill-rule="evenodd"></path>
+            </svg>
           </button>
           <div>
             <p class="CDB-Dashboard-menuTime CDB-Text CDB-Size-small u-upperCase u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>

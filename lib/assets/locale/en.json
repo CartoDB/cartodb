@@ -1126,7 +1126,7 @@
     "data": {
       "stats": {
         "add-widget": "Add as a widget",
-        "style": "STYLE",
+        "edit": "EDIT",
         "top-cat": "% in top 10 cat.",
         "trues": "% true",
         "null": "% null"

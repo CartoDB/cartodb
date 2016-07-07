@@ -44,6 +44,20 @@ $width: 620px;
   font-size: $sFontSize-normal;
   text-align: center;
 }
+.ErrorDetails-itemIcon {
+  width: $sIcon-layout;
+  height: $sIcon-layout;
+  border: 1px solid $cStructure-softLine;
+  border-radius: $sIcon-borderRadius;
+  margin-bottom: $sMargin-elementInline;
+  font-size: 22px;
+  line-height: 44px;
+  margin: 0px auto;
+}
+.ErrorDetails-itemIcon--success {
+  color: #9bc63b;
+  border-color: #9bc63b;
+}
 .ErrorDetails-itemStep--lessProminent {
   color: #ddd;
   border-color: #ddd;

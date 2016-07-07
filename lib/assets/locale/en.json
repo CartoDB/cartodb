@@ -20,9 +20,9 @@
     "georeference": "Georeference",
     "data-observatory-measurement": "Enrich from Data Observatory",
     "merge": "Join columns from 2nd layer",
-    "filter-by-node-column": "Link 2 layers in 1 widget",
+    "filter-by-node-column": "Link two layers",
     "centroid": "Centroid from geometries",
-    "area-of-influence": "Expand points into polygons",
+    "area-of-influence": "Create areas of influence",
     "intersection": "Intersection",
     "filter": "Filter by column value",
     "sampling": "Subsample percent of rows",
@@ -355,8 +355,8 @@
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
-            "title": "Expand points into polygons",
-            "desc": "Use travel time (e.g. walking or driving) or distance to calculate polygon from points."
+            "title": "Create areas of influence",
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
             "title": "Georeference",
@@ -368,7 +368,7 @@
           },
           "filter": {
             "title": "Filter rows by column value",
-            "desc": "Filter rows by column value"
+            "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
             "title": "Join columns from 2nd layer",
@@ -380,15 +380,15 @@
           },
           "kmeans": {
             "title": "Calculate clusters of points",
-            "desc": "Spatially seperate a layer of points into a specified number (N) of groups."
+            "desc": "Spatially separate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
             "title": "Find centroid of geometries",
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link 2 layers in 1 widget",
-            "desc": "Join two layers by shared values in a column such that filters will effect both."
+            "title": "Link two layers",
+            "desc": "Join two layers by shared values in a column such that widgets will effect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -396,11 +396,11 @@
           },
           "spatial-markov-trend": {
             "title": "Predict trends and volatility",
-            "desc": "Use periodic temporal data to predict probability of upward and downward trend in next period."
+            "desc": "Predict probability of upward and downward trends using spatial Markov chains."
           },
           "data-observatory-measure": {
             "title": "Enrich from Data Observatory",
-            "desc": "Add a new columns with contextual demographic and economic measures."
+            "desc": "Add a new column with contextual demographic and economic measures."
           }
         }
       },
@@ -967,7 +967,7 @@
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
-        "aggregate-by-help": "Will calculate aggregate values for each centroids",
+        "aggregate-by-help": "Will calculate aggregate values for each centroid",
         "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
@@ -980,21 +980,21 @@
         "category-column": "Category column",
         "city": "City",
         "city-help": "In which column are your city names stored?",
-        "clusters-num": "# Clusters",
+        "clusters-num": "# of clusters",
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
         "create-btn": "Apply",
-        "data-values": "Opperation",
+        "type": "Type",
         "define-columns": "Define column to find similarities with",
-        "denominator": "Normalize By",
+        "denominator": "Denominator",
         "denominator-help": "A column to normalize the target column",
         "dissolved": "Dissolved",
         "distance": "Units",
         "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
-        "filter-column": "Second layer col.",
+        "filter-column": "2nd. layer col.",
         "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
@@ -1009,7 +1009,7 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Define how to link them",
+        "key-columns-desc": "Choose similar columns to link them",
         "kilometers": "km",
         "latitude": "Latitude",
         "link-layer": "Link to col.",
@@ -1026,8 +1026,8 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
-        "neighbours": "Size Neighborhood",
-        "neighbours-help": "Define the local neighborhood as this many nearest-neighbors",
+        "neighbors": "Neighbors",
+        "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
         "operation": "Operation",
@@ -1047,7 +1047,7 @@
         "sampling-rate": "% of data ",
         "select-column": "Select a column",
         "show": "Show",
-        "significance": "Max significance",
+        "significance": "Significance",
         "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
         "source": "Source",
         "source-column": "Source column",
@@ -1068,13 +1068,13 @@
         "weight-column": "Weight column",
         "weight-type": "Weight type",
         "spatial-markov-trend-desc": "select a column for each time period",
-        "spatial-markov-trend-time-columns": "Time period cols.",
-        "spatial-markov-trend-time-columns-help": "Each column should contain a time period (e.g. 2009, 2010, 2011)",
+        "spatial-markov-trend-time-columns": "Input columns",
+        "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Workflow",
         "data-observatory-measurement-area": "Country",
-        "data-observatory-measurement-column": "New column name",
+        "data-observatory-measurement-column": "New col. name",
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",

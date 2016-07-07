@@ -20,8 +20,19 @@
               </g>
           </svg>
         </a>
+        <a href="https://twitter.com/share?url=<%- url %>&text=<%- shortTitle %>" class="u-hintTextColor" target="_blank">
+          <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
+        </a>
+        <a href="http://www.facebook.com/sharer.php?u=<%- url %>&text=<%- shortTitle %>" class="u-hintTextColor" target="_blank">
+          <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
+        </a>
+        <% if (inIframe) { %>
+          <a href="<%- url %>" class="u-hintTextColor" target="_blank">
+            <i class="CDB-IconFont CDB-IconFont-anchor CDB-Size-medium"></i>
+          </a>
+        <% } %>
       </div>
-      
+
       <div class="CDB-Dashboard-menuInfo">
         <button class="js-toggle-view">
           <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>

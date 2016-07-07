@@ -243,6 +243,7 @@
   }
   .CDB-Dashboard-menuAvatar img {
     display: block;
+    border-radius: 2px;
   }
   .CDB-Dashboard-menuActions {
     @include opacity(1);
@@ -261,9 +262,9 @@
   .CDB-Dashboard-menuTexts {
     position: absolute;
     top: 16px;
-    right: auto;
+    right: 16px;
     left: 16px;
-    max-width: 344px;
+    max-width: 300px;
     padding: 8px;
     border-radius: 4px;
     background: $cWhite;

@@ -1082,7 +1082,8 @@
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-refine": "Choose a measure"
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",

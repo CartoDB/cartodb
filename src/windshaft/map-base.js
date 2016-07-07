@@ -102,7 +102,6 @@ var WindshaftMap = Backbone.Model.extend({
         this._trackRequest(request, response);
         var windshaftErrors = this._getErrorsFromResponse(response);
         this._modelUpdater.setErrors(windshaftErrors);
-        log.error('Request to Maps API failed');
         options.error && options.error();
       }.bind(this)
     });

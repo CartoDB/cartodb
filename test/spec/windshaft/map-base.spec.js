@@ -355,10 +355,6 @@ describe('windshaft/map-base', function () {
         });
       });
 
-      it('should log the error', function () {
-        expect(log.error).toHaveBeenCalledWith('Request to Maps API failed');
-      });
-
       it('should invoke a given error callback', function () {
         expect(this.errorCallback).toHaveBeenCalledWith();
       });

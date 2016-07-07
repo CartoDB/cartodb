@@ -58,6 +58,10 @@ $width: 620px;
   color: #9bc63b;
   border-color: #9bc63b;
 }
+.ErrorDetails-itemIcon--alert {
+  color: $cHighlight-alert2;
+  border-color: $cHighlight-alert2;
+}
 .ErrorDetails-itemStep--lessProminent {
   color: #ddd;
   border-color: #ddd;

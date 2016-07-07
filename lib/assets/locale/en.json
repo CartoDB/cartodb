@@ -17,6 +17,7 @@
     "december": "December"
   },
   "analyses": {
+    "source": "Source",
     "area-of-influence": "Area of influence",
     "centroid": "Centroid",
     "cluster": "Cluster",
@@ -123,7 +124,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "Ouch! Error connecting %{name}",
+        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },
@@ -301,11 +302,13 @@
       },
       "share": {
         "done-btn": "DONE",
-        "update-btn": "UPDATE",
+        "publish-btn": "PUBLISH",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "unpublished": "Your map is not published yet.",
+        "unpublished": "Never published.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "unpublished-header": "Click on Publish to start shareing your map on the web",
+        "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
           "title": "Get the link",
           "body": "Send to your friends, coworkers, or post in your social networks.",
@@ -313,8 +316,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
           }
         },
         "embed": {
@@ -324,8 +326,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
           }
         },
         "cartodbjs": {
@@ -814,6 +815,7 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "unpublished-changes": "Unpublished changes",
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",
@@ -929,6 +931,9 @@
         "add-layer": "Add layer",
         "delete": "Delete"
       },
+      "notifier": {
+        "layer-added": "%{name} <span class='CDB-Text is-semibold'>layer was added successfully.</span>"
+      },
       "basemap": {
         "title-label": "Basemap",
         "by": "by",
@@ -988,7 +993,7 @@
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
-        "create-btn": "Create",
+        "create-btn": "Apply",
         "data-values": "Data values",
         "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
@@ -1133,6 +1138,10 @@
       "code-mirror": {
         "save": "CMD + S to apply your query."
       },
+      "notifier": {
+        "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied successfully.</span>"
+      },
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
@@ -1201,6 +1210,10 @@
       "style-toggle": {
         "values": "VALUES",
         "cartocss": "CARTOCSS"
+      },
+      "notifier": {
+        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied successfully.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1303,6 +1316,13 @@
       }
     },
     "widgets": {
+      "notifier": {
+        "delete": "%{column} <span class='CDB-Text is-semibold'>widget deleted correctly.</span>",
+        "success": "%{column} <span class='CDB-Text is-semibold'>widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget</span> for %{column}...",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget...</span>"
+      },
       "widgets-view": {
         "add_widget": "Add widget"
       },

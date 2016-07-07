@@ -911,18 +911,18 @@
         "show": "Show layer"
       },
       "rename": {
-        "loading": "Renaming layer...",
-        "success": "Layer renamed to %{name}",
-        "error": "Error renaming layer %{name}: %{error}"
+        "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
+        "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "Error deleting layer %{name}: %{error}",
-        "loading": "Removing the layer %{name}...",
-        "success": "Layer %{name} deleted"
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
+        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
       },
       "layer": {
         "analysis": "Analysis",

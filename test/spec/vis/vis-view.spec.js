@@ -25,7 +25,6 @@ describe('vis/vis-view', function () {
       url: 'http://cartodb.com',
       center: [40.044, -101.95],
       zoom: 4,
-      logo: true,
       bounds: [
         [1, 2],
         [3, 4]
@@ -139,39 +138,6 @@ describe('vis/vis-view', function () {
     this.visModel.set('loading', false);
 
     expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
-  });
-
-  it('should display the logo if vizjson say so', function () {
-    this.visView.model.overlaysCollection.add({
-      type: 'logo'
-    });
-
-    expect(this.visView.$el.find('.CDB-Logo').css('display')).not.toEqual('none');
-  });
-
-  it('should not display the logo if option display is false', function () {
-    this.visView.model.overlaysCollection.add({
-      type: 'logo',
-      options: {
-        display: false
-      }
-    });
-
-    expect(this.visView.$el.find('.CDB-Logo').css('display')).toEqual('none');
-  });
-
-  it('should render overlays on change', function () {
-    var overlay = this.visView.model.overlaysCollection.add({
-      type: 'logo'
-    });
-
-    spyOn(this.visView, '_createOverlays').and.callThrough();
-
-    expect(this.visView.$el.find('.CDB-Logo').css('display')).not.toEqual('none');
-
-    overlay.set('options', {display: false});
-    expect(this.visView._createOverlays).toHaveBeenCalled();
-    expect(this.visView.$el.find('.CDB-Logo').css('display')).toEqual('none');
   });
 
   describe('.getLayerViews', function () {

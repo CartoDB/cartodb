@@ -29,21 +29,12 @@ var createVis = function (el, vizjson, options) {
 
   var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
 
-  var showLogo = true;
-  if (options.logo === false) {
-    showLogo = false;
-  }
-  if (vizjson.logo === false && showLogo) {
-    showLogo = false;
-  }
-
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: vizjson.auth_tokens && vizjson.auth_tokens.length && vizjson.auth_tokens[0],
     showLegends: options.legends === true || vizjson.legends === true,
-    showLogo: showLogo,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
@@ -103,9 +94,8 @@ var applyOptionsToVizJSON = function (vizjson, options) {
     vizjson.removeZoomOverlay();
   }
 
-  // if logo is not included, let add it :)
-  if (!vizjson.hasOverlay('logo')) {
-    vizjson.addLogoOverlay();
+  if (options.logo === false) {
+    vizjson.removeLogoOverlay();
   }
 
   // if bounds are present zoom and center will not taken into account

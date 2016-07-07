@@ -272,10 +272,6 @@ var Vis = View.extend({
         overlay.show();
       }
 
-      if (type === 'logo') {
-        overlay[this.model.get('showLogo') === false || opt.display === false ? 'hide' : 'show']();
-      }
-
       if (type === 'header') {
         var m = overlay.model;
 

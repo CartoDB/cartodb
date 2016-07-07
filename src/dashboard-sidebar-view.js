@@ -53,6 +53,8 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
     this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
+
+    this._resizeHandler = _.debounce(this._onResize.bind(this), 500);
   },
 
   render: function () {
@@ -68,8 +70,16 @@ module.exports = cdb.core.View.extend({
     this._renderShadows();
     this._bindScroll();
 
-    $(window).on('resize', this._onResize.bind(this));
+    $(window).on('resize', this._resizeHandler);
 
+    var w = $(window).width();
+    if (w < 759) {
+      this._bounder = 'down';
+    }
+
+    if (w >= 759) {
+      this._bounder = 'up';
+    }
     return this;
   },
 
@@ -129,10 +139,23 @@ module.exports = cdb.core.View.extend({
     this.$shadowBottom.toggleClass('is-visible', currentPos < maxPos);
   },
 
-  _onResize: function () {
+  _updateScroll: function () {
     this._$container().scrollLeft = 0;
     this._$container().scrollTop = 0;
     Ps.update(this._container());
+  },
+
+  _onResize: function () {
+    var w = $(window).width();
+    if (w < 759 && this._bounder === 'up') {
+      this._bounder = 'down';
+      this._updateScroll();
+    }
+
+    if (w >= 759 && this._bounder === 'down') {
+      this._bounder = 'up';
+      this._updateScroll();
+    }
   },
 
   _onScrollBottom: function () {
@@ -140,6 +163,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _cleanScroll: function () {
+    $(window).off('resize', this._resizeHandler);
     if (this._container()) {
       this._$container().off('ps-scroll-y');
       Ps.destroy(this._container());

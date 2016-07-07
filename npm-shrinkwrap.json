@@ -1117,7 +1117,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#442c66699b7fd3c07148cd6afcb882804d1ff50a",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#8cff6b82e0dcc99e1fd0bde7b6640b1c4955bea2",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1233,6 +1233,11 @@
           "from": "d3@3.5.8",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.8.tgz"
         },
+        "cartocolor": {
+          "version": "1.1.0",
+          "from": "cartocolor@>=1.1.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
+        },
         "urijs": {
           "version": "1.18.1",
           "from": "urijs@>=1.17.1 <2.0.0",
@@ -1279,6 +1284,11 @@
                   "version": "1.0.0",
                   "from": "colorbrewer@1.0.0",
                   "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+                },
+                "cartocolor": {
+                  "version": "1.1.0",
+                  "from": "cartocolor@1.1.0",
+                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",

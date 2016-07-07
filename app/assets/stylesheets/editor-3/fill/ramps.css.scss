@@ -19,3 +19,6 @@
 .RampItem-bar {
   width: 50px;
 }
+.RampItem-text {
+  max-width: calc(100% - 60px);
+}

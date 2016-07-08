@@ -17,12 +17,12 @@
 
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="https://twitter.com/share?url=<%- url %>&text=<%- shortTitle %>" class="u-hintTextColor">
+          <a href="https://twitter.com/share?url=<%- urlWithoutParams %>&text=<%- shortTitle %>" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="http://www.facebook.com/sharer.php?u=<%- url %>&text=<%- shortTitle %>" class="u-hintTextColor">
+          <a href="http://www.facebook.com/sharer.php?u=<%- urlWithoutParams %>&text=<%- shortTitle %>" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
           </a>
         </li>
@@ -65,7 +65,7 @@
           <div class="CDB-Dashboard-menuMedia CDB-Dashboard-menuAvatar">
             <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>
           </div>
-          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt">Map by <a href="<%- userProfileURL %>"><%- userName %></a></p>
+          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt">Map by <a href="<%- userProfileURL %>" target="_blank"><%- userName %></a></p>
         </li>
       </ul>
     </div>

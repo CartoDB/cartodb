@@ -80,7 +80,7 @@ describe('src/vis/vizjson', function () {
   describe('.addHeaderOverlay', function () {
     it('should add a header Overlay', function () {
       var vizjson = new VizJSON({
-        url: 'http://carto.com',
+        url: 'https://carto.com',
         title: 'title',
         description: 'description'
       });
@@ -91,7 +91,7 @@ describe('src/vis/vizjson', function () {
         type: 'header',
         order: 1,
         shareable: 'is_shareable',
-        url: 'http://carto.com',
+        url: 'https://carto.com',
         options: {
           extra: {
             title: 'title',
@@ -203,7 +203,7 @@ describe('src/vis/vizjson', function () {
             url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
             name: 'Positron',
             className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
-            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://carto.com/attributions\'>CARTO</a>',
+            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'https://carto.com/attributions\'>CARTO</a>',
             urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           }
         }]
@@ -235,7 +235,7 @@ describe('src/vis/vizjson', function () {
             url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
             name: 'Positron',
             className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
-            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://carto.com/attributions\'>CARTO</a>',
+            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'https://carto.com/attributions\'>CARTO</a>',
             urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           }
         }]
@@ -249,7 +249,7 @@ describe('src/vis/vizjson', function () {
           url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
           name: 'Positron',
           className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
-          attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://carto.com/attributions\'>CARTO</a>',
+          attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'https://carto.com/attributions\'>CARTO</a>',
           urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         }
       });
@@ -266,7 +266,7 @@ describe('src/vis/vizjson', function () {
             url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
             name: 'Positron',
             className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
-            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://carto.com/attributions\'>CARTO</a>',
+            attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'https://carto.com/attributions\'>CARTO</a>',
             urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           }
         }]
@@ -280,7 +280,7 @@ describe('src/vis/vizjson', function () {
           url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
           name: 'Positron',
           className: 'httpsbasemapscartocdncomlight_nolabelszxypng',
-          attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'http://carto.com/attributions\'>CARTO</a>',
+          attribution: '&copy; <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors &copy; <a href= \'https://carto.com/attributions\'>CARTO</a>',
           urlTemplate: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         }
       });

@@ -1,19 +1,15 @@
 var View = require('../../core/view');
-var LOGO_URL = 'https://cartodb.s3.amazonaws.com/static/new_logo.png';
-var URL = 'http://carto.com';
+var template = require('./logo.tpl');
+var URL = 'https://carto.com';
 
 module.exports = View.extend({
   className: 'CDB-Logo',
   tagName: 'a',
 
   render: function () {
-    var img = document.createElement('img');
-    img.setAttribute('src', LOGO_URL);
-    img.setAttribute('alt', URL);
-    img.setAttribute('title', URL);
-    img.setAttribute('target', '_blank');
-    this.$el.html(img);
+    this.$el.html(template());
     this.$el.attr('href', URL);
+    this.$el.attr('target', '_blank');
     return this;
   }
 });

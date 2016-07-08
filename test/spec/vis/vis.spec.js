@@ -36,7 +36,7 @@ var fakeVizJSON = function () {
           'maxZoom': '18',
           'name': 'Positron',
           'className': 'positron_rainbow_labels',
-          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://carto.com/attributions\">CARTO</a>',
+          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>',
           'labels': {
             'url': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
           },
@@ -117,7 +117,7 @@ var fakeVizJSON = function () {
           'subdomains': 'abcd',
           'minZoom': '0',
           'maxZoom': '18',
-          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"http://carto.com/attributions\">CARTO</a>',
+          'attribution': '&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>',
           'urlTemplate': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
           'type': 'Tiled',
           'name': 'Positron Labels'
@@ -277,7 +277,7 @@ describe('vis/vis', function () {
           updated_at: 'cachebuster',
           title: 'irrelevant',
           description: 'not so irrelevant',
-          url: 'http://carto.com',
+          url: 'https://carto.com',
           center: [40.044, -101.95],
           zoom: 4,
           bounds: [[1, 2], [3, 4]],

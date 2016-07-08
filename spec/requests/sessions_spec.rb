@@ -105,7 +105,7 @@ feature "Sessions" do
 
       visit '/login'
 
-      page.should have_content("Login to CartoDB")
+      page.should have_content("Login")
     end
   end
 

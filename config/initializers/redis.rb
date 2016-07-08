@@ -11,7 +11,13 @@ end
 
 # Redis interfaces definition:
 conf = Cartodb.config[:redis].symbolize_keys
-redis_conf = conf.select { |k, v| [:host, :port, :timeout, :driver, :tcp_keepalive].include?(k) }
+
+# TODO: because of #8439 we're testing different Redis timeouts for connection, R and W.
+# After getting a final solution timeout configuration should be read from the file again
+redis_conf = conf.select { |k, v| [:host, :port, :driver, :tcp_keepalive].include?(k) }
+redis_conf[:connect_timeout] = 2
+redis_conf[:read_timeout] = 3
+redis_conf[:write_timeout] = 5
 
 if ENV['REDIS_PORT']
   redis_conf[:port] = ENV['REDIS_PORT']

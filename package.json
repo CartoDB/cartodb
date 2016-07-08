@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.28",
+  "version": "4.0.11",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -40,7 +40,7 @@
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
     "cartoassets": "cartodb/CartoAssets#master",
-    "cartocolor": "1.1.0",
+    "cartocolor": "https://github.com/CartoDB/cartocolor/archive/master.tar.gz",
     "clipboard": "^1.5.12",
     "codemirror": "^5.14.2",
     "csswring": "^3.0.5",
@@ -149,9 +149,13 @@
       "/vendor"
     ]
   },
+  "config": {
+    "npmJsDir": "lib/assets"
+  },
   "scripts": {
     "test": "jasmine",
-    "test-debug": "node debug --",
+    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
+    "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
     "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
   }
 }

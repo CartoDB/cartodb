@@ -1,5 +1,5 @@
 <div class="CDB-Box-modalHeaderItem">
-  <button class="u-rSpace--xl u-actionTextColor js-back">
+  <button class="u-actionTextColor js-back">
     <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
   </button>
   <%- attribute %>

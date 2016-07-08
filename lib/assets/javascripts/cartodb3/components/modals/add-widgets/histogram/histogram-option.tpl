@@ -4,9 +4,9 @@
 </div>
 
 <div class="WidgetList-inner js-inner">
-  <h3 class="u-ellipsis CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
+  <h3 class="u-ellipsis CDB-Text CDB-Size-large u-bSpace--m"><%- columnName %></h3>
   <ul class="js-histstats u-flex CDB-Text CDB-Size-small u-upperCase" style="display: none;">
     <li class='u-rSpace'></li>
   </ul>
-  <div class="u-bSpace--xl js-Histogram"></div>
+  <div class="u-tSpace--m u-bSpace--m js-Histogram"></div>
 </div>

@@ -57,7 +57,7 @@ describe Carto::Api::OrganizationUsersController do
     }
     unless username.nil?
       params[:username] = username
-      params[:email] = "#{username}@cartodb.com"
+      params[:email] = "#{username}@carto.com"
     end
     params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
     params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
@@ -138,7 +138,7 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       username = 'manolo'
-      params = { username: username, email: "#{username}@cartodb.com" }
+      params = { username: username, email: "#{username}@carto.com" }
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
@@ -155,7 +155,7 @@ describe Carto::Api::OrganizationUsersController do
 
       last_user_created = @organization.users.detect { |u| u.username == username }
       last_user_created.username.should eq username
-      last_user_created.email.should eq "#{username}@cartodb.com"
+      last_user_created.email.should eq "#{username}@carto.com"
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.quota_in_bytes.should eq 1024
       last_user_created.destroy

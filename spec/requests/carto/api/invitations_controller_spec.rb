@@ -34,7 +34,7 @@ describe Carto::Api::InvitationsController do
 
     let(:invitation) do
       {
-        users_emails: ['email_a@cartodb.com', 'email_b@cartodb.com'],
+        users_emails: ['email_a@carto.com', 'email_b@carto.com'],
         welcome_text: 'Please join my organization!',
         viewer: false
       }
@@ -64,7 +64,7 @@ describe Carto::Api::InvitationsController do
     it 'fails if a user with any of the emails already exists' do
       welcome_text = 'invitation creation should fail'
       invitation = {
-        users_emails: [@org_user_1.email, 'whatever@cartodb.com'],
+        users_emails: [@org_user_1.email, 'whatever@carto.com'],
         welcome_text: welcome_text
       }
       post_api_v1_organization_invitations(@org_user_owner, invitation) do |response|

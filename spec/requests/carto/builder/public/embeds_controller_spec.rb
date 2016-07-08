@@ -48,7 +48,7 @@ describe Carto::Builder::Public::EmbedsController do
 
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-      response.body.include?('Embed error | CartoDB').should be true
+      response.body.include?('Embed error | CARTO').should be true
       response.status.should == 403
     end
 

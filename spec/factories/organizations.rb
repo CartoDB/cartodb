@@ -9,7 +9,7 @@ FactoryGirl.define do
     obs_snapshot_quota 1000
     obs_general_quota 1000
     map_view_quota 100000
-    website 'cartodb.com'
+    website 'carto.com'
     description 'Lorem ipsum dolor sit amet'
     display_name 'Vizzuality Inc'
     discus_shortname 'cartodb'

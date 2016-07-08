@@ -136,7 +136,9 @@ module Carto
                 COALESCE(position(? in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
               FROM visualizations AS v
                   INNER JOIN users AS u ON u.id=v.user_id
-              WHERE v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
+                  LEFT JOIN external_sources AS es ON es.visualization_id = v.id
+                  LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id
+              WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
               (
                 to_tsvector(coalesce(v.name, '')) @@ to_tsquery(?)
                 OR to_tsvector(array_to_string(v.tags, ' ')) @@ to_tsquery(?)

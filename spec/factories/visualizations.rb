@@ -9,7 +9,6 @@ FactoryGirl.define do
     type 'derived'
     name "visualization #{random_uuid}"
     privacy 'public'
-    state {}
   end
 
   factory :table_visualization, class: CartoDB::Visualization::Member do
@@ -17,7 +16,6 @@ FactoryGirl.define do
     type 'table'
     name "visualization_#{random_uuid}"
     privacy 'public'
-    state {}
   end
 
   factory :carto_visualization, class: Carto::Visualization do
@@ -25,7 +23,6 @@ FactoryGirl.define do
     type 'derived'
     name 'factory visualization'
     privacy 'public'
-    state {}
 
     association :user, factory: :carto_user
     permission { FactoryGirl.create :carto_permission, owner: user }

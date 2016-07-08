@@ -11,39 +11,39 @@ module Carto
         "302" => "This usually means the file has been temporally moved! Click on the link to get its new location.",
         "303" => "This usually means the file has been moved! Click on the link to get its new location.",
         "307" => "This usually means the file has been temporally moved! Click on the link to get its new location.",
-        "400" => "This usually means CartoDB did not perform the request properly.",
-        "401" => "This usually means CartoDB is not authorized to retrieve this file. If you have authorization, " \
+        "400" => "This usually means CARTO did not perform the request properly.",
+        "401" => "This usually means CARTO is not authorized to retrieve this file. If you have authorization, " \
                   "download the file manually and upload it from your computer.",
-        "402" => "This usually means CartoDB is not authorized to retrieve this file. If you have authorization, " \
+        "402" => "This usually means CARTO is not authorized to retrieve this file. If you have authorization, " \
                   "download the file manually and upload it from your computer.",
-        "403" => "This usually means CartoDB is not authorized to retrieve this file. If you have authorization, " \
+        "403" => "This usually means CARTO is not authorized to retrieve this file. If you have authorization, " \
                   "download the file manually and upload it from your computer. Tip: Should you be using 'https' " \
                   "instead of 'http' in your URL?",
         "404" => "This usually means no file was found at the specified URL.",
-        "405" => "This usually means CartoDB could not negotiate the download with the file's provider. The " \
+        "405" => "This usually means CARTO could not negotiate the download with the file's provider. The " \
                   "provider is probably using a non standard method to serve this file.",
-        "407" => "This usually means CartoDB is not authorized to retrieve this file as proxy authentication " \
+        "407" => "This usually means CARTO is not authorized to retrieve this file as proxy authentication " \
                   "is required. If you can use the apropiate proxy, download the file manually and upload " \
                   "it from your computer.",
         "408" => "This usually means a timeout request was produced. You may want to try again.",
         "409" => "This usually means a confilict in the request was produced. You might want to try again.",
         "410" => "This usually means the file specified is now longer available at this location.",
-        "411" => "This usually means CartoDB did not perform the request properly. 'Content Length' header is missing.",
-        "412" => "This usually means CartoDB could not negotiate the download with the file's provider. The " \
+        "411" => "This usually means CARTO did not perform the request properly. 'Content Length' header is missing.",
+        "412" => "This usually means CARTO could not negotiate the download with the file's provider. The " \
                   "provider is probably using a non standard method to serve this file.",
         "413" => "This usually means the file provider is denying the download because the file is too large.",
-        "417" => "This usually means CartoDB could not negotiate the download with the file's provider. The " \
+        "417" => "This usually means CARTO could not negotiate the download with the file's provider. The " \
                   "provider is probably using a non standard method to serve this file.",
         "500" => "This usually means the file provider responded with an internal server error. They might " \
                   "be overloaded or having some down time. Try again later!",
-        "501" => "This usually means CartoDB could not negotiate the download with the file's provider. The " \
+        "501" => "This usually means CARTO could not negotiate the download with the file's provider. The " \
                   "provider is probably using a non standard method to serve this file.",
         "502" => "This usually means the file provider responded with a bad gateway error.",
         "503" => "This usually means the file provider responded with an internal server error. They might " \
                   "be overloaded or having some down time. Try again later!",
         "505" => "This usually means the file provider doesn't seem to support the HTTP version used in the " \
                   "transaction. The provider is probably using a non standard method to serve this file.",
-        "511" => "This usually means CartoDB is not authorized to retrieve this file. If you have " \
+        "511" => "This usually means CARTO is not authorized to retrieve this file. If you have " \
                   "authorization, download the file manually and upload it from your computer." }
 
       def initialize(data_import)

@@ -140,7 +140,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   private
 
   def set_external_source
-    @external_source = params[:remote_visualization_id].present? ? 
+    @external_source = params[:remote_visualization_id].present? ?
                                                 get_external_source(params[:remote_visualization_id]) : nil
   end
 
@@ -149,7 +149,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
             name:                   params[:table_name],
             user_id:                current_user.id,
             state:                  Synchronization::Member::STATE_CREATED,
-            # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params-4
+            # Keep in sync with https://docs.carto.com/cartodb-platform/import-api.html#params-4
             type_guessing:          !["false", false].include?(params[:type_guessing]),
             quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
             content_guessing:       ["true", true].include?(params[:content_guessing])
@@ -225,4 +225,3 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
     external_source
   end
 end
-

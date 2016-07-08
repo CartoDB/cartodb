@@ -48,14 +48,14 @@ shared_examples_for 'vizjson generator' do
 
       user_1 = create_user(
         username: "test#{rand(9999)}-1",
-        email: "client#{rand(9999)}@cartodb.com",
+        email: "client#{rand(9999)}@carto.com",
         password: 'clientex',
         private_tables_enabled: true
       )
 
       user_2 = create_user(
         username: "test#{rand(9999)}-2",
-        email: "client#{rand(9999)}@cartodb.com",
+        email: "client#{rand(9999)}@carto.com",
         password: 'clientex',
         private_tables_enabled: true
       )

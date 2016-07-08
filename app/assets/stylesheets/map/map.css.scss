@@ -447,7 +447,7 @@ div.map {
 
   &.derived div.cartodb-map {
 
-    @include position(82px, 79px, 15px, 15px);
+    @include position(15px, 79px, 15px, 15px);
     @include border-radius(3px);
     @include size(auto);
 

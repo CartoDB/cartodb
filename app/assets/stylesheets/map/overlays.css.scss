@@ -200,7 +200,7 @@
   width: 950px;
 }
 .overlay-properties ul {
-  margin: 15px 0 0 0;
+  margin: 3px 0 0 0;
 }
 .overlay-properties ul li {
   @include inline-block();
@@ -231,7 +231,7 @@
 .overlay-properties ul li > span {
   margin: 0 0 5px 0;
   font-size: 13px;
-  color: #7A7A7A;
+  color: white;
   display:block;
   font-family: "Helvetica", Arial;
   font-weight:normal;

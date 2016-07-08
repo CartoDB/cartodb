@@ -303,7 +303,7 @@ describe('geo/ui/legend', function() {
 
       custom_data = [
         { name: "Natural Parks",  value: "#58A062" },
-        { name: "Villages",       value: "http://cartodb.com/assets/logos/logos_full_cartodb_light.png", type: "image" },
+        { name: "Villages",       value: "http://carto.com/assets/logos/logos_full_cartodb_light.png", type: "image" },
         { name: "Rivers",         value: "#54BFDE" },
         { name: "Fields",         value: "#9BC562" },
         { name: "Caves",          value: "#FABB5C" }
@@ -475,7 +475,7 @@ describe('geo/ui/legend', function() {
         expect(legend.$el.find("li:first-child .bullet").css("background")).toEqual("rgb(88, 160, 98)");
 
         expect(legend.$el.find("li:nth-child(2)").text().trim()).toEqual(custom_data[1].name);
-        expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toContain("http://cartodb.com/assets/logos/logos_full_cartodb_light.png");
+        expect(legend.$el.find("li:nth-child(2) .bullet").css("background")).toContain("http://carto.com/assets/logos/logos_full_cartodb_light.png");
       });
 
       it("should show a title", function() {

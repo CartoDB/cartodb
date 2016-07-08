@@ -15,7 +15,7 @@ describe("core/sanitize", function() {
       });
 
       it('should allow target attributes for links', function() {
-        expect(sanitize.html('<a href="http://cartodb.com/" target="_blank">cartodb.com</a>')).toEqual('<a href="http://cartodb.com/" target="_blank">cartodb.com</a>');
+        expect(sanitize.html('<a href="http://carto.com/" target="_blank">carto.com</a>')).toEqual('<a href="http://carto.com/" target="_blank">carto.com</a>');
       });
       it('should remove iframe tag', function() {
         expect(sanitize.html('no <iframe src="" onload="document.body.appendChild(document.createElement(\'script\')).src=\'http://localhost/xss.js\'"/> no')).toEqual('no ');

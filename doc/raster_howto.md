@@ -12,7 +12,7 @@ we are going to explain how raster works in CartoDB.
 
 Raster usually takes a lot of space in the database and therefore render tiles is a heavy task.
 Luckily CartoDB solved this for you, when you import a raster using the editor or the [Import
-API](http://docs.cartodb.com/cartodb-platform/import-api.html) it generates a series of overviews,
+API](http://docs.carto.com/cartodb-platform/import-api.html) it generates a series of overviews,
 that's it, a bunch of tables with preprocessed information in order to speedup rendering. 
 
 You don't need to care about that but there are special cases you should be aware of when you create

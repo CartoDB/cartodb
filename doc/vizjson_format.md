@@ -39,7 +39,7 @@ This is the spec for visjson:
     // optional
     // visualization description
     // default: ''
-    url: "http://javi.cartodb.com/tables/20343",
+    url: "http://javi.carto.com/tables/20343",
 
     // mandatory 
     map_provider: "leaflet",
@@ -56,7 +56,7 @@ This is the spec for visjson:
           name: "CartoDB Flat Blue",
           urlTemplate: "http://{s}.api.cartocdn.com/base-flatblue/{z}/{x}/{y}.png",
           maxZoom: 10,
-          attribution: "©2013 CartoDB <a href='http://cartodb.com' target='_blank'>Terms of use</a>",
+          attribution: "©2013 CartoDB <a href='http://carto.com' target='_blank'>Terms of use</a>",
          },
        },
        
@@ -82,10 +82,10 @@ This is the spec for visjson:
             opacity: 0.99,
             interactivity: "cartodb_id",
             debug: false,
-            tiler_domain: "cartodb.com",
+            tiler_domain: "carto.com",
             tiler_port: "443",
             tiler_protocol: "https",
-            sql_domain: "cartodb.com",
+            sql_domain: "carto.com",
             sql_port: "443",
             sql_protocol: "https",
             extra_params: {
@@ -119,10 +119,10 @@ This is the spec for visjson:
          order: 1,
          options: {
             type: "CartoDBLayerGroup",
-            tiler_domain: "cartodb.com",
+            tiler_domain: "carto.com",
             tiler_port: "443",
             tiler_protocol: "https",
-            sql_domain: "cartodb.com",
+            sql_domain: "carto.com",
             sql_port: "443",
             sql_protocol: "https",
             user_name: "javi",
@@ -147,7 +147,7 @@ This is the spec for visjson:
          order: 1,
          options: {
             type: "namedmap",
-            tiler_domain: "cartodb.com",
+            tiler_domain: "carto.com",
             tiler_port: "443",
             tiler_protocol: "https",
             user_name: "javi",
@@ -184,7 +184,7 @@ This is the spec for visjson:
          options: {
             stat_tag: "d4a5c7e4-4ad6-11e3-ab17-3085a9a9563c",
             tiler_protocol: "http",
-            tiler_domain: "cartodb.com",
+            tiler_domain: "carto.com",
             tiler_port: "80",
             cdn_url: {
               http: "api.cartocdn.com",

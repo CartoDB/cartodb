@@ -35,7 +35,7 @@ This library allows to embed visualizations created with CartoDB in your map or 
       }).addTo(map);
 
       // add the cartodb layer
-      var layerUrl = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
+      var layerUrl = 'http://documentation.carto.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
       cartodb.createLayer(map, layerUrl).addTo(map);
     ```
 
@@ -49,7 +49,7 @@ bower install cartodb.js
 
 
 ## Documentation
-You can find the documentation online [here](http://docs.cartodb.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
+You can find the documentation online [here](http://docs.carto.com/cartodb-platform/cartodb-js.html) and the [source](https://github.com/CartoDB/cartodb.js/blob/develop/doc/API.md) inside this repository.
 
 ## Examples
 
@@ -76,5 +76,5 @@ Build CartoDB.js library:
   
 ## Submitting Contributions
 
-You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://cartodb.com/contributing)
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://carto.com/contributing)
 

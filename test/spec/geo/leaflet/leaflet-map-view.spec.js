@@ -236,7 +236,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       subdomains: ['a', 'b', 'c', 'd'],
       minZoom: 0,
       maxZoom: 18,
-      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://carto.com">CARTO</a>'
     },
     dark_roadmap: {
       tiles: {
@@ -246,7 +246,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       subdomains: ['a', 'b', 'c', 'd'],
       minZoom: 0,
       maxZoom: 18,
-      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://cartodb.com">CartoDB</a>'
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://carto.com">CARTO</a>'
     },
     roadmap: {
       tiles: {
@@ -391,7 +391,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Leaflet | Stamen, CartoDB attribution, custom attribution');
+      expect(attributions).toEqual('Leaflet | Stamen, CARTO attribution, custom attribution');
     });
 
     it('should not render attributions when the Leaflet map has attributionControl disabled', function () {

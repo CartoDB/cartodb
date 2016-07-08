@@ -44,7 +44,7 @@ var layerData = {
     sql: "SELECT * FROM table_name";
     cartocss: '#layer { marker-fill: #F0F0F0; }'
   }],
-  maps_api_template: 'https://{user}.cartodb.com' // Optional
+  maps_api_template: 'https://{user}.carto.com' // Optional
 };
 cartodb.Tiles.getTiles(layerData, function(tilesUrl, error) {
   if (tilesUrl == null) {
@@ -60,16 +60,16 @@ The `tilesUrl` object contains url template for tiles and interactivity grids:
 ```javascript
 {
   tiles: [
-    "http://{s}.cartodb.com/HASH/{z}/{x}/{y}.png",
+    "http://{s}.carto.com/HASH/{z}/{x}/{y}.png",
     ...
   ],
   grids: [
     // for each sublayer there is one entry on this array
     [
-      "http://{s}.cartodb.com/HASH/0/{z}/{x}/{y}.grid.json"
+      "http://{s}.carto.com/HASH/0/{z}/{x}/{y}.grid.json"
     ],
     [
-      "http://{s}.cartodb.com/HASH/1/{z}/{x}/{y}.grid.json"
+      "http://{s}.carto.com/HASH/1/{z}/{x}/{y}.grid.json"
     ],
     ...
   ]

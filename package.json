@@ -8,20 +8,20 @@
   },
   "author": {
     "name": "CartoDB",
-    "url": "http://cartodb.com/",
-    "email": "wadus@cartodb.com"
+    "url": "http://carto.com/",
+    "email": "wadus@carto.com"
   },
   "contributors": [
-    "Javier Álvarez <jmedina@cartodb.com>",
+    "Javier Álvarez <jmedina@carto.com>",
     "Javier Álvarez <xabel@vizzuality.com>",
-    "Javier Arce <javierarce@cartodb.com>",
-    "Javier Santana <jsantana@cartodb.com>",
-    "Raul Ochoa <rochoa@cartodb.com>",
-    "Carlos Matallín <matallo@cartodb.com>",
-    "Jaime Chapinal <jaime.chapinal@cartodb.com>",
-    "Nicklas Gummesson <nicklas@cartodb.com>",
-    "Francisco Dans <francisco@cartodb.com>",
-    "Emilio García <emilio@cartodb.com>"
+    "Javier Arce <javierarce@carto.com>",
+    "Javier Santana <jsantana@carto.com>",
+    "Raul Ochoa <rochoa@carto.com>",
+    "Carlos Matallín <matallo@carto.com>",
+    "Jaime Chapinal <jaime.chapinal@carto.com>",
+    "Nicklas Gummesson <nicklas@carto.com>",
+    "Francisco Dans <francisco@carto.com>",
+    "Emilio García <emilio@carto.com>"
   ],
   "license": "BSD-3-Clause",
   "dependencies": {

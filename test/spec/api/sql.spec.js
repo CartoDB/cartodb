@@ -33,7 +33,7 @@ describe('api/sql', function() {
   });
 
   it("should compile the url if not completeDomain passed", function() {
-    expect(sql._host()).toEqual('https://rambo.cartodb.com/api/v2/sql');
+    expect(sql._host()).toEqual('https://rambo.carto.com/api/v2/sql');
   });
 
   it("should compile the url if completeDomain passed", function() {
@@ -49,7 +49,7 @@ describe('api/sql', function() {
   it("should execute a query", function() {
     sql.execute('select * from table');
     expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent('select * from table')
+      'https://' + USER + '.carto.com/api/v2/sql?q=' + encodeURIComponent('select * from table')
     )
     expect(ajaxParams.type).toEqual('get');
     expect(ajaxParams.dataType).toEqual('json');
@@ -61,7 +61,7 @@ describe('api/sql', function() {
       table: 'rambo'
     })
     expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent('select * from rambo')
+      'https://' + USER + '.carto.com/api/v2/sql?q=' + encodeURIComponent('select * from rambo')
     )
   });
 
@@ -76,7 +76,7 @@ describe('api/sql', function() {
     sql.execute(long_query);
 
     expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.cartodb.com/api/v2/sql'
+      'https://' + USER + '.carto.com/api/v2/sql'
     )
 
     expect(ajaxParams.data.q).toEqual(long_query);
@@ -137,7 +137,7 @@ describe('api/sql', function() {
                                   + shift + ',' + shift + ',' + srid + ')';
 
     expect(ajaxParams.url).toEqual(
-      'https://' + USER + '.cartodb.com/api/v2/sql?q=' + encodeURIComponent(
+      'https://' + USER + '.carto.com/api/v2/sql?q=' + encodeURIComponent(
         'select ' + pw + ' as w, ' + ph + ' as h, '
         + bbox + ' as b from t')
     )

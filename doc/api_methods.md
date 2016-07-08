@@ -53,7 +53,7 @@ error | triggered when the layer couldn't be created. The error string is the fi
 #### Example
 
 ```javascript
-var url = 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
+var url = 'http://documentation.carto.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json';
 
 cartodb.createVis('map', url)
   .done(function(vis, layers) {
@@ -185,7 +185,7 @@ var mapOptions = {
 };
 map = new L.Map('map', mapOptions);
 
-cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+cartodb.createLayer(map, 'http://documentation.carto.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
   .addTo(map)
   .on('done', function(layer) {
     layer
@@ -495,7 +495,7 @@ A `SubLayer` object.
 #### Example
 
 ```javascript
-cartodb.createLayer(map, 'http://examples.cartodb.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
+cartodb.createLayer(map, 'http://examples.carto.com/api/v2/viz/european_countries_e/viz.json', function(layer) {
   // add populated places points over the countries layer
   layer.createSubLayer({
     sql: 'SELECT * FROM ne_10m_populated_places_simple',
@@ -511,7 +511,7 @@ Refreshes the data. If the data has been changed in the CartoDB server those cha
 ### layer.setAuthToken(_auth_token_)
 
 Sets the auth token that will be used to create the layer. Only available for private visualizations. An exception is
-raised if the layer is not being loaded with HTTPS. See [Named Maps](http://docs.cartodb.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
+raised if the layer is not being loaded with HTTPS. See [Named Maps](http://docs.carto.com/cartodb-platform/maps-api.html#named-maps-1) for more information.
 
 #### Arguments
 

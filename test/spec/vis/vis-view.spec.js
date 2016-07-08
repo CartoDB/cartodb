@@ -22,7 +22,7 @@ describe('vis/vis-view', function () {
       updated_at: 'cachebuster',
       title: 'irrelevant',
       description: 'not so irrelevant',
-      url: 'http://cartodb.com',
+      url: 'http://carto.com',
       center: [40.044, -101.95],
       zoom: 4,
       bounds: [

@@ -85,9 +85,9 @@ If you want more detailed information, this [GitHub guide](https://guides.github
 
 ## Completing documentation
 
-CartoDB.js documentation is located in ```doc/API.md```. That file is the content that appears in [CartoDB platform documentation](http://docs.cartodb.com/cartodb-platform/cartodb-js.html).
+CartoDB.js documentation is located in ```doc/API.md```. That file is the content that appears in [CartoDB platform documentation](http://docs.carto.com/cartodb-platform/cartodb-js.html).
 Just follow the instructions described in [contributing code](#contributing-code) and after accepting your pull request, we will make it appear online :).
 
 ## Submitting contributions
 
-You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here](https://cartodb.com/contributing).
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here](https://carto.com/contributing).

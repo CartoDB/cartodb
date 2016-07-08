@@ -9,14 +9,14 @@ The Viz.JSON document tells CartoDB.js all the information about your map, inclu
 Although the Viz JSON file stores all your map settings, all these settings can be easily customized with CartoDB.js. For example, if you want to do something completely different than what you initially designed it for. Loading the Viz JSON is as simple as:
 
 ```javascript
-cartodb.createVis('map', 'http://examples.cartodb.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
+cartodb.createVis('map', 'http://examples.carto.com/api/v2/viz/ne_10m_populated_p_1/viz.json')
 ```
 
 ---
 
-## How to set a different host than cartodb.com
+## How to set a different host than carto.com
 
-CartoDB.js sends all requests to the cartodb.com domain by default. If you are running your own
+CartoDB.js sends all requests to the carto.com domain by default. If you are running your own
 instance of CartoDB you can change the URLs to specify a different host.
 
 A different host can be configured by using ``sql_api_template`` and ``maps_api_template`` in the ``options`` parameter
@@ -57,7 +57,7 @@ CartoDB.js is highly asynchronous. Your application can get on with what it need
 The **createLayer** and **createVis** functions trigger two important events for you to take advantage of. The first one is **done**, which will let your code know that the library has successfully read the information from the Viz JSON and loaded the layer you requested. The second is **error**, which lets you know that something did not go as expected when trying to load the requested layer:
 
 ```javascript
-cartodb.createLayer(map, 'http://examples.cartodb.com/api/v1/viz/0001/viz.json')
+cartodb.createLayer(map, 'http://examples.carto.com/api/v1/viz/0001/viz.json')
   .addTo(map)
   .on('done', function(layer) {
     alert(‘CartoDB layer loaded!’);
@@ -120,7 +120,7 @@ You can use all the functionality of CartoDB.js with HTTPs support. Be sure to u
     center: [0,0],
     zoom: 2
   })
-  cartodb.createLayer(map, 'https://examples.cartodb.com/api/v1/viz/15589/viz.json', { https: true })
+  cartodb.createLayer(map, 'https://examples.carto.com/api/v1/viz/15589/viz.json', { https: true })
     .addTo(map)
     .on('error', function(err) {
       alert("some error occurred: " + err);

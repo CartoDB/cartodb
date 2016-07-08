@@ -56,7 +56,7 @@ This is the spec for visjson:
           name: "CartoDB Flat Blue",
           urlTemplate: "http://{s}.api.cartocdn.com/base-flatblue/{z}/{x}/{y}.png",
           maxZoom: 10,
-          attribution: "©2013 CartoDB <a href='http://carto.com' target='_blank'>Terms of use</a>",
+          attribution: "©2013 CartoDB <a href='https://carto.com' target='_blank'>Terms of use</a>",
          },
        },
        

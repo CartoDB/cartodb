@@ -33,7 +33,7 @@ module.exports = {
         'maxZoom': '18',
         'name': 'Positron',
         'className': 'httpsbasemapscartocdncomlight_nolabelszxypng',
-        'attribution': '© <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors © <a href= \'http://carto.com/attributions#basemaps\'>CARTO</a>',
+        'attribution': '© <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors © <a href= \'https://carto.com/attributions#basemaps\'>CARTO</a>',
         'labels': {
           'url': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
         },
@@ -167,7 +167,7 @@ module.exports = {
         'subdomains': 'abcd',
         'minZoom': '0',
         'maxZoom': '18',
-        'attribution': '© <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors © <a href= \'http://carto.com/attributions#basemaps\'>CARTO</a>',
+        'attribution': '© <a href=\'http://www.openstreetmap.org/copyright\'>OpenStreetMap</a> contributors © <a href= \'https://carto.com/attributions#basemaps\'>CARTO</a>',
         'urlTemplate': 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
         'name': 'Positron Labels',
         'id': 'dbc6555a-a051-48a1-8f0c-3f9b51276006',

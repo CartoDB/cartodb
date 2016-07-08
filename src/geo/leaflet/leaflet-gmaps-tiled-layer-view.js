@@ -8,7 +8,7 @@ var stamenSubstitute = function stamenSubstitute(type) {
     subdomains: 'abcd',
     minZoom: 0,
     maxZoom: 18,
-    attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://carto.com">CARTO</a>'
+    attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="https://carto.com">CARTO</a>'
   };
 };
 

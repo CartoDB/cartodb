@@ -255,11 +255,11 @@ module ApplicationHelper
   end
 
   def terms_path
-    'https://cartodb.com/terms'
+    'https://carto.com/terms'
   end
 
   def privacy_path
-    'https://cartodb.com/privacy'
+    'https://carto.com/privacy'
   end
 
   def vis_json_url(vis_id, context, user=nil)

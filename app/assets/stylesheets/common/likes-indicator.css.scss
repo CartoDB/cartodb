@@ -8,7 +8,7 @@
 $cLiked: #D93F56;
 
 .LikesIndicator {
-  color: $cTypography-secondary;
+  color: #999;
 }
 .LikesIndicator-count {
   display: inline-block;
@@ -19,6 +19,7 @@ $cLiked: #D93F56;
   @include transform(1);
   color: $cTypography-help;
   font-size: $sFontSize-small;
+  margin-top: 1px;
 }
 .LikesIndicator-icon.LikesIndicator-icon--big {
   font-size: $sFontSize-largest;
@@ -64,4 +65,3 @@ $cLiked: #D93F56;
     @include transform(scale(1));
   }
 }
-

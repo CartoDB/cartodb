@@ -307,6 +307,31 @@
         },
         "loading": "Saving your data..."
       },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Dataset Name",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data..."
+      },
       "privacy": {
         "privacy": "privacy",
         "cancel-btn": "CANCEL",
@@ -793,6 +818,11 @@
       "error": "Error deleting %{tableName}",
       "loading": "Renaming your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+    },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}...",
     },
     "duplicate": {
       "option": "Duplicate dataset",

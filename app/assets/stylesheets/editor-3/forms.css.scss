@@ -40,7 +40,7 @@
 }
 .Editor-formInner--nested .CDB-Legend::before {
   position: absolute;
-  bottom: 3px;
+  top: 14px;
   left: 6px;
   width: 5px;
   height: 5px;
@@ -49,6 +49,14 @@
   background: $cWhite;
   content: '';
   box-sizing: border-box;
+}
+
+.Editor-boxModal .CDB-Legend {
+  padding-left: 0;
+}
+
+.Editor-boxModal .CDB-Legend::before {
+  display: none;
 }
 
 // TODO: temporary CSS for the Fill component

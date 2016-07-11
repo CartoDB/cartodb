@@ -21,7 +21,7 @@ describe SignupController do
     end
 
     it 'returns 200 for organizations with signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['cartodb.com'])
+      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['carto.com'])
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
@@ -45,7 +45,7 @@ describe SignupController do
 
     it 'returns user error with admin mail if organization has not enough seats' do
       fake_owner = FactoryGirl.build(:valid_user)
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['cartodb.com'], seats: 0, owner: fake_owner)
+      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['carto.com'], seats: 0, owner: fake_owner)
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
@@ -61,7 +61,7 @@ describe SignupController do
     DEFAULT_QUOTA_IN_BYTES = 1000
 
     before(:all) do
-      @organization.whitelisted_email_domains = ['cartodb.com']
+      @organization.whitelisted_email_domains = ['carto.com']
       @organization.default_quota_in_bytes = DEFAULT_QUOTA_IN_BYTES
       @organization.save
 
@@ -231,7 +231,7 @@ describe SignupController do
         get signup_organization_user_url(user_domain: @organization.name)
         response.status.should == 404
 
-        post signup_organization_user_url(user_domain: @organization.name, user: { username: 'whatever', email: 'whatever@cartodb.com', password: 'whatever' })
+        post signup_organization_user_url(user_domain: @organization.name, user: { username: 'whatever', email: 'whatever@carto.com', password: 'whatever' })
         response.status.should == 404
       end
 

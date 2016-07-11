@@ -7,6 +7,6 @@
 <% } else if (!customHosted) { %>
   <span class="CDB-Text CDB-Size-large">
     <%- _t('components.modals.add-layer.footer.twitter-desc') %>
-    <a href="mailto:support@cartodb.com"><%- _t('components.modals.add-layer.footer.contact-team') %></a>
+    <a href="mailto:support@carto.com"><%- _t('components.modals.add-layer.footer.contact-team') %></a>
   </span>
 <% } %>

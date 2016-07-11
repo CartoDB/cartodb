@@ -163,7 +163,7 @@ describe ApplicationController do
           response.status.should == 302
           follow_redirect!
           response.status.should == 200
-          response.body.should include("Login to Carto")
+          response.body.should include("Login")
         end
       end
 

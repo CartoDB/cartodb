@@ -19,15 +19,16 @@
 body {
   background: $cStructure-mainBkg;
   font: normal #{$sFontSize-normal}/#{$sLineHeight-normal} 'Lato', sans-serif;
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
 }
 
 ul { list-style: none }
 
 a {
   text-decoration: none;
-  color: $cTypography-link;
+  color: #1181FB;
   &:hover {
-    color: $cTypography-linkHover;
     text-decoration: underline;
   }
 }

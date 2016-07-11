@@ -10,8 +10,9 @@
 }
 .SyncInfo--separator {
   position: relative;
-  margin-bottom: 24px;
-  padding-bottom: 18px;
+  margin-top: -5px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
 
   &::after {
     position: absolute;
@@ -19,12 +20,24 @@
     bottom: 0;
     left: -24px;
     height: 1px;
-    background: #EEE;
+    background: rgba(#000, 0.2);
     content: '';
   }
 }
+.is-dark .SyncInfo--separator::after {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.SyncInfo-viewOptions {
+  color: $cBlue;
+}
+
+.is-dark .SyncInfo-viewOptions {
+  color: $cWhite;
+}
+
 .SyncInfo-message--success {
-  color: $cPublic;
+  color: #5FCC79;
 }
 .SyncInfo-message--failure {
   color: $cError;

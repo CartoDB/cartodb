@@ -18,6 +18,7 @@ module Carto
     end
 
     def get_geocoding_calls(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       if owner.has_feature_flag?('new_geocoder_quota')
@@ -32,34 +33,39 @@ module Carto
     end
 
     def period_end_date
-      owner.period_end_date
+      owner && owner.period_end_date
     end
 
     def get_new_system_geocoding_calls(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.current)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       get_organization_geocoding_data(self, date_from, date_to)
     end
 
     def get_here_isolines_calls(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       get_organization_here_isolines_data(self, date_from, date_to)
     end
 
     def get_obs_snapshot_calls(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       get_organization_obs_snapshot_data(self, date_from, date_to)
     end
 
     def get_obs_general_calls(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       get_organization_obs_general_data(self, date_from, date_to)
     end
 
     def twitter_imports_count(options = {})
+      require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
       date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
       Carto::SearchTweet.twitter_imports_count(users.joins(:search_tweets), date_from, date_to)
@@ -115,6 +121,12 @@ module Carto
 
     def get_auth_token
       auth_token.present? ? auth_token : generate_auth_token
+    end
+
+    def require_organization_owner_presence!
+      if owner.nil?
+        raise ::Organization::OrganizationWithoutOwner.new(self)
+      end
     end
 
     private

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.28.36",
+  "version": "4.0.15",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -430,29 +430,26 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.8.2",
-                              "from": "https://registry.npmjs.org/sshpk/-/sshpk-1.8.2.tgz",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.8.2.tgz",
+                              "version": "1.7.4",
+                              "from": "https://registry.npmjs.org/sshpk/-/sshpk-1.7.4.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.7.4.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
                                   "from": "https://registry.npmjs.org/asn1/-/asn1-0.2.3.tgz",
                                   "resolved": "https://registry.npmjs.org/asn1/-/asn1-0.2.3.tgz"
                                 },
-                                "assert-plus": {
-                                  "version": "1.0.0",
-                                  "from": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz",
-                                  "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
-                                },
                                 "dashdash": {
-                                  "version": "1.13.1",
-                                  "from": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.1.tgz",
-                                  "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.1.tgz"
-                                },
-                                "getpass": {
-                                  "version": "0.1.5",
-                                  "from": "https://registry.npmjs.org/getpass/-/getpass-0.1.5.tgz",
-                                  "resolved": "https://registry.npmjs.org/getpass/-/getpass-0.1.5.tgz"
+                                  "version": "1.13.0",
+                                  "from": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.0.tgz",
+                                  "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.13.0.tgz",
+                                  "dependencies": {
+                                    "assert-plus": {
+                                      "version": "1.0.0",
+                                      "from": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz",
+                                      "resolved": "https://registry.npmjs.org/assert-plus/-/assert-plus-1.0.0.tgz"
+                                    }
+                                  }
                                 },
                                 "jsbn": {
                                   "version": "0.1.0",
@@ -460,9 +457,9 @@
                                   "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
                                 },
                                 "tweetnacl": {
-                                  "version": "0.13.3",
-                                  "from": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz",
-                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz"
+                                  "version": "0.14.3",
+                                  "from": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz",
+                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
                                 },
                                 "jodid25519": {
                                   "version": "1.0.2",
@@ -1084,9 +1081,9 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.21.0",
-      "from": "camshaft-reference@0.21.0",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.21.0.tgz"
+      "version": "0.22.0",
+      "from": "camshaft-reference@0.22.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.22.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",
@@ -1120,12 +1117,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#442c66699b7fd3c07148cd6afcb882804d1ff50a",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#653b4c458bb0448d85171a2130a458f350107dcb",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#c7ad099c51760bc8179f469812c2d03316724d9d",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#3e51984d785034970f9006194d49e4e964361364",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1239,7 +1236,7 @@
         "cartocolor": {
           "version": "1.1.0",
           "from": "cartocolor@>=1.1.0 <2.0.0",
-          "resolved": "http://registry.npm.taobao.org/cartocolor/download/cartocolor-1.1.0.tgz"
+          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
         },
         "urijs": {
           "version": "1.18.1",
@@ -1250,13 +1247,13 @@
     },
     "cartodb-pecan": {
       "version": "0.2.0",
-      "from": "cartodb-pecan@0.2.0",
+      "from": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz",
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#c7ad099c51760bc8179f469812c2d03316724d9d",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#3e51984d785034970f9006194d49e4e964361364",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1291,7 +1288,7 @@
                 "cartocolor": {
                   "version": "1.1.0",
                   "from": "cartocolor@1.1.0",
-                  "resolved": "http://registry.npm.taobao.org/cartocolor/download/cartocolor-1.1.0.tgz"
+                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1384,23 +1381,23 @@
     },
     "node-polyglot": {
       "version": "1.0.0",
-      "from": "node-polyglot@1.0.0",
+      "from": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz",
       "resolved": "https://registry.npmjs.org/node-polyglot/-/node-polyglot-1.0.0.tgz"
     },
     "perfect-scrollbar": {
       "version": "0.6.7",
-      "from": "perfect-scrollbar@0.6.7",
+      "from": "https://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-0.6.7.tgz",
       "resolved": "https://registry.npmjs.org/perfect-scrollbar/-/perfect-scrollbar-0.6.7.tgz"
     },
     "queue-async": {
       "version": "1.2.1",
-      "from": "queue-async@1.2.1",
+      "from": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz",
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
-      "version": "2.15.2",
-      "from": "torque.js@2.15.2",
-      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.2.tgz"
+      "version": "2.15.1",
+      "from": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz",
+      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
     },
     "underscore": {
       "version": "1.8.3",

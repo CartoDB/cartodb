@@ -74,7 +74,7 @@ module CartoDB
     self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
   end
 
-  # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)
+  # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.carto.com)
   def self.extract_host_subdomain(request)
     self.username_from_request(request).nil? ? nil : self.subdomain_from_request(request)
   end
@@ -94,7 +94,7 @@ module CartoDB
   # Note: use ||= only for fields who always have a non-nil, non-false value
   #       else, rely on defined? and pure assignment to allow nils and values caching the value
 
-  # Stores the non-user part of the domain (e.g. '.cartodb.com')
+  # Stores the non-user part of the domain (e.g. '.carto.com')
   def self.session_domain
     @@session_domain ||= self.get_session_domain
   end

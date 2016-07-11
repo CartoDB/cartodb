@@ -145,7 +145,7 @@ Once a new Pull Request is started,
 
 ## Submitting contributions
 
-Before opening a pull request (or submitting a contribution) you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://cartodb.com/contributing).
+Before opening a pull request (or submitting a contribution) you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://carto.com/contributing).
 
 After that, there are several rules you should follow when a new pull request is created:
 

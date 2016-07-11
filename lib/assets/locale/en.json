@@ -365,7 +365,8 @@
           "title": "Private",
           "body": "Nobody can access this dataset"
         },
-        "share": "Hey, maybe it's a good time to <a href=\"#\">share with your colleagues</a>.",
+        "share": "Hey, maybe it's a good time to",
+        "share-btn": "share with your colleagues.",
         "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
         "error": {
           "title": "We couldn't save your data",

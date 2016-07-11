@@ -9,7 +9,16 @@
 <div class="Modal-body">
   <div class="Modal-body-inner">
     <ul class="u-flex js-list"></ul>
-
+    <% if (belongsToOrg) { %>
+    <div class="Share-info">
+      <span class="CDB-Button-Text CDB-Text CDB-Size-medium u-altTextColor">
+        <%- _t('components.modals.privacy.share') %>
+      </span>
+      <button class="CDB-Button js-colleagues">
+        <span class="CDB-Button-Text CDB-Text CDB-Size-medium u-actionTextColor"><%- _t('components.modals.privacy.share-btn') %></span>
+      </button>
+    </div>
+    <% } %>
     <div class="js-footer">
       <ul class="Modal-actions">
         <li class="Modal-actions-button">

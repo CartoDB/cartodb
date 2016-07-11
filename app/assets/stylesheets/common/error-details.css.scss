@@ -46,12 +46,12 @@ $width: 620;
 .ErrorDetails-itemIcon {
   width: $sIcon-layout;
   height: $sIcon-layout;
+  margin: 0 auto;
+  margin-bottom: $sMargin-elementInline;
   border: 1px solid $cStructure-softLine;
   border-radius: $sIcon-borderRadius;
-  margin-bottom: $sMargin-elementInline;
   font-size: 22px;
   line-height: 44px;
-  margin: 0 auto;
 }
 .ErrorDetails-itemIcon--success {
   color: #9BC63B;

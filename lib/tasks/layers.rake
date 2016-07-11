@@ -1,4 +1,4 @@
-namespace :cartodb do
+namespace :carto do
   namespace :db do
 
     desc "get modified layers"
@@ -44,6 +44,19 @@ namespace :cartodb do
       end
       puts "TOTAL: #{affected_visualizations.length}"
     end
+
+    desc "CARTO rebranding attribution change"
+    task set_carto_attribution: :environment do
+      puts "Updating layer attributions"
+      Carto::Layer.find_each do |layer|
+        begin
+          layer.options['attribution'].gsub!('CartoDB', 'CARTO')
+          layer.options['attribution'].gsub!('cartodb.com', 'carto.com')
+          layer.save
+        rescue => e
+          puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+        end
+      end
+    end
   end
 end
-

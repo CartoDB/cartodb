@@ -46,6 +46,14 @@
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                     <% end %>
+
+                    <% unless Cartodb.config[:cartodb_com_hosted] %>
+                      <% unless !@google_plus_config.present? %>
+                        <div class="Sessions-inputLinkAside">
+                          <%= link_to 'Forgot?', 'https://carto.com/password_resets/new' %>
+                        </div>
+                      <% end %>
+                    <% end %>
                   </div>
 
                   <div class="Sessions-field">

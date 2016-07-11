@@ -916,16 +916,19 @@
             "widgets": "Widgets column",
           }
         }
-      },
-
-
+      }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}...",
       },
       "delete": {
         "confirm": "ok, delete it",
@@ -1147,7 +1150,7 @@
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
-        "type": "Measure by",
+        "measure-by": "Measure by",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",

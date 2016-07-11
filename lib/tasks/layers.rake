@@ -48,7 +48,15 @@ namespace :carto do
     desc "CARTO rebranding attribution change"
     task set_carto_attribution: :environment do
       puts "Updating layer attributions"
+      ActiveRecord::Base.logger = nil
+
+      total = Carto::Layer.count
+      acc = 0
+      errors = 0
+
       Carto::Layer.find_each do |layer|
+        acc += 1
+        puts "#{acc} / #{total}" if acc % 100 == 0
         begin
           attribution = layer.options['attribution']
           if attribution.present?
@@ -58,9 +66,12 @@ namespace :carto do
             layer.save
           end
         rescue => e
+          errors += 1
           STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
         end
       end
+
+      puts "Finished. Total: #{total}. Errors: #{errors}"
     end
   end
 end

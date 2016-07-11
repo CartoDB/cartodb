@@ -688,9 +688,9 @@ div.cartodb-popup.header.blue a.cartodb-popup-close-button:hover {
 
 div.cartodb-popup.v2.header.blue div.cartodb-popup-header {
   background: none;
-  background: -ms-linear-gradient(top, #4F9CD7, #2B68A8);
+  background: -ms-linear-gradient(top, #4F9CD7, #2B68A8); 
   background: -o-linear-gradient(right, #4F9CD7, #2B68A8);
-  background: -webkit-linear-gradient(top, #4F9CD7, #2B68A8);
+  background: -webkit-linear-gradient(top, #4F9CD7, #2B68A8); 
   background: -moz-linear-gradient(right, #4F9CD7, #2B68A8);
   -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#4F9CD7',endColorStr='#2B68A8',GradientType=0)";
 }
@@ -817,9 +817,9 @@ div.cartodb-popup.v2.header div.cartodb-popup-header {
   overflow:hidden;
   padding:17px 12px;
   background: none;
-  background: -ms-linear-gradient(top, #4F9CD7, #2B68A8);
+  background: -ms-linear-gradient(top, #4F9CD7, #2B68A8); 
   background: -o-linear-gradient(right, #4F9CD7, #2B68A8);
-  background: -webkit-linear-gradient(top, #4F9CD7, #2B68A8);
+  background: -webkit-linear-gradient(top, #4F9CD7, #2B68A8); 
   background: -moz-linear-gradient(right, #4F9CD7, #2B68A8);
   -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#4F9CD7',endColorStr='#2B68A8',GradientType=0)";
 
@@ -890,7 +890,7 @@ div.cartodb-popup.v2.header a.cartodb-popup-close-button:hover {
   div.cartodb-popup.header.v2 {
     border-bottom:4px solid #CCC;
   }
-
+  
   div.cartodb-popup.v2.header div.cartodb-popup-header {
     background:#3B7FBD;
     -ms-filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr='#4F9CD7',endColorStr='#2B68A8',GradientType=0);
@@ -927,9 +927,9 @@ div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
 
 div.cartodb-popup.v2.header.green div.cartodb-popup-header {
   background: none;
-  background: -ms-linear-gradient(top, #00CC99, #00B185);
+  background: -ms-linear-gradient(top, #00CC99, #00B185); 
   background: -o-linear-gradient(right, #00CC99, #00B185);
-  background: -webkit-linear-gradient(top, #00CC99, #00B185);
+  background: -webkit-linear-gradient(top, #00CC99, #00B185); 
   background: -moz-linear-gradient(right, #00CC99, #00B185);
   -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#00CC99',endColorStr='#00B185',GradientType=0)";
 }
@@ -978,9 +978,9 @@ div.cartodb-popup.header.orange a.cartodb-popup-close-button:hover {
 
 div.cartodb-popup.v2.header.orange div.cartodb-popup-header {
   background: none;
-  background: -ms-linear-gradient(top, #FF6825, #FF3333);
+  background: -ms-linear-gradient(top, #FF6825, #FF3333); 
   background: -o-linear-gradient(right, #FF6825, #FF3333);
-  background: -webkit-linear-gradient(top, #FF6825, #FF3333);
+  background: -webkit-linear-gradient(top, #FF6825, #FF3333); 
   background: -moz-linear-gradient(right, #FF6825, #FF3333);
   -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#FF6825',endColorStr='#FF3333',GradientType=0)";
 }
@@ -1115,9 +1115,9 @@ div.cartodb-popup.v2.header.orange a.cartodb-popup-close-button:after {
 
   div.cartodb-popup.v2.header.with-image div.cartodb-popup-header {
     background: #2C2C2C;
-    background: -ms-linear-gradient(top, #535353, #2C2C2C);
+    background: -ms-linear-gradient(top, #535353, #2C2C2C); 
     background: -o-linear-gradient(right, #535353, #2C2C2C);
-    background: -webkit-linear-gradient(top, #535353, #2C2C2C);
+    background: -webkit-linear-gradient(top, #535353, #2C2C2C); 
     background: -moz-linear-gradient(right, #535353, #2C2C2C);
     -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#535353',endColorStr='#2C2C2C',GradientType=0)";
   }
@@ -1192,9 +1192,9 @@ div.cartodb-popup.header.yellow a.cartodb-popup-close-button:hover {
 
 div.cartodb-popup.v2.header.yellow div.cartodb-popup-header {
   background: none;
-  background: -ms-linear-gradient(top, #FFBF0D, #FF9933);
+  background: -ms-linear-gradient(top, #FFBF0D, #FF9933); 
   background: -o-linear-gradient(right, #FFBF0D, #FF9933);
-  background: -webkit-linear-gradient(top, #FFBF0D, #FF9933);
+  background: -webkit-linear-gradient(top, #FFBF0D, #FF9933); 
   background: -moz-linear-gradient(right, #FFBF0D, #FF9933);
   -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#FFBF0D',endColorStr='#FF9933',GradientType=0)";
 }

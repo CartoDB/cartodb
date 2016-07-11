@@ -20,9 +20,23 @@
   height: 100px;
 }
 
+.Metadata-select {
+  background-color: $cWhite;
+  position: relative;
+
+  .CustomList {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 // To be fixed in cartoassets
 .u-grow {
   @include flex(1);
+}
+
+.Metadata-footer {
+  @include justify-content(flex-end);
 }
 
 .Markdown {

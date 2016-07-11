@@ -292,9 +292,11 @@
         "save-btn": "Save",
         "form": {
           "name": "Map Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
-          "tags": "Tags"
+          "tags": "Tags",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -305,7 +307,8 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "dataset-metadata": {
         "modal-title": "Dataset metadata",
@@ -314,12 +317,16 @@
         "save-btn": "Save",
         "form": {
           "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
           "tags": "Tags",
           "source": "Source",
           "source-placeholder": "Enter the source of the data",
-          "license": "License"
+          "license": "License",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -330,7 +337,8 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "privacy": {
         "privacy": "privacy",

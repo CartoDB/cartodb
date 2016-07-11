@@ -31,7 +31,7 @@
           <p class="CDB-Text CDB-Size-medium">
             <%- _t('components.background-importer.error-details.check-url') %>:<br/>
           </p>
-          <span class='ErrorDetails-itemTextStrong'><a href="<%- originalUrl %>"><%- originalUrl %></a></span>
+          <span class='CDB-Text CDB-Size-medium ErrorDetails-itemTextStrong'><a href="<%- originalUrl %>"><%- originalUrl %></a></span>
         </div>
       </li>
     <% } else { %>

@@ -4,10 +4,10 @@
 
 
 // Error details dialog styles
-$width: 620;
+$width: 620px;
 .ErrorDetails {}
 .ErrorDetails-header .Dialog-headerIcon {
-  line-height: 40;
+  line-height: 40px;
   margin-bottom: 15px;
 }
 .ErrorDetails-header .Dialog-headerTitle { color: $cHighlight-negative }
@@ -25,7 +25,7 @@ $width: 620;
   @include justify-content(flex-start, start);
   @include align-items(center, center);
   border-bottom: 1px solid $cStructure-mainLine;
-  padding: 20 0;
+  padding: 20px 0;
 }
 .ErrorDetails-item:first-child { padding-top: 0 }
 .ErrorDetails-item:last-child {
@@ -35,7 +35,7 @@ $width: 620;
 .ErrorDetails-itemStep {
   width: 38px;
   height: 38px;
-  margin-right: 20;
+  margin-right: 20px;
   border-radius: 38px;
   border: 1px solid #CCC;
   line-height: 38px;
@@ -46,16 +46,16 @@ $width: 620;
 .ErrorDetails-itemIcon {
   width: $sIcon-layout;
   height: $sIcon-layout;
-  margin: 0 auto;
-  margin-bottom: $sMargin-elementInline;
   border: 1px solid $cStructure-softLine;
   border-radius: $sIcon-borderRadius;
+  margin-bottom: $sMargin-elementInline;
   font-size: 22px;
   line-height: 44px;
+  margin: 0 auto;
 }
 .ErrorDetails-itemIcon--success {
-  color: #9BC63B;
-  border-color: #9BC63B;
+  color: #9bc63b;
+  border-color: #9bc63b;
 }
 .ErrorDetails-itemIcon--alert {
   color: $cHighlight-alert2;
@@ -77,7 +77,7 @@ $width: 620;
 .ErrorDetails-footer--no-line { border-top: none }
 .ErrorDetails-footerButton {
   display: inline-block;
-  padding-left: 40;
-  padding-right: 40;
-  line-height: 40;
+  padding-left: 40px;
+  padding-right: 40px;
+  line-height: 40px;
 }

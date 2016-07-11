@@ -17,12 +17,12 @@
       <% if (histogram_stats) { %>
       <div class="u-tSpace-xl CDB-Text CDB-Fieldset ">
         <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"></p>
-        <div class="Analysis-Histogram">
+        <div class="Analysis-Histogram js-histogram">
           <ul class="Analysis-HistogramInfo u-flex CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase">
             <li class="u-rSpace"><span class="js-min"></span> <%- _t('editor.layers.analysis-form.min') %></li>
             <li><span class="js-max"></span> <%- _t('editor.layers.analysis-form.max') %></li>
           </ul>
-          <div class="Analysis-HistogramChart js-histogram"></div>
+          <div class="Analysis-HistogramChart js-histogramChart"></div>
         </div>
       </div>
       <% } %>

@@ -8,7 +8,6 @@
 
 <div class="Modal-body">
   <div class="Modal-body-inner">
-
     <div class="js-footer">
       <ul class="Modal-actions is-narrow">
         <li class="Modal-actions-button">

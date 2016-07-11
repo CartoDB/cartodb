@@ -21,7 +21,7 @@
         <div class="ErrorDetails-itemStep CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-justifyCenter">1</div>
         <div class="ErrorDetails-itemText">
           <p class="CDB-Text CDB-Size-medium">
-            <%- _t('components.background-importer.error-details.remote-server-code', { httpResponseCode: httpResponseCode }) %> <%- httpResponseCodeMessage %>
+            <%= _t('components.background-importer.error-details.remote-server-code', { httpResponseCode: httpResponseCode}) %> <%- httpResponseCodeMessage %>
           </p>
         </div>
       </li>
@@ -31,7 +31,7 @@
           <p class="CDB-Text CDB-Size-medium">
             <%- _t('components.background-importer.error-details.check-url') %>:<br/>
           </p>
-          <span class="ErrorDetails-itemTextStrong"><a href="<%- originalUrl %>"><%- originalUrl %></a></span>
+          <span class='ErrorDetails-itemTextStrong'><a href="<%- originalUrl %>"><%- originalUrl %></a></span>
         </div>
       </li>
     <% } else { %>
@@ -53,9 +53,9 @@
         <div class="ErrorDetails-itemStep CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-justifyCenter">!</div>
         <div class="ErrorDetails-itemText">
           <p class="CDB-Text CDB-Size-medium">
-            <%- _t('components.background-importer.error-details.send-us-the-error-code') %>:<br/>
+            <%= _t('components.background-importer.error-details.send-us-the-error-code', { supportEmailTo: 'support@carto.com' }) %>:<br/>
           </p>
-          <span class="ErrorDetails-itemTextStrong"><%- itemQueueId %></span>
+          <span class="CDB-Text CDB-Size-medium ErrorDetails-itemTextStrong"><%- itemQueueId %></span>
         </div>
       </li>
     <% } %>

@@ -292,9 +292,11 @@
         "save-btn": "Save",
         "form": {
           "name": "Map Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
-          "tags": "Tags"
+          "tags": "Tags",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -305,7 +307,38 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "privacy": {
         "privacy": "privacy",
@@ -794,6 +827,11 @@
       "loading": "Renaming your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
     },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}...",
+    },
     "duplicate": {
       "option": "Duplicate dataset",
       "query": "applied query",
@@ -878,16 +916,19 @@
             "widgets": "Widgets column",
           }
         }
-      },
-
-
+      }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}...",
       },
       "delete": {
         "confirm": "ok, delete it",

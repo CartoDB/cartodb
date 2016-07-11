@@ -1578,8 +1578,7 @@ class User < Sequel::Model
   # The builder is enabled/disabled based on a feature flag
   # The builder_enabled is used to allow the user to turn it on/off
   def builder_enabled?
-    user = has_organization? ? organization.owner : self
-    user.has_feature_flag?('editor-3')
+    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
   end
 
   def force_builder?

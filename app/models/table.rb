@@ -1105,14 +1105,16 @@ class Table
       SELECT
         a.attname as column, i.relname as name
       FROM
-        pg_class t, pg_class i, pg_index ix, pg_attribute a
+        pg_class t, pg_class i, pg_index ix, pg_attribute a, pg_namespace n
       WHERE
         t.oid = ix.indrelid
         AND i.oid = ix.indexrelid
         AND a.attrelid = t.oid
         AND a.attnum = ANY(ix.indkey)
         AND t.relkind = 'r'
-        AND t.relname = '#{name}';
+        AND t.relname = '#{name}'
+        AND n.nspname = '#{owner.database_schema}'
+        AND t.relnamespace = n.oid;
     }).all
   end
 

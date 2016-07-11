@@ -74,7 +74,7 @@ ul.tagit input[type="text"] {
 
 .Form-tagsList.tagit .tagit-choice {
   font-size: $sFontSize-small;
-  margin: 5px 5px 0 0;
+  margin: 7px 5px 0 0;
   padding: 0 20px 0 4px;
   line-height: 14px;
   border: 1px solid $cBlue;
@@ -113,7 +113,7 @@ ul.tagit input[type="text"] {
   display: none;
 }
 .Form-tagsList.tagit li.tagit-new {
-  padding: 2px 4px 2px 7px;
+  padding: 4px 4px 5px 7px;
 }
 .Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
   color: #AAA;

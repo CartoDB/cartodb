@@ -54,7 +54,7 @@ namespace :carto do
           layer.options['attribution'].gsub!('cartodb.com', 'carto.com')
           layer.save
         rescue => e
-          puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+          STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
         end
       end
     end

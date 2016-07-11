@@ -1226,6 +1226,9 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
+        "sql-alter-loading": "Applying modifier query...",
+        "sql-alter-error": "Modifier query failed",
+        "sql-alter-success": "Modifier query applied",
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
         "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },

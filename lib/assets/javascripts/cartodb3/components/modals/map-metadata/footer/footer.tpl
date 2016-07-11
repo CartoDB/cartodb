@@ -3,7 +3,7 @@
 <div class="CreateDialog-footerInner">
   <div class="js-footer-info CreateDialog-footerInfo">
   </div>
-  <div class="CreateDialog-footerActions js-footerActions Metadata-footer">
+  <div class="CreateDialog-footerActions js-footerActions u-justifyEnd">
     <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase u-rSpace--xl"><%- privacy %></i>
 
     <button class="js-save CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase CDB-Button CDB-Button--primary <%- canFinish ? '' : 'is-disabled' %>">

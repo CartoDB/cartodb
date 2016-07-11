@@ -21,8 +21,8 @@
 }
 
 .Metadata-select {
-  background-color: $cWhite;
   position: relative;
+  background-color: $cWhite;
 
   .CustomList {
     width: 100%;
@@ -33,10 +33,6 @@
 // To be fixed in cartoassets
 .u-grow {
   @include flex(1);
-}
-
-.Metadata-footer {
-  @include justify-content(flex-end);
 }
 
 .Markdown {

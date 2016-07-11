@@ -99,7 +99,7 @@ module CartoDB
           @client.authorization.fetch_access_token!
           if @client.authorization.refresh_token.nil?
             raise AuthError.new(
-              "Error validating auth token. Is this Google account linked to another CartoDB account?",
+              "Error validating auth token. Is this Google account linked to another CARTO account?",
               DATASOURCE_NAME)
           end
           @refresh_token = @client.authorization.refresh_token

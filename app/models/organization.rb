@@ -7,6 +7,14 @@ require_relative './permission'
 
 class Organization < Sequel::Model
 
+  class OrganizationWithoutOwner < StandardError
+    attr_reader :organization
+
+    def initialize(organization)
+      @organization = organization
+      super "Organization #{organization.name} has no owner"
+    end
+  end
 
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
@@ -71,9 +79,18 @@ class Organization < Sequel::Model
     end
   end
 
-  def validate_for_signup(errors, quota_in_bytes)
-    errors.add(:organization, "not enough seats") if remaining_seats <= 0
-    errors.add(:quota_in_bytes, "not enough disk quota") if unassigned_quota <= 0 || (!quota_in_bytes.nil? && unassigned_quota < quota_in_bytes)
+  def validate_for_signup(errors, user)
+    if user.builder? && remaining_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough seats")
+    end
+
+    if user.viewer? && remaining_viewer_seats(excluded_users: [user]) <= 0
+      errors.add(:organization, "not enough viewer seats")
+    end
+
+    if unassigned_quota <= 0 || unassigned_quota < user.quota_in_bytes.to_i
+      errors.add(:quota_in_bytes, "not enough disk quota")
+    end
   end
 
   def before_validation
@@ -131,7 +148,7 @@ class Organization < Sequel::Model
   end
 
   def non_owner_users
-    self.users.select { |u| u.id != self.owner.id }
+    users.select { |u| owner && u.id != owner.id }
   end
 
   ##
@@ -140,24 +157,28 @@ class Organization < Sequel::Model
   #        example: 0.20 will get all organizations at 80% of their map view limit
   #
   def self.overquota(delta = 0)
-
     Organization.all.select do |o|
+      begin
         limit = o.geocoding_quota.to_i - (o.geocoding_quota.to_i * delta)
         over_geocodings = o.get_geocoding_calls > limit
-
         limit = o.here_isolines_quota.to_i - (o.here_isolines_quota.to_i * delta)
         over_here_isolines = o.get_here_isolines_calls > limit
-
         limit = o.obs_snapshot_quota.to_i - (o.obs_snapshot_quota.to_i * delta)
         over_obs_snapshot = o.get_obs_snapshot_calls > limit
-
         limit = o.obs_general_quota.to_i - (o.obs_general_quota.to_i * delta)
         over_obs_general = o.get_obs_general_calls > limit
-
-        limit =  o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
+        limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
-
         over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
+      rescue OrganizationWithoutOwner => error
+        # Avoid aborting because of inconistent organizations; just omit them
+        CartoDB::Logger.error(
+          message: 'Skipping organization without owner in overquota report',
+          organization: name,
+          exception: error
+        )
+        false
+      end
     end
   end
 
@@ -166,6 +187,7 @@ class Organization < Sequel::Model
   end
 
   def get_geocoding_calls(options = {})
+    require_organization_owner_presence!
     date_from, date_to = quota_dates(options)
     if owner.has_feature_flag?('new_geocoder_quota')
       get_organization_geocoding_data(self, date_from, date_to)
@@ -175,6 +197,7 @@ class Organization < Sequel::Model
   end
 
   def get_new_system_geocoding_calls(options = {})
+    require_organization_owner_presence! if !options[:from]
     date_to = (options[:to] ? options[:to].to_date : Date.current)
     date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
     get_organization_geocoding_data(self, date_from, date_to)
@@ -321,12 +344,32 @@ class Organization < Sequel::Model
     !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
   end
 
-  def remaining_seats
-    seats - assigned_seats
+  def total_seats
+    seats + viewer_seats
   end
 
-  def assigned_seats
-    users.nil? ? 0 : users.count
+  def remaining_seats(excluded_users: [])
+    seats - assigned_seats(excluded_users: excluded_users)
+  end
+
+  def remaining_viewer_seats(excluded_users: [])
+    viewer_seats - assigned_viewer_seats(excluded_users: excluded_users)
+  end
+
+  def assigned_seats(excluded_users: [])
+    builder_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def assigned_viewer_seats(excluded_users: [])
+    viewer_users.count { |u| !excluded_users.include?(u) }
+  end
+
+  def builder_users
+    (users || []).select(&:builder?)
+  end
+
+  def viewer_users
+    (users || []).select(&:viewer?)
   end
 
   def notify_if_disk_quota_limit_reached
@@ -367,6 +410,12 @@ class Organization < Sequel::Model
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date
+  end
+
+  def require_organization_owner_presence!
+    if owner.nil?
+      raise Organization::OrganizationWithoutOwner.new(self)
+    end
   end
 
   private

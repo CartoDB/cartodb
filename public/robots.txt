@@ -1,4 +1,4 @@
-# Contact us at support@cartodb.com if you are having problems
+# Contact us at support@carto.com if you are having problems
 # while trying to access our API or whatever
 
 User-agent: Googlebot

@@ -107,7 +107,8 @@ describe Carto::Api::UserPresenter do
 
   protected
 
-  def compare_data(old_data, new_data, org_user = false, mobile_sdk_enabled = false)
+  def compare_data(original_old_data, new_data, org_user = false, mobile_sdk_enabled = false)
+    old_data = add_new_keys(original_old_data)
     # INFO: new organization presenter now doesn't contain users
     old_data[:organization].delete(:users) if old_data[:organization]
 
@@ -212,6 +213,12 @@ describe Carto::Api::UserPresenter do
 
     # TODO: Pending migration and testing of :real_table_count & :last_active_time
 
+  end
+
+  def add_new_keys(user_poro)
+    new_poro = user_poro.dup.deep_merge(viewer: false)
+    new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
+    new_poro
   end
 
   def create_org(org_name, org_quota, org_seats)

@@ -6,11 +6,11 @@
       <!-- HEADER -->
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
         <tr>
-          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You are invited to join the <%= @invitation.organization.name_to_display %> organization at CartoDB</td>
+          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You are invited to join the <%= @invitation.organization.name_to_display %> organization at CARTO<%= @invitation.viewer? ? ' as a viewer' : '' %></td>
         </tr>
 
         <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @invitation.organization.name_to_display %> organization account at CartoDB:</td>
+          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @invitation.organization.name_to_display %> organization account at CARTO:</td>
         </tr>
 
         <tr>
@@ -58,4 +58,3 @@
     </td>
   </tr>
 <% end %>
-

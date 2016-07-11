@@ -11,14 +11,19 @@
   @include flex-direction(row);
 
   border-bottom: 1px solid $cStructure-darkGrey;
-  padding: 15px 0;
-  margin-top: -24px;
+  padding: 16px 0;
+  margin-top: -16px;
 }
 .OrganizationSearch-Form {
   position: relative;
 }
 .OrganizationSearch-Item {
   line-height: 30px;
+
+  &.RoleCount {
+    color: #979EA1;
+    white-space: nowrap;
+  }
 }
 .OrganizationSearch-FormButton {
   padding-right: 2px;
@@ -70,7 +75,7 @@
   }
 }
 .OrganizationSearch-FormInput {
-  width: 320px;
+  width: 220px;
   padding-left: 5px;
   outline: none;
   border: none;

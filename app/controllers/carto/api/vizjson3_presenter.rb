@@ -1,6 +1,7 @@
 require_dependency 'carto/api/layer_vizjson_adapter'
 require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/named_maps/template'
 
 module Carto
   module Api
@@ -253,7 +254,8 @@ module Carto
       def user_info_vizjson(user)
         {
           fullname: user.name.present? ? user.name : user.username,
-          avatar_url: user.avatar_url
+          avatar_url: user.avatar_url,
+          profile_url: user.public_url
         }
       end
 

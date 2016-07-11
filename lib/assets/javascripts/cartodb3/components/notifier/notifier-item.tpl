@@ -10,16 +10,16 @@
 
   <% if (status === 'success') { %>
   <div class="Notifier-icon CDB-Shape u-rSpace--m">
-    <div class="CDB-Shape-CircleItem is-green is-medium">
-      <div class="CDB-Shape-tick is-medium is-green"></div>
+    <div class="CDB-Shape-CircleItem CDB-Shape-CircleItem--fill is-green">
+      <div class="CDB-Shape-tick is-medium is-white"></div>
     </div>
   </div>
   <% } %>
 
   <% if (status === 'error' || status === 'warning') { %>
   <div class="Notifier-icon CDB-Shape u-rSpace--m">
-    <div class="CDB-Shape-CircleItem is-red">
-      <div class="CDB-Shape-close is-medium is-red"></div>
+    <div class="CDB-Shape-CircleItem CDB-Shape-CircleItem--fill is-red">
+      <div class="CDB-Shape-close is-medium is-white"></div>
     </div>
   </div>
   <% } %>

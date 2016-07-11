@@ -494,6 +494,7 @@ CartoDB::Application.routes.draw do
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+        resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
@@ -512,10 +513,10 @@ CartoDB::Application.routes.draw do
     put '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'  => 'tables#update', as: :api_v1_tables_update, constraints: { id: /[^\/]+/ }
 
     # Table records
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }
-    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'     => 'records#create',  as: :api_v1_tables_records_create, constraints: { table_id: /[^\/]+/ }
-    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#update',  as: :api_v1_tables_record_update,  constraints: { table_id: /[^\/]+/ }
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:id' => 'records#destroy', as: :api_v1_tables_record_destroy, constraints: { table_id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'             => 'records#index',   as: :api_v1_tables_records_index,  constraints: { table_id: /[^\/]+/ }
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records'             => 'records#create',  as: :api_v1_tables_records_create, constraints: { table_id: /[^\/]+/ }
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:cartodb_id' => 'records#update',  as: :api_v1_tables_record_update,  constraints: { table_id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/records/:cartodb_id' => 'records#destroy', as: :api_v1_tables_record_destroy, constraints: { table_id: /[^\/]+/ }
 
     # Table columns
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:table_id/columns'     => 'columns#create',  as: :api_v1_tables_columns_create,  constraints: { table_id: /[^\/]+/ }

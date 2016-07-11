@@ -2,7 +2,7 @@
   <div class="Filters-inner">
     <span class="Filters-separator"></span>
     <div class="Filters-row">
-      <ul class="Filters-group">
+      <ul class="Filters-group CDB-Text CDB-Size-medium">
         <li class="Filters-typeItem">
           <a href="<%= CartoDB.url(self, 'organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
             Organization profile
@@ -15,7 +15,7 @@
         </li>
         <li class="Filters-typeItem">
           <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
-            <%= current_user.organization.users.count %>/<%= current_user.organization.seats %> users
+            <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %> users
           </a>
         </li>
         <li class="Filters-typeItem">

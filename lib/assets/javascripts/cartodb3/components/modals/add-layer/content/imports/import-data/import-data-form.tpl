@@ -16,11 +16,11 @@
       <span class="Form-separator Form-separator--or"><%- _t('components.modals.add-layer.imports.form-import.or') %></span>
     <% } %>
     <div class="Form-rowData Form-rowData--noMargin Form-rowData--med">
-      <input type="text" class="Form-input Form-input--med has-submit js-textInput CDB-Text CDB-Size-medium" value="" placeholder="http://www.cartodb.com/library" />
+      <input type="text" class="Form-input Form-input--med has-submit js-textInput CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />
       <button type="submit" class="CDB-Text CDB-Size-small Form-inputSubmit u-upperCase u-actionTextColor Form-inputSubmit">
         <span><%- _t('components.modals.add-layer.imports.form-import.submit') %></span>
       </button>
-      <div class="Form-inputError"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>
+      <div class="Form-inputError CDB-Text"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>
     </div>
   </div>
 </form>

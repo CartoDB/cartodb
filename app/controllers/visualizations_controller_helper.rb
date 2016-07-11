@@ -43,12 +43,12 @@ module VisualizationsControllerHelper
   end
 
   def extract_user_from_request_and_viz_locator(viz_locator)
-    # 1. Handles any url with "/u/username", or "username.cartodb.com"
+    # 1. Handles any url with "/u/username", or "username.carto.com"
     user_or_org_name = CartoDB.extract_subdomain(request)
     user = Carto::User.where(username: user_or_org_name).first
 
     if user.nil?
-      # 2a. User not found: handles org.cartodb.com with "schema.table" visualizations
+      # 2a. User not found: handles org.carto.com with "schema.table" visualizations
       organization = Carto::Organization.where(name: user_or_org_name).first
       return nil unless organization
       organization.users.where(username: viz_locator.schema).first

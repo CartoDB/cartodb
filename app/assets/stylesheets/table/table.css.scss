@@ -382,6 +382,8 @@ div.table {
         border-top:1px solid #ECECEC;
 
         td {
+          vertical-align: top;
+
           &:not(.row_header) {
             div.cell:not(.disabled) {
               cursor: pointer;

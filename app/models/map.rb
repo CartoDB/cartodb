@@ -79,6 +79,12 @@ class Map < Sequel::Model
   end
 
   def notify_map_change
+    visualization = visualizations.first
+
+    force_notify_map_change unless visualization && visualization.latest_mapcap
+  end
+
+  def force_notify_map_change
     update_related_named_maps
     invalidate_vizjson_varnish_cache
   end
@@ -117,7 +123,9 @@ class Map < Sequel::Model
   end
 
   def viz_updated_at
-    get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
+    latest_mapcap = visualizations.first.latest_mapcap
+
+    latest_mapcap ? latest_mapcap.created_at : get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
   def invalidate_vizjson_varnish_cache

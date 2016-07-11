@@ -87,6 +87,7 @@ describe Api::Json::PermissionsController do
                   id:         @user2.id,
                   username:   @user2.username,
                   avatar_url: @user2.avatar_url,
+                  viewer:     false,
                   base_url:   @user2.public_url,
                   groups:     []
               },

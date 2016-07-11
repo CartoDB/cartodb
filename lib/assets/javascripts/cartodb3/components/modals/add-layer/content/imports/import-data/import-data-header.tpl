@@ -8,7 +8,7 @@
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
     <% fileEnabledText = _t('components.modals.add-layer.imports.header-import.select-a-file') +
-      ' <a href="http://docs.cartodb.com/cartodb-editor/datasets/#supported-file-formats">' +
+      ' <a href="https://docs.carto.com/cartodb-editor/datasets/#supported-file-formats">' +
       _t('components.modals.add-layer.imports.header-import.see-all-formats') +
       '</a>'
     %>

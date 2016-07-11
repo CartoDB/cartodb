@@ -916,16 +916,19 @@
             "widgets": "Widgets column",
           }
         }
-      },
-
-
+      }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}...",
       },
       "delete": {
         "confirm": "ok, delete it",

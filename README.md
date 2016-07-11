@@ -9,7 +9,7 @@ visualization of geospatial data on the web.
 It was built to make it easier for people to tell their stories by
 providing them with flexible and intuitive ways to create maps and design
 geospatial applications. CartoDB can be installed on your own server
-and we also offer a hosted service at [cartodb.com](https://cartodb.com).
+and we also offer a hosted service at [carto.com](https://carto.com).
 
 If you would like to see some live demos, check out our
 [videos](http://www.vimeo.com/channels/cartodb) on Vimeo.
@@ -25,12 +25,12 @@ etc) using a web form and then make it public or private.
 
 After it is uploaded, you can visualize it in a table or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
-using the CartoDB [APIs](http://docs.cartodb.com/#cartodb-platform), or export it
+using the CartoDB [APIs](https://docs.carto.com/#cartodb-platform), or export it
 to a file.
 
 In other words, with CartoDB you can make awesome maps and build
 powerful geospatial applications! Definitely check out the [CartoDB
-Platform](https://cartodb.com/platform) for interactive examples
+Platform](https://carto.com/platform) for interactive examples
 and code.
 
 
@@ -47,7 +47,7 @@ documentation.
 
 ## Developing & Contributing to CartoDB
 
-See [our contributing doc](CONTRIBUTING.md) for how you can improve CartoDB, but you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://cartodb.com/contributing).
+See [our contributing doc](CONTRIBUTING.md) for how you can improve CartoDB, but you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://carto.com/contributing).
 
 ## Testing
 

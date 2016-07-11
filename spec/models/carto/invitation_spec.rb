@@ -17,7 +17,7 @@ describe Carto::Invitation do
 
     it 'fails for non-owner users' do
       expect do
-        Carto::Invitation.create_new(@carto_org_user_1, ['no@cartodb.com'], 'hi', false)
+        Carto::Invitation.create_new(@carto_org_user_1, ['no@carto.com'], 'hi', false)
       end.to raise_error CartoDB::InvalidUser
     end
 
@@ -29,7 +29,7 @@ describe Carto::Invitation do
 
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
-      emails = ['w_1@cartodb.com', 'w_2@cartodb.com']
+      emails = ['w_1@carto.com', 'w_2@carto.com']
       invitation = Carto::Invitation.create_new(@carto_org_user_owner, emails, 'hi', false)
       invitation.inviter_user_id.should == @carto_org_user_owner.id
       invitation.organization_id.should == @carto_org_user_owner.organization_id
@@ -43,34 +43,34 @@ describe Carto::Invitation do
     end
 
     it 'returns the same token for the same email' do
-      email = 'myemail@cartodb.com'
+      email = 'myemail@carto.com'
       t1 = @invitation.token(email)
       t2 = @invitation.token(email)
       t1.should == t2
     end
 
     it 'returns different tokens for different emails' do
-      t1 = @invitation.token('email1@cartodb.com')
-      t2 = @invitation.token('email2@cartodb.com')
+      t1 = @invitation.token('email1@carto.com')
+      t2 = @invitation.token('email2@carto.com')
       t1.should_not == t2
     end
 
     it 'returns different tokens using the same email with different invitations' do
-      email = 'myemail@cartodb.com'
+      email = 'myemail@carto.com'
       t1 = @invitation.token(email)
       t2 = @invitation_2.token(email)
       t1.should_not == t2
     end
 
     it 'has a length > 10' do
-      @invitation.token('email1@cartodb.com').length.should > 10
+      @invitation.token('email1@carto.com').length.should > 10
     end
   end
 
   describe '#use' do
     before(:each) do
-      @valid_email = 'email1@cartodb.com'
-      @valid_email_2 = 'email2@cartodb.com'
+      @valid_email = 'email1@carto.com'
+      @valid_email_2 = 'email2@carto.com'
       @invitation = Carto::Invitation.create_new(
         @carto_org_user_owner,
         [@valid_email, @valid_email_2],
@@ -86,7 +86,7 @@ describe Carto::Invitation do
     end
 
     it 'return false for non valid emails' do
-      @invitation.use('fake@cartodb.com', @token).should == false
+      @invitation.use('fake@carto.com', @token).should == false
     end
 
     it 'return false for non valid tokens' do

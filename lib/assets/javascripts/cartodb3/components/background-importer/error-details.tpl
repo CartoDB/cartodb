@@ -53,7 +53,7 @@
         <div class="ErrorDetails-itemStep CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-justifyCenter">!</div>
         <div class="ErrorDetails-itemText">
           <p class="CDB-Text CDB-Size-medium">
-            <%= _t('components.background-importer.error-details.send-us-the-error-code', { supportEmailTo: 'support@carto.com' }) %>:<br/>
+            <%= _t('components.background-importer.error-details.send-us-the-error-code') %>:<br/>
           </p>
           <span class="CDB-Text CDB-Size-medium ErrorDetails-itemTextStrong"><%- itemQueueId %></span>
         </div>

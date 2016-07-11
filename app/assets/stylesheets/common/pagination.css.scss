@@ -14,7 +14,7 @@
   border-top: 1px solid $cStructure-mainLine;
 }
 .Pagination-label {
-  margin-right: $sMargin-element;
+  margin-right: 16px;
 }
 .Pagination-list {
   @include display-flex();
@@ -31,13 +31,6 @@
   border: none;
   background: $cStructure-mainBkg;
   outline: none;
-}
-.Pagination-listItemInner--link {
-  color: $cTypography-link;
-  &:hover {
-    color: $cTypography-linkHover;
-    text-decoration: underline;
-  }
 }
 .Pagination-listItemInner--more {
   background-color: $cStructure-grayBkg;

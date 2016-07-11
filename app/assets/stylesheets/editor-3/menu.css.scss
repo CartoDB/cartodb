@@ -87,7 +87,19 @@
     @include transform(rotate(-45deg));
   }
 }
-
+.EditorMenu-feedback {
+  @include transform(translateX(-50%));
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+}
+.Editor-feedbackModal {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 .EditorMenu-avatar {
   position: absolute;
   bottom: $baseSize * 2;

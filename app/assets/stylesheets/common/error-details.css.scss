@@ -20,7 +20,6 @@ $width: 620px;
   padding:0;
   border-top: none;
 }
-.ErrorDetails-list {}
 .ErrorDetails-item {
   @include display-flex();
   @include justify-content(flex-start, start);
@@ -68,9 +67,6 @@ $width: 620px;
 }
 .ErrorDetails-itemText {
   width: $width - 120;
-  font-weight: $sFontWeight-lighter;
-  font-size: 14px;
-  color: $cTypography-paragraphs;
 }
 .ErrorDetails-itemTextStrong { color: $cTypography-headers }
 .ErrorDetails-footer {

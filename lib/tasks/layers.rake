@@ -50,10 +50,13 @@ namespace :carto do
       puts "Updating layer attributions"
       Carto::Layer.find_each do |layer|
         begin
-          layer.options['attribution'].gsub!('CartoDB', 'CARTO')
-          layer.options['attribution'].gsub!('cartodb.com', 'carto.com')
-          layer.options['attribution'].gsub!('http://carto', 'https://carto')
-          layer.save
+          attribution = layer.options['attribution']
+          if attribution.present?
+            attribution.gsub!('CartoDB', 'CARTO')
+            attribution.gsub!('cartodb.com', 'carto.com')
+            attribution.gsub!('http://carto', 'https://carto')
+            layer.save
+          end
         rescue => e
           STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
         end

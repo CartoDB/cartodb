@@ -15,7 +15,7 @@
           </ul>
         </div>
         <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
-          <a href="<%- url %>" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
+          <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
         </p>
       <% } %>
     </div>

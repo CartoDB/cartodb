@@ -7,9 +7,11 @@
 
 .Editor-formInner {
   @include display-flex();
-  @include align-items(center);
   min-height: $baseSize * 4;
   margin-top: $baseSize;
+}
+.Editor-formInner .CDB-Legend {
+  padding-top: 9px;
 }
 .Editor-formInput {
   @include flex(1);
@@ -18,15 +20,6 @@
 }
 .Editor-formInput:focus {
   outline: none;
-}
-.Editor-formInput > .CDB-Textarea {
-  margin-bottom: -24px;
-}
-.Editor-formInput > .CDB-Textarea::after {
-  content: "";
-  height: 24px;
-  background: red;
-  display: block;
 }
 .Editor-formInner--nested {
   position: relative;

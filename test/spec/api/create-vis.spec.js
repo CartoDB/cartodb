@@ -264,6 +264,21 @@ describe('src/api/create-vis', function () {
     }.bind(this));
   });
 
+  it("should disable logo if it's specified by logo", function (done) {
+    fakeVizJSON.overlays = [{ type: 'logo' }];
+
+    var opts = {
+      logo: false
+    };
+
+    createVis(this.containerId, fakeVizJSON, opts);
+
+    _.defer(function () {
+      expect(this.container.find('.CDB-Logo').length).toEqual(0);
+      done();
+    }.bind(this));
+  });
+
   var mapInstantiationRequestDone = function () {
     return _.any($.ajax.calls.allArgs(), function (args) {
       var expectedURLRegexp = /(http|https):\/\/cdb.localhost.lan:8181\/api\/v1\/map\/named\/tpl_6a31d394_7c8e_11e5_8e42_080027880ca6\?stat_tag=6a31d394-7c8e-11e5-8e42-080027880ca6/;

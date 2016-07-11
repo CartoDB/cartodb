@@ -43,14 +43,6 @@ VizJSON.prototype.getOverlayByType = function (overlayType) {
   });
 };
 
-VizJSON.prototype.addLogoOverlay = function (overlayType) {
-  if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.LOGO)) {
-    this.overlays.push({
-      type: VizJSON.OVERLAY_TYPES.LOGO
-    });
-  }
-};
-
 VizJSON.prototype.addHeaderOverlay = function (showTitle, showDescription, isShareable) {
   if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.HEADER)) {
     this.overlays.unshift({
@@ -106,6 +98,10 @@ VizJSON.prototype.removeZoomOverlay = function () {
 
 VizJSON.prototype.removeSearchOverlay = function () {
   this.removeOverlay(VizJSON.OVERLAY_TYPES.SEARCH);
+};
+
+VizJSON.prototype.removeLogoOverlay = function (overlayType) {
+  this.removeOverlay(VizJSON.OVERLAY_TYPES.LOGO);
 };
 
 VizJSON.prototype._addAttributionOverlay = function () {

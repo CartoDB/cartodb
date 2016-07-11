@@ -33,7 +33,7 @@ var Vis = View.extend({
 
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
-    this.model.overlaysCollection.on('add remove', this._resetOverlays, this);
+    this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
 
     this.overlays = [];
 
@@ -270,10 +270,6 @@ var Vis = View.extend({
 
       if (type === 'search' && options[type] || type === 'search' && opt.display && options[type] === undefined) {
         overlay.show();
-      }
-
-      if (type === 'logo') {
-        overlay[this.model.get('showLogo') ? 'show' : 'hide']();
       }
 
       if (type === 'header') {

@@ -110,7 +110,39 @@ describe Carto::Api::AnalysesController do
         a.user_id.should eq @user.id
         a.visualization_id.should eq @visualization.id
         a.analysis_definition.deep_symbolize_keys.should eq payload[:analysis_definition].deep_symbolize_keys
+
+        a.destroy
       end
+    end
+
+    it 'overrides old analysis in the same visualization if they have the same natural id' do
+      bypass_named_maps
+      Carto::Analysis.where(visualization_id: @visualization.id).count.should eq 1
+
+      updated_analysis = { analysis_definition: @analysis.analysis_definition }
+      updated_analysis[:analysis_definition][:params] = { query: 'select * from whatever_overrided' }
+
+      post_json create_analysis_url(@user, @visualization), updated_analysis do |response|
+        response.status.should eq 201
+
+        # Check that update worked
+        response_body = response.body
+        response_body[:id].should eq @analysis.id
+        response_body[:analysis_definition][:id].should eq @analysis.natural_id
+        response_body[:analysis_definition].should eq updated_analysis[:analysis_definition]
+      end
+
+      # Check that no analysis is _added_
+      analyses = Carto::Analysis.where(visualization_id: @visualization.id).all
+      analyses.count.should eq 1
+      new_analysis = analyses.first
+      new_analysis.analysis_definition.should eq updated_analysis[:analysis_definition]
+      new_analysis.updated_at.should be > @analysis.updated_at
+
+      # Check that the old analysis was updated
+      @analysis.reload
+      new_analysis.created_at.should eq @analysis.created_at
+      new_analysis.updated_at.should eq @analysis.updated_at
     end
 
     it 'returns 422 if payload visualization or user id do not match with url' do

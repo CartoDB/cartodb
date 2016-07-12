@@ -1,11 +1,11 @@
 var $ = require('jquery');
-var Backbone = require('backbone');
+var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named-map');
 
 describe('geo/cartodb-layer-group-named-map', function () {
   beforeEach(function () {
-    this.layersCollection = new Backbone.Collection();
+    this.layersCollection = new Layers();
   });
 
   // TODO: This test is a bit useless

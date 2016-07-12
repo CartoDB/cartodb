@@ -17,22 +17,14 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
 
     this.layers = new Backbone.Collection(options.layers || []);
 
-    this._layersCollection.bind('reset', function () {
-      var cartoDBLayers = this._layersCollection.select(function (layerModel) { return layerModel.get('type') === 'CartoDB'; });
-      this.layers.reset(cartoDBLayers);
-    }, this);
+    this._layersCollection.bind('reset', this._resetLayers, this);
+    this._layersCollection.bind('add', this._resetLayers, this);
+    this._layersCollection.bind('remove', this._resetLayers, this);
+  },
 
-    this._layersCollection.bind('add', function (layerModel) {
-      if (layerModel.get('type') === 'CartoDB') {
-        this.layers.add(layerModel);
-      }
-    }, this);
-
-    this._layersCollection.bind('remove', function (layerModel) {
-      if (layerModel.get('type') === 'CartoDB') {
-        this.layers.remove(layerModel);
-      }
-    }, this);
+  _resetLayers: function () {
+    var cartoDBLayers = this._layersCollection.getCartoDBLayers();
+    this.layers.reset(cartoDBLayers);
   },
 
   getIndexOf: function (layerModel) {

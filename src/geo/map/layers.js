@@ -51,6 +51,24 @@ var Layers = Backbone.Collection.extend({
     }
 
     this.sort();
+  },
+
+  getCartoDBLayers: function () {
+    return this._getLayersByType(CARTODB_LAYER_TYPE);
+  },
+
+  getTiledLayers: function () {
+    return this._getLayersByType(TILED_LAYER_TYPE);
+  },
+
+  getTorqueLayers: function () {
+    return this._getLayersByType(TORQUE_LAYER_TYPE);
+  },
+
+  _getLayersByType: function (layerType) {
+    return this.select(function (layerModel) {
+      return layerModel.get('type') === layerType;
+    });
   }
 });
 

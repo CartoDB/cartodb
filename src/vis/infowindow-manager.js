@@ -107,19 +107,15 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
   layerModel.infowindow.bind('change', function () {
-    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) && this._infowindowModel.get('visibility') === true) {
-      this._updateInfowindowModel(layerModel.infowindow);
-    }
+    this._updateInfowindowModel(layerModel.infowindow);
   }, this);
 
   layerModel.infowindow.fields.bind('reset', function () {
     if (layerModel.infowindow.hasFields()) {
-      if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
-        this._updateInfowindowModel(layerModel.infowindow);
-        if (this._infowindowModel.get('visibility')) {
-          this._reloadMapAndFetchAttributes(layerView, layerModel);
-          return;
-        }
+      this._updateInfowindowModel(layerModel.infowindow);
+      if (this._infowindowModel.get('visibility')) {
+        this._reloadMapAndFetchAttributes(layerView, layerModel);
+        return;
       }
 
       this._reloadMap();

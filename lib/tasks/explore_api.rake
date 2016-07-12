@@ -281,7 +281,7 @@ namespace :cartodb do
 
       puts "INSERTING OLD MADE PUBLIC"
       page = 1
-      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_created_date))).count > 0 do
+      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_updated_date))).count > 0 do
         filter_existing_and_insert_visualizations(visualizations, page)
         page += 1
       end

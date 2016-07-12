@@ -11,7 +11,7 @@
     <div class="js-footer">
       <ul class="Modal-actions is-narrow">
         <li class="Modal-actions-button">
-          <button class="CDB-Button CDB-Button--primary js-close js-back">
+          <button class="CDB-Button CDB-Button--primary js-back">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.share.back-btn') %></span>
           </button>
         </li>

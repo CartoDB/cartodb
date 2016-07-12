@@ -13,7 +13,7 @@
       <div class="js-footer">
         <ul class="Modal-actions is-narrow">
           <li class="Modal-actions-button">
-            <button class="CDB-Button CDB-Button--primary js-back js-close">
+            <button class="CDB-Button CDB-Button--primary js-back">
               <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.maps-metadata.back-btn') %></span>
             </button>
           </li>

@@ -14,8 +14,6 @@
   padding-top: 9px;
 }
 .Editor-formInput {
-  @include display-flex();
-  @include align-items(center);
   @include flex(1);
   position: relative;
   max-width: 158px;

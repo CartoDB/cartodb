@@ -522,6 +522,8 @@ module Carto
                          @layer.options['query']
                        end
 
+        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
+
         torque
       end
 

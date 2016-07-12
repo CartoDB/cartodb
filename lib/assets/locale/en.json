@@ -997,9 +997,9 @@
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
-        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
+        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
       },
       "layer": {
         "analysis": "Analysis",

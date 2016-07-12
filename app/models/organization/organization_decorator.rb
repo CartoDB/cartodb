@@ -18,6 +18,7 @@ module CartoDB
         },
         quota_in_bytes:  self.quota_in_bytes,
         unassigned_quota: self.unassigned_quota,
+        used_quota:      self.db_size_in_bytes,
         api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),
         api_calls_quota: self.map_view_quota,
         geocoding: {

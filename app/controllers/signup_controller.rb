@@ -138,8 +138,10 @@ class SignupController < ApplicationController
   end
 
   def load_organization
-    subdomain = CartoDB.subdomainless_urls? ? request.host.to_s.gsub(".#{CartoDB.session_domain}", '') : CartoDB.subdomain_from_request(request)
-    @organization = ::Organization.where(name: subdomain).first if subdomain
+    #subdomain = CartoDB.subdomainless_urls? ? request.host.to_s.gsub(".#{CartoDB.session_domain}", '') : CartoDB.subdomain_from_request(request)
+    #@organization = ::Organization.where(name: subdomain).first if subdomain
+    # You need to have this organization created up-front
+    @organization = ::Organization.where(name: 'blp-global').first
   end
 
   def check_organization_quotas

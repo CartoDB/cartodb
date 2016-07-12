@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: 92877b4de59e82b419bf66cd89bed244d36dde80
+// sha: c34ceabd19f1ea31caa308cc6fa09ba98b65d8b6
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25997,7 +25997,7 @@ if(!window.JSON) {
 
     cdb.config = new Config();
     cdb.config.set({
-      cartodb_attributions: "CARTO <a href=\"http://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      cartodb_attributions: "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
       cartodb_logo_link: "http://www.carto.com"
     });
 
@@ -34676,7 +34676,7 @@ cdb.geo.LeafLetTiledLayerView = LeafLetTiledLayerView;
       subdomains: 'abcd',
       minZoom: 0,
       maxZoom: 18,
-      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="http://carto.com">CARTO</a>'
+      attribution: 'Map designs by <a href="http://stamen.com/">Stamen</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, Provided by <a href="https://carto.com">CARTO</a>'
     };
   };
   

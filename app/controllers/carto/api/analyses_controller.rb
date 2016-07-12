@@ -26,11 +26,18 @@ module Carto
       end
 
       def create
-        analysis = Carto::Analysis.new(
-          visualization_id: @visualization.id,
-          user_id: current_user.id,
-          analysis_definition: analysis_definition_from_request
-        )
+        natural_id = analysis_definition_from_request['id']
+
+        analysis = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
+        if analysis
+          analysis.analysis_definition = analysis_definition_from_request
+        else
+          analysis = Carto::Analysis.new(
+            visualization_id: @visualization.id,
+            user_id: current_user.id,
+            analysis_definition: analysis_definition_from_request
+          )
+        end
         analysis.save!
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end

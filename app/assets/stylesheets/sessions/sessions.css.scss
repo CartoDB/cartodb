@@ -292,7 +292,23 @@ $cWhite: #FFFFFF;
   color: #FFF;
 }
 
-.Sessions-inputLinkAside {
+.Sessions .Sessions-inputLinkAside {
+  color: #1785FB;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 48px;
+  line-height: 50px;
+  margin-right: 10px;
+  font-weight: 200;
+  font-size: 14px;
+
+  a {
+    color: #1785FB;
+  }
+}
+
+.Sessions-navy .Sessions-inputLinkAside {
   color: $cWhite;
   position: absolute;
   top: 0;

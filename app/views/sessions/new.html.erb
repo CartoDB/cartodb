@@ -17,7 +17,11 @@
                 <% if @organization.present? && @organization.avatar_url.present? %>
                   <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
                 <% else %>
-                  <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% if @organization.present? %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <% else %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% end %>
                 <% end %>
               </picture>
             </div>

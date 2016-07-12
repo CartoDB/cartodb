@@ -1,11 +1,8 @@
 <header class="vis">
-  <div class="inner">
+  <div class="inner map_toolbar">
 
     <div class="header_content">
-
-
-
-      <div class="left">
+      <div class="left header_block">
         <ul class="actions">
           <li><a class="privacy" href="#/visualize"><i class="privacy-status"></i></a></li>
           <li><form>
@@ -22,15 +19,15 @@
         </ul>
       </div>
 
-      <div class="right">
+      <div class="right header_block">
         <ul class="options">
           <li><%= link_to "Actions", "#/options", :class => "rounded btn dropdown options" %></li>
-          <li><a class="rounded btn share" href="#/visualize"><span>VISUALIZE</span></a></li>
+          <li><a class="rounded btn share" href="#/visualize"><span>EXPORT</span></a></li>
         </ul>
       </div>
-    </div>
 
-    <div class="sync_status"></div>
-    <div class="globalerror"></div>
+      <div class="sync_status"></div>
+      <div class="globalerror"></div>
+    </div>
   </div>
 </header>

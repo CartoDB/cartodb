@@ -9,6 +9,7 @@
 
   &.is-dark {
     border-color: #3A484E;
+    background: $cMainBg;
   }
 
   &:empty {
@@ -55,4 +56,3 @@
 .Notifier-icon {
   margin-top: 1px;
 }
-

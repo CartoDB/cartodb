@@ -1,4 +1,4 @@
-<div class="CDB-Text">
+<div class="CDB-Text u-tSpace--m">
   <label class="CDB-Legend u-upperCase CDB-Text is-semibold CDB-Size-small">
     <div class="u-flex u-alignCenter">
       <div class="u-iBlock u-rSpace">

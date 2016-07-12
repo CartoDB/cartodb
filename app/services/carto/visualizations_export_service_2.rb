@@ -6,9 +6,11 @@ require 'json'
 #   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
 #   - Privacy is exported, but permissions are not.
 # 2.0.1: export Widget.source_id
+# 2.0.2: export Visualization.state
+
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.1'.freeze
+    CURRENT_VERSION = '2.0.2'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -39,6 +41,7 @@ module Carto
     def build_visualization_from_hash(exported_visualization)
       exported_layers = exported_visualization[:layers]
       exported_overlays = exported_visualization[:overlays]
+      exported_visualization_state = exported_visualization[:state]
 
       visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
@@ -59,6 +62,8 @@ module Carto
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
+
+      visualization.state = exported_visualization_state.with_indifferent_access if exported_visualization_state
 
       active_layer_order = exported_layers.index { |l| l['active_layer'] }
       if active_layer_order
@@ -205,7 +210,8 @@ module Carto
         map: export_map(visualization.map),
         layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
-        analyses: visualization.analyses.map { |a| exported_analysis(a) }
+        analyses: visualization.analyses.map { |a| exported_analysis(a) },
+        state: visualization.state
       }
     end
 

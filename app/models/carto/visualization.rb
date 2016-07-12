@@ -1,6 +1,7 @@
 require 'active_record'
 require_relative '../visualization/stats'
 require_relative '../../helpers/embed_redis_cache'
+require_relative './carto_json_serializer'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
 
@@ -55,6 +56,11 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+
+  serialize :state, ::Carto::CartoJsonSerializer
+  validates :state, carto_json_symbolizer: true
+
+  before_validation :ensure_state
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -432,5 +438,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def varnish_vizjson_key
     ".*#{id}:vizjson"
+  end
+
+  def ensure_state
+    self.state = {} unless state
   end
 end

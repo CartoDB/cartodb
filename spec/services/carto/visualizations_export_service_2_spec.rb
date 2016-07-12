@@ -26,6 +26,7 @@ describe Carto::VisualizationsExportService2 do
       title: 'the title',
       kind: 'geom', # geom / raster
       attributions: 'the attributions',
+      state: { 'manolo' => 'escobar' },
       bbox: '0103000000010000000500000031118AC72D246AC1A83916DE775E51C131118AC72D246AC18A9C928550D5614101D5E410F03E7' +
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
       display_name: 'the display_name',
@@ -171,6 +172,7 @@ describe Carto::VisualizationsExportService2 do
     visualization.attributions.should eq visualization_export[:attributions]
     visualization.bbox.should eq visualization_export[:bbox]
     visualization.display_name.should eq visualization_export[:display_name]
+    visualization.state.should eq visualization_export[:state]
 
     visualization.encrypted_password.should be_nil
     visualization.password_salt.should be_nil
@@ -509,6 +511,17 @@ describe Carto::VisualizationsExportService2 do
           visualization = service.build_visualization_from_json_export(export_2_0_0.to_json)
 
           visualization_export = export_2_0_0[:visualization]
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
+
+        it '2.0.1 (without Visualization.state)' do
+          export_2_0_1 = export
+          export_2_0_1[:visualization].delete(:state)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_1.to_json)
+
+          visualization_export = export_2_0_1[:visualization]
           verify_visualization_vs_export(visualization, visualization_export)
         end
       end

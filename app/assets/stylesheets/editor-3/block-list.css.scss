@@ -52,7 +52,6 @@
 }
 .BlockList-title {
   @include display-flex();
-  @include align-items(center);
 }
 .BlockList-titleText {
   @include flex(1);

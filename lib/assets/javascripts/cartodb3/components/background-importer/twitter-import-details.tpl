@@ -2,7 +2,7 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--twitter u-flex u-alignCenter u-justifyCenter">
     <i class="CDB-IconFont CDB-IconFont-twitter"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large u-bSpace">
+  <h2 class="CDB-Text CDB-Size-large u-bSpace Dialog-headerIcon--twitter">
     <%- _t('components.background-importer.twitter-import-details.twitter-import-title', { type: type }) %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">

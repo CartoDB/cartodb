@@ -50,7 +50,7 @@
                     <% unless Cartodb.config[:cartodb_com_hosted] %>
                       <% unless !@google_plus_config.present? %>
                         <div class="Sessions-inputLinkAside">
-                          <%= link_to 'Forgot?', 'https://carto.com/password_resets/new' %>
+                          <%= link_to 'Forgot?', forget_password_url %>
                         </div>
                       <% end %>
                     <% end %>

@@ -64,8 +64,8 @@
 
 
 <div class="Dialog-footer--simple u-inner">
-  <button class="CDB-Button CDB-Button--error u-tSpace--m js-confirm">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase js-close">
+  <button class="CDB-Button CDB-Button--error u-tSpace--m js-close">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.background-importer.error-details.close') %>
     </span>
   </button>

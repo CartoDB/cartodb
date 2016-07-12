@@ -11,7 +11,7 @@
         <div class="Editor-formInput" data-editors="source"></div>
       </div>
       <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
-        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.column') %></p>
+        <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.type') %></p>
         <div class="Editor-formInput" data-editors="type"></div>
       </div>
     </div>

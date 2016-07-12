@@ -199,8 +199,8 @@
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
-          "info": "Keep your maps and get more layers quota by upgrading your plan",
-          "title": "You have reached your layers limit",
+          "info": "Keep your maps and get more layer count quota by upgrading your plan",
+          "title": "You have reached your layer count limit",
         },
       },
       "twitter-import-details": {
@@ -280,7 +280,7 @@
         },
         "errors": {
           "title": "There was an error",
-          "geometry-error": "We can't reach data geometries",
+          "geometry-error": "We can't read data geometries",
           "unknown": "An error occurred"
         },
         "cancel": "Cancel"
@@ -292,9 +292,11 @@
         "save-btn": "Save",
         "form": {
           "name": "Map Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
-          "tags": "Tags"
+          "tags": "Tags",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -305,7 +307,38 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "privacy": {
         "privacy": "privacy",
@@ -347,7 +380,7 @@
         "published": "Published %{when}",
         "unpublished": "Never published.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
-        "unpublished-header": "Click on Publish to start shareing your map on the web",
+        "unpublished-header": "Click on Publish to start sharing your map on the web",
         "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
           "title": "Get the link",
@@ -394,7 +427,7 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
@@ -498,7 +531,7 @@
             "error-desc": "Error. Your URL doesn’t look correct.",
             "format": "Format",
             "or": "or",
-            "title": "Enter a url",
+            "title": "Enter a URL",
             "desc": "Paste a URL and start the import",
             "submit": "submit"
           },
@@ -526,7 +559,7 @@
             "no-results-title": "Oouch! There are no results",
             "no-results-desc": "We haven't found any valid file from your account",
             "state-idle-login": "Login to your account and select any item.",
-            "state-error": "We are sorry that you can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-error": "We are sorry that you can’t connect to your %{title} account. Be sure you have any pop-up blockers deactivated for this website.",
             "state-token": "Checking Token.",
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
@@ -794,6 +827,11 @@
       "loading": "Renaming your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
     },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}...",
+    },
     "duplicate": {
       "option": "Duplicate dataset",
       "query": "applied query",
@@ -878,16 +916,19 @@
             "widgets": "Widgets column",
           }
         }
-      },
-
-
+      }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}...",
       },
       "delete": {
         "confirm": "ok, delete it",
@@ -956,9 +997,9 @@
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
-        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
+        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
       },
       "layer": {
         "analysis": "Analysis",
@@ -1109,7 +1150,7 @@
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
-        "type": "Measure by",
+        "measure-by": "Measure by",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",
@@ -1376,7 +1417,7 @@
         "histogram": "Histogram",
         "category": "Category",
         "formula": "Formula",
-        "time-series": "Time-series"
+        "time-series": "Time series"
       },
       "widgets-form": {
         "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",

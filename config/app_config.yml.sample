@@ -108,7 +108,7 @@ defaults: &defaults
   common_data:
     protocol: 'https'
     username: 'common-data'
-    # base_url: 'https://common-data.cartodb.com'
+    # base_url: 'https://common-data.carto.com'
     format: 'shp'
     generate_every: 86400
   explore_api:
@@ -116,7 +116,7 @@ defaults: &defaults
   reports:
     mail_to: ''
   mailer:
-    from: 'cartodb.com <support@cartodb.com>'
+    from: 'carto.com <support@carto.com>'
     address: ''
     port: ''
     user_name: ''
@@ -202,7 +202,7 @@ defaults: &defaults
     # It must end in `/uploads` and be accessible via HTTP, if relative will default to Rails.Root/#{uploads_path}
     uploads_path: 'public/uploads'
   error_track:
-    url: 'https://viz2.cartodb.com/api/v1/sql'
+    url: 'https://viz2.carto.com/api/v1/sql'
     percent_users: 10
   # graphite endpoint used to post frontend stats
   graphite_public:
@@ -223,7 +223,7 @@ defaults: &defaults
     data:
       kind: "carto"
       options:
-        # attribution:        'CartoDB attribution'
+        # attribution:        'CARTO attribution'
         query:              ""
         opacity:            0.99
         auto_bound:         false
@@ -245,7 +245,7 @@ defaults: &defaults
       kind: "background"
       options: { color: '#ffffff' }
   cartodb_com_hosted: true
-  cartodb_central_domain_name: 'cartodb.com'
+  cartodb_central_domain_name: 'carto.com'
   aws:
     s3:
       access_key_id: "test"
@@ -283,7 +283,7 @@ defaults: &defaults
       application_name:     ''
       client_id:            ''
       client_secret:        ''
-      callback_url:         'https://cartodb.com'
+      callback_url:         'https://carto.com'
     google_plus:
       client_id: ''
       cookie_policy: 'single_host_origin'
@@ -333,7 +333,7 @@ defaults: &defaults
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
   basemaps:
-    CartoDB:
+    CARTO:
       positron_rainbow_labels:
         default: true
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
@@ -342,7 +342,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron'
         className: 'positron_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
       dark_matter_rainbow_labels:
@@ -352,7 +352,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter'
         className: 'dark_matter_rainbow_labels'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         labels:
           url: 'http://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}.png'
       positron_rainbow:
@@ -362,7 +362,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (labels below)'
         className: 'positron_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       dark_matter_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -370,7 +370,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (labels below)'
         className: 'dark_matter_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       positron_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -378,7 +378,7 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Positron (lite)'
         className: 'positron_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       dark_matter_lite_rainbow:
         url: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
         subdomains: 'abcd'
@@ -386,13 +386,13 @@ defaults: &defaults
         maxZoom: '18'
         name: 'Dark matter (lite)'
         className: 'dark_matter_lite_rainbow'
-        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://cartodb.com/attributions">CartoDB</a>'
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
       eco_cartodb:
         url: 'https://cartocdn_{s}.global.ssl.fastly.net/base-antique/{z}/{x}/{y}.png'
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
-        name: 'CartoDB World Eco'
+        name: 'CARTO World Eco'
         className: 'eco_cartodb'
         attribution: ''
       flat_blue:
@@ -400,7 +400,7 @@ defaults: &defaults
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
-        name: 'CartoDB World Flat Blue'
+        name: 'CARTO World Flat Blue'
         className: 'flat_blue'
         attribution: ''
       midnight_cartodb:
@@ -408,7 +408,7 @@ defaults: &defaults
         subdomains: 'abcd'
         minZoom: '0'
         maxZoom: '10'
-        name: 'CartoDB World Midnight Commander'
+        name: 'CARTO World Midnight Commander'
         className: 'midnight_cartodb'
         attribution: ''
       antique_cartodb:
@@ -416,7 +416,7 @@ defaults: &defaults
         subdomains: 'abcd'
         minZoom: 0
         maxZoom: 10
-        name: 'CartoDB World Antique'
+        name: 'CARTO World Antique'
         className: 'antique_cartodb'
         attribution: ''
     Stamen:

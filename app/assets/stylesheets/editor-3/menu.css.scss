@@ -8,7 +8,7 @@
   width: 72px;
   min-height: 450px;
   box-sizing: border-box;
-  padding: 20px 0 $baseSize * 2;
+  padding: 24px 0 $baseSize * 2;
   background: $cBlue;
 }
 
@@ -53,7 +53,7 @@
   @include justify-content(center);
   width: 32px;
   height: 32px;
-  margin: 0 auto 48px;
+  margin: 0 auto 44px;
 
   .arrow {
     @include opacity(0);
@@ -87,7 +87,19 @@
     @include transform(rotate(-45deg));
   }
 }
-
+.EditorMenu-feedback {
+  @include transform(translateX(-50%));
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+}
+.Editor-feedbackModal {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 .EditorMenu-avatar {
   position: absolute;
   bottom: $baseSize * 2;

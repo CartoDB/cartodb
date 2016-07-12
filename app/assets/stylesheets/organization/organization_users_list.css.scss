@@ -112,7 +112,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .OrganizationList-userInfoData--paragraph {
   color: $cTypography-linkSecondary;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: normal;
 
   &:not(:last-child) { margin-right: 20px; }
 }

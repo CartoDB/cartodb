@@ -44,11 +44,23 @@
   padding: 0 25px;
 }
 .Dataset-options.is-dark {
-  background-color: #2B3C43;
+  border-top: 1px solid #000;
+  background-color: $cMainBg;
 }
 
 .Dataset-options {
+  position: relative;
   border-top: 1px solid $cThirdBackground;
+  z-index: 2;
+}
+.Dataset-options::before {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  left: 0;
+  height: 18px;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), transparent 88%);
+  content: '';
 }
 
 .Dataset-options-actions {
@@ -56,8 +68,8 @@
 }
 .Dataset-editor {
   position: absolute;
+  top: 0;
   right: 0;
-  bottom: 100%;
   left: 0;
   padding-top: $baseSize * 3;
   z-index: 100;
@@ -70,3 +82,10 @@
 .Dataset-editor .CodeMirror-message {
   padding: 0 25px;
 }
+.Dataset-tablePreview {
+  color: $cBlue;
+}
+.is-dark .Dataset-tablePreview {
+  color: $cWhite;
+}
+

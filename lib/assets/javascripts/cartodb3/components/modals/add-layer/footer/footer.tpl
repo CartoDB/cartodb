@@ -1,6 +1,6 @@
 <div class="CreateDialog-footerShadow"></div>
 <div class="CreateDialog-footerLine"></div>
-<div class="CreateDialog-footerInner ">
+<div class="CreateDialog-footerInner u-flex u-justifySpace">
   <div class="js-footer-info CreateDialog-footerInfo">
   </div>
   <div class="CreateDialog-footerActions js-footerActions">

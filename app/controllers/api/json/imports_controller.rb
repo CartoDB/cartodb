@@ -134,7 +134,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise "service_item_id field should be empty or a string" unless (params[:service_item_id].is_a?(String) ||
                                                                       params[:service_item_id].is_a?(NilClass))
 
-    # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params
+    # Keep in sync with https://docs.carto.com/cartodb-platform/import-api.html#params
     {
       user_id:                current_user.id,
       table_name:             params[:table_name].presence,
@@ -205,7 +205,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     if params[:privacy].present?
       privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
       raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{[UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '), UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]].join(' and ')}" if privacy.nil?
-      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://cartodb.com/pricing for more info." if !current_user.valid_privacy?(privacy)
+      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://carto.com/pricing for more info." if !current_user.valid_privacy?(privacy)
       privacy
     else
       nil

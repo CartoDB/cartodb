@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset='utf-8' />
-    <title><%= yield :page_title -%>CartoDB</title>
+    <title><%= yield :page_title -%>CARTO</title>
     <%= favicon_link_tag "/favicons/favicon.ico" -%>
     <%= stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
     <%= yield :css -%>
@@ -13,7 +13,7 @@
       <%= render 'admin/shared/private_header' %>
 
       <% if current_user.notification.present? %>
-        <div class="FlashMessage">
+        <div class="CDB-Text FlashMessage">
           <div class="u-inner">
             <p class="FlashMessage-info"><%= raw current_user.notification %></p>
           </div>

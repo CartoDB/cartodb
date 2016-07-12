@@ -254,7 +254,8 @@ module Carto
       def user_info_vizjson(user)
         {
           fullname: user.name.present? ? user.name : user.username,
-          avatar_url: user.avatar_url
+          avatar_url: user.avatar_url,
+          profile_url: user.public_url
         }
       end
 
@@ -520,6 +521,8 @@ module Carto
                        else
                          @layer.options['query']
                        end
+
+        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
 
         torque
       end

@@ -37,7 +37,7 @@ module LoginHelper
     else
       "<picture class=\"Navbar-brand\">
         <source type='image/svg+xml' srcset=\"#{brand_path}\">
-        <img src=\"#{brand_path}\" alt='CartoDB' height=\"48\" width=\"48\" />
+        <img src=\"#{brand_path}\" alt='CARTO' height=\"48\" width=\"48\" />
       </picture>".html_safe
     end
   end
@@ -61,5 +61,5 @@ module LoginHelper
       }
     end
   end
-  
+
 end

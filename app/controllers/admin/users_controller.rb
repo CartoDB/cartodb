@@ -127,7 +127,7 @@ class Admin::UsersController < Admin::AdminController
     cdb_logout
 
     if Cartodb::Central.sync_data_with_cartodb_central?
-      redirect_to "http://www.cartodb.com"
+      redirect_to "https://carto.com"
     else
       render(file: "public/404.html", layout: false, status: 404)
     end

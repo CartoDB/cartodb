@@ -7,12 +7,6 @@
         </button>
         <%- attribute %>
       </div>
-
-      <div class="CDB-Text CDB-Size-small js-switch" data-tooltip="<%- _t('form-components.editors.fill.switch.to-categories') %>">
-        <input class="CDB-Toggle u-iBlock" type="checkbox" name="switch" checked="checked">
-        <span class="u-iBlock CDB-ToggleFace"></span>
-      </div>
-
     </li>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">

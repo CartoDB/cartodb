@@ -1,4 +1,5 @@
 {
+  "feedback": "Give us some feedback!",
   "user": {
     "you": "You"
   },
@@ -16,34 +17,70 @@
     "november": "November",
     "december": "December"
   },
+
   "analyses": {
-    "area-of-influence": "Area of influence",
-    "centroid": "Centroid",
-    "cluster": "Cluster",
-    "filter": "Filter",
-    "filter-by-node-column": "Link to layer analysis",
-    "georeference": "Georeference",
-    "intersection": "Intersection",
-    "kmeans": "Cluster",
-    "merge": "Merge",
-    "moran-cluster": "Moran cluster",
-    "point-in-polygon": "Point in polygon",
-    "sampling": "Sampling",
-    "spatial-markov-trend": "Temporal simulation",
-    "data-observatory-measurement": "Data Observatory"
+    "georeference": {
+      "title": "Georeference",
+      "short-title": "Georeference"
+    },
+    "data-observatory-measurement": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data observatory"
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "title": "Link two layers",
+      "short-title": "Link to layer"
+    },
+    "centroid": {
+      "title": "Centroid from geometries",
+      "short-title": "Centroid"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "short-title": "AOI"
+    },
+    "intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "aggregate-intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "filter": {
+      "title": "Filter by column value",
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "title": "Subsample percent of rows",
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "title": "Calculate clusters of points",
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "title": "Detect outliers and clusters",
+      "short-title": "Outliers & clusters",
+    },
+    "spatial-markov-trend": {
+      "title": "Predict trends and volatility",
+      "short-title": "Trends"
+    },
   },
+
   "analysis-category": {
-    "data-transformation": "Data transformation",
-    "relationship-analysis":"Relationship analysis",
-    "predictive": "Predictive analysis"
+    "create-clean": "Create and clean",
+    "data-transformation": "Transform",
+    "analyze-predict": "Analyze and predict"
   },
   "form-components": {
     "editors": {
       "fill": {
-        "switch": {
-          "to-categories": "Switch to categories",
-          "to-ramps": "Switch to ramps"
-        },
         "customize": "Custom color set",
         "quantification": {
           "title": "Quantification",
@@ -51,7 +88,8 @@
             "jenks": "Jenks",
             "equal": "Equal Interval",
             "headtails": "Heads/Tails",
-            "quantiles": "Quantiles"
+            "quantiles": "Quantiles",
+            "category": "Category"
           }
         },
         "bins": "Buckets",
@@ -102,7 +140,7 @@
         "close": "close",
         "description": "There was a problem georeferencing your data",
         "title": "Geocoding Error",
-        "try-again": "Please try again and if the problem persists, <a href='mailto:support@cartodb.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
         "view-dataset": "view dataset"
       },
       "geocoding-success-detail": {
@@ -126,7 +164,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "Ouch! Error connecting %{name}",
+        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },
@@ -141,7 +179,7 @@
         "continue-btn": "Continue",
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
-        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+        "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -149,7 +187,7 @@
         "close": "close",
         "dont-panic": "Don’t panic, here's some info that might help",
         "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
-        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> the following code",
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
@@ -157,12 +195,12 @@
         "8001": {
           "description": "Remove some of your datasets to gain available space or upgrade your account",
           "info": "Keep your data and get a larger quota by upgrading your plan",
-          "title": "Your quota has run out",
+          "title": "Your quota has run out"
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
-          "info": "Keep your maps and get more layers quota by upgrading your plan",
-          "title": "You have reached your layers limit",
+          "info": "Keep your maps and get more layer count quota by upgrading your plan",
+          "title": "You have reached your layer count limit",
         },
       },
       "twitter-import-details": {
@@ -232,6 +270,21 @@
       "placeholder": "Add tags"
     },
     "modals": {
+      "export-data": {
+        "title": "Export data",
+        "desc": "Select the preferred file format",
+        "no-geometry": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+        "loading": {
+          "geometry": "Checking geometries...",
+          "preparing": "Preparing content..."
+        },
+        "errors": {
+          "title": "There was an error",
+          "geometry-error": "We can't read data geometries",
+          "unknown": "An error occurred"
+        },
+        "cancel": "Cancel"
+      },
       "maps-metadata": {
         "modal-title": "Map metadata",
         "modal-desc": "Edit the attributtes of your map",
@@ -239,9 +292,11 @@
         "save-btn": "Save",
         "form": {
           "name": "Map Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
-          "tags": "Tags"
+          "tags": "Tags",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -252,7 +307,38 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "privacy": {
         "privacy": "privacy",
@@ -289,11 +375,13 @@
       },
       "share": {
         "done-btn": "DONE",
-        "update-btn": "UPDATE",
+        "publish-btn": "PUBLISH",
         "back-btn": "GO BACK",
         "published": "Published %{when}",
-        "unpublished": "Your map is not published yet.",
+        "unpublished": "Never published.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "unpublished-header": "Click on Publish to start sharing your map on the web",
+        "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
           "title": "Get the link",
           "body": "Send to your friends, coworkers, or post in your social networks.",
@@ -301,8 +389,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
           }
         },
         "embed": {
@@ -312,8 +399,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "title": "Your map is private",
-            "body": "Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
           }
         },
         "cartodbjs": {
@@ -341,60 +427,56 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
-            "title": "Area of influence",
-            "desc": "Calculate the area of a layer determined by walking, driving, or biking time, or just by distance"
-          },
-          "point-in-polygon": {
-            "title": "Point in polygon",
-            "desc": "Analyze points in polygon (or vice versa)"
+            "title": "Create areas of influence",
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
           },
           "georeference": {
             "title": "Georeference",
-            "desc": "Transform your data into coordinates"
+            "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "intersection": {
-            "title": "Intersection",
-            "desc": "Takes two layers and returns a layer with the intersecting features based on a criteria"
+            "title": "Intersect second layer",
+            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
           },
           "filter": {
-            "title": "Filter",
-            "desc": "Filter your rows depending on the values of a column"
+            "title": "Filter rows by column value",
+            "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
-            "title": "Merge",
-            "desc": "Takes two layers and returns a layer with the result of joining both datasets"
+            "title": "Join columns from 2nd layer",
+            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
           },
           "moran-cluster": {
-            "title": "Moran cluster",
-            "desc": "Find areas which have similar values and identify outliers"
+            "title": "Detect outliers and clusters",
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
           },
           "kmeans": {
-            "title": "Cluster",
-            "desc": "Group points by proximity"
+            "title": "Calculate clusters of points",
+            "desc": "Spatially separate a layer of points into a specified number (N) of groups."
           },
           "centroid": {
-            "title": "Centroid",
-            "desc": "Calculate the centroid of a geometry based on the values of a weight column"
+            "title": "Find centroid of geometries",
+            "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link to layer",
-            "desc": "Link two layers with matching column names"
+            "title": "Link two layers",
+            "desc": "Join two layers by shared values in a column such that widgets will effect both."
           },
           "sampling": {
-            "title": "Sampling",
-            "desc": "Return a percentage of your data"
+            "title": "Subsample percent of rows",
+            "desc": "Subsample the rows in a dataset based on a specified percent."
           },
           "spatial-markov-trend": {
-            "title": "Temporal simulation",
-            "desc": "Predict trends based on temporal series"
+            "title": "Predict trends and volatility",
+            "desc": "Predict probability of upward and downward trends using spatial Markov chains."
           },
           "data-observatory-measure": {
-            "title": "Data Observatory",
-            "desc": "Augment your table with data from Data Observatory"
+            "title": "Enrich from Data Observatory",
+            "desc": "Add a new column with contextual demographic and economic measures."
           }
         }
       },
@@ -449,7 +531,7 @@
             "error-desc": "Error. Your URL doesn’t look correct.",
             "format": "Format",
             "or": "or",
-            "title": "Enter a url",
+            "title": "Enter a URL",
             "desc": "Paste a URL and start the import",
             "submit": "submit"
           },
@@ -477,7 +559,7 @@
             "no-results-title": "Oouch! There are no results",
             "no-results-desc": "We haven't found any valid file from your account",
             "state-idle-login": "Login to your account and select any item.",
-            "state-error": "We are sorry that you can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-error": "We are sorry that you can’t connect to your %{title} account. Be sure you have any pop-up blockers deactivated for this website.",
             "state-token": "Checking Token.",
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
@@ -590,7 +672,7 @@
     },
     "error": {
       "default-title": "Oops, there was a problem",
-      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>"
     },
     "backbone-forms": {
       "select": {
@@ -722,6 +804,15 @@
   "dataset": {
     "sql": "SQL",
     "updated": "Updated %{ago}",
+    "options": {
+      "add-row": "Add row",
+      "add-column": "Add column",
+      "export": "Export"
+    },
+    "preview-map": {
+      "preview": "preview",
+      "back": "back"
+    },
     "create-map": {
       "title": "Create map",
       "loading": "Creating a map from %{tableName}",
@@ -735,6 +826,11 @@
       "error": "Error deleting %{tableName}",
       "loading": "Renaming your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+    },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}...",
     },
     "duplicate": {
       "option": "Duplicate dataset",
@@ -793,27 +889,46 @@
     "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
     "button_add": "Add",
     "button_share": "SHARE",
+    "unpublished-changes": "Unpublished changes",
     "settings": {
-      "title": "Map options",
-      "options": {
-        "title": "Fixed title",
-        "description": "Fixed description",
-        "search": "Seach box",
-        "zoom": "Zoom controls",
-        "fullscreen": "Fullscreen",
-        "share": "Share options",
-        "scrollwheel": "Scroll wheel zoom",
-        "layer_selector": "Layer selector",
-        "legends": "Legends",
-        "logo": "CartoDB Logo"
+      "menu-tab-pane-labels": {
+        "preview": "Preview",
+        "snapshots": "Snapshots"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mode"
+        },
+        "options": {
+          "title": "Map Options",
+          "subtitle": "Components that are shown in the map",
+          "description": {
+            "title": "Components",
+            "subtitle": "Change map elements"
+          },
+          "elements": {
+            "search": "Search box",
+            "zoom": "Zoom controls",
+            "fullscreen": "Fullscreen",
+            "scrollwheel": "Scroll wheel zoom",
+            "layer_selector": "Layer selector",
+            "logo": "CartoDB Logo",
+            "widgets": "Widgets column",
+          }
+        }
       }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}...",
       },
       "delete": {
         "confirm": "ok, delete it",
@@ -868,22 +983,23 @@
         "delete": "Delete layer…",
         "collapse": "Collapse",
         "expand": "Expand",
+        "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer"
       },
       "rename": {
-        "loading": "Renaming layer...",
-        "success": "Layer renamed to %{name}",
-        "error": "Error renaming layer %{name}: %{error}"
+        "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
+        "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "Error deleting layer %{name}: %{error}",
-        "loading": "Removing the layer %{name}...",
-        "success": "Layer %{name} deleted"
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
+        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
       },
       "layer": {
         "analysis": "Analysis",
@@ -891,6 +1007,9 @@
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
         "delete": "Delete"
+      },
+      "notifier": {
+        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -936,6 +1055,7 @@
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
+        "aggregate-by-help": "Will calculate aggregate values for each centroid",
         "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
@@ -944,23 +1064,25 @@
         "by-car": "car",
         "by-walk": "walk",
         "categorize-by": "Categorize by",
+        "categorize-by-help": "If selected a centroid will be found for each category",
         "category-column": "Category column",
         "city": "City",
         "city-help": "In which column are your city names stored?",
-        "clusters-num": "# Clusters",
+        "clusters-num": "# of clusters",
         "column": "Column",
         "country": "Country",
         "country-help": "In which column are your country names stored?",
-        "create-btn": "Create",
-        "data-values": "Data values",
+        "create-btn": "Apply",
+        "type": "Type",
         "define-columns": "Define column to find similarities with",
         "denominator": "Denominator",
+        "denominator-help": "A column to normalize the target column",
         "dissolved": "Dissolved",
-        "distance": "Distance",
+        "distance": "Units",
         "filter": "Filter",
         "filter-aggregate": "Filter or aggregate your results",
         "filter-column": "Filter column",
-        "filter-column": "Linked layer col.",
+        "filter-column": "2nd. layer col.",
         "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
@@ -975,12 +1097,12 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Define how to link them",
+        "key-columns-desc": "Choose similar columns to link them",
         "kilometers": "km",
         "latitude": "Latitude",
-        "link-layer": "Source col.",
-        "link-layer-desc": "Specify which layer you want to link this to",
-        "linked-layer": "Linked layer",
+        "link-layer": "Link to col.",
+        "link-layer-desc": "Specify a second layer to join",
+        "linked-layer": "Link to layer",
         "loading": "loading…",
         "left": 'Left',
         "right": 'Right',
@@ -992,8 +1114,10 @@
         "miles": "mi",
         "min": "Min",
         "mode": "Mode",
-        "neighbours": "Neighbors",
-        "numerator": "Numerator",
+        "neighbors": "Neighbors",
+        "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
+        "numerator": "Target column",
+        "numerator-help": "Measure spatial autocorrelation of this column",
         "operation": "Operation",
         "parameters": "Parameters",
         "parameters-description": "Tune your analysis",
@@ -1003,7 +1127,7 @@
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
         "postal-code-help": "In which column are your postal codes stored?",
-        "radius": "Radius",
+        "radius": "Distance",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
         "sampling": "Sampling",
@@ -1012,6 +1136,7 @@
         "select-column": "Select a column",
         "show": "Show",
         "significance": "Significance",
+        "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
         "source": "Source",
         "source-column": "Source column",
         "state": "State",
@@ -1025,20 +1150,24 @@
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
-        "type": "Type",
+        "measure-by": "Measure by",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",
         "weight-type": "Weight type",
-        "spatial-markov-trend-desc": "select the columns with temporal value series",
-        "spatial-markov-trend-time-columns": "time columns",
+        "spatial-markov-trend-desc": "select a column for each time period",
+        "spatial-markov-trend-time-columns": "Input columns",
+        "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
         "weighted-by": "Weighted by",
+        "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Workflow",
-        "data-observatory-measurement-area": "Zone",
-        "data-observatory-measurement-column": "Column",
+        "data-observatory-measurement-area": "Country",
+        "data-observatory-measurement-column": "New col. name",
+        "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-refine": "refine your selection"
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1084,7 +1213,7 @@
     "data": {
       "stats": {
         "add-widget": "Add as a widget",
-        "style": "STYLE",
+        "edit": "EDIT",
         "top-cat": "% in top 10 cat.",
         "trues": "% true",
         "null": "% null"
@@ -1095,6 +1224,10 @@
       },
       "code-mirror": {
         "save": "CMD + S to apply your query."
+      },
+      "notifier": {
+        "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1164,6 +1297,10 @@
       "style-toggle": {
         "values": "VALUES",
         "cartocss": "CARTOCSS"
+      },
+      "notifier": {
+        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1266,6 +1403,13 @@
       }
     },
     "widgets": {
+      "notifier": {
+        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
+        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
+      },
       "widgets-view": {
         "add_widget": "Add widget"
       },
@@ -1273,7 +1417,7 @@
         "histogram": "Histogram",
         "category": "Category",
         "formula": "Formula",
-        "time-series": "Time-series"
+        "time-series": "Time series"
       },
       "widgets-form": {
         "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",
@@ -1300,7 +1444,9 @@
           "suffix": "Suffix",
           "title": "Title",
           "title-label": "Data",
-          "value": "Value"
+          "value": "Value",
+          "aggregate-by": "aggregate by",
+          "operation-column": "operation column"
         },
         "style": {
           "title-label": "Style",
@@ -1316,6 +1462,15 @@
           "sum": "SUM"
         }
       }
+    }
+  },
+  "notifications": {
+    "analysis": {
+      "pending": "Analysis %{nodeId} waiting",
+      "waiting": "Analysis %{nodeId} enqueued",
+      "completed": "Analysis %{nodeId} completed",
+      "failed": "Analysis %{nodeId} failed",
+      "removed": "Analysis %{nodeId} deleted"
     }
   }
 }

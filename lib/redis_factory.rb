@@ -18,11 +18,11 @@ class RedisFactory
       redis_conf[:port] = ENV['REDIS_PORT']
     end
 
-    if redis_conf[:tcp_keepalive] and redis_conf[:tcp_keepalive].is_a? Hash
+    if redis_conf[:tcp_keepalive] && redis_conf[:tcp_keepalive].is_a?(Hash)
       redis_conf[:tcp_keepalive] = redis_conf[:tcp_keepalive].symbolize_keys
     end
-    if redis_conf[:driver] and redis_conf[:driver].is_a? String
-      redis_conf.merge! :driver => redis_conf[:driver].to_sym
+    if redis_conf[:driver] && redis_conf[:driver].is_a?(String)
+      redis_conf[:driver] = redis_conf[:driver].to_sym
     end
 
     redis_conf

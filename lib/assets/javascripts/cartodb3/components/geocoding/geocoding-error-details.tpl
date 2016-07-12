@@ -27,8 +27,8 @@
 <% } %>
 
 <div class="Dialog-footer--simple u-inner">
-  <button class="cancel CDB-Button CDB-Button--error u-tSpace--m <%- showGeocodingDatasetURLButton ? 'Dialog-footerBtn' : '' %>">
-    <span class='CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase js-close'>
+  <button class="cancel CDB-Button CDB-Button--error u-tSpace--m <%- showGeocodingDatasetURLButton ? 'Dialog-footerBtn' : '' %> js-close">
+    <span class='CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase'>
       <%- _t('components.geocoding.geocoding-error-details.close') %>
     </span>
   </button>

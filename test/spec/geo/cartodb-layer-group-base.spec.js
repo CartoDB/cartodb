@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
 
 var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
@@ -9,7 +10,7 @@ var MyCartoDBLayerGroup = CartoDBLayerGroupBase.extend({
 
 describe('geo/cartodb-layer-group-base', function () {
   beforeEach(function () {
-    this.layersCollection = new Backbone.Collection();
+    this.layersCollection = new Layers();
   });
 
   describe('internal collection of CartoDB layers', function () {

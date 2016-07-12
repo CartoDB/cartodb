@@ -447,7 +447,7 @@ module Carto
       ).freeze
 
       INFOWINDOW_AND_TOOLTIP_KEYS = %w(
-        fields template_name template alternative_names width maxHeight headerColor
+        fields template_name template template_type alternative_names width maxHeight headerColor
       ).freeze
 
       def initialize(layer, options = {}, configuration = {}, decoration_data = {})

@@ -8,7 +8,7 @@
     </div>
     <div class="u-flex">
       <span
-        class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace--m u-upperCase"
+        class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase"
         style="background-color: <%- sourceColor %>;"><%- source %></span>
       <p class="CDB-Text CDB-Size-medium u-altTextColor u-ellipsis"><%- layerName %></p>
     </div>

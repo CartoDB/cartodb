@@ -14,7 +14,7 @@
     <div class="CreateDialog-footerLine"></div>
     <div class="CreateDialog-footerInner ">
       <div class="CreateDialog-footerInfo"></div>
-      <div class="CreateDialog-footerActions js-footerActions">
+      <div class="CreateDialog-footerActions js-footerActions u-flex u-justifySpace">
         <div></div>
         <button class="CDB-Button CDB-Button--primary is-disabled js-continue">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-widgets.continue-btn') %></span>

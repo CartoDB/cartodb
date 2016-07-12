@@ -119,9 +119,9 @@ module Carto
 
       def related_templates_by_table
         table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params.fetch('id'), current_user)
-        templates = table.related_templates
+        templates = table.service.related_templates
 
-        render_jsonp({ items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values } })
+        render_jsonp(items: templates.map { |template| Carto::Api::TemplatePresenter.new(template).public_values })
       rescue => e
         CartoDB.notify_exception(e)
         render json: { error: [e.message] }, status: 400

@@ -30,9 +30,9 @@
 </div>
 
 <div class="Dialog-footer--simple u-inner">
-  <button href="<%- upgradeUrl %>" class="CDB-Button CDB-Button--primary u-tSpace--m js-confirm">
+  <a href="<%- upgradeUrl %>" class="CDB-Button CDB-Button--primary u-tSpace--m">
     <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
       <%- _t('components.background-importer.upgrade-errors.upgrade') %>
     </span>
-  </button>
+  </a>
 </div>

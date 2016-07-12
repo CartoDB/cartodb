@@ -12,41 +12,28 @@ module Carto
 
         rx = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 
+        # Fetch by visualization name or UUID
         table_name, table_schema = ::Table.table_and_schema(id_or_name)
-
-        query_filters = {
-            user_id: viewer_user.id,
-            name: table_name,
-            type: CartoDB::Visualization::Member::TYPE_CANONICAL
-        }
+        vqb = Carto::VisualizationQueryBuilder.new
+        vqb.with_name(table_name).with_type(Carto::Visualization::TYPE_CANONICAL)
 
         if table_schema.nil?
-          # INFO: if we don't have schema we don't want shared
-          query_filters[:shared] = CartoDB::Visualization::Collection::FILTER_SHARED_NO
+          vqb.with_user_id(viewer_user.id)
         else
-          owner = ::User.where(username:table_schema).first
-          unless owner.nil?
-            query_filters[:user_id] = owner.id
-          end
+          owner = Carto::User.where(username: table_schema).first
+          user_id = owner ? owner.id : viewer_user.id
+          vqb.with_owned_by_or_shared_with_user_id(user_id)
         end
 
-        # noinspection RubyArgCount
-        vis = CartoDB::Visualization::Collection.new.fetch(query_filters).select { |v|
-          v.user_id == query_filters[:user_id] || v.has_permission?(viewer_user, CartoDB::Permission::ACCESS_READONLY)
-        }.first
+        vis = vqb.build.first
         table = vis.nil? ? nil : vis.table
-        table.set_table_visualization(vis) if table
 
-        if rx.match(id_or_name) && table.nil?
+        # Fetch by UserTable UUID
+        if table.nil? && rx.match(id_or_name)
           table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)
           unless table_temp.nil?
-            # Make sure we're allowed to see the table
-            vis = CartoDB::Visualization::Collection.new.fetch(
-                user_id: viewer_user.id,
-                map_id: table_temp.map_id,
-                type: CartoDB::Visualization::Member::TYPE_CANONICAL
-            ).first
-            table = vis.table unless vis.nil?
+            vis = table_temp.table_visualization
+            table = vis.table if vis && vis.is_viewable_by_user?(viewer_user)
           end
         end
 

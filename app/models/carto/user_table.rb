@@ -1,7 +1,6 @@
 require 'active_record'
 
 module Carto
-
   class UserTable < ActiveRecord::Base
 
     PRIVACY_PRIVATE = 0
@@ -9,7 +8,7 @@ module Carto
     PRIVACY_LINK = 2
 
     belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
-                conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
+                               conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
     belongs_to :user
 

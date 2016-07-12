@@ -192,6 +192,10 @@ body.is-inDialog {
     color: $cIcons-active !important;
   }
 }
+.Dialog-headerIcon--twitter {
+  color: #55acee;
+  border-color: #55acee;
+}
 .Dialog-headerIcon--negative {
   color: $cError;
   border-color: $cError;

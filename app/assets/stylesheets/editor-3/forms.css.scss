@@ -51,6 +51,10 @@
   box-sizing: border-box;
 }
 
+.Editor-formSelect {
+  @include flex(1);
+}
+
 .Editor-boxModal .CDB-Legend {
   padding-left: 0;
 }

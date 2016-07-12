@@ -9,6 +9,6 @@
       </div>
     <% } %>
   </label>
-  <div class="Editor-formInput" data-editor>
+  <div class="Editor-formInput u-flex u-alignCenter" data-editor>
   </div>
 </div>

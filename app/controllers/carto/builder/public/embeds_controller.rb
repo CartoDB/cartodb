@@ -14,10 +14,10 @@ module Carto
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
 
-        layout 'application_public_visualization_layout'
+        layout false
 
         def show
-          render 'show'
+          render 'show', layout: 'application_public_visualization_layout'
         end
 
         def show_protected

@@ -7,6 +7,12 @@ module Carto
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
 
+    PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => 'private',
+      PRIVACY_PUBLIC => 'public',
+      PRIVACY_LINK => 'link'
+    }.freeze
+
     belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
                                conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
@@ -76,6 +82,10 @@ module Carto
 
     def public_with_link_only?
       privacy == PRIVACY_LINK
+    end
+
+    def privacy_text
+      PRIVACY_VALUES_TO_TEXTS[privacy].upcase
     end
 
     def readable_by?(user)

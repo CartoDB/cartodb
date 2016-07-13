@@ -215,6 +215,7 @@
 
 		_onMiniMapMoveStarted: function (e) {
 			if (!this.options.centerFixed) {
+				this._miniMapMoving = true;
 				var lastAimingRect = this._aimingRect.getBounds();
 				var sw = this._miniMap.latLngToContainerPoint(lastAimingRect.getSouthWest());
 				var ne = this._miniMap.latLngToContainerPoint(lastAimingRect.getNorthEast());
@@ -224,7 +225,7 @@
 
 		_onMiniMapMoving: function (e) {
 			if (!this.options.centerFixed) {
-				if (!this._mainMapMoving && this._lastAimingRectPosition) {
+				if (!this._mainMapMoving && this._lastAimingRectPosition && this._miniMapMoving) {
 					this._shadowRect.setBounds(new L.LatLngBounds(this._miniMap.containerPointToLatLng(this._lastAimingRectPosition.sw), this._miniMap.containerPointToLatLng(this._lastAimingRectPosition.ne)));
 					this._shadowRect.setStyle({opacity: 1, fillOpacity: 0.3});
 				}
@@ -233,12 +234,12 @@
 
 		_onMiniMapMoved: function (e) {
 			if (!this._mainMapMoving) {
-				this._miniMapMoving = true;
 				this._mainMap.setView(this._miniMap.getCenter(), this._decideZoom(false));
 				this._miniMap.setView(this._miniMap.getCenter(), this._decideZoom(true));
 				this._shadowRect.setStyle({opacity: 0, fillOpacity: 0});
 			} else {
 				this._mainMapMoving = false;
+				this._miniMapMoving = false;
 			}
 		},
 

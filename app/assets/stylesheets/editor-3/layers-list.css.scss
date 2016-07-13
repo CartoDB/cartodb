@@ -155,7 +155,6 @@
   cursor: move;
   z-index: 1000;
 }
-
 .Editor-ListAnalysis-inner {
   @include display-flex();
   width: calc(100% + 8px);
@@ -207,6 +206,10 @@
   margin-left: -1px;
   border-top-left-radius: $halfBaseSize;
   border-bottom-left-radius: $halfBaseSize;
+}
+
+.Editor-ListAnalysis-itemInfoDataset {
+  @include flex(10);
 }
 
 .Editor-ListAnalysis-itemInfoIcon {

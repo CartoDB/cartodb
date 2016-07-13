@@ -22,7 +22,7 @@ module Carto
       private
 
       def load_user_table
-        @user_table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params[:table_id], current_user)
+        @user_table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params[:id], current_user)
         raise RecordNotFound unless @user_table
       end
 

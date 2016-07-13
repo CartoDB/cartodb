@@ -20,8 +20,7 @@ format.formatNumber = function (value, unit) {
   else if (Math.abs(value) < 1) { p = 3; }
 
   var value = value.toFixed(p);
-  var m = value.match(/(\.0+)$/);
-  if (m) {
+  if (m = value.match(/(\.0+)$/)) {
     value = value.replace(m[0], '');
   }
 

@@ -5,7 +5,7 @@ var format = {};
 
 format.formatNumber = function (value, unit) {
   if (!_.isNumber(value) || value == 0) {
-    return value;
+    return value === '0.0' ? 0 : value:
   }
 
   var format = d3.format('.2s');
@@ -15,11 +15,12 @@ format.formatNumber = function (value, unit) {
     return value = format(value) + (unit ? ' ' + unit : '');
   }
 
-  if (Math.abs(value) < 100) { p = 1; }
-  else if (Math.abs(value) < 10) { p = 2; }
-  else if (Math.abs(value) < 1) { p = 3; }
+  if (Math.abs(value) > 100) { p = 0; }
+  else if (Math.abs(value) > 10) { p = 1; }
+  else if (Math.abs(value) > 1) { p = 2; }
+  else if (Math.abs(value) > 0) { p = 3; }
 
-  var value = value.toFixed(p);
+  value = value.toFixed(p);
   if (m = value.match(/(\.0+)$/)) {
     value = value.replace(m[0], '');
   }

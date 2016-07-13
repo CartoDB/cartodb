@@ -1010,7 +1010,8 @@
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
         "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
@@ -1174,6 +1175,8 @@
         "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
+        "select-fields": "Select fields",
+        "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {
@@ -1230,6 +1233,9 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
+        "sql-alter-loading": "Modifying table...",
+        "sql-alter-error": "Modifying failed",
+        "sql-alter-success": "Modifying applied",
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
         "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },

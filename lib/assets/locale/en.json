@@ -65,12 +65,12 @@
     },
     "moran-cluster": {
       "title": "Detect outliers and clusters",
-      "short-title": "Outliers & clusters",
+      "short-title": "Outliers & clusters"
     },
     "spatial-markov-trend": {
       "title": "Predict trends and volatility",
       "short-title": "Trends"
-    },
+    }
   },
 
   "analysis-category": {
@@ -200,8 +200,8 @@
         "8005": {
           "description": "Remove any layer or upgrade your account",
           "info": "Keep your maps and get more layer count quota by upgrading your plan",
-          "title": "You have reached your layer count limit",
-        },
+          "title": "You have reached your layer count limit"
+        }
       },
       "twitter-import-details": {
         "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
@@ -225,12 +225,12 @@
         "show": "show",
         "rows-geocoded": {
           "without-dataset": "%{realRowsFormatted} row geocoded |||| %{realRowsFormatted} rows geocoded",
-          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset",
+          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset"
         },
         "errors": {
           "no-rows-geocoded": {
             "without-dataset": "No rows geocoded",
-            "in-dataset": "No rows geocoded in %{tableName} dataset",
+            "in-dataset": "No rows geocoded in %{tableName} dataset"
           },
           "geocoding-layer": "Ouch! There was an error geocoding %{tableName} layer"
         }
@@ -240,7 +240,7 @@
         "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
 
       },
-      "free-trial": "%{days} day free trial",
+      "free-trial": "Get a %{days} day free trial",
       "connecting": "Connecting",
       "dataset": "dataset…",
       "geocoding": "Geocoding",
@@ -250,7 +250,8 @@
     "custom-list": {
       "placeholder": "Search by %{typeLabel}",
       "no-items": "There is no %{typeLabel} items",
-      "no-results": "No %{typeLabel} results found with '%{query}'"
+      "no-results": "No %{typeLabel} results found with '%{query}'",
+      "add-custom-result": "Add custom value"
     },
     "datepicker": {
       "dates-placeholder": "Choose your dates",
@@ -637,7 +638,7 @@
             "no-description": "No description",
             "rows-pluralize": "row |||| rows",
             "tags-more": "and %{tagsCount} more",
-            "no-tags": "No tags",
+            "no-tags": "No tags"
           },
           "loading": "Loading",
           "searching": "Searching",
@@ -684,7 +685,7 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
-      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "interval-error": "Value must be between %{minValue} and %{maxValue}"
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -830,19 +831,19 @@
     "metadata": {
       "option": "Edit metadata",
       "error": "There was an error edititng metadata of your dataset %{name}",
-      "loading": "Editing metadata of your dataset %{name}...",
+      "loading": "Editing metadata of your dataset %{name}..."
     },
     "duplicate": {
       "option": "Duplicate dataset",
       "query": "applied query",
       "customOption": "Duplicate query",
       "error": "There was an error duplicating %{name}",
-      "loading": "Duplicating your dataset %{name}...",
+      "loading": "Duplicating your dataset %{name}..."
     },
     "lock": {
       "option": "Lock dataset",
       "error": "There was an error locking %{tableName}",
-      "loading": "Locking your dataset %{tableName}...",
+      "loading": "Locking your dataset %{tableName}..."
     },
     "rename": {
       "option": "Rename dataset",
@@ -879,7 +880,7 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
-    },
+    }
   },
   "editor": {
     "map": "map",
@@ -913,7 +914,7 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CartoDB Logo",
-            "widgets": "Widgets column",
+            "widgets": "Widgets column"
           }
         }
       }
@@ -928,7 +929,7 @@
       },
       "duplicate": {
         "error": "There was an error duplicating %{name}",
-        "loading": "Duplicating your map %{name}...",
+        "loading": "Duplicating your map %{name}..."
       },
       "delete": {
         "confirm": "ok, delete it",
@@ -987,6 +988,9 @@
         "hide": "Hide layer",
         "show": "Show layer"
       },
+      "drag-n-drop-analysis": {
+        "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
+      },
       "rename": {
         "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
         "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
@@ -997,9 +1001,9 @@
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
-        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
+        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
       },
       "layer": {
         "analysis": "Analysis",
@@ -1104,10 +1108,10 @@
         "link-layer-desc": "Specify a second layer to join",
         "linked-layer": "Link to layer",
         "loading": "loading…",
-        "left": 'Left',
-        "right": 'Right',
-        "inner": 'Inner',
-        "join-type": 'Join Type',
+        "left": "Left",
+        "right": "Right",
+        "inner": "Inner",
+        "join-type": "Join Type",
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",
@@ -1264,7 +1268,7 @@
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
         }
-      },
+      }
     },
     "legend": {
       "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
@@ -1399,7 +1403,7 @@
         "animated-trails": "trails",
         "animated-resolution": "resolution",
         "animated-steps": "steps",
-        "animated-duration": "duration",
+        "animated-duration": "duration"
       }
     },
     "widgets": {

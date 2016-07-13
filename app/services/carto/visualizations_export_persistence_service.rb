@@ -108,16 +108,21 @@ module Carto
       if options.has_key?(:user_name)
         old_username = options[:user_name]
         options[:user_name] = new_username
+      end
 
-        # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
-        query = options[:query]
+      if options.has_key?(:table_name)
+        old_table_name = options[:table_name]
+        options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+      end
 
-        if query.present?
-          new_query = rewrite_query_for_new_user(query, old_username, new_user)
-          new_query = rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
+      # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
+      query = options[:query]
 
-          options[:query] = new_query
-        end
+      if query.present?
+        new_query = rewrite_query_for_new_user(query, old_username, new_user)
+        new_query = rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
+
+        options[:query] = new_query
       end
     end
 

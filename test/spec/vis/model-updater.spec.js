@@ -209,7 +209,7 @@ describe('src/vis/model-updater', function () {
 
     it('should "mark" analysis as erroneous', function () {
       var analysis = new Backbone.Model({
-        id: 'ANALYSIS_ID'
+        id: 'ANALYSIS_NODE_ID'
       });
       analysis.setError = jasmine.createSpy('setError');
 
@@ -221,6 +221,7 @@ describe('src/vis/model-updater', function () {
           message: 'Missing required param "radius"',
           analysis: {
             id: 'ANALYSIS_ID',
+            node_id: 'ANALYSIS_NODE_ID',
             context: {
               something: 'else'
             }
@@ -232,7 +233,7 @@ describe('src/vis/model-updater', function () {
       var error = analysis.setError.calls.argsFor(0)[0];
 
       expect(error.type).toBeUndefined();
-      expect(error.analysisId).toEqual('ANALYSIS_ID');
+      expect(error.analysisId).toEqual('ANALYSIS_NODE_ID');
       expect(error.message).toEqual('Missing required param "radius"');
       expect(error.context).toEqual({
         something: 'else'

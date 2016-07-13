@@ -2,7 +2,7 @@
 
 module LoginHelper
 
-  DEFAULT_BACKGROUND_COLOR = "#F9F9F9"
+  DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
 
   def background
     base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR
@@ -12,8 +12,8 @@ module LoginHelper
   end
 
   def color_to_rgb(hex_color)
-    hex_color = hex_color.gsub('#','')
-    rgb = hex_color.scan(/../).map {|color| color.hex}
+    hex_color = hex_color.delete('#')
+    rgb = hex_color.scan(/../).map(&:hex)
 
     "#{rgb[0]}, #{rgb[1]}, #{rgb[2]}"
   end

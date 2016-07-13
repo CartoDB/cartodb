@@ -1,8 +1,8 @@
 <li data-analysis-node-id="<%- nodeId %>" style="width: 294px;">
   <div class="Editor-ListLayer-item">
     <div class="Editor-ListLayer-itemHeader">
-      <div class="Editor-ListLayer-media u-rSpace--m" style="background: <%- bgColor %>; color: #fff">
-        <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- nodeId %></p>
+      <div class="Editor-ListLayer-media u-rSpace--m" style="background: <%- nextBgColor %>; color: #fff">
+        <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- nextLetter %></p>
       </div>
       <div class="Editor-ListLayer-inner">
         <div class="Editor-ListLayer-title">

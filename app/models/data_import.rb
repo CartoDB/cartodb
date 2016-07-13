@@ -681,6 +681,8 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
+    CartoDB::Importer2::Connector.check_availability!(current_user)
+
     database_options = pg_options
 
     self.host = database_options[:host]

@@ -145,8 +145,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     1501 => {
-      title: 'Connector invalid channel',
-      what_about: "The type of connector you were trying to use is invalid or unsupported",
+      title: 'Connectors disabled',
+      what_about: "The type of connector you were trying to use is not enabled",
       source: ERROR_SOURCE_USER
     },
     1502 => {

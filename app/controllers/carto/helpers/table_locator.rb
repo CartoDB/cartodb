@@ -30,9 +30,9 @@ module Carto
 
         # Fetch by UserTable UUID
         if user_table.nil? && rx.match(id_or_name)
-          user_table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)
+          user_table_temp = Carto::UserTable.where(id: id_or_name).first
           unless user_table_temp.nil?
-            vis = user_table_temp.table_visualization
+            vis = user_table_temp.visualization
             user_table = vis.user_table if vis && vis.is_viewable_by_user?(viewer_user)
           end
         end

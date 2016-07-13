@@ -16,7 +16,7 @@
     <h3 class="CDB-Text CDB-Size-large u-bSpace u-ellipsis">
       <%- title %>
       <% if (showPermissionIndicator) { %>
-        <span class="DatasetsList-itemTitlePermission PermissionIndicator u-upperCase">
+        <span class="CDB-Text DatasetsList-itemTitlePermission PermissionIndicator u-upperCase">
           <%- _t('components.modals.add-layer.datasets.item.read') %>
         </span>
       <% } %>

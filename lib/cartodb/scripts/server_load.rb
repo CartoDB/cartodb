@@ -7,7 +7,7 @@ class ServerLoadScript
   def initialize
 
     Capybara.default_driver = :selenium
-    Capybara.app_host       = 'https://staging20.cartodb.com'
+    Capybara.app_host       = 'https://staging20.carto.com'
     Capybara.run_server     = false
 
     visit '/'

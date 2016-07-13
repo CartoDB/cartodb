@@ -1,6 +1,6 @@
-<div class="Quote">
+<p class="CDB-Text CDB-Size-medium u-altTextColor">
   "<%= quote %>"
-</div>
+</p>
 <% if (author) { %>
-  <div class="Quote-author"><%- author %></div>
+  <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace"><i>– <%- author %></i></p>
 <% } %>

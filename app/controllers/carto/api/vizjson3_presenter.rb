@@ -254,7 +254,8 @@ module Carto
       def user_info_vizjson(user)
         {
           fullname: user.name.present? ? user.name : user.username,
-          avatar_url: user.avatar_url
+          avatar_url: user.avatar_url,
+          profile_url: user.public_url
         }
       end
 
@@ -446,7 +447,7 @@ module Carto
       ).freeze
 
       INFOWINDOW_AND_TOOLTIP_KEYS = %w(
-        fields template_name template alternative_names width maxHeight headerColor
+        fields template_name template template_type alternative_names width maxHeight headerColor
       ).freeze
 
       def initialize(layer, options = {}, configuration = {}, decoration_data = {})
@@ -520,6 +521,8 @@ module Carto
                        else
                          @layer.options['query']
                        end
+
+        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
 
         torque
       end

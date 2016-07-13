@@ -17,20 +17,62 @@
     "november": "November",
     "december": "December"
   },
+
   "analyses": {
-    "georeference": "Georeference",
-    "data-observatory-measurement": "Enrich from Data Observatory",
-    "merge": "Join columns from 2nd layer",
-    "filter-by-node-column": "Link two layers",
-    "centroid": "Centroid from geometries",
-    "area-of-influence": "Create areas of influence",
-    "intersection": "Intersection",
-    "filter": "Filter by column value",
-    "sampling": "Subsample percent of rows",
-    "kmeans": "Calculate clusters of points",
-    "moran-cluster": "Detect outliers and clusters",
-    "spatial-markov-trend": "Predict trends and volatility"
+    "georeference": {
+      "title": "Georeference",
+      "short-title": "Georeference"
+    },
+    "data-observatory-measurement": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data observatory"
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "title": "Link two layers",
+      "short-title": "Link to layer"
+    },
+    "centroid": {
+      "title": "Centroid from geometries",
+      "short-title": "Centroid"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "short-title": "AOI"
+    },
+    "intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "aggregate-intersection": {
+      "title": "Intersection",
+      "short-title": "Intersection"
+    },
+    "filter": {
+      "title": "Filter by column value",
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "title": "Subsample percent of rows",
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "title": "Calculate clusters of points",
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "title": "Detect outliers and clusters",
+      "short-title": "Outliers & clusters"
+    },
+    "spatial-markov-trend": {
+      "title": "Predict trends and volatility",
+      "short-title": "Trends"
+    }
   },
+
   "analysis-category": {
     "create-clean": "Create and clean",
     "data-transformation": "Transform",
@@ -98,7 +140,7 @@
         "close": "close",
         "description": "There was a problem georeferencing your data",
         "title": "Geocoding Error",
-        "try-again": "Please try again and if the problem persists, <a href='mailto:support@cartodb.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
         "view-dataset": "view dataset"
       },
       "geocoding-success-detail": {
@@ -137,7 +179,7 @@
         "continue-btn": "Continue",
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
-        "upgrade-your-account": "<a href='https://cartodb.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+        "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -145,7 +187,7 @@
         "close": "close",
         "dont-panic": "Don’t panic, here's some info that might help",
         "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
-        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@cartodb.com'>send us</a> the following code",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> the following code",
         "unknown-error": "An unknown error has happened"
       },
       "upgrade-errors": {
@@ -157,9 +199,9 @@
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
-          "info": "Keep your maps and get more layers quota by upgrading your plan",
-          "title": "You have reached your layers limit",
-        },
+          "info": "Keep your maps and get more layer count quota by upgrading your plan",
+          "title": "You have reached your layer count limit"
+        }
       },
       "twitter-import-details": {
         "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
@@ -183,12 +225,12 @@
         "show": "show",
         "rows-geocoded": {
           "without-dataset": "%{realRowsFormatted} row geocoded |||| %{realRowsFormatted} rows geocoded",
-          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset",
+          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset"
         },
         "errors": {
           "no-rows-geocoded": {
             "without-dataset": "No rows geocoded",
-            "in-dataset": "No rows geocoded in %{tableName} dataset",
+            "in-dataset": "No rows geocoded in %{tableName} dataset"
           },
           "geocoding-layer": "Ouch! There was an error geocoding %{tableName} layer"
         }
@@ -238,7 +280,7 @@
         },
         "errors": {
           "title": "There was an error",
-          "geometry-error": "We can't reach data geometries",
+          "geometry-error": "We can't read data geometries",
           "unknown": "An error occurred"
         },
         "cancel": "Cancel"
@@ -250,9 +292,11 @@
         "save-btn": "Save",
         "form": {
           "name": "Map Name",
+          "name-placeholder": "Type your name here",
           "description": "Description",
           "description-placeholder": "Type your description here",
-          "tags": "Tags"
+          "tags": "Tags",
+          "markdown": "Markdown supported"
         },
         "validation": {
           "error": {
@@ -263,7 +307,38 @@
           "title": "We couldn't save your data",
           "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
         },
-        "loading": "Saving your data..."
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "form": {
+          "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
       "privacy": {
         "privacy": "privacy",
@@ -305,7 +380,7 @@
         "published": "Published %{when}",
         "unpublished": "Never published.",
         "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
-        "unpublished-header": "Click on Publish to start shareing your map on the web",
+        "unpublished-header": "Click on Publish to start sharing your map on the web",
         "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
           "title": "Get the link",
@@ -352,7 +427,7 @@
         "modal-desc": "Select the analysis you want to add",
         "loading-title": "Loading options",
         "add-btn": "Add analysis",
-        "disabled-option-desc": "Your layer geometry is %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
           "area-of-influence": {
@@ -456,7 +531,7 @@
             "error-desc": "Error. Your URL doesn’t look correct.",
             "format": "Format",
             "or": "or",
-            "title": "Enter a url",
+            "title": "Enter a URL",
             "desc": "Paste a URL and start the import",
             "submit": "submit"
           },
@@ -484,7 +559,7 @@
             "no-results-title": "Oouch! There are no results",
             "no-results-desc": "We haven't found any valid file from your account",
             "state-idle-login": "Login to your account and select any item.",
-            "state-error": "We are sorry that you can’t connect to your %{title} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-error": "We are sorry that you can’t connect to your %{title} account. Be sure you have any pop-up blockers deactivated for this website.",
             "state-token": "Checking Token.",
             "state-oauth": "Requesting oAuth.",
             "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
@@ -562,7 +637,7 @@
             "no-description": "No description",
             "rows-pluralize": "row |||| rows",
             "tags-more": "and %{tagsCount} more",
-            "no-tags": "No tags",
+            "no-tags": "No tags"
           },
           "loading": "Loading",
           "searching": "Searching",
@@ -597,7 +672,7 @@
     },
     "error": {
       "default-title": "Oops, there was a problem",
-      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>"
     },
     "backbone-forms": {
       "select": {
@@ -609,7 +684,7 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
-      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "interval-error": "Value must be between %{minValue} and %{maxValue}"
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -752,17 +827,22 @@
       "loading": "Renaming your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
     },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}..."
+    },
     "duplicate": {
       "option": "Duplicate dataset",
       "query": "applied query",
       "customOption": "Duplicate query",
       "error": "There was an error duplicating %{name}",
-      "loading": "Duplicating your dataset %{name}...",
+      "loading": "Duplicating your dataset %{name}..."
     },
     "lock": {
       "option": "Lock dataset",
       "error": "There was an error locking %{tableName}",
-      "loading": "Locking your dataset %{tableName}...",
+      "loading": "Locking your dataset %{tableName}..."
     },
     "rename": {
       "option": "Rename dataset",
@@ -799,7 +879,7 @@
       "loading": "Unlocking your dataset %{tableName}...",
       "success": "Dataset %{tableName} unlocked",
       "title": "Your dataset %{tableName} is locked."
-    },
+    }
   },
   "editor": {
     "map": "map",
@@ -833,19 +913,22 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CartoDB Logo",
-            "widgets": "Widgets column",
+            "widgets": "Widgets column"
           }
         }
-      },
-
-
+      }
     },
     "maps": {
       "options": {
         "rename": "Rename",
+        "duplicate": "Duplicate",
         "export-map": "Export map",
         "edit-metadata": "Edit metadata…",
         "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}..."
       },
       "delete": {
         "confirm": "ok, delete it",
@@ -904,6 +987,9 @@
         "hide": "Hide layer",
         "show": "Show layer"
       },
+      "drag-n-drop-analysis": {
+        "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
+      },
       "rename": {
         "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
         "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
@@ -914,9 +1000,9 @@
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span> %{name}: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing the layer</span> %{name}...",
-        "success": "Layer %{name} <span class='CDB-Text is-semibold'>was deleted</span>."
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
+        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
       },
       "layer": {
         "analysis": "Analysis",
@@ -926,7 +1012,7 @@
         "delete": "Delete"
       },
       "notifier": {
-        "layer-added": "%{name} <span class='CDB-Text is-semibold'>layer was added successfully.</span>"
+        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1021,10 +1107,10 @@
         "link-layer-desc": "Specify a second layer to join",
         "linked-layer": "Link to layer",
         "loading": "loading…",
-        "left": 'Left',
-        "right": 'Right',
-        "inner": 'Inner',
-        "join-type": 'Join Type',
+        "left": "Left",
+        "right": "Right",
+        "inner": "Inner",
+        "join-type": "Join Type",
         "longitude": "Longitude",
         "max": "Max",
         "meters": "m",
@@ -1067,7 +1153,7 @@
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
-        "type": "Measure by",
+        "measure-by": "Measure by",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",
@@ -1083,7 +1169,8 @@
         "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
         "data-observatory-measurement-measurement": "Measurement",
         "data-observatory-measurement-desc": "enrich your data",
-        "data-observatory-measurement-refine": "Choose a measure"
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
@@ -1143,7 +1230,7 @@
       },
       "notifier": {
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
-        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied successfully.</span>"
+        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
@@ -1180,7 +1267,7 @@
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
         }
-      },
+      }
     },
     "legend": {
       "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
@@ -1216,7 +1303,7 @@
       },
       "notifier": {
         "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied successfully.</span>"
+        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1315,16 +1402,16 @@
         "animated-trails": "trails",
         "animated-resolution": "resolution",
         "animated-steps": "steps",
-        "animated-duration": "duration",
+        "animated-duration": "duration"
       }
     },
     "widgets": {
       "notifier": {
-        "delete": "%{column} <span class='CDB-Text is-semibold'>widget deleted correctly.</span>",
-        "success": "%{column} <span class='CDB-Text is-semibold'>widget successfully added.</span>",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Adding widget</span> for %{column}...",
-        "updating": "<span class='CDB-Text is-semibold'>Updating widget...</span>"
+        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
+        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
+        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
+        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
       },
       "widgets-view": {
         "add_widget": "Add widget"
@@ -1333,7 +1420,7 @@
         "histogram": "Histogram",
         "category": "Category",
         "formula": "Formula",
-        "time-series": "Time-series"
+        "time-series": "Time series"
       },
       "widgets-form": {
         "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",
@@ -1378,6 +1465,15 @@
           "sum": "SUM"
         }
       }
+    }
+  },
+  "notifications": {
+    "analysis": {
+      "pending": "Analysis %{nodeId} waiting",
+      "waiting": "Analysis %{nodeId} enqueued",
+      "completed": "Analysis %{nodeId} completed",
+      "failed": "Analysis %{nodeId} failed",
+      "removed": "Analysis %{nodeId} deleted"
     }
   }
 }

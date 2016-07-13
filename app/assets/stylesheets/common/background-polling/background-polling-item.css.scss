@@ -25,7 +25,6 @@
   @include css3-prefix(text-overflow, ellipsis);
   white-space: nowrap;
   overflow: hidden;
-  font-size: $sFontSize-normal;
   color: $cTypography-paragraphs;
 }
 .ImportItem-text.is-long {

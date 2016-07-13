@@ -32,8 +32,6 @@ module CartoDB
         end
       end
 
-      DATASOURCE_NAME = 'carto-connector'
-
       attr_reader :results, :log, :job
       attr_accessor :stats
 

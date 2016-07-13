@@ -14,7 +14,6 @@
 
 .Editor-HeaderInfo {
   @include display-flex();
-  @include align-items(baseline);
   margin-bottom: 32px;
 
   &.is-block {

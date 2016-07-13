@@ -4,29 +4,28 @@ var d3 = require('d3');
 var format = {};
 
 format.formatNumber = function (value, unit) {
-  if (!_.isNumber(value)) {
+  if (!_.isNumber(value) || value == 0) {
     return value;
   }
 
   var format = d3.format('.2s');
+  var p = 0;
 
-  if (value < 1000) {
-    var v = (value).toFixed(2);
-    // v ends with .00
-    if (v.match('.00' + '$')) {
-      v = v.replace('.00', '');
-    }
-    return v;
+  if (value > 1000){
+    return value = format(value) + (unit ? ' ' + unit : '');
   }
 
-  value = format(value) + (unit ? ' ' + unit : '');
+  if (Math.abs(value) < 100) { p = 1; }
+  else if (Math.abs(value) < 10) { p = 2; }
+  else if (Math.abs(value) < 1) { p = 3; }
 
-  // value ends with .0
-  if (value.match('.0' + '$')) {
-    value = value.replace('.0', '');
+  var value = value.toFixed(p);
+  var m = value.match(/(\.0+)$/);
+  if (m) {
+    value = value.replace(m[0], '');
   }
 
-  return value === '0.0' ? 0 : value;
+  return value;
 };
 
 format.formatDate = function (value) {

@@ -4,8 +4,8 @@ var d3 = require('d3');
 var format = {};
 
 format.formatNumber = function (value, unit) {
-  if (!_.isNumber(value) || value == 0) {
-    return value === '0.0' ? 0 : value:
+  if (!_.isNumber(value) || value === 0) {
+    return value;
   }
 
   var format = d3.format('.2s');

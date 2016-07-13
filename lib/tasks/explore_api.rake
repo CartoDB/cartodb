@@ -272,35 +272,34 @@ namespace :cartodb do
     end
 
     def insert_new_visualizations_at_user(most_recent_created_date, most_recent_updated_date)
-
       puts "INSERTING NEW CREATED"
       page = 1
       while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, most_recent_created_date))).count > 0 do
-        insert_visualizations(filter_valid_visualizations(visualizations))
-        print "Batch ##{page}. \t Insertions: #{visualizations.count}\n"
+        filter_existing_and_insert_visualizations(visualizations, page)
         page += 1
       end
 
       puts "INSERTING OLD MADE PUBLIC"
       page = 1
-      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_created_date))).count > 0 do
-        updated_ids = visualizations.collect(&:id)
+      while (visualizations = CartoDB::Visualization::Collection.new.fetch(filter(page, nil, most_recent_updated_date))).count > 0 do
+        filter_existing_and_insert_visualizations(visualizations, page)
+        page += 1
+      end
+    end
 
+    def filter_existing_and_insert_visualizations(visualizations, current_page)
+        updated_ids = visualizations.collect(&:id)
         existing_ids = db_conn[%{ SELECT visualization_id
                                FROM #{VISUALIZATIONS_TABLE}
                                WHERE visualization_id
                                IN ('#{updated_ids.join("','")}')}].all.map { |row| row[:visualization_id] }
 
         missing_ids = updated_ids - existing_ids
-
         if missing_ids.length > 0
           missing_visualizations = visualizations.select { |v| missing_ids.include?(v.id) }
           insert_visualizations(filter_valid_visualizations(missing_visualizations))
-          print "Batch ##{page}.\tInsertions: #{missing_visualizations.length}\n"
+          print "Batch ##{current_page}.\tInsertions: #{missing_visualizations.length}\n"
         end
-        page += 1
-      end
-
     end
 
     def filter(page, min_created_at = nil, min_updated_at = nil)

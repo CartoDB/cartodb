@@ -12,7 +12,7 @@
   display: block;
   position: relative;
   width: 100%;
-  padding: $baseSize * 5 0;
+  padding: $baseSize * 5 0 0;
   border-top: 1px solid $cSecondaryLine;
   background: $cThirdBackground;
 }
@@ -48,7 +48,6 @@
 }
 
 .Footer-columns {
-  padding-bottom: 20px;
   border-top: 1px solid #EEE;
 }
 .Footer-columns--footer {
@@ -110,6 +109,9 @@
 }
 .Colophon-item {
   display: inline-block;
+}
+.Footer-item {
+  display: block;
 }
 .Newsletter {
   position: relative;

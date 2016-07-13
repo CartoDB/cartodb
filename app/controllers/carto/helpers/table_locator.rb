@@ -26,18 +26,18 @@ module Carto
         end
 
         vis = vqb.build.first
-        table = vis.nil? ? nil : vis.table
+        user_table = vis.nil? ? nil : vis.user_table
 
         # Fetch by UserTable UUID
-        if table.nil? && rx.match(id_or_name)
-          table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)
-          unless table_temp.nil?
-            vis = table_temp.table_visualization
-            table = vis.table if vis && vis.is_viewable_by_user?(viewer_user)
+        if user_table.nil? && rx.match(id_or_name)
+          user_table_temp = Carto::UserTable.where(id: id_or_name).first.try(:service)
+          unless user_table_temp.nil?
+            vis = user_table_temp.table_visualization
+            user_table = vis.user_table if vis && vis.is_viewable_by_user?(viewer_user)
           end
         end
 
-        table
+        user_table
       end
 
     end

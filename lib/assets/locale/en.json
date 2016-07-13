@@ -250,7 +250,8 @@
     "custom-list": {
       "placeholder": "Search by %{typeLabel}",
       "no-items": "There is no %{typeLabel} items",
-      "no-results": "No %{typeLabel} results found with '%{query}'"
+      "no-results": "No %{typeLabel} results found with '%{query}'",
+      "add-custom-result": "Add custom value"
     },
     "datepicker": {
       "dates-placeholder": "Choose your dates",

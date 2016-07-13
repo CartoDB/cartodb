@@ -17,18 +17,18 @@
 
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="https://twitter.com/share?url=<%- urlWithoutParams %>&text=<%- shortTitle %>" class="u-hintTextColor">
+          <a href="https://twitter.com/share?url=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="http://www.facebook.com/sharer.php?u=<%- urlWithoutParams %>&text=<%- shortTitle %>" class="u-hintTextColor">
+          <a href="http://www.facebook.com/sharer.php?u=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
           </a>
         </li>
         <% if (inIframe) { %>
           <li class="CDB-Dashboard-menuActionsItem">
-            <a href="<%- url %>" class="u-hintTextColor">
+            <a href="<%- url %>" target="_blank" class="u-hintTextColor">
               <i class="CDB-IconFont CDB-IconFont-anchor CDB-Size-medium"></i>
             </a>
           </li>

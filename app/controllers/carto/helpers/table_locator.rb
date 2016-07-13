@@ -20,7 +20,7 @@ module Carto
         if table_schema.nil?
           vqb.with_user_id(viewer_user.id)
         else
-          owner = Carto::User.where(username: table_schema).first
+          owner = Carto::User.where(username: table_schema).select(:id).first
           user_id = owner ? owner.id : viewer_user.id
           vqb.with_owned_by_or_shared_with_user_id(user_id)
         end

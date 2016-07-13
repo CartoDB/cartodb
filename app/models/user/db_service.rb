@@ -463,7 +463,7 @@ module CartoDB
         end
       end
 
-      def install_odbc_fdw()
+      def install_odbc_fdw
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS odbc_fdw SCHEMA public')

@@ -153,12 +153,14 @@ describe('windshaft/map-base', function () {
 
         describe('when max number of subsecuent identical requests (with identical responses) have been performed', function () {
           beforeEach(function () {
-            for (var i = 0; i < 3; i++) {
-              this.windshaftMap.createInstance(this.options);
-            }
             spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
               options[result]({ a: 'b' });
             });
+            for (var i = 0; i < 3; i++) {
+              this.windshaftMap.createInstance(this.options);
+            }
+
+            this.client.instantiateMap.calls.reset();
           });
 
           it('should make a request if payload has changed', function () {

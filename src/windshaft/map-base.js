@@ -74,7 +74,7 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _canPerformRequest: function (request) {
-    return !this._requestTracker.maxNumberOfRequestsReached();
+    return this._requestTracker.canRequestBePerformed(request);
   },
 
   _trackRequest: function (request, response) {

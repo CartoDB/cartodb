@@ -54,7 +54,6 @@ $cWhite: #FFFFFF;
   @include display-flex;
   @include flex-direction(column);
   min-height: 100vh;
-  background-color: #F9F9F9;
   background-size: cover;
 }
 

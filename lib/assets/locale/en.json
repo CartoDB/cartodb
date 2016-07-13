@@ -1173,6 +1173,8 @@
         "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
+        "select-fields": "Select fields",
+        "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {

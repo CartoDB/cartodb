@@ -1,30 +1,38 @@
-<div class="Dialog-header ErrorDetails-header">
-  <div class="Dialog-headerIcon Dialog-headerIcon--negative">
+<div class="Dialog-header">
+  <div class="Dialog-headerIcon Dialog-headerIcon--negative u-flex u-alignCenter u-justifyCenter">
     <i class="CDB-IconFont CDB-IconFont-barometer"></i>
   </div>
-  <p class="Dialog-headerTitle"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.title') %></p>
-  <p class="Dialog-headerText"><%- _t('components.background-importer.upgrade-errors.' + errorCode + '.description') %></p>
+  <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor">
+    <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.title') %>
+  </h2>
+  <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor">
+    <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.description') %>
+  </h3>
 </div>
-<div class="Dialog-body ErrorDetails-body ErrorDetails-body--no-line">
-  <div class="UpgradeElement">
-    <div class="UpgradeElement-info">
-      <div class="LayoutIcon UpgradeElement-infoIcon">
+
+<div class="Dialog-body ErrorDetails-body">
+  <ul class="Modal-containerList">
+    <li class="ErrorDetails-item">
+      <div class="ErrorDetails-itemIcon ErrorDetails-itemIcon--success CDB-Size-big u-flex u-alignCenter u-justifyCenter u-rSpace--xl">
         <i class="CDB-IconFont CDB-IconFont-rocket"></i>
       </div>
-      <p class="UpgradeElement-infoText u-ellipsLongText">
-        <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.info') %>
-      </p>
-    </div>
-    <% if (showTrial) { %>
-    <div class="UpgradeElement-trial">
-      <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-      <p class="UpgradeElement-trialText u-ellipsLongText"><%- _t('components.background-importer.free-trial', { days: 14 }) %></p>
-    </div>
-    <% } %>
-  </div>
+      <div class="ErrorDetails-itemText">
+        <p class="CDB-Text CDB-Size-medium">
+          <%- _t('components.background-importer.upgrade-errors.' + errorCode + '.info') %>
+          <% if (showTrial) { %>
+            <br/>
+            <a href="<%= upgradeUrl %>"><%- _t('components.background-importer.free-trial', { days: 14 }) %></a>
+          <% } %>
+        </p>
+      </div>
+    </li>
+  </ul>
 </div>
-<div class="Dialog-footer ErrorDetails-footer ErrorDetails-footer--no-line">
-  <a href="<%- upgradeUrl %>" class="Button Button--main ErrorDetails-footerButton">
-    <span><%- _t('components.background-importer.upgrade-errors.upgrade') %></span>
+
+<div class="Dialog-footer--simple u-inner">
+  <a href="<%- upgradeUrl %>" class="CDB-Button CDB-Button--primary u-tSpace--m">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
+      <%- _t('components.background-importer.upgrade-errors.upgrade') %>
+    </span>
   </a>
 </div>

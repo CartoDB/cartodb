@@ -680,7 +680,10 @@
     text-transform: uppercase;
     @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
 
-    &:hover {text-decoration:none;}
+    &:hover {
+      text-decoration:none;
+      color: #44759E;
+    }
 
     &.white {
       &:hover {

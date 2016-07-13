@@ -14,11 +14,9 @@ module Carto
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
 
-        layout false
+        layout 'application_public_visualization_layout'
 
         def show
-          @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
-
           render 'show'
         end
 

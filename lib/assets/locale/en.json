@@ -1010,7 +1010,8 @@
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
         "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"

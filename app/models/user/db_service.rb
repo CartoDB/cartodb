@@ -195,7 +195,7 @@ module CartoDB
       # Centralized method to provide the (ordered) search_path
       def self.build_search_path(user_schema, quote_user_schema = true)
         quote_char = quote_user_schema ? "\"" : ""
-        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_COMMON_DATA}, #{SCHEMA_PUBLIC}"
+        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, '#{SCHEMA_COMMON_DATA}', #{SCHEMA_PUBLIC}"
       end
 
       def set_database_search_path

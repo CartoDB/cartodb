@@ -101,7 +101,7 @@ module CartoDB
         end
         execute_as_superuser %{
           CREATE VIEW "#{@user.database_schema}".#{foreign_table_name}
-            AS SELECT * FROM #{@schema}.#{foreign_table_name};
+            AS SELECT * FROM "#{@schema}".#{foreign_table_name};
         }
         # Ensure view has proper permissions
         execute_as_superuser %{ GRANT SELECT ON "#{@user.database_schema}".#{foreign_table_name} TO "#{@user.database_username}" }
@@ -110,10 +110,10 @@ module CartoDB
 
       def create_foreign_table_command
         %{
-          IMPORT FOREIGN SCHEMA #{@schema} LIMIT TO (#{foreign_table_name})
-            FROM SERVER #{server_name} INTO #{@schema};
-          ALTER FOREIGN TABLE #{@schema}.#{foreign_table_name} OWNER TO "#{@user.database_username}";
-          GRANT SELECT ON #{@schema}.#{foreign_table_name} TO publicuser;
+          IMPORT FOREIGN SCHEMA "#{@schema}" LIMIT TO (#{foreign_table_name})
+            FROM SERVER #{server_name} INTO "#{@schema}";
+          ALTER FOREIGN TABLE "#{@schema}".#{foreign_table_name} OWNER TO "#{@user.database_username}";
+          GRANT SELECT ON "#{@schema}".#{foreign_table_name} TO publicuser;
         }
       end
 
@@ -123,10 +123,10 @@ module CartoDB
           execute_as_superuser %{select '#{@schema}.cdb_tablemetadata'::regclass}
         rescue => e
           execute_as_superuser %{
-            CREATE FOREIGN TABLE #{@schema}.cdb_tablemetadata (tabname text, updated_at timestamp with time zone)
+            CREATE FOREIGN TABLE "#{@schema}".cdb_tablemetadata (tabname text, updated_at timestamp with time zone)
               SERVER #{server_name}
               OPTIONS (table_name 'cdb_tablemetadata_text', schema_name 'cartodb', updatable 'false');
-            GRANT SELECT ON #{@schema}.cdb_tablemetadata TO publicuser;
+            GRANT SELECT ON "#{@schema}".cdb_tablemetadata TO publicuser;
           }
         end
       end

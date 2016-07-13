@@ -151,7 +151,7 @@ module CartoDB
     },
     1502 => {
       title: 'Connector invalid parameters',
-      what_about: "The connector couldn't be configure because the parameters were not valid.",
+      what_about: "The connector couldn't be configured because the parameters were not valid.",
       source: ERROR_SOURCE_USER
     },
     2001 => {

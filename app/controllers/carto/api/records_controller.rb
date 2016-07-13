@@ -15,7 +15,9 @@ module Carto
       # This endpoint is not used by the editor but by users. Do not remove
       def show
         render_jsonp(@user_table.service.record(params[:id]))
-      rescue
+      rescue => e
+        CartoDB::Logger.error(message: 'Error loading record', exception: e,
+                              record_id: params[:id], user_table: @user_table)
         render_jsonp({ errors: ["Record #{params[:id]} not found"] }, 404)
       end
 

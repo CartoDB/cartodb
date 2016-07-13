@@ -18,7 +18,9 @@ module Carto
       def show
         resp = @user_table.service.schema(cartodb_types: true).select { |e| e[0] == params[:id].to_sym }.first.last
         render_jsonp(type: resp)
-      rescue
+      rescue => e
+        CartoDB::Logger.error(message: 'Error loading column', exception: e,
+                              column_id: params[:id], user_table: @user_table)
         render_jsonp({ errors: "Column #{params[:id]} doesn't exist" }, 404)
       end
 

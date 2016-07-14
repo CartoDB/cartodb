@@ -1,14 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var LayerModelBase = require('./layer-model-base');
 
 var TILED_LAYER_TYPE = 'Tiled';
 var CARTODB_LAYER_TYPE = 'CartoDB';
 var TORQUE_LAYER_TYPE = 'torque';
 
 var Layers = Backbone.Collection.extend({
-
-  model: LayerModelBase,
 
   initialize: function () {
     this.comparator = function (m) {

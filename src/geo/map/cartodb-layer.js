@@ -6,8 +6,8 @@ var TooltipTemplate = require('./tooltip-template');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
-    attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
+    attribution: config.get('cartodb_attributions'),
     visible: true
   },
 

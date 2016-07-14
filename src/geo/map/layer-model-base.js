@@ -10,11 +10,6 @@ var Model = require('../../core/model');
 // Map layer, could be tiled or whatever
 var MapLayer = Model.extend({
 
-  defaults: {
-    visible: true,
-    type: 'Tiled'
-  },
-
   initialize: function () {
     this.bind('change:type', function () {
       log.error('changing layer type is not allowed, remove it and add a new one instead');

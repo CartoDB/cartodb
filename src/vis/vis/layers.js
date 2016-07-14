@@ -18,7 +18,6 @@ var Layers = {
     var LayerClass = this._types[type.toLowerCase()];
 
     var layerAttributes = {};
-    layerAttributes.type = type;
     _.extend(layerAttributes, data, data.options);
     return new LayerClass(layerAttributes, options);
   }

@@ -1,8 +1,10 @@
 var LayerModelBase = require('./layer-model-base');
 
 var TileLayer = LayerModelBase.extend({
-  getTileLayer: function() {
+  defaults: {
+    type: 'Tiled',
+    visible: true
   }
 });
 
-module.exports = TileLayer
+module.exports = TileLayer;

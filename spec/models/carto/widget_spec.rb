@@ -2,6 +2,18 @@ require 'json'
 require_relative '../../spec_helper'
 
 describe Carto::Widget do
+  before(:all) do
+    @user = FactoryGirl.create(:carto_user)
+    @map, @table, @table_visualization, @visualization = create_full_visualization(Carto::User.find(user.id))
+
+    @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
+  end
+
+  after(:all) do
+    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    @user.destroy
+  end
+
   describe 'Storage' do
     it 'can be stored and retrieved keeping the data' do
       widget = FactoryGirl.create(:widget_with_layer)
@@ -22,13 +34,11 @@ describe Carto::Widget do
 
     describe '#save' do
       before(:each) do
-        @map = FactoryGirl.create(:carto_map_with_layers)
         @widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
       end
 
       after(:each) do
         @widget.destroy
-        @map.destroy
       end
 
       it 'triggers notify_map_change on related map(s)' do
@@ -62,16 +72,6 @@ describe Carto::Widget do
   end
 
   describe '#from_visualization_id' do
-    before(:each) do
-      @map = FactoryGirl.create(:carto_map_with_layers)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map)
-    end
-
-    after(:each) do
-      @visualization.destroy
-      @map.destroy
-    end
-
     it 'retrieves all visualization widgets' do
       # Twice expectation: creation + destroy
       Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
@@ -92,16 +92,7 @@ describe Carto::Widget do
   context 'viewer users' do
     before(:each) do
       Map.any_instance.stubs(:update_related_named_maps)
-      @user = FactoryGirl.create(:carto_user)
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
       @layer = @visualization.data_layers.first
-    end
-
-    after(:each) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
     end
 
     it "can't create a new widget" do

@@ -15,7 +15,9 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
+  cursor: move;
   cursor: -webkit-grab;
+  cursor: -moz-grab;
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
@@ -60,12 +62,16 @@
 }
 .Editor-ListLayer .ui-sortable-helper,
 .Editor-newLayerContainer .Editor-ListLayer-item {
+  cursor: move;
   cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
 }
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);
   box-shadow: 0 8px 16px rgba(#000, 0.16);
+  cursor: move;
   cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
   opacity: 0.8;
   z-index: 1000;
 }
@@ -195,7 +201,9 @@
   background: $cThirdBackground;
   &:hover {
     border: 1px solid $cSecondaryLine;
-    cursor: -webkit-grab;
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
   }
 }
 

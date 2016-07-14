@@ -87,9 +87,17 @@ var AnonymousMap = MapBase.extend({
         if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
           analyses.push(sourceAnalysis.toJSON());
         }
-      } else {
-        if (this._getLayerById(sourceId)) {
-          analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
+      } else { // sourceId might be the ID of a layer
+        var layerModel = this._getLayerById(sourceId);
+        if (layerModel) {
+          if (layerModel.get('sql')) {
+            analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
+          } else {
+            // layerModel has a source, so the analysis will be included
+            // in the payload when we get to that sourceId in this loop
+          }
+        } else {
+          throw new Error("sourceId '" + sourceId + "' doesn't exist");
         }
       }
     }, this);

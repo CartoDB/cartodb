@@ -473,6 +473,26 @@ describe('dataviews/dataview-model-base', function () {
 
       expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
     });
+
+    it("should return the id of the layer's source", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'a1'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase({
+        source: {
+          id: layer.id
+        }
+      }, { // eslint-disable-line
+        map: this.map,
+        windshaftMap: this.windshaftMap,
+        layer: layer
+      });
+
+      expect(dataview.getSourceId()).toEqual('a1');
+    });
   });
 
   describe('.hasSameSourceAsLayer', function () {

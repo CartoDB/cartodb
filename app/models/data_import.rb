@@ -394,9 +394,7 @@ class DataImport < Sequel::Model
     return from_table         if table_copy.present? || from_query.present?
 
     if service_name == 'connector'
-      importer, runner    = new_importer_with_connector
-      datasource_provider = nil
-      manual_fields       = nil
+      importer, runner, datasource_provider, manual_fields = new_importer_with_connector
     else
       importer, runner, datasource_provider, manual_fields = new_importer
     end

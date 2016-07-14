@@ -15,6 +15,7 @@ module Carto
         ensure_unique_name(user, visualization)
 
         visualization.layers.map { |layer| fix_layer_user_information(layer, user, renamed_tables) }
+        visualization.analyses.each { |analysis| fix_analyses_queries(analysis, user, renamed_tables) }
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
@@ -106,7 +107,7 @@ module Carto
 
       options = layer.options
       if options.has_key?(:user_name)
-        old_username = options[:user_name]
+        @old_username = options[:user_name]
         options[:user_name] = new_username
       end
 
@@ -117,7 +118,21 @@ module Carto
 
       # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
       query = options[:query]
-      options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+      options[:query] = rewrite_query(query, @old_username, new_user, renamed_tables) if query.present?
+    end
+
+    def fix_analyses_queries(analysis, new_user, renamed_tables)
+      definition = analysis.analysis_definition
+      options = definition[:options]
+
+      if options.has_key?(:table_name)
+        old_table_name = options[:table_name]
+        options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+      end
+
+      params = definition[:params]
+      query = params[:query]
+      params[:query] = rewrite_query(query, @old_username, new_user, renamed_tables)
     end
 
     def rewrite_query(query, old_username, new_user, renamed_tables)

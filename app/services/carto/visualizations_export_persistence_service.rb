@@ -7,6 +7,7 @@ module Carto
     include Carto::UUIDHelper
 
     def save_import(user, visualization, renamed_tables: {})
+      old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
       ActiveRecord::Base.transaction do
         visualization.id = random_uuid
@@ -14,8 +15,10 @@ module Carto
 
         ensure_unique_name(user, visualization)
 
-        visualization.layers.map { |layer| fix_layer_user_information(layer, user, renamed_tables) }
-        visualization.analyses.each { |a| fix_analysis_node_queries(a.analysis_node, user, renamed_tables) }
+        visualization.layers.each { |layer| fix_layer_user_information(layer, old_username, user, renamed_tables) }
+        visualization.analyses.each do |analysis|
+          fix_analysis_node_queries(analysis.analysis_node, old_username, user, renamed_tables)
+        end
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
@@ -102,12 +105,12 @@ module Carto
       visualization.map.layers = layers
     end
 
-    def fix_layer_user_information(layer, new_user, renamed_tables)
+    def fix_layer_user_information(layer, old_username, new_user, renamed_tables)
       new_username = new_user.username
 
       options = layer.options
       if options.has_key?(:user_name)
-        @old_username = options[:user_name]
+        old_username ||= options[:user_name]
         options[:user_name] = new_username
       end
 
@@ -118,10 +121,10 @@ module Carto
 
       # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
       query = options[:query]
-      options[:query] = rewrite_query(query, @old_username, new_user, renamed_tables) if query.present?
+      options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
     end
 
-    def fix_analysis_node_queries(node, new_user, renamed_tables)
+    def fix_analysis_node_queries(node, old_username, new_user, renamed_tables)
       options = node.options
 
       if options && options.has_key?(:table_name)
@@ -130,12 +133,12 @@ module Carto
       end
 
       params = node.params
-      if params
+      if params && old_username
         query = params[:query]
-        params[:query] = rewrite_query(query, @old_username, new_user, renamed_tables) if query.present?
+        params[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
       end
 
-      node.children.each { |child| fix_analysis_node_queries(child, new_user, renamed_tables) }
+      node.children.each { |child| fix_analysis_node_queries(child, old_username, new_user, renamed_tables) }
     end
 
     def rewrite_query(query, old_username, new_user, renamed_tables)

@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: 2
+      version: '2.0.2'
     }
   end
 
@@ -152,7 +152,8 @@ describe Carto::VisualizationsExportService2 do
       ],
       analyses: [
         { analysis_definition: { id: 'a1', type: 'source' } }
-      ]
+      ],
+      user: { username: 'juanignaciosl' }
     }
   end
 
@@ -497,6 +498,30 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        describe '2.0.1 (without username)' do
+          it 'when not renaming tables' do
+            export_2_0_1 = export
+            export_2_0_1[:visualization].delete(:user)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_1.to_json)
+
+            visualization_export = export_2_0_1[:visualization]
+            verify_visualization_vs_export(visualization, visualization_export)
+          end
+
+          it 'when renaming tables' do
+            export_2_0_1 = export
+            export_2_0_1.delete(:user)
+
+            service = Carto::VisualizationsExportService2.new
+            built_viz = service.build_visualization_from_json_export(export_2_0_1.to_json)
+            Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+            imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+            imported_viz.layers[1].options[:user_name].should eq @user.username
+          end
+        end
+
         it '2.0.0 (without Widget.source_id)' do
           export_2_0_0 = export
           export_2_0_0[:visualization][:layers].each do |layer|

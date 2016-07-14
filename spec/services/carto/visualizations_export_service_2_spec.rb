@@ -649,8 +649,8 @@ describe Carto::VisualizationsExportService2 do
                                                                                        table: user_table,
                                                                                        data_layer: layer)
 
-         FactoryGirl.create(:source_analysis, visualization: @visualization, user: owner_user,
-                                              source_table: @table.name)
+        FactoryGirl.create(:source_analysis, visualization: @visualization, user: owner_user,
+                                             source_table: @table.name, query: query_1)
       end
 
       after(:each) do

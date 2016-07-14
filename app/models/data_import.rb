@@ -399,9 +399,6 @@ class DataImport < Sequel::Model
       importer, runner, datasource_provider, manual_fields = new_importer
     end
     execute_importer importer, runner, datasource_provider, manual_fields
-  rescue => exception
-    puts exception.to_s + exception.backtrace.join("\n")
-    raise exception
   end
 
   def running_import_ids

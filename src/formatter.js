@@ -10,19 +10,20 @@ format.formatNumber = function (value, unit) {
 
   var format = d3.format('.2s');
   var p = 0;
+  var abs_v = Math.abs(value);
 
   if (value > 1000) {
     value = format(value) + (unit ? ' ' + unit : '');
     return value;
   }
 
-  if (Math.abs(value) > 100) {
+  if ( abs_v > 100) {
     p = 0;
-  } else if (Math.abs(value) > 10) {
+  } else if (abs_v > 10) {
     p = 1;
-  } else if (Math.abs(value) > 1) {
+  } else if (abs_v > 1) {
     p = 2;
-  } else if (Math.abs(value) > 0) {
+  } else if (abs_v > 0) {
     p = 3;
   }
 

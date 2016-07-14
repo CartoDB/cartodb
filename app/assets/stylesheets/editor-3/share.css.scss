@@ -44,3 +44,45 @@
   height: 16px;
   border-radius: $halfBaseSize / 2;
 }
+
+.Share-inner {
+  width: 620px;
+  margin: 0 auto;
+}
+
+.Share-list {
+  padding: $baseSize * 4 0;
+}
+
+.Share-permission {
+  @include display-flex();
+  @include align-items(center);
+  margin-bottom: $baseSize * 3;
+}
+
+.Share-permissionInfo {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(1 1 auto);
+}
+
+.Share-permissionIcon {
+  @include display-flex();
+  @include justify-content(center);
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid $cMainLine;
+  border-radius: 3px;
+  font-size: 22px;
+  margin-right: $baseSize * 2;
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.Share-togglers {
+  @include display-flex();
+}

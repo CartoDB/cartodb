@@ -1,24 +1,35 @@
-<div class="Dialog-header u-inner">
-  <div class="LayutIcon LayoutIcon--negative Dialog-headerIcon">
+<div class="Dialog-header">
+  <div class="Dialog-headerIcon Dialog-headerIcon--negative u-flex u-alignCenter u-justifyCenter">
     <i class="CDB-IconFont CDB-IconFont-<%- geometryType && geometryType === "point" ? 'streets' : 'globe' %>"></i>
-    <span class="Badge Badge--negative">!</span>
   </div>
-  <p class="Dialog-headerTitle"><%- _t('components.geocoding.geocoding-error-details.title') %></p>
-  <p class="Dialog-headerText Dialog-headerText--centered Dialog-narrowerContent">
-    <%- errorDescription || _t('components.geocoding.geocoding-error-details.description') %>.
-    <% if (!customHosted && id) { %>
-    <%- _t('components.geocoding.geocoding-error-details.try-again', { id: id }) %>
-       <br/><strong><%- id %></strong>.
-    <% } %>
-  </p>
+  <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor">
+    <%- _t('components.geocoding.geocoding-error-details.title') %>
+  </h2>
+  <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor">
+    <%- errorDescription || _t('components.geocoding.geocoding-error-details.description') %>. <br/>
+  </h3>
 </div>
-<div class="Dialog-footer Dialog-footer--simple u-inner Dialog-narrowerContent">
-  <button class="cancel Button Button--secondary <%- showGeocodingDatasetURLButton ? 'Dialog-footerBtn' : '' %>">
-    <span><%- _t('components.geocoding.geocoding-error-details.close') %></span>
+
+<% if (!customHosted && id) { %>
+  <div class="Dialog-body ErrorDetails-body">
+    <ul class="Modal-containerList">
+      <li class="ErrorDetails-item">
+        <div class="ErrorDetails-itemStep CDB-Text CDB-Size-medium is-semibold u-flex u-alignCenter u-justifyCenter">!</div>
+        <div class="ErrorDetails-itemText">
+          <p class="CDB-Text CDB-Size-medium">
+            <%= _t('components.geocoding.geocoding-error-details.try-again', { id: id, supportGeocodingMailTo: 'support@carto.com?subject=Geocoding' }) %><br/>
+          </p>
+          <span class="CDB-Text CDB-Size-medium ErrorDetails-itemTextStrong"><%- id %></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+<% } %>
+
+<div class="Dialog-footer--simple u-inner">
+  <button class="cancel CDB-Button CDB-Button--error u-tSpace--m <%- showGeocodingDatasetURLButton ? 'Dialog-footerBtn' : '' %> js-close">
+    <span class='CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase'>
+      <%- _t('components.geocoding.geocoding-error-details.close') %>
+    </span>
   </button>
-  <% if (showGeocodingDatasetURLButton) { %>
-    <a href="<%- datasetURL %>" class="Button Button--main">
-      <span><%- _t('components.geocoding.geocoding-error-details.view-dataset') %></span>
-    </a>
-  <% } %>
 </div>

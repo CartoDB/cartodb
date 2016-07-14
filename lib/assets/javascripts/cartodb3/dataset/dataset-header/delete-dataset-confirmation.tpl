@@ -2,7 +2,7 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--negative">
     <i class="CDB-IconFont CDB-IconFont-trash"></i>
   </div>
-  <h2 class="CDB-Text CDB-Size-large u-bSpace">
+  <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor">
     <%- _t('dataset.delete.title', { tableName: tableName }) %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">

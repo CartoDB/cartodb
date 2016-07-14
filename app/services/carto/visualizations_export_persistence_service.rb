@@ -15,7 +15,7 @@ module Carto
         ensure_unique_name(user, visualization)
 
         visualization.layers.map { |layer| fix_layer_user_information(layer, user, renamed_tables) }
-        visualization.analyses.each { |analysis| fix_analyses_queries(analysis, user, renamed_tables) }
+        visualization.analyses.each { |a| fix_analysis_node_queries(a.analysis_node, user, renamed_tables) }
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)
         visualization.permission = permission
@@ -121,18 +121,21 @@ module Carto
       options[:query] = rewrite_query(query, @old_username, new_user, renamed_tables) if query.present?
     end
 
-    def fix_analyses_queries(analysis, new_user, renamed_tables)
-      definition = analysis.analysis_definition
-      options = definition[:options]
+    def fix_analysis_node_queries(node, new_user, renamed_tables)
+      options = node.options
 
-      if options.has_key?(:table_name)
+      if options && options.has_key?(:table_name)
         old_table_name = options[:table_name]
         options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
       end
 
-      params = definition[:params]
-      query = params[:query]
-      params[:query] = rewrite_query(query, @old_username, new_user, renamed_tables)
+      params = node.params
+      if params
+        query = params[:query]
+        params[:query] = rewrite_query(query, @old_username, new_user, renamed_tables) if query.present?
+      end
+
+      node.children.each { |child| fix_analysis_node_queries(child, new_user, renamed_tables) }
     end
 
     def rewrite_query(query, old_username, new_user, renamed_tables)

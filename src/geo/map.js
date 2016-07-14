@@ -72,12 +72,12 @@ var Map = Model.extend({
   // PUBLIC API METHODS
 
   createCartoDBLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql', 'cartocss']);
+    this._checkProperties(attrs, ['sql|source', 'cartocss']);
     return this._addNewLayerModel('cartodb', attrs, options);
   },
 
   createTorqueLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql', 'cartocss']);
+    this._checkProperties(attrs, ['sql|source', 'cartocss']);
     return this._addNewLayerModel('torque', attrs, options);
   },
 

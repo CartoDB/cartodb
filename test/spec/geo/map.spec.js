@@ -269,7 +269,17 @@ describe('core/geo/map', function() {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // CartoDB layer that points to a source (instead of having sql)
+        createMethod: 'createCartoDBLayer',
+        expectedLayerModelClass: CartoDBLayer,
+        expectedLayerModelType: 'CartoDB',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTorqueLayer',
@@ -279,7 +289,17 @@ describe('core/geo/map', function() {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // Torque layer that points to a source (instead of having sql)
+        createMethod: 'createTorqueLayer',
+        expectedLayerModelClass: TorqueLayer,
+        expectedLayerModelType: 'torque',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|sourcew,cartocss'
       },
       {
         createMethod: 'createTileLayer',

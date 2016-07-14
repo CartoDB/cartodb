@@ -3,9 +3,12 @@
 @import 'cdb-variables/sizes';
 
 .Notifier {
+  @include css3-prefix(hyphens, auto);
   margin: 0 -25px;
   padding: 0 $baseSize * 3;
   border-top: 1px solid $cSecondaryLine;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   &.is-dark {
     border-color: #3A484E;
@@ -22,7 +25,7 @@
   padding: $baseSize + 4 0;
   border-top: 1px solid $cSecondaryLine;
 
-  &.is-dark {
+  .is-dark & {
     border-color: #3A484E;
   }
 
@@ -33,20 +36,14 @@
 
 .Notifier-item {
   @include display-flex();
-  @include align-items(center);
   padding: $baseSize 0;
   color: $cSecondaryText;
-
-  &.is-working {
-    color: $cAltText;
-  }
 }
 
 .Notifier-info {
   @include flex(1);
   min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
-  word-break: break-all;
 }
 
 .Notifier-actions {
@@ -55,5 +52,9 @@
   &:first-of-type {
     margin-left: 0;
   }
+}
+
+.Notifier-icon {
+  margin-top: 1px;
 }
 

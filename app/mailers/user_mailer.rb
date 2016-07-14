@@ -6,7 +6,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @organization = @user.organization
     @owner = @organization.owner
-    @subject = "You have been invited to CartoDB organization '#{@organization.name}'"
+    @subject = "You have been invited to CARTO organization '#{@organization.name}'"
 
     if @user.enable_account_token.nil?
       @link = "#{CartoDB.base_url(@organization.name, @user.username)}"
@@ -25,7 +25,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     organization = @table_visualization.user.organization
     @link = "#{CartoDB.base_url(organization.name, @user.username)}#{CartoDB.path(self, 'public_tables_show_bis', {id: "#{@table_visualization.user.username}.#{@table_visualization.name}"})}"
-    @subject = "#{@table_visualization.user.username} has shared a CartoDB dataset with you"
+    @subject = "#{@table_visualization.user.username} has shared a CARTO dataset with you"
     mail :to => @user.email,
          :subject => @subject
   end
@@ -37,7 +37,7 @@ class UserMailer < ActionMailer::Base
     # This presenter has limited compatibility with old Visualization models
     visualization_presenter = Carto::Api::VisualizationPresenter.new(visualization, user, self)
     @link = visualization_presenter.privacy_aware_map_url
-    @subject = "#{@visualization.user.username} has shared a CartoDB map with you"
+    @subject = "#{@visualization.user.username} has shared a CARTO map with you"
     mail(to: @user.email,
          subject: @subject)
   end
@@ -46,7 +46,7 @@ class UserMailer < ActionMailer::Base
     @table_visualization_name = table_visualization_name
     @table_visualization_owner_name = table_visualization_owner_name
     @user = user
-    @subject = "#{@table_visualization_owner_name} has stopped sharing a CartoDB dataset with you"
+    @subject = "#{@table_visualization_owner_name} has stopped sharing a CARTO dataset with you"
     mail :to => @user.email,
          :subject => @subject
   end
@@ -55,7 +55,7 @@ class UserMailer < ActionMailer::Base
     @visualization_name = visualization_name
     @visualization_owner_name = visualization_owner_name
     @user = user
-    @subject = "#{@visualization_owner_name} has stopped sharing a CartoDB map with you"
+    @subject = "#{@visualization_owner_name} has stopped sharing a CARTO map with you"
     mail :to => @user.email,
          :subject => @subject
   end

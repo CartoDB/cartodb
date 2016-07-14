@@ -72,7 +72,7 @@ module CartoDB
 
   # Deprecated logging
   class StdoutLogger
-    def self.info(title = "CartoDB Log", message)
+    def self.info(title = "CARTO Log", message)
       Rails.logger.info "[#{title}] === #{message}"
     end
   end

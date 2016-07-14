@@ -8,39 +8,45 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
-@import "../variables/colors";
 
 div.dropdown.map_options_dropdown {
-  padding: 0px;
+
+  display: block;
+  box-shadow: none;
+  border-radius: none;
+  width: 80%;
 
   ul {
 
     box-sizing: border-box;
     margin: 0;
-    width: 204px;    
+    width: 100%;
+    padding: 12px 15px;
+    line-height: 10px;
+    letter-spacing: 0px;
 
     li {
       @include display-flex();
       @include justify-content(space-between, justify);
       @include align-items(center, center);
-      background-color: transparent;
-      margin: 0;      
+      margin: 0;
+      padding: 10px 0;
       border:none;
       font-size: 13px;
-      border-bottom: 1px solid $Black;
+      border-bottom: 1px solid rgba(204,204,204,0.35);
       cursor: default;
-      padding: 0px 12px;
       position:relative;
 
       &:before {
-        content: ''; 
+        content: '';
         position:absolute;
-        top: 15px;
+        top: 14px;
         width: 10px;
         height: 10px;
       }
 
       &.title:before {
+        top: 12px;
         width: 10px; height: 11px;
         @include map-sprite(map_options_title);
       }
@@ -74,6 +80,8 @@ div.dropdown.map_options_dropdown {
       }
 
       &.scrollwheel:before {
+        top: 10px;
+        left: 2px;
         width: 11px; height: 16px;
         @include map-sprite(map_options_scrollwheel);
       }
@@ -93,23 +101,22 @@ div.dropdown.map_options_dropdown {
         @include map-sprite(map_options_legends);
       }
 
-      &:first-child { 
+      &:first-child {
         padding-top: 0;
+        &:before { top: 2px; }
       }
 
-      &:last-child { 
+      &:last-child {
         border:none;
         padding-bottom: 0;
       }
 
 
-      p { margin-left: 17px; color:$Amber1}
+      p { margin-left: 17px; }
 
-      &.active, &.active p {  }
-      &:hover {
-        background-color: transparent;
-      }
-      &, p {         
+      &.active, &.active p { color: #666666; }
+      &, p {
+        color: #b9b9b9;
         @include simple-transition(color, 100ms);
       }
 
@@ -124,6 +131,8 @@ div.dropdown.map_options_dropdown {
         }
 
       }
+
+      &:hover { background: #fff; }
 
       a {
         @include inline-block();

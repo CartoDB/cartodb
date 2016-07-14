@@ -21,6 +21,7 @@ module Carto
     STATE_UPLOADING = 'uploading'
     STATE_FAILURE   = 'failure'
     STATE_STUCK     = 'stuck'
+    STATE_CANCELLED = 'cancelled'
 
     belongs_to :user, class_name: Carto::User
     belongs_to :log, class_name: Carto::Log

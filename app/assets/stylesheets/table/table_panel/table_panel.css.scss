@@ -9,33 +9,49 @@
 @import "../../old_common/vars";
 @import "../../old_common/common-sprite";
 @import "../../table/table-sprite";
-@import "../variables/colors";
 
-$corner_radius: 0px;
+$corner_radius: 6px;
 
 .table_panel {
   position:fixed;
   right:-537px;
-  top:78px;
+  top:80px;
   bottom:0px;
   width:600px;
-  background:$DarkGrey3;
+  padding-top:25px;
+  background:white;
   letter-spacing:-4px;
-  border:1px solid $Black;
+  border:1px solid rgba(black,0.4);
   border-bottom:0;
   border-right:0;
+  background:#EDEDED;
   @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-  @include border-top-left-radius($corner_radius);
   z-index:20;
 
-//bb_layer_panel
+  .collapse {
+    left: -44px;
+    position: absolute;
+    width: 43px;
+    height: 43px;
+    top: -1px;
+    background-color: #EDEDED;
+    border-radius: 6px 0px 0px 6px;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    @include table-sprite(wizard-arrows, $offset-x:0px);
+
+    &.open {
+      background-color: #EDEDED;
+      @include table-sprite(wizard-arrows, $offset-x:-43px);
+    }
+  }
+
   .layer_panel {
     position:relative;
     width:100%;
     height:100%;
     margin-top:-25px;
-    background:$DarkGrey2;
-    border-top:1px solid $Black;
+    background:#EDEDED;
+    border-top:1px solid #999999;
     @include border-top-left-radius($corner_radius);
     @include box-shadow(rgba(black,0.1) 0 -10px 20px 0);
     @include transform-style("linear");
@@ -43,7 +59,9 @@ $corner_radius: 0px;
     @include transition-duration(250ms);
     z-index:1;
 
+    &:hover {padding-bottom:15px}
     &:first-child {margin-top:0;}
+    &:last-child:hover {margin-top:-38px}
   }
 
 
@@ -89,20 +107,26 @@ $corner_radius: 0px;
 
   // Active layer
   .layer_panel.active {
-    margin-bottom:20px;
+    margin-bottom:5px;
     padding-bottom:0;
 
     .layer-info .info {
       .order {background:#666666;}
-      .name_info {color:$Grey2;}
-      .name { color:$Grey1; }
+      .name_info {color:#999; line-height: 30px;}
+      .name { color:#666; }
     }
 
+    &:hover {
+      margin-bottom:20px;
+      padding-bottom:0;
+      margin-top:-25px;
+    }
   }
 
   // Active layer in visualization
   .layer_panel.active.vis {
     .layer-info {
+      .info .name:hover { color:#454545 }
     }
   }
 
@@ -123,6 +147,11 @@ $corner_radius: 0px;
   // due to it is not possible drag layers in table view.
   &.ui-sortable .layer_panel.active .layer-info .info:hover {
     cursor:move;
+    .order {
+      @include table-sprite(layer_move_icon);
+      background-color:none;
+      text-indent:-9999px;
+    }
   }
 
 }

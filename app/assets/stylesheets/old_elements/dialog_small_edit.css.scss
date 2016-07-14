@@ -126,7 +126,7 @@
       word-spacing: -4px;
 
       .select2-container {width:100px!important;}
-      
+
       & > div.column {
         @include inline-block();
         letter-spacing: 0;
@@ -164,7 +164,7 @@
         }
 
         &:last-child {margin-right:0;}
-      }      
+      }
     }
 
 
@@ -279,7 +279,7 @@
         top:6px;
         left:8px;
         font-style:italic;
-        color:#AAAAAA; 
+        color:#AAAAAA;
         font-size:13px;
         pointer-events:none;
         z-index:10;
@@ -292,6 +292,7 @@
   }
 }
 .floating.edit_name_dialog {
+  z-index:10000;
   min-width:280px;
   height:37px;
   padding: 5px;

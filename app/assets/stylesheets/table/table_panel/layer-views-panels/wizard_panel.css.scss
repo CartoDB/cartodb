@@ -12,7 +12,6 @@
   @import "../../../table/table-sprite";
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
-  @import "../../../variables/colors";
 
   // LOCAL VARS
   $corner_radius: 6px;
@@ -29,11 +28,12 @@
     div.wizard_wrap {
       position:absolute;
       overflow:hidden;
-      top:0px;
+      top:60px;
       left:0;
       right:0;
       height:149px;
-      background: none;
+
+      background: image-url('layout/linen.png');
 
       &.left_shadow:before {
         content:'';
@@ -108,7 +108,10 @@
       display:block;
       width:1050px;
       padding:0 30px;
+
       letter-spacing:-4px;
+      border-bottom:1px solid #E5E5E5;
+      @include box-shadow(rgba(0,0,0,0.05) 0 -4px 8px 0 inset);
 
       li {
         position:relative;
@@ -125,7 +128,7 @@
           margin:30px 0;
 
           @include box-shadow(0 0 3px 4px rgba(black, 0.15));
-          @include border-radius(2px);
+          @include border-radius(3px);
 
           .name {
             position: absolute;
@@ -136,7 +139,7 @@
             background:#fff;
 
             border-top: 1px solid #ccc;
-            @include border-radius(0 0 2px 2px);
+            @include border-radius(0 0 3px 3px);
             text-transform: uppercase;
 
             text-align:center;
@@ -192,12 +195,35 @@
           }
 
           &.selected {
-            border: 4px solid $SelectionBlue2;
+            border-color:$cGray2;
 
-            @include opacity(1); 
+            @include opacity(1);
 
             .name {
               color: #333;
+            }
+
+            &:before, &:after {
+              @include size(0);
+              position:absolute;
+              bottom: 0;
+              content: '';
+              left:50%;
+              margin-left:-13px;
+              border-left:10px solid transparent;
+              border-right:10px solid transparent;
+              z-index:5;
+            }
+
+            &:before {
+              bottom:-30px;
+              border-bottom:10px solid white;
+              z-index:10;
+            }
+
+            &:after {
+              bottom:-30px;
+              border-bottom:10px solid $cGray4;
             }
           }
 
@@ -221,12 +247,12 @@
           display:block;
           width:100%;
           padding:13px 0;
-          border-bottom:1px solid $DarkGrey9;
+          border-bottom:1px solid rgba(#E5E5E5,0.5);
 
           & > span:first-child {
             float:left;
             margin-top:2px;
-            color:$Grey2;
+            color:#AAA;
           }
 
           & > span:last-child {
@@ -238,7 +264,7 @@
           }
 
           &.label_text { border:none; }
-          &.label_text.border { border-bottom: 1px solid $DarkGrey9; }
+          &.label_text.border { border-bottom: 1px solid rgba(#E5E5E5,0.5); }
           &:last-child {border:none;}
 
           span.field > div {
@@ -266,7 +292,7 @@
       }
 
       &.panel_content {
-        top:152px;
+        top:212px;
       }
 
       // Color wizard styles
@@ -296,9 +322,9 @@
       }
     }
   }
-  
+
   /* Temporary hack for a Chrome v45 bug */
   /* https://github.com/CartoDB/cartodb/issues/5368 */
-  .select2-result-label td.color { 
+  .select2-result-label td.color {
      width: 10%;
   }

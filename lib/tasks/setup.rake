@@ -162,11 +162,29 @@ DESC
         u.password = password
         u.password_confirmation = password
         if !u.save
-          rais u.errors.inspect
+          raise u.errors.inspect
         else
           puts "Password changed"
         end
       end
     end
+
+    desc "Remove table quota for user in the USER_NAME environment variable"
+    task :remove_table_quota => :environment do
+      raise "Set USER_NAME environment variable" if ENV['USER_NAME'].blank?
+      users = ::User.filter(:username => ENV['USER_NAME']).all
+      if users.empty?
+        raise "User doesn't exist"
+      else
+        u = users.first
+        u.update(:table_quota => nil)
+        if !u.save
+          raise u.errors.inspect
+        else
+          puts "#{u.username} table quota limit removed"
+        end
+      end
+    end
+
   end
 end

@@ -12,7 +12,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   include Carto::UUIDHelper
   include Carto::UrlValidator
 
-  ssl_required :create
+  ssl_required :create, :update
   ssl_allowed :invalidate_service_token
 
   # NOTE: When/If OAuth tokens management is built into the UI, remove this to send and check CSRF
@@ -40,10 +40,13 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if params[:url].present?
           validate_url!(params.fetch(:url)) unless Rails.env.development? || Rails.env.test?
-          options.merge!(data_source: params.fetch(:url))
+          options[:data_source] = params.fetch(:url)
+        elsif params[:fdw].present?
+          options[:service_name] = 'connector'
+          options[:service_item_id] = params[:fdw]
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
-          options.merge!( { data_source: external_source.import_url.presence } )
+          options[:data_source] = external_source.import_url.presence
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
             results = file_upload_helper.upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
@@ -81,6 +84,42 @@ class Api::Json::ImportsController < Api::ApplicationController
         render_jsonp({ errors: { imports: ex.message } }, 400)
       end
 
+    end
+  end
+
+  # -------- Cancel a running import -------
+
+  def destroy
+    if !params[:id].present?
+      render_jsonp({ errors: { imports: 'Missing queue ID in import cancellation request'} }, 400) and return
+    end
+
+    queue_id = params[:id]
+
+    begin
+      # first verify that this job exists and user owns this job
+      import = DataImport.where(id: queue_id).first()
+
+      if import.nil? or import.user_id != current_user.id
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} not found."} }, 400) and return
+      end
+
+      if import.state == Carto::DataImport::STATE_COMPLETE or import.state == Carto::DataImport::STATE_FAILURE
+        render_jsonp({ errors: { imports: "Failed to cancel import. Job with ID #{queue_id} not currently running."} }, 400) and return
+      end
+
+      # found a running job for the user with the given ID; stop it
+      Resque::Job.destroy(Resque::ImporterJobs, job_id: queue_id)
+      # clean up and set state
+      import.cancel_import
+      import.delete
+      decrement_concurrent_imports_rate_limit
+
+      print("\nCancelled import job #{queue_id}\n")
+      render_jsonp({ item_queue_id: queue_id, success: true })
+
+    rescue => ex
+      render_jsonp({ errors: { imports: "Failed to cancel import #{queue_id}: #{ex.message}"} }, 500)
     end
   end
 

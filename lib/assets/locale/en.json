@@ -913,7 +913,7 @@
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
-            "logo": "CartoDB Logo",
+            "logo": "CARTO Logo",
             "widgets": "Widgets column"
           }
         }
@@ -1469,12 +1469,21 @@
         },
         "aggregation-options": {
           "count": "COUNT",
-          "sum": "SUM"
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }
   },
   "notifications": {
+    "vis": {
+      "failed": {
+        "title": "This map couldn't be rendered.",
+        "body": "Please refresh the page and contact us if the error persists."
+      }
+    },
     "analysis": {
       "pending": "Analysis %{nodeId} waiting",
       "waiting": "Analysis %{nodeId} enqueued",

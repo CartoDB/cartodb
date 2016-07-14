@@ -173,7 +173,7 @@ module CartoDB
         # since connectors' foreign table names are unique (because
         # server names are unique and not reused)
         # we could in principle use any schema (@schema, 'public', 'cdb_importer')
-        CartoDB::Connector::Importer::ORIGIN_SCHEMA;
+        CartoDB::Connector::Importer::ORIGIN_SCHEMA
       end
 
       def qualified_foreign_table_name

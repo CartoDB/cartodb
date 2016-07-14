@@ -201,9 +201,9 @@
   background: $cThirdBackground;
   &:hover {
     border: 1px solid $cSecondaryLine;
-  cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
   }
 }
 

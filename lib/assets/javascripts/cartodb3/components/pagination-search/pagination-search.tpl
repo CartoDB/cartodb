@@ -7,12 +7,12 @@
         </p>
       </div>
       <div class="Filters-typeItem Filters-typeItem--searchField">
-        <form class="Filters-searchForm js-search-form" action="#">
-          <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- q %>" placeholder="Search by username or email" />
-          <button type="button" class="CDB-Shape Filters-cleanSearch js-clean-search" style="display: none;">
-            <div class="CDB-Shape-close is-blue is-large"></div>
-          </button>
-        </form>
+        <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- q %>" placeholder="Search by username or email" />
+        <% if (q !== '') { %>
+        <button type="button" class="CDB-Shape Filters-cleanSearch js-clean-search">
+          <div class="CDB-Shape-close is-blue is-large"></div>
+        </button>
+        <% } %>
       </div>
     </div>
   </div>

@@ -77,7 +77,6 @@
 
 .ModalBlockList-item {
   @include display-flex();
-  @include align-items(baseline);
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
@@ -90,7 +89,7 @@
 }
 
 .ModalBlockList-itemInput {
-  margin-right: 16px;
+  margin-right: $baseSize;
 }
 
 .ModalBlockList-item:hover {

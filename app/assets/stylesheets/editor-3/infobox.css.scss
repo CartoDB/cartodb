@@ -2,6 +2,11 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+.Infobox-wrapper {
+  width: 100%;
+  margin-top: -25px;
+  margin-bottom: -25px;
+}
 .Infobox {
   @include flex(10);
   margin-right: -25px;
@@ -23,11 +28,14 @@
     color: $cHighlightYellow;
   }
 }
-
+.Infobox-quota {
+  @include flex(10);
+  margin-right: 18%;
+}
 .Infobox-buttons {
   @include display-flex();
+  @include flex(10);
 }
-
 .Infobox-button {
   @include flex(1);
 

@@ -1475,7 +1475,10 @@
   },
   "notifications": {
     "vis": {
-      "failed": "This map couldn't be rendered. Please try to refresh the page and contact us if the error persists."
+      "failed": {
+        "title": "This map couldn't be rendered.",
+        "body": "Please refresh the page and contact us if the error persists."
+      }
     },
     "analysis": {
       "pending": "Analysis %{nodeId} waiting",

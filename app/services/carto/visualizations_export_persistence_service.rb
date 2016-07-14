@@ -117,13 +117,12 @@ module Carto
 
       # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
       query = options[:query]
+      options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
 
-      if query.present?
-        new_query = rewrite_query_for_new_user(query, old_username, new_user)
-        new_query = rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
-
-        options[:query] = new_query
-      end
+    def rewrite_query(query, old_username, new_user, renamed_tables)
+      new_query = rewrite_query_for_new_user(query, old_username, new_user)
+      rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
     end
 
     def rewrite_query_for_new_user(query, old_username, new_user)

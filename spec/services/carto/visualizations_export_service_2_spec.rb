@@ -648,6 +648,9 @@ describe Carto::VisualizationsExportService2 do
                                                                                        map: map,
                                                                                        table: user_table,
                                                                                        data_layer: layer)
+
+         FactoryGirl.create(:source_analysis, visualization: @visualization, user: owner_user,
+                                              source_table: @table.name)
       end
 
       after(:each) do
@@ -672,6 +675,9 @@ describe Carto::VisualizationsExportService2 do
         imported_layer = imported_viz.layers[0]
 
         imported_layer[:options]['user_name'].should eq target_user.username
+
+        analysis_definition = imported_viz.analyses.first.analysis_definition
+        analysis_definition[:params][:query].should eq imported_layer[:options]['query']
 
         imported_layer[:options]['query']
       end

@@ -1469,7 +1469,10 @@
         },
         "aggregation-options": {
           "count": "COUNT",
-          "sum": "SUM"
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }

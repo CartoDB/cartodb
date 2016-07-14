@@ -228,7 +228,7 @@ module.exports = Model.extend({
   getSourceId: function () {
     // Dataview is pointing to a layer that has a source, so its
     // source is actually the the layers's source
-    if (this.hasLayerAsSource() && this.layer.get('source')) {
+    if (this.hasLayerAsSource() && this.layer.has('source')) {
       return this.layer.get('source');
     }
 

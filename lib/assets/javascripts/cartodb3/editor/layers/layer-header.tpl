@@ -1,7 +1,9 @@
 <div class="Editor-HeaderInfoEditor">
-  <button class="u-rSpace--xl u-actionTextColor js-back">
-    <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
-  </button>
+  <div class="u-rSpace--xl u-actionTextColor js-back Editor-HeaderInfoEditorShape">
+    <button>
+      <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+    </button>
+  </div>
 
   <div class="Editor-HeaderInfo-inner">
     <div class="Editor-HeaderInfo-title u-bSpace js-header">
@@ -21,7 +23,7 @@
     </div>
   </div>
 
-  <div class=" CDB-Shape">
+  <div class="CDB-Shape Editor-HeaderInfoEditorShape">
     <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
       <div class="CDB-Shape-threePointsItem"></div>
       <div class="CDB-Shape-threePointsItem"></div>

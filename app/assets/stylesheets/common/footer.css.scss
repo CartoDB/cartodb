@@ -20,6 +20,7 @@
   background: white;
 }
 .Footer.Footer--public {
+  padding-bottom: 0;
   box-shadow: none;
   overflow: hidden;
   text-rendering: optimizeLegibility;
@@ -59,6 +60,9 @@
 }
 .Footer-columns--noBorder {
   border-top: 0;
+}
+.Footer-column {
+  padding-bottom: 40px;
 }
 .Footer-column--mobile {
   border-top: 1px solid #EEE;

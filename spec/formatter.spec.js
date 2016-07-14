@@ -2,7 +2,7 @@ var formatter = require('../src/formatter');
 
 describe('formatter', function () {
   it('should format numbers', function () {
-    expect(formatter.formatNumber(0)).toBe('0');
+    expect(formatter.formatNumber(0)).toBe(0);
     expect(formatter.formatNumber(0.71)).toBe('0.710');
     expect(formatter.formatNumber(-0.71)).toBe('-0.710');
     expect(formatter.formatNumber(5)).toBe('5');

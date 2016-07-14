@@ -4,7 +4,7 @@ var d3 = require('d3');
 var format = {};
 
 format.formatNumber = function (value, unit) {
-  if (!_.isNumber(value) || value === 0) {
+  if (!_.isNumber(value) || value == 0) {
     return value;
   }
 
@@ -31,7 +31,6 @@ format.formatNumber = function (value, unit) {
   if (m) {
       value = value.replace(m[0], '');
   }
-
 
   return value;
 };

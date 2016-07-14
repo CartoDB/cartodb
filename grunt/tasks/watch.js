@@ -5,18 +5,6 @@
 module.exports = {
   task: function () {
     return {
-      jasmine: {
-        files: [
-          'src/**/*.js',
-          'spec/**/*.js'
-        ],
-        tasks: ['npm-test'],
-        options: {
-          spawn: true, // don't share context with others watchers, only want to rerun the jasmine tests separately
-          interrupt: true,
-          atBegin: false
-        }
-      },
       scss: {
         files: ['themes/scss/**/*.scss'],
         tasks: ['sass', 'concat:themes', 'cssmin:themes'],

@@ -64,7 +64,7 @@ module CartoDB
         @job.log "Creating Foreign Table"
         execute_as_superuser create_foreign_table_command
         @job.log "Copying Foreign Table"
-        execute "CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{foreign_table_name};"
+        execute "CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{qualified_foreign_table_name};"
       rescue => error
         @job.log "Connector Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
@@ -169,6 +169,17 @@ module CartoDB
         "#{foreign_prefix}#{@params['table'] || 'table'}"
       end
 
+      def foreign_table_schema
+        # since connectors' foreign table names are unique (because
+        # server names are unique and not reused)
+        # we could in principle use any schema (@schema, 'public', 'cdb_importer')
+        CartoDB::Connector::Importer::ORIGIN_SCHEMA;
+      end
+
+      def qualified_foreign_table_name
+        %{"#{foreign_table_schema}".#{foreign_table_name}}
+      end
+
       def create_server_command
         options = server_params.map { |k, v| "#{k} '#{v}'" } * ",\n"
         %{
@@ -185,10 +196,10 @@ module CartoDB
         if @columns.present?
           options_list = options.map { |k, v| "#{k} '#{v}'" } * ",\n"
           %{
-            CREATE FOREIGN TABLE #{foreign_table_name} (#{@columns * ','})
+            CREATE FOREIGN TABLE #{qualified_foreign_table_name} (#{@columns * ','})
               SERVER #{server_name}
               OPTIONS (#{options_list});
-            GRANT SELECT ON #{foreign_table_name} TO "#{@user.database_username}";
+            GRANT SELECT ON #{qualified_foreign_table_name} TO "#{@user.database_username}";
            }
         else
           options = options.merge(prefix: foreign_prefix)
@@ -196,9 +207,9 @@ module CartoDB
           %{
             IMPORT FOREIGN SCHEMA #{@params['schema'] || @params['connection']['database'] || 'schema'}
               FROM SERVER #{server_name}
-              INTO #{@schema}
+              INTO #{foreign_table_schema}
               OPTIONS (#{options_list});
-            GRANT SELECT ON #{foreign_table_name} TO "#{@user.database_username}";
+            GRANT SELECT ON #{qualified_foreign_table_name} TO "#{@user.database_username}";
            }
         end
       end
@@ -208,7 +219,7 @@ module CartoDB
       end
 
       def drop_foreign_table_command
-        "DROP FOREIGN TABLE IF EXISTS #{foreign_table_name} CASCADE;"
+        %{DROP FOREIGN TABLE IF EXISTS #{qualified_foreign_table_name} CASCADE;}
       end
 
       def execute_as_superuser(command)

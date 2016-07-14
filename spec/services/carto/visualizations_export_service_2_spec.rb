@@ -709,6 +709,87 @@ describe Carto::VisualizationsExportService2 do
         check_username_replacement(source_user, target_user).should eq query
       end
     end
+
+    describe 'exporting + importing visualizations with renamed tables' do
+      include Carto::Factories::Visualizations
+      include CartoDB::Factories
+
+      before(:all) do
+        bypass_named_maps
+        @user = FactoryGirl.create(:carto_user)
+      end
+
+      def default_query(table_name = @table.name)
+        if @user.present?
+          "SELECT * FROM #{@user.sql_safe_database_schema}.#{table_name}"
+        else
+          "SELECT * FROM #{table_name}"
+        end
+      end
+
+      def setup_visualization_with_layer_query(table_name, query = nil)
+        @table = create_table(name: table_name, user_id: @user.id)
+        user_table = Carto::UserTable.find(@table.id)
+
+        query ||= default_query(table_name)
+        layer_options = {
+          table_name: @table.name,
+          query: query,
+          user_name: @user.username,
+          query_history: [query]
+        }
+        layer = FactoryGirl.create(:carto_layer, options: layer_options)
+        layer.options['query'].should eq query
+        layer.options['user_name'].should eq @user.username
+        layer.options['table_name'].should eq @table.name
+        layer.options['query_history'].should eq [query]
+
+        map = FactoryGirl.create(:carto_map, layers: [layer], user: @user)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@user,
+                                                                                       map: map,
+                                                                                       table: user_table,
+                                                                                       data_layer: layer)
+      end
+
+      after(:each) do
+        ::UserTable[@table.id].destroy
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      let(:export_service) { Carto::VisualizationsExportService2.new }
+
+      def import_and_check_query(renamed_tables, expected_table_name, expected_query = nil)
+        exported = export_service.export_visualization_json_hash(@visualization.id, @user)
+
+        built_viz = export_service.build_visualization_from_hash_export(exported)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz,
+                                                                                     renamed_tables: renamed_tables)
+
+        expected_query ||= default_query(expected_table_name)
+        imported_layer_options = imported_viz.layers[0][:options]
+
+        imported_layer_options['query'].should eq expected_query
+        imported_layer_options['table_name'].should eq expected_table_name
+      end
+
+      it 'replaces table name in default queries on import (with schema)' do
+        setup_visualization_with_layer_query('tabula')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa')
+      end
+
+      it 'replaces table name in more complex queries on import' do
+        setup_visualization_with_layer_query('tabula', 'SELECT COUNT(*) AS count FROM tabula WHERE tabula.yoyo=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT COUNT(*) AS count FROM rasa WHERE rasa.yoyo=2')
+      end
+
+      it 'does not replace table name as part of a longer identifier' do
+        setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM rasa WHERE tabulacol=2')
+      end
+    end
   end
 
   describe 'exporting + importing' do

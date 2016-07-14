@@ -112,6 +112,7 @@
 **/src/vis/vis/infowindow-template.js
 **/src/vis/vis/overlay.js
 **/src/vis/vis/overlays.js
+**/spec/specs/geo/geometry.spec.js
 **/test/fail-tests-if-have-errors-in-src.js
 **/test/install-source-map-support.js
 **/test/spec/api/sql.spec.js
@@ -128,7 +129,6 @@
 **/test/spec/geo/cartodb-layer-common.spec.js
 **/test/spec/geo/geocoder/nokia-geocoder.spec.js
 **/test/spec/geo/geocoder/yahoo-geocoder.spec.js
-**/test/spec/geo/geometry.spec.js
 **/test/spec/geo/gmaps_cartodb_layer/hide.js
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js

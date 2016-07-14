@@ -16,13 +16,6 @@
 .Editor-contextSwitcher.is-moved {
   left: calc(50% - 216px);
 }
-/*
-.Editor-contextSwitcher.in-table {
-  position: fixed;
-  right: 42px;
-  bottom: 42px;
-  left: auto;
-}*/
 .Editor-contextSwitcherButton {
   @include display-flex();
   @include align-items(center);
@@ -34,7 +27,7 @@
   cursor: pointer;
 }
 .Editor-contextSwitcherButton.is-selected {
-  background: rgba(0, 0, 0, 0.64);
+  background: $cMainBg;
 }
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
   fill: $cWhite;

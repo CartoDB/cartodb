@@ -913,7 +913,7 @@
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
-            "logo": "CartoDB Logo",
+            "logo": "CARTO Logo",
             "widgets": "Widgets column"
           }
         }
@@ -1010,7 +1010,8 @@
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
         "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
@@ -1232,6 +1233,9 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
+        "sql-alter-loading": "Modifying table...",
+        "sql-alter-error": "Modifying failed",
+        "sql-alter-success": "Modifying applied",
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
         "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
@@ -1465,12 +1469,21 @@
         },
         "aggregation-options": {
           "count": "COUNT",
-          "sum": "SUM"
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }
   },
   "notifications": {
+    "vis": {
+      "failed": {
+        "title": "This map couldn't be rendered.",
+        "body": "Please refresh the page and contact us if the error persists."
+      }
+    },
     "analysis": {
       "pending": "Analysis %{nodeId} waiting",
       "waiting": "Analysis %{nodeId} enqueued",

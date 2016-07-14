@@ -141,7 +141,20 @@ module Carto
     def rewrite_query(query, old_username, new_user, renamed_tables)
       new_query = rewrite_query_for_new_user(query, old_username, new_user)
       new_query = rewrite_query_for_renamed_tables(new_query, renamed_tables) if renamed_tables.present?
-      new_query
+      if test_query(new_user, new_query)
+        new_query
+      else
+        CartoDB::Logger.debug(message: 'Did not rewrite query on import', old_query: query, new_query: new_query,
+                              old_username: @old_username, user: new_user, renamed_tables: renamed_tables)
+        query
+      end
+    end
+
+    def test_query(user, query)
+      user.in_database.execute("EXPLAIN (#{query})")
+      true
+    rescue
+      false
     end
 
     def rewrite_query_for_new_user(query, old_username, new_user)

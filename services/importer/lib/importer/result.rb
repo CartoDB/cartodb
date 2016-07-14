@@ -3,7 +3,7 @@
 module CartoDB
   module Importer2
     class Result
-      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace support_tables original_name }
+      ATTRIBUTES = %w{ name schema extension tables success error_code log_trace support_tables original_name }.freeze
       attr_reader *ATTRIBUTES.map(&:to_sym)
       attr_writer :name
 

@@ -781,11 +781,15 @@ describe Carto::VisualizationsExportService2 do
         imported_layer_options['query'].should eq expected_query
         imported_layer_options['table_name'].should eq expected_table_name
 
-        imported_viz.analyses.each do |analysis|
-          analysis_definition = analysis.analysis_definition
-          analysis_definition[:options][:table_name].should eq expected_table_name
-          analysis_definition[:params][:query].should eq expected_query
-        end
+        source_analysis = imported_viz.analyses.find { |a| a.analysis_node.source? }.analysis_definition
+        check_analysis_defition(source_analysis, expected_table_name, expected_query)
+        nested_analysis = imported_viz.analyses.find { |a| !a.analysis_node.source? }.analysis_definition
+        check_analysis_defition(nested_analysis[:params][:source], expected_table_name, expected_query)
+      end
+
+      def check_analysis_defition(analysis_definition, expected_table_name, expected_query)
+        analysis_definition[:options][:table_name].should eq expected_table_name
+        analysis_definition[:params][:query].should eq expected_query
       end
 
       it 'replaces table name in default queries on import (with schema)' do

@@ -19,7 +19,7 @@
   $text-shadow-color: rgba(black,0.25);
 
 
-  .header_content {
+  header {
 
     div.left {
       position:relative;
@@ -141,10 +141,14 @@
             font-weight:300;
             color: rgba(255, 255, 255, 0.5);
             &:hover { cursor:pointer; color:rgba(255, 255, 255, 1); }
-            &.disabled {@include opacity(1)}
+            &.disabled { @include opacity(1); }
           }
         }
       }
+    }
+
+    div.right {
+      position:relative;
     }
 
     // Actions list
@@ -192,8 +196,7 @@
 
     // Options menu
     ul.options {
-      position:absolute;
-      top:0;
+      position: absolute;
       right: 0;
       width:auto;
       margin:5px 35px 0 0;
@@ -255,5 +258,11 @@
         }
 
       }
+    }
+
+    .export-options {
+      position: absolute;
+      top: 100px;
+      right: 20px;
     }
   }

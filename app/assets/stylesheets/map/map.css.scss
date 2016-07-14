@@ -461,7 +461,7 @@ div.map {
 
   &.derived div.cartodb-map {
 
-    @include position(82px, 79px, 15px, 15px);
+    @include position(15px, 79px, 15px, 15px);
     @include border-radius(3px);
     @include size(auto);
 
@@ -927,4 +927,3 @@ div.search-result-dropdown {
 :fullscreen {
   top: 0!Important; left: 0!Important; right: 0!Important; bottom: 0!Important;
 }
-

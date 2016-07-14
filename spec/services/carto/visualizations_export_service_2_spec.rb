@@ -614,6 +614,7 @@ describe Carto::VisualizationsExportService2 do
         bypass_named_maps
         delete_user_data @org_user_with_dash_1
         delete_user_data @org_user_with_dash_2
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
       end
 
       let(:table_name) { 'a_shared_table' }
@@ -714,6 +715,14 @@ describe Carto::VisualizationsExportService2 do
         source_user.username.should include('-')
         check_username_replacement(source_user, target_user).should eq query
       end
+
+      it 'does not replace owner name with new user name on import when new query fails' do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        source_user = @carto_org_user_1
+        target_user = @carto_org_user_2
+        setup_visualization_with_layer_query(source_user, target_user)
+        check_username_replacement(source_user, target_user).should eq query(source_user)
+      end
     end
 
     describe 'exporting + importing visualizations with renamed tables' do
@@ -723,6 +732,10 @@ describe Carto::VisualizationsExportService2 do
       before(:all) do
         bypass_named_maps
         @user = FactoryGirl.create(:carto_user)
+      end
+
+      before(:each) do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
       end
 
       def default_query(table_name = @table.name)
@@ -808,6 +821,13 @@ describe Carto::VisualizationsExportService2 do
         setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
         renamed_tables = { 'tabula' => 'rasa' }
         import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM rasa WHERE tabulacol=2')
+      end
+
+      it 'does not replace table name when query fails' do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM tabula WHERE tabulacol=2')
       end
     end
   end

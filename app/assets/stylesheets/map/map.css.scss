@@ -239,20 +239,6 @@ div.map {
 
     }
 
-    .search-bar-container {
-      background: none !important;
-      padding: 0 6px 0 2px;
-    }
-
-    .search-bar-input {
-      width: 240px;
-    }
-
-    .search-bar-browse {
-      float: right;
-      text-transform: none;
-    }
-
     & > li {
 
       &.export_image .info h5 {
@@ -844,6 +830,21 @@ div.cartodb-popup.dark  {
     }
   }
 }
+
+.search-bar-container {
+  background: none !important;
+  padding: 0 0 0 2px;
+}
+
+.search-bar-input {
+  width: 240px;
+}
+
+.search-bar-browse {
+  float: right;
+  text-transform: none;
+}
+
 
 div.search-result-dropdown {
   border:1px solid #ff9e24;

@@ -299,7 +299,7 @@ describe('core/geo/map', function() {
           source: 'a0',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql|sourcew,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTileLayer',

@@ -112,7 +112,7 @@
 **/src/vis/vis/infowindow-template.js
 **/src/vis/vis/overlay.js
 **/src/vis/vis/overlays.js
-**/spec/specs/geo/geometry.spec.js
+**/spec/unit/geo/geometry.spec.js
 **/test/fail-tests-if-have-errors-in-src.js
 **/test/install-source-map-support.js
 **/test/spec/api/sql.spec.js

@@ -11,19 +11,27 @@ format.formatNumber = function (value, unit) {
   var format = d3.format('.2s');
   var p = 0;
 
-  if (value > 1000){
-    return value = format(value) + (unit ? ' ' + unit : '');
+  if (value > 1000) {
+    value = format(value) + (unit ? ' ' + unit : '');
+    return value;
   }
 
-  if (Math.abs(value) > 100) { p = 0; }
-  else if (Math.abs(value) > 10) { p = 1; }
-  else if (Math.abs(value) > 1) { p = 2; }
-  else if (Math.abs(value) > 0) { p = 3; }
+  if (Math.abs(value) > 100) {
+    p = 0;
+  } else if (Math.abs(value) > 10) {
+    p = 1;
+  } else if (Math.abs(value) > 1) {
+    p = 2;
+  } else if (Math.abs(value) > 0) {
+    p = 3;
+  }
 
   value = value.toFixed(p);
-  if (m = value.match(/(\.0+)$/)) {
-    value = value.replace(m[0], '');
+  var m = value.match(/(\.0+)$/);
+  if (m) {
+      value = value.replace(m[0], '');
   }
+
 
   return value;
 };

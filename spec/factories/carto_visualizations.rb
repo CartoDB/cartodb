@@ -34,6 +34,10 @@ module Carto
         FactoryGirl.create(:carto_zoom_overlay, visualization: visualization)
         FactoryGirl.create(:carto_search_overlay, visualization: visualization)
 
+        visualization.map.data_layers.each do |data_layer|
+          FactoryGirl.create(:source_analysis, user_id: carto_user.id, visualization_id: visualization.id)
+        end
+
         # Need to mock the nonexistant table because factories use Carto::* models
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_name_to).returns(true)
         CartoDB::Visualization::Member.any_instance.stubs(:propagate_privacy_to).returns(true)

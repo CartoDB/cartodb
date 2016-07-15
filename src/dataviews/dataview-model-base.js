@@ -176,16 +176,12 @@ module.exports = Model.extend({
 
     return this.get('sync_on_data_change') &&
       this.get('enabled') &&
-        (!sourceId || sourceId && this._sourceAffectsDataview(sourceId));
+        (!sourceId || sourceId && this._sourceAffectsMyOwnSource(sourceId));
   },
 
-  _sourceAffectsDataview: function (sourceId) {
+  _sourceAffectsMyOwnSource: function (sourceId) {
     var sourceAnalysis = this._analysisCollection.get(this.getSourceId());
     return sourceAnalysis && sourceAnalysis.findAnalysisById(sourceId);
-  },
-
-  _affectedByChangeInSource: function (sourceId) {
-
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

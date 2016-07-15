@@ -11,7 +11,7 @@ module CartoDB; end
 describe Carto::Api::DataImportPresenter do
   before(:all) do
     @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
-    @user.max_layers = 4
+    stub_const('::Map::MAX_LAYERS', 4)
   end
 
   before(:each) do

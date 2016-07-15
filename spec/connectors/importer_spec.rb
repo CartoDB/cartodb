@@ -289,7 +289,7 @@ describe CartoDB::Connector::Importer do
   end
 
   it 'should be able to handle a zip with more files MAX_LAYERS' do
-    stub_const(::Map::MAX_LAYERS, 2)
+    stub_const('::Map::MAX_LAYERS', 2)
 
     filepath = "#{Rails.root}/spec/support/data/multilayer_shp.zip"
 

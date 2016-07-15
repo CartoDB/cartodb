@@ -10,9 +10,9 @@ class RedisFactory
     # TODO: because of #8439 we're testing different Redis timeouts for connection, R and W.
     # After getting a final solution timeout configuration should be read from the file again
     redis_conf = conf.select { |k, _| [:host, :port, :driver, :tcp_keepalive, :connect_timeout, :read_timeout, :write_timeout].include?(k) }
-    redis_conf[:connect_timeout] = 2
-    redis_conf[:read_timeout] = 3
-    redis_conf[:write_timeout] = 5
+    redis_conf[:connect_timeout] = conf.fetch(:timeout, 2) unless redis_conf[:connect_timeout]
+    redis_conf[:read_timeout] = conf.fetch(:timeout, 3) unless redis_conf[:read_timeout]
+    redis_conf[:write_timeout] = conf.fetch(:timeout, 5) unless redis_conf[:write_timeout]
 
     if ENV['REDIS_PORT']
       redis_conf[:port] = ENV['REDIS_PORT']

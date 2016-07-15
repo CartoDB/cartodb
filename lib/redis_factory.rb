@@ -9,7 +9,7 @@ class RedisFactory
   def self.get_conf
     # TODO: because of #8439 we're testing different Redis timeouts for connection, R and W.
     # After getting a final solution timeout configuration should be read from the file again
-    redis_conf = conf.select { |k, _| [:host, :port, :driver, :tcp_keepalive].include?(k) }
+    redis_conf = conf.select { |k, _| [:host, :port, :driver, :tcp_keepalive, :connect_timeout, :read_timeout, :write_timeout].include?(k) }
     redis_conf[:connect_timeout] = 2
     redis_conf[:read_timeout] = 3
     redis_conf[:write_timeout] = 5
@@ -48,6 +48,7 @@ class RedisFactory
     Cartodb.config[:redis].symbolize_keys
   end
 
+  private_class_method :conf
   private_class_method :get_conf
   private_class_method :databases
 end

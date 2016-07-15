@@ -89,8 +89,10 @@ describe('windshaft/map-base', function () {
 
       this.dataview = new HistogramDataviewModel({
         id: 'dataviewId',
+        source: {id: 'a0'},
         type: 'list'
       }, {
+        analysisCollection: this.analysisCollection,
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,

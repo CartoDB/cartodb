@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var Model = require('../../../src/core/model');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -7,11 +8,18 @@ describe('dataviews/histogram-dataview-model', function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     this.filter = new RangeFilter();
+
     this.layer = new Model();
-    this.layer.getDataProvider = function () {};
+    this.layer.getDataProvider = jasmine.createSpy('layer.getDataProvider');
+
+    this.analysisCollection = new Backbone.Collection();
+
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
-    this.model = new HistogramDataviewModel({}, {
+    this.model = new HistogramDataviewModel({
+      source: {id: 'THE_SOURCE_ID'}
+    }, {
+      analysisCollection: this.analysisCollection,
       map: this.map,
       layer: this.layer,
       filter: this.filter
@@ -31,10 +39,12 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new HistogramDataviewModel({
+      source: {id: 'THE_SOURCE_ID'},
       apiKey: 'API_KEY'
     }, {
+      analysisCollection: this.analysisCollection,
       map: this.map,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      layer: this.layer,
       filter: this.filter
     });
 

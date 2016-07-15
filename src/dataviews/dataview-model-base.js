@@ -48,9 +48,8 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
 
-    if (!opts.map) {
-      throw new Error('map is required');
-    }
+    if (!opts.map) throw new Error('map is required');
+    if (!attrs.source) throw new Error('source is a required attr');
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -78,7 +77,7 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
-    this.listenTo(this.layer, 'change:source', this._onLayerVisibilityChanged);
+
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider) {
       this.listenToOnce(layerDataProvider, 'dataChanged', this._onChangeBinds, this);
@@ -90,6 +89,7 @@ module.exports = Model.extend({
         });
       });
     }
+
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
@@ -102,16 +102,18 @@ module.exports = Model.extend({
     this._removeExistingAnalysisBindings();
     this._analysis = this._analysisCollection.get(this.getSourceId());
     if (this._analysis) {
-      this._analysis.on('change:status', this._onAnalysisChange, this);
+      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
     }
   },
 
   _removeExistingAnalysisBindings: function () {
     if (!this._analysis) return;
-    this._analysis.off('change:status', this._onAnalysisChange, this);
+
+    this.layer.off('change:status', this._onAnalysisStatusChange, this);
+    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
   },
 
-  _onAnalysisChange: function (analysis, status) {
+  _onAnalysisStatusChange: function (analysis, status) {
     if (analysis.isLoading()) {
       this._triggerLoading();
     } else if (analysis.isFailed()) {
@@ -261,6 +263,7 @@ module.exports = Model.extend({
     return this.getSourceId() === this.layer.get('source');
   },
 
+  // @return might return undefined if there's no source
   getSourceId: function () {
     // Dataview is pointing to a layer that has a source, so its
     // source is actually the the layers's source
@@ -271,11 +274,15 @@ module.exports = Model.extend({
     // Dataview is pointing to a layer with `sql` or an analysis
     // node directly, so just return the id that has been set by
     // dataviews-factory.js
-    return this.get('source').id;
+    return this._ownSourceId();
+  },
+
+  _ownSourceId: function () {
+    return this.has('source') && this.get('source').id;
   },
 
   hasLayerAsSource: function () {
-    return this.get('source').id === this.layer.id;
+    return this._ownSourceId() === this.layer.id;
   },
 
   remove: function () {

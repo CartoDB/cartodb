@@ -17,9 +17,7 @@ module Carto
         layout false
 
         def show
-          @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
-
-          render 'show'
+          render 'show', layout: 'application_public_visualization_layout'
         end
 
         def show_protected

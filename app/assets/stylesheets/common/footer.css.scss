@@ -20,6 +20,7 @@
   background: white;
 }
 .Footer.Footer--public {
+  padding-bottom: 0;
   box-shadow: none;
   overflow: hidden;
   text-rendering: optimizeLegibility;
@@ -48,7 +49,6 @@
 }
 
 .Footer-columns {
-  padding-bottom: 20px;
   border-top: 1px solid #EEE;
 }
 .Footer-columns--footer {
@@ -110,6 +110,9 @@
 }
 .Colophon-item {
   display: inline-block;
+}
+.Footer-item {
+  display: block;
 }
 .Newsletter {
   position: relative;

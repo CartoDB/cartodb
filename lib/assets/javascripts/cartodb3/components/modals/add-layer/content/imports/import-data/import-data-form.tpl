@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <span class="Form-separator Form-separator--or"><%- _t('components.modals.add-layer.imports.form-import.or') %></span>
+      <span class="u-lSpace--xl u-rSpace--xl u-flex u-alignCenter CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-layer.imports.form-import.or') %></span>
     <% } %>
     <div class="Form-rowData Form-rowData--noMargin Form-rowData--med">
       <input type="text" class="Form-input Form-input--med has-submit js-textInput CDB-Text CDB-Size-medium" value="" placeholder="https://carto.com/data-library" />

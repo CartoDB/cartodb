@@ -94,7 +94,9 @@ describe Carto::Api::DataImportPresenter do
     it 'gets warnings' do
       CartoDB.expects(:notify_debug).never
       presenter = Carto::Api::DataImportPresenter.new(@data_import)
-      expected = { :rejected_layers => ["manolo", "escobar"], :user_max_layers => 4, "max_tables_per_import" => 10 }
+      expected = { rejected_layers: ["manolo", "escobar"],
+                   user_max_layers: ::Map::MAX_LAYERS,
+                   "max_tables_per_import" => 10 }
       presenter.api_public_values[:warnings].should eq expected
     end
 

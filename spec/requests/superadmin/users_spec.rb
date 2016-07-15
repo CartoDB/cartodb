@@ -157,7 +157,6 @@ feature "Superadmin's users API" do
     t = Time.now
     @update_atts = { quota_in_bytes: 2000,
                      table_quota: 20,
-                     max_layers: 10,
                      user_timeout: 100000,
                      database_timeout: 200000,
                      account_type: 'Juliet',
@@ -187,7 +186,6 @@ feature "Superadmin's users API" do
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
     user.sync_tables_enabled.should == true
-    user.max_layers.should == 10
     user.database_timeout.should == 200000
     user.user_timeout.should == 100000
     user.upgraded_at.to_s.should == t.to_s

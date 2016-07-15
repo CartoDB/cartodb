@@ -804,6 +804,7 @@
   },
   "dataset": {
     "sql": "SQL",
+    "data": "Metadata",
     "updated": "Updated %{ago}",
     "options": {
       "add-row": "Add row",

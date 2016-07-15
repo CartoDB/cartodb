@@ -10,7 +10,7 @@ module.exports = PaginatorView.extend({
     var pages = Math.ceil(this.dataviewModel.getSearchCount() / this.options.itemsPerPage);
     this.$el.html(
       searchTemplate({
-        showPaginator: true,
+        showPaginator: (pages > 1),
         currentPage: this.model.get('page'),
         pages: pages
       })

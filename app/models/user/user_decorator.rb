@@ -88,7 +88,7 @@ module CartoDB
           concurrent_imports: self.max_concurrent_import_count,
           import_file_size: self.max_import_file_size,
           import_table_rows: self.max_import_table_row_count,
-          max_layers: self.max_layers
+          max_layers: ::Map::MAX_LAYERS
         },
         notification: self.notification,
         avatar_url: self.avatar,

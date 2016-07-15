@@ -32,8 +32,8 @@
       "short-title": "Join columns"
     },
     "filter-by-node-column": {
-      "title": "Link two layers",
-      "short-title": "Link to layer"
+      "title": "Filter by layer",
+      "short-title": "Filter by layer"
     },
     "centroid": {
       "title": "Centroid from geometries",
@@ -464,8 +464,8 @@
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link two layers",
-            "desc": "Join two layers by shared values in a column such that widgets will effect both."
+            "title": "Filter by layer",
+            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -804,6 +804,7 @@
   },
   "dataset": {
     "sql": "SQL",
+    "data": "Metadata",
     "updated": "Updated %{ago}",
     "options": {
       "add-row": "Add row",
@@ -1102,12 +1103,12 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Choose similar columns to link them",
+        "key-columns-desc": "Choose similar columns to relate them",
         "kilometers": "km",
         "latitude": "Latitude",
         "link-layer": "Link to col.",
-        "link-layer-desc": "Specify a second layer to join",
-        "linked-layer": "Link to layer",
+        "link-layer-desc": "Specify a second layer to filter by",
+        "linked-layer": "Filter by layer",
         "loading": "loading…",
         "left": "Left",
         "right": "Right",

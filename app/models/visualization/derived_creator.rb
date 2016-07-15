@@ -8,8 +8,8 @@ module CartoDB
       def initialize(user, tables = [])
         @rejected_layers = []
 
-        if tables.length > user.max_layers
-          tables.pop(tables.length - user.max_layers).each do |rejected_layers|
+        if tables.length > ::Map::MAX_LAYERS
+          tables.pop(tables.length - ::Map::MAX_LAYERS).each do |rejected_layers|
             @rejected_layers << rejected_layers.name
           end
         end

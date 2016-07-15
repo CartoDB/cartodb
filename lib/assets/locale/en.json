@@ -269,6 +269,23 @@
       "none": "No tags",
       "placeholder": "Add tags"
     },
+    "pagination-search": {
+      "filter": {
+        "search": "Search",
+        "placeholder": "Search by username or email"
+      },
+      "loading": {
+        "title": "Loading..."
+      },
+      "error": {
+        "title": "Error",
+        "desc": "Oops there was an error."
+      },
+      "no-results": {
+        "title": "'Oh! No results",
+        "desc": "Unfortunately we could not find anything with these parameters"
+      }
+    },
     "modals": {
       "export-data": {
         "title": "Export data",
@@ -422,6 +439,28 @@
           "subtitle": "We had an internal error trying to save your data. We recommend you try again."
         },
         "loading": "Saving your data..."
+      },
+      "share-org": {
+        "modal-title": "privacy",
+        "modal-desc": "Select your colleagues you want to give access in the list below",
+        "cancel-btn": "Cancel",
+        "save-btn": "Save settings",
+        "organization": {
+          "title": "Default settings for your Organization",
+          "desc": "New users will have this permission"
+        },
+        "role": {
+          "viewer": "Viewer",
+          "builder": "Builder"
+        },
+        "tooltip": {
+          "group": "Access is inherited from group %{name}",
+          "org": "Access is inherited from organization",
+        },
+        "toggle": {
+          "read": "Read",
+          "write": "Write"
+        }
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",

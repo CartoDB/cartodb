@@ -6,8 +6,9 @@ var LayerModelBase = require('./layer-model-base');
 var PlainLayer = LayerModelBase.extend({
   defaults: {
     type: 'Plain',
-    base_type: "plain",
-    className: "plain",
+    visible: true,
+    base_type: 'plain',
+    className: 'plain',
     color: '#FFFFFF',
     image: ''
   }

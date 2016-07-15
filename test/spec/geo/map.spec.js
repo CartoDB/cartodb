@@ -264,24 +264,47 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createCartoDBLayer',
         expectedLayerModelClass: CartoDBLayer,
+        expectedLayerModelType: 'CartoDB',
         testAttributes: {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // CartoDB layer that points to a source (instead of having sql)
+        createMethod: 'createCartoDBLayer',
+        expectedLayerModelClass: CartoDBLayer,
+        expectedLayerModelType: 'CartoDB',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTorqueLayer',
         expectedLayerModelClass: TorqueLayer,
+        expectedLayerModelType: 'torque',
         testAttributes: {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // Torque layer that points to a source (instead of having sql)
+        createMethod: 'createTorqueLayer',
+        expectedLayerModelClass: TorqueLayer,
+        expectedLayerModelType: 'torque',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTileLayer',
         expectedLayerModelClass: TileLayer,
+        expectedLayerModelType: 'Tiled',
         testAttributes: {
           urlTemplate: 'http://example.com'
         },
@@ -290,6 +313,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createWMSLayer',
         expectedLayerModelClass: WMSLayer,
+        expectedLayerModelType: 'WMS',
         testAttributes: {
           urlTemplate: 'http://example.com'
         },
@@ -298,6 +322,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createGMapsBaseLayer',
         expectedLayerModelClass: GMapsBaseLayer,
+        expectedLayerModelType: 'GMapsBase',
         testAttributes: {
           base_type: 'http://example.com'
         },
@@ -306,6 +331,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createPlainLayer',
         expectedLayerModelClass: PlainLayer,
+        expectedLayerModelType: 'Plain',
         testAttributes: {
           color: '#FABADA'
         },
@@ -314,6 +340,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createPlainLayer',
         expectedLayerModelClass: PlainLayer,
+        expectedLayerModelType: 'Plain',
         testAttributes: {
           image: 'http://example.com/image.png'
         },
@@ -332,6 +359,16 @@ describe('core/geo/map', function() {
         it('should return a layer of the corresponding type', function () {
           var layer = this.map[testCase.createMethod](testCase.testAttributes);
           expect(layer instanceof testCase.expectedLayerModelClass).toBeTruthy();
+        });
+
+        it('should be visible', function () {
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          expect(layer.get('visible')).toBeTruthy();
+        });
+
+        it('should set the right type', function () {
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          expect(layer.get('type')).toEqual(testCase.expectedLayerModelType);
         });
 
         it('should add the layer model to the collection of layers', function () {

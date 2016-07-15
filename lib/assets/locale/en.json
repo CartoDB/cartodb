@@ -1243,7 +1243,7 @@
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
-          "body": "You just applied analysis to this layer and the SQL passed to read only.",
+          "body": "You just applied analysis to this layer. The SQL is now read only.",
           "accept": "CLOSE"
         },
         "empty-data": {

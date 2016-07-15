@@ -32,8 +32,8 @@
       "short-title": "Join columns"
     },
     "filter-by-node-column": {
-      "title": "Link two layers",
-      "short-title": "Link to layer"
+      "title": "Filter by layer",
+      "short-title": "Filter by layer"
     },
     "centroid": {
       "title": "Centroid from geometries",
@@ -240,7 +240,7 @@
         "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
 
       },
-      "free-trial": "%{days} day free trial",
+      "free-trial": "Get a %{days} day free trial",
       "connecting": "Connecting",
       "dataset": "dataset…",
       "geocoding": "Geocoding",
@@ -475,8 +475,8 @@
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link two layers",
-            "desc": "Join two layers by shared values in a column such that widgets will effect both."
+            "title": "Filter by layer",
+            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -924,7 +924,7 @@
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
-            "logo": "CartoDB Logo",
+            "logo": "CARTO Logo",
             "widgets": "Widgets column"
           }
         }
@@ -1021,7 +1021,8 @@
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
         "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
@@ -1112,12 +1113,12 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Choose similar columns to link them",
+        "key-columns-desc": "Choose similar columns to relate them",
         "kilometers": "km",
         "latitude": "Latitude",
         "link-layer": "Link to col.",
-        "link-layer-desc": "Specify a second layer to join",
-        "linked-layer": "Link to layer",
+        "link-layer-desc": "Specify a second layer to filter by",
+        "linked-layer": "Filter by layer",
         "loading": "loading…",
         "left": "Left",
         "right": "Right",
@@ -1185,6 +1186,8 @@
         "data-observatory-measurement-segments": "Segments"
       },
       "infowindow": {
+        "select-fields": "Select fields",
+        "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
         "style": {
@@ -1241,6 +1244,9 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
+        "sql-alter-loading": "Modifying table...",
+        "sql-alter-error": "Modifying failed",
+        "sql-alter-success": "Modifying applied",
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
         "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
@@ -1474,12 +1480,21 @@
         },
         "aggregation-options": {
           "count": "COUNT",
-          "sum": "SUM"
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }
   },
   "notifications": {
+    "vis": {
+      "failed": {
+        "title": "This map couldn't be rendered.",
+        "body": "Please refresh the page and contact us if the error persists."
+      }
+    },
     "analysis": {
       "pending": "Analysis %{nodeId} waiting",
       "waiting": "Analysis %{nodeId} enqueued",

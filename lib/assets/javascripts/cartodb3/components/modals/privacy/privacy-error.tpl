@@ -1,6 +1,6 @@
 <div class="Dialog-header Modal-header js-header">
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
-    <i class="CDB-IconFont"></i>
+    <i class="CDB-IconFont CDB-IconFont-cockroach"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor"><%- _t('components.modals.privacy.error.title') %></h2>
   <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.privacy.error.subtitle') %></h3>

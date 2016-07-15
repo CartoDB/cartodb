@@ -1,9 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var AnalysisModel = require('../../../src/analysis/analysis-model');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 
-fdescribe('dataviews/dataview-model-base', function () {
+describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = function () {};

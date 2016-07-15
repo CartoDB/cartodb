@@ -332,7 +332,6 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
-      expect(this.model.layer.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
       expect(this.a0.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
     });
   });

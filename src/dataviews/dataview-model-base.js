@@ -77,6 +77,8 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
+    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
+    this.on('change:source', this._setupAnalysisStatusEvents, this);
 
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider) {
@@ -93,9 +95,6 @@ module.exports = Model.extend({
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
-
-    this.layer.on('change:source', this._setupAnalysisStatusEvents, this);
-    this.on('change:source', this._setupAnalysisStatusEvents, this);
   },
 
   _setupAnalysisStatusEvents: function () {
@@ -108,8 +107,6 @@ module.exports = Model.extend({
 
   _removeExistingAnalysisBindings: function () {
     if (!this._analysis) return;
-
-    this.layer.off('change:status', this._onAnalysisStatusChange, this);
     this._analysis.off('change:status', this._onAnalysisStatusChange, this);
   },
 
@@ -263,7 +260,6 @@ module.exports = Model.extend({
     return this.getSourceId() === this.layer.get('source');
   },
 
-  // @return might return undefined if there's no source
   getSourceId: function () {
     // Dataview is pointing to a layer that has a source, so its
     // source is actually the the layers's source

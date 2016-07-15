@@ -17,7 +17,7 @@ format.formatNumber = function (value, unit) {
     return value;
   }
 
-  if ( abs_v > 100) {
+  if (abs_v > 100) {
     p = 0;
   } else if (abs_v > 10) {
     p = 1;
@@ -30,7 +30,7 @@ format.formatNumber = function (value, unit) {
   value = value.toFixed(p);
   var m = value.match(/(\.0+)$/);
   if (m) {
-      value = value.replace(m[0], '');
+    value = value.replace(m[0], '');
   }
 
   return value;

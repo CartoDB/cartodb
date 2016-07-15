@@ -128,7 +128,6 @@
 **/test/spec/geo/cartodb-layer-common.spec.js
 **/test/spec/geo/geocoder/nokia-geocoder.spec.js
 **/test/spec/geo/geocoder/yahoo-geocoder.spec.js
-**/test/spec/geo/geometry.spec.js
 **/test/spec/geo/gmaps_cartodb_layer/hide.js
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
@@ -154,3 +153,4 @@
 **/test/spec/ui/common/table.spec.js
 **/test/spec/ui/common/tabpane.spec.js
 **/test/spec/vis/overlay_spec.js
+**/test/unit/geo/geometry.spec.js

@@ -64,7 +64,7 @@ var Map = Model.extend({
     // in the tests that depend on this to work
     this.reload = _.debounce(function (options) {
       options = options || {};
-      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success', 'error');
+      options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
       this._windshaftMap.createInstance(options);
     }.bind(this), this.RELOAD_DEBOUNCE_TIME);
   },
@@ -165,14 +165,14 @@ var Map = Model.extend({
 
   _onLayerAdded: function (layerModel) {
     this.reload({
-      sourceLayerId: layerModel.get('id')
+      sourceId: layerModel.get('id')
     });
     this._updateAttributions();
   },
 
   _onLayerRemoved: function (layerModel) {
     this.reload({
-      sourceLayerId: layerModel.get('id')
+      sourceId: layerModel.get('id')
     });
     this._updateAttributions();
   },

@@ -49,7 +49,7 @@ var CartoDBLayer = LayerModelBase.extend({
 
   _reloadMap: function () {
     this._map.reload({
-      sourceLayerId: this.get('id')
+      sourceId: this.get('id')
     });
   },
 

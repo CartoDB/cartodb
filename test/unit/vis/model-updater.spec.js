@@ -103,12 +103,12 @@ describe('src/vis/model-updater', function () {
 
       spyOn(dataview1, 'set').and.callThrough();
 
-      this.modelUpdater.updateModels(this.windshaftMap, 'sourceLayerId', 'forceFetch');
+      this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
       expect(dataview1.set).toHaveBeenCalledWith({
         url: 'http://example1.com'
       }, {
-        sourceLayerId: 'sourceLayerId',
+        sourceId: 'sourceId',
         forceFetch: 'forceFetch'
       });
 

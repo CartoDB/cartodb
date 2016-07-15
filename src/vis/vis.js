@@ -171,8 +171,9 @@ var VisModel = Backbone.Model.extend({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     }, {
+      map: this.map,
       dataviewsCollection: this._dataviewsCollection,
-      map: this.map
+      analysisCollection: this._analysisCollection
     });
 
     // Create the public Analysis Factory

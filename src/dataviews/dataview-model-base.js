@@ -48,9 +48,8 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
 
-    if (!opts.map) {
-      throw new Error('map is required');
-    }
+    if (!opts.map) throw new Error('map is required');
+    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -58,6 +57,7 @@ module.exports = Model.extend({
 
     this.layer = opts.layer;
     this._map = opts.map;
+    this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneCancelSync.bind(this);
 
@@ -112,7 +112,7 @@ module.exports = Model.extend({
     this._map.reload(
       _.extend(
         opts, {
-          sourceLayerId: this.layer.get('id')
+          sourceId: this.getSourceId()
         }
       )
     );
@@ -142,7 +142,7 @@ module.exports = Model.extend({
       if (this.get('sync_on_data_change')) {
         this._newDataAvailable = true;
       }
-      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange(opts && opts.sourceLayerId)) {
+      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
         this.fetch();
       }
     }, this);
@@ -165,9 +165,27 @@ module.exports = Model.extend({
     }
   },
 
-  _shouldFetchOnURLChange: function (sourceLayerId) {
-    var urlChangeTriggeredBySameLayer = sourceLayerId && sourceLayerId === this.layer.get('id');
-    return this.get('sync_on_data_change') && this.get('enabled') && (!sourceLayerId || urlChangeTriggeredBySameLayer);
+  _shouldFetchOnURLChange: function (options) {
+    options = options || {};
+    var sourceId = options.sourceId;
+    var forceFetch = options.forceFetch;
+
+    if (forceFetch) {
+      return true;
+    }
+
+    return this.get('sync_on_data_change') &&
+      this.get('enabled') &&
+        (!sourceId || sourceId && this._sourceAffectsDataview(sourceId));
+  },
+
+  _sourceAffectsDataview: function (sourceId) {
+    var sourceAnalysis = this._analysisCollection.get(this.getSourceId());
+    return sourceAnalysis && sourceAnalysis.findAnalysisById(sourceId);
+  },
+
+  _affectedByChangeInSource: function (sourceId) {
+
   },
 
   _shouldFetchOnBoundingBoxChange: function () {

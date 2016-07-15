@@ -1,3 +1,5 @@
+var Backbone = require('backbone');
+
 var Model = require('../../../src/core/model');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -11,10 +13,13 @@ describe('dataviews/histogram-dataview-model', function () {
     this.layer.getDataProvider = function () {};
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
-    this.model = new HistogramDataviewModel({}, {
+    this.model = new HistogramDataviewModel({
+      source: { id: 'a0' }
+    }, {
       map: this.map,
       layer: this.layer,
-      filter: this.filter
+      filter: this.filter,
+      analysisCollection: new Backbone.Collection()
     });
   });
 
@@ -31,11 +36,13 @@ describe('dataviews/histogram-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new HistogramDataviewModel({
-      apiKey: 'API_KEY'
+      apiKey: 'API_KEY',
+      source: { id: 'a0' }
     }, {
       map: this.map,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
-      filter: this.filter
+      filter: this.filter,
+      analysisCollection: new Backbone.Collection()
     });
 
     expect(this.model._unfilteredData.get('apiKey')).toEqual('API_KEY');
@@ -136,7 +143,7 @@ describe('dataviews/histogram-dataview-model', function () {
     it('should reload map and force fetch', function () {
       this.map.reload.calls.reset();
       this.model.set('column', 'random_col');
-      expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+      expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 

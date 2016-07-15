@@ -9,25 +9,28 @@ describe('dataviews/category-dataview-model', function () {
     this.map.getViewBounds = jasmine.createSpy();
     this.map.reload = jasmine.createSpy();
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    this.model = new CategoryDataviewModel(null, {
+    this.model = new CategoryDataviewModel({
+      source: { id: 'a0' }
+    }, {
       map: this.map,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
-      filter: new WindshaftFiltersCategory()
+      filter: new WindshaftFiltersCategory(),
+      analysisCollection: new Backbone.Collection()
     });
   });
 
   it('should reload map and force fetch on changing attrs', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation', 'count');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 
   it('should define several internal models/collections', function () {
@@ -38,11 +41,13 @@ describe('dataviews/category-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new CategoryDataviewModel({
-      apiKey: 'API_KEY'
+      source: { id: 'a0' },
+      apiKey: 'API_KEY',
     }, {
       map: this.map,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
-      filter: new WindshaftFiltersCategory()
+      filter: new WindshaftFiltersCategory(),
+      analysisCollection: new Backbone.Collection()
     });
 
     expect(this.model._searchModel.get('apiKey')).toEqual('API_KEY');

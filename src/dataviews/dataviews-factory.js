@@ -16,9 +16,11 @@ module.exports = Model.extend({
   initialize: function (attrs, opts) {
     if (!opts.map) throw new Error('map is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
+    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
 
     this._map = opts.map;
     this._dataviewsCollection = opts.dataviewsCollection;
+    this._analysisCollection = opts.analysisCollection;
   },
 
   createCategoryModel: function (layerModel, attrs) {
@@ -34,8 +36,9 @@ module.exports = Model.extend({
     return this._newModel(
       new CategoryDataviewModel(attrs, {
         map: this._map,
+        layer: layerModel,
         filter: categoryFilter,
-        layer: layerModel
+        analysisCollection: this._analysisCollection
       })
     );
   },
@@ -46,7 +49,8 @@ module.exports = Model.extend({
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
-        layer: layerModel
+        layer: layerModel,
+        analysisCollection: this._analysisCollection
       })
     );
   },
@@ -62,8 +66,9 @@ module.exports = Model.extend({
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
+        layer: layerModel,
         filter: rangeFilter,
-        layer: layerModel
+        analysisCollection: this._analysisCollection
       })
     );
   },
@@ -74,7 +79,8 @@ module.exports = Model.extend({
     return this._newModel(
       new ListDataviewModel(attrs, {
         map: this._map,
-        layer: layerModel
+        layer: layerModel,
+        analysisCollection: this._analysisCollection
       })
     );
   },

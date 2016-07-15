@@ -69,14 +69,14 @@
 .Share-permissionIcon {
   @include display-flex();
   @include justify-content(center);
-  min-width: 40px;
   width: 40px;
+  min-width: 40px;
   height: 40px;
+  margin-right: $baseSize * 2;
   box-sizing: border-box;
   border: 1px solid $cMainLine;
   border-radius: 3px;
   font-size: 22px;
-  margin-right: $baseSize * 2;
 
   img {
     max-width: 100%;
@@ -85,4 +85,13 @@
 
 .Share-togglers {
   @include display-flex();
+
+  .Share-toggler.is-disabled {
+    opacity: 0.4;
+
+    // In order to make parent tipsyable on mouseover
+    .CDB-Toggle {
+      visibility: hidden;
+    }
+  }
 }

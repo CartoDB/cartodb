@@ -22,16 +22,20 @@
 </div>
 <div class="Share-togglers">
   <% if (hasWriteAccessAvailable) { %>
-    <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
+    <div class="CDB-Text CDB-Size-medium u-rSpace--xl Share-toggler js-toggler <% if (!canChangeWriteAccess) { %>is-disabled<% } %>">
       <input class="CDB-Toggle u-iBlock js-write" type="checkbox"
-        <% if (hasWriteAccess) { %> checked <% } %> >
+        <% if (!canChangeWriteAccess) { %>disabled="disabled"<% } %>
+        <% if (hasWriteAccess) { %> checked <% } %>
+      />
       <span class="u-iBlock CDB-ToggleFace"></span>
       <label class="u-iBlock u-altTextColor "><%- "Write" %></label>
     </div>
   <% } %>
-  <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
+  <div class="CDB-Text CDB-Size-medium u-rSpace--xl Share-toggler js-toggler <% if (!canChangeReadAccess) { %>is-disabled<% } %>">
     <input class="CDB-Toggle u-iBlock js-read" type="checkbox"
-      <% if (hasReadAccess) { %> checked <% } %> >
+      <% if (hasReadAccess) { %> checked <% } %>
+      <% if (!canChangeReadAccess) { %>disabled="disabled"<% } %>
+    />
     <span class="u-iBlock CDB-ToggleFace"></span>
     <label class="u-iBlock u-altTextColor "><%- "Read" %></label>
   </div>

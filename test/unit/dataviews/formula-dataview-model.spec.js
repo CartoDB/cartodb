@@ -1,14 +1,21 @@
+var Backbone = require('backbone');
 var FormulaDataviewModel = require('../../../src/dataviews/formula-dataview-model.js');
 
 describe('dataviews/formula-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+
+    this.layer = new Backbone.Model();
+    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
+
     this.model = new FormulaDataviewModel({
+      source: {id: 'a0'},
       operation: 'min'
     }, {
+      analysisCollection: new Backbone.Collection(),
       map: this.map,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
+      layer: this.layer
     });
   });
 

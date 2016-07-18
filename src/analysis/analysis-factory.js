@@ -26,7 +26,7 @@ var AnalysisFactory = function (opts) {
  */
 AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
-  var analysis = this._getAnalysisFromIndex(analysisDefinition.id);
+  var analysis = this._analysisCollection.get(analysisDefinition.id);
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
 
   if (analysis) {
@@ -64,12 +64,8 @@ AnalysisFactory.prototype._onAnalysisRemoved = function (analysis) {
   analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 
-AnalysisFactory.prototype.findNodeById = function (analysisId) {
-  return this._getAnalysisFromIndex(analysisId);
-};
-
-AnalysisFactory.prototype._getAnalysisFromIndex = function (analysisId) {
-  return this._analysisCollection.findWhere({ id: analysisId });
+AnalysisFactory.prototype.findNodeById = function (id) {
+  return this._analysisCollection.get(id);
 };
 
 AnalysisFactory.prototype._addAnalysisToCollection = function (analysis) {

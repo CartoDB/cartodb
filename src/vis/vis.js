@@ -171,6 +171,7 @@ var VisModel = Backbone.Model.extend({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     }, {
+      analysisCollection: this._analysisCollection,
       dataviewsCollection: this._dataviewsCollection,
       map: this.map
     });

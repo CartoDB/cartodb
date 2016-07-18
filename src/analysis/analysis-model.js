@@ -73,6 +73,7 @@ module.exports = Model.extend({
 
   remove: function () {
     this.trigger('destroy', this);
+    this.stopListening();
   },
 
   findAnalysisById: function (analysisId) {
@@ -95,7 +96,20 @@ module.exports = Model.extend({
   },
 
   isDone: function () {
-    return [STATUS.READY, STATUS.FAILED].indexOf(this.get('status')) >= 0;
+    return this._anyStatus(STATUS.READY, STATUS.FAILED);
+  },
+
+  isFailed: function () {
+    return this._anyStatus(STATUS.FAILED);
+  },
+
+  isLoading: function () {
+    return this._anyStatus(STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING);
+  },
+
+  _anyStatus: function () {
+    var list = Array.prototype.slice.call(arguments, 0);
+    return list.indexOf(this.get('status')) !== -1;
   },
 
   toJSON: function () {

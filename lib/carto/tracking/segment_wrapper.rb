@@ -1,8 +1,8 @@
 module Carto
   module Tracking
     class SegmentWrapper
-      def initialize(user_id)
-        @user = Carto::User.find(user_id)
+      def initialize(user)
+        @user = user
       end
 
       def track_exported_map(vis)

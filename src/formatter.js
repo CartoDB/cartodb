@@ -24,7 +24,7 @@ format.formatNumber = function (value, unit) {
   } else if (abs_v > 1) {
     p = 2;
   } else if (abs_v > 0) {
-    p = 3;
+    p = Math.max(Math.ceil(Math.abs(Math.log(abs_v)/Math.log(10))) + 2,3);
   }
 
   value = value.toFixed(p);

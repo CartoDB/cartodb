@@ -112,16 +112,11 @@ class Api::Json::TablesController < Api::ApplicationController
         return head(403) unless @table.table_visualization.is_owner?(current_user)
       end
 
+      Carto::Tracking::Events::DeletedDataset.new(current_user, @table).report if @table
+
       @stats_aggregator.timing('delete') do
         @table.destroy
       end
-
-      table_visualization = @table.table_visualization
-      Carto::SegmentWrapper.new(current_user.id)
-                           .send_event('Deleted dataset',
-                                       privacy: table_visualization.privacy,
-                                       type: table_visualization.type,
-                                       vis_id: table_visualization.id)
 
       head :no_content
     end

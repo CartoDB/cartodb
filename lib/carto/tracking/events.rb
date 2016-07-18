@@ -26,34 +26,6 @@ module Carto
         end
       end
 
-      class LikedMap
-        EVENT_NAME = 'Liked map'.freeze
-
-        def initialize(user, visualization)
-          @user = user
-          @visualization = visualization
-        end
-
-        def report
-          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
-        end
-
-        private
-
-        def properties
-          visualization_user = @visualization.user
-          {
-            action: 'like',
-            vis_id: @visualization.id,
-            vis_name: @visualization.name,
-            vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
-            vis_author: visualization_user.username,
-            vis_author_email: visualization_user.email,
-            vis_author_id: visualization_user.id
-          }
-        end
-      end
-
       class CreatedDataset
         EVENT_NAME = 'Created dataset'.freeze
 
@@ -99,6 +71,57 @@ module Carto
             privacy: table_visualization.privacy,
             type: table_visualization.type,
             vis_id: table_visualization.id
+          }
+        end
+      end
+
+      class LikedMap
+        def initialize(user, visualization)
+          @user = user
+          @visualization = visualization
+        end
+
+        def report
+          Carto::Tracking::Events::MapLiking.new(@user, @visualization, 'like').report
+        end
+      end
+
+      class DislikedMap
+        def initialize(user, visualization)
+          @user = user
+          @visualization = visualization
+        end
+
+        def report
+          Carto::Tracking::Events::MapLiking.new(@user, @visualization, 'remove').report
+        end
+      end
+
+      class MapLiking
+        EVENT_NAME = 'Liked map'.freeze
+
+        def initialize(user, visualization, action)
+          @user = user
+          @visualization = visualization
+          @action = action
+        end
+
+        def report
+          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
+        end
+
+        private
+
+        def properties
+          visualization_user = @visualization.user
+          {
+            action: @action,
+            vis_id: @visualization.id,
+            vis_name: @visualization.name,
+            vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
+            vis_author: visualization_user.username,
+            vis_author_email: visualization_user.email,
+            vis_author_id: visualization_user.id
           }
         end
       end

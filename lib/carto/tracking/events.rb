@@ -47,6 +47,31 @@ module Carto
           }
         end
       end
+
+      class DeletedDataset
+        EVENT_NAME = 'Deleted dataset'.freeze
+
+        def initialize(user, table)
+          @user = user
+          @table = table
+        end
+
+        def report
+          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
+        end
+
+        private
+
+        def properties
+          table_visualization = @table.table_visualization
+
+          {
+            privacy: table_visualization.privacy,
+            type: table_visualization.type,
+            vis_id: table_visualization.id
+          }
+        end
+      end
     end
   end
 end

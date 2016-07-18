@@ -23,9 +23,9 @@ require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
-require_relative '../../lib/cartodb/event_tracker'
 require_relative '../../services/importer/lib/importer/connector'
 
+require_dependency 'carto/segment_wrapper'
 require_dependency 'carto/valid_table_name_proposer'
 
 include CartoDB::Datasources
@@ -309,8 +309,7 @@ class DataImport < Sequel::Model
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
-
-    Cartodb::EventTracker.new.track_import(current_user, id, results, visualization_id, from_common_data?)
+    track_results(results, id, visualization_id)
 
     self
   end
@@ -987,5 +986,29 @@ class DataImport < Sequel::Model
       datasource.data_import_item = self
       datasource.set_audit_to_failed
     end
+  end
+
+  def track_results(results, data_import_id, visualization_id)
+    results.each do |result|
+      condition, origin = if result.success?
+                            [{ data_import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
+                          else
+                            [{ data_import_id: import_id }, 'copy']
+                          end
+
+      user_table = ::UserTable.where(condition).first
+      vis = Carto::Visualization.where(map_id: user_table.map.id).first
+
+      Carto::SegmentWrapper.new(current_user.id).send_event('Created dataset',
+                                                            privacy: vis.privacy,
+                                                            type: vis.type,
+                                                            vis_id: vis.id,
+                                                            origin: origin)
+    end
+  rescue => tracking_exception
+    Carto::Logger.warning('SegmentWrapper: could not report',
+                          event: 'Created dataset',
+                          type: 'Invalid import result',
+                          exception: tracking_exception)
   end
 end

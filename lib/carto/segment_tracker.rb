@@ -14,7 +14,7 @@ module Cartodb
 
       @analytics.track(user_id: user_id, event: event, properties: properties)
     rescue => exception
-      CartoDB::Logger.error(message: 'EventTracker: segment event tracking error',
+      CartoDB::Logger.error(message: 'SegmentTracker: segment event tracking error',
                             exception: exception,
                             user_id: user_id,
                             event: event,
@@ -24,7 +24,7 @@ module Cartodb
     def flush
       @analytics.flush
     rescue => exception
-      CartoDB::Logger.error(message: 'EventTracker: segment flushing error', exception: exception)
+      CartoDB::Logger.error(message: 'SegmentTracker: segment flushing error', exception: exception)
     end
   end
 end

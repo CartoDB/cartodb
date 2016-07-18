@@ -89,14 +89,14 @@ describe('windshaft/map-base', function () {
 
       this.dataview = new HistogramDataviewModel({
         id: 'dataviewId',
-        source: {id: 'a0'},
-        type: 'list'
+        type: 'list',
+        source: { id: 'a0' }
       }, {
-        analysisCollection: this.analysisCollection,
         map: this.map,
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,
-        filter: this.filter
+        filter: this.filter,
+        analysisCollection: this.analysisCollection
       });
 
       this.dataviewsCollection.add(this.dataview);
@@ -202,7 +202,7 @@ describe('windshaft/map-base', function () {
         spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -242,7 +242,7 @@ describe('windshaft/map-base', function () {
         spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
@@ -255,7 +255,7 @@ describe('windshaft/map-base', function () {
 
         // Recreate the instance again
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
         args = this.client.instantiateMap.calls.mostRecent().args[0];
 
@@ -288,7 +288,7 @@ describe('windshaft/map-base', function () {
         });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -314,7 +314,7 @@ describe('windshaft/map-base', function () {
         });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -327,7 +327,7 @@ describe('windshaft/map-base', function () {
       it('should set the attributes of the new instance', function () {
         this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
@@ -336,11 +336,11 @@ describe('windshaft/map-base', function () {
 
       it('should use the modelUpdater to update internal models', function () {
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId',
+          sourceId: 'sourceId',
           forceFetch: 'forceFetch'
         });
 
-        expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', 'forceFetch');
+        expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceId', 'forceFetch');
       });
     });
 

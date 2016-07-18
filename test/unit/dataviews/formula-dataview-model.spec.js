@@ -22,12 +22,12 @@ describe('dataviews/formula-dataview-model', function () {
   it('should reload map and force fetch on operation change', function () {
     this.map.reload.calls.reset();
     this.model.set('operation', 'avg');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 
   it('should reload map and force fetch on column change', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'other_col');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 });

@@ -21,6 +21,6 @@ describe('dataviews/list-dataview-model', function () {
   it('should reload map and force fetch on columns change', function () {
     this.map.reload.calls.reset();
     this.model.set('columns', ['asd']);
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 });

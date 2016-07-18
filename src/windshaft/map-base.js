@@ -94,7 +94,7 @@ var WindshaftMap = Backbone.Model.extend({
       success: function (response) {
         this._trackRequest(request, response);
         this.set(response);
-        this._modelUpdater.updateModels(this, options.sourceLayerId, options.forceFetch);
+        this._modelUpdater.updateModels(this, options.sourceId, options.forceFetch);
         this.trigger('instanceCreated');
         options.success && options.success(this);
       }.bind(this),

@@ -28,10 +28,10 @@ var ModelUpdater = function (deps) {
   this._analysisCollection = deps.analysisCollection;
 };
 
-ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceLayerId, forceFetch) {
+ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceId, forceFetch) {
   this._updateLayerGroupModel(windhsaftMap);
   this._updateLayerModels(windhsaftMap);
-  this._updateDataviewModels(windhsaftMap, sourceLayerId, forceFetch);
+  this._updateDataviewModels(windhsaftMap, sourceId, forceFetch);
   this._updateAnalysisModels(windhsaftMap);
 
   this._visModel.setOk();
@@ -57,14 +57,14 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   }, this);
 };
 
-ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceLayerId, forceFetch) {
+ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {
   this._dataviewsCollection.each(function (dataviewModel) {
     var dataviewMetadata = windshaftMap.getDataviewMetadata(dataviewModel.get('id'));
     if (dataviewMetadata) {
       dataviewModel.set({
         url: dataviewMetadata.url[this._getProtocol()]
       }, {
-        sourceLayerId: sourceLayerId,
+        sourceId: sourceId,
         forceFetch: forceFetch
       });
     }

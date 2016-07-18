@@ -16,25 +16,25 @@ describe('dataviews/category-dataview-model', function () {
     this.model = new CategoryDataviewModel({
       source: {id: 'a0'}
     }, {
-      analysisCollection: new Backbone.Collection(),
       map: this.map,
       layer: this.layer,
-      filter: new WindshaftFiltersCategory()
+      filter: new WindshaftFiltersCategory(),
+      analysisCollection: new Backbone.Collection()
     });
   });
 
   it('should reload map and force fetch on changing attrs', function () {
     this.map.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation', 'count');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
     this.map.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceLayerId: undefined });
+    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 
   it('should define several internal models/collections', function () {
@@ -45,13 +45,13 @@ describe('dataviews/category-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new CategoryDataviewModel({
-      source: {id: 'THE_SOURCE_ID'},
+      source: {id: 'a0'},
       apiKey: 'API_KEY'
     }, {
-      analysisCollection: new Backbone.Collection(),
       map: this.map,
-      layer: this.layer,
-      filter: new WindshaftFiltersCategory()
+      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      filter: new WindshaftFiltersCategory(),
+      analysisCollection: new Backbone.Collection()
     });
 
     expect(this.model._searchModel.get('apiKey')).toEqual('API_KEY');

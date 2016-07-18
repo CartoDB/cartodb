@@ -24,10 +24,10 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
   });
 
   return new HistogramDataviewModel(attrs, {
-    analysisCollection: analysisCollection,
     map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
     windshaftMap: windshaftMap,
-    layer: layer
+    layer: layer,
+    analysisCollection: new Backbone.Collection()
   });
 };
 
@@ -244,10 +244,10 @@ describe('windshaft/anonymous-map', function () {
           id: 'a0'
         }
       }, {
-        analysisCollection: this.analysisCollection,
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
-        layer: this.cartoDBLayer1
+        layer: this.cartoDBLayer1,
+        analysisCollection: new Backbone.Collection()
       });
 
       var dataview2 = new HistogramDataviewModel({
@@ -258,10 +258,10 @@ describe('windshaft/anonymous-map', function () {
           id: 'a1'
         }
       }, {
-        analysisCollection: this.analysisCollection,
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
-        layer: this.cartoDBLayer2
+        layer: this.cartoDBLayer2,
+        analysisCollection: new Backbone.Collection()
       });
 
       this.cartoDBLayer2.set('visible', false, { silent: true });

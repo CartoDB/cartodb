@@ -188,7 +188,7 @@ describe('core/geo/map', function() {
       map.layers.add({ id: 'layer1' });
 
       expect(map.reload).toHaveBeenCalledWith({
-        sourceLayerId: 'layer1'
+        sourceId: 'layer1'
       });
     });
 
@@ -200,7 +200,7 @@ describe('core/geo/map', function() {
       map.layers.remove(layer);
 
       expect(map.reload).toHaveBeenCalledWith({
-        sourceLayerId: 'layer1'
+        sourceId: 'layer1'
       });
     });
   });
@@ -235,14 +235,14 @@ describe('core/geo/map', function() {
       map.reload({
         a: 1,
         b: 2,
-        sourceLayerId: 'sourceLayerId',
+        sourceId: 'sourceId',
         forceFetch: 'forceFetch',
         success: 'success'
       });
 
       setTimeout(function () {
         expect(windshaftMap.createInstance).toHaveBeenCalledWith({
-          sourceLayerId: 'sourceLayerId',
+          sourceId: 'sourceId',
           forceFetch: 'forceFetch',
           success: 'success'
         });

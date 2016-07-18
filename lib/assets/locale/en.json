@@ -44,8 +44,8 @@
       "short-title": "AOI"
     },
     "filter-intersection": {
-      "title": "Filter points in polygon",
-      "short-title": "Filter points in polygon"
+      "title": "Filter points in polygons",
+      "short-title": "Filter points in polygons"
     },
     "aggregate-intersection": {
       "title": "Aggregate intersection",
@@ -445,7 +445,7 @@
           },
           "filter-intersection": {
             "title": "Filter points in polygon",
-            "desc": "Filter rows based intersection."
+            "desc": "Filter points intersecting your polygon layer, and augment those with your polygons columns."
           },
           "filter": {
             "title": "Filter rows by column value",

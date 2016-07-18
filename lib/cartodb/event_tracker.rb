@@ -1,6 +1,5 @@
-module Cartodb
-  class EventTracker
-
+module Carto
+  class SegmentWrapper
     def track_exported_map(user, vis)
       if !vis.nil?
         custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id }
@@ -43,6 +42,8 @@ module Cartodb
       end
     end
 
+    private
+
     def send_event(user, event_name, custom_properties = {})
       return unless is_tracking_active?
       return unless user_valid?(user, event_name, custom_properties)
@@ -53,8 +54,6 @@ module Cartodb
 
       Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user.id, event_name, properties)
     end
-
-    private
 
     def generate_event_properties(user)
       {

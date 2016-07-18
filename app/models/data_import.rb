@@ -25,7 +25,7 @@ require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../services/importer/lib/importer/connector'
 
-require_dependency 'carto/segment_wrapper'
+require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 
 include CartoDB::Datasources
@@ -999,11 +999,7 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::SegmentWrapper.new(current_user.id).send_event('Created dataset',
-                                                            privacy: vis.privacy,
-                                                            type: vis.type,
-                                                            vis_id: vis.id,
-                                                            origin: origin)
+      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin)
     end
   rescue => tracking_exception
     Carto::Logger.warning('SegmentWrapper: could not report',

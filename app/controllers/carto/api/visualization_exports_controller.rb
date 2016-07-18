@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require_relative '../../../../lib/cartodb/event_tracker'
+require_dependency 'carto/segment_wrapper'
 
 module Carto
   module Api

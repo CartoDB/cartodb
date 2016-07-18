@@ -47,6 +47,7 @@ module.exports = cdb.core.View.extend({
 
     this.model.bind('change:normalized', function () {
       var normalized = this.model.get('normalized');
+      this._resetWidget()
       this.histogramChartView.setNormalized(normalized);
       this.miniHistogramChartView.setNormalized(normalized);
     }, this);

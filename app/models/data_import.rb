@@ -309,7 +309,7 @@ class DataImport < Sequel::Model
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
-    track_results(results, id, visualization_id)
+    track_results(results, id)
 
     self
   end
@@ -988,12 +988,12 @@ class DataImport < Sequel::Model
     end
   end
 
-  def track_results(results, import_id, visualization_id)
+  def track_results(results, import_id)
     results.each do |result|
       condition, origin = if result.success?
-                            [{ import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
+                            [{ data_import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
                           else
-                            [{ import_id: import_id }, 'copy']
+                            [{ data_import_id: import_id }, 'copy']
                           end
 
       user_table = ::UserTable.where(condition).first

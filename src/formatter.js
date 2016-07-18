@@ -4,29 +4,36 @@ var d3 = require('d3');
 var format = {};
 
 format.formatNumber = function (value, unit) {
-  if (!_.isNumber(value)) {
+  if (!_.isNumber(value) || value === 0) {
     return value;
   }
 
   var format = d3.format('.2s');
+  var p = 0;
+  var abs_v = Math.abs(value);
 
-  if (value < 1000) {
-    var v = (value).toFixed(2);
-    // v ends with .00
-    if (v.match('.00' + '$')) {
-      v = v.replace('.00', '');
-    }
-    return v;
+  if (value > 1000) {
+    value = format(value) + (unit ? ' ' + unit : '');
+    return value;
   }
 
-  value = format(value) + (unit ? ' ' + unit : '');
-
-  // value ends with .0
-  if (value.match('.0' + '$')) {
-    value = value.replace('.0', '');
+  if (abs_v > 100) {
+    p = 0;
+  } else if (abs_v > 10) {
+    p = 1;
+  } else if (abs_v > 1) {
+    p = 2;
+  } else if (abs_v > 0) {
+    p = Math.max(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 3);
   }
 
-  return value === '0.0' ? 0 : value;
+  value = value.toFixed(p);
+  var m = value.match(/(\.0+)$/);
+  if (m) {
+    value = value.replace(m[0], '');
+  }
+
+  return value;
 };
 
 format.formatDate = function (value) {

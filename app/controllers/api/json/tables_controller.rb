@@ -3,7 +3,7 @@
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
 
-require_dependency 'carto/segment_wrapper'
+require_dependency 'carto/tracking/events'
 
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'

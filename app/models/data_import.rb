@@ -988,12 +988,12 @@ class DataImport < Sequel::Model
     end
   end
 
-  def track_results(results, data_import_id, visualization_id)
+  def track_results(results, import_id, visualization_id)
     results.each do |result|
       condition, origin = if result.success?
-                            [{ data_import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
+                            [{ import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
                           else
-                            [{ data_import_id: import_id }, 'copy']
+                            [{ import_id: import_id }, 'copy']
                           end
 
       user_table = ::UserTable.where(condition).first

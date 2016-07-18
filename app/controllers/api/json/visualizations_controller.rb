@@ -450,10 +450,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   end
 
   def track_event(vis, action)
-    custom_properties = {'privacy' => vis.privacy, 'type' => vis.type,  'vis_id' => vis.id}
     event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset'
 
-    Cartodb::EventTracker.new.send_event(current_user, "#{action} #{event_type}", custom_properties)
+    Carto::SegmentWrapper.new(current_viewer)
+                         .send_event("#{action} #{event_type}",
+                                     privacy: vis.privacy,
+                                     type: vis.type,
+                                     vis_id: vis.id)
   end
 
 end

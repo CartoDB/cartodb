@@ -432,7 +432,7 @@
         "unknown-geometry-type": "unknown",
         "option-types": {
           "aggregate-intersection": {
-            "title": "Intersection",
+            "title": "Intersect second layer",
             "desc": "Aggregate data in a second layer as a new column."
           },
           "area-of-influence": {

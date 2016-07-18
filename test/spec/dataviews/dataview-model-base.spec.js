@@ -358,9 +358,9 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should reload the map by default when the filter changes', function () {
       var filter = new Backbone.Model();
-      new DataviewModelBase({
+      new DataviewModelBase({ // eslint-disable-line
         source: { id: 'a0' }
-      }, { // eslint-disable-line
+      }, {
         map: this.map,
         layer: this.layer,
         filter: filter,

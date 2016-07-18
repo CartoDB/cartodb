@@ -24,7 +24,6 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
   });
 
   return new HistogramDataviewModel(attrs, {
-    analysisCollection: analysisCollection,
     map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
     windshaftMap: windshaftMap,
     layer: layer,
@@ -245,7 +244,6 @@ describe('windshaft/anonymous-map', function () {
           id: 'a0'
         }
       }, {
-        analysisCollection: this.analysisCollection,
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
         layer: this.cartoDBLayer1,
@@ -260,7 +258,6 @@ describe('windshaft/anonymous-map', function () {
           id: 'a1'
         }
       }, {
-        analysisCollection: this.analysisCollection,
         map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
         windshaftMap: this.map,
         layer: this.cartoDBLayer2,

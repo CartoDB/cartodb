@@ -37,7 +37,6 @@ module.exports = Model.extend({
 
     return this._newModel(
       new CategoryDataviewModel(attrs, {
-        analysisCollection: this._analysisCollection,
         map: this._map,
         layer: layerModel,
         filter: categoryFilter,
@@ -51,7 +50,6 @@ module.exports = Model.extend({
     attrs = this._generateAttrsForDataview(layerModel, attrs, FormulaDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new FormulaDataviewModel(attrs, {
-        analysisCollection: this._analysisCollection,
         map: this._map,
         layer: layerModel,
         analysisCollection: this._analysisCollection
@@ -69,7 +67,6 @@ module.exports = Model.extend({
 
     return this._newModel(
       new HistogramDataviewModel(attrs, {
-        analysisCollection: this._analysisCollection,
         map: this._map,
         layer: layerModel,
         filter: rangeFilter,
@@ -83,7 +80,6 @@ module.exports = Model.extend({
     attrs = this._generateAttrsForDataview(layerModel, attrs, ListDataviewModel.ATTRS_NAMES);
     return this._newModel(
       new ListDataviewModel(attrs, {
-        analysisCollection: this._analysisCollection,
         map: this._map,
         layer: layerModel,
         analysisCollection: this._analysisCollection

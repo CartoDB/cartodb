@@ -26,8 +26,12 @@ module Carto
             send_event(user, 'Created dataset', custom_properties)
           end
         end
-      rescue => e
-        report_error('Created dataset', user, type: 'Invalid import result', error: e.inspect)
+      rescue => exception
+        CartoDB::Logger.warning(message: 'SegmentWrapper',
+                                event: 'created dataset',
+                                type: 'Invalid import result',
+                                exception: exception,
+                                user: user)
       end
 
       # Generate an event if a map is imported as well
@@ -37,16 +41,20 @@ module Carto
           custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id, origin: 'import' }
           send_event(user, 'Created map', custom_properties)
         end
-      rescue => e
-        report_error('Created map', user, type: 'Invalid import result', error: e.inspect)
+      rescue => exception
+        CartoDB::Logger.warning(message: 'SegmentWrapper',
+                                event: 'created map',
+                                type: 'Invalid import result',
+                                exception: exception,
+                                user: user)
       end
     end
 
     private
 
     def send_event(user, event_name, custom_properties = {})
-      return unless is_tracking_active?
-      return unless user_valid?(user, event_name, custom_properties)
+      return unless tracking?
+      return unless user
 
       # Some events register custom properties
       # Monetary values associated with the event should use 'revenue' reserved key
@@ -66,27 +74,16 @@ module Carto
       }
     end
 
-    def is_tracking_active?
-      !Cartodb.config[:segment].blank? and !Cartodb.config[:segment]['api_key'].blank?
+    def tracking?
+      Cartodb.config[:segment].present? && Cartodb.config[:segment]['api_key'].present?
     end
 
-    def user_valid?(user, event_name, custom_properties)
-      if user.nil?
-        report_error(event_name, user, type: 'Null user', properties: custom_properties)
-        false
-      else
-        true
-      end
-    end
-
-    def report_error(event, user, type: 'Unknown', properties: {}, error: nil)
-      Rollbar.log('warning',
-                  "EventTracker: #{type} error",
-                  user_id: user.nil? ? nil : user.id,
-                  event: event,
-                  properties: properties,
-                  error_message: error
-                 )
+    def report_error(event, user, type: 'Unknown', properties: {}, exception: nil)
+      CartoDB::Logger.warning(message: "EventTracker: #{type} error",
+                              exception: error,
+                              user: user
+                              event: event,
+                              properties: properties)
     end
   end
 end

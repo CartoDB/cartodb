@@ -52,9 +52,10 @@ module Carto
       class CreatedDataset
         EVENT_NAME = 'Created dataset'.freeze
 
-        def initialize(user, table_visualization)
+        def initialize(user, table_visualization, origin: 'blank')
           @user = user
           @table_visualization = table_visualization
+          @origin = orgin
         end
 
         def report
@@ -68,7 +69,7 @@ module Carto
             privacy: @table_visualization.privacy,
             type: @table_visualization.type,
             vis_id: @table_visualization.id,
-            origin: 'blank'
+            origin: @origin
           }
         end
       end

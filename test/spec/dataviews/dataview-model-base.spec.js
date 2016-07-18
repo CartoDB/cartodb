@@ -179,6 +179,7 @@ describe('dataviews/dataview-model-base', function () {
 
     describe('when change:url has a sourceId option', function () {
       beforeEach(function () {
+        this.analysisCollection.reset([]);
         this.analysisFactory.analyse({
           id: 'a2',
           type: 'estimated-population',

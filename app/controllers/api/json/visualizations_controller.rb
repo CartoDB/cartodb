@@ -250,17 +250,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           send_like_email(vis, current_viewer, vis_preview_image)
         end
 
-        visualization_id = vis.id
-        visualization_user = vis.user
-        Carto::SegmentWrapper.new(current_viewer.id)
-                             .send_event('Liked map',
-                                         action: 'like',
-                                         vis_id: visualization_id,
-                                         vis_name: vis.name,
-                                         vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-                                         vis_author: visualization_user.username,
-                                         vis_author_email: visualization_user.email,
-                                         vis_author_id: visualization_user.id)
+        Carto::Tracking::Events::LikedMap.new(current_viewer, visualization).report
 
         render_jsonp(id: visualization_id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
       rescue KeyError => exception

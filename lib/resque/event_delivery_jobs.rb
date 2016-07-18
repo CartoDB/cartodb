@@ -1,4 +1,4 @@
-require_dependency 'carto/segment_tracker'
+require_dependency 'carto/tracking/segment_tracker'
 
 module Resque
   module EventDeliveryJobs

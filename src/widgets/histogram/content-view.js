@@ -47,9 +47,6 @@ module.exports = cdb.core.View.extend({
 
     this.model.bind('change:normalized', function () {
       var normalized = this.model.get('normalized');
-      this._resetWidget()
-      this.histogramChartView.setNormalized(normalized);
-      this.miniHistogramChartView.setNormalized(normalized);
     }, this);
 
     this.addView(dropdown);
@@ -437,7 +434,6 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetWidget: function () {
-    this.lockedByUser = true;
     this.unsettingRange = true;
     this.model.set({
       zoomed: false,
@@ -445,12 +441,7 @@ module.exports = cdb.core.View.extend({
       filter_enabled: false,
       lo_index: null,
       hi_index: null,
-      min: this._dataviewModel.start,
-      max: this._dataviewModel.end
     });
     this._dataviewModel.disableFilter();
-    this.filter.unsetRange();
-    this.histogramChartView.unsetBounds();
-    this.miniHistogramChartView.hide();
   }
 });

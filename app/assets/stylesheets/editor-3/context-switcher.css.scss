@@ -13,6 +13,9 @@
   overflow: hidden;
   z-index: 4;
 }
+.Editor-contextSwitcher.in-table {
+  bottom: 39px;
+}
 .Editor-contextSwitcher.is-moved {
   left: calc(50% - 216px);
 }

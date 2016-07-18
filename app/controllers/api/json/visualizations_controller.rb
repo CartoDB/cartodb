@@ -175,13 +175,13 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         unless vis.table.nil?
-          vis.table.dependent_visualizations.each { |dependent_vis|
+          vis.table.dependent_visualizations.each do |dependent_vis|
             if dependent_vis.derived?
               Carto::Tracking::Events::DeletedMap.new(current_user, dependent_vis).report
             else
               Carto::Tracking::Events::DeletedDataset.new(current_user, dependent_vis).report
             end
-          }
+          end
         end
 
         @stats_aggregator.timing('delete') do

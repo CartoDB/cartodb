@@ -288,7 +288,7 @@ describe User do
     it 'should set default settings properly unless overriden' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.max_layers.should == 6
+        u.max_layers.should eq ::User::DEFAULT_MAX_LAYERS
         u.private_tables_enabled.should be_true
         u.sync_tables_enabled.should be_true
       end

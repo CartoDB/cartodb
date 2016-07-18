@@ -55,7 +55,7 @@ module Carto
         def initialize(user, table_visualization, origin: 'blank')
           @user = user
           @table_visualization = table_visualization
-          @origin = orgin
+          @origin = origin
         end
 
         def report

@@ -1,12 +1,14 @@
 module Carto
   class SegmentWrapper
+    def initialize(user_id)
+      @user = Carto::User.find(user_id)
+    end
+
     def track_exported_map(user, vis)
-      if !vis.nil?
-        custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id }
-        send_event(user, 'Exported map', custom_properties)
-      else
-        report_error('Exported map', user, type: 'Null visualization')
-      end
+      return unless vis
+
+      custom_properties = { privacy: vis.privacy, type: vis.type, vis_id: vis.id }
+      send_event(user, 'Exported map', custom_properties)
     end
 
     def track_import(user, import_id, results, visualization_id, from_common_data)

@@ -3,8 +3,31 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module Events
-      class MapExported
+      class ExportedMap
         EVENT_NAME = 'Exported map'.freeze
+
+        def initialize(user, visualization)
+          @user = user
+          @visualization = visualization
+        end
+
+        def report
+          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
+        end
+
+        private
+
+        def properties
+          {
+            privacy: @visualization.privacy,
+            type: @visualization.type,
+            id: @visualization.id
+          }
+        end
+      end
+
+      class CreatedMap
+        EVENT_NAME = 'Created map'.freeze
 
         def initialize(user, visualization)
           @user = user
@@ -29,9 +52,9 @@ module Carto
       class CreatedDataset
         EVENT_NAME = 'Created dataset'.freeze
 
-        def initialize(user, table)
+        def initialize(user, table_visualization)
           @user = user
-          @table = table
+          @table_visualization = table_visualization
         end
 
         def report
@@ -42,9 +65,9 @@ module Carto
 
         def properties
           {
-            privacy: @table.table_visualization.privacy,
-            type: @table.table_visualization.type,
-            vis_id: @table.table_visualization.id,
+            privacy: @table_visualization.privacy,
+            type: @table_visualization.type,
+            vis_id: @table_visualization.id,
             origin: 'blank'
           }
         end
@@ -53,9 +76,9 @@ module Carto
       class DeletedDataset
         EVENT_NAME = 'Deleted dataset'.freeze
 
-        def initialize(user, table)
+        def initialize(user, table_visualization)
           @user = user
-          @table = table
+          @table_visualization = table_visualization
         end
 
         def report
@@ -65,12 +88,10 @@ module Carto
         private
 
         def properties
-          table_visualization = @table.table_visualization
-
           {
-            privacy: table_visualization.privacy,
-            type: table_visualization.type,
-            vis_id: table_visualization.id
+            privacy: @table_visualization.privacy,
+            type: @table_visualization.type,
+            vis_id: @table_visualization.id
           }
         end
       end

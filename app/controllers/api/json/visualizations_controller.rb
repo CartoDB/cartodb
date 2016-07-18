@@ -9,7 +9,8 @@ require_relative '../../../models/visualization/table_blender'
 require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../lib/static_maps_url_helper'
-require_relative '../../../../lib/cartodb/event_tracker'
+
+require_dependency 'carto/segment_wrapper'
 require_dependency 'carto/visualizations_export_service_2'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
@@ -249,23 +250,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           send_like_email(vis, current_viewer, vis_preview_image)
         end
 
-        custom_properties = {
-          action: 'like',
-          vis_id: vis.id,
-          vis_name: vis.name,
-          vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-          vis_author: vis.user.username,
-          vis_author_email: vis.user.email,
-          vis_author_id: vis.user.id
-        }
+        visualization_id = vis.id
+        visualization_user = vis.user
+        Carto::SegmentWrapper.new(current_viewer)
+                             .send_event('Liked map',
+                                         action: 'like',
+                                         vis_id: visualization_id,
+                                         vis_name: vis.name,
+                                         vis_type: vis.type == 'derived' ? 'map' : 'dataset',
+                                         vis_author: visualization_user.username,
+                                         vis_author_email: visualization_user.email,
+                                         vis_author_id: visualization_user.id)
 
-        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
-
-        render_jsonp({
-                       id:    vis.id,
-                       likes: vis.likes.count,
-                       liked: vis.liked_by?(current_viewer.id)
-                     })
+        render_jsonp(id: visualization_id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       rescue AlreadyLikedError
@@ -277,7 +274,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def remove_like
     @stats_aggregator.timing('visualizations.unlike') do
-
       begin
         return(head 403) unless current_viewer
 
@@ -294,27 +290,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        custom_properties = {
-          action: 'remove',
-          vis_id: vis.id,
-          vis_name: vis.name,
-          vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-          vis_author: vis.user.username,
-          vis_author_email: vis.user.email,
-          vis_author_id: vis.user.id
-        }
+        visualizaiton_user = vis.user
+        visualization_id = vis.id
+        Carto::SegmentWrapper.new(current_viewer)
+                             .send_event('Liked map',
+                                         action: 'remove',
+                                         vis_id: visualization_id,
+                                         vis_name: vis.name,
+                                         vis_type: vis.type == 'derived' ? 'map' : 'dataset',
+                                         vis_author: visualizaiton_user.username,
+                                         vis_author_email: visualizaiton_user.email,
+                                         vis_author_id: visualizaiton_user.id)
 
-        Cartodb::EventTracker.new.send_event(current_viewer, 'Liked map', custom_properties)
-
-        render_jsonp({
-                       id:    vis.id,
-                       likes: vis.likes.count,
-                       liked: false
-                     })
-      rescue KeyError => exception
-        render(text: exception.message, status: 403)
-      end
-
+        render_jsonp(id: visualization_id, likes: vis.likes.count, liked: false)
+    rescue KeyError => exception
+      render(text: exception.message, status: 403)
     end
   end
 

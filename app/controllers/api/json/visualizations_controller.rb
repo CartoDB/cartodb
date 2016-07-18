@@ -87,8 +87,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
-        track_event(vis, 'Created')
-
         if vis.derived?
           Carto::Tracking::Events::CreatedMap.new(current_user, vis).report
         else
@@ -170,11 +168,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
 
-        track_event(vis, 'Deleted')
+        if vis.derived?
+          Carto::Tracking::Events::DeletedMap.new(current_user, vis).report
+        else
+          Carto::Tracking::Events::DeletedDataset.new(current_user, vis).report
+        end
+
         unless vis.table.nil?
           vis.table.dependent_visualizations.each { |dependent_vis|
-            # Remove dependent visualizations as well, if any
-            track_event(dependent_vis, 'Deleted')
+            if dependent_vis.derived?
+              Carto::Tracking::Events::DeletedMap.new(current_user, dependent_vis).report
+            else
+              Carto::Tracking::Events::DeletedDataset.new(current_user, dependent_vis).report
+            end
           }
         end
 
@@ -434,15 +440,4 @@ class Api::Json::VisualizationsController < Api::ApplicationController
     end
     vis
   end
-
-  def track_event(vis, action)
-    event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset'
-
-    Carto::SegmentWrapper.new(current_viewer.id)
-                         .send_event("#{action} #{event_type}",
-                                     privacy: vis.privacy,
-                                     type: vis.type,
-                                     vis_id: vis.id)
-  end
-
 end

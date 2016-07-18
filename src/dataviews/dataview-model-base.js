@@ -50,6 +50,7 @@ module.exports = Model.extend({
 
     if (!opts.map) throw new Error('map is required');
     if (!opts.analysisCollection) throw new Error('analysisCollection is required');
+    if (!attrs.source) throw new Error('source is a required attr');
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -68,6 +69,7 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
+    this._setupAnalysisStatusEvents();
   },
 
   _getLayerDataProvider: function () {
@@ -76,6 +78,9 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
+    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
+    this.on('change:source', this._setupAnalysisStatusEvents, this);
+
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider) {
       this.listenToOnce(layerDataProvider, 'dataChanged', this._onChangeBinds, this);
@@ -87,9 +92,40 @@ module.exports = Model.extend({
         });
       });
     }
+
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+  },
+
+  _setupAnalysisStatusEvents: function () {
+    this._removeExistingAnalysisBindings();
+    this._analysis = this._analysisCollection.get(this.getSourceId());
+    if (this._analysis) {
+      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
+    }
+  },
+
+  _removeExistingAnalysisBindings: function () {
+    if (!this._analysis) return;
+    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
+  },
+
+  _onAnalysisStatusChange: function (analysis, status) {
+    if (analysis.isLoading()) {
+      this._triggerLoading();
+    } else if (analysis.isFailed()) {
+      this._triggerError(analysis.get('error'));
+    }
+    // loaded will be triggered through the default behavior, so not necessary to react on that status here
+  },
+
+  _triggerLoading: function () {
+    this.trigger('loading', this);
+  },
+
+  _triggerError: function (error) {
+    this.trigger('error', this, error);
   },
 
   /**
@@ -211,7 +247,7 @@ module.exports = Model.extend({
     if (layerDataProvider && layerDataProvider.canProvideDataFor(this)) {
       this.set(this.parse(layerDataProvider.getDataFor(this)));
     } else {
-      this.trigger('loading', this);
+      this._triggerLoading();
 
       if (opts.success) {
         var successCallback = opts && opts.success;
@@ -224,7 +260,7 @@ module.exports = Model.extend({
         }.bind(this),
         error: function (mdl, err) {
           if (!err || (err && err.statusText !== 'abort')) {
-            this.trigger('error', mdl, err);
+            this._triggerError(err);
           }
         }.bind(this)
       }));
@@ -249,14 +285,20 @@ module.exports = Model.extend({
     // Dataview is pointing to a layer with `sql` or an analysis
     // node directly, so just return the id that has been set by
     // dataviews-factory.js
-    return this.get('source').id;
+    return this._ownSourceId();
+  },
+
+  _ownSourceId: function () {
+    return this.has('source') && this.get('source').id;
   },
 
   hasLayerAsSource: function () {
-    return this.get('source').id === this.layer.id;
+    return this._ownSourceId() === this.layer.id;
   },
 
   remove: function () {
+    this._removeExistingAnalysisBindings();
+
     if (this.filter) {
       var isFilterEmpty = this.filter.isEmpty();
       this.filter.remove();
@@ -264,6 +306,7 @@ module.exports = Model.extend({
         this._reloadMap();
       }
     }
+
     this.trigger('destroy', this);
     this.stopListening();
   }

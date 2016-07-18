@@ -11,7 +11,8 @@ describe('dataviews/dataview-collection', function () {
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
     var layer = new Backbone.Model();
     layer.getDataProvider = function () {};
-    var dataviewModel = new DataviewModel(null, {
+    var dataviewModel = new DataviewModel({source: {id: 'a0'}}, {
+      analysisCollection: new Backbone.Collection(),
       map: map,
       layer: layer
     });

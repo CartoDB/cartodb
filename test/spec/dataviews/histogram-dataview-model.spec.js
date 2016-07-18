@@ -1,5 +1,4 @@
 var Backbone = require('backbone');
-
 var Model = require('../../../src/core/model');
 var RangeFilter = require('../../../src/windshaft/filters/range');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -9,8 +8,12 @@ describe('dataviews/histogram-dataview-model', function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
     this.filter = new RangeFilter();
+
     this.layer = new Model();
-    this.layer.getDataProvider = function () {};
+    this.layer.getDataProvider = jasmine.createSpy('layer.getDataProvider');
+
+    this.analysisCollection = new Backbone.Collection();
+
     spyOn(HistogramDataviewModel.prototype, 'listenTo').and.callThrough();
     spyOn(HistogramDataviewModel.prototype, 'fetch').and.callThrough();
     this.model = new HistogramDataviewModel({

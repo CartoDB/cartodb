@@ -161,6 +161,7 @@
   },
   "scripts": {
     "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json",
+    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json --",
     "test-watch": "watch 'npm test' $npm_package_config_root"
   }
 }

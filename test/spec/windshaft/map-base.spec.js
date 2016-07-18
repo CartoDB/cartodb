@@ -96,7 +96,7 @@ describe('windshaft/map-base', function () {
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,
         filter: this.filter,
-        analysisCollection: new Backbone.Collection()
+        analysisCollection: this.analysisCollection
       });
 
       this.dataviewsCollection.add(this.dataview);

@@ -9,11 +9,15 @@ describe('dataviews/category-dataview-model', function () {
     this.map.getViewBounds = jasmine.createSpy();
     this.map.reload = jasmine.createSpy();
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+
+    this.layer = new Backbone.Model();
+    this.layer.getDataProvider = jasmine.createSpy('layer.getDataProvider');
+
     this.model = new CategoryDataviewModel({
-      source: { id: 'a0' }
+      source: {id: 'a0'}
     }, {
       map: this.map,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
+      layer: this.layer,
       filter: new WindshaftFiltersCategory(),
       analysisCollection: new Backbone.Collection()
     });
@@ -41,8 +45,8 @@ describe('dataviews/category-dataview-model', function () {
 
   it('should set the api_key attribute on the internal models', function () {
     this.model = new CategoryDataviewModel({
-      source: { id: 'a0' },
-      apiKey: 'API_KEY',
+      source: {id: 'a0'},
+      apiKey: 'API_KEY'
     }, {
       map: this.map,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),

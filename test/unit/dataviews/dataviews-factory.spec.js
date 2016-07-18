@@ -11,12 +11,15 @@ var generateFakeAttributes = function (attrNames) {
 
 describe('dataviews/dataviews-factory', function () {
   beforeEach(function () {
+    this.analysisCollection = new Backbone.Collection();
     this.dataviewsCollection = new Backbone.Collection();
     this.factory = new DataviewsFactory(null, {
+      analysisCollection: this.analysisCollection,
       dataviewsCollection: this.dataviewsCollection,
       map: {}
     });
-    this.layer = jasmine.createSpyObj('layer', ['getDataProvider']);
+    this.layer = new Backbone.Model();
+    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
   });
 
   it('should create the factory as expected', function () {
@@ -48,6 +51,7 @@ describe('dataviews/dataviews-factory', function () {
       this.factory = new DataviewsFactory({
         apiKey: 'THE_API_KEY'
       }, {
+        analysisCollection: this.analysisCollection,
         dataviewsCollection: this.dataviewsCollection,
         map: {}
       });
@@ -62,6 +66,7 @@ describe('dataviews/dataviews-factory', function () {
       this.factory = new DataviewsFactory({
         apiKey: 'THE_API_KEY'
       }, {
+        analysisCollection: this.analysisCollection,
         dataviewsCollection: this.dataviewsCollection,
         map: {}
       });

@@ -10,7 +10,7 @@ require_relative '../../../models/visualization/watcher'
 require_relative '../../../models/map/presenter'
 require_relative '../../../../lib/static_maps_url_helper'
 
-require_dependency 'carto/segment_wrapper'
+require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualizations_export_service_2'
 
 class Api::Json::VisualizationsController < Api::ApplicationController

@@ -114,7 +114,7 @@
 }
 
 .Filters-searchLink {
-  @include display-flex();
+  display: block;
   color: #1181FB;
 }
 .Filters-searchLink:after {

@@ -31,7 +31,7 @@ def create_import(user, file_name, name=nil)
   end
 
   @data_import.data_source =  file_name
-  @data_import.send :new_importer
+  @data_import.send :dispatch
   @data_import
 end
 

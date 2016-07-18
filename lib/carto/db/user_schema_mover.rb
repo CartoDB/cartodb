@@ -127,6 +127,7 @@ module Carto
             Database.new(@database_name, database).create_schema(old_name)
             move_postgis_to_schema(database, old_name)
             move_plproxy_to_schema(database, old_name, new_name)
+            move_odbc_fdw_to_schema(database, old_name)
             @user.db_service.rebuild_quota_trigger_with_database(database)
 
             cartodbfied_tables.select { |_, is_cartodbfied| is_cartodbfied }.map do |t, _|
@@ -142,6 +143,15 @@ module Carto
 
       def move_postgis_to_schema(database, schema)
         database.run(%{ALTER EXTENSION postgis SET SCHEMA "#{schema}"})
+      end
+
+      def move_odbc_fdw_to_schema(database, schema)
+        odbc_fdw_installed = database.fetch(%{
+          SELECT count(*) FROM pg_extension WHERE extname='odbc_fdw'
+        }).first[:count] > 0
+        if odbc_fdw_installed
+          database.run %{ALTER EXTENSION odbc_fdw SET SCHEMA "#{schema}"}
+        end
       end
 
       def move_plproxy_to_schema(database, old_schema, new_schema)

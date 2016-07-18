@@ -3,7 +3,7 @@
   <ul class="u-flex u-justifySpace">
     <% if (isEditable) { %>
       <li>
-        <button class="u-flex u-alignCenter  CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addRow">
+        <button class="u-alignCenter  CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addRow">
           <svg width="16px" height="7px" viewBox="563 478 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <defs>
                   <rect id="path-1" x="3" y="0" width="1" height="7"></rect>
@@ -36,7 +36,7 @@
         </button>
       </li>
       <li class="u-lSpace--xl">
-        <button class="u-flex u-alignCenter CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addColumn">
+        <button class="u-alignCenter CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase js-addColumn">
           <svg width="16px" height="7px" viewBox="565 455 16 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="Add-Column" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(565.000000, 455.000000)">
               <path d="M3,7 L4,7 L4,0 L3,0 L3,7 Z M7,4 L7,3 L0,3 L0,4 L7,4 Z" id="Combined-Shape" fill="#1181FB"></path>
@@ -51,7 +51,7 @@
       </li>
     <% } %>
     <li class="u-lSpace--xl">
-      <button class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase is-disabled u-flex u-alignCenter js-export">
+      <button class="CDB-Text CDB-Size-small is-semibold u-actionTextColor u-upperCase is-disabled u-alignCenter js-export">
         <svg width="10px" height="9px" viewBox="760 477 10 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(760.000000, 477.000000)">
                 <path d="M0.707106781,3 L0.707106781,3 L5.35355339,7.64644661 L4.64644661,8.35355339 L9.53903623e-13,3.70710678 L0.707106781,3 Z M8.34664192,3 L9.0537487,3.70710678 L4.40730209,8.35355339 L3.70019531,7.64644661 L8.34664192,3 L8.34664192,3 Z" fill="#1181FB"></path>

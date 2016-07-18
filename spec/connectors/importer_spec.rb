@@ -7,7 +7,7 @@ require 'csv'
 describe CartoDB::Connector::Importer do
 
   before(:all) do
-    @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400)
+    @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400, max_layers: 4)
   end
 
   before(:each) do
@@ -270,6 +270,9 @@ describe CartoDB::Connector::Importer do
   end
 
   it 'should be able to import a multi file zip as a multilayer map' do
+    @user.max_layers = 5
+    @user.save
+
     filepath = "#{Rails.root}/spec/support/data/multilayer_shp.zip"
 
     data_import = DataImport.create(
@@ -288,8 +291,9 @@ describe CartoDB::Connector::Importer do
     vis.map.data_layers.count.should eq 5
   end
 
-  it 'should be able to handle a zip with more files MAX_LAYERS' do
-    stub_const('::Map::MAX_LAYERS', 2)
+  it 'should be able to handle a zip with more files max_layers' do
+    @user.max_layers = 2
+    @user.save
 
     filepath = "#{Rails.root}/spec/support/data/multilayer_shp.zip"
 
@@ -306,7 +310,7 @@ describe CartoDB::Connector::Importer do
     data_import.success.should eq true
 
     vis = Carto::Visualization.find_by_id(data_import.visualization_id)
-    vis.map.data_layers.count.should eq ::Map::MAX_LAYERS
+    vis.map.data_layers.count.should eq @user.max_layers
 
     data_import.rejected_layers.split(',').count.should eq 3
   end

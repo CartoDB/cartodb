@@ -94,7 +94,7 @@ module Carto
       data_layer_count = 0
       visualization.map.layers.each do |layer|
         if layer.data_layer?
-          if data_layer_count < ::Map::MAX_LAYERS
+          if data_layer_count < user.max_layers
             layers.push(layer)
             data_layer_count += 1
           end

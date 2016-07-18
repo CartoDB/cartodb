@@ -177,9 +177,9 @@ module Carto
       def get_warnings
         warnings = {}
 
-        if @data_import.rejected_layers
-          warnings[:rejected_layers] = @data_import.rejected_layers.split(',')
-          warnings[:user_max_layers] = ::Map::MAX_LAYERS
+        if !@data_import.rejected_layers.nil?
+          warnings.merge!(rejected_layers: @data_import.rejected_layers.split(','))
+          warnings.merge!(user_max_layers: @data_import.user.max_layers)
         end
 
         warnings.merge!(JSON.parse(@data_import.runner_warnings)) if !@data_import.runner_warnings.nil?

@@ -288,13 +288,16 @@ describe User do
     it 'should set default settings properly unless overriden' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
+        u.max_layers.should == 6
         u.private_tables_enabled.should be_true
         u.sync_tables_enabled.should be_true
       end
       user = FactoryGirl.build(:user, organization: organization)
+      user.max_layers = 3
       user.private_tables_enabled = false
       user.sync_tables_enabled = false
       user.save
+      user.max_layers.should == 3
       user.private_tables_enabled.should be_false
       user.sync_tables_enabled.should be_false
       organization.destroy

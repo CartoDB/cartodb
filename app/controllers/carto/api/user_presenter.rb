@@ -151,7 +151,7 @@ module Carto
             concurrent_imports: @user.max_concurrent_import_count,
             import_file_size: @user.max_import_file_size,
             import_table_rows: @user.max_import_table_row_count,
-            max_layers: ::Map::MAX_LAYERS
+            max_layers: @user.max_layers
           },
           notification: @user.notification,
           avatar_url: @user.avatar,

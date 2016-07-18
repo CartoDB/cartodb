@@ -457,17 +457,26 @@ describe Carto::VisualizationsExportService2 do
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
       end
 
-      it 'does not import more layers than MAX_LAYERS' do
-        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
-        tiled_layers_count = imported.layers.select { |l| ['tiled'].include?(l.kind) }.count
-        tiled_layers_count.should eq 2
-        imported.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should > ::Map::MAX_LAYERS
+      it 'does not import more layers than the user limit' do
+        old_max_layers = @user.max_layers
+        @user.max_layers = 1
+        @user.save
 
-        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
-        visualization.layers.select { |l| ['tiled'].include?(l.kind) }.count.should eq tiled_layers_count
-        visualization.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should eq ::Map::MAX_LAYERS
+        begin
+          imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+          tiled_layers_count = imported.layers.select { |l| ['tiled'].include?(l.kind) }.count
+          tiled_layers_count.should eq 2
+          imported.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should > @user.max_layers
 
-        visualization.destroy
+          visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+          visualization.layers.select { |l| ['tiled'].include?(l.kind) }.count.should eq tiled_layers_count
+          visualization.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should eq @user.max_layers
+
+          visualization.destroy
+        ensure
+          @user.max_layers = old_max_layers
+          @user.save
+        end
       end
 
       it "Doesn't register layer tables dependencies if user table doesn't exist" do

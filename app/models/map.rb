@@ -62,7 +62,6 @@ class Map < Sequel::Model
   }
 
   MAXIMUM_ZOOM = 18
-  MAX_LAYERS = 8
 
   attr_accessor :table_id,
                 # Flag to detect if being destroyed by whom so invalidate_vizjson_varnish_cache skips it
@@ -148,7 +147,7 @@ class Map < Sequel::Model
   end
 
   def can_add_layer(user)
-    return false if carto_and_torque_layers.count > MAX_LAYERS
+    return false if self.user.max_layers && self.user.max_layers <= carto_and_torque_layers.count
     return false if self.user.viewer
 
     current_vis = visualizations.first

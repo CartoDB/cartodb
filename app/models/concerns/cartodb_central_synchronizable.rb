@@ -1,5 +1,6 @@
 module Concerns
   module CartodbCentralSynchronizable
+
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
       return true unless self.is_a?(::User)
@@ -84,7 +85,7 @@ module Concerns
         [:account_type, :admin, :crypted_password, :database_host,
          :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
-         :map_view_quota, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
+         :map_view_quota, :max_layers, :max_import_file_size, :max_import_table_row_count, :max_concurrent_import_count,
          :name, :notification, :organization_id,
          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
@@ -113,51 +114,20 @@ module Concerns
           :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
         end
       elsif self.is_a?(::User)
-        attrs = values.slice(:account_type,
-                             :admin,
-                             :available_for_hire,
-                             :crypted_password,
-                             :database_host,
-                             :database_timeout,
-                             :description,
-                             :disqus_shortname,
-                             :email,
-                             :geocoding_block_price,
-                             :geocoding_quota,
-                             :google_maps_key,
-                             :google_maps_private_key,
-                             :google_sign_in,
-                             :here_isolines_block_price,
-                             :here_isolines_quota,
-                             :last_password_change_date,
-                             :map_view_block_price,
-                             :map_view_quota,
-                             :name,
-                             :notification,
-                             :obs_general_block_price,
-                             :obs_general_quota,
-                             :obs_snapshot_block_price,
-                             :obs_snapshot_quota,
-                             :organization_id,
-                             :period_end_date,
-                             :private_tables_enabled,
-                             :quota_in_bytes,
-                             :salt,
-                             :soft_geocoding_limit,
-                             :soft_here_isolines_limit,
-                             :soft_obs_general_limit,
-                             :soft_obs_snapshot_limit,
-                             :soft_twitter_datasource_limit,
-                             :sync_tables_enabled,
-                             :table_quota,
-                             :twitter_datasource_enabled,
-                             :twitter_username,
-                             :upgraded_at,
-                             :user_timeout,
-                             :username,
-                             :viewer,
-                             :website)
-
+        attrs = self.values.slice(:account_type, :admin, :crypted_password,
+          :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
+          :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
+          :map_view_quota, :max_layers, :name, :notification, :organization_id,
+          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
+          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
+          :user_timeout, :username, :website, :soft_geocoding_limit,
+          :twitter_datasource_enabled, :soft_twitter_datasource_limit,
+          :google_sign_in, :last_password_change_date,
+          :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
+          :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
+          :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
+          :viewer
+        )
         case action
         when :create
           attrs[:remote_user_id] = self.id

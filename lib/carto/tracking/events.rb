@@ -26,6 +26,24 @@ module Carto
         end
       end
 
+      class VisitedDashboard
+        EVENT_NAME = 'Visited dashboard'.freeze
+
+        def initialize(user)
+          @user = user
+        end
+
+        def report
+          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
+        end
+
+        private
+
+        def properties
+          {}
+        end
+      end
+
       class CreatedMap
         EVENT_NAME = 'Created map'.freeze
 

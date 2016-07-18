@@ -295,8 +295,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         Carto::Tracking::Events::DislikedMap.new(current_viewer, vis).report
 
         render_jsonp(id: visualization_id, likes: vis.likes.count, liked: false)
-    rescue KeyError => exception
-      render(text: exception.message, status: 403)
+      rescue KeyError => exception
+        render(text: exception.message, status: 403)
+      end
     end
   end
 

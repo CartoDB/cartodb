@@ -42,7 +42,7 @@ class Api::Json::TablesController < Api::ApplicationController
                                 'vis_id' => @table.table_visualization.id,
                                 'origin' => 'blank' }
 
-          Carto::SegmentWrapper.new(current_user).send_event(current_user, 'Created dataset', custom_properties)
+          Carto::SegmentWrapper.new(current_user.id).send_event(current_user, 'Created dataset', custom_properties)
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
           render_jsonp( { :description => @table.errors.full_messages,
@@ -122,7 +122,7 @@ class Api::Json::TablesController < Api::ApplicationController
       end
 
       table_visualization = @table.table_visualization
-      Carto::SegmentWrapper.new(current_user)
+      Carto::SegmentWrapper.new(current_user.id)
                            .send_event('Deleted dataset',
                                        privacy: table_visualization.privacy,
                                        type: table_visualization.type,

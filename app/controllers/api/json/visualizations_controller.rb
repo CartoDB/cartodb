@@ -252,7 +252,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         visualization_id = vis.id
         visualization_user = vis.user
-        Carto::SegmentWrapper.new(current_viewer)
+        Carto::SegmentWrapper.new(current_viewer.id)
                              .send_event('Liked map',
                                          action: 'like',
                                          vis_id: visualization_id,
@@ -292,7 +292,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         visualizaiton_user = vis.user
         visualization_id = vis.id
-        Carto::SegmentWrapper.new(current_viewer)
+        Carto::SegmentWrapper.new(current_viewer.id)
                              .send_event('Liked map',
                                          action: 'remove',
                                          vis_id: visualization_id,
@@ -452,7 +452,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def track_event(vis, action)
     event_type = vis.type == Visualization::Member::TYPE_DERIVED ? 'map' : 'dataset'
 
-    Carto::SegmentWrapper.new(current_viewer)
+    Carto::SegmentWrapper.new(current_viewer.id)
                          .send_event("#{action} #{event_type}",
                                      privacy: vis.privacy,
                                      type: vis.type,

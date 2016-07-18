@@ -804,6 +804,7 @@
   },
   "dataset": {
     "sql": "SQL",
+    "data": "Metadata",
     "updated": "Updated %{ago}",
     "options": {
       "add-row": "Add row",
@@ -1242,7 +1243,7 @@
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
-          "body": "You just applied analysis to this layer and the SQL passed to reaad only.",
+          "body": "You just applied analysis to this layer. The SQL is now read only.",
           "accept": "CLOSE"
         },
         "empty-data": {
@@ -1485,7 +1486,7 @@
       }
     },
     "analysis": {
-      "pending": "Analysis %{nodeId} waiting",
+      "pending": "Analysis %{nodeId} running",
       "waiting": "Analysis %{nodeId} enqueued",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",

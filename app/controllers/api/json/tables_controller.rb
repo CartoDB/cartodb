@@ -37,7 +37,8 @@ class Api::Json::TablesController < Api::ApplicationController
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
 
-          Carto::Tracking::Events::DatasetCreated.new(current_user, @table).report
+          table_visualization = @table.table_visualization
+          Carto::Tracking::Events::CreatedDataset.new(current_user, table_visualization).report if table_visualization
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
           render_jsonp( { :description => @table.errors.full_messages,
@@ -108,11 +109,13 @@ class Api::Json::TablesController < Api::ApplicationController
 
   def destroy
     @stats_aggregator.timing('tables.destroy') do
+      table_visualization = @table.table_visualization
+
       @stats_aggregator.timing('ownership-check') do
-        return head(403) unless @table.table_visualization.is_owner?(current_user)
+        return head(403) unless table_visualization.is_owner?(current_user)
       end
 
-      Carto::Tracking::Events::DeletedDataset.new(current_user, @table).report if @table
+      Carto::Tracking::Events::DeletedDataset.new(current_user, table_visualization).report if table_visualization
 
       @stats_aggregator.timing('delete') do
         @table.destroy

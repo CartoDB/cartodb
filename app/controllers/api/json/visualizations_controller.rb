@@ -89,6 +89,12 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         track_event(vis, 'Created')
 
+        if vis.derived?
+          Carto::Tracking::Events::CreatedMap.new(current_user, vis).report
+        else
+          Carto::Tracking::Events::CreatedDataset.new(current_user, vis).report
+        end
+
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
         render_jsonp({ errors: vis.full_errors }, 400)
@@ -250,7 +256,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           send_like_email(vis, current_viewer, vis_preview_image)
         end
 
-        Carto::Tracking::Events::LikedMap.new(current_viewer, visualization).report
+        Carto::Tracking::Events::LikedMap.new(current_viewer, vis).report
 
         render_jsonp(id: visualization_id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
       rescue KeyError => exception
@@ -280,17 +286,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        visualizaiton_user = vis.user
-        visualization_id = vis.id
-        Carto::SegmentWrapper.new(current_viewer.id)
-                             .send_event('Liked map',
-                                         action: 'remove',
-                                         vis_id: visualization_id,
-                                         vis_name: vis.name,
-                                         vis_type: vis.type == 'derived' ? 'map' : 'dataset',
-                                         vis_author: visualizaiton_user.username,
-                                         vis_author_email: visualizaiton_user.email,
-                                         vis_author_id: visualizaiton_user.id)
+        Carto::Tracking::Events::DislikedMap.new(current_viewer, vis).report
 
         render_jsonp(id: visualization_id, likes: vis.likes.count, liked: false)
     rescue KeyError => exception

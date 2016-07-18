@@ -1497,7 +1497,7 @@
       }
     },
     "analysis": {
-      "pending": "Analysis %{nodeId} waiting",
+      "pending": "Analysis %{nodeId} running",
       "waiting": "Analysis %{nodeId} enqueued",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",

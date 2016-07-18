@@ -10,8 +10,7 @@ module Cartodb
     end
 
     def track_event(user_id, event, properties)
-      return unless @api_key.present?
-      return unless user_id.present?
+      return unless @api_key.present? && user_id.present?
 
       @analytics.track(user_id: user_id, event: event, properties: properties)
     rescue => exception

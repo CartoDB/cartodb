@@ -9,7 +9,6 @@
   </head>
   <body>
     <%= yield %>
-    <%= insert_trackjs() -%>
     <%= yield :js -%>
     <%= insert_google_analytics('primary') -%>
     <%= insert_hubspot() -%>

@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-require_dependency 'carto/segment_wrapper'
+require_dependency 'carto/tracking/events'
 
 module Carto
   module Api
@@ -47,12 +47,7 @@ module Carto
         download_path = CartoDB.path(self, 'visualization_export_download', download_path_params)
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id, download_path: download_path)
 
-        unless vis
-          Carto::SegmentWrapper.new(current_user.id).send_event('Exported map',
-                                                                privacy: vis.privacy,
-                                                                type: vis.type,
-                                                                vis_id: vis.id)
-        end
+        Carto::Tracking::Events::MapExported(current_user, vis).report unless vis
 
         render_jsonp(VisualizationExportPresenter.new(visualization_export).to_poro, 201)
       end

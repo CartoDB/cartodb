@@ -18,9 +18,39 @@ module Carto
         private
 
         def properties
-          { privacy: @visualization.privacy,
+          {
+            privacy: @visualization.privacy,
             type: @visualization.type,
-            id: @visualization.id }
+            id: @visualization.id
+          }
+        end
+      end
+
+      class LikedMap
+        EVENT_NAME = 'Liked map'.freeze
+
+        def initialize(user, visualization)
+          @user = user
+          @visualization = visualization
+        end
+
+        def report
+          Carto::Tracking::SegmentWrapper.new(@user).send_event(EVENT_NAME, properties)
+        end
+
+        private
+
+        def properties
+          visualization_user = @visualization.user
+          {
+            action: 'like',
+            vis_id: @visualization.id,
+            vis_name: @visualization.name,
+            vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
+            vis_author: visualization_user.username,
+            vis_author_email: visualization_user.email,
+            vis_author_id: visualization_user.id
+          }
         end
       end
 

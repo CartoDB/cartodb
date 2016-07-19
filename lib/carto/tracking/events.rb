@@ -109,7 +109,7 @@ module Carto
 
       class VisitedPrivateDataset < VistedPrivatePage
         def initialize(user)
-          super(user, 'dashboard')
+          super(user, 'dataset')
         end
       end
 

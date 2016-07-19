@@ -89,6 +89,12 @@ module Carto
         end
       end
 
+      class DeletedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Deleted map', visualization_properties(visualization))
+        end
+      end
+
       class VistedPrivatePage < TrackingEvent
         def initialize(user, page)
           super(user, 'Visited private page', visit_properties(user, page))

@@ -184,6 +184,10 @@ class Layer < Sequel::Model
     "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
   end
 
+  def user
+    map.user if map
+  end
+
   private
 
   def rename_in(target, anchor, substitution)
@@ -219,10 +223,6 @@ class Layer < Sequel::Model
 
   def map
     maps.first
-  end
-
-  def user
-    map.user if map
   end
 
   def query

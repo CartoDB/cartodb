@@ -87,11 +87,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
-        if vis.derived?
-          Carto::Tracking::Events::CreatedMap.new(current_user, vis).report
-        else
-          Carto::Tracking::Events::CreatedDataset.new(current_user, vis).report
-        end
+        Carto::Tracking::Events::CreatedVisualizationFactory.build(current_user, vis).report
 
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
@@ -168,19 +164,11 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
 
-        if vis.derived?
-          Carto::Tracking::Events::DeletedMap.new(current_user, vis).report
-        else
-          Carto::Tracking::Events::DeletedDataset.new(current_user, vis).report
-        end
+        Carto::Tracking::Events::DeletedVisualizationFactory.build(current_user, vis).report
 
         unless vis.table.nil?
           vis.table.dependent_visualizations.each do |dependent_vis|
-            if dependent_vis.derived?
-              Carto::Tracking::Events::DeletedMap.new(current_user, dependent_vis).report
-            else
-              Carto::Tracking::Events::DeletedDataset.new(current_user, dependent_vis).report
-            end
+            Carto::Tracking::Events::DeletedVisualizationFactory.build(current_user, dependent_vis).report
           end
         end
 

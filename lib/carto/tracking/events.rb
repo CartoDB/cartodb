@@ -27,7 +27,7 @@ module Carto
           type: table_visualization.type
         }
 
-        properties.merge(origin: origin) if origin
+        properties[:origin] = origin if origin
 
         properties
       end

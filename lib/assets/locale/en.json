@@ -403,7 +403,7 @@
             "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
           }
         },
-        "CARTOjs": {
+        "cartodbjs": {
           "title": "CARTO.js",
           "body": "Add your map to your applications using this URL.",
           "link": "Read more.",
@@ -776,18 +776,18 @@
           "success": "New row added"
         },
         "edit": {
-          "loading": "Editing %{attribute} with CARTO_id %{CARTOId}...",
-          "error": "Error editing %{attribute} with CARTO_id %{CARTOId}: %{error}",
-          "success": "Edited %{attribute} with CARTO_id %{CARTOId}"
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
         },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",
           "desc": "Are you sure you want to delete it?",
-          "error": "Error deleting row with CARTO_id %{CARTO_id}: %{error}",
-          "loading": "Removing your row with CARTO_id %{CARTO_id}...",
-          "success": "Row with CARTO_id %{CARTO_id} deleted",
-          "title": "You are about to delete row with CARTO_id %{CARTO_id}"
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
+          "success": "Row with cartodb_id %{cartodb_id} deleted",
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
         },
         "paginator": {
           "error": "There was an error with pagination: %{error}",

@@ -64,7 +64,7 @@ module Carto
     def upload_package(filepath)
       log.append("Uploading user data package")
       file = CartoDB::FileUploadFile.new(filepath)
-      s3_config = Cartodb.config[:exporter]['s3'] || {}
+      s3_config = Cartodb.config[:user_migrator]['s3'] || {}
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,
         s3_config: s3_config,
@@ -87,11 +87,11 @@ module Carto
     end
 
     def file_upload_helper
-      CartoDB::FileUpload.new(Cartodb.get_config(:exporter, "uploads_path"))
+      CartoDB::FileUpload.new(Cartodb.get_config(:user_migrator, "uploads_path"))
     end
 
     def export_dir
-      Cartodb.get_config(:exporter, 'exporter_temporal_folder')
+      Cartodb.get_config(:user_migrator, 'user_migrator_temporal_folder')
     end
 
     def export_job_arguments(work_dir)

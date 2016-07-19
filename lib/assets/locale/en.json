@@ -403,15 +403,15 @@
             "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
           }
         },
-        "cartodbjs": {
-          "title": "CartoDB.js",
+        "CARTOjs": {
+          "title": "CARTO.js",
           "body": "Add your map to your applications using this URL.",
           "link": "Read more.",
           "copy": "COPY",
           "select": "SELECT"
         },
         "mobile-sdk": {
-          "title": "CartoDB Mobile SDK",
+          "title": "CARTO Mobile SDK",
           "body": "Add your map to your native mobile applications using this line of code.",
           "link": "Read more.",
           "copy": "COPY",
@@ -603,21 +603,21 @@
             "your-gmt": "You are in GMT"
           },
           "arcgis": {
-            "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CartoDB and mantain it in sync with the source.",
+            "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CARTO and mantain it in sync with the source.",
             "input-placeholder": "Paste your %{brand} table URL here",
             "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
             "import-data": "Import your data from a %{brand} instance",
             "sync-options": "Sync options only available for a layer"
           },
           "instagram": {
-            "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CartoDB."
+            "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CARTO."
           },
           "box": {
-            "fallback-desc": "Enable the %{brand} connector in your account to map your %{brand} files in CartoDB or mantain your CartoDB maps in sync with your Box data."
+            "fallback-desc": "Enable the %{brand} connector in your account to map your %{brand} files in CARTO or mantain your CARTO maps in sync with your Box data."
           },
           "mailchimp": {
             "campaign-selected": "%{brand} campaign selected",
-            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
             "map-campaign": "Map your %{brand} campaigns",
             "state-idle": "Connect your %{brand} account to select any of your campaigns.",
             "state-error": "We are sorry, there has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
@@ -627,7 +627,7 @@
             "state-selected": "Campaign selected."
           },
           "salesforce": {
-            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CartoDB or mantain your CartoDB maps in sync with your %{brand} data.",
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
             "input-placeholder": "Paste your %{brand} URL here"
           }
         },
@@ -664,7 +664,7 @@
           }
         },
         "footer": {
-          "guessing-desc": "Let CartoDB automatically guess data types and content on import.",
+          "guessing-desc": "Let CARTO automatically guess data types and content on import.",
           "twitter-desc": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
@@ -776,18 +776,18 @@
           "success": "New row added"
         },
         "edit": {
-          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
-          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
-          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+          "loading": "Editing %{attribute} with CARTO_id %{CARTOId}...",
+          "error": "Error editing %{attribute} with CARTO_id %{CARTOId}: %{error}",
+          "success": "Edited %{attribute} with CARTO_id %{CARTOId}"
         },
         "destroy": {
           "cancel": "cancel",
           "confirm": "ok, delete",
           "desc": "Are you sure you want to delete it?",
-          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
-          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
-          "success": "Row with cartodb_id %{cartodb_id} deleted",
-          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
+          "error": "Error deleting row with CARTO_id %{CARTO_id}: %{error}",
+          "loading": "Removing your row with CARTO_id %{CARTO_id}...",
+          "success": "Row with CARTO_id %{CARTO_id} deleted",
+          "title": "You are about to delete row with CARTO_id %{CARTO_id}"
         },
         "paginator": {
           "error": "There was an error with pagination: %{error}",
@@ -954,7 +954,7 @@
         },
         "download": {
           "confirm": "Download",
-          "tip": "Tip: Allow pop-ups from CartoDB in your web browser.",
+          "tip": "Tip: Allow pop-ups from CARTO in your web browser.",
           "desc": "Click Download to begin the .carto file download.",
           "title": "Ready to Download"
         },

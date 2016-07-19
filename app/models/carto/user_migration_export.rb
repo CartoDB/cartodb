@@ -30,7 +30,7 @@ module Carto
       log.append("Exporting user/org data")
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(work_dir))
 
-      update_attributes(state: STATE_UPLOADING, json_file: export_job.json_file)
+      update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
       package_path = compress_package(work_dir)
       uploaded_path = upload_package(package_path)
 

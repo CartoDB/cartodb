@@ -264,7 +264,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         Carto::Tracking::Events::LikedMap.new(current_viewer, vis).report
 
-        render_jsonp(id: visualization_id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
+        render_jsonp(id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       rescue AlreadyLikedError

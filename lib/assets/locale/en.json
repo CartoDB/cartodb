@@ -433,7 +433,7 @@
         "option-types": {
           "aggregate-intersection": {
             "title": "Intersect second layer",
-            "desc": "Intersect and aggregate with a second layer get the results as a new column."
+            "desc": "Intersect with a second layer and calculate aggregations on the fly."
           },
           "area-of-influence": {
             "title": "Create areas of influence",

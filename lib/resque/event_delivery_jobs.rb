@@ -6,7 +6,7 @@ module Resque
       @queue = :tracker
 
       def self.perform(user_id, event_name, properties)
-        tracker = Carto::SegmentTracker.new
+        tracker = Carto::Tracking::SegmentTracker.new
 
         tracker.track_event(user_id, event_name, properties)
         tracker.flush

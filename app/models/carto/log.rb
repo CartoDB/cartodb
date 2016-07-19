@@ -58,7 +58,7 @@ class Carto::Log < ActiveRecord::Base
 
     def add(severity, progname = nil, message = nil)
       if message.present?
-        @log.entries += message + "\n"
+        @log.entries += message.to_s + "\n"
         @stored_entries += 1
         if @stored_entries >= SAVE_BLOCK
           @stored_entries = 0

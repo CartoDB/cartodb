@@ -60,13 +60,72 @@ var Map = Model.extend({
       });
     }
 
+    this._instantiateMapWasCalled = false;
+
     // This method is declared here so that we can spyOn _.debounce
     // in the tests that depend on this to work
     this.reload = _.debounce(function (options) {
-      options = options || {};
-      options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
-      this._windshaftMap.createInstance(options);
+      if (this._instantiateMapWasCalled) {
+        options = options || {};
+        options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
+        this._windshaftMap.createInstance(options);
+      }
     }.bind(this), this.RELOAD_DEBOUNCE_TIME);
+
+    this._initBinds();
+  },
+
+  _initBinds: function () {
+    this.layers.bind('reset', this._onLayersResetted, this);
+    this.layers.bind('add', this._onLayerAdded, this);
+    this.layers.bind('remove', this._onLayerRemoved, this);
+    this.layers.bind('change:attribution', this._updateAttributions, this);
+
+    if (this._dataviewsCollection) {
+      // When new dataviews are defined, a new instance of the map needs to be created
+      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
+    }
+  },
+
+  _onLayersResetted: function () {
+    if (this.layers.size() >= 1) {
+      this._adjustZoomtoLayer(this.layers.models[0]);
+    }
+
+    this.reload();
+    this._updateAttributions();
+  },
+
+  _onLayerAdded: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+    this._updateAttributions();
+  },
+
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+    this._updateAttributions();
+  },
+
+  _onDataviewAdded: function (layerModel) {
+    this.reload();
+  },
+
+  _updateAttributions: function () {
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
+    var attributions = _.chain(this.layers.models)
+      .map(function (layer) { return sanitize.html(layer.get('attribution')); })
+      .reject(function (attribution) { return attribution === defaultCartoDBAttribution; })
+      .compact()
+      .uniq()
+      .value();
+
+    attributions.push(defaultCartoDBAttribution);
+
+    this.set('attribution', attributions);
   },
 
   // PUBLIC API METHODS
@@ -133,70 +192,9 @@ var Map = Model.extend({
 
   // INTERNAL CartoDB.js METHODS
 
-  _initBinds: function () {
-    this.layers.bind('reset', function () {
-      if (this.layers.size() >= 1) {
-        this._adjustZoomtoLayer(this.layers.models[0]);
-      }
-    }, this);
-
-    // TODO: When the order of the layers change, the instance of the map needs
-    // to be re-recreated
-    this.layers.bind('reset', this._onLayersResetted, this);
-    this.layers.bind('add', this._onLayerAdded, this);
-    this.layers.bind('remove', this._onLayerRemoved, this);
-    this.layers.bind('change:attribution', this._updateAttributions, this);
-
-    if (this._dataviewsCollection) {
-      // When new dataviews are defined, a new instance of the map needs to be created
-      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
-    }
-  },
-
   instantiateMap: function (options) {
-    this._initBinds();
+    this._instantiateMapWasCalled = true;
     this.reload(_.pick(options, ['success', 'error']));
-  },
-
-  _onLayersResetted: function () {
-    this.reload();
-    this._updateAttributions();
-  },
-
-  _onLayerAdded: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
-    this._updateAttributions();
-  },
-
-  _onLayerRemoved: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
-    this._updateAttributions();
-  },
-
-  _onDataviewAdded: function (layerModel) {
-    this.reload();
-  },
-
-  _updateAttributions: function () {
-    var defaultCartoDBAttribution = this.defaults.attribution[0];
-    var attributions = _.chain(this.layers.models)
-      .map(function (layer) { return sanitize.html(layer.get('attribution')); })
-      .reject(function (attribution) { return attribution === defaultCartoDBAttribution; })
-      .compact()
-      .uniq()
-      .value();
-
-    attributions.push(defaultCartoDBAttribution);
-
-    this.set('attribution', attributions);
-  },
-
-  getWindshaftMap: function () {
-    return this._windshaftMap;
   },
 
   setView: function (latlng, zoom) {

@@ -451,6 +451,7 @@ module CartoDB
 
         @start = Time.now
         @logger = options[:logger] || default_logger
+        @@exportjob_logger = options[:export_job_logger]
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
         export_log = { job_uuid:     job_uuid,
@@ -535,7 +536,9 @@ module CartoDB
                                                              path: @options[:path],
                                                              job_uuid: job_uuid,
                                                              from_org: true,
-                                                             schema_mode: true)
+                                                             schema_mode: true,
+                                                             logger: @logger,
+                                                             export_job_logger: exportjob_logger)
             end
           end
         rescue => e

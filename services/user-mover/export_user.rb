@@ -491,8 +491,8 @@ module CartoDB
               )
             end
 
-            @json_file = "#{@options[:path]}user_#{@user_id}.json"
-            File.open(json_file, "w") do |f|
+            @json_file = "user_#{@user_id}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -514,8 +514,8 @@ module CartoDB
 
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
-            @json_file = "#{@options[:path]}org_#{@org_metadata['id']}.json"
-            File.open(json_file, "w") do |f|
+            @json_file = "org_#{@org_metadata['id']}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(data.to_json)
             end
 

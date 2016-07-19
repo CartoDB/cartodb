@@ -29,7 +29,9 @@ module Carto
       end
 
       def segment_enabled?
-        @segment_enabled ||= (Cartodb.config[:segment].present? && Cartodb.config[:segment]['api_key'].present?)
+        carto_config = Cartodb.config
+
+        @segment_enabled ||= (carto_config[:segment].present? && carto_config[:segment]['api_key'].present?)
       end
     end
   end

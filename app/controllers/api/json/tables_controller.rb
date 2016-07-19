@@ -119,7 +119,7 @@ class Api::Json::TablesController < Api::ApplicationController
         @table.destroy
       end
 
-      Carto::Tracking::Events::DeletedDataset.new(current_user, table_visualization).report if table_visualization
+      Carto::Tracking::Events::DeletedDataset.new(current_user, table_visualization).report
 
       head :no_content
     end

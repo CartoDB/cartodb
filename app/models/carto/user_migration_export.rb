@@ -72,12 +72,12 @@ module Carto
         force_s3_upload: true
       )
 
-      export_path = if results[:file_uri].present?
-                      log.append("By file_upload_helper: #{results[:file_uri]}")
-                      results[:file_uri]
-                    else
+      export_path = if results[:file_path].present?
                       log.append("Ad-hoc export download: #{results[:file_path]}")
                       results[:file_path]
+                    else
+                      log.append("By file_upload_helper: #{results[:file_uri]}")
+                      results[:file_uri]
                     end
 
       log.append('Deleting tmp file')

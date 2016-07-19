@@ -152,6 +152,26 @@ module Carto
           super(user, visualization, 'remove')
         end
       end
+
+      class CreatedVisualizationFactory
+        def self.build(user, visualization)
+          if visualization.derived?
+            Carto::Tracking::Events::CreatedMap.new(user, visualization)
+          else
+            Carto::Tracking::Events::CreatedDataset.new(user, visualization)
+          end
+        end
+      end
+
+      class DeletedVisualizationFactory
+        def self.build(user, visualization)
+          if visualization.derived?
+            Carto::Tracking::Events::DeletedMap.new(user, visualization)
+          else
+            Carto::Tracking::Events::DeletedDataset.new(user, visualization)
+          end
+        end
+      end
     end
   end
 end

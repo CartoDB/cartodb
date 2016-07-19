@@ -2,13 +2,16 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+// Styles for infobox element
+// ------------------------------
+
 .Infobox-wrapper {
   width: 100%;
   margin-top: -25px;
   margin-bottom: -25px;
 }
 .Infobox {
-  @include flex(10);
+  @include flex(2);
   margin-right: -25px;
   margin-left: -25px;
   padding: 25px;
@@ -30,7 +33,7 @@
 }
 .Infobox-quota {
   @include flex(10);
-  margin-right: 55px;
+  margin-right: $baseSize * 5;
 }
 .Infobox-buttons {
   @include display-flex();

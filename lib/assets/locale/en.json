@@ -433,7 +433,7 @@
         "option-types": {
           "aggregate-intersection": {
             "title": "Intersect second layer",
-            "desc": "Aggregate data in a second layer as a new column."
+            "desc": "Intersect and aggregate with a second layer get the results as a new column."
           },
           "area-of-influence": {
             "title": "Create areas of influence",
@@ -444,8 +444,8 @@
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
           "filter-intersection": {
-            "title": "Filter points in polygon",
-            "desc": "Filter points intersecting your polygon layer, and augment those with your polygons columns."
+            "title": "Filter points in polygons",
+            "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
             "title": "Filter rows by column value",

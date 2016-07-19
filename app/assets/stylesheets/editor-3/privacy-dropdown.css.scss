@@ -1,0 +1,18 @@
+.Privacy-dropdown {
+  position: relative;
+}
+
+.Privacy-dropdownArrow {
+  fill: currentColor;
+  width: 6px;
+  margin-left: 4px;
+}
+
+.Editor-PrivacyDialog {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  left: 0;
+  width: 248px;
+  z-index: 100;
+}

@@ -7,6 +7,7 @@ ghost tables, importing common data and automatic index creation.
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
+* Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

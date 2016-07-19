@@ -21,6 +21,7 @@ module CartoDB
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
+        @@importjob_logger = @options[:import_job_logger]
 
         @user_import_jobs = Array.new
 

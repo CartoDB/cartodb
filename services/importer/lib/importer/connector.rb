@@ -154,7 +154,7 @@ module CartoDB
       end
 
       def connector_name
-        @params['connection']['dsn'] || @params['connection']['driver']
+        Carto::DB::Sanitize.sanitize_identifier @params['connection']['dsn'] || @params['connection']['driver']
       end
 
       def server_name

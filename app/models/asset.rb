@@ -106,7 +106,7 @@ class Asset < Sequel::Model
       acl: :public_read,
       content_type: MIME::Types.type_for(filename).first.to_s
     })
-    o.public_url.to_s
+    o.public_url(secure: true).to_s
   end
 
   def save_local(filename)

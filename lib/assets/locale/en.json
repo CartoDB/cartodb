@@ -32,8 +32,8 @@
       "short-title": "Join columns"
     },
     "filter-by-node-column": {
-      "title": "Link two layers",
-      "short-title": "Link to layer"
+      "title": "Filter by layer",
+      "short-title": "Filter by layer"
     },
     "centroid": {
       "title": "Centroid from geometries",
@@ -43,13 +43,13 @@
       "title": "Create areas of influence",
       "short-title": "AOI"
     },
-    "intersection": {
-      "title": "Intersection",
-      "short-title": "Intersection"
+    "filter-intersection": {
+      "title": "Filter points in polygons",
+      "short-title": "Filter points in polygons"
     },
     "aggregate-intersection": {
-      "title": "Intersection",
-      "short-title": "Intersection"
+      "title": "Aggregate intersection",
+      "short-title": "Aggregate intersection"
     },
     "filter": {
       "title": "Filter by column value",
@@ -431,6 +431,10 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
+          "aggregate-intersection": {
+            "title": "Intersect second layer",
+            "desc": "Intersect with a second layer and calculate aggregations on the fly."
+          },
           "area-of-influence": {
             "title": "Create areas of influence",
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
@@ -439,9 +443,9 @@
             "title": "Georeference",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
-          "intersection": {
-            "title": "Intersect second layer",
-            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
+          "filter-intersection": {
+            "title": "Filter points in polygons",
+            "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
             "title": "Filter rows by column value",
@@ -464,8 +468,8 @@
             "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
           },
           "filter-by-node-column": {
-            "title": "Link two layers",
-            "desc": "Join two layers by shared values in a column such that widgets will effect both."
+            "title": "Filter by layer",
+            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
           },
           "sampling": {
             "title": "Subsample percent of rows",
@@ -804,6 +808,7 @@
   },
   "dataset": {
     "sql": "SQL",
+    "data": "Metadata",
     "updated": "Updated %{ago}",
     "options": {
       "add-row": "Add row",
@@ -913,7 +918,7 @@
             "fullscreen": "Fullscreen",
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
-            "logo": "CartoDB Logo",
+            "logo": "CARTO Logo",
             "widgets": "Widgets column"
           }
         }
@@ -1010,7 +1015,8 @@
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
         "add-layer": "Add layer",
-        "delete": "Delete"
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
         "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
@@ -1091,7 +1097,7 @@
         "dissolved": "Dissolved",
         "distance": "Units",
         "filter": "Filter",
-        "filter-aggregate": "Filter or aggregate your results",
+        "filter-aggregate": "Aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "2nd. layer col.",
         "geometry-from": "Geometry from",
@@ -1108,12 +1114,12 @@
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "key-columns": "Key columns",
-        "key-columns-desc": "Choose similar columns to link them",
+        "key-columns-desc": "Choose similar columns to relate them",
         "kilometers": "km",
         "latitude": "Latitude",
         "link-layer": "Link to col.",
-        "link-layer-desc": "Specify a second layer to join",
-        "linked-layer": "Link to layer",
+        "link-layer-desc": "Specify a second layer to filter by",
+        "linked-layer": "Filter by layer",
         "loading": "loading…",
         "left": "Left",
         "right": "Right",
@@ -1243,13 +1249,16 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
+        "sql-alter-loading": "Modifying table...",
+        "sql-alter-error": "Modifying failed",
+        "sql-alter-success": "Modifying applied",
         "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
         "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
       },
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
-          "body": "You just applied analysis to this layer and the SQL passed to reaad only.",
+          "body": "You just applied analysis to this layer. The SQL is now read only.",
           "accept": "CLOSE"
         },
         "empty-data": {
@@ -1476,14 +1485,23 @@
         },
         "aggregation-options": {
           "count": "COUNT",
-          "sum": "SUM"
+          "sum": "SUM",
+          "avg": "AVG",
+          "min": "MIN",
+          "max": "MAX"
         }
       }
     }
   },
   "notifications": {
+    "vis": {
+      "failed": {
+        "title": "This map couldn't be rendered.",
+        "body": "Please refresh the page and contact us if the error persists."
+      }
+    },
     "analysis": {
-      "pending": "Analysis %{nodeId} waiting",
+      "pending": "Analysis %{nodeId} running",
       "waiting": "Analysis %{nodeId} enqueued",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",

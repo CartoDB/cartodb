@@ -26,7 +26,7 @@
           <div class="DefaultTags MapCard-contentBodyRow">
             <% if vis[:tags].size > 0 %>
               <%# Keep on one line to avoid unwanted spaces %>
-              <% formatted_tags(vis[:tags]) do |tag| %><a class="DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
+              <% formatted_tags(vis[:tags]) do |tag| %><a class="CDB-Tag CDB-Text CDB-Size-small u-upperCase DefaultTags-item js-tag-link" href="<%= CartoDB.url(self, 'public_tag', {tag: tag}, vis[:owner]) %>"><%= tag %></a><% end %>
             <% end %>
           </div>
         </div>

@@ -118,8 +118,10 @@ module CartoDB
           create_default_visualization
         else
           user = Carto::User.find(data_import.user_id)
+          renamed_tables = results.map { |r| [r.original_name, r.name] }.to_h
           runner.visualizations.each do |visualization|
-            vis = Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization)
+            persister = Carto::VisualizationsExportPersistenceService.new
+            vis = persister.save_import(user, visualization, renamed_tables: renamed_tables)
             bind_visualization_to_data_import(vis)
           end
         end

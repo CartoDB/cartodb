@@ -1000,7 +1000,7 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin)
+      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
     end
   rescue => exception
     CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',

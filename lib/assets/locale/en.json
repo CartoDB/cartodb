@@ -43,13 +43,13 @@
       "title": "Create areas of influence",
       "short-title": "AOI"
     },
-    "intersection": {
-      "title": "Intersection",
-      "short-title": "Intersection"
+    "filter-intersection": {
+      "title": "Filter points in polygons",
+      "short-title": "Filter points in polygons"
     },
     "aggregate-intersection": {
-      "title": "Intersection",
-      "short-title": "Intersection"
+      "title": "Aggregate intersection",
+      "short-title": "Aggregate intersection"
     },
     "filter": {
       "title": "Filter by column value",
@@ -431,6 +431,10 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
+          "aggregate-intersection": {
+            "title": "Intersect second layer",
+            "desc": "Intersect with a second layer and calculate aggregations on the fly."
+          },
           "area-of-influence": {
             "title": "Create areas of influence",
             "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
@@ -439,9 +443,9 @@
             "title": "Georeference",
             "desc": "Use street addresses, city names, or other location text to generate point geometries."
           },
-          "intersection": {
-            "title": "Intersect second layer",
-            "desc": "Filter rows based intersection or aggregate data in a second layer as a new column."
+          "filter-intersection": {
+            "title": "Filter points in polygons",
+            "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
             "title": "Filter rows by column value",
@@ -1086,7 +1090,7 @@
         "dissolved": "Dissolved",
         "distance": "Units",
         "filter": "Filter",
-        "filter-aggregate": "Filter or aggregate your results",
+        "filter-aggregate": "Aggregate your results",
         "filter-column": "Filter column",
         "filter-column": "2nd. layer col.",
         "geometry-from": "Geometry from",

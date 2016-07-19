@@ -29,10 +29,15 @@ module Carto
       work_dir = create_work_directory
       package_file = download_package(work_dir)
       unzip_package(work_dir, package_file)
+      log.append('Deleting zip package')
+      FileUtils.rm(package_file)
 
       update_attributes(state: STATE_IMPORTING)
       log.append("Importing user data")
       CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
+
+      log.append('Deleting tmp directory')
+      FileUtils.remove_dir(work_dir)
 
       log.append("Data import finished")
       update_attributes(state: STATE_COMPLETE)

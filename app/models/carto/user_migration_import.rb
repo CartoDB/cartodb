@@ -2,7 +2,7 @@
 
 require 'active_record'
 require 'fileutils'
-require_dependency 'services/user-mover/import_user'
+require_relative '../../../services/user-mover/import_user'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base

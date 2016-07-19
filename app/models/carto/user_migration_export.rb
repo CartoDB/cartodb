@@ -2,7 +2,7 @@
 
 require 'active_record'
 require 'fileutils'
-require_dependency 'services/user-mover/export_user'
+require_relative '../../../services/user-mover/export_user'
 require_dependency 'file_upload'
 
 module Carto

@@ -1,6 +1,6 @@
 module Carto
   module Tracking
-    module Properties
+    module PropertiesHelper
       def visualization_properties(visualization)
         {
           id: visualization.id,

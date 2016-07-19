@@ -991,7 +991,8 @@ class DataImport < Sequel::Model
   def track_results(results, import_id)
     results.each do |result|
       condition, origin = if result.success?
-                            [{ data_import_id: import_id, name: result.name }, common_data ? 'common-data' : 'import']
+                            [{ data_import_id: import_id, name: result.name },
+                             from_common_data ? 'common-data' : 'import']
                           else
                             [{ data_import_id: import_id }, 'copy']
                           end

@@ -52,8 +52,8 @@ module Carto
         }
       end
 
-      def visit_properties(user)
-        user_properties(user).merge(properties_context)
+      def visit_properties(user, page)
+        { page: page }.merge(user_properties(user)).merge(properties_context)
       end
     end
 
@@ -70,10 +70,10 @@ module Carto
         def report
           Carto::Tracking::SegmentWrapper.new(@user).send_event(@name, @properties)
         rescue => exception
-          CartoDB::Logger.error(message: 'Carto::Tracking: Event couldn\'t be reported',
-                                exception: exception,
-                                properties: @properties,
-                                user: @user)
+          CartoDB::Logger.warning(message: 'Carto::Tracking: Event couldn\'t be reported',
+                                  exception: exception,
+                                  properties: @properties,
+                                  user: @user)
         end
       end
 
@@ -89,21 +89,27 @@ module Carto
         end
       end
 
-      class VisitedDashboard < TrackingEvent
-        def initialize(user)
-          super(user, 'Visited dashboard', visit_properties(user))
+      class VistedPage < TrackingEvent
+        def initialize(user, page)
+          super(user, 'Visited dashboard', visit_properties(user, page))
         end
       end
 
-      class VisitedBuilder < TrackingEvent
+      class VisitedDashboard < VistedPage
         def initialize(user)
-          super(user, 'Visited builder', visit_properties(user))
+          super(user, 'dashboard')
         end
       end
 
-      class VisitedDataset < TrackingEvent
+      class VisitedBuilder < VistedPage
         def initialize(user)
-          super(user, 'Visited dataset', visit_properties(user))
+          super(user, 'builder')
+        end
+      end
+
+      class VisitedDataset < VistedPage
+        def initialize(user)
+          super(user, 'dashboard')
         end
       end
 

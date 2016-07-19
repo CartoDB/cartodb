@@ -69,7 +69,7 @@ module CartoDB
       end
     end
     class ExportJob
-      attr_reader :logger
+      attr_reader :logger, :json_file
 
       REDIS_KEYS = {
         mapviews: {
@@ -491,7 +491,8 @@ module CartoDB
               )
             end
 
-            File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
+            @json_file = "#{@options[:path]}user_#{@user_id}.json"
+            File.open(json_file, "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -513,7 +514,8 @@ module CartoDB
 
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
-            File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
+            @json_file = "#{@options[:path]}org_#{@org_metadata['id']}.json"
+            File.open(json_file, "w") do |f|
               f.write(data.to_json)
             end
 

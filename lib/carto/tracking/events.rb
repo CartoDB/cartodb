@@ -32,19 +32,6 @@ module Carto
         properties
       end
 
-      def like_properties(visualization, action)
-        visualization_user = visualization.user
-        {
-          action: action,
-          vis_id: visualization.id,
-          vis_name: visualization.name,
-          vis_type: visualization.type == 'derived' ? 'map' : 'dataset',
-          vis_author: visualization_user.username,
-          vis_author_email: visualization_user.email,
-          vis_author_id: visualization_user.id
-        }
-      end
-
       def properties_context(event_origin: 'Editor')
         {
           event_origin: event_origin,
@@ -133,7 +120,22 @@ module Carto
 
       class MapLiking < TrackingEvent
         def initialize(user, visualization, action)
-          super(user, 'Liked map', like_properties(visualization, action))
+          super(user, 'Liked map', properties(visualization, action))
+        end
+
+        private
+
+        def properties(visualization, action)
+          visualization_user = visualization.user
+          {
+            action: action,
+            vis_id: visualization.id,
+            vis_name: visualization.name,
+            vis_type: visualization.type == 'derived' ? 'map' : 'dataset',
+            vis_author: visualization_user.username,
+            vis_author_email: visualization_user.email,
+            vis_author_id: visualization_user.id
+          }
         end
       end
 

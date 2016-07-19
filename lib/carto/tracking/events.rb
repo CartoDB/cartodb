@@ -91,7 +91,7 @@ module Carto
 
       class VistedPrivatePage < TrackingEvent
         def initialize(user, page)
-          super(user, 'Visited page', visit_properties(user, page))
+          super(user, 'Visited private page', visit_properties(user, page))
         end
       end
 

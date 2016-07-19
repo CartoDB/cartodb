@@ -992,7 +992,7 @@ class DataImport < Sequel::Model
     results.each do |result|
       condition, origin = if result.success?
                             [{ data_import_id: import_id, name: result.name },
-                             from_common_data ? 'common-data' : 'import']
+                             from_common_data? ? 'common-data' : 'import']
                           else
                             [{ data_import_id: import_id }, 'copy']
                           end

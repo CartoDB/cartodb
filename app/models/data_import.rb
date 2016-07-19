@@ -1002,9 +1002,9 @@ class DataImport < Sequel::Model
       Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin)
     end
   rescue => exception
-    Carto::Logger.warning('SegmentWrapper: could not report',
-                          event: 'Created dataset',
-                          type: 'Invalid import result',
-                          exception: exception)
+    CartoDB::Logger.warning('SegmentWrapper: could not report',
+                            event: 'Created dataset',
+                            type: 'Invalid import result',
+                            exception: exception)
   end
 end

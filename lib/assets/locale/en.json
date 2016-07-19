@@ -204,18 +204,17 @@
         }
       },
       "twitter-import-details": {
-        "new-type-created": "We've created a new %{type} containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
+        "new-type-created": "We've created a new dataset containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
         "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
         "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
         "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
-        "twitter-import-title": "Your Twitter %{type} is created",
-        "view-type": "view %{type}",
+        "twitter-import-title": "Your Twitter dataset is created",
         "tweet-cost": {
           "free": "No extra charges have been applied",
           "paid": "$%{tweetsCostFormatted} will be charged to your account"
         },
         "errors": {
-          "no-results": "Your search query was correct but returned no results, please try with a different set of parameters before running it again"
+          "no-results": "Your search query was correct but returned no results, \n please try with a different set of parameters before running it again"
         }
       },
       "background-geocoding-item": {

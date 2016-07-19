@@ -3,13 +3,13 @@
     <i class="CDB-IconFont CDB-IconFont-twitter"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace Dialog-headerIcon--twitter">
-    <%- _t('components.background-importer.twitter-import-details.twitter-import-title', { type: type }) %>
+    <%- _t('components.background-importer.twitter-import-details.twitter-import-title') %>
   </h2>
   <h3 class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (datasetTotalRows === 0) { %>
       <%- _t('components.background-importer.twitter-import-details.errors.no-results') %>
     <% } else { %>
-      <%= _t('components.background-importer.twitter-import-details.new-type-created', { type: type, datasetTotalRowsFormatted: datasetTotalRowsFormatted, tweetPlural: datasetTotalRows != 1 ? 's' : '' }) %>
+      <%= _t('components.background-importer.twitter-import-details.new-type-created', { datasetTotalRowsFormatted: datasetTotalRowsFormatted, tweetPlural: datasetTotalRows != 1 ? 's' : '' }) %>
     <% } %>
   </h3>
 </div>
@@ -21,14 +21,14 @@
         <i class="CDB-IconFont CDB-IconFont-dollar"></i>
       </div>
       <div class="ErrorDetails-itemText">
-        <p class="CDB-Text CDB-Size-medium">
+        <p class="CDB-Text CDB-Size-large u-secondaryTextColor">
           <% if (tweetsCost > 0) { %>
             <%- _t('components.background-importer.twitter-import-details.tweet-cost.paid', { tweetsCostFormatted: tweetsCostFormatted }) %>
           <% } else { %>
             <%- _t('components.background-importer.twitter-import-details.tweet-cost.free', { tweetsCostFormatted: tweetsCostFormatted }) %>
           <% } %>
         </p>
-        <p class="CDB-Text CDB-Size-medium">
+        <p class="CDB-Text CDB-Size-medium u-altTextColor">
           <% if (tweetsCost > 0 || availableTweets <= 0) { %>
             <%- _t('components.background-importer.twitter-import-details.no-more-credits', { blockPriceFormatted: blockPriceFormatted, blockSizeFormatted: blockSizeFormatted }) %>
           <% } else { %>
@@ -45,10 +45,9 @@
 </div>
 
 <div class="Dialog-footer--simple u-inner">
-  <a href="<%- mapURL %>" class="CDB-Button CDB-Button--primary u-tSpace--m">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-      <%- _t('components.background-importer.twitter-import-details.view-type', { type: type }) %>
+  <button class="CDB-Button CDB-Button--primary u-tSpace--m">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase js-close">
+      <%- _t('components.background-importer.error-details.close') %>
     </span>
-  </a>
+  </button>
 </div>
-

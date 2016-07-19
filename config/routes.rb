@@ -602,6 +602,7 @@ CartoDB::Application.routes.draw do
   scope module: 'carto' do
     namespace :superadmin do
       resources :user_migration_exports, only: [:show, :create]
+      resources :user_migration_imports, only: [:show, :create]
     end
   end
 

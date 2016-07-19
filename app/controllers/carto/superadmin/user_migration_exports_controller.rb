@@ -9,8 +9,6 @@ module Carto
 
       ssl_required [:show, :create]
 
-      layout 'application'
-
       def create
         export = Carto::UserMigrationExport.new(
           user_id: params[:user_id],

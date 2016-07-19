@@ -16,7 +16,7 @@ module Carto
           database_host:   params[:database_host],
           org_import:      params[:org_import],
           user_id:         params[:user_id],
-          organization_id: params[:organization_id],
+          organization_id: params[:organization_id]
         )
         if import.save
           Resque.enqueue(Resque::UserMigrationJobs::Import, import_id: import.id)

@@ -115,11 +115,11 @@ class Api::Json::TablesController < Api::ApplicationController
         return head(403) unless table_visualization.is_owner?(current_user)
       end
 
-      Carto::Tracking::Events::DeletedDataset.new(current_user, table_visualization).report if table_visualization
-
       @stats_aggregator.timing('delete') do
         @table.destroy
       end
+
+      Carto::Tracking::Events::DeletedDataset.new(current_user, table_visualization).report if table_visualization
 
       head :no_content
     end

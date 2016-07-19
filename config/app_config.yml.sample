@@ -174,7 +174,8 @@ defaults: &defaults
       api_key: ''
       table_name: ''
   user_migrator:
-    user_migrator_temporal_folder: '/tmp/user_migrations'
+    user_exports_folder: '/tmp/user_exports'
+    user_imports_folder: '/tmp/user_imports'
     s3:
       access_key_id: ''
       secret_access_key: ''

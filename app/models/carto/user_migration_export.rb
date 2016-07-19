@@ -91,7 +91,7 @@ module Carto
     end
 
     def export_dir
-      Cartodb.get_config(:user_migrator, 'user_migrator_temporal_folder')
+      Cartodb.get_config(:user_migrator, 'user_exports_folder')
     end
 
     def export_job_arguments(work_dir)

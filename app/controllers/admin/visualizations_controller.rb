@@ -693,6 +693,6 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def track_dashboard_visit
-    Carto::Tracking::Events::VisitedDashboard.new(current_user).report
+    Carto::Tracking::Events::VisitedPrivateDashboard.new(current_user).report
   end
 end

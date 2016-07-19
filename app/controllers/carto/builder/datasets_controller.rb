@@ -61,7 +61,7 @@ module Carto
       end
 
       def track_dataset_visit
-        Carto::Tracking::Events::VisitedDataset.new(@user).report
+        Carto::Tracking::Events::VisitedPrivateDataset.new(@user).report
       end
     end
   end

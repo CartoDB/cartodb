@@ -51,7 +51,7 @@ module Carto
         end
 
         def report
-          Carto::Tracking::SegmentWrapper.new(@user).send_event(@name, @properties)
+          Carto::Tracking::SegmentWrapper.new.send_event(@user, @name, @properties)
         rescue => exception
           CartoDB::Logger.warning(message: 'Carto::Tracking: Event couldn\'t be reported',
                                   exception: exception,

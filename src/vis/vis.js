@@ -143,11 +143,9 @@ var VisModel = Backbone.Model.extend({
     // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
 
-    var mapConfig = {
+    this.map = new Map({
       title: vizjson.title,
       description: vizjson.description,
-      maxZoom: vizjson.maxZoom,
-      minZoom: vizjson.minZoom,
       bounds: vizjson.bounds,
       center: vizjson.center,
       zoom: vizjson.zoom,
@@ -155,9 +153,7 @@ var VisModel = Backbone.Model.extend({
       drag: allowDragging,
       provider: vizjson.map_provider,
       vector: vizjson.vector
-    };
-
-    this.map = new Map(mapConfig, {
+    }, {
       layersCollection: this._layersCollection,
       windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection

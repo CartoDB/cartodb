@@ -206,49 +206,64 @@ describe('core/geo/map', function() {
   });
 
   describe('reload', function () {
-    it('should be debounced', function (done) {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      var map = new Map({}, {
-        windshaftMap: windshaftMap
+    beforeEach(function () {
+      this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
+      this.map = new Map({}, {
+        windshaftMap: this.windshaftMap
       });
-
-      // Reload the map 1000 times in a row
-      for (var i = 0; i < 1000; i++) {
-        map.reload();
-      }
-
-      setTimeout(function () {
-        expect(windshaftMap.createInstance).toHaveBeenCalled();
-
-        // windshaftMap.createInstance is debounced and has only been called once
-        expect(windshaftMap.createInstance.calls.count()).toEqual(1);
-        done();
-      }, 25);
     });
 
-    it('should forward options', function (done) {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      var map = new Map({}, {
-        windshaftMap: windshaftMap
+    describe("when map hasn't been instantiated yet", function () {
+      it('should NOT instantiate map', function (done) {
+        this.map.reload({});
+
+        setTimeout(function () {
+          expect(this.windshaftMap.createInstance).not.toHaveBeenCalled();
+
+          done();
+        }.bind(this), 25);
+      });
+    });
+
+    describe('when map has been instantiated once', function () {
+      beforeEach(function () {
+        this.map.instantiateMap();
       });
 
-      map.reload({
-        a: 1,
-        b: 2,
-        sourceId: 'sourceId',
-        forceFetch: 'forceFetch',
-        success: 'success'
-      });
-
-      setTimeout(function () {
-        expect(windshaftMap.createInstance).toHaveBeenCalledWith({
+      it('should instantiate map and forward options', function (done) {
+        this.map.reload({
+          a: 1,
+          b: 2,
           sourceId: 'sourceId',
           forceFetch: 'forceFetch',
           success: 'success'
         });
 
-        done();
-      }, 25);
+        setTimeout(function () {
+          expect(this.windshaftMap.createInstance).toHaveBeenCalledWith({
+            sourceId: 'sourceId',
+            forceFetch: 'forceFetch',
+            success: 'success'
+          });
+
+          done();
+        }.bind(this), 25);
+      });
+
+      it('should be debounced', function (done) {
+        // Reload the map 1000 times in a row
+        for (var i = 0; i < 1000; i++) {
+          this.map.reload();
+        }
+
+        setTimeout(function () {
+          expect(this.windshaftMap.createInstance).toHaveBeenCalled();
+
+          // windshaftMap.createInstance is debounced and has only been called once
+          expect(this.windshaftMap.createInstance.calls.count()).toEqual(1);
+          done();
+        }.bind(this), 25);
+      });
     });
   });
 

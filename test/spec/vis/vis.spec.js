@@ -251,17 +251,6 @@ describe('vis/vis', function () {
       expect(this.vis.map.layers.size()).toEqual(3);
     });
 
-    it('should use given maxZoom and minZoom', function () {
-      var vizjson = fakeVizJSON();
-      vizjson.maxZoom = 10;
-      vizjson.minZoom = 5;
-
-      this.vis.load(new VizJSON(vizjson));
-
-      expect(this.vis.map.get('maxZoom')).toEqual(10);
-      expect(this.vis.map.get('minZoom')).toEqual(5);
-    });
-
     it('should use the given provider', function () {
       var vizjson = fakeVizJSON();
       vizjson.map_provider = 'googlemaps';

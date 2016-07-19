@@ -4,9 +4,9 @@ require_dependency 'carto/tracking/properties_helper'
 module Carto
   module Tracking
     module Events
-      include Carto::Tracking::PropertiesHelper
-
       class TrackingEvent
+        include Carto::Tracking::PropertiesHelper
+
         def initialize(user, name, properties)
           @user = user
           @name = name

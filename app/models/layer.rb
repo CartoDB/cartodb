@@ -214,7 +214,10 @@ class Layer < Sequel::Model
   end
 
   def tables_from_table_name_option
-    ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
+    user_name = options.symbolize_keys[:user_name]
+    table_name = options.symbolize_keys[:table_name]
+    schema_prefix = user_name.present? ? %{"#{user_name}".} : ''
+    ::Table.get_all_by_names(["#{schema_prefix}#{table_name}"], user)
   end
 
   def affected_table_names

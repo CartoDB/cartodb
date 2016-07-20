@@ -55,8 +55,8 @@ module Carto
       @legend ||= options['legend']
     end
 
-    def qualified_table_name(viewer_user)
-      "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    def qualified_table_name(schema_owner_user)
+      "#{schema_owner_user.sql_safe_database_schema}.#{options['table_name']}"
     end
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
@@ -177,7 +177,10 @@ module Carto
 
     def tables_from_table_name_option
       return[] if options.empty?
-      ::Table.get_all_user_tables_by_names([options.symbolize_keys[:table_name]], user)
+      user_name = options.symbolize_keys[:user_name]
+      table_name = options.symbolize_keys[:table_name]
+      schema_prefix = user_name.present? ? %{"#{user_name}".} : ''
+      ::Table.get_all_user_tables_by_names(["#{schema_prefix}#{table_name}"], user)
     end
 
     def query

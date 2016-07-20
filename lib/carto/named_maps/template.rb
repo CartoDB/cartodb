@@ -152,7 +152,7 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
+          options[:sql] = visibility_wrapped_sql(generate_sql(layer, @visualization.user), index)
         end
 
         attributes, interactivity = attributes_and_interactivity(layer.infowindow, layer.tooltip)
@@ -165,6 +165,19 @@ module Carto
 
       def visibility_wrapped_sql(sql, index)
         "SELECT * FROM (#{sql}) AS wrapped_query WHERE <%= layer#{index} %>=1"
+      end
+
+      def generate_sql(layer, user)
+        # Inspired from CartoDB::LayerModule::Presenter#default_query_for
+        layer_options = layer.options
+        user_name = layer_options['user_name']
+        table_name = layer_options['table_name']
+
+        if user_name.present? && user.username != user_name && table_name.present?
+          %{ select * from "#{user_name}".#{table_name} }
+        else
+          layer.wrapped_sql(user)
+        end
       end
 
       def attributes_and_interactivity(layer_infowindow, layer_tooltip)

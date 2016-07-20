@@ -5,7 +5,7 @@ module Carto
     class UserMigrationImportsController < ::Superadmin::SuperadminController
       respond_to :json
 
-      ssl_required [:show, :create]
+      ssl_required :show, :create
 
       def create
         import = Carto::UserMigrationImport.create(

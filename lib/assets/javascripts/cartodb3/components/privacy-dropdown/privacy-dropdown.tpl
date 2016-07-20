@@ -1,4 +1,5 @@
 <div class="Privacy-dropdown">
+  <% if (isDropdown) { %>
   <button class="Tag Tag--big Tag--outline u-flex u-alignCenter <%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
     <%- privacy %>
     <svg viewBox="0 0 129 129" class="Privacy-dropdownArrow">
@@ -7,6 +8,11 @@
       </g>
     </svg>
   </button>
+  <% } else { %>
+    <i class="Tag Tag--big Tag--outline u-flex u-alignCenter <%- cssClass %> CDB-Text CDB-Size-small u-upperCase">
+    <%- privacy %>
+    </i>
+  <% } %>
 
   <div class="js-dialog"></div>
 </div>

@@ -5,7 +5,7 @@
     </div>
     <div class="Form-rowData Form-rowData--longer">
       <input type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--longer has-submit js-textInput" value="" placeholder="<%= _t('components.modals.add-layer.imports.arcgis.input-placeholder', { brand: 'ArcGIS Server&trade;' }) %>" />
-      <button type="submit" class="Button Button--secondary Form-inputSubmit">
+      <button type="submit" class="CDB-Text CDB-Size-small Form-inputSubmit u-upperCase u-actionTextColor Form-inputSubmit">
         <span><%- _t('components.modals.add-layer.imports.form-import.submit') %></span>
       </button>
       <div class="Form-inputError CDB-Text"><%- _t('components.modals.add-layer.imports.form-import.error-desc') %></div>

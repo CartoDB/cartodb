@@ -76,6 +76,12 @@ module Carto
         end
       end
 
+      class ExceededQuota < TrackingEvent
+        def initialize(user)
+          super(user, 'Exceeded quota', )
+        end
+      end
+
       class ScoredTrendingMap < TrackingEvent
         def initialize(user, visualization, views)
           super(user, 'Scored trending map', properties(visualization, views))
@@ -124,7 +130,7 @@ module Carto
 
       class CreatedDataset < TrackingEvent
         def initialize(user, table_visualization, origin: 'blank')
-          super(user, 'Created dataset', visualization_properties(table_visualization, origin: origin))
+          super(user, 'Created dataset', visualization_properties(table_visualization, origin: origin, type: 'empty'))
         end
       end
 

@@ -24,6 +24,7 @@ require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../services/importer/lib/importer/connector'
+require_relative '../../services/importer/lib/importer/exceptions'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
@@ -202,7 +203,7 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
-    Carto::Tracking::Events::QuotaExceeded.new(current_user).report
+    Carto::Tracking::Events::ExceededQuota.new(current_user).report
 
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
@@ -214,8 +215,8 @@ class DataImport < Sequel::Model
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue => exception
-    if exception.is_a?(CartoDB::StorageQuotaExceededError)
-      Carto::Tracking::Events::QuotaExceeded.new(current_user).report
+    if exception.is_a?(CartoDB::Importer2::StorageQuotaExceededError)
+      Carto::Tracking::Events::ExceededQuota.new(current_user).report
     end
 
     log.append "Exception: #{exception.to_s}"

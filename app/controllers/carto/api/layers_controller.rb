@@ -69,10 +69,10 @@ module Carto
       private
 
       def owner_user(layer)
-        if(current_user.nil? || @parent.user.id != current_user.id)
+        if current_user.nil? || @parent.user.id != current_user.id
           # This keeps backwards compatibility with map user assignment. See #8974
           @parent.user
-        elsif(layer.options && layer.options['user_name'].present?)
+        elsif layer.options && layer.options['user_name'].present?
           ::User.where(username: layer.options['user_name']).first
         else
           layer.user

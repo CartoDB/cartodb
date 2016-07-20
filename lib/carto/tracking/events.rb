@@ -23,13 +23,6 @@ module Carto
 
         properties
       end
-
-      def properties_context(event_origin: 'Editor')
-        {
-          event_origin: event_origin,
-          creation_time: Time.now.utc
-        }
-      end
     end
 
     module Events
@@ -59,8 +52,8 @@ module Carto
       end
 
       class CreatedMap < TrackingEvent
-        def initialize(user, visualization)
-          super(user, 'Created map', visualization_properties(visualization))
+        def initialize(user, visualization, origin: 'blank')
+          super(user, 'Created map', visualization_properties(visualization, origin: origin))
         end
       end
 
@@ -78,7 +71,7 @@ module Carto
         private
 
         def properties(user, page)
-          { page: page }.merge(user_properties(user)).merge(properties_context)
+          { page: page, event_origin: 'Editor', creation_time: Time.now.utc }.merge(user_properties(user))
         end
       end
 
@@ -146,11 +139,11 @@ module Carto
       end
 
       class CreatedVisualizationFactory
-        def self.build(user, visualization)
+        def self.build(user, visualization, origin: 'blank')
           if visualization.derived?
-            Carto::Tracking::Events::CreatedMap.new(user, visualization)
+            Carto::Tracking::Events::CreatedMap.new(user, visualization, origin: origin)
           else
-            Carto::Tracking::Events::CreatedDataset.new(user, visualization)
+            Carto::Tracking::Events::CreatedDataset.new(user, visualization, origin: origin)
           end
         end
       end

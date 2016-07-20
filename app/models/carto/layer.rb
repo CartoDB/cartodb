@@ -56,8 +56,9 @@ module Carto
     end
 
     def qualified_table_name(schema_owner_user)
-      if options['table_name'].include?('.')
-        options['table_name']
+      table_name = options['table_name']
+      if table_name.present? && table_name.include?('.')
+        table_name
       else
         "#{schema_owner_user.sql_safe_database_schema}.#{options['table_name']}"
       end
@@ -153,7 +154,7 @@ module Carto
               user_name = options[:user_name]
               table_name = options[:table_name]
 
-              if !table_name.include?('.') && user_name.present? && user.username != user_name && table_name.present?
+              if table_name.present? && !table_name.include?('.') && user_name.present? && user.username != user_name
                 %{ select * from "#{user_name}".#{table_name} }
               else
                 "SELECT * FROM #{qualified_table_name(user)}"
@@ -191,7 +192,7 @@ module Carto
       return[] if options.empty?
       user_name = options.symbolize_keys[:user_name]
       table_name = options.symbolize_keys[:table_name]
-      schema_prefix = user_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
+      schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       ::Table.get_all_user_tables_by_names(["#{schema_prefix}#{table_name}"], user)
     end
 

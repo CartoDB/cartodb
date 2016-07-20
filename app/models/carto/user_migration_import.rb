@@ -48,6 +48,7 @@ module Carto
       log.append_exception('Importing', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
+      FileUtils.remove_dir(work_dir)
       false
     end
 

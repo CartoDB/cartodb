@@ -45,6 +45,7 @@ module Carto
       log.append_exception('Exporting', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
+      FileUtils.remove_dir(work_dir)
       false
     end
 

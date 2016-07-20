@@ -22,15 +22,15 @@ var HistogramAutoStyler = AutoStyler.extend({
 HistogramAutoStyler.SCALES_MAP = {
   'polygon-fill': {
     'F': {
-      palette: 'Sunset3',
+      palette: 'Sunset',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'A': {
@@ -38,11 +38,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld1',
+      palette: 'Emrld',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld1',
+      palette: 'Emrld',
       quantification: 'jenks'
     }
   },
@@ -52,11 +52,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'A': {
@@ -64,25 +64,25 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld1',
+      palette: 'Emrld',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld1',
+      palette: 'Emrld',
       quantification: 'jenks'
     }
   },
   'marker-fill': {
     'F': {
-      palette: 'RedOr1',
+      palette: 'RedOr',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'Sunset',
       quantification: 'headtails'
     },
     'A': {
@@ -90,15 +90,14 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'BluYl1',
+      palette: 'BluYl',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'BluYl1',
+      palette: 'BluYl',
       quantification: 'jenks'
     }
   }
 };
 
 module.exports = HistogramAutoStyler;
-

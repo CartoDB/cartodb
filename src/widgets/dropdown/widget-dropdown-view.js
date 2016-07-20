@@ -46,7 +46,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.model);
 
     this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
-    this.model.bind('change:pinned change:collapsed change:normalized', this.render, this);
+    this.model.bind('change:pinned change:collapsed', this.render, this);
 
     this._$container.delegate(this._target, 'click',
       _.bind(this._toggleClick, this)

@@ -184,6 +184,7 @@ module.exports = cdb.core.View.extend({
 
   _onChangeNormalized: function () {
     // do not show shadow bars if they are not enabled
+    this.model.set('show_shadow_bars', !this.model.get('normalized'));
     this._generateShadowBars();
     this.updateYScale();
     this.refresh();

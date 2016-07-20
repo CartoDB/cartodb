@@ -45,12 +45,6 @@ module.exports = cdb.core.View.extend({
       }
     });
 
-    this.model.bind('change:normalized', function () {
-      var normalized = this.model.get('normalized');
-      this.histogramChartView.setNormalized(normalized);
-      this.miniHistogramChartView.setNormalized(normalized);
-    }, this);
-
     this.addView(dropdown);
 
     this._renderMiniChart();
@@ -69,7 +63,12 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this._originalData.once('change:data', this._onFirstLoad, this);
-    this.model.bind('change:collapsed change:pinned change:normalized', this.render, this);
+    this.model.bind('change:collapsed change:pinned', this.render, this);
+    this.model.bind('change:normalized', function () {
+      var normalized = this.model.get('normalized');
+      this.histogramChartView.setNormalized(normalized);
+      this.miniHistogramChartView.setNormalized(normalized);
+    }, this);
   },
 
   _onFirstLoad: function () {
@@ -436,20 +435,17 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetWidget: function () {
-    this.lockedByUser = true;
-    this.unsettingRange = true;
+    this.filter.unsetRange();
+    this._dataviewModel.disableFilter();
+    this.histogramChartView.unsetBounds();
+    this.miniHistogramChartView.hide();
     this.model.set({
       zoomed: false,
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
-      hi_index: null,
-      min: this._dataviewModel.start,
-      max: this._dataviewModel.end
+      hi_index: null
     });
-    this._dataviewModel.disableFilter();
-    this.filter.unsetRange();
-    this.histogramChartView.unsetBounds();
-    this.miniHistogramChartView.hide();
+    this._updateStats();
   }
 });

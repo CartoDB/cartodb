@@ -1,5 +1,10 @@
 IrresponsibleModule:
   enabled: false
+DuplicateMethodCall:
+  enabled: true
+  exclude: []
+  max_calls: 2
+  allow_calls: []
 UncommunicativeVariableName:
   enabled: true
   exclude: []

@@ -134,7 +134,6 @@
 **/test/spec/geo/map/gmaps-base-layer.spec.js
 **/test/spec/geo/map/tile-layer.spec.js
 **/test/spec/geo/map-view.spec.js
-**/test/spec/geo/map.spec.js
 **/test/spec/geo/ui/header.spec.js
 **/test/spec/geo/ui/infobox.spec.js
 **/test/spec/geo/ui/infowindow.spec.js

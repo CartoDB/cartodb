@@ -391,7 +391,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Leaflet | Stamen, CARTO attribution, custom attribution');
+      expect(attributions).toEqual('Leaflet | Stamen, © CARTO, custom attribution');
     });
 
     it('should not render attributions when the Leaflet map has attributionControl disabled', function () {

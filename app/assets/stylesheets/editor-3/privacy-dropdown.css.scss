@@ -1,5 +1,16 @@
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
 .Privacy-dropdown {
   position: relative;
+}
+
+.Privacy-dropdownButton {
+  width: 100%;
+
+  &.is-selected {
+    background: rgba($cHighlight, 0.16);
+  }
 }
 
 .Privacy-dropdownArrow {
@@ -15,4 +26,8 @@
   left: 0;
   width: 248px;
   z-index: 100;
+}
+
+.Privacy-passwordField {
+  padding: $baseSize $baseSize + 4;
 }

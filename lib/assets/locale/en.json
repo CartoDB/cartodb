@@ -375,7 +375,8 @@
         "password": {
           "type": "PASSWORD",
           "title": "Password",
-          "body": "Set a password and share only with specific people"
+          "body": "Set a password and share only with specific people",
+          "placeholder": "Type your password"
         },
         "private": {
           "type": "PRIVATE",

@@ -38,7 +38,7 @@ class Carto::Log < ActiveRecord::Base
   end
 
   def logger
-    @logger ||= Logger.new(self)
+    @logger ||= LogWriter.new(self)
   end
 
   private
@@ -48,7 +48,7 @@ class Carto::Log < ActiveRecord::Base
   end
 
   # A logger implementation that logs to this Carto::Log
-  class Logger < Logger
+  class LogWriter < ::Logger
     SAVE_BLOCK = 10 # Save the changes to DB every X lines
 
     def initialize(log)

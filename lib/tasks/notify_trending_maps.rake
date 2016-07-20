@@ -1,7 +1,7 @@
 require_relative '../../lib/cartodb/trending_maps'
 require_relative '../../lib/static_maps_url_helper'
 
-require_dependency 'carto/tracking/events'
+require_relative '../carto/tracking/events'
 
 namespace :cartodb do
   namespace :trending_maps do

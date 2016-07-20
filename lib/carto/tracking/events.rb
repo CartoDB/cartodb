@@ -91,13 +91,7 @@ module Carto
 
       class VistedPrivatePage < TrackingEvent
         def initialize(user, page)
-          super(user, 'Visited private page', properties(user, page))
-        end
-
-        private
-
-        def properties(user, page)
-          { page: page, event_origin: 'Editor', creation_time: Time.now.utc }.merge(user_properties(user))
+          super(user, 'Visited private page', { page: page })
         end
       end
 

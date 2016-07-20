@@ -1005,7 +1005,7 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin, type: data_type).report
+      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
     end
 
     if visualization_id

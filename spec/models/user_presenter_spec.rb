@@ -159,6 +159,9 @@ describe Carto::Api::UserPresenter do
     new_data[:new_dashboard_enabled].should == old_data[:new_dashboard_enabled]
     new_data[:feature_flags].should == old_data[:feature_flags]
     new_data[:base_url].should == old_data[:base_url]
+    new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+    new_data[:isolines_provider].should == old_data[:isolines_provider]
+    new_data[:routing_provider].should == old_data[:routing_provider]
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
@@ -198,6 +201,9 @@ describe Carto::Api::UserPresenter do
       #owner is excluded from the users list
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
+      new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+      new_data[:isolines_provider].should == old_data[:isolines_provider]
+      new_data[:routing_provider].should == old_data[:routing_provider]
     end
 
     if mobile_sdk_enabled

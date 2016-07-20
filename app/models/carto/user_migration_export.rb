@@ -110,7 +110,8 @@ module Carto
              else
                {
                  organization_name: organization.name,
-                 schema_mode: true
+                 schema_mode: true,
+                 split_user_schemas: false
                }
              end
       args.merge(

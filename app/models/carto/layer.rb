@@ -56,7 +56,11 @@ module Carto
     end
 
     def qualified_table_name(schema_owner_user)
-      "#{schema_owner_user.sql_safe_database_schema}.#{options['table_name']}"
+      if options['table_name'].include?('.')
+        options['table_name']
+      else
+        "#{schema_owner_user.sql_safe_database_schema}.#{options['table_name']}"
+      end
     end
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
@@ -179,7 +183,7 @@ module Carto
       return[] if options.empty?
       user_name = options.symbolize_keys[:user_name]
       table_name = options.symbolize_keys[:table_name]
-      schema_prefix = user_name.present? ? %{"#{user_name}".} : ''
+      schema_prefix = user_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       ::Table.get_all_user_tables_by_names(["#{schema_prefix}#{table_name}"], user)
     end
 

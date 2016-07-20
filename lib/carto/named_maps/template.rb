@@ -173,7 +173,7 @@ module Carto
         user_name = layer_options['user_name']
         table_name = layer_options['table_name']
 
-        if user_name.present? && user.username != user_name && table_name.present?
+        if !table_name.include?('.') && user_name.present? && user.username != user_name && table_name.present?
           %{ select * from "#{user_name}".#{table_name} }
         else
           layer.wrapped_sql(user)

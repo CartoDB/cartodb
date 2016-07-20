@@ -25,18 +25,20 @@ module Carto
     validate  :user_or_organization_present
 
     def run_export
+      log.append('=== Exporting ===')
       update_attributes(state: STATE_EXPORTING)
       work_dir = create_work_directory
 
-      log.append("Exporting user/org data")
+      log.append('=== Exporting user/org data ===')
       export_job = CartoDB::DataMover::ExportJob.new(export_job_arguments(work_dir))
 
+      log.append('=== Uploading ===')
       update_attributes(state: STATE_UPLOADING, json_file: "#{id}/#{export_job.json_file}")
       package_path = compress_package(work_dir)
       uploaded_path = upload_package(package_path)
 
       state = uploaded_path.present? ? STATE_COMPLETE : STATE_FAILURE
-      log.append("Finishing. State: #{state}. File: #{uploaded_path}")
+      log.append("=== Finishing. State: #{state}. File: #{uploaded_path} ===")
       update_attributes(state: state, exported_file: uploaded_path)
       true
     rescue => e
@@ -53,21 +55,21 @@ module Carto
     private
 
     def create_work_directory
-      log.append("Creating work directory")
+      log.append('=== Creating work directory ===')
       work_dir = "#{export_dir}/#{id}/"
       FileUtils.mkdir_p(work_dir)
       work_dir
     end
 
     def compress_package(work_dir)
-      log.append("Compressing export")
+      log.append('=== Compressing export ===')
       `cd #{export_dir}/ && zip -r \"user_export_#{id}.zip\" #{id} && cd -`
       FileUtils.remove_dir(work_dir)
       "#{export_dir}/user_export_#{id}.zip"
     end
 
     def upload_package(filepath)
-      log.append("Uploading user data package")
+      log.append('=== Uploading user data package ===')
       file = CartoDB::FileUploadFile.new(filepath)
       s3_config = Cartodb.config[:user_migrator]['s3'] || {}
       results = file_upload_helper.upload_file_to_storage(
@@ -85,7 +87,7 @@ module Carto
                       results[:file_uri]
                     end
 
-      log.append('Deleting tmp file')
+      log.append('=== Deleting tmp file ===')
       FileUtils.rm(filepath)
 
       export_path

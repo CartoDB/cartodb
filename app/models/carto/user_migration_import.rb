@@ -26,6 +26,7 @@ module Carto
     validates :json_file, presence: true
 
     def run_import
+      log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       work_dir = create_work_directory
       package_file = download_package(work_dir)
@@ -33,14 +34,15 @@ module Carto
       log.append('Deleting zip package')
       FileUtils.rm(package_file)
 
+      log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
       log.append("Importing user data")
       CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
 
-      log.append('Deleting tmp directory')
+      log.append('=== Deleting tmp directory ===')
       FileUtils.remove_dir(work_dir)
 
-      log.append("Data import finished")
+      log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
     rescue => e
       log.append_exception('Importing', exception: e)
@@ -56,12 +58,12 @@ module Carto
     private
 
     def unzip_package(work_dir, package)
-      log.append("Unzipping #{package}")
+      log.append("=== Unzipping #{package} ===")
       `cd #{work_dir}; unzip -u #{package}; cd -`
     end
 
     def create_work_directory
-      log.append("Creating work directory")
+      log.append('=== Creating work directory ===')
       work_dir = "#{import_dir}/#{id}/"
       FileUtils.mkdir_p(work_dir)
       work_dir
@@ -69,7 +71,7 @@ module Carto
 
     def download_package(work_dir)
       destination = "#{work_dir}/export.zip"
-      log.append("Downloading #{exported_file} to #{destination}")
+      log.append("=== Downloading #{exported_file} to #{destination} ===")
       if exported_file.starts_with?('http')
         http_client.get_file(exported_file, destination)
       else

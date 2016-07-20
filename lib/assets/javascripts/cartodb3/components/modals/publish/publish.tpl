@@ -5,7 +5,9 @@
       <li class="js-dropdown u-rSpace--xl"></li>
       <li class="u-rSpace--xl">
         <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
+        <% if (!isSimple) { %>
         <i class="Tag Tag--big Tag--outline CDB-Text CDB-Size-small u-iBlock">+ 4</i>
+        <% } %>
       </li>
       <li class="CDB-Text CDB-Size-medium u-altTextColor js-update">
       </li>

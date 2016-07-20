@@ -115,7 +115,7 @@ module Carto
 
       class CreatedDataset < TrackingEvent
         def initialize(user, table_visualization, origin: 'blank')
-          super(user, 'Created dataset', visualization_properties(table_visualization, origin: origin, type: 'empty'))
+          super(user, 'Created dataset', visualization_properties(table_visualization, origin: origin))
         end
       end
 

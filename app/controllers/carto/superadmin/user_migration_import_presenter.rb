@@ -9,8 +9,6 @@ module Carto
       end
 
       def to_poro
-        return {} unless @user_migration_import
-
         {
           id: @user_migration_import.id,
           state: @user_migration_import.state,

@@ -3,15 +3,6 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module PropertiesHelper
-      def user_properties(user)
-        {
-          username: user.username,
-          email: user.email,
-          plan: user.account_type,
-          organization: (user.organization_user? ? user.organization.name : nil)
-        }
-      end
-
       def visualization_properties(table_visualization, origin: nil)
         properties = {
           vis_id: table_visualization.id,

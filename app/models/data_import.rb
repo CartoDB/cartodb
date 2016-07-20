@@ -173,7 +173,8 @@ class DataImport < Sequel::Model
   def run_import!
     self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
-    log.append "Running on server #{self.server} with PID: #{Process.pid}"
+    log.append "Running on server #{server} with PID: #{Process.pid}"
+
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex
@@ -187,18 +188,22 @@ class DataImport < Sequel::Model
     end
 
     log.append 'After dispatch'
-    if self.results.empty?
+
+    if results.empty?
       self.error_code = 1002
       self.state      = STATE_FAILURE
       save
     end
 
-    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(self.id).get()
+    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(id).get
     success ? handle_success : handle_failure
     log.store
     Rails.logger.debug log.to_s
+
     self
   rescue CartoDB::QuotaExceeded => quota_exception
+    Carto::Tracking::Events::QuotaExceeded.new(current_user).report
+
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
     self
@@ -1000,7 +1005,7 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
+      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin, type: data_type).report
     end
 
     if visualization_id

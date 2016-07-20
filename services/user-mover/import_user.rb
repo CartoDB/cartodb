@@ -563,7 +563,7 @@ module CartoDB
         user_model.db_service.setup_organization_owner if @target_is_owner
         user_model.db_service.monitor_user_notification # Used to inform the database_server
         user_model.db_service.configure_database
-        user_model.db_service.enable_remote_db_user
+        user_model.db_service.monitor_user_notification
       end
 
       def update_metadata_user(target_dbhost)

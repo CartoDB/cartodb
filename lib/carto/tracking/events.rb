@@ -89,25 +89,25 @@ module Carto
         end
       end
 
-      class VistedPrivatePage < TrackingEvent
+      class VisitedPrivatePage < TrackingEvent
         def initialize(user, page)
           super(user, 'Visited private page', { page: page })
         end
       end
 
-      class VisitedPrivateDashboard < VistedPrivatePage
+      class VisitedPrivateDashboard < VisitedPrivatePage
         def initialize(user)
           super(user, 'dashboard')
         end
       end
 
-      class VisitedPrivateBuilder < VistedPrivatePage
+      class VisitedPrivateBuilder < VisitedPrivatePage
         def initialize(user)
           super(user, 'builder')
         end
       end
 
-      class VisitedPrivateDataset < VistedPrivatePage
+      class VisitedPrivateDataset < VisitedPrivatePage
         def initialize(user)
           super(user, 'dataset')
         end

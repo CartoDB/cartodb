@@ -1240,8 +1240,9 @@
         "sql-alter-loading": "Modifying table...",
         "sql-alter-error": "Modifying failed",
         "sql-alter-success": "Modifying applied",
-        "sql-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in SQL query.</span>",
-        "sql-success": "<span class='CDB-Text is-semibold'>SQL query applied.</span>"
+        "sql-applying": "Applying query...",
+        "sql-error": "Error in SQL query.",
+        "sql-success": "SQL query applied."
       },
       "messages": {
         "sql-readonly": {

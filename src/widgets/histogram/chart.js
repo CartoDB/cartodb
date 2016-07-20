@@ -164,7 +164,6 @@ module.exports = cdb.core.View.extend({
     this.selectRange(lo_index, hi_index);
     this._adjustBrushHandles();
     this._selectBars();
-    this.trigger('range_updated', lo_index, hi_index);
     this.trigger('on_brush_end', lo_index, hi_index);
   },
 

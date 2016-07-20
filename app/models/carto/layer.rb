@@ -144,12 +144,20 @@ module Carto
     end
 
     def wrapped_sql(user)
+      # Inspired from CartoDB::LayerModule::Presenter#default_query_for
       query = options[:query]
 
       sql = if query.present?
               query
             else
-              "SELECT * FROM #{qualified_table_name(user)}"
+              user_name = options[:user_name]
+              table_name = options[:table_name]
+
+              if !table_name.include?('.') && user_name.present? && user.username != user_name && table_name.present?
+                %{ select * from "#{user_name}".#{table_name} }
+              else
+                "SELECT * FROM #{qualified_table_name(user)}"
+              end
             end
 
       query_wrapper = options[:query_wrapper]

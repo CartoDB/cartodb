@@ -214,6 +214,10 @@ class DataImport < Sequel::Model
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue => exception
+    if exception.is_a?(CartoDB::StorageQuotaExceededError)
+      Carto::Tracking::Events::QuotaExceeded.new(current_user).report
+    end
+
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join

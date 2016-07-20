@@ -52,7 +52,7 @@ module Carto
 
     def unzip_package(work_dir, package)
       log.append("Unzipping #{package}")
-      `cd #{work_dir}; unzip #{package}; cd -`
+      `cd #{work_dir}; unzip -u #{package}; cd -`
     end
 
     def create_work_directory

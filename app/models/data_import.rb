@@ -1002,6 +1002,14 @@ class DataImport < Sequel::Model
 
       Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
     end
+
+    Carto::Tracking::Events::CreatedMap.new(current_user, Carto::Visualization.find(visualization_id), origin: 'import')
+                                       .report
+  rescue ActiveRecord::ActiveRecordError => exception
+    CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
+                            event: 'Created map',
+                            type: 'Invalid import result',
+                            exception: exception)
   rescue => exception
     CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
                             event: 'Created dataset',

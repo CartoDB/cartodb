@@ -36,12 +36,25 @@ module Carto
         end
 
         def report
-          Carto::Tracking::SegmentWrapper.new.send_event(@user, @name, @properties)
+          Carto::Tracking::SegmentWrapper.new.send_event(@user, @name, @properties.merge(event_properties))
         rescue => exception
           CartoDB::Logger.warning(message: 'Carto::Tracking: Event couldn\'t be reported',
                                   exception: exception,
                                   properties: @properties,
                                   user: @user)
+        end
+
+        private
+
+        def event_properties
+          {
+            username: @user.username,
+            email: @user.email,
+            plan: @user.account_type,
+            organization: @user.organization_user? ? @user.organization.name : nil,
+            event_origin: 'Editor',
+            creation_time: Time.now.utc
+          }
         end
       end
 

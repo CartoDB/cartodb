@@ -14,9 +14,9 @@ module Carto
       def layers_by_map
         raise RecordNotFound if @parent.nil?
 
-        layers = @parent.layers(@parent).map { |layer|
+        layers = @parent.layers(@parent).map do |layer|
           Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
-        }
+        end
 
         render_jsonp layers: layers, total_entries: layers.size
       end

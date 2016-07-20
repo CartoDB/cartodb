@@ -146,13 +146,14 @@ module Carto
 
     def wrapped_sql(user)
       # Inspired from CartoDB::LayerModule::Presenter#default_query_for
+      sym_options = options.symbolize_keys
       query = options[:query]
 
       sql = if query.present?
               query
             else
-              user_name = options[:user_name]
-              table_name = options[:table_name]
+              user_name = sym_options[:user_name]
+              table_name = sym_options[:table_name]
 
               if table_name.present? && !table_name.include?('.') && user_name.present? && user.username != user_name
                 %{ select * from "#{user_name}".#{table_name} }
@@ -161,7 +162,7 @@ module Carto
               end
             end
 
-      query_wrapper = options[:query_wrapper]
+      query_wrapper = sym_options[:query_wrapper]
       sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
 
       sql
@@ -190,8 +191,9 @@ module Carto
 
     def tables_from_table_name_option
       return[] if options.empty?
-      user_name = options.symbolize_keys[:user_name]
-      table_name = options.symbolize_keys[:table_name]
+      sym_options = options.symbolize_keys
+      user_name = sym_options[:user_name]
+      table_name = sym_options[:table_name]
       schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       ::Table.get_all_user_tables_by_names(["#{schema_prefix}#{table_name}"], user)
     end

@@ -63,6 +63,22 @@ module Carto
         end
       end
 
+      class ScoredTrendingMap < TrackingEvent
+        def initialize(user, visualization, views)
+          super(user, 'Scored trending map', properties(visualization, views))
+        end
+
+        private
+
+        def properties(visualization, views)
+          {
+            map_id: visualization.id,
+            map_name: visualization.fetch.name,
+            mapviews: views
+          }
+        end
+      end
+
       class VistedPrivatePage < TrackingEvent
         def initialize(user, page)
           super(user, 'Visited private page', properties(user, page))

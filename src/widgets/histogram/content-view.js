@@ -254,7 +254,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     var data = this._dataviewModel.getData();
-    if ((!data || !data.length) || (this.model.get('lo_index') == loBarIndex && this.model.get('hi_index') == hiBarIndex)) {
+    if ((!data || !data.length) || (this.model.get('lo_index') === loBarIndex && this.model.get('hi_index') === hiBarIndex)) {
       return;
     }
 

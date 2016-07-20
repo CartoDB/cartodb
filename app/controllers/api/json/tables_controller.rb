@@ -46,6 +46,7 @@ class Api::Json::TablesController < Api::ApplicationController
                         }, 400)
         end
       rescue CartoDB::QuotaExceeded
+        Carto::Tracking::Events::ExceededQuota.new(current_user).report
         render_jsonp({ errors: [TABLE_QUOTA_REACHED_TEXT]}, 400)
       end
 

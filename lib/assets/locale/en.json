@@ -398,7 +398,7 @@
         "back-btn": "GO BACK",
         "published": "Published %{when}",
         "unpublished": "Never published.",
-        "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
+        "last-published": "Last updated %{date}",
         "unpublished-header": "Click on Publish to start sharing your map on the web",
         "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
         "get-link": {
@@ -408,7 +408,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your privacy settings to share your map. Right now it's private."
           }
         },
         "embed": {
@@ -418,7 +418,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
+            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your privacy settings to embed your map. Right now it's private."
           }
         },
         "cartodbjs": {
@@ -440,6 +440,17 @@
           "subtitle": "We had an internal error trying to save your data. We recommend you try again."
         },
         "loading": "Saving your data..."
+      },
+      "publish": {
+        "done-btn": "Done",
+        "update-btn": "Update",
+        "publish-btn": "Publish",
+        "publishing-btn": "Publishing",
+        "updating-btn": "Updating",
+        "menu": {
+          "share": "Share with colleagues",
+          "publish": "publish"
+        }
       },
       "share-org": {
         "modal-title": "privacy",

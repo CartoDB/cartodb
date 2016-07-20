@@ -1,5 +1,5 @@
 <div class="Privacy-dropdown">
-  <button class="Tag Tag--outline u-flex u-alignCenter <%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
+  <button class="Tag Tag--big Tag--outline u-flex u-alignCenter <%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
     <%- privacy %>
     <svg viewBox="0 0 129 129" class="Privacy-dropdownArrow">
       <g>

@@ -216,4 +216,53 @@
   box-shadow: 1px 0 0 $cBlue, -1px 0 0 $cBlue, 0 1px 0 $cBlue, 0 -1px 0 $cBlue;
 }
 
+.Publish-modalHeader {
+  @include flex(1);
+  min-height: initial;
+  text-align: left;
+  padding: $baseSize * 3 0;
+}
 
+.Publish-modalBody {
+  @include display-flex();
+  @include flex(100);
+  @include flex-direction(column);
+  position: relative;
+  padding-bottom: 100px;
+}
+
+.Publish-modalBody.is-simple,
+.Publish-modalFooter,
+.Publish-modalContent {
+  background-color: $cThirdBackground;
+}
+
+.Publish-modalShadow {
+  width: 100%;
+  background-color: $cWhite;
+}
+
+.Publish-modalMenu,
+.Publish-modalShadow {
+  position: relative;
+  min-height: 5px; // to be able to show the shadow if no content inside.
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.Publish-modalShare {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex-grow(1);
+  @include justify-content(center);
+  @include align-items(center);
+}
+
+.Publish-modalButton {
+  height: 24px;
+  overflow: hidden;
+}
+
+.CDB-NavSubmenu-item.is-selected .Publish-modalLink {
+  border-color: $cMainText;
+}

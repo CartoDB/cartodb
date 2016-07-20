@@ -3,6 +3,7 @@
 require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/import_user'
+require_dependency 'resque/user_migration_jobs'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base
@@ -46,6 +47,10 @@ module Carto
       CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
       false
+    end
+
+    def enqueue
+      Resque.enqueue(Resque::UserMigrationJobs::Import, import_id: id)
     end
 
     private

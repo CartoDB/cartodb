@@ -1,7 +1,5 @@
 # encoding: UTF-8
 
-require_dependency 'resque/user_migration_jobs'
-
 module Carto
   module Superadmin
     class UserMigrationExportsController < ::Superadmin::SuperadminController
@@ -15,7 +13,7 @@ module Carto
           organization_id: params[:organization_id]
         )
         if export.save
-          Resque.enqueue(Resque::UserMigrationJobs::Export, export_id: export.id)
+          export.enqueue
           render json: UserMigrationExportPresenter.new(export).to_poro, status: 201
         else
           render json: { errors: export.errors.to_h }, status: 422

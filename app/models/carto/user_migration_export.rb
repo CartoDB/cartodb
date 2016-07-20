@@ -4,6 +4,7 @@ require 'active_record'
 require 'fileutils'
 require_relative '../../../services/user-mover/export_user'
 require_dependency 'file_upload'
+require_dependency 'resque/user_migration_jobs'
 
 module Carto
   class UserMigrationExport < ::ActiveRecord::Base
@@ -43,6 +44,10 @@ module Carto
       CartoDB::Logger.error(exception: e, message: 'Error exporting user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
       false
+    end
+
+    def enqueue
+      Resque.enqueue(Resque::UserMigrationJobs::Export, export_id: id)
     end
 
     private

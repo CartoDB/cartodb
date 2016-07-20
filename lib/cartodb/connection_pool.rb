@@ -6,7 +6,7 @@ module CartoDB
     include CartoDB::SequelConnectionHelper
 
     # Until migration to AR is done
-    MAX_POOL_SIZE = 600
+    MAX_POOL_SIZE = 300
 
     def initialize
       @pool = {}

@@ -43,12 +43,14 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         param_tables = params[:tables]
         current_user_id = current_user.id
 
+        origin = 'blank'
         source_id = params[:source_visualization_id]
         vis = if source_id
                 user = Carto::User.find(current_user_id)
                 source = Carto::Visualization.where(id: source_id).first
                 return head(403) unless source && source.is_viewable_by_user?(user) && !source.kind_raster?
                 if source.derived?
+                  origin = 'copy'
                   duplicate_derived_visualization(params[:source_visualization_id], user)
                 else
                   tables = [UserTable.find(id: source.user_table.id)]
@@ -87,7 +89,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
-        Carto::Tracking::Events::CreatedVisualizationFactory.build(current_user, vis).report
+        Carto::Tracking::Events::CreatedVisualizationFactory.build(current_user, vis, origin: origin).report
 
         render_jsonp(vis)
       rescue CartoDB::InvalidMember

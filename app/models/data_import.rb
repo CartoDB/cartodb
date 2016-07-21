@@ -815,10 +815,11 @@ class DataImport < Sequel::Model
     end
 
     if datasource_provider.providers_download_url?
-      log.append "File will be downloaded from #{downloader.url}"
-
       metadata_url = metadata[:url]
       resource_url = (metadata_url.present? && datasource_provider.providers_download_url?) ? metadata_url : data_source
+
+      log.append "File will be downloaded from #{resource_url}"
+
       http_options = { http_timeout: ::DataImport.http_timeout_for(current_user) }
       options = {
         importer_config: Cartodb.config[:importer],

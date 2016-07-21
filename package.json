@@ -15,7 +15,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
-    "backbone-forms": "^0.14.0",
+    "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "^1.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "<2.0",

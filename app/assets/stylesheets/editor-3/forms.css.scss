@@ -50,6 +50,10 @@
   box-sizing: border-box;
 }
 
+
+.Editor-formInner .Editor-formSelect {
+  max-width: 158px;
+}
 .Editor-formSelect {
   @include flex(1);
 }

@@ -120,7 +120,14 @@ module CartoDB
 
       def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
         return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
+
+        quota_overage = size - available_quota_in_bytes.to_i
+        if quota_overage > 0
+          user = Carto::User.find(@options[:user_id])
+
+          Carto::Tracking::Events::ExceededQuota.new(user, quota_overage: quota_overage).report
+          raise StorageQuotaExceededError
+        end
       end
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)

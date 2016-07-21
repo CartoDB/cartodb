@@ -1,7 +1,5 @@
 # enconding utf-8
 
-require_dependency 'carto/tracking/events'
-
 module CartoDB
   module Importer2
     module QuotaCheckHelpers

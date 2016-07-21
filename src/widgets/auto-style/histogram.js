@@ -48,7 +48,7 @@ HistogramAutoStyler.SCALES_MAP = {
   },
   'line-color': {
     'F': {
-      palette: 'Sunset3',
+      palette: 'Sunset',
       quantification: 'quantiles'
     },
     'L': {

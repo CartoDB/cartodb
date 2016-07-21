@@ -157,7 +157,7 @@ module Carto
 
     def default_query(user = nil)
       sym_options = options.symbolize_keys
-      query = options[:query]
+      query = sym_options[:query]
 
       if query.present?
         query

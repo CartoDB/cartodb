@@ -12,3 +12,7 @@
 <p class="CDB-Text Onboarding-description">
   <%- _t('analyses-onboarding.georeference.description') %>
 </p>
+
+<p class="CDB-Text Onboarding-description">
+  <a href="https://carto.com/docs/carto-engine/dataservices-api/geocoding-functions">Read more in documentation</a>
+</p>

@@ -22,15 +22,15 @@ var HistogramAutoStyler = AutoStyler.extend({
 HistogramAutoStyler.SCALES_MAP = {
   'polygon-fill': {
     'F': {
-      palette: 'Sunset',
+      palette: 'PinkYl',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'A': {
@@ -38,25 +38,29 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld',
+      palette: 'Sunset',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld',
+      palette: 'Sunset',
       quantification: 'jenks'
     }
   },
   'line-color': {
     'F': {
+<<<<<<< HEAD
       palette: 'Sunset',
+=======
+      palette: 'PinkYl',
+>>>>>>> master
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'A': {
@@ -64,11 +68,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld',
+      palette: 'Sunset',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld',
+      palette: 'Sunset',
       quantification: 'jenks'
     }
   },
@@ -78,11 +82,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset',
+      palette: 'BluYl',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset',
+      palette: 'BluYl',
       quantification: 'headtails'
     },
     'A': {
@@ -90,11 +94,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'BluYl',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'BluYl',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     }
   }

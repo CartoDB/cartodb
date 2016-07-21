@@ -2,6 +2,9 @@
  var timer = require("grunt-timer");
  var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 
+ var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
+ var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
+
   /**
    *  CartoDB UI assets generation
    */
@@ -9,6 +12,36 @@
   module.exports = function(grunt) {
 
     if (timer) timer.init(grunt);
+
+    function preFlight(done) {
+      function checkVersion(cmd, versionRegExp, name, done) {
+        require("child_process").exec(cmd, function (error, stdout, stderr) {
+          var err = null;
+          if (error) {
+            err = 'failed to check version for ' + name;
+          } else {
+            if (!versionRegExp.test(stdout)) {
+              err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
+            }
+          }
+          if (err) {
+            grunt.log.fail(err);
+          }
+          done && done(err ? new Error(err): null);
+        });
+      }
+      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+    }
+
+    preFlight(function (err) {
+      if (err) {
+        grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+        grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
+        grunt.log.fail("#################################################");
+        process.exit(1);
+      }
+    });
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';

@@ -48,11 +48,7 @@ HistogramAutoStyler.SCALES_MAP = {
   },
   'line-color': {
     'F': {
-<<<<<<< HEAD
-      palette: 'Sunset',
-=======
       palette: 'PinkYl',
->>>>>>> master
       quantification: 'quantiles'
     },
     'L': {
@@ -94,11 +90,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'SunsetDark',
+      palette: 'Sunset',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'SunsetDark',
+      palette: 'Sunset',
       quantification: 'jenks'
     }
   }

@@ -229,8 +229,6 @@
 }
 
 .Publish-modalHeader {
-  // @include flex(0 0 auto);
-  // min-height: 0;
   @include flex(0 0 auto);
   padding: $baseSize * 3 0;
   text-align: left;

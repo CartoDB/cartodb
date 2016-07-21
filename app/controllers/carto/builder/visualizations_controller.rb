@@ -3,6 +3,8 @@
 require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 
+require_dependency 'carto/tracking/events'
+
 module Carto
   module Builder
     class VisualizationsController < BuilderController
@@ -10,12 +12,13 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced, only: [:show]
-      before_filter :load_derived_visualization, only: [:show]
+      before_filter :redirect_to_editor_if_forced, only: :show
+      before_filter :load_derived_visualization, only: :show
       before_filter :authors_only
-      before_filter :editable_visualizations_only, only: [:show]
+      before_filter :editable_visualizations_only, only: :show
 
-      after_filter :update_user_last_activity, only: [:show]
+      after_filter :update_user_last_activity, only: :show
+      after_filter :track_builder_visit, only: :show
 
       layout 'application_builder'
 
@@ -50,6 +53,10 @@ module Carto
 
       def unauthorized
         redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: request.params[:id])
+      end
+
+      def track_builder_visit
+        Carto::Tracking::Events::VisitedPrivateBuilder.new(current_user).report
       end
     end
   end

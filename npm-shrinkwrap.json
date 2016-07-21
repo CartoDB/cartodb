@@ -1319,8 +1319,8 @@
     },
     "carto": {
       "version": "0.15.1-cdb1",
-      "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-      "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
+      "from": "cartodb/carto#master",
+      "resolved": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
       "dependencies": {
         "underscore": {
           "version": "1.8.3",

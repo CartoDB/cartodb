@@ -23,9 +23,9 @@ require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
-require_relative '../../lib/cartodb/event_tracker'
 require_relative '../../services/importer/lib/importer/connector'
 
+require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
 
 include CartoDB::Datasources
@@ -309,8 +309,7 @@ class DataImport < Sequel::Model
                            "#{exception.message} #{exception.backtrace.inspect}")
     end
     notify(results)
-
-    Cartodb::EventTracker.new.track_import(current_user, id, results, visualization_id, from_common_data?)
+    track_results(results, id)
 
     self
   end
@@ -987,5 +986,37 @@ class DataImport < Sequel::Model
       datasource.data_import_item = self
       datasource.set_audit_to_failed
     end
+  end
+
+  def track_results(results, import_id)
+    results.select(&:success?).each do |result|
+      condition, origin = if result.name
+                            [{ data_import_id: import_id, name: result.name },
+                             from_common_data? ? 'common-data' : 'import']
+                          else
+                            [{ data_import_id: import_id }, 'copy']
+                          end
+
+      user_table = ::UserTable.where(condition).first
+      vis = Carto::Visualization.where(map_id: user_table.map.id).first
+
+      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
+    end
+
+    if visualization_id
+      visualization = Carto::Visualization.find(visualization_id)
+
+      Carto::Tracking::Events::CreatedMap.new(current_user, visualization, origin: 'import').report
+    end
+  rescue ActiveRecord::ActiveRecordError => exception
+    CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
+                            event: 'Created map',
+                            type: 'Invalid import result',
+                            exception: exception)
+  rescue => exception
+    CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
+                            event: 'Created dataset',
+                            type: 'Invalid import result',
+                            exception: exception)
   end
 end

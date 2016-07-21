@@ -2,6 +2,8 @@
 
 require 'carto/api/vizjson3_presenter'
 
+require_dependency 'carto/tracking/events'
+
 module Carto
   module Builder
     class DatasetsController < BuilderController
@@ -9,13 +11,14 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced, only: [:show]
-      before_filter :load_canonical_visualization, only: [:show]
+      before_filter :redirect_to_editor_if_forced, only: :show
+      before_filter :load_canonical_visualization, only: :show
       before_filter :authors_only
-      before_filter :load_user_table, only: [:show]
-      before_filter :editable_visualizations_only, only: [:show]
+      before_filter :load_user_table, only: :show
+      before_filter :editable_visualizations_only, only: :show
 
-      after_filter :update_user_last_activity, only: [:show]
+      after_filter :update_user_last_activity, only: :show
+      after_filter :track_dataset_visit, only: :show
 
       layout 'application_builder'
 
@@ -55,6 +58,10 @@ module Carto
 
       def unauthorized
         redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id])
+      end
+
+      def track_dataset_visit
+        Carto::Tracking::Events::VisitedPrivateDataset.new(current_user).report
       end
     end
   end

@@ -25,16 +25,24 @@
     "never-show-message": "Never show me this message.",
     "new-columns-created": "New columns have been created as a new dataset.",
     "new-column-included": "A new column has been included with your original data.",
+    "moran": {
+      "title": "Calculating point clusters",
+      "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the number of clusters you requested (or max rows if less)",
+      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+    },
     "data-observatory-measure": {
+      "title": "Enrich from the Data Observatory",
       "custom-column": "This column contains the data requested from the Data Observatory",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
     "georeference": {
+      "title": "Georeference",
       "geometries-updated": "The geometries in your table were updated",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
       "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
     },
     "centroid": {
+      "title": "Calculating centroids from geometries",
       "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
       "the-geom": "Point geometries representing the centroid(s) of your input data.",
       "value": "If Aggregate is selected, this will store the aggregate value for each centroid. If not, it will contain the count of features considered for each centroid",
@@ -47,7 +55,7 @@
       "title": "Georeference",
       "short-title": "Georeference"
     },
-    "data-observatory-measurement": {
+    "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
       "short-title": "Data observatory"
     },

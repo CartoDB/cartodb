@@ -1,7 +1,7 @@
 <div class="Onboarding-fake"></div>
 <div class="Onboarding-contentWrapper">
   <div class="Onboarding-body">
-    <p class="CDB-Text Onboarding-headerTitle"><%- type %></p>
+    <p class="CDB-Text Onboarding-headerTitle"><%- _t('analyses-onboarding.' + type + '.title') %></p>
     <p class="CDB-Text Onboarding-headerText"><%- _t('analyses-onboarding.finished') %></p>
 
     <div class="js-content"></div>

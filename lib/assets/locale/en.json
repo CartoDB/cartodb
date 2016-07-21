@@ -25,6 +25,10 @@
     "never-show-message": "Never show me this message.",
     "new-columns-created": "New columns have been created as a new dataset.",
     "new-column-included": "A new column has been included with your original data.",
+    "filter": {
+      "title": "Row filtering",
+      "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
+    },
     "moran": {
       "title": "Calculating point clusters",
       "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the number of clusters you requested (or max rows if less)",

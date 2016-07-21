@@ -8,6 +8,7 @@ require_relative './unp'
 module CartoDB
   module Importer2
     class DatasourceDownloader
+      include Carto::QuotaCheckHelper
 
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
@@ -107,9 +108,9 @@ module CartoDB
             @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
           rescue => exception
             if exception.message =~ /quota/i
-              user = Carto::User.find(@options[:user_id])
+              user_id = @options[:user_id]
+              report_over_quota(user_id) if user_id
 
-              Carto::Tracking::Events::ExceededQuota.new(user).report
               raise StorageQuotaExceededError
             else
               raise
@@ -121,25 +122,17 @@ module CartoDB
         self
       end
 
-      def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
-        return self unless available_quota_in_bytes
-
-        quota_overage = size - available_quota_in_bytes.to_i
-        if quota_overage > 0
-          user = Carto::User.find(@options[:user_id])
-
-          Carto::Tracking::Events::ExceededQuota.new(user, quota_overage: quota_overage).report
-          raise StorageQuotaExceededError
-        end
-      end
-
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
         # Skip storing if no data came in
         return if resource_data.empty?
 
         data = StringIO.new(resource_data)
         name = filename
-        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
+
+        raise_if_over_storage_quota(quota_requested: data.size,
+                                    quota_available: available_quota_in_bytes,
+                                    user_id: @options[:user_id])
+
         self.source_file = SourceFile.new(filepath(name), name)
         # Delete if exists
         repository.remove(source_file.path) if repository.respond_to?(:remove)

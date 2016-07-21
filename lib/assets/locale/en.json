@@ -24,6 +24,11 @@
     "style-column": "Style this column",
     "never-show-message": "Never show me this message.",
     "new-columns-created": "New columns have been created as a new dataset.",
+    "georeference": {
+      "geometries-updated": "The geometries in your table were updated",
+      "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
+      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+    },
     "centroid": {
       "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
       "the-geom": "Point geometries representing the centroid(s) of your input data.",

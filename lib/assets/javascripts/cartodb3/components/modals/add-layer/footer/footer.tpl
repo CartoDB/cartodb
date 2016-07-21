@@ -1,7 +1,7 @@
 <div class="CreateDialog-footerShadow"></div>
 <div class="CreateDialog-footerLine"></div>
-<div class="CreateDialog-footerInner u-flex u-justifySpace">
-  <div class="js-footer-info CreateDialog-footerInfo">
+<div class="CreateDialog-footerInner u-flex u-justifySpace u-alignCenter">
+  <div class="js-footer-info CreateDialog-footerInfo u-secondaryTextColor">
   </div>
   <div class="CreateDialog-footerActions js-footerActions">
     <button class="js-ok CDB-Button CDB-Button--primary <%- canFinish ? '' : 'is-disabled' %>">

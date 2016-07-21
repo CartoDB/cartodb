@@ -68,8 +68,8 @@ module Carto
       end
 
       class ExceededQuota < TrackingEvent
-        def initialize(user)
-          super(user, 'Exceeded quota', {})
+        def initialize(user, amount: 0)
+          super(user, 'Exceeded quota', amount > 0 ? { amount: amount } : {})
         end
       end
 

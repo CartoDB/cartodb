@@ -97,6 +97,9 @@
   width: 92px;
   margin-right: 12px;
 }
+.Editor-checkerInput .CDB-Checkbox-face {
+  width: 18px; // Forcing to be at least that width
+}
 .Editor-checkerComponent {
   width: 158px;
 }

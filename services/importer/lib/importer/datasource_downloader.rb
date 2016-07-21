@@ -107,6 +107,9 @@ module CartoDB
             @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
           rescue => exception
             if exception.message =~ /quota/i
+              user = Carto::User.find(@options[:user_id])
+
+              Carto::Tracking::Events::ExceededQuota.new(user).report
               raise StorageQuotaExceededError
             else
               raise
@@ -142,7 +145,6 @@ module CartoDB
         repository.remove(source_file.path) if repository.respond_to?(:remove)
         repository.store(source_file.path, data)
       end
-
 
       def filepath(name)
         repository.fullpath_for(name)

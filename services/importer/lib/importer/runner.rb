@@ -12,8 +12,6 @@ require_relative '../../../platform-limits/platform_limits'
 require_relative '../../../../lib/cartodb/stats/importer'
 require_relative '../../../../lib/carto/visualization_exporter'
 
-require_dependency 'carto/tracking/events'
-
 module CartoDB
   module Importer2
     class Runner

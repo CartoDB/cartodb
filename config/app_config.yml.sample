@@ -143,7 +143,9 @@ defaults: &defaults
   redis:
     host: '127.0.0.1'
     port: 6379
-    timeout: 20
+    connect_timeout: 2
+    read_timeout: 3
+    write_timeout: 5
     databases:
       tables_metadata:     0
       api_credentials:     3

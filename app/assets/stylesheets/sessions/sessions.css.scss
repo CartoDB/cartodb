@@ -54,7 +54,6 @@ $cWhite: #FFFFFF;
   @include display-flex;
   @include flex-direction(column);
   min-height: 100vh;
-  background-color: #F9F9F9;
   background-size: cover;
 }
 
@@ -292,7 +291,23 @@ $cWhite: #FFFFFF;
   color: #FFF;
 }
 
-.Sessions-inputLinkAside {
+.Sessions .Sessions-inputLinkAside {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 48px;
+  margin-right: 10px;
+  color: #1785FB;
+  font-size: 14px;
+  font-weight: 200;
+  line-height: 50px;
+
+  a {
+    color: #1785FB;
+  }
+}
+
+.Sessions-navy .Sessions-inputLinkAside {
   color: $cWhite;
   position: absolute;
   top: 0;

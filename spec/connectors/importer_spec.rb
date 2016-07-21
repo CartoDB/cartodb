@@ -345,6 +345,34 @@ describe CartoDB::Connector::Importer do
       visualization.destroy
     end
 
+    it 'imports a visualization export when the table already exists' do
+      existing_table = create_table(name: 'twitter_t3chfest_reduced', user_id: @user.id)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      data_import.values[:data_source] = filepath
+
+      data_import.run_import!
+      data_import.success.should eq true
+
+      # Fixture file checks
+      renamed_table = 'twitter_t3chfest_reduced_1'
+      data_import.table_name.should eq renamed_table
+      visualization = Carto::Visualization.find(data_import.visualization_id)
+      visualization.data_layers.first.options['table_name'].should eq renamed_table
+
+      data_import.table.destroy
+      data_import.destroy
+      visualization.destroy
+      ::UserTable[existing_table.id].destroy
+    end
+
     it 'imports a visualization export with two data layers' do
       filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
 

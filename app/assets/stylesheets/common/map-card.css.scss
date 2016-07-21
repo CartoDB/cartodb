@@ -118,9 +118,12 @@ $sEditButtonSize: 50px;
   text-align: center;
 }
 .MapCard-tags {
-  @include line-clamp(1);
   position: relative;
   min-height: 18px;
+
+  a {
+    line-height: 18px;
+  }
 }
 .MapCard--selectable {
   &:hover {
@@ -258,7 +261,7 @@ $sEditButtonSize: 50px;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   position: relative;
-  height: 183px; /* We should try avoid fix heights. For review*/
+  height: 185px; /* We should try avoid fix heights. For review*/
   padding: $baseSize * 2;
   border-radius: $halfBaseSize;
   z-index: 1;

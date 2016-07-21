@@ -36,7 +36,7 @@
   position: relative;
   width: 100%;
 }
-.Dataset-viewTable .Table--relative {
+.Dataset-viewTable .Table-wrapper {
   top: 40px;
 }
 .Dataset-options,
@@ -61,6 +61,7 @@
   height: 18px;
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), transparent 88%);
   content: '';
+  pointer-events: none;
 }
 
 .Dataset-options-actions {
@@ -88,4 +89,3 @@
 .is-dark .Dataset-tablePreview {
   color: $cWhite;
 }
-

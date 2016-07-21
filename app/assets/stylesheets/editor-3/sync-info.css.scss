@@ -4,10 +4,6 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 
-.SyncInfo {
-  @include display-flex();
-  @include align-items(center);
-}
 .SyncInfo--separator {
   position: relative;
   margin-top: -5px;

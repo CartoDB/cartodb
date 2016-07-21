@@ -505,7 +505,7 @@ describe CartoDB::Permission do
       permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
       permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
-      # Organization has more permissions than user. Should get overriden (user prevails)
+      # Organization has more permissions than user. Should get inherited (RW prevails)
       permission.acl = [
           {
               type: Permission::TYPE_USER,
@@ -526,30 +526,7 @@ describe CartoDB::Permission do
       ]
       permission.save
       permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
-
-      # User has revoked permissions, org has permissions. User revoked should prevail
-      permission.acl = [
-          {
-              type: Permission::TYPE_USER,
-              entity: {
-                  id: user2_mock.id,
-                  username: user2_mock.username
-              },
-              access: Permission::ACCESS_NONE
-          },
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id: org_mock.id,
-                  username: org_mock.name
-              },
-              access: Permission::ACCESS_READWRITE
-          }
-      ]
-      permission.save
-      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
-      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
       # Organization permission only
       permission.acl = [

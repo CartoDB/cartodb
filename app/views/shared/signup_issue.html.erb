@@ -1,15 +1,16 @@
 <% content_for :title do %><%= @signup_source %> signup issue<% end %>
 
-<div class="Sessions" style="<%= background %>">
+<div class="Sessions-navy CDB-Text" style="<%= background %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
       <div class="u-inner">
         <div class="Sessions-center Sessions--centered">
-          <div class="Logo js-logo">
-            <span class="Logo--avatar">
-              <i class="CDB-IconFont CDB-IconFont-cartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
-            </span>
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+            </picture>
           </div>
+
           <% if @signup_errors %>
             <div class="js-info">
               <h1 class="Sessions-title u-tspace-m">Signup issues</h1>
@@ -37,4 +38,3 @@
     </div>
   </div>
 </div>
-

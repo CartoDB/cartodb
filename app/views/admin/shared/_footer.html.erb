@@ -11,11 +11,7 @@
       <li class="Footer-listItem CDB-Text CDB-Size-medium">Version: <%= cartodb_onpremise_version %></li>
       <% end %>
     </ul>
-    <% if cartodb_com_hosted? %>
-      <a class="Footer-logo Logo" href="<% if cartodb_com_hosted? %><%= CartoDB.url(self, 'root') %><% else %>https://carto.com<% end %>">
-        <img src="<%= image_path "layout/carto-logo-grey.svg" %>" alt="carto">
-      </a>
-    <% end %>
+
     <ul class="Footer-list Footer-list--secondary">
       <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/docs">Documentation</a></li>
       <% unless cartodb_com_hosted? %>

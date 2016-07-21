@@ -1,6 +1,6 @@
 <div class="Dialog-header Dialog-header--expanded Modal-header js-header">
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
-    <i class="CDB-IconFont"></i>
+    <i class="CDB-IconFont CDB-IconFont-cockroach"></i>
   </div>
   <h2 class="CDB-Text CDB-Size-large u-bSpace u-errorTextColor"><%- _t('components.modals.share.error.title') %></h2>
   <h3 class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.share.error.subtitle') %></h3>
@@ -8,7 +8,6 @@
 
 <div class="Modal-body">
   <div class="Modal-body-inner">
-
     <div class="js-footer">
       <ul class="Modal-actions is-narrow">
         <li class="Modal-actions-button">

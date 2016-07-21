@@ -7,6 +7,11 @@
     </ul>
   </div>
 </div>
-<p class="CDB-Text CDB-Size-small u-secondaryTextColor u-ellipsis">
+<p class="CDB-Text CDB-Size-small u-secondaryTextColor Editor-ListAnalysis-itemInfoDataset u-ellipsis">
   <%- tableName %>
 </p>
+<% if (customQueryApplied) { %>
+  <span class="Editor-ListAnalysis-itemSQL CDB-Tag CDB-Tag--opaque CDB-Text CDB-Size-small u-secondaryTextColor">
+    SQL
+  </span>
+<% } %>

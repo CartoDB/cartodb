@@ -1,0 +1,56 @@
+{
+  "simple": {
+
+    "point": {
+      "fill": {
+        "size": {
+          "fixed": 7
+        },
+        "color": {
+          "fixed": "#FFB927",
+          "opacity": 0.9
+        }
+      },
+      "stroke": {
+        "size": {
+          "fixed": 1.5
+        },
+        "color": {
+          "fixed": "#ffda8d",
+          "opacity": 1
+        }
+      }
+    },
+
+    "line": {
+      "fill": {},
+      "stroke": {
+        "size": {
+          "fixed": 1.5
+        },
+        "color": {
+          "fixed": "#3EBCAE",
+          "opacity": 1
+        }
+      }
+    },
+
+    "polygon": {
+      "fill": {
+        "color": {
+          "fixed": "#374c70",
+          "opacity": 0.9
+        }
+      },
+      "stroke": {
+        "size": {
+          "fixed": 1
+        },
+        "color": {
+          "fixed": "#fff",
+          "opacity": 0.5
+        }
+      }
+    }
+  }
+}

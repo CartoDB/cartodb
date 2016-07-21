@@ -8,8 +8,6 @@ require_relative './unp'
 module CartoDB
   module Importer2
     class DatasourceDownloader
-      include Carto::QuotaCheckHelper
-
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
         @source_file = nil

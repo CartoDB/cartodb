@@ -15,8 +15,6 @@ require_relative '../../../../lib/carto/visualization_exporter'
 module CartoDB
   module Importer2
     class Runner
-      include Carto::QuotaCheckHelper
-
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3

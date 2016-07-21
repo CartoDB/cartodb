@@ -2,8 +2,8 @@
 
 require_dependency 'carto/tracking/events'
 
-module Carto
-  module QuotaCheckHelper
+module CartoDB
+  module Importer2
     def raise_if_over_storage_quota(quota_requested: 0, quota_available: 0, user_id: nil)
       quota_overage = quota_requested - quota_available
 

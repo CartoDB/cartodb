@@ -1350,7 +1350,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a1d9dca064b44ab1e22cbc1822489157fde99ecc",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#795048fd9caa133202562ad567a8a5fd94be23b3",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

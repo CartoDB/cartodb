@@ -9,8 +9,8 @@ install:
   - npm install
 
 before_script:
-  - npm install -g grunt-cli
   - npm install -g npm@2.14
+  - npm install -g grunt-cli
 
 script:
   - grunt test

@@ -215,10 +215,6 @@ class DataImport < Sequel::Model
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue => exception
-    if exception.is_a?(CartoDB::Importer2::StorageQuotaExceededError)
-      Carto::Tracking::Events::ExceededQuota.new(current_user).report
-    end
-
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
     stacktrace = exception.to_s + exception.backtrace.join
@@ -810,7 +806,7 @@ class DataImport < Sequel::Model
   end
 
   def get_downloader(datasource_provider)
-    log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+    log.append "Fetching datasource #{datasource_provider} metadata for item id #{service_item_id}"
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
@@ -819,23 +815,29 @@ class DataImport < Sequel::Model
     end
 
     if datasource_provider.providers_download_url?
-      downloader = CartoDB::Importer2::Downloader.new(
-          (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source,
-          { http_timeout: ::DataImport.http_timeout_for(current_user) },
-          { importer_config: Cartodb.config[:importer] }
-      )
       log.append "File will be downloaded from #{downloader.url}"
+
+      metadata_url = metadata[:url]
+      resource_url = (metadata_url.present? && datasource_provider.providers_download_url?) ? metadata_url : data_source
+      http_options = { http_timeout: ::DataImport.http_timeout_for(current_user) }
+      options = {
+        importer_config: Cartodb.config[:importer],
+        user_id: current_user.id
+      }
+
+      CartoDB::Importer2::Downloader.new(resource_url, http_options, options)
     else
       log.append 'Downloading file data from datasource'
-      downloader = CartoDB::Importer2::DatasourceDownloader.new(
-        datasource_provider, metadata, {
-                                         http_timeout: ::DataImport.http_timeout_for(current_user),
-                                         importer_config: Cartodb.config[:importer]
-                                       }, log
-      )
-    end
 
-    downloader
+      http_timeout = ::DataImport.http_timeout_for(current_user)
+      options = {
+        http_timeout: http_timeout,
+        importer_config: Cartodb.config[:importer],
+        user_id: current_user.id
+      }
+
+      CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, options, log)
+    end
   end
 
   def hit_platform_limit?(datasource, metadata, user)

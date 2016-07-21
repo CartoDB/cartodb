@@ -563,7 +563,7 @@ module Carto
 
       def sql_from(layer)
         query = layer.options.fetch('query', '')
-        query.present? ? present : layer.default_query
+        query.present? ? query : layer.default_query
       end
 
       def css_from(options)

@@ -1,1 +1,1 @@
-<i class="Tag Tag--big Tag--outline CDB-Text CDB-Size-small u-iBlock">+ <%- people %></i>
+<div class="Tag <% if (displayBig) {%>Tag--big<% } %> Tag--outline CDB-Text CDB-Size-small">+ <%- people %></div>

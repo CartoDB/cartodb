@@ -81,7 +81,7 @@ describe('core/geo/map', function () {
     expect(map.get('zoom')).toEqual(10);
   });
 
-  it("should adjust zoom to layer", function() {
+  it('should adjust zoom to layer', function () {
     spyOn(map, 'reload').and.callFake(function (options) {
       options && options.success && options.success();
     });

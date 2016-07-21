@@ -52,17 +52,13 @@
 }
 .BlockList-title {
   @include display-flex();
-  margin-top: 2px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .BlockList-titleText {
   @include flex(1);
   width: 0;
   padding-right: $baseSize * 2;
   cursor: pointer;
-}
-.BlockList-titleText.CDB-Text {
-  line-height: 1;
 }
 .BlockList-media {
   @include display-flex();

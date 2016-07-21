@@ -93,11 +93,11 @@
 
 .Onboarding-listItemValue {
   display: inline-block;
-  margin-bottom: 2*$sMargin-min;
-  color: #FFF;
-  background: #1E272B;
-  border-radius: 2px;
+  margin-bottom: 2 * $sMargin-min;
   padding: 4px 5px;
+  border-radius: 2px;
+  background: #1E272B;
+  color: #FFF;
   font-family: 'Monaco', 'Monospace';
   font-size: $sFontSize-smallUpperCase;
   font-weight: $sFontWeight-normal;

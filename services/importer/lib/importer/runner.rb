@@ -446,7 +446,7 @@ module CartoDB
         over_quota_amount = (QUOTA_MAGIC_NUMBER * file_size) - available_quota
 
         if over_quota_amount > 0
-          Carto::Events::ExceededQuota.new(user, quota_overage: over_quota_amount).report
+          Carto::Tracking::Events::ExceededQuota.new(user, quota_overage: over_quota_amount).report
           raise StorageQuotaExceededError
         end
         self

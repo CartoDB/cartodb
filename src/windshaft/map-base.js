@@ -60,17 +60,26 @@ var WindshaftMap = Backbone.Model.extend({
   createInstance: function (options) {
     options = options || {};
 
-    var payload = this.toJSON();
-    var params = this._getParams();
+    try {
+      var payload = this.toJSON();
+      var params = this._getParams();
 
-    var request = new Request(payload, params, options);
-    if (this._canPerformRequest(request)) {
-      this._performRequest(request);
-    } else {
-      log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
+      var request = new Request(payload, params, options);
+      if (this._canPerformRequest(request)) {
+        this._performRequest(request);
+      } else {
+        log.error('Maximum number of subsequent equal requests to the Maps API reached (' + MAP_INSTANTIATION_LIMIT + '):', payload, params);
+        options.error && options.error();
+      }
+    } catch (e) {
+      var error = new WindshaftError({
+        message: e.message
+      });
+      this._modelUpdater.setErrors([ error ]);
+
+      log.error(e.message);
+      options.error && options.error();
     }
-
-    return this;
   },
 
   _canPerformRequest: function (request) {

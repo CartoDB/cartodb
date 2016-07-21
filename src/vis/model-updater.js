@@ -28,11 +28,11 @@ var ModelUpdater = function (deps) {
   this._analysisCollection = deps.analysisCollection;
 };
 
-ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceId, forceFetch) {
-  this._updateLayerGroupModel(windhsaftMap);
-  this._updateLayerModels(windhsaftMap);
-  this._updateDataviewModels(windhsaftMap, sourceId, forceFetch);
-  this._updateAnalysisModels(windhsaftMap);
+ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
+  this._updateLayerGroupModel(windshaftMap);
+  this._updateLayerModels(windshaftMap);
+  this._updateDataviewModels(windshaftMap, sourceId, forceFetch);
+  this._updateAnalysisModels(windshaftMap);
 
   this._visModel.setOk();
 };

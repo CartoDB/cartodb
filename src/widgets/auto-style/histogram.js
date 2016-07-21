@@ -90,11 +90,11 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Sunset',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Sunset',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     }
   }

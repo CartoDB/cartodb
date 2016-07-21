@@ -62,9 +62,9 @@
   @include align-items(center);
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
+  border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
-  border: 1px solid $cWhite;
 
   &.is-selected {
     border: 1px solid $cHighlight;

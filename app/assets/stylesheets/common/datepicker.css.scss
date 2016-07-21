@@ -143,7 +143,7 @@ $sDates-defaultWidth: 434px;
 .DatePicker-calendar {
   width: 422px;
   height: 196px;
-  margin: 16px 18px;
+  margin: 16px 18px 0;
   font-size: 11px;
   cursor: default;
 }
@@ -211,11 +211,12 @@ tbody.datepickerMonths td.datepickerSelected{
 .datepickerGoPrev a,
 .datepickerMonth a {
   text-align: center;
+  height: 20px;
+  line-height: 20px;
   color:#666666;
   text-transform: uppercase;
   font-weight:bold;
   font-size:11px;
-  line-height: 11px;
 }
 .datepickerGoNext a {
   float: right;

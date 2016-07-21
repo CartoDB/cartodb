@@ -15,6 +15,8 @@ require_relative '../../../../lib/carto/visualization_exporter'
 module CartoDB
   module Importer2
     class Runner
+      include Carto::QuotaCheckHelper
+
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3
@@ -168,7 +170,11 @@ module CartoDB
 
         @importer_stats.timing('resource') do
           @importer_stats.timing('quota_check') do
-            raise_if_over_storage_quota(source_file)
+            file_size = File.size(source_file.fullpath)
+            user_id = @user.id if @user
+            raise_if_over_storage_quota(requested_quota: QUOTA_MAGIC_NUMBER * file_size,
+                                        available_quota: available_quota,
+                                        user_id: user_id)
           end
 
           @importer_stats.timing('file_size_limit_check') do
@@ -342,8 +348,13 @@ module CartoDB
 
             @importer_stats.timing('quota_check') do
               log.append "Starting import for #{subres_downloader.source_file.fullpath}"
-              log.store   # Checkpoint-save
-              raise_if_over_storage_quota(subres_downloader.source_file)
+              log.store
+
+              file_size = File.size(subres_downloader.source_file.fullpath)
+              user_id = @user.id if @user
+              raise_if_over_storage_quota(requested_quota: QUOTA_MAGIC_NUMBER * file_size,
+                                          available_quota: available_quota,
+                                          user_id: user_id)
             end
 
             @importer_stats.timing('import') do
@@ -437,17 +448,6 @@ module CartoDB
 
       def delete_job_table
         @job.delete_job_table
-      end
-
-      def raise_if_over_storage_quota(source_file)
-        file_size = File.size(source_file.fullpath)
-        over_quota_amount = (QUOTA_MAGIC_NUMBER * file_size) - available_quota
-
-        if over_quota_amount > 0
-          Carto::Tracking::Events::ExceededQuota.new(@user, quota_overage: over_quota_amount).report if @user
-          raise StorageQuotaExceededError
-        end
-        self
       end
     end
   end

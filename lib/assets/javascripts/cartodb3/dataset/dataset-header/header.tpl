@@ -17,10 +17,16 @@
       </div>
     </button>
   </div>
-  <div class="u-bSpace--xl">
+  <div class="u-bSpace--xl u-flex u-alignCenter">
     <<%- privacyDOMElement %> class="u-rSpace--m u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
       <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
     </<%- privacyDOMElement %>>
+    <% if (isOwner) { %>
+      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
+      <% if (!isSimple) { %>
+      <span class="u-iBlock js-share-users u-rSpace"></span>
+      <% } %>
+    <% } %>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>
   </div>
 </div>

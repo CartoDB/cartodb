@@ -440,9 +440,13 @@ module CartoDB
       end
 
       def raise_if_over_storage_quota(source_file)
-        file_size   = File.size(source_file.fullpath)
-        over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
-        raise StorageQuotaExceededError if over_quota
+        file_size = File.size(source_file.fullpath)
+        over_quota_amount = (QUOTA_MAGIC_NUMBER * file_size) - available_quota
+
+        if over_quota_amount > 0
+          Carto::Events::ExceededQuota.new(user, amount: over_quota_amount).report
+          raise StorageQuotaExceededError
+        end
         self
       end
     end

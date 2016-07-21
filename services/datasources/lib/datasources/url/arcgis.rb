@@ -44,6 +44,9 @@ module CartoDB
         # Used to display more data only (for local debugging purposes)
         DEBUG = false
 
+        VECTOR_LAYER_TYPE = 'Feature Layer'.freeze
+        OID_FIELD_TYPE    = 'esriFieldTypeOID'.freeze
+
         attr_reader :metadata
 
         # Constructor
@@ -249,7 +252,14 @@ module CartoDB
           # non-rails symbolize keys
           data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
 
+          raise ResponseError.new("Invalid layer type: '#{data[:type]}'") if data[:type] != VECTOR_LAYER_TYPE
           raise ResponseError.new("Missing data: 'fields'") if data[:fields].nil?
+
+          if data[:supportedQueryFormats].present?
+            supported_formats = data.fetch(:supportedQueryFormats).gsub(' ', '').split(',')
+          else
+            supported_formats = []
+          end
 
           begin
             @metadata = {
@@ -259,14 +269,14 @@ module CartoDB
               type:                       data.fetch(:type),
               geometry_type:              data.fetch(:geometryType),
               copyright:                  data.fetch(:copyrightText, ''),
-              fields:                     data.fetch(:fields).map{ |field|
+              fields:                     data.fetch(:fields).try(:map) { |field|
                 {
                   name: field['name'],
                   type: field['type']
                 }
               },
               max_records_per_query:      data.fetch(:maxRecordCount, 500),
-              supported_formats:          data.fetch(:supportedQueryFormats).gsub(' ', '').split(','),
+              supported_formats:          supported_formats,
               advanced_queries_supported: data.fetch(:supportsAdvancedQueries, false)
             }
           rescue => exception
@@ -337,6 +347,9 @@ module CartoDB
             raise ResponseError.new("Missing data: #{exception.to_s} #{request_url} #{exception.backtrace}")
           end
 
+          # We only support vector layers (not raster layers)
+          data = data.reject { |layer| layer['type'] != VECTOR_LAYER_TYPE }
+
           raise ResponseError.new("Empty layers list #{request_url}") if data.length == 0
 
           begin
@@ -388,10 +401,18 @@ module CartoDB
           raise InvalidInputDataError.new("'ids' empty or invalid") if (ids.nil? || ids.length == 0)
           raise InvalidInputDataError.new("'fields' empty or invalid") if (fields.nil? || fields.length == 0)
 
+          oid_field = fields.find { |field| field[:type] == OID_FIELD_TYPE }
+
           if ids.length == 1
-            ids_field = {objectIds: ids.first}
+            ids_field = { objectIds: ids.first }
           else
-            ids_field = {where: "OBJECTID >=#{ids.first} AND OBJECTID <=#{ids.last}"}
+            if oid_field
+              # Note that ids is sorted
+              ids_field = { where: "#{oid_field[:name]} >=#{ids.first} AND #{oid_field[:name]} <=#{ids.last}" }
+            else
+              # This could be innefficient with large number of ids, but it is limited to MAX_BLOCK_SIZE
+              ids_field = { objectIds: ids.join(',') }
+            end
           end
 
           prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))

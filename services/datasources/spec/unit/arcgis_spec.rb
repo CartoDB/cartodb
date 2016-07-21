@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_support/core_ext'
+
 require_relative '../../lib/datasources'
 require_relative '../doubles/user'
 
@@ -519,4 +521,3 @@ describe Url::ArcGIS do
     end
   end
 end
-

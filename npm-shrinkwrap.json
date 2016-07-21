@@ -1,41 +1,20 @@
 {
   "name": "cartodb-ui",
-  "version": "4.0.46",
+  "version": "4.0.49",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
       "from": "backbone@1.2.3",
-      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz",
-      "dependencies": {
-        "underscore": {
-          "version": "1.8.3",
-          "from": "underscore@>=1.7.0",
-          "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
-        }
-      }
+      "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.2.3.tgz"
     },
     "backbone-forms": {
       "version": "0.14.0",
-      "from": "backbone-forms@0.14.0",
-      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz",
-      "dependencies": {
-        "backbone": {
-          "version": "1.3.3",
-          "from": "backbone@>=1.0.0",
-          "resolved": "https://registry.npmjs.org/backbone/-/backbone-1.3.3.tgz",
-          "dependencies": {
-            "underscore": {
-              "version": "1.8.3",
-              "from": "underscore@>=1.8.3",
-              "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
-            }
-          }
-        }
-      }
+      "from": "backbone-forms@>=0.14.0 <0.15.0",
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
-      "from": "backbone-model-file-upload@1.0.0",
+      "from": "backbone-model-file-upload@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/backbone-model-file-upload/-/backbone-model-file-upload-1.0.0.tgz",
       "dependencies": {
         "bower": {
@@ -47,221 +26,6 @@
           "version": "1.0.17",
           "from": "formidable@>=1.0.15 <1.1.0",
           "resolved": "https://registry.npmjs.org/formidable/-/formidable-1.0.17.tgz"
-        },
-        "grunt": {
-          "version": "0.4.5",
-          "from": "grunt@>=0.4.5 <0.5.0",
-          "resolved": "https://registry.npmjs.org/grunt/-/grunt-0.4.5.tgz",
-          "dependencies": {
-            "async": {
-              "version": "0.1.22",
-              "from": "async@>=0.1.22 <0.2.0",
-              "resolved": "https://registry.npmjs.org/async/-/async-0.1.22.tgz"
-            },
-            "coffee-script": {
-              "version": "1.3.3",
-              "from": "coffee-script@>=1.3.3 <1.4.0",
-              "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.3.3.tgz"
-            },
-            "colors": {
-              "version": "0.6.2",
-              "from": "colors@>=0.6.2 <0.7.0",
-              "resolved": "https://registry.npmjs.org/colors/-/colors-0.6.2.tgz"
-            },
-            "dateformat": {
-              "version": "1.0.2-1.2.3",
-              "from": "dateformat@1.0.2-1.2.3",
-              "resolved": "https://registry.npmjs.org/dateformat/-/dateformat-1.0.2-1.2.3.tgz"
-            },
-            "eventemitter2": {
-              "version": "0.4.14",
-              "from": "eventemitter2@>=0.4.13 <0.5.0",
-              "resolved": "https://registry.npmjs.org/eventemitter2/-/eventemitter2-0.4.14.tgz"
-            },
-            "findup-sync": {
-              "version": "0.1.3",
-              "from": "findup-sync@>=0.1.2 <0.2.0",
-              "resolved": "https://registry.npmjs.org/findup-sync/-/findup-sync-0.1.3.tgz",
-              "dependencies": {
-                "glob": {
-                  "version": "3.2.11",
-                  "from": "glob@>=3.2.9 <3.3.0",
-                  "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz",
-                  "dependencies": {
-                    "inherits": {
-                      "version": "2.0.1",
-                      "from": "inherits@>=2.0.0 <3.0.0",
-                      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
-                    },
-                    "minimatch": {
-                      "version": "0.3.0",
-                      "from": "minimatch@>=0.3.0 <0.4.0",
-                      "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
-                      "dependencies": {
-                        "lru-cache": {
-                          "version": "2.7.3",
-                          "from": "lru-cache@>=2.0.0 <3.0.0",
-                          "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.7.3.tgz"
-                        },
-                        "sigmund": {
-                          "version": "1.0.1",
-                          "from": "sigmund@>=1.0.0 <1.1.0",
-                          "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.1.tgz"
-                        }
-                      }
-                    }
-                  }
-                },
-                "lodash": {
-                  "version": "2.4.2",
-                  "from": "lodash@>=2.4.1 <2.5.0",
-                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz"
-                }
-              }
-            },
-            "glob": {
-              "version": "3.1.21",
-              "from": "glob@>=3.1.21 <3.2.0",
-              "resolved": "https://registry.npmjs.org/glob/-/glob-3.1.21.tgz",
-              "dependencies": {
-                "graceful-fs": {
-                  "version": "1.2.3",
-                  "from": "graceful-fs@>=1.2.0 <1.3.0",
-                  "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-1.2.3.tgz"
-                },
-                "inherits": {
-                  "version": "1.0.2",
-                  "from": "inherits@>=1.0.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/inherits/-/inherits-1.0.2.tgz"
-                }
-              }
-            },
-            "hooker": {
-              "version": "0.2.3",
-              "from": "hooker@>=0.2.3 <0.3.0",
-              "resolved": "https://registry.npmjs.org/hooker/-/hooker-0.2.3.tgz"
-            },
-            "iconv-lite": {
-              "version": "0.2.11",
-              "from": "iconv-lite@>=0.2.11 <0.3.0",
-              "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.2.11.tgz"
-            },
-            "minimatch": {
-              "version": "0.2.14",
-              "from": "minimatch@>=0.2.12 <0.3.0",
-              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.2.14.tgz",
-              "dependencies": {
-                "lru-cache": {
-                  "version": "2.7.3",
-                  "from": "lru-cache@>=2.0.0 <3.0.0",
-                  "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.7.3.tgz"
-                },
-                "sigmund": {
-                  "version": "1.0.1",
-                  "from": "sigmund@>=1.0.0 <1.1.0",
-                  "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.1.tgz"
-                }
-              }
-            },
-            "nopt": {
-              "version": "1.0.10",
-              "from": "nopt@>=1.0.10 <1.1.0",
-              "resolved": "https://registry.npmjs.org/nopt/-/nopt-1.0.10.tgz",
-              "dependencies": {
-                "abbrev": {
-                  "version": "1.0.9",
-                  "from": "abbrev@>=1.0.0 <2.0.0",
-                  "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.0.9.tgz"
-                }
-              }
-            },
-            "rimraf": {
-              "version": "2.2.8",
-              "from": "rimraf@>=2.2.8 <2.3.0",
-              "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.2.8.tgz"
-            },
-            "lodash": {
-              "version": "0.9.2",
-              "from": "lodash@>=0.9.2 <0.10.0",
-              "resolved": "https://registry.npmjs.org/lodash/-/lodash-0.9.2.tgz"
-            },
-            "underscore.string": {
-              "version": "2.2.1",
-              "from": "underscore.string@>=2.2.1 <2.3.0",
-              "resolved": "https://registry.npmjs.org/underscore.string/-/underscore.string-2.2.1.tgz"
-            },
-            "which": {
-              "version": "1.0.9",
-              "from": "which@>=1.0.5 <1.1.0",
-              "resolved": "https://registry.npmjs.org/which/-/which-1.0.9.tgz"
-            },
-            "js-yaml": {
-              "version": "2.0.5",
-              "from": "js-yaml@>=2.0.5 <2.1.0",
-              "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-2.0.5.tgz",
-              "dependencies": {
-                "argparse": {
-                  "version": "0.1.16",
-                  "from": "argparse@>=0.1.11 <0.2.0",
-                  "resolved": "https://registry.npmjs.org/argparse/-/argparse-0.1.16.tgz",
-                  "dependencies": {
-                    "underscore": {
-                      "version": "1.7.0",
-                      "from": "underscore@>=1.7.0 <1.8.0",
-                      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.7.0.tgz"
-                    },
-                    "underscore.string": {
-                      "version": "2.4.0",
-                      "from": "underscore.string@>=2.4.0 <2.5.0",
-                      "resolved": "https://registry.npmjs.org/underscore.string/-/underscore.string-2.4.0.tgz"
-                    }
-                  }
-                },
-                "esprima": {
-                  "version": "1.0.4",
-                  "from": "esprima@>=1.0.2 <1.1.0",
-                  "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
-                }
-              }
-            },
-            "exit": {
-              "version": "0.1.2",
-              "from": "exit@>=0.1.1 <0.2.0",
-              "resolved": "https://registry.npmjs.org/exit/-/exit-0.1.2.tgz"
-            },
-            "getobject": {
-              "version": "0.1.0",
-              "from": "getobject@>=0.1.0 <0.2.0",
-              "resolved": "https://registry.npmjs.org/getobject/-/getobject-0.1.0.tgz"
-            },
-            "grunt-legacy-util": {
-              "version": "0.2.0",
-              "from": "grunt-legacy-util@>=0.2.0 <0.3.0",
-              "resolved": "https://registry.npmjs.org/grunt-legacy-util/-/grunt-legacy-util-0.2.0.tgz"
-            },
-            "grunt-legacy-log": {
-              "version": "0.1.3",
-              "from": "grunt-legacy-log@>=0.1.0 <0.2.0",
-              "resolved": "https://registry.npmjs.org/grunt-legacy-log/-/grunt-legacy-log-0.1.3.tgz",
-              "dependencies": {
-                "grunt-legacy-log-utils": {
-                  "version": "0.1.1",
-                  "from": "grunt-legacy-log-utils@>=0.1.1 <0.2.0",
-                  "resolved": "https://registry.npmjs.org/grunt-legacy-log-utils/-/grunt-legacy-log-utils-0.1.1.tgz"
-                },
-                "lodash": {
-                  "version": "2.4.2",
-                  "from": "lodash@>=2.4.1 <2.5.0",
-                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.2.tgz"
-                },
-                "underscore.string": {
-                  "version": "2.3.3",
-                  "from": "underscore.string@>=2.3.3 <2.4.0",
-                  "resolved": "https://registry.npmjs.org/underscore.string/-/underscore.string-2.3.3.tgz"
-                }
-              }
-            }
-          }
         },
         "grunt-contrib-jasmine": {
           "version": "0.6.5",
@@ -322,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -455,9 +219,9 @@
                                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.2.tgz",
                                   "dependencies": {
                                     "brace-expansion": {
-                                      "version": "1.1.5",
+                                      "version": "1.1.6",
                                       "from": "brace-expansion@>=1.0.0 <2.0.0",
-                                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.5.tgz",
+                                      "resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.6.tgz",
                                       "dependencies": {
                                         "balanced-match": {
                                           "version": "0.4.2",
@@ -624,9 +388,9 @@
                           "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.7.tgz"
                         },
                         "qs": {
-                          "version": "5.2.0",
+                          "version": "5.2.1",
                           "from": "qs@>=5.2.0 <5.3.0",
-                          "resolved": "https://registry.npmjs.org/qs/-/qs-5.2.0.tgz"
+                          "resolved": "https://registry.npmjs.org/qs/-/qs-5.2.1.tgz"
                         },
                         "tunnel-agent": {
                           "version": "0.4.3",
@@ -1264,7 +1028,7 @@
                   "dependencies": {
                     "esprima": {
                       "version": "1.0.4",
-                      "from": "esprima@>=1.0.2 <1.1.0",
+                      "from": "esprima@>=1.0.4 <1.1.0",
                       "resolved": "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
                     },
                     "estraverse": {
@@ -1313,20 +1077,15 @@
       }
     },
     "camshaft-reference": {
-      "version": "0.23.1",
-      "from": "camshaft-reference@0.23.1",
-      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.23.1.tgz"
+      "version": "0.24.0",
+      "from": "camshaft-reference@<2.0.0",
+      "resolved": "https://registry.npmjs.org/camshaft-reference/-/camshaft-reference-0.24.0.tgz"
     },
     "carto": {
       "version": "0.15.1-cdb1",
       "from": "cartodb/carto#master",
       "resolved": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
       "dependencies": {
-        "underscore": {
-          "version": "1.8.3",
-          "from": "underscore@1.8.3",
-          "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
-        },
         "mapnik-reference": {
           "version": "6.0.5",
           "from": "mapnik-reference@>=6.0.2 <6.1.0",
@@ -1354,7 +1113,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.1",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#a4bc3ae8a35dc2c24f7305ccbfe37a306470f960",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a1d9dca064b44ab1e22cbc1822489157fde99ecc",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1369,22 +1128,56 @@
             "d3.cartodb": {
               "version": "1.1.1",
               "from": "cartodb/d3.cartodb#gh-pages",
-              "resolved": "git://github.com/cartodb/d3.cartodb.git#ae986fc5bd6378b2e253cf90b048347b8f00700d",
+              "resolved": "git://github.com/cartodb/d3.cartodb.git#f44c972dd7eb314024a13cd1ab3cc5b9dcb357eb",
               "dependencies": {
+                "carto": {
+                  "version": "0.15.1-cdb1",
+                  "from": "cartodb/carto#master",
+                  "resolved": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
+                  "dependencies": {
+                    "mapnik-reference": {
+                      "version": "6.0.5",
+                      "from": "mapnik-reference@>=6.0.2 <6.1.0",
+                      "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
+                    },
+                    "optimist": {
+                      "version": "0.6.1",
+                      "from": "optimist@>=0.6.0 <0.7.0",
+                      "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+                      "dependencies": {
+                        "wordwrap": {
+                          "version": "0.0.3",
+                          "from": "wordwrap@>=0.0.2 <0.1.0",
+                          "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
+                        },
+                        "minimist": {
+                          "version": "0.0.10",
+                          "from": "minimist@>=0.0.1 <0.1.0",
+                          "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
+                        }
+                      }
+                    }
+                  }
+                },
                 "crossfilter": {
                   "version": "1.3.12",
                   "from": "crossfilter@>=1.3.12 <2.0.0",
                   "resolved": "https://registry.npmjs.org/crossfilter/-/crossfilter-1.3.12.tgz"
                 },
                 "turbo-carto": {
-                  "version": "0.10.0",
-                  "from": "turbo-carto@0.10.0",
-                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.10.0.tgz",
+                  "version": "0.15.0",
+                  "from": "turbo-carto@0.15.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.15.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
                       "from": "colorbrewer@1.0.0",
                       "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+                    },
+                    "cartocolor": {
+                      "version": "2.0.2",
+                      "from": "cartocolor@2.0.2",
+                      "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-2.0.2.tgz"
                     },
                     "debug": {
                       "version": "2.2.0",
@@ -1470,11 +1263,6 @@
           "from": "d3@3.5.8",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.8.tgz"
         },
-        "cartocolor": {
-          "version": "1.1.0",
-          "from": "cartocolor@>=1.1.0 <2.0.0",
-          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
-        },
         "urijs": {
           "version": "1.18.1",
           "from": "urijs@>=1.17.1 <2.0.0",
@@ -1484,7 +1272,7 @@
     },
     "cartodb-pecan": {
       "version": "0.2.0",
-      "from": "cartodb-pecan@0.2.0",
+      "from": "cartodb-pecan@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/cartodb-pecan/-/cartodb-pecan-0.2.0.tgz"
     },
     "cartodb.js": {
@@ -1505,17 +1293,46 @@
         "d3.cartodb": {
           "version": "1.1.1",
           "from": "cartodb/d3.cartodb#gh-pages",
-          "resolved": "git://github.com/cartodb/d3.cartodb.git#ae986fc5bd6378b2e253cf90b048347b8f00700d",
+          "resolved": "git://github.com/cartodb/d3.cartodb.git#f44c972dd7eb314024a13cd1ab3cc5b9dcb357eb",
           "dependencies": {
+            "carto": {
+              "version": "0.15.1-cdb1",
+              "from": "cartodb/carto#master",
+              "resolved": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
+              "dependencies": {
+                "mapnik-reference": {
+                  "version": "6.0.5",
+                  "from": "mapnik-reference@>=6.0.2 <6.1.0",
+                  "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
+                },
+                "optimist": {
+                  "version": "0.6.1",
+                  "from": "optimist@>=0.6.0 <0.7.0",
+                  "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+                  "dependencies": {
+                    "wordwrap": {
+                      "version": "0.0.3",
+                      "from": "wordwrap@>=0.0.2 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
+                    },
+                    "minimist": {
+                      "version": "0.0.10",
+                      "from": "minimist@>=0.0.1 <0.1.0",
+                      "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
+                    }
+                  }
+                }
+              }
+            },
             "crossfilter": {
               "version": "1.3.12",
               "from": "crossfilter@>=1.3.12 <2.0.0",
               "resolved": "https://registry.npmjs.org/crossfilter/-/crossfilter-1.3.12.tgz"
             },
             "turbo-carto": {
-              "version": "0.10.0",
-              "from": "turbo-carto@0.10.0",
-              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.10.0.tgz",
+              "version": "0.15.0",
+              "from": "turbo-carto@0.15.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.15.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
@@ -1523,9 +1340,9 @@
                   "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                 },
                 "cartocolor": {
-                  "version": "1.1.0",
-                  "from": "cartocolor@1.1.0",
-                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-1.1.0.tgz"
+                  "version": "2.0.2",
+                  "from": "cartocolor@2.0.2",
+                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-2.0.2.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1628,49 +1445,13 @@
     },
     "queue-async": {
       "version": "1.2.1",
-      "from": "queue-async@1.2.1",
+      "from": "queue-async@>=1.0.7 <2.0.0",
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
-      "version": "2.15.2",
-      "from": "torque.js@2.15.2",
-      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.2.tgz",
-      "dependencies": {
-        "carto": {
-          "version": "0.15.1-cdb1",
-          "from": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-          "resolved": "https://github.com/CartoDB/carto/archive/master.tar.gz",
-          "dependencies": {
-            "underscore": {
-              "version": "1.8.3",
-              "from": "underscore@1.8.3",
-              "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
-            },
-            "mapnik-reference": {
-              "version": "6.0.5",
-              "from": "mapnik-reference@>=6.0.2 <6.1.0",
-              "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
-            },
-            "optimist": {
-              "version": "0.6.1",
-              "from": "optimist@>=0.6.0 <0.7.0",
-              "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
-              "dependencies": {
-                "wordwrap": {
-                  "version": "0.0.3",
-                  "from": "wordwrap@>=0.0.2 <0.1.0",
-                  "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
-                },
-                "minimist": {
-                  "version": "0.0.10",
-                  "from": "minimist@>=0.0.1 <0.1.0",
-                  "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
-                }
-              }
-            }
-          }
-        }
-      }
+      "version": "2.15.1",
+      "from": "torque.js@>=2.15.0 <3.0.0",
+      "resolved": "https://registry.npmjs.org/torque.js/-/torque.js-2.15.1.tgz"
     },
     "underscore": {
       "version": "1.8.3",

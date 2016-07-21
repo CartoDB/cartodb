@@ -45,23 +45,31 @@
   border-radius: $halfBaseSize / 2;
 }
 
+.Share-wrapper {
+  overflow: auto;
+}
+
+.Share-filtersRow {
+  height: 60px;
+}
+
 .Share-user--big {
   height: 24px;
-}
-
-.Share-inner {
-  width: 620px;
-  margin: 0 auto;
-}
-
-.Share-list {
-  padding: $baseSize * 4 0;
 }
 
 .Share-permission {
   @include display-flex();
   @include align-items(center);
-  margin-bottom: $baseSize * 3;
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+  border: 1px solid $cWhite;
+
+  &.is-selected {
+    border: 1px solid $cHighlight;
+    background-color: rgba($cHighlight, 0.1);
+  }
 }
 
 .Share-permissionInfo {

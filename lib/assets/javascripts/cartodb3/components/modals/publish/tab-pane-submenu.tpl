@@ -4,4 +4,4 @@
   </nav>
 </div>
 
-<div class="Editor-content Publish-modalContent js-content"></div>
+<div class="Tab-paneContent Publish-modalContent js-content"></div>

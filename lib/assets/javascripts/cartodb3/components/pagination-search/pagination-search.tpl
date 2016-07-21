@@ -1,9 +1,9 @@
 <div class="Filters is-relative">
   <div class="Filters-inner">
-    <div class="Filters-row js-filters">
+    <div class="Filters-row Share-filtersRow js-filters">
       <div class="Filters-typeItem Filters-typeItem--searchEnabler">
-        <p class="Filters-searchLink js-search-link u-alignCenter CDB-Text CDB-Size-medium">
-          <i class="Filters-searchLinkIcon CDB-IconFont CDB-IconFont-lens"></i> <%- _t('components.pagination-search.filter.search') %>
+        <p class="Filters-searchLink js-search-link u-alignCenter CDB-Text CDB-Size-medium u-upperCase">
+          <i class="Filters-searchLinkIcon CDB-IconFont CDB-IconFont-lens u-rSpace--xl"></i> <%- _t('components.pagination-search.filter.search') %>
         </p>
       </div>
       <div class="Filters-typeItem Filters-typeItem--searchField">
@@ -16,6 +16,5 @@
       </div>
     </div>
   </div>
-  <span class="Filters-separator"></span>
 </div>
 <div class="js-content"></div>

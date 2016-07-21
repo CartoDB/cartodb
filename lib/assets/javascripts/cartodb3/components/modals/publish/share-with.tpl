@@ -1,0 +1,1 @@
+<i class="Tag Tag--big Tag--outline CDB-Text CDB-Size-small u-iBlock">+ <%- people %></i>

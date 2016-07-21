@@ -450,6 +450,24 @@
         "menu": {
           "share": "Share with colleagues",
           "publish": "publish"
+        },
+        "share": {
+          "organization": {
+            "title": "Default settings for your Organization",
+            "desc": "New users will have this permission"
+          },
+          "role": {
+            "viewer": "Viewer",
+            "builder": "Builder"
+          },
+          "tooltip": {
+            "group": "Access is inherited from group %{name}",
+            "org": "Access is inherited from organization",
+          },
+          "toggle": {
+            "read": "Read",
+            "write": "Write"
+          }
         }
       },
       "share-org": {

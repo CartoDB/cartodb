@@ -216,19 +216,28 @@
   box-shadow: 1px 0 0 $cBlue, -1px 0 0 $cBlue, 0 1px 0 $cBlue, 0 -1px 0 $cBlue;
 }
 
+.Publish-modal {
+  @include display-flex();
+  @include flex-direction(column);
+  width: 100%;
+  height: 100%;
+}
+
 .Publish-modalHeader {
-  @include flex(1);
-  min-height: initial;
-  text-align: left;
+  // @include flex(0 0 auto);
+  // min-height: 0;
+  @include flex(0 0 auto);
   padding: $baseSize * 3 0;
+  text-align: left;
 }
 
 .Publish-modalBody {
   @include display-flex();
-  @include flex(100);
+  @include flex(1);
   @include flex-direction(column);
   position: relative;
   padding-bottom: 100px;
+  overflow: hidden;
 }
 
 .Publish-modalBody.is-simple,

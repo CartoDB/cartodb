@@ -6,7 +6,7 @@
       <li class="u-rSpace--xl">
         <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
         <% if (!isSimple) { %>
-        <i class="Tag Tag--big Tag--outline CDB-Text CDB-Size-small u-iBlock">+ 4</i>
+        <span class="u-iBlock js-share-users"></span>
         <% } %>
       </li>
       <li class="CDB-Text CDB-Size-medium u-altTextColor js-update">
@@ -22,10 +22,6 @@
   <% } %>
 
 </div>
-
-<!-- <div class="Publish-modalBody Dialog-body Dialog-body--expanded Dialog-body--create Dialog-body--noPaddingTop Dialog-body--withoutBorder js-body">
-
-</div> -->
 
 <div class="Dialog-footer Dialog-footer--expanded CreateDialog-footer Publish-modalFooter">
   <div>

@@ -39,17 +39,18 @@ module Carto
       log.append('=== Importing user data ===')
       CartoDB::DataMover::ImportJob.new(import_job_arguments(work_dir)).run!
 
-      log.append('=== Deleting tmp directory ===')
-      FileUtils.remove_dir(work_dir)
-
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
     rescue => e
       log.append_exception('Importing', exception: e)
       CartoDB::Logger.error(exception: e, message: 'Error importing user data', job: inspect)
       update_attributes(state: STATE_FAILURE)
-      FileUtils.remove_dir(work_dir)
       false
+    ensure
+      if work_dir
+        log.append("Deleting tmp directory #{ẉork_dir}")
+        FileUtils.remove_dir(work_dir)
+      end
     end
 
     def enqueue

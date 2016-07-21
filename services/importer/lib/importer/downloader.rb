@@ -115,6 +115,7 @@ module CartoDB
         raise UploadError if url.nil?
 
         @http_options = http_options
+        @options = options
         @importer_config = options[:importer_config]
         @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed

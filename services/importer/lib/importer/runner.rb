@@ -8,13 +8,15 @@ require_relative './exceptions'
 require_relative './result'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
-
 require_relative '../../../../lib/cartodb/stats/importer'
 require_relative '../../../../lib/carto/visualization_exporter'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class Runner
+      include CartoDB::Importer2::QuotaCheckHelpers
+
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3

@@ -4,10 +4,13 @@ require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 require_relative './unp'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class DatasourceDownloader
+      include CartoDB::Importer2::QuotaCheckHelpers
+
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
         @source_file = nil
@@ -127,8 +130,8 @@ module CartoDB
         data = StringIO.new(resource_data)
         name = filename
 
-        raise_if_over_storage_quota(quota_requested: data.size,
-                                    quota_available: available_quota_in_bytes,
+        raise_if_over_storage_quota(requested_quota: data.size,
+                                    available_quota: available_quota_in_bytes,
                                     user_id: @options[:user_id])
 
         self.source_file = SourceFile.new(filepath(name), name)

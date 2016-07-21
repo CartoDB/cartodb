@@ -289,6 +289,9 @@ class Organization < Sequel::Model
       :obs_snapshot_block_price => self.obs_snapshot_block_price,
       :obs_general_quota        => self.obs_general_quota,
       :obs_general_block_price  => self.obs_general_block_price,
+      :geocoder_provider => self.geocoder_provider,
+      :isolines_provider => self.isolines_provider,
+      :routing_provider => self.routing_provider,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :location                 => self.twitter_username,
@@ -409,7 +412,10 @@ class Organization < Sequel::Model
       'obs_general_quota', obs_general_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date
+      'period_end_date', period_end_date,
+      'geocoder_provider', geocoder_provider,
+      'isolines_provider', isolines_provider,
+      'routing_provider', routing_provider
   end
 
   def require_organization_owner_presence!

@@ -44,6 +44,9 @@ module CartoDB
           monthly_use: self.organization_user? ? self.organization.get_here_isolines_calls : self.get_here_isolines_calls,
           hard_limit:  self.hard_here_isolines_limit?
         },
+        geocoder_provider: self.geocoder_provider,
+        isolines_provider: self.isolines_provider,
+        routing_provider: self.routing_provider,
         obs_snapshot: {
           quota:       organization_user? ? organization.obs_snapshot_quota : obs_snapshot_quota,
           block_price: organization_user? ? organization.obs_snapshot_block_price : obs_snapshot_block_price,

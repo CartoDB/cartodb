@@ -1116,6 +1116,7 @@
         "geometry-from": "Geometry from",
         "georeference-admin-region": "Admin. Regions",
         "georeference-city": "City names",
+        "georeference-country": "Country names",
         "georeference-ip-address": "IP Addresses",
         "georeference-long-lat": "Lon/Lat Columns",
         "georeference-postal-code": "Postal Codes",

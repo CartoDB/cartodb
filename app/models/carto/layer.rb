@@ -55,12 +55,13 @@ module Carto
       @legend ||= options['legend']
     end
 
-    def qualified_table_name(schema_owner_user)
+    def qualified_table_name(schema_owner_user = nil)
       table_name = options['table_name']
       if table_name.present? && table_name.include?('.')
         table_name
       else
-        "#{schema_owner_user.sql_safe_database_schema}.#{options['table_name']}"
+        schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
+        "#{schema_prefix}#{options['table_name']}"
       end
     end
 
@@ -145,27 +146,32 @@ module Carto
     end
 
     def wrapped_sql(user)
-      # Inspired from CartoDB::LayerModule::Presenter#default_query_for
+      query_wrapper = options.symbolize_keys[:query_wrapper]
+      sql = default_query(user)
+      if query_wrapper.present? && torque?
+        query_wrapper.gsub('<%= sql %>', sql)
+      else
+        sql
+      end
+    end
+
+    def default_query(user = nil)
       sym_options = options.symbolize_keys
       query = options[:query]
 
-      sql = if query.present?
-              query
-            else
-              user_name = sym_options[:user_name]
-              table_name = sym_options[:table_name]
+      if query.present?
+        query
+      else
+        user_username = user.nil? ? nil : user.username
+        user_name = sym_options[:user_name]
+        table_name = sym_options[:table_name]
 
-              if table_name.present? && !table_name.include?('.') && user_name.present? && user.username != user_name
-                %{ select * from "#{user_name}".#{table_name} }
-              else
-                "SELECT * FROM #{qualified_table_name(user)}"
-              end
-            end
-
-      query_wrapper = sym_options[:query_wrapper]
-      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
-
-      sql
+        if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
+          %{ select * from "#{user_name}".#{table_name} }
+        else
+          "SELECT * FROM #{qualified_table_name(user)}"
+        end
+      end
     end
 
     private

@@ -173,7 +173,6 @@ var Map = Model.extend({
     this.layers.bind('reset', this._onLayersResetted, this);
     this.layers.bind('add', this._onLayerAdded, this);
     this.layers.bind('remove', this._onLayerRemoved, this);
-    this.layers.bind('change:attribution', this._updateAttributions, this);
 
     if (this._dataviewsCollection) {
       // When new dataviews are defined, a new instance of the map needs to be created

@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.9
+// cartodb.js version: 3.15.10
 // uncompressed version: cartodb.uncompressed.js
-// sha: c34ceabd19f1ea31caa308cc6fa09ba98b65d8b6
+// sha: 7d1e91c82d284f18d61d10b92f267ca75b2adeea
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25659,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.9";
+    cdb.VERSION = "3.15.10";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25997,7 +25997,7 @@ if(!window.JSON) {
 
     cdb.config = new Config();
     cdb.config.set({
-      cartodb_attributions: "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      cartodb_attributions: "© <a href=\"https://carto.com/attributions\" target=\"_blank\">CARTO</a>",
       cartodb_logo_link: "http://www.carto.com"
     });
 

@@ -1,31 +1,22 @@
-<div class="AnalysisCompletionDetails-body">
-  <p class="CDB-Text Onboarding-headerTitle"><%- type %></p>
-  <p class="CDB-Text Onboarding-headerText">has been finished</p>
+<p class="CDB-Text Onboarding-headerDescription">
+  <%- _t('analyses-onboarding.new-columns-created') %>
+</p>
 
-  <p class="CDB-Text Onboarding-headerDescription">
-    New data has been changed in your dataset.
-  </p>
+<ul class="Onboarding-list">
+  <li class="Onboarding-listItem">
+    <div class="CDB-Text Onboarding-listItemValue">the_geom</div>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.the-geom') %></p>
+  </li>
+  <li class="Onboarding-listItem">
+    <div class="CDB-Text Onboarding-listItemValue">value</div>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.value') %></p>
+  </li>
+  <li class="Onboarding-listItem">
+    <div class="CDB-Text Onboarding-listItemValue">category</div>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.moran.category') %></p>
+  </li>
+</ul>
 
-
-  <p class="CDB-Text Onboarding-description">
-    Very often calculating the difference between the last temporal column of your data and the predicted value, and styling your map by that difference gives a good way for looking at your prediction
-  </p>
-
-  <div class="Onboarding-footer">
-  <div class="Onboarding-footerButtons">
-      <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close js-close">
-        <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium">Done</span>
-      </button>
-
-      <button class="CDB-Button CDB-Button--primary CDB-Button--big">
-        <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium">Style this column</span>
-      </button>
-    </div>
-
-    <div class="u-iBlock">
-      <input class="CDB-Checkbox" type="checkbox" name="vehicle" value="Bus">
-      <span class="u-iBlock CDB-Checkbox-face"></span>
-      <label class="Checkbox-label CDB-Text CDB-Size-small u-altTextColor u-lSpace">Never show me this message.</label>
-    </div>
-  </div>
-</div>
+<p class="CDB-Text Onboarding-description">
+  <%- _t('analyses-onboarding.moran.description') %>
+</p>

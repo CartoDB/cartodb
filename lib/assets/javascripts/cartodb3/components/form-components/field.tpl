@@ -1,5 +1,5 @@
 <div class="CDB-Text Editor-formInner">
-  <% if (title || help) { %>
+  <% if (title) { %>
     <label class="CDB-Legend u-upperCase u-ellipsis CDB-Text is-semibold CDB-Size-small u-rSpace--m" for="<%- editorId %>">
       <div class="u-flex u-alignCenter">
         <span class="u-ellipsis" title="<%- title %>"><%- title %></span>

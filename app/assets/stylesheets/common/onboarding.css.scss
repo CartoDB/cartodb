@@ -35,7 +35,7 @@
   @include justify-content(center);
   @include align-items(center);
   height: 100%;
-  background: #000;
+  background: #2E3C43;
   pointer-events: all;
 }
 
@@ -50,6 +50,7 @@
   margin-bottom: $sMargin-elementInline;
   color: #FFF;
   font-size: $sFontSize-large;
+  font-size: 26px;
   font-weight: $sFontWeight-bold;
   line-height: $sLineHeight-large;
 }
@@ -95,7 +96,7 @@
   display: inline;
   font-family: 'Monaco', 'Monospace';
   color: #fff;
-  background: #2E3C43;
+  background: #1e272b;
   border-radius: 2px;
   padding: 3px 7px;
   font-size: $sFontSize-smallUpperCase;

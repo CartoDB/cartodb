@@ -558,12 +558,12 @@ module Carto
         layer_alias = @layer.options.fetch('table_name_alias', nil)
         table_name  = @layer.options.fetch('table_name')
 
-        layer_alias && !layer_alias.empty? ? layer_alias : table_name
+        layer_alias.present? ? layer_alias : table_name
       end
 
       def sql_from(layer)
         query = layer.options.fetch('query', '')
-        query.nil? || query.empty? ? layer.default_query : query
+        query.present? ? present : layer.default_query
       end
 
       def css_from(options)

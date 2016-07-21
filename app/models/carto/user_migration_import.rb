@@ -77,8 +77,8 @@ module Carto
         http_client.get_file(exported_file, destination)
       else
         FileUtils.cp(exported_file, destination)
-        destination
       end
+      destination
     end
 
     def http_client

@@ -13,7 +13,6 @@ describe('core/geo/map', function () {
 
   beforeEach(function () {
     map = new Map();
-    map.instantiateMap();
   });
 
   describe('.initialize', function () {
@@ -83,6 +82,12 @@ describe('core/geo/map', function () {
   });
 
   it('should adjust zoom to layer', function () {
+    spyOn(map, 'reload').and.callFake(function (options) {
+      options && options.success && options.success();
+    });
+
+    map.instantiateMap();
+
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
@@ -174,17 +179,23 @@ describe('core/geo/map', function () {
   });
 
   describe('bindings to collection of layers', function () {
-    it('should reload the map when layers are resetted', function () {
-      spyOn(map, 'reload');
+    beforeEach(function () {
+      spyOn(map, 'reload').and.callFake(function (options) {
+        options && options.success && options.success();
+      });
 
+      map.instantiateMap();
+
+      map.reload.calls.reset();
+    });
+
+    it('should reload the map when layers are resetted', function () {
       map.layers.reset([{ id: 'layer1' }]);
 
       expect(map.reload).toHaveBeenCalled();
     });
 
     it('should reload the map when a new layer is added', function () {
-      spyOn(map, 'reload');
-
       map.layers.add({ id: 'layer1' });
 
       expect(map.reload).toHaveBeenCalledWith({
@@ -193,10 +204,7 @@ describe('core/geo/map', function () {
     });
 
     it('should reload the map when a layer is removed', function () {
-      var layer = map.layers.add({ id: 'layer1' });
-
-      spyOn(map, 'reload');
-
+      var layer = map.layers.add({ id: 'layer1' }, { silent: true });
       map.layers.remove(layer);
 
       expect(map.reload).toHaveBeenCalledWith({

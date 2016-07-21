@@ -29,6 +29,9 @@ module CartoDB
           quota:       self.here_isolines_quota,
           monthly_use: self.get_here_isolines_calls
         },
+        geocoder_provider: self.geocoder_provider,
+        isolines_provider: self.isolines_provider,
+        routing_provider: self.routing_provider,
         obs_snapshot: {
           quota:       obs_snapshot_quota,
           monthly_use: get_obs_snapshot_calls

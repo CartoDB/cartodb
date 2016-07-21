@@ -18,6 +18,20 @@
     "december": "December"
   },
 
+  "analyses-onboarding": {
+    "done": "Done",
+    "finished": "has been finished",
+    "style-column": "Style this column",
+    "never-show-message": "Never show me this message.",
+    "new-columns-created": "New columns have been created as a new dataset.",
+    "centroid": {
+      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
+      "the-geom": "Point geometries representing the centroid(s) of your input data.",
+      "value": "If Aggregate is selected, this will store the aggregate value for each centroid. If not, it will contain the count of features considered for each centroid",
+      "category": "If Categorize is selected, this column will store the category value for each centroid from the source dataset"
+    }
+  },
+
   "analyses": {
     "georeference": {
       "title": "Georeference",

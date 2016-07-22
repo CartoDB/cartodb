@@ -213,11 +213,21 @@ describe Carto::Api::VizJSON3Presenter do
   describe 'layers' do
     include_context 'full visualization'
 
+    before(:all) do
+      @data_layer = @map.data_layers.first
+      @data_layer.options[:attribution] = 'CARTO attribution'
+      @data_layer.save
+
+      @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
+      @torque_layer.options[:attribution] = 'CARTO attribution'
+      @torque_layer.save
+    end
+
     shared_examples 'common layer checks' do |vizjson_version|
       let(:vizjson_version) { vizjson_version }
 
       def vizjson_for(visualization)
-        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson, forced_privacy_version: vizjson_version)
+        Carto::Api::VizJSON3Presenter.new(visualization, viewer_user).send(:calculate_vizjson, forced_privacy_version: vizjson_version)
       end
 
       it 'should not include layergroup layers' do
@@ -228,6 +238,16 @@ describe Carto::Api::VizJSON3Presenter do
       it 'should not include namedmap layers' do
         v3_vizjson = vizjson_for(@visualization)
         v3_vizjson[:layers].map { |l| l[:type] }.should_not include 'namedmap'
+      end
+
+      it 'should have exactly three layers: tiled, CartoDB and torque' do
+        v3_vizjson = vizjson_for(@visualization)
+        v3_vizjson[:layers].map { |l| l[:type] }.should eq %w(tiled CartoDB torque)
+      end
+
+      it 'should include attribution for all layers' do
+        v3_vizjson = vizjson_for(@visualization)
+        v3_vizjson[:layers].each { |l| l[:options].should include :attribution }
       end
     end
 

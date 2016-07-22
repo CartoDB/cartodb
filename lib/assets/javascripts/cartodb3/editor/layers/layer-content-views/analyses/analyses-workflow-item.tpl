@@ -22,3 +22,7 @@
     </div>
   <% } %>
 <% } %>
+
+<% if (hasError) { %>
+<div class="Editor-ListAnalysis-itemError"></div>
+<% } %>

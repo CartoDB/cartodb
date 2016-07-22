@@ -199,7 +199,8 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
     end
-end
+  end
+
   describe 'anonyous_vizjson' do
     include_context 'full visualization'
 
@@ -208,5 +209,4 @@ end
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
-
 end

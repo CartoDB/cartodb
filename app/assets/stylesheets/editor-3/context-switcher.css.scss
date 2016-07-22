@@ -6,12 +6,15 @@
 
 .Editor-contextSwitcher {
   position: absolute;
-  bottom: 39px;
+  bottom: 32px;
   left: calc(50% - 32px);
   border-radius: 4px;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   overflow: hidden;
   z-index: 4;
+}
+.Editor-contextSwitcher.in-table {
+  bottom: 39px;
 }
 .Editor-contextSwitcher.is-moved {
   left: calc(50% - 216px);
@@ -40,4 +43,3 @@
     left: calc(50% - 176px);
   }
 }
-

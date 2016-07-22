@@ -18,6 +18,7 @@
   @import "../old_common/mixins";
   @import "../old_common/vars";
   @import "../old_elements/elements-sprite";
+  @import "../variables/colors";
 
   // HORIZONTAL SLIDER (SPINNER)
 
@@ -95,18 +96,18 @@
     width:44px;
     height:21px;
 
-    $rad: 3px;
+    $rad: 2px;
 
     a {
       position:absolute;
       top:0;
       bottom:0;
-      height:21px;
+      height:19px;
       width:21px;
 
       .handle {
         position:absolute;
-        top:6px; left:6px;
+        top:7px; left:6px;
         height:8px;
         width:8px;
 
@@ -120,9 +121,10 @@
       left:0;
       height:19px;
       width:22px;
-      border:1px solid #B2B2B2;
+      background-color: $Amber1;
+      border:1px solid $Black;
       border-right:0;
-      @include border-left-radius($rad);
+      @include border-left-radius(2px);
 
       span.handle {
         top:5px;
@@ -140,15 +142,16 @@
     // Color picker
     a.color-picker {
       right:0;
-      @include border-right-radius($rad);
+      border:1px solid $Black;
+      @include border-right-radius(2px);
       @include elements-sprite(image_color, $offset-x:2px, $offset-y:4px);
 
       span.handle {
-        top:7px;
+        top:6px;
         right:6px;
         left:auto;
         @include border-radius(2px);
-        background:rgba(black,0.3);
+        background:$spinner_bg;
 
         b {
           top:3px;
@@ -158,6 +161,7 @@
           border-left:2px solid transparent;
           border-right:2px solid transparent;
           border-top:3px solid white;
+          display: none;
         }
       }
 
@@ -169,8 +173,7 @@
         right:0;
         bottom:0;
         background:none;
-        @include border-right-radius($rad);
-        border:1px solid rgba(0,0,0,0.3);
+        @include border-right-radius(2px);
       }
 
       // Color expanded
@@ -181,7 +184,6 @@
       }
 
       &:hover {
-        &:before { border-color: rgba(0,0,0,0.4) }
         span.handle { background:rgba(black,0.4) }
       }
     }
@@ -193,37 +195,31 @@
     overflow:hidden;
 
     a.align {
-
-      border-top:1px solid #9E9E9E;
-      border-bottom:1px solid #9E9E9E;
+        background-color: $btn_background_normal;
 
       &:nth-child(2) {
-        border-right:1px solid #9E9E9E;
+        border-left:1px solid $Black;
+        border-right:1px solid $Black;
+
       }
 
       &:first-child {
-        border-left:1px solid #9E9E9E;
-        border-right:1px solid #9E9E9E;
-        @include border-radius(3px 0 0 3px);
+        @include border-radius(2px 0 0 2px);
       }
 
       &:last-child {
-        border-right:1px solid #9E9E9E;
-        @include border-radius(0 3px 3px 0);
+        @include border-radius(0 2px 2px 0);
       }
 
       &.align-left:after {
-        @include opacity(.8);
         @include background(image-url("layout/align_left.png") no-repeat 0 0);
       }
 
       &.align-center:after {
-        @include opacity(.8);
         @include background(image-url("layout/align_center.png") no-repeat 0 0);
       }
 
       &.align-right:after {
-        @include opacity(.8);
         @include background(image-url("layout/align_right.png") no-repeat 0 0);
       }
 
@@ -237,12 +233,11 @@
       }
 
       &:hover {
-        @include background(linear-gradient(#F3F3F3, #FFF));
+        background-color: $btn_background_hover;
       }
 
       &.selected {
-        @include background(linear-gradient(#F3F3F3, #FFF));
-        @include box-shadow(inset 0px 2px 2px #ccc);
+        background-color: $btn_background_selected;
 
         &:after {
           @include opacity(1);
@@ -250,14 +245,13 @@
       }
 
       position:relative;
-      display:block;
+      display:block; 
       float:left;
       min-width:28px;
       width:auto;
-      height:20px;
+      height:19px;
       margin:0;
       @include border-radius(0);
-      @include background(linear-gradient(#FFF,#F2F2F2));
     }
 
   }
@@ -281,9 +275,10 @@
     padding:2px 19px 2px 4px;
     height:15px;
     margin:0;
-    border:1px solid #9E9E9E;
-    @include border-radius(3px);
-    @include background(linear-gradient(#FFF,#F2F2F2));
+    background-color: $Amber1;
+    border:1px solid $Black;
+    @include border-radius(2px);
+	
 
     &.with-label {
       margin: 0;
@@ -296,7 +291,7 @@
       .label {
         margin: 0 4px 0 0;
         font-size: 11px;
-        color: #ffffff;
+        color: $Grey2;
         cursor: default;
       }
 
@@ -305,7 +300,7 @@
       }
 
       &:hover .input {
-        border: 1px solid #7E7E7E!important;
+        
       }
 
       .input {
@@ -316,9 +311,9 @@
         padding:2px 19px 2px 4px;
         height:15px;
         margin:0;
-        border:1px solid #9E9E9E;
-        @include border-radius(3px);
-        @include background(linear-gradient(#FFF,#F2F2F2));
+        border:1px solid $Black;
+        @include border-radius(2px);
+        background-color: $Amber1;
       }
 
   }
@@ -329,11 +324,10 @@
     }
 
     &:hover, .input:hover {
-      border: 1px solid #7E7E7E;
+      
     }
 
     &:hover input.value {
-      color: #333;
     }
 
     input.value {
@@ -359,46 +353,39 @@
       right:0;
       width:14px;
       height:9px;
-      border-left:1px solid #A8A8A8;
-      background:white;
+      border-left:1px solid $Black;
+      background:$spinner_bg;
       @include text-indent();
 
       &:before {
         content:' ';
         position:absolute;
-        left:5px;
+        left:4px;
         width:0;
         height:0;
-        border-left:2px solid transparent;
-        border-right:2px solid transparent;
+        border-left:3px solid transparent;
+        border-right:3px solid transparent;
       }
 
       &.plus {
         top:0;
         border-bottom:1px solid #A8A8A8;
-        @include border-top-right-radius(3px);
-        &:before {top:3px; border-bottom:3px solid #666666;}
+        @include border-top-right-radius(1px);
+        &:before {top:4px; border-bottom:4px solid $Grey2;}
       }
       &.minus {
         bottom:0;
-        @include border-bottom-right-radius(3px);
-        &:before {bottom:3px; border-top:3px solid #666666;}
+        @include border-bottom-right-radius(1px);
+        &:before {bottom:3px; border-top:3px solid $Grey2;}
       }
 
       &:hover {
-        &.plus {
-          &:before {border-bottom:3px solid #000;}
-        }
-        &.minus {
-          bottom:0;
-          &:before {border-top:3px solid #000;}
-        }
+
       }
     }
 
     // Opacity type
     &.opacity {
-      @include background(image-url("layout/alpha_bkg.png") repeat 0 0);
     }
 
     // Disabled state
@@ -525,8 +512,8 @@
       width:10px;
       height:10px;
       margin: 0 0 1px 0;
-      @include border-radius(3px);
-      border:1px solid #999999;
+      @include border-radius(2px);
+      border:1px solid $Black;
       background:white;
 
       &:before {
@@ -575,24 +562,25 @@
     </a>
   */
 
+  //bb_toggle
+
   .switch, .form_switch {
     position:relative;
     @include inline-block();
     @include text-indent();
     vertical-align:middle;
     width:29px;
-    height:15px;
+    height:14px;
     @include border-radius(12px);
     @include transform-style("linear");
     @include transition-property("background");
     @include transition-duration(180ms);
     text-decoration:none;
-    border:1px solid #44759E;
 
     &:before {
       position:absolute;
       content:' ';
-      top:0;
+      top:1px;
       left:0;
       width:100%;
       height:100%;
@@ -608,7 +596,6 @@
       width:11px;
       height:11px;
       @include border-radius(12px);
-      border:1px solid #44759E;
       background:#F2F2F2;
       z-index:2;
       @include transform-style("linear");
@@ -617,11 +604,9 @@
     }
 
     &.enabled {
-      border-color:#44759E;
-      background:#56AFEF;
+      background:$Amber1;
       span.handle {
         left:15px;
-        border-color:#44759E;
       }
     }
 
@@ -650,7 +635,7 @@
 
       span.handle {
         position:absolute;
-        top:0px;
+        top:1px;
         left:11px;
         width:10px;
         height:10px;
@@ -680,10 +665,7 @@
     text-transform: uppercase;
     @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
 
-    &:hover {
-      text-decoration:none;
-      color: #44759E;
-    }
+    &:hover {text-decoration:none;}
 
     &.white {
       &:hover {

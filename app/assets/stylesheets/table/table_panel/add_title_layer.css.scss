@@ -8,6 +8,7 @@
   @import "compass/css3/transition";
   @import "../../old_common/vars";
   @import "../../old_common/mixins";
+  @import "../variables/colors";
 
   .title_layer {
     position:relative;
@@ -21,11 +22,15 @@
     .title-bar {
       position: relative;
       width: 100%;
-      height: 45px;
-      top: -10px;
+      height: 30px;
+      background-image: url("../images/bb_icon_globe.png");
+      background-position: 24px center;
+      background-repeat: no-repeat;
 
       a.info {
         text-decoration: none;
+        margin-left: 36px;
+        color: $White;
       }
 
       // Change title

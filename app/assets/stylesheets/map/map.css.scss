@@ -12,6 +12,8 @@
 @import "../old_common/mixins";
 @import "../map/map-sprite";
 @import "../old_elements/elements-sprite";
+@import "../variables/colors";
+@import "../variables/mixins";
 
 div.map {
   @include box-sizing(border-box);
@@ -193,12 +195,15 @@ div.map {
     }
   }
 
+//bb_toolbar
+
   div.map_toolbar {
     @include position(0, false, false, 0px);
     @include size(100%, 66px);
-    @include box-shadow(rgba(black,0.15) 0 3px 3px 0);
-    background: image-url('layout/thead_bkg.jpg') repeat 0 0;
-
+    background-color: $DarkGrey8;
+    border-bottom: 1px solid $Black;
+    box-sizing: border-box;
+    padding: 3px 7px 4px;
     &.animated {
       overflow:hidden;
     }
@@ -212,31 +217,65 @@ div.map {
       top: 0;
       left: 0;
       @include inline-block();
+      padding-top:15px;
+      padding-left: 8px;
     }
   }
 
   .options {
     float: left;
     @include inline-block();
-    margin: 20px 0 0 45px;
 
     & > li.button {
 
-      &.add_overlay, &.toggle_slides, &.export_image {
+      &.canvas_setup, &.add_overlay, &.toggle_slides, &.export_image {
 
         position:relative;
 
         & > .thumb {
           @include size(26px);
+          display: none; //remove_icons
         }
 
       }
 
-      &.add_overlay   > .thumb { @include map-sprite(add_element);  }
-      &.export_image  > .thumb { @include map-sprite(export_image); }
+      &.canvas_setup  > .thumb { @include map-sprite(setup_canvas); }
+      &.add_overlay {
+          position: relative;
+          padding-right: 18px;
+          > .thumb { @include map-sprite(add_element);  }
+          &:after {
+            content: "";
+            position: absolute;
+            border: 3px solid transparent;
+            border-top: 5px solid $Grey2;
+            right: 6px;
+            top: 18px;
+          }
+      }
+      &.export_image   {
+        padding-right: 8px;
+       > .thumb { @include map-sprite(export_image); }
+      }
+
       &.toggle_slides > .thumb { @include map-sprite(toggle_slides); }
       &.toggle_slides.active > .thumb { @include map-sprite(toggle_slides_active); }
 
+
+    }
+
+    .search-bar-container {
+      background: none !important;
+      padding: 0 6px 0 2px;
+    }
+
+    .search-bar-input {
+      width: 240px;
+    }
+
+    .search-bar-browse {
+      float: right;
+      text-transform: none;
     }
 
     & > li {
@@ -260,38 +299,39 @@ div.map {
 
         &:before {
           content:' ';
-          @include position(-3px, -9px, false, false);
-          margin:8px 0 0 5px;
+          @include position(-3px, -20px, false, false);
+          margin:16px 0 0 5px;
 
-          border-left:3px solid transparent;
-          border-right:3px solid transparent;
-          border-top:3px solid #7C7C7C;
+          border-left:4px solid transparent;
+          border-right:4px solid transparent;
+          border-top:5px solid $Grey1;
 
           z-index:1;
         }
 
         &:after {
           content:' ';
-          @include position(-1px, -9px, false, false);
-          margin:9px 0 0 5px;
+          @include position(-1px, -20px, false, false);
+          margin:16px 0 0 5px;
 
-          border-left:3px solid transparent;
-          border-right:3px solid transparent;
-          border-top:3px solid transparent;
+          border-left:4px solid transparent;
+          border-right:4px solid transparent;
+          border-top:5px solid $Grey1;
 
           z-index:0;
         }
 
       }
 
-      @include inline-block();
+      @include inline-block();      
+      @include bb_button_style;
+      height: 40px;
+      margin: 0 1px 0 0;
+      padding: 0px 12px 0px 6px;
+      cursor: default;
+      -webkit-user-select: none;
 
-      padding: 0 15px 0 0;
-      margin: 0 5px 0 0;
 
-      border-right: 1px solid rgba(#D9D9D9, .8);
-
-      cursor: pointer;
 
       & > .thumb {
         position:relative;
@@ -315,38 +355,39 @@ div.map {
           position:relative;
           padding:0 12px 0 0;
           display:block;
-          font-family: "Helvetica", Arial;
           font-weight:normal;
-          line-height:12px;
+          line-height:15px;
         }
       }
 
       .info {
         @include inline-block();
-        padding-top:2px;
+        line-height: 38px;
 
         h5, .name {
           font-size: 13px;
-          color: #7A7A7A;
+          color: $Grey1;
+        }
+
+        //bb remove second line
+        .name {
         }
 
         h5 {
           position:relative;
           padding:0 12px 0 0;
           display:block;
-          font-family: $text-fonts2;
-          font-weight:normal;
-          line-height:12px;
+          line-height:35px;
 
           &:before {
             position:absolute;
             content:' ';
-            top:-3px;
-            right:-9px;
-            margin:8px 0 0 5px;
-            border-left:3px solid transparent;
-            border-right:3px solid transparent;
-            border-top:3px solid #7C7C7C;
+            top:0px;
+            right:-5px;
+            margin:16px 0 0 5px;
+            border-left:4px solid transparent;
+            border-right:4px solid transparent;
+            border-top:5px solid $Grey1;
             z-index:1;
           }
 
@@ -354,16 +395,17 @@ div.map {
             position:absolute;
             content:' ';
             top:-1px;
-            right:-9px;
-            margin:9px 0 0 5px;
-            border-left:3px solid transparent;
-            border-right:3px solid transparent;
-            border-top:3px solid transparent;
+            right:-20px;
+            margin:16px 0 0 5px;
+            border-left:4px solid transparent;
+            border-right:4px solid transparent;
+            border-top:5px solid transparent;
             z-index:0;
           }
         }
 
       }
+
     }
   } // .dropdowns
 
@@ -377,14 +419,14 @@ div.map {
     position:relative;
     box-sizing: border-box;
     @include inline-block();
+    @include bb_button_style;
     padding: 10px 14px 10px 37px;
     margin: 0 3px 0 0;
     height: auto;
     min-width: 70px;
-    background: rgba(#000, .7);
     color: #fff;
     font-size: 13px;
-    @include border-radius(3px);
+
 
     &:last-child {
       margin-right: 0;
@@ -428,7 +470,7 @@ div.map {
     &:after {
       background-color: #fff;
       @include box-shadow(0 0 1px rgba(#000, .9));
-      @include border-radius(3px);
+      @include border-radius(2px);
     }
   }
 
@@ -440,15 +482,14 @@ div.map {
 
   &.table div.cartodb-map {
 
-    @include position(66px, 0, 0, 0);
+    @include position(-1px, 0, 0, 0);
     @include border-radius(0);
 
   }
 
   &.derived div.cartodb-map {
 
-    @include position(15px, 79px, 15px, 15px);
-    @include border-radius(3px);
+    @include position(-1px, 0px, 0, 0);
     @include size(auto);
 
   }
@@ -460,7 +501,15 @@ div.map {
       right: 77px;
       float: right;
       position: absolute;
-    }
+
+      background-color: $Amber1;
+      border: 1px solid $Black;
+      input.text {
+        border:none;
+        color: $Black;
+      }
+    } 
+
 
     z-index:1;
 
@@ -471,32 +520,17 @@ div.map {
     margin: 0;
 
     z-index: 10001;
-
+    background-color: $DarkGrey2;
+    border:1px solid Black;
     div.cartodb-legend {
       display:none;
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
-
-      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density {
-        display: block;
+      ul li {
+        color: $Amber1;
       }
-
-      &.cluster, &.bubble, &.color, &.intensity, &.density {
-        width: 100% !important;
-      }
-
-      &.bubble {
-        padding-left: 0;
-        padding-right: 0;
-        .legend-title {
-          padding-left: 10px;
-        }
-        & > ul {
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-      }
+      &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
     }
   }
 
@@ -506,7 +540,6 @@ div.map {
   div.cartodb-legend-stack,
   div.cartodb-share,
   div.cartodb-layer-selector-box,
-  div.cartodb-inset-map-box,
   div.cartodb-searchbox {
     @include transform-style("linear");
     @include transition-property("margin");
@@ -532,6 +565,48 @@ div.map {
     display:none;
     font-weight: normal;
     margin: 0;
+    @include bb_button_style;
+    border: 1px solid $Black;
+
+  }
+  div.cartodb-dropdown.border {
+    background-color: #1d1d1d;
+    border: 1px solid $Grey2;
+  }
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li {
+    border: none;
+    &:hover { 
+      background: none;
+      a.layer {
+        text-decoration: none;
+      }
+    }
+  }
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.layer {
+    color: $Amber1;
+    border: none;
+
+  }
+  div.cartodb-dropdown div.tail span.border {
+    top: 0px;
+  }
+
+  div.cartodb-layer-selector-box a.layers .count, &:hover{
+    background: none;
+  }
+
+
+  div.cartodb-layer-selector-box div.cartodb-dropdown ul li a.switch {
+    border: none;
+    &.enabled {
+      background-color: $Amber1
+    }
+    span.handle {
+      border: none;
+      top: 1px;
+    }
   }
 
   // Zoom
@@ -551,6 +626,10 @@ div.map {
       top: 0;
       left: 0;
       margin:0;
+      background: url(../images/loader.svg) no-repeat center;
+      border-radius: 0px;
+      border:none;
+      box-shadow: none;
     }
   }
 
@@ -564,11 +643,19 @@ div.map {
     display:none;
     position:absolute;
     margin: 0;
+    a {
+      @include bb_button_style;
+      border: 1px solid $Black;
+    }
   }
 
   div.cartodb-share {
     margin: 0;
     position:absolute;
+     a {
+      @include bb_button_style;
+      border: 1px solid $Black;
+    }
   }
 
   // Search box in core map
@@ -590,7 +677,7 @@ div.map {
     border:1px solid #999999;
     @include box-shadow(rgba(0,0,0,0.1) 0 0 4px 3px);
     background:white;
-    @include border-radius(3px);
+    @include border-radius(2px);
     z-index: 1000;
 
     a {
@@ -798,7 +885,7 @@ div.cartodb-edit-buttons {
     height:24px;
     border-right:0;
     margin:0;
-    padding:0!important;
+    padding:0!important; 
     margin:0;
     text-indent: -9999px;
     font-size:0;
@@ -813,8 +900,8 @@ div.cartodb-edit-buttons {
     &.add_point {@include edit-bottom-states(-80, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
     &.add_annotation {@include edit-bottom-states(-110, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
 
-    &:first-child {@include border-left-radius(3px);}
-    &:last-child {@include border-right-radius(3px); border-right:1px solid #B0B0B0;}
+    &:first-child {@include border-left-radius(2px);}
+    &:last-child {@include border-right-radius(2px); border-right:1px solid #B0B0B0;}
   }
 }
 

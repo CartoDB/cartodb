@@ -16,12 +16,12 @@
 
   .add_layer {
     position:relative;
-    height:55px;
-    margin-top:-15px;
-    line-height:35px;
-    @include transform-style("linear");
-    @include transition-property("height");
-    @include transition-duration(250ms);
+    height:59px;
+    line-height:28px;
+    background: $DarkGrey3;
+    //@include transform-style("linear");
+    //@include transition-property("height");
+    //@include transition-duration(250ms); 
 
     a.info {
       text-decoration: none;

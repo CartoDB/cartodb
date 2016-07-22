@@ -6,7 +6,7 @@
 @import '../variables/sizes';
 
 $cHighlight-mainHover: rgba(#007FBD, 1);
-
+// bb_button
 .Button {
   @include display-flex();
   @include align-items(center, center);
@@ -15,17 +15,14 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   background: $btn_background_normal;
   border: 1px solid $Black;
   border-radius: 2px;
-  box-shadow: $button_shadow;
   outline: none;
   text-align: center;
   text-decoration: none;
   &:hover {
-  background: $btn_background_hover;
-  box-shadow: $button_shadow_hover;
+    background: $btn_background_hover;
  }
  &:active {
-  background: $btn_background_press;
-  box-shadow: $button_shadow_press;
+    background: $btn_background_press;
   }    
 }
 .Button--inline {

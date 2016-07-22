@@ -10,6 +10,7 @@
   @import "../../old_common/mixins";
   @import "../../old_common/vars";
   @import "../variables/colors";
+  @import "../variables/mixins";
 
   // Navigation block
   div.vis_navigation {
@@ -17,42 +18,15 @@
       position:relative;
       @include inline-block();
       margin:0;
-
-      @include border-radius(2px);
-      background: $DarkGrey1;
-      border: 1px solid $Black;
-      box-shadow: $button_shadow;
-
       z-index:1;
 
       a.tab {
-        padding:7px 25px;
+        height: 40px;
         @include inline-block();
-        font-size:12px;
-        font-weight:500;
-        color:#fff;
-
         text-transform: uppercase;
-
         @include border-radius(1px);
-	&:hover {
-		background: $btn_background_hover;
- 		text-decoration: none;
-        }
-
-
-
-        &:focus, &:active {}
-
-        &.selected {
-          color: $White;
-          background:#0b3968;
-	  box-shadow: 0px 0px 0px 1px $Black;
-          &:hover {text-decoration:none; cursor:default;}
-          &:focus, &:active {}
-        }
-
-        &.disabled { &:hover, &:focus, &:active {} }
+        @include bb_button_style; 
+        line-height: 40px;
       }
     }
   }

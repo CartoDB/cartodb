@@ -444,6 +444,7 @@ module Carto
         torque-blend-mode
         named_map
         visible
+        attribution
       ).freeze
 
       INFOWINDOW_AND_TOOLTIP_KEYS = %w(

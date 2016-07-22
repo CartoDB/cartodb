@@ -13,10 +13,10 @@
       },
       "stroke": {
         "size": {
-          "fixed": 1.5
+          "fixed": 1
         },
         "color": {
-          "fixed": "#ffda8d",
+          "fixed": "#fff",
           "opacity": 1
         }
       }

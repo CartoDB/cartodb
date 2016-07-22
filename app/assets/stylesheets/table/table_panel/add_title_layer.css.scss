@@ -18,6 +18,14 @@
     @include transition-property("height");
     @include transition-duration(250ms);
 
+    .title-image {
+      @include inline-block();
+      margin:0 0 0 27px;
+      height: 16px;
+      width: 16px;
+      background: image-url('sprites/map/cog.png') repeat 0 0;
+    }
+
     .title-bar {
       position: relative;
       width: 100%;

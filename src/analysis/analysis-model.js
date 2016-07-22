@@ -17,12 +17,12 @@ module.exports = Model.extend({
       throw new Error('chamshaftReference is required');
     }
 
-    if (!opts.map) {
-      throw new Error('map is required');
+    if (!opts.vis) {
+      throw new Error('vis is required');
     }
 
     this._camshaftReference = opts.camshaftReference;
-    this._map = opts.map;
+    this._vis = opts.vis;
     this._initBinds();
   },
 
@@ -64,7 +64,7 @@ module.exports = Model.extend({
   _reloadMap: function (opts) {
     opts = opts || {};
     opts.error = this._onMapReloadError.bind(this);
-    this._map.reload(opts);
+    this._vis.reload(opts);
   },
 
   _onMapReloadError: function () {

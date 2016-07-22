@@ -327,7 +327,7 @@ describe('windshaft/anonymous-map', function () {
         this.analysisFactory = new AnalysisFactory({
           analysisCollection: this.analysisCollection,
           camshaftReference: fakeCamshaftReference,
-          map: jasmine.createSpyObj('map', ['reload'])
+          vis: jasmine.createSpyObj('vis', ['reload'])
         });
       });
 

@@ -57,7 +57,7 @@ describe('dataviews/dataview-model-base', function () {
     this.analysisFactory = new AnalysisFactory({
       analysisCollection: this.analysisCollection,
       camshaftReference: fakeCamshaftReference,
-      map: jasmine.createSpyObj('map', ['reload'])
+      vis: jasmine.createSpyObj('vis', ['reload'])
     });
 
     // Disable debounce

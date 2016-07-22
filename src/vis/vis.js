@@ -181,7 +181,7 @@ var VisModel = Backbone.Model.extend({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       analysisCollection: this._analysisCollection,
-      map: this.map
+      vis: this
     });
 
     this._windshaftMap.bind('instanceRequested', this._onMapInstanceRequested, this);

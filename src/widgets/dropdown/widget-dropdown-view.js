@@ -15,7 +15,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-toggleNormalized': '_toggleNormalized',
-    'click .js-toggleCollapsed': '_toggleCollapsed',
+    'click .js-toggleCollapsed': '_toggleCollapsed'
   },
 
   initialize: function (opts) {

@@ -223,40 +223,54 @@ describe Carto::Api::VizJSON3Presenter do
       @torque_layer.save
     end
 
-    shared_examples 'common layer checks' do |vizjson_version|
-      let(:vizjson_version) { vizjson_version }
-
-      def vizjson_for(visualization)
-        Carto::Api::VizJSON3Presenter.new(visualization, viewer_user).send(:calculate_vizjson, forced_privacy_version: vizjson_version)
-      end
-
+    shared_examples 'common layer checks' do
       it 'should not include layergroup layers' do
-        v3_vizjson = vizjson_for(@visualization)
-        v3_vizjson[:layers].map { |l| l[:type] }.should_not include 'layergroup'
+        vizjson[:layers].map { |l| l[:type] }.should_not include 'layergroup'
       end
 
       it 'should not include namedmap layers' do
-        v3_vizjson = vizjson_for(@visualization)
-        v3_vizjson[:layers].map { |l| l[:type] }.should_not include 'namedmap'
+        vizjson[:layers].map { |l| l[:type] }.should_not include 'namedmap'
       end
 
       it 'should have exactly three layers: tiled, CartoDB and torque' do
-        v3_vizjson = vizjson_for(@visualization)
-        v3_vizjson[:layers].map { |l| l[:type] }.should eq %w(tiled CartoDB torque)
+        vizjson[:layers].map { |l| l[:type] }.should eq %w(tiled CartoDB torque)
       end
 
       it 'should include attribution for all layers' do
-        v3_vizjson = vizjson_for(@visualization)
-        v3_vizjson[:layers].each { |l| l[:options].should include :attribution }
+        vizjson[:layers].each { |l| l[:options].should include :attribution }
       end
     end
 
     describe 'in namedmap vizjson' do
-      include_examples 'common layer checks', :force_named
+      let(:vizjson) do
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_named)
+      end
+
+      include_examples 'common layer checks'
+
+      it 'should not include sql nor cartocss fields in data layers' do
+        data_layer_options = vizjson[:layers][1][:options]
+        data_layer_options.should_not include :sql
+        data_layer_options.should_not include :cartocss
+        data_layer_options.should_not include :cartocss_version
+      end
     end
 
     describe 'in anonymous vizjson' do
-      include_examples 'common layer checks', :force_anonymous
+      let(:vizjson) do
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_anonymous)
+      end
+
+      include_examples 'common layer checks'
+
+      it 'should include sql and cartocss fields in data layers' do
+        data_layer_options = vizjson[:layers][1][:options]
+        data_layer_options.should include :sql
+        data_layer_options.should include :cartocss
+        data_layer_options.should include :cartocss_version
+      end
     end
   end
 end

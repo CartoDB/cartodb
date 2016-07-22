@@ -45,12 +45,6 @@ module.exports = cdb.core.View.extend({
       }
     });
 
-    this.model.bind('change:normalized', function () {
-      var normalized = this.model.get('normalized');
-      this.histogramChartView.setNormalized(normalized);
-      this.miniHistogramChartView.setNormalized(normalized);
-    }, this);
-
     this.addView(dropdown);
 
     this._renderMiniChart();
@@ -69,7 +63,12 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this._originalData.once('change:data', this._onFirstLoad, this);
-    this.model.bind('change:collapsed change:pinned change:normalized', this.render, this);
+    this.model.bind('change:collapsed change:pinned', this.render, this);
+    this.model.bind('change:normalized', function () {
+      var normalized = this.model.get('normalized');
+      this.histogramChartView.setNormalized(normalized);
+      this.miniHistogramChartView.setNormalized(normalized);
+    }, this);
   },
 
   _onFirstLoad: function () {
@@ -167,7 +166,6 @@ module.exports = cdb.core.View.extend({
     this.$('.js-content').append(this.histogramChartView.el);
     this.addView(this.histogramChartView);
 
-    this.histogramChartView.bind('range_updated', this._onRangeUpdated, this);
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
@@ -256,8 +254,7 @@ module.exports = cdb.core.View.extend({
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
     var data = this._dataviewModel.getData();
-
-    if (!data || !data.length) {
+    if ((!data || !data.length) || (this.model.get('lo_index') === loBarIndex && this.model.get('hi_index') === hiBarIndex)) {
       return;
     }
 
@@ -282,18 +279,6 @@ module.exports = cdb.core.View.extend({
     } else {
       console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
     }
-  },
-
-  _onRangeUpdated: function (loBarIndex, hiBarIndex) {
-    var self = this;
-    if (this.model.get('zoomed')) {
-      this.model.set({ zoom_enabled: false, lo_index: loBarIndex, hi_index: hiBarIndex });
-    } else {
-      this.model.set({ lo_index: loBarIndex, hi_index: hiBarIndex });
-    }
-
-    var updateStats = _.debounce(function () { self._updateStats(); }, 400);
-    updateStats();
   },
 
   _onChangeFilterEnabled: function () {
@@ -436,20 +421,17 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetWidget: function () {
-    this.lockedByUser = true;
-    this.unsettingRange = true;
+    this.filter.unsetRange();
+    this._dataviewModel.disableFilter();
+    this.histogramChartView.unsetBounds();
+    this.miniHistogramChartView.hide();
     this.model.set({
       zoomed: false,
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
-      hi_index: null,
-      min: this._dataviewModel.start,
-      max: this._dataviewModel.end
+      hi_index: null
     });
-    this._dataviewModel.disableFilter();
-    this.filter.unsetRange();
-    this.histogramChartView.unsetBounds();
-    this.miniHistogramChartView.hide();
+    this._updateStats();
   }
 });

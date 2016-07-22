@@ -22,15 +22,15 @@ var HistogramAutoStyler = AutoStyler.extend({
 HistogramAutoStyler.SCALES_MAP = {
   'polygon-fill': {
     'F': {
-      palette: 'Sunset3',
+      palette: 'PinkYl',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'A': {
@@ -38,25 +38,25 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld1',
+      palette: 'Sunset',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld1',
+      palette: 'Sunset',
       quantification: 'jenks'
     }
   },
   'line-color': {
     'F': {
-      palette: 'Sunset3',
+      palette: 'PinkYl',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'Emrld',
       quantification: 'headtails'
     },
     'A': {
@@ -64,25 +64,25 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'Emrld1',
+      palette: 'Sunset',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'Emrld1',
+      palette: 'Sunset',
       quantification: 'jenks'
     }
   },
   'marker-fill': {
     'F': {
-      palette: 'RedOr1',
+      palette: 'RedOr',
       quantification: 'quantiles'
     },
     'L': {
-      palette: 'Sunset2',
+      palette: 'BluYl',
       quantification: 'headtails'
     },
     'J': {
-      palette: 'Sunset2',
+      palette: 'BluYl',
       quantification: 'headtails'
     },
     'A': {
@@ -90,15 +90,14 @@ HistogramAutoStyler.SCALES_MAP = {
       quantification: 'quantiles'
     },
     'C': {
-      palette: 'BluYl1',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     },
     'U': {
-      palette: 'BluYl1',
+      palette: 'SunsetDark',
       quantification: 'jenks'
     }
   }
 };
 
 module.exports = HistogramAutoStyler;
-

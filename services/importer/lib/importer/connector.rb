@@ -212,14 +212,14 @@ module CartoDB
 
       def options_clause(options)
         if options.present?
-          options_list = options.map { |k, v| "#{k} '#{escape_singe_quotes v}'" } * ",\n"
+          options_list = options.map { |k, v| "#{k} '#{escape_single_quotes v}'" } * ",\n"
           "OPTIONS (#{options_list})"
         else
           ''
         end
       end
 
-      def escape_singe_quotes(text)
+      def escape_single_quotes(text)
         text.gsub("'", "''")
       end
 

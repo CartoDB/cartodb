@@ -190,6 +190,31 @@ describe('windshaft/map-base', function () {
       });
     });
 
+    describe('when an exception is thrown/catched', function () {
+      beforeEach(function () {
+        spyOn(this.windshaftMap, 'toJSON').and.callFake(function () {
+          throw new Error('something went wrong!');
+        });
+
+        this.successCallback = jasmine.createSpy('success');
+        this.errorCallback = jasmine.createSpy('error');
+        this.windshaftMap.createInstance({
+          success: this.successCallback,
+          error: this.errorCallback
+        });
+      });
+
+      it('should set an error', function () {
+        expect(this.modelUpdater.setErrors).toHaveBeenCalled();
+        expect(this.modelUpdater.setErrors.calls.argsFor(0)[0][0].message).toEqual('something went wrong!');
+      });
+
+      it('should invoke the error callback', function () {
+        expect(this.successCallback).not.toHaveBeenCalled();
+        expect(this.errorCallback).toHaveBeenCalled();
+      });
+    });
+
     describe('when request succeeds', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {

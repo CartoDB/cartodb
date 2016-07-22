@@ -63,7 +63,6 @@ module.exports = cdb.core.View.extend({
 
   _initBinds: function () {
     this._originalData.once('change:data', this._onFirstLoad, this);
-    this.model.bind('change:collapsed change:pinned', this.render, this);
     this.model.bind('change:normalized', function () {
       var normalized = this.model.get('normalized');
       this.histogramChartView.setNormalized(normalized);

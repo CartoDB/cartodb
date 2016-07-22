@@ -29,22 +29,6 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect(this.view._toggleClick).toHaveBeenCalled();
   });
 
-  it('should trigger an event when clicking the pinned option', function () {
-    var called = false;
-    var pinned = null;
-
-    this.model.bind('change:pinned', function (action) {
-      called = true;
-      pinned = true;
-    });
-
-    this.view.render();
-    this.view.$('.js-togglePinned').click();
-
-    expect(called).toBe(true);
-    expect(pinned).toBe(true);
-  });
-
   it('should trigger an event when clicking the collapsed option', function () {
     var called = false;
     var collapsed = null;

@@ -48,7 +48,7 @@ module Carto
       false
     ensure
       if work_dir
-        log.append("Deleting tmp directory #{ẉork_dir}")
+        log.append("Deleting tmp directory #{work_dir}")
         FileUtils.remove_dir(work_dir)
       end
     end

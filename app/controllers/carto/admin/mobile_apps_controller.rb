@@ -109,12 +109,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
   end
 
-  def api_keys
-    respond_to do |format|
-      format.html { render 'mobile_app_api_keys' }
-    end
-  end
-
   private
 
   def check_user_permissions

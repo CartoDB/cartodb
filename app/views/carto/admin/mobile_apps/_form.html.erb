@@ -128,6 +128,21 @@
 
   <%- if @mobile_app.persisted? %>
     <div class="FormAccount-title">
+      <p class="FormAccount-titleText">License key</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your API Key</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
+      </div>
+    </div>
+
+    <div class="FormAccount-title">
       <p class="FormAccount-titleText">Application quota</p>
     </div>
 

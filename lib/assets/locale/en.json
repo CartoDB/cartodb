@@ -401,6 +401,10 @@
         "last-published": "Last updated %{date}",
         "unpublished-header": "Click on Publish to start sharing your map on the web",
         "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
+        "upgradeLabel": "Upgrade",
+        "upgradeLink": "https://carto.com/pricing/#pricing-standard",
+        "upgrade": "%{upgradeLink} to share with your colleagues?",
+        "private": "PRIVATE",
         "get-link": {
           "title": "Get the link",
           "body": "Send to your friends, coworkers, or post in your social networks.",
@@ -408,7 +412,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your privacy settings to share your map. Right now it's private."
+            "body": "Your map is %{private}. Change privacy to get the link"
           }
         },
         "embed": {
@@ -418,7 +422,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your privacy settings to embed your map. Right now it's private."
+            "body": "Your map is %{private}. Change privacy to embed map"
           }
         },
         "cartodbjs": {

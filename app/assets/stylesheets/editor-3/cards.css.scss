@@ -9,20 +9,17 @@
   @include flex-direction(column);
   margin-right: $baseSize * 2;
   padding: 20px 25px;
-  border: 1px solid $cMainLine;
+  border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
-  background-color: $cThirdBackground;
+  background-color: $cWhite;
 
   &:last-child {
     margin-right: 0;
   }
 
   &.is-disabled {
-    opacity: 0.6;
-  }
-
-  &.is-disabled a {
-    display: none;
+    border: 1px solid $cMainLine;
+    background-color: $cThirdBackground;
   }
 }
 

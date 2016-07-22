@@ -231,11 +231,11 @@ describe Carto::Api::VizJSON3Presenter do
       end
     end
 
-    describe 'named maps' do
+    describe 'in namedmap vizjson' do
       include_examples 'common layer checks', :force_named
     end
 
-    describe 'anonymous' do
+    describe 'in anonymous vizjson' do
       include_examples 'common layer checks', :force_anonymous
     end
   end

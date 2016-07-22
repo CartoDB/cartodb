@@ -56,7 +56,6 @@ var LeafletMapView = MapView.extend({
     this.map.geometries.bind('remove', this._removeGeometry, this);
 
     this._bindModel();
-    this._addLayers();
     this.setAttribution();
 
     this._leafletMap.on('layeradd', function(lyr) {

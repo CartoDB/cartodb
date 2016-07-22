@@ -209,4 +209,34 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
+
+  describe 'layers' do
+    include_context 'full visualization'
+
+    shared_examples 'common layer checks' do |vizjson_version|
+      let(:vizjson_version) { vizjson_version }
+
+      def vizjson_for(visualization)
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send(:calculate_vizjson, forced_privacy_version: vizjson_version)
+      end
+
+      it 'should not include layergroup layers' do
+        v3_vizjson = vizjson_for(@visualization)
+        v3_vizjson[:layers].map { |l| l[:type] }.should_not include 'layergroup'
+      end
+
+      it 'should not include namedmap layers' do
+        v3_vizjson = vizjson_for(@visualization)
+        v3_vizjson[:layers].map { |l| l[:type] }.should_not include 'namedmap'
+      end
+    end
+
+    describe 'named maps' do
+      include_examples 'common layer checks', :force_named
+    end
+
+    describe 'anonymous' do
+      include_examples 'common layer checks', :force_anonymous
+    end
+  end
 end

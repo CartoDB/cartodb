@@ -23,15 +23,13 @@ var Map = Model.extend({
     vector: false
   },
 
-  RELOAD_DEBOUNCE_TIME: 10,
-
   initialize: function (attrs, options) {
     options = options || {};
     this.layers = options.layersCollection || new Layers();
-    // Update attributions after layers instantiation
     this._updateAttributions();
     this.geometries = new Backbone.Collection();
 
+    // TODO: Remove this
     this._windshaftMap = options.windshaftMap;
     this._dataviewsCollection = options.dataviewsCollection;
 
@@ -60,22 +58,17 @@ var Map = Model.extend({
       });
     }
 
-    this._instantiateMapWasCalled = false;
-
-    // This method is declared here so that we can spyOn _.debounce
-    // in the tests that depend on this to work
-    this.reload = _.debounce(function (options) {
-      if (this._instantiateMapWasCalled) {
-        options = options || {};
-        options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
-        this._windshaftMap.createInstance(options);
-      }
-    }.bind(this), this.RELOAD_DEBOUNCE_TIME);
-
     this.layers.bind('reset', this._updateAttributions, this);
     this.layers.bind('add', this._updateAttributions, this);
     this.layers.bind('remove', this._updateAttributions, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
+    this.layers.bind('reset', this._onLayersResetted, this);
+  },
+
+  _onLayersResetted: function () {
+    if (this.layers.size() >= 1) {
+      this._adjustZoomtoLayer(this.layers.first());
+    }
   },
 
   _updateAttributions: function () {
@@ -156,53 +149,12 @@ var Map = Model.extend({
 
   // INTERNAL CartoDB.js METHODS
 
-  instantiateMap: function (options) {
-    options = _.pick(options, ['success', 'error']);
-    if (!this._instantiateMapWasCalled) {
-      var successCallback = options.success;
-      options.success = function () {
-        this._initBindsAfterFirstMapInstantiation();
-        successCallback && successCallback();
-      }.bind(this);
-    }
-    this._instantiateMapWasCalled = true;
-    this.reload(options);
+  // TODO: Get rid of this
+  reload: function (options) {
+    options = options || {};
+    this.vis.reload(options);
   },
 
-  _initBindsAfterFirstMapInstantiation: function () {
-    this.layers.bind('reset', this._onLayersResetted, this);
-    this.layers.bind('add', this._onLayerAdded, this);
-    this.layers.bind('remove', this._onLayerRemoved, this);
-
-    if (this._dataviewsCollection) {
-      // When new dataviews are defined, a new instance of the map needs to be created
-      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
-    }
-  },
-
-  _onLayersResetted: function () {
-    if (this.layers.size() >= 1) {
-      this._adjustZoomtoLayer(this.layers.models[0]);
-    }
-
-    this.reload();
-  },
-
-  _onLayerAdded: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
-  },
-
-  _onLayerRemoved: function (layerModel) {
-    this.reload({
-      sourceId: layerModel.get('id')
-    });
-  },
-
-  _onDataviewAdded: function (layerModel) {
-    this.reload();
-  },
   setView: function (latlng, zoom) {
     this.set({
       center: latlng,

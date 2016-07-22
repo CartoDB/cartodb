@@ -12,12 +12,9 @@ describe('geo/ui/layer-selector (torque)', function() {
   var layerSelector;
 
   beforeEach(function() {
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance', 'reload']);
-
-    var map = new Map(null, {
-      windshaftMap: windshaftMap
-    });
+    // TODO: Remove this
+    var map = new Map();
+    map.vis = { reload: function () {} };
 
     var l1 = new TorqueLayer({ layer_name: 'Layer 1' }, { map: map });
     var l2 = new TorqueLayer({ layer_name: 'Layer 2' }, { map: map });

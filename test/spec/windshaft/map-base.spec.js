@@ -79,9 +79,9 @@ describe('windshaft/map-base', function () {
       this.map = new Map({
         view_bounds_sw: [],
         view_bounds_ne: []
-      }, {
-        windshaftMap: this.windshaftMap
       });
+      // TODO: Remove this
+      this.map.vis = { reload: function () {} };
 
       this.filter = new CategoryFilter({
         dataviewId: 'dataviewId'

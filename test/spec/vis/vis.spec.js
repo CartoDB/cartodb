@@ -234,6 +234,81 @@ describe('vis/vis', function () {
     expect(this.vis.get('loading')).toEqual(false);
   });
 
+  describe('bindings to collection of layers', function () {
+    beforeEach(function () {
+      spyOn(this.vis, 'reload').and.callFake(function (options) {
+        options && options.success && options.success();
+      });
+
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      this.vis.instantiateMap();
+
+      this.vis.reload.calls.reset();
+    });
+
+    it('should reload the map when layers are resetted', function () {
+      this.vis.map.layers.reset([{ id: 'layer1' }]);
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when a new layer is added', function () {
+      this.vis.map.layers.add({ id: 'layer1' });
+
+      expect(this.vis.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
+      });
+    });
+
+    it('should reload the map when a layer is removed', function () {
+      var layer = this.vis.map.layers.add({ id: 'layer1' }, { silent: true });
+      this.vis.map.layers.remove(layer);
+
+      expect(this.vis.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
+      });
+    });
+  });
+
+  describe('.reload', function () {
+    beforeEach(function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+
+      spyOn(this.vis._windshaftMap, 'createInstance');
+    });
+
+    describe("when vis hasn't been instantiated yet", function () {
+      it('should NOT instantiate map', function () {
+        this.vis.reload({});
+
+        expect(this.vis._windshaftMap.createInstance).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when vis has been instantiated once', function () {
+      beforeEach(function () {
+        this.vis.instantiateMap();
+        this.vis._windshaftMap.createInstance.calls.reset();
+      });
+
+      it('should instantiate map and forward options', function () {
+        this.vis.reload({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceId',
+          forceFetch: 'forceFetch',
+          success: 'success'
+        });
+
+        expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
+          sourceId: 'sourceId',
+          forceFetch: 'forceFetch',
+          success: 'success'
+        });
+      });
+    });
+  });
+
   describe('.load', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});

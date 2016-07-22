@@ -36,6 +36,7 @@ var VisModel = Backbone.Model.extend({
     this._dataviewsCollection = new Backbone.Collection();
 
     this.overlaysCollection = new Backbone.Collection();
+    this._instantiateMapWasCalled = false;
   },
 
   done: function (callback) {
@@ -159,6 +160,9 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
+    // TODO: Temporary hack so that we can forward map.reload to vis.reload
+    this.map.vis = this;
+
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
 
@@ -223,7 +227,7 @@ var VisModel = Backbone.Model.extend({
     if (analysisModel.isDone()) {
       this.untrackLoadingObject(analysisModel);
       if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        this.map.reload();
+        this.reload();
       }
     }
   },
@@ -258,12 +262,59 @@ var VisModel = Backbone.Model.extend({
 
   /**
    * Force a map instantiation.
-   * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
+   * Only expected to be called once if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function (options) {
     options = options || {};
-    this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
-    this.map.instantiateMap(options);
+    if (!this._instantiateMapWasCalled) {
+      this._instantiateMapWasCalled = true;
+      var successCallback = options.success;
+      options.success = function () {
+        this._initBindsAfterFirstMapInstantiation();
+        successCallback && successCallback();
+      }.bind(this);
+      this.reload(options);
+    }
+  },
+
+  reload: function (options) {
+    options = options || {};
+    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
+    if (this._instantiateMapWasCalled) {
+      this._windshaftMap.createInstance(options);
+    }
+  },
+
+  _initBindsAfterFirstMapInstantiation: function () {
+    this._layersCollection.bind('reset', this._onLayersResetted, this);
+    this._layersCollection.bind('add', this._onLayerAdded, this);
+    this._layersCollection.bind('remove', this._onLayerRemoved, this);
+
+    if (this._dataviewsCollection) {
+      // When new dataviews are defined, a new instance of the map needs to be created
+      this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
+      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
+    }
+  },
+
+  _onLayersResetted: function () {
+    this.reload();
+  },
+
+  _onLayerAdded: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+  },
+
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+  },
+
+  _onDataviewAdded: function (layerModel) {
+    this.reload();
   },
 
   invalidateSize: function () {

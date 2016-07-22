@@ -11,21 +11,18 @@ describe('geo/ui/layer-selector', function () {
   var layerSelector, layer1, layer2;
 
   beforeEach(function() {
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance', 'reload']);
+    // TODO: Remove this
+    var map = new Map();
+    map.vis = { reload: function () {} };
 
-    var map2 = new Map(null, {
-      windshaftMap: windshaftMap
-    });
+    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { map: map });
+    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { map: map });
 
-    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { map: map2 });
-    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { map: map2 });
-
-    map2.layers.reset([layer1, layer2]);
+    map.layers.reset([layer1, layer2]);
 
     var mapView2 = new LeafletMapView({
       el: $("<div>"),
-      map: map2,
+      map: map,
       layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model({ type: 'layergroup' })
     });

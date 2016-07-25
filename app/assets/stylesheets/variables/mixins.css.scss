@@ -1,4 +1,5 @@
 @import "compass/css3/images";
+@import "colors";
 
 // Mixins
 // - Necessary SCSS functions
@@ -240,6 +241,8 @@
 //button 
  @mixin bb_button_style {
     background-color: $btn_background_normal;
+    background-repeat: no-repeat;
+    background-position: center;
     border-radius: 2px;
     color: $Grey1; 
     padding: 0px 6px;

@@ -15,6 +15,7 @@
   @import "../../old_common/vars";
   @import "../../old_common/common-sprite";
   @import "../../table/table-sprite";
+  @import '../variables/mixins';
 
   $text-shadow-color: rgba(black,0.25);
 
@@ -207,35 +208,17 @@
         margin:0;
 
         a.btn {
-          line-height:20px;
-          padding: 0 20px;
-          text-shadow: none;
-          color: #fff;
-          @include box-shadow(none);
-          border-radius: 30px;
-          border: 2px solid #fff;
-          background:none;
-
+          @include bb_button_style;
+          height: 40px;
+          line-height:40px;
           span {
-            padding: 1px 0;
             @include inline-block();
-            color: #fff;
-            font-size: 12px;
           }
-
-          &:hover {
-            span { text-decoration: underline; }
-          }
-
           &.dropdown {
-            padding-right: 20px;
-
-            &:before, &:after {
-              margin-right: 10px;
-            }
+            padding: 0 24px 0 5px;
           }
-
         }
+
 
         &:after {
           position:absolute;
@@ -248,13 +231,12 @@
         }
 
         &:last-child {
-          margin-left: 15px;
+          margin-left: 12px;
           &:after { display:none; }
         }
 
         a {
-          display: block;
-          font-weight:300;
+          display: block;          
         }
 
       }

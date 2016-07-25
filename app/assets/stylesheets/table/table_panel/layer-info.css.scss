@@ -18,14 +18,16 @@
   // LOCAL VARS
   $corner_radius: 6px;
 
-
+ 
   // Layer info, as name, order, ... etc
-  //bb_layer_header
+  //bb_layer_header 
   .layer-info {
+    background-color: $DarkGrey6;
+    border-bottom: 1px solid $Black;
     position:absolute;
     top:0; right:0; bottom:auto; left:0;
-    line-height:62px;
-    height:67px;
+    line-height:25px;
+    height:30px;
     z-index:0;
 
 
@@ -35,7 +37,7 @@
     
     // Layer info block
     .info {
-      display:block;
+      display:block;  
       left:0!important;
       top:0!important;
       width: 100%;
@@ -46,13 +48,13 @@
 
       // Order element
       .order {
-        width:16px;
-        padding-top: 5px;
+        width:14px;        
         height: 14px;
         text-align:center;
-        font:11px $text-fonts;
-        color:$Grey1;
-        background:#A9A9A9;
+        color:transparent;
+        background-image: url(../images/bb_icon_layer.png);
+        background-position: center;
+        background-repeat: no-repeat;
       }
 
       // Layer name
@@ -62,7 +64,7 @@
         @include text-overflow();
         overflow:hidden;
         margin-left:23px;
-        font-size:17px;
+        font-size:15px;
         color:$Grey1;
         line-height:20px;
 
@@ -97,15 +99,6 @@
         line-height:15px;
 
         a { margin-left: 5px }
-        a:hover { color: $White }
-      }
-
-
-      &:hover {
-        text-decoration:none;
-        cursor:pointer;
-        .name {color:$White;}
-        .order {background:#666;}
       }
     }
 
@@ -136,4 +129,11 @@
       &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
       &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
     }
+    &:hover {
+      cursor: pointer;
+    }
   }
+//active layer header
+.layer_panel.active .layer-info {
+  background: $DarkGrey1;
+}

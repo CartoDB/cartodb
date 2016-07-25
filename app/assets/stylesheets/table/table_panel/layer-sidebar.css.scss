@@ -12,19 +12,18 @@
   @import "compass/css3/inline-block";
   @import "../../table/table-sprite";
   @import "../../old_common/mixins";
-
+  @import "../../variables/colors";
 
   // Layer actions sidebar
+  //bb_sidebar_tabs
   .layer-sidebar {
     position:absolute;
-    top:68px;
-    bottom:0;
+    top:31px;  
+    bottom:15px;
     left:0;
     @include inline-block();
     @include size(65px, auto);
-    letter-spacing:0;
-    @include border-left-radius(4px);
-    @include single-box-shadow( -4px, 0, 5px, 0, rgba(black,0.03), true);
+    letter-spacing: normal;
     z-index:6;
 
     nav {
@@ -34,8 +33,8 @@
 
       // Tools menu
       &.tools {
-        top:0;
-
+        top:6px;
+        
         a.has_errors {
           position:relative;
 
@@ -99,75 +98,109 @@
         position:relative;
         display:block;
         width:100%;
-        height:60px;
-        text-indent: 0px;
-        text-align: center;
-        font-size: 9px;
-        line-height: 90px;
-        border-bottom:1px solid rgba(#999999,0.25);
+        height:70px;
+        @include text-indent();
         z-index:0;
-        @include opacity(0.75);
 
-        &.sql_mod        { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-3px);}
-        &.filters_mod    { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-62px);}
-        &.cartocss_mod   { @include table-sprite(table_icons, $offset-x:21px, $offset-y:-549px);}
-        &.infowindow_mod { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-430px);}
-        &.legends_mod    { @include table-sprite(table_icons, $offset-x:20px, $offset-y:-663px);}
+        &.sql_mod        { 
+         background-image: url(../images/icons/sql.png);
+         background-repeat: no-repeat;
+         background-position: center;
+        }
+
+        &.filters_mod    { 
+          background-image: url(../images/icons/filters.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
+        &.cartocss_mod   { 
+          background-image: url(../images/icons/css.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+
+        &.infowindow_mod { 
+          background-image: url(../images/icons/info.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+        &.legends_mod    { 
+          background-image: url(../images/icons/legends.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
 
         &.wizards_mod    {
-          @include table-sprite(table_icons, $offset-x:21px, $offset-y:-370px);
-          &.selected:before, &.selected:after { border-right-color: #575757; }
-          &.selected:after {right:-1px;}
+         background-image: url(../images/icons/wizard.png);
+         background-repeat: no-repeat;
+         background-position: center;
         }
 
         // tool buttons
-        &.add_row {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-307px);}
-        &.add_column {@include table-sprite(table_icons, $offset-x:22px, $offset-y:-247px);}
-        &.merge_datasets {@include table-sprite(table_icons, $offset-x:21px, $offset-y:-186px);}
+        &.add_row {
+          background-image: url(../images/icons/add_row.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+        &.add_column {
+          background-image: url(../images/icons/add_column.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
+        &.merge_datasets {
+          background-image: url(../images/icons/merge.png);
+          background-repeat: no-repeat;
+          background-position: center;
+        }
 
         &.add_feature {
-          border-top:1px solid rgba(#999999,0.25);
-          @include table-sprite(table_icons, $offset-x:19px, $offset-y:-489px);
+          border-top:1px solid $Black;
+          background-image: url(../images/icons/add_feature.png);
+          background-repeat: no-repeat;
+          background-position: center;
         }
 
         &:hover {
           cursor:pointer;
-          @include opacity(1);
+          background-color: $DarkGrey1;
         }
 
         &.disabled {
           @include opacity(0.15);
-          border-color:#999;
         }
-
+ 
         &.selected {
           @include opacity(1);
+          background-color: $DarkGrey6;
+          &:first-child {
+            border-top-color: transparent;
+          }
+
 
           &:before {
-            position:absolute;
-            content:'';
-            right:-1px;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid white;
-            z-index:1;
+            position: absolute;
+            content: '';
+            left: -4px;
+            width: 2px;
+            background-color: #fff;
+            border: 1px solid $DarkGrey6;
+            top: -1px;
+            bottom: -1px;
+            z-index: 1;
+            display: none;
+            
           }
           &:after {
             position:absolute;
+            background-color: $DarkGrey3;
             content:'';
-            right:0;
-            top:50%;
-            margin:-7px 0 0 0;
-            width:0;
-            height:0;
-            border-top:7px solid transparent;
-            border-bottom:7px solid transparent;
-            border-right:7px solid #D0D0D0;
+            bottom: 0px;
+            right:-1px;
+            top: 0px;
+            width:1px;            
             z-index:0;
+            
           }
         }
       }

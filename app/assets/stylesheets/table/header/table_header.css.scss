@@ -8,7 +8,7 @@
   @import "compass/css3/images";
   @import "../../old_common/mixins";
   @import "../../old_common/vars";
-  
+
   header.vis {
     position:fixed;
     left:0;
@@ -24,9 +24,12 @@
       height: 100%;
     }
 
+    .animated {
+      overflow:hidden;
+    }
 
     /* TABLE HEADER TYPES */
-    
+
     // Synced visualization
     &.synced { height:90px }
 

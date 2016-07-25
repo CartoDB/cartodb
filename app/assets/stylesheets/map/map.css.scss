@@ -34,6 +34,15 @@ div.map.animated .cartodb-map {
   transition: all 200ms ease;
 }
 
+// Disable animations
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  -ms-transition: none !important;
+  transition: none !important;
+}
+
 div.map {
 
   &.mobile #cartodb-gmaps-attribution {
@@ -51,6 +60,35 @@ div.map {
     }
     span.tooltip p {
       font-size: 11px;
+    }
+  }
+
+  div.cartodb-legend-stack {
+    &:hover {
+      .reset {
+        display: block;
+      }
+    }
+
+    .reset {
+      position: absolute;
+      display: none;
+      background-color: white;
+      cursor: pointer;
+      top: -24px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      font-size: 22px;
+      line-height: 22px;
+      text-align: center;
+      // Matches font-family of the legend text. Without this the default font is different,
+      //    which makes the rendering 'jump' when we click to switch to custom styles
+      font-family: Helvetica, Arial;
+      color: #666;
+      @include box-shadow(rgba(black,0.2) 0 0 4px 2px);
+      @include border-radius(5);
+      border: solid 1px #666;
     }
   }
 
@@ -123,7 +161,8 @@ div.map {
       div.cartodb-logo,
       div.cartodb-zoom,
       div.cartodb-legend-stack,
-      div.cartodb-zoom-info {
+      div.cartodb-zoom-info,
+      .leaflet-control-minimap {
         display:none!important;
       }
 
@@ -238,7 +277,6 @@ div.map {
       float: right;
       text-transform: none;
     }
-    
 
     & > li {
 
@@ -444,14 +482,14 @@ div.map {
 
   &.table div.cartodb-map {
 
-    @include position(66px, 0, 0, 0);
+    @include position(-1px, 0, 0, 0);
     @include border-radius(0);
 
   }
 
   &.derived div.cartodb-map {
 
-    @include position(66px, 64px, 0, 0);
+    @include position(-1px, 0px, 0, 0);
     @include size(auto);
 
   }
@@ -593,6 +631,11 @@ div.map {
       border:none;
       box-shadow: none;
     }
+  }
+
+  // Inset Map
+  .leaflet-control-minimap {
+    display: none;
   }
 
   // Fullscreen
@@ -842,7 +885,7 @@ div.cartodb-edit-buttons {
     height:24px;
     border-right:0;
     margin:0;
-    padding:0!important;
+    padding:0!important; 
     margin:0;
     text-indent: -9999px;
     font-size:0;
@@ -874,6 +917,21 @@ div.cartodb-popup.dark  {
     }
   }
 }
+
+.search-bar-container {
+  background: none !important;
+  padding: 0 0 0 2px;
+}
+
+.search-bar-input {
+  width: 240px;
+}
+
+.search-bar-browse {
+  float: right;
+  text-transform: none;
+}
+
 
 div.search-result-dropdown {
   border:1px solid #ff9e24;

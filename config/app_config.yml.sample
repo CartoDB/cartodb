@@ -109,6 +109,13 @@ defaults: &defaults
     # base_url: 'https://common-data.cartodb.com'
     format: 'shp'
     generate_every: 86400
+  fdw:
+    host: 'localhost'
+    port: 5432
+    database: ''
+    username: ''
+    password: ''
+    remote_schema: ''
   explore_api:
     username: ''
   reports:

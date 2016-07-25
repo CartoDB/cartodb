@@ -18,22 +18,19 @@
 
   // LOCAL VARS
   $corner_radius: 0px;
-  
+   
 
   // Layer actions view!
   // bb_layer_view
   .layer-views {
-    position:absolute;
-    top:68px;
-    right:0;
+    position:absolute; 
+    top:31px;
+    right:0;  
     left:65px;
     bottom:0;
-    @include inline-block();
+    @include inline-block(); 
     background:$DarkGrey3;
-    border: 1px solid $DarkGrey6;
-    border-right:0;
-    border-bottom:0; 
-    letter-spacing:0;
+    border-left: 1px solid $DarkGrey6;
     z-index:5;
 
 
@@ -123,7 +120,6 @@
         left:0;
         height:22px;
         width:100%;
-        @include background(linear-gradient(top, white, rgba(white,0)));
         z-index:10;
       }
     }

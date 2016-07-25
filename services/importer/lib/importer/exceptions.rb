@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require_relative '../../../../services/datasources/lib/datasources/exceptions'
+require_relative './base_connector'
 
 module CartoDB
   module Importer2
@@ -167,7 +168,10 @@ module CartoDB
       CartoDB::Datasources::GNIPServiceError                      => 1009,
       CartoDB::Datasources::DropboxPermissionError                => 1016,
       CartoDB::Datasources::BoxPermissionError                    => 1021,
-      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008
+      CartoDB::Datasources::GDriveNoExternalAppsAllowedError      => 1008,
+      CartoDB::Importer2::BaseConnector::ConnectorError               => 1500,
+      CartoDB::Importer2::BaseConnector::InvalidChannelError          => 1501,
+      CartoDB::Importer2::BaseConnector::InvalidParametersError       => 1502
     }
   end
 end

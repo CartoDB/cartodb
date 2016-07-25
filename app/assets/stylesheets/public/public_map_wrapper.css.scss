@@ -36,7 +36,8 @@
   .cartodb-map-wrapper.with_header div.cartodb-zoom,
   .cartodb-map-wrapper.with_header div.cartodb-share,
   .cartodb-map-wrapper.with_header div.cartodb-searchbox,
-  .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+  .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box,
+  .cartodb-map-wrapper.with_header div.cartodb-inset-map-box {
     margin-top: 70px;
   }
 
@@ -45,7 +46,7 @@
     margin: 41px 0 0 20px;
   }
 
-  div.cartodb-layer-selector-box { 
+  div.cartodb-layer-selector-box {
     position:relative;
     float:right;
     margin: 20px 20px 0 0;
@@ -77,8 +78,8 @@
     height:28px;
   }
 
-  div.cartodb-zoom { 
-    position:absolute; 
+  div.cartodb-zoom {
+    position:absolute;
     top: 0px;
     margin: 20px 0 0 20px;
   }

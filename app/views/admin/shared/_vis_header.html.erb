@@ -1,35 +1,32 @@
 <header class="vis">
-  <div class="inner">
-    
+  <div class="inner map_toolbar">
+
     <div class="header_content">
-
-      <div class="vis_navigation">
-        <nav>
-          <%= link_to "Data view", "#/table", :class => "smaller strong tab selected" %>
-          <%= link_to "Map view",  "#/map",   :class => "smaller strong tab" %>
-        </nav>
-      </div>
-
-      <div class="left">
+      <div class="left header_block">
         <ul class="actions">
-          <li><%= link_to "Back", CartoDB.path(self, 'root'), :class => "back" %></li>
-          <li><h1><%= link_to @visualization.name, "#/change-title", :class => "title" %></h1></li>
+          <li class="button search-bar-container" style="margin-right:0;">
+            <input id="search-bar-input" type="text" class="Form-input search-bar-input" placeholder="&lt;Search for Dataset&gt;" />
+          </li>
+          <li style="margin-left:0"><a class="Button add_new_layer" href="#/add-new-layer">Browse</a></li>
+          <li><a class="dropdown add_overlay button" href="#">Annotate</a></li>
+          <li><div class="vis_navigation">
+            <nav>
+              <%= link_to "Map",  "#/map",   :class => "smaller strong tab button" %>
+              <%= link_to "Table", "#/table", :class => "smaller strong tab hidden button" %>
+            </nav>
+          </div></li>
         </ul>
-        <div class="metadata">
-          <p><a href="#/edit-metadata">Edit metadata…</a></p>
-        </div>
       </div>
-      
-      <div class="right">
-        <ul class="options">
-          <li><%= link_to "Actions", "#/options", :class => "dropdown options" %></li>
-          <li><a class="rounded share" href="#/visualize"><span>VISUALIZE</span></a></li>
-        </ul>
-      </div>
-    </div>
 
-    <div class="sync_status"></div>
-    <div class="globalerror"></div>
+      <div class="right header_block">
+        <ul class="options">
+          <li><%= link_to "Actions", "#/options", :class => "rounded btn dropdown options" %></li>
+          <li><a class="rounded btn share" href="#/visualize"><span>EXPORT</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sync_status"></div>
+      <div class="globalerror"></div>
+    </div>
   </div>
 </header>
-

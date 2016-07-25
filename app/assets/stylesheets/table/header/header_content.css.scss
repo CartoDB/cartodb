@@ -15,13 +15,12 @@
   @import "../../old_common/vars";
   @import "../../old_common/common-sprite";
   @import "../../table/table-sprite";
-  @import "../variables/colors";
-  @import "../variables/mixins";
+  @import '../variables/mixins';
 
   $text-shadow-color: rgba(black,0.25);
 
 
-  .header_content {
+  header {
 
     div.left {
       position:relative;
@@ -136,17 +135,21 @@
 
           em { font-style: italic; }
 
-          .link { text-decoration: none; }
+          .link { text-decoration: underline; }
 
           a {
             font-style:normal;
             font-weight:300;
             color: rgba(255, 255, 255, 0.5);
             &:hover { cursor:pointer; color:rgba(255, 255, 255, 1); }
-            &.disabled {@include opacity(1)}
+            &.disabled { @include opacity(1); }
           }
         }
       }
+    }
+
+    div.right {
+      position:relative;
     }
 
     // Actions list
@@ -154,10 +157,10 @@
       @include display-flex();
       @include justify-content(flex-start, start);
       @include align-items(center, center);
-      height:28px;
+      height:45px;
       margin:0;
 
-      li { margin:0; }
+      li { margin:7px; }
 
       .privacy {
 
@@ -181,7 +184,7 @@
           height: 20px;
           background: rgba(#EEE, .8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
           @include simple-transition(all, 150ms);
-          @include border-radius(2px);
+          @include border-radius(3px);
 
           &.disabled {
             @include opacity(0.5);
@@ -194,8 +197,7 @@
 
     // Options menu
     ul.options {
-      position:absolute;
-      top:0;
+      position: absolute;
       right: 0;
       width:auto;
       margin:5px 35px 0 0;
@@ -205,40 +207,44 @@
         padding:0;
         margin:0;
 
-        a.share {
-	  @include actionButton;
-          line-height:20px;
-          span{
-            @include inline-block();          
-            font-size: 12px;
+        a.btn {
+          @include bb_button_style;
+          height: 40px;
+          line-height:40px;
+          span {
+            @include inline-block();
+          }
+          &.dropdown {
+            padding: 0 24px 0 5px;
           }
         }
 
-        &.dropdown { 
-          padding-right: 12px; 
-          @include bb_button_style; 
-        }
 
         &:after {
           position:absolute;
           content:'';
           top:0px;
           right:0;
-          margin:0;
+          margin:0 10px 0 0;
           width: 1px;
           height: 16px;
         }
 
         &:last-child {
-          margin-left: 15px;
+          margin-left: 12px;
           &:after { display:none; }
         }
 
         a {
-          display: block;
-          font-weight:300;
+          display: block;          
         }
 
       }
+    }
+
+    .export-options {
+      position: absolute;
+      top: 100px;
+      right: 20px;
     }
   }

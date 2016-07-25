@@ -10,41 +10,49 @@
 @import "../../old_common/common-sprite";
 @import "../../table/table-sprite";
 @import "../variables/colors";
+@import "../variables/mixins";
 
 $corner_radius: 0px;
 
 .table_panel {
   position:fixed;
   right:-537px;
-  top:78px;
+  top:79px;
   bottom:0px;
-  width:600px;
-  background:$DarkGrey3;
-  letter-spacing:-4px;
-  border:1px solid $Black;
+  width:601px;
+
+  background-color: rgba(0,0,0, 0.32);  
+  border-left: 1px solid $Black;
   border-bottom:0;
   border-right:0;
-  @include box-shadow(rgba(black,0.15) 0 0 2px 2px);
-  @include border-top-left-radius($corner_radius);
   z-index:20;
+
+  .collapse {
+    @include bb_button_style;
+    border-radius: 0px;
+    border: 1px solid black;
+    border-right: 0px;
+    left: -21px;
+    position: absolute;
+    width: 20px;
+    height: 32px;
+    padding: 0px;
+    top: -1px;
+    background-image: url(../images/bb_icon_open.png);
+    &.open {
+      background-image: url(../images/bb_icon_collapse.png);
+    } 
+  }
 
 //bb_layer_panel
   .layer_panel {
     position:relative;
     width:100%;
     height:100%;
-    margin-top:-25px;
     background:$DarkGrey2;
     border-top:1px solid $Black;
-    @include border-top-left-radius($corner_radius);
-    @include box-shadow(rgba(black,0.1) 0 -10px 20px 0);
-    @include transform-style("linear");
-    @include transition-property("padding,margin");
-    @include transition-duration(250ms);
     z-index:1;
-
-    &:first-child {margin-top:0;}
-  }
+  } 
 
 
 
@@ -87,42 +95,14 @@ $corner_radius: 0px;
     }
   }
 
-  // Active layer
-  .layer_panel.active {
-    margin-bottom:20px;
-    padding-bottom:0;
-
-    .layer-info .info {
-      .order {background:#666666;}
-      .name_info {color:$Grey2;}
-      .name { color:$Grey1; }
-    }
-
-  }
-
-  // Active layer in visualization
-  .layer_panel.active.vis {
-    .layer-info {
-    }
-  }
-
-  // Opened layer in visualization
-  &.opened .layer_panel.active.vis {
-    .layer-info {
-      line-height:46px;
-    }
-  }
-
-  &.opened .layer_panel.vis {
-    .layer-info {
-      line-height:46px;
-    }
-  }
-
   // Only hover state for visualizations, not for table view,
   // due to it is not possible drag layers in table view.
   &.ui-sortable .layer_panel.active .layer-info .info:hover {
     cursor:move;
   }
 
+}
+//bb_override_lineheight
+.table_panel.opened .layer_panel.vis .layer-info {
+  line-height: 28px;
 }

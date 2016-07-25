@@ -19,6 +19,7 @@ module CartoDB
       SCHEMA_IMPORTER = 'cdb_importer'.freeze
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
+      SCHEMA_COMMON_DATA = Cartodb::config[:fdw]['remote_schema'].freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.2.0'.freeze
 
       def initialize(user)
@@ -194,7 +195,7 @@ module CartoDB
       # Centralized method to provide the (ordered) search_path
       def self.build_search_path(user_schema, quote_user_schema = true)
         quote_char = quote_user_schema ? "\"" : ""
-        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
+        "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, '#{SCHEMA_COMMON_DATA}', #{SCHEMA_PUBLIC}"
       end
 
       def set_database_search_path

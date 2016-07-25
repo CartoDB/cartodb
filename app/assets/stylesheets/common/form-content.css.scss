@@ -136,6 +136,7 @@ $sLabel-width: 140px;
   width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
   margin-right: $sMargin-element;
+  margin-left: $sMargin-element;
 }
 
 .Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
@@ -145,7 +146,7 @@ $sLabel-width: 140px;
 // RowData sizes
 .Form-rowData--full { width: 100% }
 .Form-rowData--longer { width: 460px }
-.Form-rowData--long { width: 380px }
+.Form-rowData--long { width: 345px }
 .Form-rowData--med { width: 300px }
 .Form-rowData--short { width: 170px }
 .Form-rowData--shorter {

@@ -46,7 +46,7 @@ module Carto
         CartoDB.notify_debug('Group already exists', { params: params })
         render json: { errors: "A group with that data already exists" }, status: 409
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e)
+        handle_statement_invalid_error(e, group)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created'), organization: @organization })
         render json: { errors: e.message }, status: 500
@@ -59,7 +59,7 @@ module Carto
         CartoDB.notify_debug('Group display name already exists', { params: params })
         render json: { errors: "A group with that name already exists" }, status: 409
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e)
+        handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500
@@ -69,7 +69,7 @@ module Carto
         @group.destroy_group_with_extension
         render json: {}, status: 204
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e)
+        handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group })
         render json: { errors: e.message }, status: 500
@@ -79,7 +79,7 @@ module Carto
         @group.add_users_with_extension(@organization_users)
         render json: {}, status: 200
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e)
+        handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
         render json: { errors: e.message }, status: 500
@@ -89,7 +89,7 @@ module Carto
         @group.remove_users_with_extension(@organization_users)
         render json: {}, status: 200
       rescue ActiveRecord::StatementInvalid => e
-        handle_statement_invalid_error(e)
+        handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB.notify_exception(e, { params: params , group: @group, user: @user })
         render json: { errors: e.message }, status: 500
@@ -146,12 +146,12 @@ module Carto
         render json: { errors: "Users #{ids} not found" }, status: 404 unless @organization_users.length > 0
       end
 
-      def handle_statement_invalid_error(e)
-        errRegexp = /ERROR:  (.*):/
-        if e.message =~ errRegexp
-          render json: { errors: errRegexp.match(e.message)[1] }, status: 409
+      def handle_statement_invalid_error(e, group)
+        err_regexp = /ERROR:  (.*)\n/
+        if e.message =~ err_regexp
+          render json: { errors: err_regexp.match(e.message)[1] }, status: 422
         else
-          CartoDB.notify_exception(e, { params: params , group: (group ? group : 'not created'), organization: @organization })
+          CartoDB.notify_exception(e, params: params, group: group ? group : 'not created', organization: @organization)
           render json: { errors: e.message }, status: 500
         end
       end

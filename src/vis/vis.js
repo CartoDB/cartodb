@@ -159,9 +159,6 @@ var VisModel = Backbone.Model.extend({
       dataviewsCollection: this._dataviewsCollection
     });
 
-    // TODO: Temporary hack so that we can forward map.reload to vis.reload
-    this.map.vis = this;
-
     // Reset the collection of overlays
     this.overlaysCollection.reset(vizjson.overlays);
 

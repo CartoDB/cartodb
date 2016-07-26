@@ -149,12 +149,6 @@ var Map = Model.extend({
 
   // INTERNAL CartoDB.js METHODS
 
-  // TODO: Get rid of this
-  reload: function (options) {
-    options = options || {};
-    this.vis.reload(options);
-  },
-
   setView: function (latlng, zoom) {
     this.set({
       center: latlng,

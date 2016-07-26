@@ -220,9 +220,7 @@ describe Carto::Api::VizJSON3Presenter do
 
       @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
       @torque_layer.options[:attribution] = 'CARTO attribution'
-      @torque_layer.options[:query] = 'select * from wadus'
-      @torque_layer.options[:cartocss] = 'some.css'
-      @torque_layer.options[:cartocss_version] = '2.1.1'
+      @torque_layer.options[:table_name] = 'wadus'
       @torque_layer.save
     end
 
@@ -272,8 +270,8 @@ describe Carto::Api::VizJSON3Presenter do
       it 'should include cartocss but not sql in torque layers' do
         torque_layer = vizjson[:layers][2]
         torque_layer.should_not include :sql
-        torque_layer.should include :cartocss
-        torque_layer.should include :cartocss_version
+        torque_layer[:cartocss].should be
+        torque_layer[:cartocss_version].should be
       end
     end
 
@@ -287,16 +285,16 @@ describe Carto::Api::VizJSON3Presenter do
 
       it 'should include sql and cartocss fields in data layers' do
         data_layer_options = vizjson[:layers][1][:options]
-        data_layer_options.should include :sql
-        data_layer_options.should include :cartocss
-        data_layer_options.should include :cartocss_version
+        data_layer_options[:sql].should be
+        data_layer_options[:cartocss].should be
+        data_layer_options[:cartocss_version].should be
       end
 
       it 'should include sql and cartocss fields in torque layers' do
         torque_layer = vizjson[:layers][2]
-        torque_layer.should include :sql
-        torque_layer.should include :cartocss
-        torque_layer.should include :cartocss_version
+        torque_layer[:sql].should be
+        torque_layer[:cartocss].should be
+        torque_layer[:cartocss_version].should be
       end
     end
   end

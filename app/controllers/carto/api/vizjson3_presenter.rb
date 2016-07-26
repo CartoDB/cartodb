@@ -363,13 +363,9 @@ module Carto
 
         torque[:cartocss] = layer_options[:tile_style]
 
-        torque[:cartocss_version] = @layer.options['style_version'] if @layer
+        torque[:cartocss_version] = layer_options[:style_version]
 
-        torque[:sql] = if layer_options[:query].present? || @layer.nil?
-                         layer_options[:query]
-                       else
-                         @layer.options['query']
-                       end
+        torque[:sql] = wrap(sql_from(@layer.options), @layer.options)
 
         torque[:source] = @layer.options['source'] if @layer.options['source'].present?
 

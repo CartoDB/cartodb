@@ -147,7 +147,7 @@ module CartoDB
         errors = []
         if params.blank?
           errors << "Connection parameters are missing"
-        elsif params['dsn'].blank? && (params['driver'].blank? || params['database'].blank?)
+        elsif params['dsn'].blank? && params['driver'].blank?
           errors << "Missing required connection parameters"
         end
         errors

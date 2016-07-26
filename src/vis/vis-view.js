@@ -73,6 +73,9 @@ var Vis = View.extend({
     var mapViewFactory = new MapViewFactory();
 
     this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
+    // Bind events before the view is rendered and layer views are added to the map
+    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+    this.mapView.render();
 
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this, {
@@ -82,8 +85,6 @@ var Vis = View.extend({
 
     var tooltipManager = new TooltipManager(this);
     tooltipManager.manage(this.mapView, this.model.map);
-
-    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
 
     // Bindings
     if (this.model.get('showLegends')) {

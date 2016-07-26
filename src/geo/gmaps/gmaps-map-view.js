@@ -95,7 +95,6 @@ var GoogleMapsMapView = MapView.extend({
     this.map.geometries.bind('remove', this._removeGeometry, this);
 
     this._bindModel();
-    this._addLayers();
     this.setAttribution();
 
     this.projector = new Projector(this._gmapsMap);

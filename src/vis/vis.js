@@ -155,8 +155,8 @@ var VisModel = Backbone.Model.extend({
       provider: vizjson.map_provider,
       vector: vizjson.vector
     }, {
-      layersCollection: this._layersCollection,
-      dataviewsCollection: this._dataviewsCollection
+      vis: this,
+      layersCollection: this._layersCollection
     });
 
     // Reset the collection of overlays

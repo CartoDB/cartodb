@@ -13,7 +13,7 @@ describe('core/geo/map', function () {
 
   beforeEach(function () {
     this.vis = jasmine.createSpyObj('vis', ['reload']);
-    map = new Map({});
+    map = new Map();
   });
 
   describe('.initialize', function () {
@@ -174,7 +174,9 @@ describe('core/geo/map', function () {
 
   describe('API methods', function () {
     beforeEach(function () {
-      this.map = new Map();
+      this.map = new Map({}, {
+        vis: {}
+      });
     });
 
     var testCases = [

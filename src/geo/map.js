@@ -25,15 +25,11 @@ var Map = Model.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
-    this.layers = options.layersCollection || new Layers();
-    this._updateAttributions();
-    this.geometries = new Backbone.Collection();
-
-    // TODO: Remove this
-    if (options.windshaftMap) throw new Error('remove windshaftMap');
-    this._dataviewsCollection = options.dataviewsCollection;
-
     attrs = attrs || {};
+
+    this.layers = options.layersCollection || new Layers();
+    this.geometries = new Backbone.Collection();
+    this._vis = options.vis;
 
     var center = attrs.center || this.defaults.center;
     if (typeof center === 'string') {
@@ -63,6 +59,8 @@ var Map = Model.extend({
     this.layers.bind('remove', this._updateAttributions, this);
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
+
+    this._updateAttributions();
   },
 
   _onLayersResetted: function () {
@@ -132,7 +130,8 @@ var Map = Model.extend({
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
     var layerModel = LayersFactory.create(type, attrs, {
-      map: this
+      map: this,
+      vis: this._vis
     });
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {

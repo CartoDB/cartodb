@@ -24,7 +24,8 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
   });
 
   return new HistogramDataviewModel(attrs, {
-    map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+    map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+    vis: jasmine.createSpyObj('map', ['reload']),
     windshaftMap: windshaftMap,
     layer: layer,
     analysisCollection: new Backbone.Collection()

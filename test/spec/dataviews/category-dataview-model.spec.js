@@ -7,7 +7,7 @@ describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();
-    this.map.reload = jasmine.createSpy();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
 
     this.layer = new Backbone.Model();
@@ -17,6 +17,7 @@ describe('dataviews/category-dataview-model', function () {
       source: {id: 'a0'}
     }, {
       map: this.map,
+      vis: this.vis,
       layer: this.layer,
       filter: new WindshaftFiltersCategory(),
       analysisCollection: new Backbone.Collection()
@@ -24,17 +25,17 @@ describe('dataviews/category-dataview-model', function () {
   });
 
   it('should reload map and force fetch on changing attrs', function () {
-    this.map.reload.calls.reset();
+    this.vis.reload.calls.reset();
     this.model.set('column', 'random_col');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
-    this.map.reload.calls.reset();
+    this.vis.reload.calls.reset();
     this.model.set('aggregation', 'count');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
 
-    this.map.reload.calls.reset();
+    this.vis.reload.calls.reset();
     this.model.set('aggregation_column', 'other');
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 
   it('should define several internal models/collections', function () {
@@ -49,6 +50,7 @@ describe('dataviews/category-dataview-model', function () {
       apiKey: 'API_KEY'
     }, {
       map: this.map,
+      vis: this.vis,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: new WindshaftFiltersCategory(),
       analysisCollection: new Backbone.Collection()

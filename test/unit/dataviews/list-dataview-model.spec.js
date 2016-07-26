@@ -5,6 +5,7 @@ describe('dataviews/list-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
 
     this.layer = new Backbone.Model();
     this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
@@ -12,15 +13,16 @@ describe('dataviews/list-dataview-model', function () {
     this.model = new ListDataviewModel({
       source: {id: 'a0'}
     }, {
-      analysisCollection: new Backbone.Collection(),
       map: this.map,
+      vis: this.vis,
+      analysisCollection: new Backbone.Collection(),
       layer: this.layer
     });
   });
 
   it('should reload map and force fetch on columns change', function () {
-    this.map.reload.calls.reset();
+    this.vis.reload.calls.reset();
     this.model.set('columns', ['asd']);
-    expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+    expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
   });
 });

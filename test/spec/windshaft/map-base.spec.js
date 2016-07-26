@@ -80,8 +80,7 @@ describe('windshaft/map-base', function () {
         view_bounds_sw: [],
         view_bounds_ne: []
       });
-      // TODO: Remove this
-      this.map.vis = { reload: function () {} };
+      this.vis = { reload: function () {} };
 
       this.filter = new CategoryFilter({
         dataviewId: 'dataviewId'
@@ -93,6 +92,7 @@ describe('windshaft/map-base', function () {
         source: { id: 'a0' }
       }, {
         map: this.map,
+        vis: this.vis,
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,
         filter: this.filter,

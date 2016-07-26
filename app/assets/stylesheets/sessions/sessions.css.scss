@@ -80,10 +80,10 @@ $cWhite: #FFFFFF;
 }
 
 .Sessions .Sessions-title {
-  font-weight: 300;
-  font-size: 32px;
-  line-height: 48px;
   color: $cNavyBlue;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 48px;
 }
 
 .Sessions-navy .Sessions-title {
@@ -98,12 +98,12 @@ $cWhite: #FFFFFF;
 }
 
 .Sessions .Sessions-description {
-  font-weight: 200;
-  font-size: 13px;
-  line-height: 20px;
   margin-bottom: 16px;
-  text-align: center;
   color: #979EA1;
+  font-size: 13px;
+  font-weight: 200;
+  line-height: 20px;
+  text-align: center;
 
   a {
     color: $cLocationBlue;

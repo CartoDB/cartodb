@@ -350,6 +350,10 @@ module Carto
         attributes.merge(type: attributes.delete(:kind))
       end
 
+      def attribution
+        @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')
+      end
+
       def as_torque
         layer_options = @layer.options.deep_symbolize_keys
 
@@ -358,7 +362,7 @@ module Carto
           type:       'torque',
           order:      @layer.order,
           legend:     @layer.legend,
-          options:    layer_options.select { |k| TORQUE_ATTRS.include? k }
+          options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
         }
 
         torque[:cartocss] = layer_options[:tile_style]
@@ -378,7 +382,7 @@ module Carto
           cartocss:           css_from(@layer.options),
           cartocss_version:   @layer.options.fetch('style_version'),
           interactivity:      @layer.options.fetch('interactivity'),
-          attribution:        @layer.options.fetch('attribution', '')
+          attribution:        attribution
         }
         source = @layer.options['source']
         if source

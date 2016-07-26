@@ -219,7 +219,6 @@ describe Carto::Api::VizJSON3Presenter do
       @data_layer.save
 
       @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
-      @torque_layer.options[:attribution] = 'CARTO attribution'
       @torque_layer.options[:table_name] = 'wadus'
       @torque_layer.save
     end

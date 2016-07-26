@@ -28,6 +28,10 @@ describe Carto::Api::VisualizationsController do
       def vizjson_vx_version
         '0.1.0'
       end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
+      end
     end
   end
 
@@ -39,6 +43,12 @@ describe Carto::Api::VisualizationsController do
 
       def vizjson_vx_version
         '3.0.0'
+      end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'].select { |l| l['type'] == 'CartoDB' }
+                               .map { |l| l['options']['attribution'] }
+                               .select(&:present?)
       end
     end
   end

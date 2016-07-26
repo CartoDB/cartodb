@@ -294,7 +294,8 @@ module CartoDB
       end
 
       def visualization_owner_is_table_owner?
-        layer.options.nil? || layer.options['user_name'].nil? || layer.options['user_name'] == layer.user.username
+        layer.options.nil? || layer.options['user_name'].nil? || layer.user.nil? ||
+          layer.options['user_name'] == layer.user.username
       end
     end
   end

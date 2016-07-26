@@ -156,7 +156,6 @@ var VisModel = Backbone.Model.extend({
       vector: vizjson.vector
     }, {
       layersCollection: this._layersCollection,
-      windshaftMap: this._windshaftMap,
       dataviewsCollection: this._dataviewsCollection
     });
 

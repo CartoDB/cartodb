@@ -30,7 +30,7 @@ var Map = Model.extend({
     this.geometries = new Backbone.Collection();
 
     // TODO: Remove this
-    this._windshaftMap = options.windshaftMap;
+    if (options.windshaftMap) throw new Error('remove windshaftMap');
     this._dataviewsCollection = options.dataviewsCollection;
 
     attrs = attrs || {};

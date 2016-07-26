@@ -54,10 +54,11 @@ describe('windshaft/map-base', function () {
       userName: 'rambo'
     });
 
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.cartoDBLayerGroup = new Model();
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' });
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' });
-    this.torqueLayer = new TorqueLayer();
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
+    this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
 
     this.windshaftMap = new WindshaftMap({
       statTag: 'stat_tag'
@@ -80,7 +81,6 @@ describe('windshaft/map-base', function () {
         view_bounds_sw: [],
         view_bounds_ne: []
       });
-      this.vis = { reload: function () {} };
 
       this.filter = new CategoryFilter({
         dataviewId: 'dataviewId'

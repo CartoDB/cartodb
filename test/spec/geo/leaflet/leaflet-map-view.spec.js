@@ -28,12 +28,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'width': '200px'
     });
 
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var fakeWindshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance', 'bind']);
-
-    map = new Map(null, {
-      windshaftMap: fakeWindshaftMap
-    });
+    map = new Map(null);
 
     mapView = new LeafletMapView({
       el: container,
@@ -50,6 +45,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:keyboard', spy.keyboardChanged);
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
+
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
   });
 
   it('should change bounds when center is set', function () {
@@ -147,8 +144,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer();
-    var cartoDBLayer2 = new CartoDBLayer();
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
     var tileLayer = new TileLayer({ urlTemplate: 'test' });
 
     map.addLayer(cartoDBLayer1);
@@ -386,7 +383,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       // Add a CartoDB layer with some custom attribution
       layer = new CartoDBLayer({
         attribution: 'custom attribution'
-      });
+      }, { vis: this.vis });
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
@@ -416,7 +413,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
       // Add a CartoDB layer with some custom attribution
       layer = new CartoDBLayer({
         attribution: 'custom attribution'
-      });
+      }, { vis: this.vis });
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();

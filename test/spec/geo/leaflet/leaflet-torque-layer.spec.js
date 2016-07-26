@@ -13,6 +13,7 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
       'height': '200px',
       'width': '200px'
     });
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.map = new Map();
     this.mapView = new LeafletMapView({
       el: container,
@@ -28,7 +29,7 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
       sql: 'select * from table',
       cartocss: '#test {}',
       dynamic_cdn: 'dynamic-cdn-value'
-    });
+    }, { vis: this.vis });
     this.map.addLayer(model);
     this.view = this.mapView._layerViews[model.cid];
   });
@@ -39,7 +40,9 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
     expect(this.view instanceof L.TorqueLayer).toEqual(true);
 
     this.view.check = 'testing';
-    var newLayer = this.view.model.clone();
+    var newLayer = new TorqueLayer(this.view.model.attributes, {
+      vis: this.vis
+    });
     newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
     this.map.layers.reset([newLayer]);
 

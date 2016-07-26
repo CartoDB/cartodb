@@ -7,11 +7,7 @@ var InfowindowManager = require('../../../src/vis/infowindow-manager');
 
 describe('src/vis/infowindow-manager.js', function () {
   beforeEach(function () {
-    var windshaftMap = new Backbone.Model({});
-    // TODO: Remove this?
-    this.map = new Map({}, {
-      windshaftMap: windshaftMap
-    });
+    this.map = new Map({}, {});
     this.layerView = new Backbone.Model();
     var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     layerViewFactory.createLayerView.and.returnValue(this.layerView);
@@ -43,7 +39,7 @@ describe('src/vis/infowindow-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     this.map.layers.reset([ layer ]);
 
@@ -64,7 +60,7 @@ describe('src/vis/infowindow-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -84,7 +80,7 @@ describe('src/vis/infowindow-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -104,7 +100,7 @@ describe('src/vis/infowindow-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var layer2 = new CartoDBLayer({
       infowindow: {
@@ -114,7 +110,7 @@ describe('src/vis/infowindow-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -138,7 +134,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
 
     var layer2 = new CartoDBLayer({
       infowindow: {
@@ -151,7 +147,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -274,7 +270,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
 
     var layer2 = new CartoDBLayer({
       infowindow: {
@@ -287,7 +283,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -316,7 +312,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -383,7 +379,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -461,7 +457,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -510,7 +506,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -552,7 +548,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -597,7 +593,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -621,7 +617,7 @@ describe('src/vis/infowindow-manager.js', function () {
     infowindowManager._infowindowModel.setInfowindowTemplate(layer.infowindow);
     infowindowManager._infowindowModel.set('visibility', true);
 
-    spyOn(this.vis, 'reload');
+    this.vis.reload.calls.reset();
 
     layer.infowindow.update({
       fields: [
@@ -633,7 +629,7 @@ describe('src/vis/infowindow-manager.js', function () {
       ]
     });
 
-    expect(this.map.reload.calls.argsFor(0)[0].success).toEqual(jasmine.any(Function));
+    expect(this.vis.reload.calls.argsFor(0)[0].success).toEqual(jasmine.any(Function));
   });
 
   it('should hide the infowindow when fields are cleared in the infowindow template', function () {
@@ -642,7 +638,6 @@ describe('src/vis/infowindow-manager.js', function () {
     tooltipView.setFilter.and.returnValue(tooltipView);
     this.layerView.tooltipView = tooltipView;
 
-    spyOn(this.map, 'reload');
     spyOn(this.mapView, 'addInfowindow');
 
     var layer1 = new CartoDBLayer({
@@ -656,7 +651,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var layer2 = new CartoDBLayer({
       infowindow: {
@@ -669,7 +664,7 @@ describe('src/vis/infowindow-manager.js', function () {
         }],
         alternative_names: 'alternative_names'
       }
-    });
+    }, { vis: this.vis });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);

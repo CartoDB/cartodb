@@ -25,7 +25,7 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
 
   return new HistogramDataviewModel(attrs, {
     map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
-    vis: jasmine.createSpyObj('map', ['reload']),
+    vis: this.vis,
     windshaftMap: windshaftMap,
     layer: layer,
     analysisCollection: new Backbone.Collection()
@@ -35,12 +35,14 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
     this.analysisCollection = new Backbone.Collection();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer2 = new CartoDBLayer({
@@ -49,6 +51,7 @@ describe('windshaft/anonymous-map', function () {
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer3 = new CartoDBLayer({
@@ -57,6 +60,7 @@ describe('windshaft/anonymous-map', function () {
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
 
@@ -211,6 +215,8 @@ describe('windshaft/anonymous-map', function () {
         id: 'torqueId',
         sql: 'sql',
         cartocss: 'cartocss'
+      }, {
+        vis: this.vis
       }));
 
       expect(this.map.toJSON()).toEqual({
@@ -245,7 +251,8 @@ describe('windshaft/anonymous-map', function () {
           id: 'a0'
         }
       }, {
-        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+        vis: this.vis,
         windshaftMap: this.map,
         layer: this.cartoDBLayer1,
         analysisCollection: new Backbone.Collection()
@@ -259,7 +266,8 @@ describe('windshaft/anonymous-map', function () {
           id: 'a1'
         }
       }, {
-        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+        vis: this.vis,
         windshaftMap: this.map,
         layer: this.cartoDBLayer2,
         analysisCollection: new Backbone.Collection()
@@ -328,7 +336,7 @@ describe('windshaft/anonymous-map', function () {
         this.analysisFactory = new AnalysisFactory({
           analysisCollection: this.analysisCollection,
           camshaftReference: fakeCamshaftReference,
-          vis: jasmine.createSpyObj('vis', ['reload'])
+          vis: this.vis
         });
       });
 

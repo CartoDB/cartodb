@@ -12,7 +12,8 @@ describe('core/geo/map', function () {
   var map;
 
   beforeEach(function () {
-    map = new Map();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    map = new Map({});
   });
 
   describe('.initialize', function () {
@@ -114,10 +115,10 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' });
-    var layer4 = new CartoDBLayer({ attribution: '' });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
 
     map.layers.reset([ layer1, layer2, layer3, layer4 ]);
 
@@ -128,7 +129,7 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { vis: this.vis });
 
     map.layers.add(layer);
 
@@ -159,7 +160,7 @@ describe('core/geo/map', function () {
     ]);
 
     // Addind a layer with the default attribution
-    layer = new CartoDBLayer();
+    layer = new CartoDBLayer({}, { vis: this.vis });
 
     map.layers.add(layer, { at: 0 });
 
@@ -173,10 +174,7 @@ describe('core/geo/map', function () {
 
   describe('API methods', function () {
     beforeEach(function () {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      this.map = new Map({}, {
-        windshaftMap: windshaftMap
-      });
+      this.map = new Map();
     });
 
     var testCases = [
@@ -346,7 +344,7 @@ describe('core/geo/map', function () {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });
 
       map.layers.reset(layer1);
     });

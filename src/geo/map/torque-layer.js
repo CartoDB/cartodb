@@ -32,14 +32,13 @@ var TorqueLayer = LayerModelBase.extend({
   LAYER_NAME_IN_CARTO_CSS: 'Map',
 
   initialize: function (attrs, options) {
+    options = options || {};
     if (!options.vis) throw new Error('vis is required');
 
-    LayerModelBase.prototype.initialize.apply(this, arguments);
-    options = options || {};
-
-    // TODO: Make this "required"
     this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
+
+    LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {

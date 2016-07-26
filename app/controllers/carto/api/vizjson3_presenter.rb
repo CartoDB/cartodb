@@ -146,7 +146,8 @@ module Carto
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        if display_named_map?(@visualization, forced_privacy_version)
+        display_named_map = display_named_map?(@visualization, forced_privacy_version)
+        if display_named_map
           presenter_options = {
             user_name: options.fetch(:user_name),
             https_request: options.fetch(:https_request, false),
@@ -156,25 +157,24 @@ module Carto
             layers_data.push(VizJSON3NamedMapLayerPresenter.new(layer, presenter_options, configuration).to_vizjson)
           end
         else
-          named_maps_presenter = nil
           @visualization.data_layers.map do |layer|
             layers_data.push(VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson)
           end
         end
 
-        layers_data.push(other_layers_vizjson(options, named_maps_presenter))
+        layers_data.push(other_layers_vizjson(options, display_named_map))
 
         layers_data += non_basemap_base_layers_for(options)
 
         layers_data.compact.flatten
       end
 
-      def other_layers_vizjson(options, named_maps_presenter = nil)
+      def other_layers_vizjson(options, display_named_map)
         layer_index = @visualization.data_layers.size
 
         @visualization.other_layers.map do |layer|
-          decoration_data_to_apply = if named_maps_presenter
-                                       named_maps_presenter.get_decoration_for_layer(layer)
+          decoration_data_to_apply = if display_named_map
+                                       { query: nil } # Remove torque layer query in named maps
                                      else
                                        {}
                                      end
@@ -257,8 +257,6 @@ module Carto
     class VizJSON3NamedMapLayerPresenter
       include ApiTemplates
 
-      LAYER_TYPES_TO_DECORATE = ['torque'].freeze
-
       def initialize(layer, options, configuration)
         @options            = options
         @configuration      = configuration
@@ -270,16 +268,6 @@ module Carto
       def to_vizjson
         layer_vizjson = VizJSON3LayerPresenter.new(@layer, @options, @configuration).to_vizjson
         data_for_carto_layer(layer_vizjson)
-      end
-
-      # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
-      # - Parameters set inside as nil will remove the field itself from the layer data
-      def get_decoration_for_layer(layer_type)
-        return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
-
-        {
-          query: nil # do not expose SQL query on Torque layers with named maps
-        }
       end
 
       private

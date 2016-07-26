@@ -6,6 +6,7 @@ var CartoDBLayerGroupAnonymousMap = require('../../../src/geo/cartodb-layer-grou
 describe('geo/layer-group-anonymous-map', function () {
   beforeEach(function () {
     this.layersCollection = new Layers();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
   });
 
   // TODO: This test is a bit useless
@@ -18,8 +19,8 @@ describe('geo/layer-group-anonymous-map', function () {
 
   describe('fetchAttributes', function () {
     it('should calculate indexes correctly', function () {
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       spyOn($, 'ajax').and.callFake(function (options) {
         options.success('attributes!');
@@ -67,8 +68,8 @@ describe('geo/layer-group-anonymous-map', function () {
     });
 
     it('should generate the TileJSON when all layers are visible', function () {
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       var layerGroup = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'
@@ -113,8 +114,8 @@ describe('geo/layer-group-anonymous-map', function () {
     });
 
     it('should NOT include grid URLs for hidden layers', function () {
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       var layerGroup = new CartoDBLayerGroupAnonymousMap({
         baseURL: 'http://wadus.com'

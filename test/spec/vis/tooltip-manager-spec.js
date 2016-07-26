@@ -26,7 +26,8 @@ describe('src/vis/tooltip-manager.js', function () {
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
     this.vis = {
-      mapView: this.mapView
+      mapView: this.mapView,
+      reload: jasmine.createSpy('reload')
     };
   });
 

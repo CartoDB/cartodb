@@ -8,6 +8,7 @@ var InfowindowManager = require('../../../src/vis/infowindow-manager');
 describe('src/vis/infowindow-manager.js', function () {
   beforeEach(function () {
     var windshaftMap = new Backbone.Model({});
+    // TODO: Remove this?
     this.map = new Map({}, {
       windshaftMap: windshaftMap
     });
@@ -26,7 +27,8 @@ describe('src/vis/infowindow-manager.js', function () {
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
     this.vis = {
-      mapView: this.mapView
+      mapView: this.mapView,
+      reload: jasmine.createSpy('reload')
     };
   });
 
@@ -539,8 +541,6 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should reload the map when the infowindow template gets new fields', function () {
-    spyOn(this.map, 'reload');
-
     var layer = new CartoDBLayer({
       infowindow: {
         template: 'template',
@@ -580,7 +580,7 @@ describe('src/vis/infowindow-manager.js', function () {
       ]
     });
 
-    expect(this.map.reload).toHaveBeenCalledWith({});
+    expect(this.vis.reload).toHaveBeenCalledWith({});
   });
 
   it('should reload the map and fetch attributes when the infowindow template is active (visible) and it gets fields', function () {
@@ -621,7 +621,7 @@ describe('src/vis/infowindow-manager.js', function () {
     infowindowManager._infowindowModel.setInfowindowTemplate(layer.infowindow);
     infowindowManager._infowindowModel.set('visibility', true);
 
-    spyOn(this.map, 'reload');
+    spyOn(this.vis, 'reload');
 
     layer.infowindow.update({
       fields: [
@@ -702,7 +702,7 @@ describe('src/vis/infowindow-manager.js', function () {
 
     // Nothing happened
     expect(infowindowView.model.get('visibility')).toBe(true);
-    expect(this.map.reload).not.toHaveBeenCalledWith({});
+    expect(this.vis.reload).not.toHaveBeenCalledWith({});
 
     // Clear fields on layer #0 (the one that was opened)
     layer1.infowindow.update({
@@ -711,6 +711,6 @@ describe('src/vis/infowindow-manager.js', function () {
 
     // Infowindow has been closed and map has NOT been reloaded
     expect(infowindowView.model.get('visibility')).toBe(false);
-    expect(this.map.reload).not.toHaveBeenCalledWith({});
+    expect(this.vis.reload).not.toHaveBeenCalledWith({});
   });
 });

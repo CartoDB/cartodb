@@ -6,6 +6,7 @@ var CartoDBLayerGroupNamed = require('../../../src/geo/cartodb-layer-group-named
 describe('geo/cartodb-layer-group-named-map', function () {
   beforeEach(function () {
     this.layersCollection = new Layers();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
   });
 
   // TODO: This test is a bit useless
@@ -18,8 +19,8 @@ describe('geo/cartodb-layer-group-named-map', function () {
 
   describe('fetchAttributes', function () {
     it('should calculate indexes correctly', function () {
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       spyOn($, 'ajax').and.callFake(function (options) {
         options.success('attributes!');
@@ -68,8 +69,8 @@ describe('geo/cartodb-layer-group-named-map', function () {
     });
 
     it('should be return the TileJSON for the given layerIndex', function () {
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       var layerGroup = new CartoDBLayerGroupNamed({
         baseURL: 'http://wadus.com'

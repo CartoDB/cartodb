@@ -189,7 +189,7 @@ var VisModel = Backbone.Model.extend({
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
-    var layerModels = this._newLayerModels(vizjson, this.map);
+    var layerModels = this._newLayerModels(vizjson);
     this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate
@@ -327,11 +327,11 @@ var VisModel = Backbone.Model.extend({
     this.map.reCenter();
   },
 
-  _newLayerModels: function (vizjson, map) {
+  _newLayerModels: function (vizjson) {
     var layerModels = [];
     var layersOptions = {
       https: this.get('https'),
-      map: map
+      vis: this
     };
     _.each(vizjson.layers, function (layerData) {
       if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {

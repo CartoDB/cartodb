@@ -14,11 +14,15 @@ var CartoDBLayer = LayerModelBase.extend({
   ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'],
 
   initialize: function (attrs, options) {
+    if (!options.vis) throw new Error('vis is required');
+
     attrs = attrs || {};
     LayerModelBase.prototype.initialize.apply(this, arguments);
+
     options = options || {};
 
-    this._map = options.map;
+    // TODO: Make this "required"
+    this._vis = options.vis;
     if (attrs && attrs.cartocss) {
       this.set('initialStyle', attrs.cartocss);
     }
@@ -47,8 +51,9 @@ var CartoDBLayer = LayerModelBase.extend({
     }
   },
 
+  // TODO: Rename
   _reloadMap: function () {
-    this._map.reload({
+    this._vis.reload({
       sourceId: this.get('id')
     });
   },

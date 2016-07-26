@@ -2,10 +2,19 @@
 </div>
 <div class="BlockList-inner u-ellipsis">
   <div class="BlockList-title u-bSpace">
-    <h2 class="BlockList-titleText CDB-Text CDB-Size-large u-ellipsis"><%- title %></h2>
-    <button class="CDB-Shape js-remove">
+    <div class="BlockList-titleText js-header"></div>
+
+    <div class="CDB-Shape">
+      <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+      </button>
+    </div>
+
+    <!-- <button class="CDB-Shape js-remove">
       <div class="CDB-Shape-close is-blue is-large"></div>
-    </button>
+    </button> -->
   </div>
   <div class="u-flex">
     <span

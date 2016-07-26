@@ -440,7 +440,7 @@ div.map {
 
   &.table div.cartodb-map {
 
-    @include position(66px, 0, 0, 0);
+    @include position(0, 0, 0, 0);
     @include border-radius(0);
 
   }

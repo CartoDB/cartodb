@@ -71,10 +71,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def update
-    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url)
+    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url, :app_type)
     @mobile_app.name = updated_attributes[:name]
     @mobile_app.icon_url = updated_attributes[:icon_url]
     @mobile_app.description = updated_attributes[:description]
+    @mobile_app.app_type = updated_attributes[:app_type] if @mobile_app.app_type === 'dev'
 
     unless @mobile_app.valid?
       @max_dev_users = Carto::MobileApp::MAX_DEV_USERS

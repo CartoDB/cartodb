@@ -76,7 +76,7 @@ describe('geo/cartodb-layer-group-base', function () {
   describe('fetchAttributes', function () {
     it('should trigger a request to the right URL', function () {
       var callback = jasmine.createSpy('callback');
-      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
 
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
@@ -98,7 +98,7 @@ describe('geo/cartodb-layer-group-base', function () {
 
     it('should not trigger a request when the layer index is invalid and callback should return null', function () {
       var callback = jasmine.createSpy('callback');
-      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
 
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
@@ -120,7 +120,7 @@ describe('geo/cartodb-layer-group-base', function () {
 
     it('should invoke the callback with null when the ajax request fails', function () {
       var callback = jasmine.createSpy('callback');
-      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
 
       var layer = new MyCartoDBLayerGroup({
         baseURL: 'http://wadus.com'
@@ -142,7 +142,7 @@ describe('geo/cartodb-layer-group-base', function () {
 
     it('should use an api_key if WindhsaftMap has one', function () {
       var callback = jasmine.createSpy('callback');
-      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
 
       var layer = new MyCartoDBLayerGroup({
         apiKey: 'THE_API_KEY',

@@ -14,8 +14,8 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
   });
 
   it('should register a new GeoJSONDataProvider on each CartoDBLayer on the layergroup', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });;
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
     this.layerGroupModel.layers = new Backbone.Collection([
       cartoDBLayer1, cartoDBLayer2
     ]);
@@ -32,8 +32,8 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
   it('should register a new GeoJSONDataProvider on new CartoDBLayers added to the layergroup after the layer view has been initialized', function () {
     new LeafletCartoDBVectorLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
 
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });;
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
     expect(cartoDBLayer1.getDataProvider()).toBeUndefined();
     expect(cartoDBLayer2.getDataProvider()).toBeUndefined();
@@ -46,7 +46,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
   });
 
   it('should translate internal L.CartoDBd3Layer events to Backbone events', function (done) {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
     this.layerGroupModel.layers = new Backbone.Collection([
       cartoDBLayer1
     ]);
@@ -78,8 +78,8 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
     });
   });
   it('should call setUrl when all named map styles have been added', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });;
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });;
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
     L.CartoDBd3Layer.prototype.setUrl = jasmine.createSpy();
     LeafletCartoDBVectorLayerGroupView.prototype._onTileJSONChanged = function () {
       this.options.styles = [undefined, undefined];

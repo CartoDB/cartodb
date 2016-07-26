@@ -74,8 +74,7 @@ module Carto
       def default_options
         user = @visualization.user
 
-        {
-          full: false,
+
           visualization_id: @visualization.id,
           https_request: false,
           attributions: @visualization.attributions_from_derived_visualizations,
@@ -404,31 +403,27 @@ module Carto
       end
 
       def options_data
-        if @options[:full]
-          decorate_with_data(@layer.options, @decoration_data)
+        data = {
+          layer_name:         layer_name,
+          cartocss:           css_from(@layer.options),
+          cartocss_version:   @layer.options.fetch('style_version'),
+          interactivity:      @layer.options.fetch('interactivity'),
+          attribution:        @layer.options.fetch('attribution', '')
+        }
+        source = @layer.options['source']
+        if source
+          data[:source] = source
+          data.delete(:sql)
         else
-          data = {
-            layer_name:         layer_name,
-            cartocss:           css_from(@layer.options),
-            cartocss_version:   @layer.options.fetch('style_version'),
-            interactivity:      @layer.options.fetch('interactivity'),
-            attribution:        @layer.options.fetch('attribution', '')
-          }
-          source = @layer.options['source']
-          if source
-            data[:source] = source
-            data.delete(:sql)
-          else
-            data[:sql] = wrap(sql_from(@layer.options), @layer.options)
-          end
-
-          sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
-          data[:sql_wrap] = sql_wrap if sql_wrap
-
-          data = decorate_with_data(data, @decoration_data)
-
-          data
+          data[:sql] = wrap(sql_from(@layer.options), @layer.options)
         end
+
+        sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+        data[:sql_wrap] = sql_wrap if sql_wrap
+
+        data = decorate_with_data(data, @decoration_data)
+
+        data
       end
 
       def layer_name

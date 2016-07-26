@@ -538,7 +538,8 @@ module Carto
             layer_name:         layer_name,
             cartocss:           css_from(@layer.options),
             cartocss_version:   @layer.options.fetch('style_version'),
-            interactivity:      @layer.options.fetch('interactivity')
+            interactivity:      @layer.options.fetch('interactivity'),
+            attribution:        @layer.options.fetch('attribution', '')
           }
           source = @layer.options['source']
           if source

@@ -599,6 +599,13 @@ CartoDB::Application.routes.draw do
     resources :feature_flags
   end
 
+  scope module: 'carto' do
+    namespace :superadmin do
+      resources :user_migration_exports, only: [:show, :create]
+      resources :user_migration_imports, only: [:show, :create]
+    end
+  end
+
   scope :module => 'superadmin', :format => :json do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
     get '/superadmin/stats/total_users' => 'platform#total_users'

@@ -1,6 +1,7 @@
 FactoryGirl.define do
 
   factory :organization do
+    to_create(&:save)
     name 'vizzuality'
     seats 10
     quota_in_bytes 100.megabytes
@@ -30,5 +31,4 @@ FactoryGirl.define do
       end
     end
   end
-
 end

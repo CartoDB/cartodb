@@ -21,6 +21,7 @@ module CartoDB
         @options = default_options.merge(options)
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
+        @@importjob_logger = @options[:import_job_logger]
 
         @user_import_jobs = Array.new
 
@@ -562,6 +563,7 @@ module CartoDB
         user_model.db_service.setup_organization_owner if @target_is_owner
         user_model.db_service.monitor_user_notification # Used to inform the database_server
         user_model.db_service.configure_database
+        user_model.db_service.monitor_user_notification
       end
 
       def update_metadata_user(target_dbhost)

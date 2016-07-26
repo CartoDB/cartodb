@@ -180,8 +180,8 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should eq query
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
+      v3_vizjson[:layers][1][:options][:sql].should eq query
+      v3_vizjson[:layers][1][:options][:source].should be_nil
 
       source = 'a1'
       layer.options['source'] = source
@@ -196,8 +196,8 @@ describe Carto::Api::VizJSON3Presenter do
       v2_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
       nm_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq(id: source)
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql].should be_nil
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:source].should eq source
+      v3_vizjson[:layers][1][:options][:sql].should be_nil
+      v3_vizjson[:layers][1][:options][:source].should eq source
     end
   end
 
@@ -206,7 +206,7 @@ describe Carto::Api::VizJSON3Presenter do
 
     it 'v3 should include sql_wrap' do
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
-      v3_vizjson[:layers][1][:options][:layer_definition][:layers][0][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
+      v3_vizjson[:layers][1][:options][:sql_wrap].should eq "select * from (<%= sql %>) __wrap"
     end
   end
 

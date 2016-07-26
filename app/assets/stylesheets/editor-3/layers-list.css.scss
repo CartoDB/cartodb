@@ -140,7 +140,7 @@
   background: #FFF;
 }
 .Editor-ListAnalysis-item.has-error {
-  &::after {
+  .Editor-ListAnalysis-itemError {
     display: block;
     position: absolute;
     top: -5px;

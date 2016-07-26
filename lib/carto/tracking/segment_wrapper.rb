@@ -4,7 +4,7 @@ module Carto
       def send_event(user, name, properties = {})
         return unless segment_enabled?
 
-        Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user.id, name, properties)
+        Resque.enqueue(Resque::EventDeliveryJobs::TrackEvent, user ? user.id : nil, name, properties)
       end
 
       private

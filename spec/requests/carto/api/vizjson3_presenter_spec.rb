@@ -220,6 +220,7 @@ describe Carto::Api::VizJSON3Presenter do
 
       @torque_layer = FactoryGirl.create(:carto_layer, kind: 'torque', maps: [@map])
       @torque_layer.options[:attribution] = 'CARTO attribution'
+      @torque_layer.options[:query] = 'select * from wadus'
       @torque_layer.save
     end
 
@@ -238,6 +239,16 @@ describe Carto::Api::VizJSON3Presenter do
 
       it 'should include attribution for all layers' do
         vizjson[:layers].each { |l| l[:options].should include :attribution }
+      end
+
+      it 'should not include named map options in any layers' do
+        vizjson[:layers].each do |l|
+          options = l[:options]
+          options.should_not include :stat_tag
+          options.should_not include :maps_api_template
+          options.should_not include :sql_api_template
+          options.should_not include :named_map
+        end
       end
     end
 

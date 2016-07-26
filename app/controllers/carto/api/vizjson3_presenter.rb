@@ -152,9 +152,9 @@ module Carto
             https_request: options.fetch(:https_request, false),
             owner: @visualization.user
           }
-          named_maps_presenter = VizJSON3NamedMapPresenter.new(
-            @visualization, layer_group_for_named_map(options), presenter_options, configuration)
-          layers_data.push(named_maps_presenter.to_vizjson)
+          @visualization.data_layers.map do |layer|
+            layers_data.push(VizJSON3NamedMapLayerPresenter.new(layer, presenter_options, configuration).to_vizjson)
+          end
         else
           named_maps_presenter = nil
           @visualization.data_layers.map do |layer|
@@ -169,34 +169,12 @@ module Carto
         layers_data.compact.flatten
       end
 
-      def layer_group_for_named_map(options)
-        layer_group_poro = layer_group_for(options)
-        # If there is *only* a torque layer, there is no layergroup
-        return {} unless layer_group_poro
-
-        layers_data = Array.new
-        layer_num = 0
-        layer_group_poro[:options][:layer_definition][:layers].each do |layer|
-          layers_data.push(type:       layer[:type],
-                           options:    layer[:options],
-                           visible:    layer[:visible],
-                           index:      layer_num
-                          )
-          layer_num += 1
-        end
-        layers_data
-      end
-
-      def layer_group_for(options)
-        VizJSON3LayerGroupPresenter.new(@visualization.data_layers, options, configuration).to_vizjson
-      end
-
       def other_layers_vizjson(options, named_maps_presenter = nil)
         layer_index = @visualization.data_layers.size
 
         @visualization.other_layers.map do |layer|
           decoration_data_to_apply = if named_maps_presenter
-                                       named_maps_presenter.get_decoration_for_layer(layer.kind, layer_index)
+                                       named_maps_presenter.get_decoration_for_layer(layer)
                                      else
                                        {}
                                      end
@@ -276,96 +254,51 @@ module Carto
       end
     end
 
-    class VizJSON3NamedMapPresenter
+    class VizJSON3NamedMapLayerPresenter
       include ApiTemplates
 
-      NAMED_MAP_TYPE = 'namedmap'.freeze
       LAYER_TYPES_TO_DECORATE = ['torque'].freeze
-      DEFAULT_TILER_FILTER = 'mapnik'.freeze
 
-      def initialize(visualization, layergroup, options, configuration)
-        @visualization      = visualization
+      def initialize(layer, options, configuration)
         @options            = options
         @configuration      = configuration
-        @layergroup_data    = layergroup
-        @named_map_template = Carto::NamedMaps::Template.new(visualization)
+        @layer              = layer
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_vizjson
-        return nil if @visualization.data_layers.empty? # When there are no layers don't return named map data
-
-        privacy_type = @visualization.password_protected? ? API_TEMPLATE_PRIVATE : api_templates_type(@options)
-
-        {
-          type: NAMED_MAP_TYPE,
-          order: 1,
-          options: {
-            type: NAMED_MAP_TYPE,
-            user_name: @options.fetch(:user_name),
-            maps_api_template: ApplicationHelper.maps_api_template(privacy_type),
-            sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
-            filter: @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-            named_map: {
-              name: @named_map_template.name,
-              stat_tag: @visualization.id,
-              params: placeholders_data,
-              layers: configure_layers_data
-            },
-            attribution: @visualization.attributions_from_derived_visualizations.join(', ')
-          }
-        }
+        layer_vizjson = VizJSON3LayerPresenter.new(@layer, @options, @configuration).to_vizjson
+        data_for_carto_layer(layer_vizjson)
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
       # - Parameters set inside as nil will remove the field itself from the layer data
-      def get_decoration_for_layer(layer_type, layer_index)
+      def get_decoration_for_layer(layer_type)
         return {} unless LAYER_TYPES_TO_DECORATE.include? layer_type
 
         {
-          named_map: {
-            name:         @named_map_template.name,
-            layer_index:  layer_index,
-            params:       placeholders_data
-          },
           query: nil # do not expose SQL query on Torque layers with named maps
         }
       end
 
       private
 
-      def placeholders_data
-        data = {}
-        @layergroup_data.each do |layer|
-          data["layer#{layer[:index]}".to_sym] = layer[:visible] ? 1 : 0
-        end
-        data
-      end
-
-      # Extract relevant information from layers
-      def configure_layers_data
-        # Http/base layers don't appear at viz.json
-        layers = @visualization.data_layers
-        layers_data = Array.new
-        layers.each do |layer|
-          layer_vizjson = VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson
-          layers_data.push(data_for_carto_layer(layer_vizjson))
-        end
-        layers_data
-      end
-
       def data_for_carto_layer(layer_vizjson)
         layer_options = layer_vizjson[:options]
         data = {
           id: layer_vizjson[:id],
+          type: layer_vizjson[:type],
           layer_name: layer_options[:layer_name],
           interactivity: layer_options[:interactivity],
-          visible: layer_vizjson[:visible]
+          visible: layer_vizjson[:visible],
+          options: {
+            attribution: layer_options[:attribution]
+          }
         }
 
         if layer_options && layer_options[:source]
-          data[:options] = { source: layer_options[:source] }
+          data[:options][:source] = layer_options[:source]
         end
 
         infowindow = layer_vizjson[:infowindow]
@@ -384,47 +317,6 @@ module Carto
         end
 
         data
-      end
-    end
-
-    class VizJSON3LayerGroupPresenter
-      include ApiTemplates
-
-      LAYER_GROUP_VERSION = '3.0.0'.freeze
-      DEFAULT_TILER_FILTER = 'mapnik'.freeze
-
-      def initialize(layers, options, configuration)
-        @layers         = layers
-        @options        = options
-        @configuration  = configuration
-      end
-
-      def to_vizjson
-        return nil if cartodb_layers.empty?
-
-        {
-          type:               'layergroup',
-          options:            {
-            user_name:          @options.fetch(:user_name),
-            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type(@options)),
-            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type(@options)),
-            filter:             @configuration[:tiler].fetch('filter', DEFAULT_TILER_FILTER),
-            layer_definition:   {
-              stat_tag:           @options.fetch(:visualization_id),
-              version:            LAYER_GROUP_VERSION,
-              layers:             cartodb_layers
-            },
-            attribution: @options.fetch(:attributions).join(', ')
-          }
-        }
-      end
-
-      private
-
-      def cartodb_layers
-        @cartodb_layers ||= @layers.map do |layer|
-          VizJSON3LayerPresenter.new(layer, @options, @configuration).to_vizjson
-        end
       end
     end
 

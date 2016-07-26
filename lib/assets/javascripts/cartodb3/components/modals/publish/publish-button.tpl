@@ -1,4 +1,4 @@
-<button class="Publish-modalButton CDB-Button CDB-Button--primary CDB-Button--small u-rSpace js-button">
+<button class="Publish-modalButton CDB-Button CDB-Button--primary CDB-Button--small u-rSpace js-button <% if (isDisabled) {%>is-disabled<% } %>">
   <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-iBlock">

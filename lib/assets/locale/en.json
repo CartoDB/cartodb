@@ -164,7 +164,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
+        "error-connecting": "<span class='u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },
@@ -996,18 +996,18 @@
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
       },
       "rename": {
-        "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
-        "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
+        "loading": "Renaming layer…",
+        "success": "Layer renamed to %{name}",
+        "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
-        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
+        "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "Removing layer…",
+        "success": "Layer deleted correctly."
       },
       "layer": {
         "analysis": "Analysis",

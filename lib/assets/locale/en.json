@@ -1018,7 +1018,7 @@
         "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
-        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
+        "layer-added": "Layer added successfully."
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1326,8 +1326,8 @@
         "cartocss": "CARTOCSS"
       },
       "notifier": {
-        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
+        "css-error": "<span class='CDB-Text u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "CartoCSS applied."
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1431,11 +1431,11 @@
     },
     "widgets": {
       "notifier": {
-        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
-        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
-        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
+        "delete": "Widget deleted correctly.",
+        "success": "Widget successfully added.",
+        "error": "<span class='u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "Adding widget…",
+        "updating": "Updating widget…"
       },
       "widgets-view": {
         "add_widget": "Add widget"

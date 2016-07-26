@@ -48,10 +48,10 @@ module Carto
 
         def event_properties
           {
-            username: @user.username,
-            email: @user.email,
-            plan: @user.account_type,
-            organization: @user.organization_user? ? @user.organization.name : nil,
+            username: @user ? @user.username : nil,
+            email: @user ? @user.email : nil,
+            plan: @user ? @user.account_type : nil,
+            organization: (@user && @user.organization_user?) ? @user.organization.name : nil,
             event_origin: 'Editor',
             creation_time: Time.now.utc
           }

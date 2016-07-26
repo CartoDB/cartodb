@@ -132,9 +132,10 @@ module Carto
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        layers_data += data_layers_vizjson(display_named_map?(@visualization, forced_privacy_version))
+        named_map = display_named_map?(@visualization, forced_privacy_version)
+        layers_data += data_layers_vizjson(named_map)
 
-        layers_data.push(other_layers_vizjson)
+        layers_data.push(other_layers_vizjson(named_map))
 
         layers_data += non_basemap_base_layers
 
@@ -151,10 +152,13 @@ module Carto
         end
       end
 
-      def other_layers_vizjson
+      def other_layers_vizjson(display_named_map)
         @visualization.other_layers.map do |layer|
-          # Remove torque layer query in named maps
-          VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
+          if display_named_map
+            VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson
+          else
+            VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
+          end
         end
       end
 
@@ -241,10 +245,19 @@ module Carto
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_vizjson
         layer_vizjson = VizJSON3LayerPresenter.new(@layer, @configuration).to_vizjson
-        data_for_carto_layer(layer_vizjson)
+        if layer_vizjson[:type] == 'torque'
+          data_for_torque_layer(layer_vizjson)
+        else
+          data_for_carto_layer(layer_vizjson)
+        end
       end
 
       private
+
+      def data_for_torque_layer(layer_vizjson)
+        layer_vizjson.delete(:sql)
+        layer_vizjson
+      end
 
       def data_for_carto_layer(layer_vizjson)
         layer_options = layer_vizjson[:options]

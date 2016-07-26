@@ -152,11 +152,8 @@ module Carto
 
       def other_layers_vizjson(display_named_map)
         @visualization.other_layers.map do |layer|
-          decoration_data_to_apply = if display_named_map
-                                       { query: nil } # Remove torque layer query in named maps
-                                     else
-                                       {}
-                                     end
+          # Remove torque layer query in named maps
+          decoration_data_to_apply = display_named_map ? { query: nil } : {}
           VizJSON3LayerPresenter.new(layer, configuration, decoration_data_to_apply).to_vizjson
         end
       end

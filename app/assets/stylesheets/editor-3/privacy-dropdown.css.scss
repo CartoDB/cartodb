@@ -5,8 +5,10 @@
   position: relative;
 }
 
-.Privacy-dropdownTrigger {
+.Privacy-dropdown .Privacy-dropdownTrigger {
   height: 24px;
+  padding-right: $halfBaseSize;
+  padding-left: $halfBaseSize;
   overflow: hidden;
 }
 

@@ -5,7 +5,7 @@
 <ul class="Onboarding-list">
   <li class="Onboarding-listItem">
     <div class="CDB-Text Onboarding-listItemValue">cluster_no</div>
-    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.kmeans.cluster-no') %></p>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.kmeans.cluster-no', { clusters: clusters, smart_count: clusters }) %></p>
   </li>
 </ul>
 

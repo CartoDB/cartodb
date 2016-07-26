@@ -4,11 +4,11 @@
 
 <ul class="Onboarding-list">
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">the_geom</div>
+    <div class="Onboarding-listItemValue">the_geom</div>
     <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.centroid.the-geom') %></p>
   </li>
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">value</div>
+    <div class="Onboarding-listItemValue">value</div>
     <p class="CDB-Text Onboarding-description">
       <% if (aggregation) { %>
       <%- _t('analyses-onboarding.centroid.aggregated-value') %>
@@ -19,7 +19,7 @@
   </li>
   <% if (category_column) { %>
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">category</div>
+    <div class="Onboarding-listItemValue">category</div>
     <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.centroid.category') %></p>
   </li>
   <% } %>

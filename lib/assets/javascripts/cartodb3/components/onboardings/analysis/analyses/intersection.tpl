@@ -4,7 +4,7 @@
 
 <ul class="Onboarding-list">
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">source_cartodb_id</div>
+    <div class="Onboarding-listItemValue">source_cartodb_id</div>
     <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.intersection.source-cartodb-id') %></p>
   </li>
 </ul>

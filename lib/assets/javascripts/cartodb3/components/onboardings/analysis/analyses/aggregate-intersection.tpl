@@ -5,14 +5,14 @@
 <ul class="Onboarding-list">
   <% if (aggregate_function === 'count') { %>
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">count_vals</div>
+    <div class="Onboarding-listItemValue">count_vals</div>
   </li>
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue">count_vals_density</div>
+    <div class="Onboarding-listItemValue">count_vals_density</div>
   </li>
   <% } else {%>
   <li class="Onboarding-listItem">
-    <div class="CDB-Text Onboarding-listItemValue"><%- aggregate_function %>_<%- aggregate_column %></div>
+    <div class="Onboarding-listItemValue"><%- aggregate_function %>_<%- aggregate_column %></div>
   </li>
   <% } %>
 </ul>

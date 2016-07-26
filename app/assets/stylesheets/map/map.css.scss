@@ -496,7 +496,8 @@ div.map {
 
   div.cartodb-map {
 
-    & > div.cartodb-searchbox{
+    & > div.cartodb-searchbox {
+      width: 160px;
       top: 20px;
       right: 77px;
       float: right;
@@ -504,9 +505,20 @@ div.map {
 
       background-color: $Amber1;
       border: 1px solid $Black;
+      input {
+        width: 150px;
+      }
       input.text {
         border:none;
         color: $Black;
+        left: 6px;
+      }
+      input.submit {
+        background: none;
+      }
+      span.loader {
+        background: url(../images/loader.svg) no-repeat center;
+        margin-left: -30px;
       }
     } 
 

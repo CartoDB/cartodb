@@ -350,11 +350,7 @@ module Carto
       end
 
       def as_torque
-        layer_options = decorate_with_data(
-          # Make torque always have a SQL query too (as vizjson v2)
-          @layer.options.deep_symbolize_keys.merge(query: wrap(sql_from(@layer.options), @layer.options)),
-          @decoration_data
-        )
+        layer_options = @layer.options.deep_symbolize_keys
 
         torque = {
           id:         @layer.id,

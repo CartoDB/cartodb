@@ -1,8 +1,8 @@
 <div class="Card-icon u-bSpace--xl js-icon"></div>
 
-<div class="Card-body CDB-Text is-light u-bSpace--xl">
-  <div class="CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></div>
-  <div class="CDB-Size-medium u-altTextColor">
+<div class="Card-body u-bSpace--xl">
+  <div class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></div>
+  <div class="CDB-Text CDB-Size-medium u-altTextColor">
     <%= body %>
     <% if (url && !isPrivate) { %>
     <a href="<%- url %>" class="Share-link js-link"><%- link %></a>

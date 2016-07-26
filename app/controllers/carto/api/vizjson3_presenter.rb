@@ -132,29 +132,29 @@ module Carto
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        display_named_map = display_named_map?(@visualization, forced_privacy_version)
+        layers_data += data_layers_vizjson(display_named_map?(@visualization, forced_privacy_version))
 
-        @visualization.data_layers.map do |layer|
-          presenter = if display_named_map
-                        VizJSON3NamedMapLayerPresenter.new(layer, configuration)
-                      else
-                        VizJSON3LayerPresenter.new(layer, configuration)
-                      end
-          layers_data.push(presenter.to_vizjson)
-        end
-
-        layers_data.push(other_layers_vizjson(display_named_map))
+        layers_data.push(other_layers_vizjson)
 
         layers_data += non_basemap_base_layers
 
         layers_data.compact.flatten
       end
 
-      def other_layers_vizjson(display_named_map)
+      def data_layers_vizjson(display_named_map)
+        @visualization.data_layers.map do |layer|
+          if display_named_map
+            VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson
+          else
+            VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
+          end
+        end
+      end
+
+      def other_layers_vizjson
         @visualization.other_layers.map do |layer|
           # Remove torque layer query in named maps
-          decoration_data_to_apply = display_named_map ? { query: nil } : {}
-          VizJSON3LayerPresenter.new(layer, configuration, decoration_data_to_apply).to_vizjson
+          VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
         end
       end
 

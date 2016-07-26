@@ -113,3 +113,12 @@
 .Onboarding-forgetLabel {
   cursor: pointer;
 }
+
+.Onboarding-readMore {
+  color: $cWhite;
+  text-decoration: underline;
+}
+
+.Onboarding-readMore:hover {
+  text-decoration: none;
+}

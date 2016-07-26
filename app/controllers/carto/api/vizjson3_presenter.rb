@@ -133,14 +133,14 @@ module Carto
         layers_data.push(basemap_layer) if basemap_layer
 
         display_named_map = display_named_map?(@visualization, forced_privacy_version)
-        if display_named_map
-          @visualization.data_layers.map do |layer|
-            layers_data.push(VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson)
-          end
-        else
-          @visualization.data_layers.map do |layer|
-            layers_data.push(VizJSON3LayerPresenter.new(layer, configuration).to_vizjson)
-          end
+
+        @visualization.data_layers.map do |layer|
+          presenter = if display_named_map
+                        VizJSON3NamedMapLayerPresenter.new(layer, configuration)
+                      else
+                        VizJSON3LayerPresenter.new(layer, configuration)
+                      end
+          layers_data.push(presenter.to_vizjson)
         end
 
         layers_data.push(other_layers_vizjson(display_named_map))

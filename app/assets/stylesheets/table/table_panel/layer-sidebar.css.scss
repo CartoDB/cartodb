@@ -105,6 +105,7 @@
         font-size: 9px;
         line-height: 90px;
         border-bottom:1px solid rgba(#999999,0.25);
+        text-transform: capitalize;
         z-index:0;
         @include opacity(0.75);
 

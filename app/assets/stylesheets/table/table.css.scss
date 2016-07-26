@@ -34,8 +34,8 @@ div.panes {
   bottom:0;
   left:0;
 
-  // When table/layer is synced
-  &.synced {top:102px}
+  // Should be value of default panes top + height of table_title below
+  &.table-view { top: 128px; }
 
   .emptyTableContainer {
     position:fixed;
@@ -88,6 +88,17 @@ div.panes {
 }
 
 div.table {
+
+  .table_title {
+    position: fixed;
+    top: 78px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    z-index: 2;
+    background: whitesmoke;
+    padding: 5px;
+  }
 
   table {
     position:relative;

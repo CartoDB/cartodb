@@ -12,11 +12,9 @@
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('analyses-onboarding.done') %></span>
         </button>
 
-        <% if (style) { %>
         <button class="CDB-Button CDB-Button--primary CDB-Button--big js-style">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('analyses-onboarding.style-analysis') %></span>
         </button>
-        <% } %>
       </div>
 
       <div class="u-iBlock">

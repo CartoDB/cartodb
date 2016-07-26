@@ -34,9 +34,6 @@ div.panes {
   bottom:0;
   left:0;
 
-  // When table/layer is synced
-  &.synced {top:102px}
-
   // Should be value of default panes top + height of table_title below
   &.table-view { top: 128px; }
 

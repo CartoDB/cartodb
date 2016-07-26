@@ -307,10 +307,9 @@ module Carto
         fields template_name template template_type alternative_names width maxHeight headerColor
       ).freeze
 
-      def initialize(layer, configuration = {}, decoration_data = {})
+      def initialize(layer, configuration = {})
         @layer            = layer
         @configuration    = configuration
-        @decoration_data  = decoration_data
       end
 
       def to_vizjson
@@ -334,19 +333,8 @@ module Carto
 
       private
 
-      # Decorates the layer presentation with data if needed. nils on the decoration act as removing the field
-      def decorate_with_data(source_hash, decoration_data)
-        decoration_data.each do |key, value|
-          source_hash[key] = value
-          source_hash.delete_if do |_, v|
-            v.nil?
-          end
-        end
-        source_hash
-      end
-
       def with_kind_as_type(attributes)
-        decorate_with_data(attributes.merge(type: attributes.delete(:kind)), @decoration_data)
+        attributes.merge(type: attributes.delete(:kind))
       end
 
       def as_torque
@@ -393,8 +381,6 @@ module Carto
 
         sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
         data[:sql_wrap] = sql_wrap if sql_wrap
-
-        data = decorate_with_data(data, @decoration_data)
 
         data
       end

@@ -157,7 +157,9 @@ module Carto
           layers_data.push(named_maps_presenter.to_vizjson)
         else
           named_maps_presenter = nil
-          layers_data.push(layer_group_for(options))
+          @visualization.data_layers.map do |layer|
+            layers_data.push(VizJSON3LayerPresenter.new(layer, options, configuration).to_vizjson)
+          end
         end
 
         layers_data.push(other_layers_vizjson(options, named_maps_presenter))

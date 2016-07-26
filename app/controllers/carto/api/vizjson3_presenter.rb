@@ -58,10 +58,10 @@ module Carto
 
         vizjson = if @redis_vizjson_cache
                     @redis_vizjson_cache.cached(@visualization.id, https_request, version) do
-                      calculate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: forced_privacy_version)
+                      calculate_vizjson(https_request: https_request, forced_privacy_version: forced_privacy_version)
                     end
                   else
-                    calculate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: forced_privacy_version)
+                    calculate_vizjson(https_request: https_request, forced_privacy_version: forced_privacy_version)
                   end
 
         vizjson[:vector] = vector
@@ -71,20 +71,8 @@ module Carto
 
       VIZJSON_VERSION = '3.0.0'.freeze
 
-      def default_options
-        user = @visualization.user
-        {
-          visualization_id: @visualization.id,
-          https_request: false,
-          attributions: @visualization.attributions_from_derived_visualizations,
-          user_name: user.username,
-          user: user,
-          vector: false
-        }
-      end
-
-      def calculate_vizjson(https_request: false, vector: false, forced_privacy_version: nil)
-        options = default_options.merge(https_request: https_request, vector: vector)
+      def calculate_vizjson(https_request: false, forced_privacy_version: nil)
+        options = { https_request: https_request }
 
         user = @visualization.user
         map = @visualization.map

@@ -385,11 +385,7 @@ module Carto
           type:       'torque',
           order:      @layer.order,
           legend:     @layer.legend,
-          options:    {
-            stat_tag:           @options.fetch(:visualization_id),
-            maps_api_template: ApplicationHelper.maps_api_template(api_templates_type(@options)),
-            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type(@options))
-          }.merge(layer_options.select { |k| TORQUE_ATTRS.include? k })
+          options:    layer_options.select { |k| TORQUE_ATTRS.include? k }
         }
 
         torque[:cartocss] = layer_options[:tile_style]

@@ -21,7 +21,7 @@
   "analyses-onboarding": {
     "done": "Done",
     "finished": "has finished",
-    "style-column": "Style this column",
+    "style-analysis": "Style this analysis",
     "read-more": "Read more in documentation",
     "never-show-message": "Never show me this message.",
     "no-new-columns": "No new columns were created.",
@@ -43,6 +43,11 @@
       "title": "Filter points in polygons",
       "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the source layer.",
       "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "description": "Area of influence creates polygons according to the parameters set by the user.",
+      "the-geom": "This column was updated to show the area of influence requested.",
     },
     "aggregate-intersection": {
       "title": "Intersect second layer",
@@ -93,8 +98,9 @@
       "title": "Calculating centroids from geometries",
       "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
       "the-geom": "Point geometries representing the centroid(s) of your input data.",
-      "value": "If Aggregate is selected, this will store the aggregate value for each centroid. If not, it will contain the count of features considered for each centroid",
-      "category": "If Categorize is selected, this column will store the category value for each centroid from the source dataset"
+      "aggregated-value": "Stores the aggregate value for each centroid.",
+      "non-aggregated-value": "Contains the count of features considered for each centroid",
+      "category": "Stores the category value for each centroid from the source dataset"
     }
   },
 

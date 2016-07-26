@@ -9,12 +9,20 @@
   </li>
   <li class="Onboarding-listItem">
     <div class="CDB-Text Onboarding-listItemValue">value</div>
-    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.centroid.value') %></p>
+    <p class="CDB-Text Onboarding-description">
+      <% if (aggregation) { %>
+      <%- _t('analyses-onboarding.centroid.aggregated-value') %>
+      <% } else { %>
+      <%- _t('analyses-onboarding.centroid.non-aggregated-value') %>
+      <% } %>
+    </p>
   </li>
+  <% if (category_column) { %>
   <li class="Onboarding-listItem">
     <div class="CDB-Text Onboarding-listItemValue">category</div>
     <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.centroid.category') %></p>
   </li>
+  <% } %>
 </ul>
 
 <p class="CDB-Text Onboarding-description">

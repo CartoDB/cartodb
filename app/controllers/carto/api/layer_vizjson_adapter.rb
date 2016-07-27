@@ -14,7 +14,7 @@ module Carto
         'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
       }
 
-      delegate [:options, :kind, :id, :order, :legend] => :layer
+      delegate [:options, :kind, :id, :order, :legend, :user] => :layer
 
       attr_reader :layer
 

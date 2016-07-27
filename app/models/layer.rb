@@ -184,6 +184,10 @@ class Layer < Sequel::Model
     "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
   end
 
+  def user
+    map.user if map
+  end
+
   private
 
   def rename_in(target, anchor, substitution)
@@ -210,7 +214,11 @@ class Layer < Sequel::Model
   end
 
   def tables_from_table_name_option
-    ::Table.get_all_by_names([options.symbolize_keys[:table_name]], user)
+    sym_options = options.symbolize_keys
+    user_name = sym_options[:user_name]
+    table_name = sym_options[:table_name]
+    schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
+    ::Table.get_all_by_names(["#{schema_prefix}#{table_name}"], user)
   end
 
   def affected_table_names
@@ -219,10 +227,6 @@ class Layer < Sequel::Model
 
   def map
     maps.first
-  end
-
-  def user
-    map.user if map
   end
 
   def query

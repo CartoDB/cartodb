@@ -79,14 +79,12 @@ Layers.register('background', function (data, options) {
 });
 
 Layers.register('cartodb', function (data, options) {
-  normalizeOptions(data, options);
   return new CartoDBLayer(data, {
     vis: options.vis
   });
 });
 
 Layers.register('torque', function (data, options) {
-  normalizeOptions(data, options);
   // default is https
   if (options.https) {
     if (data.sql_api_domain && data.sql_api_domain.indexOf('carto.com') !== -1) {
@@ -100,17 +98,5 @@ Layers.register('torque', function (data, options) {
     vis: options.vis
   });
 });
-
-function normalizeOptions (data, options) {
-  if (data.infowindow && data.infowindow.fields) {
-    if (data.interactivity) {
-      if (data.interactivity.indexOf('cartodb_id') === -1) {
-        data.interactivity = data.interactivity + ',cartodb_id';
-      }
-    } else {
-      data.interactivity = 'cartodb_id';
-    }
-  }
-}
 
 module.exports = Layers;

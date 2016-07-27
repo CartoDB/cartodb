@@ -120,7 +120,7 @@ module Carto
         if @organization.nil?
           @organization = @user.organization
         elsif @user.organization_id != @organization.id
-            render json: { errors: ["You can't get other organization users"] }, status: 501
+          render json: { errors: ["You can't get other organization users"] }, status: 501
         end
 
         unless @user.id == current_user.id || current_user.organization_owner?
@@ -133,7 +133,9 @@ module Carto
       end
 
       def org_users_only
-        render json: { errors: ["Not organization owner"] }, status: 400 unless @organization.id == current_user.organization_id
+        unless @organization.id == current_user.organization_id
+          render json: { errors: ["Not organization owner"] }, status: 400
+        end
       end
 
       def org_owner_only

@@ -16,8 +16,8 @@
       <button class="u-rSpace--m u-actionTextColor js-privacy">
         <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </button>
-      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
       <% if (!isSimple) { %>
+      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
       <span class="u-iBlock js-share-users u-rSpace"></span>
       <% } %>
       <span class="CDB-Text CDB-Size-medium u-altTextColor u-lSpace"><%- published %></span>

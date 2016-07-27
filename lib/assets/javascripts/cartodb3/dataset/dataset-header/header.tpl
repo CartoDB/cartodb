@@ -22,8 +22,8 @@
       <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
     </<%- privacyDOMElement %>>
     <% if (isOwner) { %>
-      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
       <% if (!isSimple) { %>
+      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
       <span class="u-iBlock js-share-users u-rSpace"></span>
       <% } %>
     <% } %>

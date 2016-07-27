@@ -1,7 +1,11 @@
 <div class="Card-icon u-bSpace--xl js-icon"></div>
 
 <div class="Card-body u-bSpace--xl">
+  <% if (isPrivate) { %>
+  <div class="CDB-Text CDB-Size-large u-altTextColor u-bSpace--m"><%- title %></div>
+  <% } else { %>
   <div class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></div>
+  <% } %>
   <div class="CDB-Text CDB-Size-medium u-altTextColor">
     <%= body %>
     <% if (url && !isPrivate) { %>

@@ -4,8 +4,8 @@
     <ul class="u-flex u-alignCenter">
       <li class="js-dropdown u-rSpace--xl"></li>
       <li class="u-rSpace--xl">
-        <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
         <% if (!isSimple) { %>
+        <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
         <span class="u-iBlock js-share-users"></span>
         <% } %>
       </li>

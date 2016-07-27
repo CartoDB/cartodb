@@ -8,7 +8,7 @@
   @include align-items(center);
   @include flex-direction(column);
   margin-right: $baseSize * 2;
-  padding: 20px 25px;
+  padding: 20px;
   border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
@@ -18,7 +18,8 @@
   }
 
   &.is-disabled {
-    border: 1px solid $cMainLine;
+    @include justify-content(center);
+    border: 1px solid rgba($cMainLine, 0.5);
     background-color: $cThirdBackground;
   }
 }
@@ -32,6 +33,10 @@
   border: 1px solid $cMainLine;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
+
+  .is-disabled > & {
+    opacity: 0.5;
+  }
 }
 
 .Card-body {

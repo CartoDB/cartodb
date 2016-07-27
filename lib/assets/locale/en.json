@@ -407,12 +407,12 @@
         "private": "PRIVATE",
         "get-link": {
           "title": "Get the link",
-          "body": "Send to your friends, coworkers, or post in your social networks.",
+          "body": "Send to your friends, coworkers, or post it in your social networks.",
           "link": "",
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "Your map is %{private}. Change privacy to get the link"
+            "body": "Your map is %{private} Change privacy to get the link"
           }
         },
         "embed": {
@@ -422,7 +422,7 @@
           "copy": "COPY",
           "select": "SELECT",
           "private": {
-            "body": "Your map is %{private}. Change privacy to embed map"
+            "body": "Your map is %{private} Change privacy to embed map"
           }
         },
         "cartodbjs": {

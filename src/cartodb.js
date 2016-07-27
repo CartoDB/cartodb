@@ -27,7 +27,6 @@ cdb.log = require('cdb.log');
 cdb.errors = require('cdb.errors');
 cdb.templates = require('cdb.templates');
 cdb.createVis = require('./api/create-vis');
-cdb.createLayer = require('./api/create-layer');
 cdb.LZMA = require('lzma');
 
 cdb.core.Profiler = require('cdb.core.Profiler');

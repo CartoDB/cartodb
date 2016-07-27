@@ -39,86 +39,68 @@ function transformToHTTPS (tilesTemplate) {
   return tilesTemplate;
 }
 
-var LayersFactory = {
+var LAYER_CONSTRUCTORS = {
+  tiled: function (data, options) {
+    var url = data.urlTemplate;
+    if (options.https === true) {
+      url = transformToHTTPS(url);
+    } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+      url = transformToHTTP(url);
+    }
 
-  _types: {},
-
-  register: function (type, creatorFn) {
-    this._types[type] = creatorFn;
+    data.urlTemplate = url;
+    return new TileLayer(data);
   },
 
+  wms: function (data, options) {
+    return new WMSLayer(data);
+  },
+
+  gmapsbase: function (data, options) {
+    return new GMapsBaseLayer(data);
+  },
+
+  plain: function (data, options) {
+    return new PlainLayer(data);
+  },
+
+  background: function (data, options) {
+    return new PlainLayer(data);
+  },
+
+  cartodb: function (data, options) {
+    return new CartoDBLayer(data, {
+      vis: options.vis
+    });
+  },
+
+  torque: function (data, options) {
+    // default is https
+    if (options.https) {
+      if (data.sql_api_domain && data.sql_api_domain.indexOf('carto.com') !== -1) {
+        data.sql_api_protocol = 'https';
+        data.sql_api_port = 443;
+        data.tiler_protocol = 'https';
+        data.tiler_port = 443;
+      }
+    }
+    return new TorqueLayer(data, {
+      vis: options.vis
+    });
+  }
+};
+
+var LayersFactory = {
   create: function (type, data, options) {
+    var LayerClass = LAYER_CONSTRUCTORS[type.toLowerCase()];
     if (!type) {
-      log.error('creating a layer without type');
+      log.error("error creating layer of type '" + type + "'");
       return null;
     }
-    var LayerClass = this._types[type.toLowerCase()];
-
     var layerAttributes = {};
     _.extend(layerAttributes, data, data.options);
     return new LayerClass(layerAttributes, options);
   }
 };
-
-LayersFactory.register('tilejson', function (data, options) {
-  var url = data.tiles[0];
-  if (options.https === true) {
-    url = transformToHTTPS(url);
-  } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-    url = transformToHTTP(url);
-  }
-  return new TileLayer({
-    urlTemplate: url
-  });
-});
-
-LayersFactory.register('tiled', function (data, options) {
-  var url = data.urlTemplate;
-  if (options.https === true) {
-    url = transformToHTTPS(url);
-  } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
-    url = transformToHTTP(url);
-  }
-
-  data.urlTemplate = url;
-  return new TileLayer(data);
-});
-
-LayersFactory.register('wms', function (data, options) {
-  return new WMSLayer(data);
-});
-
-LayersFactory.register('gmapsbase', function (data, options) {
-  return new GMapsBaseLayer(data);
-});
-
-LayersFactory.register('plain', function (data, options) {
-  return new PlainLayer(data);
-});
-
-LayersFactory.register('background', function (data, options) {
-  return new PlainLayer(data);
-});
-
-LayersFactory.register('cartodb', function (data, options) {
-  return new CartoDBLayer(data, {
-    vis: options.vis
-  });
-});
-
-LayersFactory.register('torque', function (data, options) {
-  // default is https
-  if (options.https) {
-    if (data.sql_api_domain && data.sql_api_domain.indexOf('carto.com') !== -1) {
-      data.sql_api_protocol = 'https';
-      data.sql_api_port = 443;
-      data.tiler_protocol = 'https';
-      data.tiler_port = 443;
-    }
-  }
-  return new TorqueLayer(data, {
-    vis: options.vis
-  });
-});
 
 module.exports = LayersFactory;

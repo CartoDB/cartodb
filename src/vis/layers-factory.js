@@ -93,12 +93,12 @@ var LAYER_CONSTRUCTORS = {
 var LayersFactory = {
   create: function (type, data, options) {
     var LayerClass = LAYER_CONSTRUCTORS[type.toLowerCase()];
-    if (!type) {
+    if (!LayerClass) {
       log.error("error creating layer of type '" + type + "'");
       return null;
     }
-    var layerAttributes = {};
-    _.extend(layerAttributes, data, data.options);
+    // Flatten "options"
+    var layerAttributes = _.extend({}, _.omit(data, 'options'), data.options);
     return new LayerClass(layerAttributes, options);
   }
 };

@@ -44,8 +44,14 @@ module Carto
       @legend ||= options['legend']
     end
 
-    def qualified_table_name(viewer_user)
-      "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    def qualified_table_name(schema_owner_user = nil)
+      table_name = options['table_name']
+      if table_name.present? && table_name.include?('.')
+        table_name
+      else
+        schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
+        "#{schema_prefix}#{options['table_name']}"
+      end
     end
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
@@ -129,18 +135,32 @@ module Carto
     end
 
     def wrapped_sql(user)
-      query = options[:query]
+      query_wrapper = options.symbolize_keys[:query_wrapper]
+      sql = default_query(user)
+      if query_wrapper.present? && torque?
+        query_wrapper.gsub('<%= sql %>', sql)
+      else
+        sql
+      end
+    end
 
-      sql = if query.present?
-              query
-            else
-              "SELECT * FROM #{qualified_table_name(user)}"
-            end
+    def default_query(user = nil)
+      sym_options = options.symbolize_keys
+      query = sym_options[:query]
 
-      query_wrapper = options[:query_wrapper]
-      sql = query_wrapper.gsub('<%= sql %>', sql) if query_wrapper.present? && torque?
+      if query.present?
+        query
+      else
+        user_username = user.nil? ? nil : user.username
+        user_name = sym_options[:user_name]
+        table_name = sym_options[:table_name]
 
-      sql
+        if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
+          %{ select * from "#{user_name}".#{table_name} }
+        else
+          "SELECT * FROM #{qualified_table_name(user)}"
+        end
+      end
     end
 
     private
@@ -166,7 +186,11 @@ module Carto
 
     def tables_from_table_name_option
       return[] if options.empty?
-      ::Table.get_all_user_tables_by_names([options.symbolize_keys[:table_name]], user)
+      sym_options = options.symbolize_keys
+      user_name = sym_options[:user_name]
+      table_name = sym_options[:table_name]
+      schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
+      ::Table.get_all_user_tables_by_names(["#{schema_prefix}#{table_name}"], user)
     end
 
     def query

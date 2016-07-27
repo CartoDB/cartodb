@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:page_title) do %><%= @table.name.gsub(/_/," ") %><% end %>
 
 <%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>

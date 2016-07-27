@@ -277,6 +277,12 @@ describe Carto::Api::VizJSON3Presenter do
         carto_layer.should_not include :layer_name
         carto_layer[:options][:layer_name].should
       end
+
+      it 'should not include Odyssey options' do
+        vizjson.should_not include :prev
+        vizjson.should_not include :next
+        vizjson.should_not include :transition_options
+      end
     end
 
     describe 'in namedmap vizjson' do

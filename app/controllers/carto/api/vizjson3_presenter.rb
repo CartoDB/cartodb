@@ -92,9 +92,6 @@ module Carto
           updated_at:     map.viz_updated_at,
           layers:         layers_vizjson(forced_privacy_version),
           overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
-          prev:           @visualization.prev_id,
-          next:           @visualization.next_id,
-          transition_options: @visualization.transition_options,
           widgets:        widgets_vizjson,
           datasource:     datasource_vizjson(options, forced_privacy_version),
           user:           user_info_vizjson(user)

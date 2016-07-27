@@ -44,12 +44,12 @@ module Carto
         render_jsonp(Carto::Api::GroupPresenter.full(group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB::Logger.debug(message: 'Group already exists', exception: e, params: params)
-        render json: { errors: "A group with that data already exists" }, status: 409
+        render json: { errors: ["A group with that name already exists"] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, group)
       rescue => e
         CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
-        render json: { errors: e.message }, status: 500
+        render json: { errors: [e.message] }, status: 500
       end
 
       def update
@@ -57,12 +57,12 @@ module Carto
         render_jsonp(Carto::Api::GroupPresenter.full(@group).to_poro, 200)
       rescue CartoDB::ModelAlreadyExistsError => e
         CartoDB::Logger.debug(message: 'Group display name already exists', params: params)
-        render json: { errors: "A group with that name already exists" }, status: 409
+        render json: { errors: ["A group with that name already exists"] }, status: 409
       rescue ActiveRecord::StatementInvalid => e
         handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB::Logger.error(exception: e, params: params, group: @group)
-        render json: { errors: e.message }, status: 500
+        render json: { errors: [e.message] }, status: 500
       end
 
       def destroy
@@ -72,7 +72,7 @@ module Carto
         handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB::Logger.error(exception: e, params: params, group: @group)
-        render json: { errors: e.message }, status: 500
+        render json: { errors: [e.message] }, status: 500
       end
 
       def add_users
@@ -82,7 +82,7 @@ module Carto
         handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
-        render json: { errors: e.message }, status: 500
+        render json: { errors: [e.message] }, status: 500
       end
 
       def remove_users
@@ -92,7 +92,7 @@ module Carto
         handle_statement_invalid_error(e, @group)
       rescue => e
         CartoDB::Logger.error(exception: e, user: @user, params: params, group: @group)
-        render json: { errors: e.message }, status: 500
+        render json: { errors: [e.message] }, status: 500
       end
 
       private
@@ -108,51 +108,56 @@ module Carto
       def load_organization
         return unless params['organization_id'].present?
         @organization = Carto::Organization.where(id: params['organization_id']).first
-        render json: { errors: "Organization #{params['organization_id']} not found" }, status: 404 unless @organization
+        render json: { errors: ["Org. #{params['organization_id']} not found"] }, status: 404 unless @organization
       end
 
       def load_user
         return unless params['user_id'].present?
+
         @user = Carto::User.where(id: params['user_id']).first
-        render json: { errors: "User #{params['user_id']} not found" }, status: 404 unless @user
+        render json: { errors: ["User #{params['user_id']} not found"] }, status: 404 unless @user
+
         if @organization.nil?
           @organization = @user.organization
-        else
-          render json: { errors: "You can't get other organization users" }, status: 501 unless @user.organization_id == @organization.id
+        elsif @user.organization_id != @organization.id
+            render json: { errors: ["You can't get other organization users"] }, status: 501
         end
-        render json: { errors: "You can't get other users groups" }, status: 501 unless @user.id == current_user.id || current_user.organization_owner?
+
+        unless @user.id == current_user.id || current_user.organization_owner?
+          render json: { errors: ["You can't get other users groups"] }, status: 501
+        end
       end
 
       def validate_organization_or_user_loaded
-        render json: { errors: "You must set user_id or organization_id" }, status: 404 unless @organization || @user
+        render json: { errors: ["You must set user_id or organization_id"] }, status: 404 unless @organization || @user
       end
 
       def org_users_only
-        render json: { errors: "Not organization owner" }, status: 400 unless @organization.id == current_user.organization_id
+        render json: { errors: ["Not organization owner"] }, status: 400 unless @organization.id == current_user.organization_id
       end
 
       def org_owner_only
-        render json: { errors: "Not organization owner" }, status: 400 unless @organization.owner_id == current_user.id
+        render json: { errors: ["Not org. owner"] }, status: 400 unless @organization.owner_id == current_user.id
       end
 
       def load_group
         @group = @organization.groups.where(id: params['group_id']).first
-        render json: { errors: "Group #{params['group_id']} not found" }, status: 404 unless @group
+        render json: { errors: ["Group #{params['group_id']} not found"] }, status: 404 unless @group
       end
 
       def load_organization_users
         ids = params['users'].present? ? params['users'] : [ params['user_id'] ]
         @organization_users = ids.map { |id| @organization.users.where(id: id).first }
-        render json: { errors: "Users #{ids} not found" }, status: 404 unless @organization_users.length > 0
+        render json: { errors: ["Users #{ids} not found"] }, status: 404 if @organization_users.empty?
       end
 
       def handle_statement_invalid_error(e, group)
         err_regexp = /ERROR:  (.*)\n/
         if e.message =~ err_regexp
-          render json: { errors: err_regexp.match(e.message)[1] }, status: 422
+          render json: { errors: [err_regexp.match(e.message)[1]] }, status: 422
         else
           CartoDB::Logger.error(exception: e, params: params, group: group || 'no group', organization: @organization)
-          render json: { errors: e.message }, status: 500
+          render json: { errors: [e.message] }, status: 500
         end
       end
 

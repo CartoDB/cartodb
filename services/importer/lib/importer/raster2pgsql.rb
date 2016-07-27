@@ -34,8 +34,12 @@ module CartoDB
       attr_reader   :exit_code, :command_output
 
       def run
-        downsample_raster
-        reproject_raster
+        if need_downsample?
+          downsample_raster
+          reproject_raster(downsampled_filepath)
+        else
+          reproject_raster(filepath)
+        end
 
         size = extract_raster_size
         pixel_size = extract_pixel_size
@@ -51,6 +55,12 @@ module CartoDB
         import_original_raster
 
         self
+      end
+
+      def need_downsample?
+        # There is no less than Byte type in GDAL Byte/Int16/UInt16/UInt32/Int32/Float32/Float64/CInt16/CInt32/CFloat32/CFloat64
+        bands_type = extract_bands_type
+        bands_type.select{|band| band.downcase!='byte'}.size > 0
       end
 
       # Returns a list of additional support tables created, that should go to the user DB
@@ -75,8 +85,8 @@ module CartoDB
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
       end
 
-      def reproject_raster
-        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{downsampled_filepath} #{webmercator_filepath})
+      def reproject_raster(file)
+        gdalwarp_command = %Q(#{gdalwarp_path} #{GDALWARP_COMMON_OPTIONS} -t_srs EPSG:#{PROJECTION} #{file} #{webmercator_filepath})
 
         stdout, stderr, status  = Open3.capture3(gdalwarp_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalwarp_command}"
@@ -97,21 +107,31 @@ module CartoDB
 
       # Returns only X pixel size/scale
       def extract_pixel_size
-        gdalinfo_command = %Q(#{gdalinfo_path} #{webmercator_filepath})
-
-        stdout, stderr, status  = Open3.capture3(gdalinfo_command)
-        output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
-        self.command_output << "\n#{output_message}"
-        self.exit_code = status.to_i
-        raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
-
+        output_message = extract_raster_info(webmercator_filepath)
         matches = output_message.match(/pixel size = \((.*)?,/i)
         raise TiffToSqlConversionError.new("Error obtaining raster pixel size: #{output_message}") unless matches[1]
         matches[1].to_f
       end
 
       def extract_raster_size
-        gdalinfo_command = %Q(#{gdalinfo_path} #{webmercator_filepath})
+        output_message = extract_raster_info(webmercator_filepath)
+        matches = output_message.match(/size is (.*)?\n/i)
+        raise TiffToSqlConversionError.new("Error obtaining raster size: #{output_message}") unless matches[1]
+        matches[1].split(', ')
+                  .map{ |value| value.to_i }
+      end
+
+      # Returns the raster bands type: Byte, Float64...
+      def extract_bands_type
+        output_message = extract_raster_info(filepath)
+        matches = output_message.scan(/band \d* .* type=(\w*)/i)
+        raise TiffToSqlConversionError.new("Error obtaining band field type: #{output_message}") if matches.empty?
+
+        matches.flatten
+      end
+
+      def extract_raster_info(file)
+        gdalinfo_command = %Q(#{gdalinfo_path} #{file})
 
         stdout, stderr, status  = Open3.capture3(gdalinfo_command)
         output_message = "(#{status}) |#{stdout + stderr}| Command: #{gdalinfo_command}"
@@ -119,10 +139,7 @@ module CartoDB
         self.exit_code = status.to_i
         raise TiffToSqlConversionError.new(output_message) if status.to_i != 0
 
-        matches = output_message.match(/size is (.*)?\n/i)
-        raise TiffToSqlConversionError.new("Error obtaining raster size: #{output_message}") unless matches[1]
-        matches[1].split(', ')
-                  .map{ |value| value.to_i }
+        return output_message
       end
 
       def run_raster2pgsql(overviews_list)

@@ -131,7 +131,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.PlainLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.TorqueLayer).toEqual(jasmine.any(Function));
       expect(cdb.geo.CartoDBLayer).toEqual(jasmine.any(Function));
-      expect(cdb.geo.Layers).toEqual(jasmine.any(Function));
       expect(cdb.geo.Map).toEqual(jasmine.any(Function));
       expect(cdb.geo.MapView).toEqual(jasmine.any(Function));
     });
@@ -197,7 +196,6 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.vis.Overlay).toEqual(jasmine.any(Object));
       expect(cdb.vis.Overlays).toEqual(jasmine.any(Function));
-      expect(cdb.vis.Layers).toEqual(jasmine.any(Object));
       expect(cdb.vis.Vis).toEqual(jasmine.any(Function));
       expect(cdb.vis.INFOWINDOW_TEMPLATE).toEqual(jasmine.any(Object));
     });

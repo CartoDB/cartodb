@@ -5,8 +5,7 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var Layers = require('../../../src/vis/vis/layers');
-require('../../../src/vis/layers'); // Layers.register calls
+var Layers = require('../../../src/vis/layers');
 
 describe('vis/layers', function () {
   beforeEach(function () {

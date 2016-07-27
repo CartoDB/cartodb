@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var log = require('cdb.log');
 var util = require('cdb.core.util');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
@@ -10,7 +9,6 @@ var Legend = require('../geo/ui/legend');
 var InfowindowModel = require('../geo/ui/infowindow-model');
 var Infowindow = require('../geo/ui/infowindow-view');
 var Template = require('../core/template');
-var Layers = require('./vis/layers');
 var Overlay = require('./vis/overlay');
 var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
 var InfowindowManager = require('./infowindow-manager');
@@ -349,19 +347,6 @@ var Vis = View.extend({
       }, this);
     }
     return v;
-  },
-
-  createLayer: function (layerData) {
-    var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
-    return this.mapView.createLayer(layerModel);
-  },
-
-  throwError: function (msg, lyr) {
-    log.error(msg);
-    var self = this;
-    _.defer(function () {
-      self.trigger('error', msg, lyr);
-    });
   },
 
   // returns an array of layers

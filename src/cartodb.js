@@ -58,7 +58,6 @@ cdb.geo.WMSLayer = require('./geo/map/wms-layer');
 cdb.geo.PlainLayer = require('./geo/map/plain-layer');
 cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
 cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
-cdb.geo.Layers = require('./geo/map/layers');
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 
@@ -94,9 +93,7 @@ cdb.geo.ui.Tooltip = require('./geo/ui/tooltip-view');
 cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
 cdb.vis.Overlay = require('./vis/vis/overlay');
 cdb.vis.Overlays = require('./vis/vis/overlays');
-cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
 require('./vis/overlays'); // Overlay.register calls
-require('./vis/layers'); // Layers.register calls
 
 module.exports = cdb;

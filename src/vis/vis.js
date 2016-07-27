@@ -13,7 +13,7 @@ var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymou
 var ModelUpdater = require('./model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
-var Layers = require('./vis/layers');
+var Layers = require('./layers');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok

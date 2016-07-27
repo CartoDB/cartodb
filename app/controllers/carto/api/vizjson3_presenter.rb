@@ -337,7 +337,7 @@ module Carto
             tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
             legend:     @layer.legend,
             order:      @layer.order,
-            visible:    @layer.public_values[:options]['visible'],
+            visible:    @layer.options['visible'],
             options:    options_data
           }
         end

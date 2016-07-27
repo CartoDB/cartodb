@@ -264,9 +264,9 @@ module Carto
         data = {
           id: layer_vizjson[:id],
           type: layer_vizjson[:type],
-          layer_name: layer_options[:layer_name],
           visible: layer_vizjson[:visible],
           options: {
+            layer_name: layer_options[:layer_name],
             attribution: layer_options[:attribution]
           }
         }

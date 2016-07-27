@@ -271,6 +271,12 @@ describe Carto::Api::VizJSON3Presenter do
           l.should_not include :order
         end
       end
+
+      it 'should not include layer_name in options for carto layers' do
+        carto_layer = vizjson[:layers][1]
+        carto_layer.should_not include :layer_name
+        carto_layer[:options][:layer_name].should
+      end
     end
 
     describe 'in namedmap vizjson' do

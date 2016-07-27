@@ -630,11 +630,13 @@ class Admin::VisualizationsController < Admin::AdminController
     user = Carto::User.where(username: schema).first
     # INFO: organization public visualizations
     if user
-      visualization = get_priority_visualization(table_id, user_id: user.id)
+      visualization = get_priority_visualization(table_id, user_id: user.id, force_name: false)
+      visualization = get_priority_visualization(table_id, user_id: user.id, force_name: true) unless visualization
     else
       organization = Carto::Organization.where(name: schema).first
       organization_id = organization.id unless organization.nil?
-      visualization = get_priority_visualization(table_id, organization_id: organization_id)
+      visualization = get_priority_visualization(table_id, organization_id: organization_id, force_name: false)
+      visualization = get_priority_visualization(table_id, organization_id: organization_id, force_name: true) unless visualization
     end
 
     return get_visualization_and_table_from_table_id(table_id) if visualization.nil?

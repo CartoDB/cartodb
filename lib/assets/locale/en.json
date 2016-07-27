@@ -369,9 +369,6 @@
         },
         "privacy": {
           "privacy": "privacy",
-          "cancel-btn": "CANCEL",
-          "save-btn": "SAVE",
-          "back-btn": "GO BACK",
           "public": {
             "type": "PUBLIC",
             "title": "Public",
@@ -393,12 +390,15 @@
             "title": "Private",
             "body": "Nobody can access this dataset"
           },
-          "share": "Hey, maybe it's a good time to",
-          "share-btn": "share with your colleagues.",
-          "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
           "error": {
             "title": "We couldn't save your data",
             "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "upgrade": {
+            "title": "Interested on sharing within your organization?",
+            "desc": "%{contact} for try one of our Enterprise plans",
+            "contact": "Contact us",
+            "mail": "sales@carto.com"
           },
           "loading": "Saving your data..."
         },

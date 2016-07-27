@@ -29,7 +29,8 @@
     <div class="CreateDialog-footerLine"></div>
     <div class="CreateDialog-footerInner ">
       <div class="CreateDialog-footerInfo"></div>
-      <div class="CreateDialog-footerActions js-footerActions u-flex u-justifyEnd">
+      <div class="CreateDialog-footerActions js-footerActions u-flex u-justifySpace u-grow">
+        <div class="js-upgrade"></div>
         <button class="CDB-Button CDB-Button--secondary js-done">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.publish.done-btn') %></span>
         </button>

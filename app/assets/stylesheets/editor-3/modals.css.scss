@@ -280,3 +280,14 @@
 .CDB-NavSubmenu-item.is-selected .Publish-modalLink {
   border-color: $cMainText;
 }
+
+.Upgrade-icon {
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+  padding: $baseSize;
+}
+
+.Upgrade-body {
+  text-align: left;
+}
+

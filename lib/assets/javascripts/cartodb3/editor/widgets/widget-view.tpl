@@ -11,10 +11,6 @@
         <div class="CDB-Shape-threePointsItem"></div>
       </button>
     </div>
-
-    <!-- <button class="CDB-Shape js-remove">
-      <div class="CDB-Shape-close is-blue is-large"></div>
-    </button> -->
   </div>
   <div class="u-flex">
     <span

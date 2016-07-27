@@ -11,10 +11,10 @@ module VisualizationsControllerHelper
   class VisualizationLocator
     include Carto::UUIDHelper
 
-    def initialize(visualization_locator_string)
+    def initialize(visualization_locator_string, force_name: false)
       table_id_or_name, @schema = visualization_locator_string.split('.').reverse
 
-      if is_uuid?(table_id_or_name)
+      if !force_name && is_uuid?(table_id_or_name)
         @id = table_id_or_name
       else
         @name = table_id_or_name
@@ -63,30 +63,45 @@ module VisualizationsControllerHelper
   end
 
   # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-  def get_priority_visualization(visualization_id, user_id: nil, organization_id: nil)
-    Carto::VisualizationQueryBuilder.new
-                                    .with_id_or_name(visualization_id)
-                                    .with_user_id(user_id)
-                                    .with_organization_id(organization_id)
-                                    .build
-                                    .all
-                                    .sort { |vis_a, _vis_b|
-                                      vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-                                    }
-                                    .first
+  def get_priority_visualization(visualization_id, force_name: false, user_id: nil, organization_id: nil)
+    builder = if force_name
+                Carto::VisualizationQueryBuilder.new.with_name(visualization_id)
+              else
+                Carto::VisualizationQueryBuilder.new.with_id_or_name(visualization_id)
+              end
+
+    builder.with_user_id(user_id)
+           .with_organization_id(organization_id)
+           .build
+           .all
+           .sort { |vis_a, _vis_b|
+             vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+           }
+           .first
   end
 
   def load_visualization_from_id_or_name(id_or_name)
-    viz_locator = VisualizationLocator.new(id_or_name)
-    if viz_locator.id
-      visualization = get_priority_visualization(viz_locator.id)
-    else
-      user = extract_user_from_request_and_viz_locator(viz_locator)
-      visualization = user.nil? ? nil : get_priority_visualization(viz_locator.name, user_id: user.id)
-    end
-
-    return nil unless viz_locator.matches_visualization?(visualization)
+    visualization = load_visualization_from_id_or_name_guessing(id_or_name, force_name: false)
+    # Support for tables named with uuids (see #9142)
+    visualization = load_visualization_from_id_or_name_guessing(id_or_name, force_name: true) unless visualization
     visualization
+  end
+
+  def load_visualization_from_id_or_name_guessing(id_or_name, force_name:)
+    viz_locator = VisualizationLocator.new(id_or_name, force_name: force_name)
+
+    visualization = if viz_locator.id
+                      get_priority_visualization(viz_locator.id, force_name: force_name)
+                    else
+                      user = extract_user_from_request_and_viz_locator(viz_locator)
+                      if user.nil?
+                        nil
+                      else
+                        get_priority_visualization(viz_locator.name, force_name: force_name, user_id: user.id)
+                      end
+                    end
+
+    viz_locator.matches_visualization?(visualization) ? visualization : nil
   end
 
   def generate_vizjson3(visualization, params)

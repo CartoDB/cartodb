@@ -28,17 +28,6 @@ module Carto
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }.freeze
 
-    def public_values
-      {
-        options: options,
-        kind: kind,
-        infowindow: infowindow,
-        tooltip: tooltip,
-        id: id,
-        order: order
-      }
-    end
-
     def affected_tables
       (tables_from_query_option + tables_from_table_name_option).compact.uniq
     end

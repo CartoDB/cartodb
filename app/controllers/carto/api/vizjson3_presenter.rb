@@ -326,7 +326,12 @@ module Carto
 
       def to_vizjson
         if @layer.base?
-          with_kind_as_type(@layer.public_values)
+          {
+            id:      @layer.id,
+            type:    @layer.kind,
+            order:   @layer.order,
+            options: @layer.options
+          }
         elsif @layer.torque?
           as_torque
         else
@@ -344,10 +349,6 @@ module Carto
       end
 
       private
-
-      def with_kind_as_type(attributes)
-        attributes.merge(type: attributes.delete(:kind))
-      end
 
       def attribution
         @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')

@@ -753,7 +753,7 @@
     },
     "backbone-undo": {
       "version": "0.2.5",
-      "from": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f",
+      "from": "cartodb/Backbone.Undo.js#c10e997",
       "resolved": "git://github.com/cartodb/Backbone.Undo.js.git#c10e9977d22ecea1fabe894be650c78ac548911f"
     },
     "bootstrap-colorpicker": {
@@ -1093,27 +1093,27 @@
     },
     "carto": {
       "version": "0.15.1-cdb1",
-      "from": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
+      "from": "cartodb/carto#master",
       "resolved": "git://github.com/cartodb/carto.git#f17aea8657ea27f2a660db15dd13b57127e823f9",
       "dependencies": {
         "mapnik-reference": {
           "version": "6.0.5",
-          "from": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz",
+          "from": "mapnik-reference@>=6.0.2 <6.1.0",
           "resolved": "https://registry.npmjs.org/mapnik-reference/-/mapnik-reference-6.0.5.tgz"
         },
         "optimist": {
           "version": "0.6.1",
-          "from": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
+          "from": "optimist@>=0.6.0 <0.7.0",
           "resolved": "https://registry.npmjs.org/optimist/-/optimist-0.6.1.tgz",
           "dependencies": {
             "wordwrap": {
               "version": "0.0.3",
-              "from": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz",
+              "from": "wordwrap@>=0.0.2 <0.1.0",
               "resolved": "https://registry.npmjs.org/wordwrap/-/wordwrap-0.0.3.tgz"
             },
             "minimist": {
               "version": "0.0.10",
-              "from": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz",
+              "from": "minimist@>=0.0.1 <0.1.0",
               "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.10.tgz"
             }
           }

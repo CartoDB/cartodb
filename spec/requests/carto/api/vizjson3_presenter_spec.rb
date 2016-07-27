@@ -240,13 +240,35 @@ describe Carto::Api::VizJSON3Presenter do
         vizjson[:layers].each { |l| l[:options].should include :attribution }
       end
 
-      it 'should not include named map options in any layers' do
+      it 'should not include named map options in any layer' do
         vizjson[:layers].each do |l|
           options = l[:options]
           options.should_not include :stat_tag
           options.should_not include :maps_api_template
           options.should_not include :sql_api_template
           options.should_not include :named_map
+        end
+      end
+
+      it 'should not include interactivity in any layer' do
+        vizjson[:layers].each do |l|
+          l.should_not include :interactivity
+          l[:options].should_not include :interactivity
+        end
+      end
+
+      it 'should not include infowindow nor tooltip in basemaps' do
+        vizjson[:layers].each do |l|
+          if l[:type] == 'tiled'
+            l.should_not include :infowindow
+            l.should_not include :tooltip
+          end
+        end
+      end
+
+      it 'should not include order in any layer' do
+        vizjson[:layers].each do |l|
+          l.should_not include :order
         end
       end
     end

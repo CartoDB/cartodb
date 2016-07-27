@@ -357,94 +357,6 @@
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
-      "privacy": {
-        "privacy": "privacy",
-        "cancel-btn": "CANCEL",
-        "save-btn": "SAVE",
-        "back-btn": "GO BACK",
-        "public": {
-          "type": "PUBLIC",
-          "title": "Public",
-          "body": "Everyone can view your table and download it"
-        },
-        "link": {
-          "type": "LINK",
-          "title": "Link",
-          "body": "Only the people with a shared link can view the data"
-        },
-        "password": {
-          "type": "PASSWORD",
-          "title": "Password",
-          "body": "Set a password and share only with specific people",
-          "placeholder": "Type your password"
-        },
-        "private": {
-          "type": "PRIVATE",
-          "title": "Private",
-          "body": "Nobody can access this dataset"
-        },
-        "share": "Hey, maybe it's a good time to",
-        "share-btn": "share with your colleagues.",
-        "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
-        "error": {
-          "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
-        },
-        "loading": "Saving your data..."
-      },
-      "share": {
-        "done-btn": "DONE",
-        "publish-btn": "PUBLISH",
-        "back-btn": "GO BACK",
-        "published": "Published %{when}",
-        "unpublished": "Never published.",
-        "last-published": "Last updated %{date}",
-        "unpublished-header": "Click on Publish to start sharing your map on the web",
-        "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
-        "upgradeLabel": "Upgrade",
-        "upgradeLink": "https://carto.com/pricing/#pricing-standard",
-        "upgrade": "%{upgradeLink} to share with your colleagues?",
-        "private": "PRIVATE",
-        "get-link": {
-          "title": "Get the link",
-          "body": "Send to your friends, coworkers, or post it in your social networks.",
-          "link": "",
-          "copy": "COPY",
-          "select": "SELECT",
-          "private": {
-            "body": "Your map is %{private} Change privacy to get the link"
-          }
-        },
-        "embed": {
-          "title": "Embed it",
-          "body": "Insert your map into your blog, website, or simple application.",
-          "link": "Get a simple URL.",
-          "copy": "COPY",
-          "select": "SELECT",
-          "private": {
-            "body": "Your map is %{private} Change privacy to embed map"
-          }
-        },
-        "cartodbjs": {
-          "title": "CARTO.js",
-          "body": "Add your map to your applications using this URL.",
-          "link": "Read more.",
-          "copy": "COPY",
-          "select": "SELECT"
-        },
-        "mobile-sdk": {
-          "title": "CARTO Mobile SDK",
-          "body": "Add your map to your native mobile applications using this line of code.",
-          "link": "Read more.",
-          "copy": "COPY",
-          "select": "SELECT"
-        },
-        "error": {
-          "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
-        },
-        "loading": "Saving your data..."
-      },
       "publish": {
         "done-btn": "Done",
         "update-btn": "Update",
@@ -455,7 +367,90 @@
           "share": "Share with colleagues",
           "publish": "publish"
         },
+        "privacy": {
+          "privacy": "privacy",
+          "cancel-btn": "CANCEL",
+          "save-btn": "SAVE",
+          "back-btn": "GO BACK",
+          "public": {
+            "type": "PUBLIC",
+            "title": "Public",
+            "body": "Everyone can view your table and download it"
+          },
+          "link": {
+            "type": "LINK",
+            "title": "Link",
+            "body": "Only the people with a shared link can view the data"
+          },
+          "password": {
+            "type": "PASSWORD",
+            "title": "Password",
+            "body": "Set a password and share only with specific people",
+            "placeholder": "Type your password"
+          },
+          "private": {
+            "type": "PRIVATE",
+            "title": "Private",
+            "body": "Nobody can access this dataset"
+          },
+          "share": "Hey, maybe it's a good time to",
+          "share-btn": "share with your colleagues.",
+          "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "loading": "Saving your data..."
+        },
         "share": {
+          "published": "Published %{when}",
+          "unpublished": "Never published.",
+          "last-published": "Last updated %{date}",
+          "unpublished-header": "Click on Publish to start sharing your map on the web",
+          "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
+          "upgradeLabel": "Upgrade",
+          "upgradeLink": "https://carto.com/pricing/#pricing-standard",
+          "upgrade": "%{upgradeLink} to share with your colleagues?",
+          "private": "PRIVATE",
+          "get-link": {
+            "title": "Get the link",
+            "body": "Send to your friends, coworkers, or post it in your social networks.",
+            "link": "",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to get the link"
+            }
+          },
+          "embed": {
+            "title": "Embed it",
+            "body": "Insert your map into your blog, website, or simple application.",
+            "link": "Get a simple URL.",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to embed map"
+            }
+          },
+          "cartodbjs": {
+            "title": "CARTO.js",
+            "body": "Add your map to your applications using this URL.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "mobile-sdk": {
+            "title": "CARTO Mobile SDK",
+            "body": "Add your map to your native mobile applications using this line of code.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "loading": "Saving your data...",
           "organization": {
             "title": "Default settings for your Organization",
             "desc": "New users will have this permission"
@@ -472,28 +467,6 @@
             "read": "Read",
             "write": "Write"
           }
-        }
-      },
-      "share-org": {
-        "modal-title": "privacy",
-        "modal-desc": "Select your colleagues you want to give access in the list below",
-        "cancel-btn": "Cancel",
-        "save-btn": "Save settings",
-        "organization": {
-          "title": "Default settings for your Organization",
-          "desc": "New users will have this permission"
-        },
-        "role": {
-          "viewer": "Viewer",
-          "builder": "Builder"
-        },
-        "tooltip": {
-          "group": "Access is inherited from group %{name}",
-          "org": "Access is inherited from organization",
-        },
-        "toggle": {
-          "read": "Read",
-          "write": "Write"
         }
       },
       "add-analysis": {

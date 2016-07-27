@@ -380,7 +380,7 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadMap');
+      spyOn(this.model, '_reloadVis');
       spyOn(this.model.layer, 'off').and.callThrough();
       spyOn(this.a0, 'off').and.callThrough();
 
@@ -399,7 +399,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should reload the map if there is a filter and it is not empty', function () {
-      expect(this.model._reloadMap).toHaveBeenCalled();
+      expect(this.model._reloadVis).toHaveBeenCalled();
     });
 
     it('should stop listening to events', function () {

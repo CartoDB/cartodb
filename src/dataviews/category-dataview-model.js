@@ -42,7 +42,7 @@ module.exports = DataviewModelBase.extend({
       apiKey: this.get('apiKey')
     });
 
-    this.on('change:column change:aggregation change:aggregation_column', this._reloadMapAndForceFetch, this);
+    this.on('change:column change:aggregation change:aggregation_column', this._reloadVisAndForceFetch, this);
 
     this.bind('change:url', function () {
       this._searchModel.set({

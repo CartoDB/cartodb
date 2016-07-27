@@ -53,15 +53,15 @@ module.exports = Model.extend({
     this.bind('change:type', function () {
       this.unbind(null, null, this);
       this._initBinds();
-      this._reloadMap();
+      this._reloadVis();
     }, this);
 
     _.each(this.getParamNames(), function (paramName) {
-      this.bind('change:' + paramName, this._reloadMap, this);
+      this.bind('change:' + paramName, this._reloadVis, this);
     }, this);
   },
 
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
     opts.error = this._onMapReloadError.bind(this);
     this._vis.reload(opts);

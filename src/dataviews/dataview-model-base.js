@@ -138,14 +138,14 @@ module.exports = Model.extend({
     if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
       layerDataProvider.applyFilter(this, filter);
     } else {
-      this._reloadMap();
+      this._reloadVis();
     }
   },
 
   /**
    * @protected
    */
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
     this._vis.reload(
       _.extend(
@@ -156,8 +156,8 @@ module.exports = Model.extend({
     );
   },
 
-  _reloadMapAndForceFetch: function () {
-    this._reloadMap({
+  _reloadVisAndForceFetch: function () {
+    this._reloadVis({
       forceFetch: true
     });
   },
@@ -305,7 +305,7 @@ module.exports = Model.extend({
       var isFilterEmpty = this.filter.isEmpty();
       this.filter.remove();
       if (!isFilterEmpty) {
-        this._reloadMap();
+        this._reloadVis();
       }
     }
 

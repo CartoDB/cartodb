@@ -19,7 +19,7 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
 
   TORQUE_LAYER_CARTOCSS_PROPS: [
     '-torque-frame-count',
@@ -42,7 +42,7 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   _onAttributeChanged: function () {
-    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
           return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
@@ -51,8 +51,8 @@ var TorqueLayer = LayerModelBase.extend({
       }
     }, this);
 
-    if (reloadMap) {
-      this._reloadMap();
+    if (reloadVis) {
+      this._reloadVis();
     }
   },
 
@@ -81,7 +81,7 @@ var TorqueLayer = LayerModelBase.extend({
     return properties;
   },
 
-  _reloadMap: function () {
+  _reloadVis: function () {
     this._vis.reload({
       sourceId: this.get('id')
     });

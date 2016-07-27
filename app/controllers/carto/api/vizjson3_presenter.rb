@@ -496,7 +496,7 @@ module Carto
       def as_torque
         layer_options = decorate_with_data(
           # Make torque always have a SQL query too (as vizjson v2)
-          @layer.options.deep_symbolize_keys.merge(query: wrap(sql_from(@layer.options), @layer.options)),
+          @layer.options.deep_symbolize_keys.merge(query: wrap(sql_from(@layer), @layer.options)),
           @decoration_data
         )
 
@@ -542,7 +542,7 @@ module Carto
             data[:source] = source
             data.delete(:sql)
           else
-            data[:sql] = wrap(sql_from(@layer.options), @layer.options)
+            data[:sql] = wrap(sql_from(@layer), @layer.options)
           end
 
           sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
@@ -558,14 +558,12 @@ module Carto
         layer_alias = @layer.options.fetch('table_name_alias', nil)
         table_name  = @layer.options.fetch('table_name')
 
-        return table_name unless layer_alias && !layer_alias.empty?
-        layer_alias
+        layer_alias.present? ? layer_alias : table_name
       end
 
-      def sql_from(options)
-        query = options.fetch('query', '')
-        return default_query_for(options) if query.nil? || query.empty?
-        query
+      def sql_from(layer)
+        query = layer.options.fetch('query', '')
+        query.present? ? query : layer.default_query(layer.visualization.user)
       end
 
       def css_from(options)
@@ -577,10 +575,6 @@ module Carto
         wrapper = options.fetch('query_wrapper', nil)
         return query if wrapper.nil? || wrapper.empty?
         EJS.evaluate(wrapper, sql: query)
-      end
-
-      def default_query_for(layer_options)
-        "select * from #{layer_options.fetch('table_name')}"
       end
 
       def public_options

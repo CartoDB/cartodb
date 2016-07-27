@@ -51,7 +51,7 @@ module Carto
             username: @user ? @user.username : nil,
             email: @user ? @user.email : nil,
             plan: @user ? @user.account_type : nil,
-            organization: (@user && @user.organization_user?) ? @user.organization.name : nil,
+            organization: @user && @user.organization_user? ? @user.organization.name : nil,
             event_origin: 'Editor',
             creation_time: Time.now.utc
           }

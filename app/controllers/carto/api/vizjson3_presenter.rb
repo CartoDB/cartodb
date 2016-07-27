@@ -265,7 +265,6 @@ module Carto
           id: layer_vizjson[:id],
           type: layer_vizjson[:type],
           layer_name: layer_options[:layer_name],
-          interactivity: layer_options[:interactivity],
           visible: layer_vizjson[:visible],
           options: {
             attribution: layer_options[:attribution]
@@ -381,7 +380,6 @@ module Carto
           layer_name:         layer_name,
           cartocss:           css_from(@layer.options),
           cartocss_version:   @layer.options.fetch('style_version'),
-          interactivity:      @layer.options.fetch('interactivity'),
           attribution:        attribution
         }
         source = @layer.options['source']

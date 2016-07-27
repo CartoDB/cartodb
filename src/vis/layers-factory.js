@@ -39,8 +39,7 @@ function transformToHTTPS (tilesTemplate) {
   return tilesTemplate;
 }
 
-// layer factory
-var Layers = {
+var LayersFactory = {
 
   _types: {},
 
@@ -61,7 +60,7 @@ var Layers = {
   }
 };
 
-Layers.register('tilejson', function (data, options) {
+LayersFactory.register('tilejson', function (data, options) {
   var url = data.tiles[0];
   if (options.https === true) {
     url = transformToHTTPS(url);
@@ -73,7 +72,7 @@ Layers.register('tilejson', function (data, options) {
   });
 });
 
-Layers.register('tiled', function (data, options) {
+LayersFactory.register('tiled', function (data, options) {
   var url = data.urlTemplate;
   if (options.https === true) {
     url = transformToHTTPS(url);
@@ -85,29 +84,29 @@ Layers.register('tiled', function (data, options) {
   return new TileLayer(data);
 });
 
-Layers.register('wms', function (data, options) {
+LayersFactory.register('wms', function (data, options) {
   return new WMSLayer(data);
 });
 
-Layers.register('gmapsbase', function (data, options) {
+LayersFactory.register('gmapsbase', function (data, options) {
   return new GMapsBaseLayer(data);
 });
 
-Layers.register('plain', function (data, options) {
+LayersFactory.register('plain', function (data, options) {
   return new PlainLayer(data);
 });
 
-Layers.register('background', function (data, options) {
+LayersFactory.register('background', function (data, options) {
   return new PlainLayer(data);
 });
 
-Layers.register('cartodb', function (data, options) {
+LayersFactory.register('cartodb', function (data, options) {
   return new CartoDBLayer(data, {
     vis: options.vis
   });
 });
 
-Layers.register('torque', function (data, options) {
+LayersFactory.register('torque', function (data, options) {
   // default is https
   if (options.https) {
     if (data.sql_api_domain && data.sql_api_domain.indexOf('carto.com') !== -1) {
@@ -122,4 +121,4 @@ Layers.register('torque', function (data, options) {
   });
 });
 
-module.exports = Layers;
+module.exports = LayersFactory;

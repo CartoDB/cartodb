@@ -6,7 +6,7 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
-var LayersFactory = require('../vis/layers');
+var LayersFactory = require('../vis/layers-factory');
 
 var Map = Model.extend({
   defaults: {

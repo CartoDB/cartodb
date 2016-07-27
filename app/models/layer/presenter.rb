@@ -153,6 +153,7 @@ module CartoDB
             sql_api_endpoint:   (configuration[:sql_api]["public"]["endpoint"] rescue nil),
             sql_api_port:       (configuration[:sql_api]["public"]["port"] rescue nil),
             layer_name:         name_for(layer),
+            visualization_user_name: visualization_user_name
           }.merge(
             layer_options.select { |k| TORQUE_ATTRS.include? k })
         }
@@ -289,13 +290,19 @@ module CartoDB
         else
           # This fixes #9017 avoding Torque request to table owner named map instead of visualization owner.
           # See https://github.com/CartoDB/torque/blob/8a14fe546ac411829b5f52bb575526ad5ecb79f8/lib/torque/provider/windshaft.js#L361
-          maps_api_template.gsub('{user}', layer.user.username)
+          maps_api_template.gsub('{user}', visualization_user_name)
         end
       end
 
       def visualization_owner_is_table_owner?
         layer.options.nil? || layer.options['user_name'].nil? || layer.user.nil? ||
-          layer.options['user_name'] == layer.user.username
+          layer.options['user_name'] == visualization_user_name
+      end
+
+      def visualization_user_name
+        layer.user.username
+      rescue
+        nil
       end
     end
   end

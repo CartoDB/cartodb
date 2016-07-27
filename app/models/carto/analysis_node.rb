@@ -45,6 +45,11 @@ class Carto::AnalysisNode
     source? && options && options[:table_name] == table_name
   end
 
+  def source_descendants
+    return [self] if source?
+    children.map(&:source_descendants).flatten
+  end
+
   private
 
   MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze

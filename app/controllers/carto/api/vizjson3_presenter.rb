@@ -329,7 +329,6 @@ module Carto
           {
             id:      @layer.id,
             type:    @layer.kind,
-            order:   @layer.order,
             options: @layer.options
           }
         elsif @layer.torque?
@@ -341,7 +340,6 @@ module Carto
             infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
             tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
             legend:     @layer.legend,
-            order:      @layer.order,
             visible:    @layer.options['visible'],
             options:    options_data
           }
@@ -360,7 +358,6 @@ module Carto
         torque = {
           id:         @layer.id,
           type:       'torque',
-          order:      @layer.order,
           legend:     @layer.legend,
           options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
         }

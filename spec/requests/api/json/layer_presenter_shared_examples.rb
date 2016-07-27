@@ -116,7 +116,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       expect(poro_options).to include(expected_options)
 
       # Now add presenter options to change table_name (new way)
-      expected_options['table_name'] = "#{@user_1.database_schema}.#{table_name}"
+      expected_options['table_name'] = "#{@user_1.database_schema}.\"#{table_name}\""
 
       presenter_options = {
         viewer_user: @user_2,
@@ -338,7 +338,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
 
       expected_vizjson[:id] = layer.id
       # No special quoting
-      expected_vizjson[:options]['query'] = "select * from public.#{layer.options['table_name']}"
+      expected_vizjson[:options]['query'] = "select * from public.\"#{layer.options['table_name']}\""
       expected_vizjson[:options]['user_name'] = @user_1.database_schema
 
       presenter_options =  {

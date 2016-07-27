@@ -181,7 +181,7 @@ class Layer < Sequel::Model
   end
 
   def qualified_table_name(viewer_user)
-    "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    "#{viewer_user.sql_safe_database_schema}.\"#{options['table_name']}\""
   end
 
   def user

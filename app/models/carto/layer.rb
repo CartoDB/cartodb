@@ -178,9 +178,10 @@ module Carto
 
     def tables_from_query_option
       ::Table.get_all_user_tables_by_names(affected_table_names, user)
-    rescue => exception
-      # INFO: this covers changes that CartoDB can't track. For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
-      CartoDB.notify_debug('Could not retrieve tables from query', { user: user, layer: self })
+    rescue => e
+      # INFO: this covers changes that CartoDB can't track.
+      # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
+      CartoDB::Logger.debug(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
       []
     end
 
@@ -189,14 +190,14 @@ module Carto
 
       # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
       query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      query_tables['cdb_querytables'].split(',').map do |table_name|
+      query_tables['cdb_querytables'].split(',').map { |table_name|
         t = table_name.gsub!(/[\{\}]/, '')
         (t.blank? ? nil : t)
-      end.compact.uniq
+      }.compact.uniq
     end
 
     def tables_from_table_name_option
-      return[] if options.empty?
+      return [] if options.empty?
       sym_options = options.symbolize_keys
       user_name = sym_options[:user_name]
       table_name = sym_options[:table_name]

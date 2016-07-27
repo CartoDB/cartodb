@@ -35,8 +35,8 @@ describe('core/geo/map-view', function () {
         return jasmine.createSpyObj('layerView', ['something']);
       });
       var tileLayer = new TileLayer();
-      var cartoDBLayer1 = new CartoDBLayer();
-      var cartoDBLayer2 = new CartoDBLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
 

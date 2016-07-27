@@ -32,7 +32,7 @@
         <% if (hasWriteAccess) { %> checked <% } %>
       />
       <span class="u-iBlock CDB-ToggleFace"></span>
-      <label class="u-iBlock u-altTextColor "><%- _t('components.modals.share-org.toggle.write') %></label>
+      <label class="u-iBlock u-altTextColor "><%- _t('components.modals.publish.share.toggle.write') %></label>
     </div>
   <% } %>
   <div class="CDB-Text CDB-Size-medium Share-toggler js-toggler <% if (!canChangeReadAccess) { %>is-disabled<% } %>">
@@ -41,6 +41,6 @@
       <% if (!canChangeReadAccess) { %>disabled="disabled"<% } %>
     />
     <span class="u-iBlock CDB-ToggleFace"></span>
-    <label class="u-iBlock u-altTextColor "><%- _t('components.modals.share-org.toggle.read') %></label>
+    <label class="u-iBlock u-altTextColor "><%- _t('components.modals.publish.share.toggle.read') %></label>
   </div>
 </div>

@@ -18,12 +18,98 @@
     "december": "December"
   },
 
+  "analyses-onboarding": {
+    "done": "Done",
+    "finished": "has finished",
+    "style-analysis": "Style this analysis",
+    "read-more": "Read more in documentation",
+    "never-show-message": "Never show me this message.",
+    "no-new-columns": "No new columns were created.",
+    "geometries-updated": "The geometries in your table were updated",
+    "new-column-added": "A new column has been added to your dataset.",
+    "new-columns-created": "New columns have been created as a new dataset.",
+    "new-column-included": "A new column has been included with your original data.",
+    "new-columns-included": "New columns has been included with your original data.",
+    "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
+    "sampling": {
+      "title": "Subsample of rows",
+      "description": "A sample of your original table was randomly selected to give approximately %{percentage}% of the rows from your input dataset."
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "description": "This analysis performed a columnar JOIN in order to get columns from two different tables."
+    },
+    "intersection": {
+      "title": "Filter points in polygons",
+      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the source layer.",
+      "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "description": "Area of influence creates polygons according to the parameters set by the user.",
+      "the-geom": "This column was updated to show the area of influence requested.",
+    },
+    "aggregate-intersection": {
+      "title": "Intersect second layer",
+      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the source layer.",
+      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation",
+      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
+    
+    },
+    "filter": {
+      "title": "Row filtering",
+      "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
+    },
+    "filter-by-node-column": {
+      "title": "Filter by layer",
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the '%{name_of_the_layer}' layer. Now if you filter on widgets added to the attached layer, the results in this layer would be also filtered."
+    },
+    "spatial-markov-trend": {
+      "trend": "The normalized trend for each geometry",
+      "trend_up": "The probability that a geometry's value will move to a higher class",
+      "trend_down": "The probability that a geometry's value will move to a lower class",
+      "volatility": "A measure of the potential for a geometry to possess values in other classes",
+      "description": "Trends and volatility are calculated based on the time series data input. Trends calculated from inputs with a longer history are more precise. Inputs for the time column should equally spaced (e.g., all one week/month/year apart)."
+    },
+    "moran": {
+      "title": "Detect outliers and clusters",
+      "description": "Detect outliers and clusters finds areas in your data where clusters of high values or low values exist, as well as areas which are dissimilar from their neighbors.",
+      "quads": "Classification of the geometry from the analysis",
+      "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
+      "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
+"rowid": "The original row id of the geometry (cartodb_id)."
+    },
+    "kmeans": {
+      "title": "Calculating point clusters",
+      "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
+      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+    },
+    "data-observatory-measure": {
+      "title": "Enrich from the Data Observatory",
+      "custom-column": "This column contains the data requested from the Data Observatory",
+      "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
+    },
+    "georeference": {
+      "title": "Georeference",
+      "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
+      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+    },
+    "centroid": {
+      "title": "Calculating centroids from geometries",
+      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
+      "the-geom": "Point geometries representing the centroid(s) of your input data.",
+      "aggregated-value": "Stores the aggregate value for each centroid.",
+      "non-aggregated-value": "Contains the count of features considered for each centroid",
+      "category": "Stores the category value for each centroid from the source dataset"
+    }
+  },
+
   "analyses": {
     "georeference": {
       "title": "Georeference",
       "short-title": "Georeference"
     },
-    "data-observatory-measurement": {
+    "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
       "short-title": "Data observatory"
     },
@@ -164,7 +250,7 @@
     "background-importer": {
       "background-importer-item": {
         "completed": "completed",
-        "error-connecting": "<span class='CDB-Text is-semibold u-errorTextColor'>Error connecting</span> %{name}",
+        "error-connecting": "<span class='u-errorTextColor'>Error connecting</span> %{name}",
         "from": "from",
         "show": "show"
       },
@@ -1007,18 +1093,18 @@
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
       },
       "rename": {
-        "loading": "<span class='CDB-Text is-semibold'>Renaming layer...</span>",
-        "success": "<span class='CDB-Text is-semibold'>Layer renamed</span> to %{name}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
+        "loading": "Renaming layer…",
+        "success": "Layer renamed to %{name}",
+        "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
         "desc": "Maps will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error deleting layer</span>: %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Removing layer</span>…",
-        "success": "<span class='CDB-Text is-semibold'>Layer deleted correctly</span>."
+        "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "Removing layer…",
+        "success": "Layer deleted correctly."
       },
       "layer": {
         "analysis": "Analysis",
@@ -1029,7 +1115,7 @@
         "cancel-delete-analysis": "Cancel"
       },
       "notifier": {
-        "layer-added": "<span class='CDB-Text is-semibold'>Layer added successfully.</span>"
+        "layer-added": "Layer added successfully."
       },
       "basemap": {
         "title-label": "Basemap",
@@ -1260,10 +1346,10 @@
         "save": "CMD + S to apply your query."
       },
       "notifier": {
-        "sql-alter-loading": "Modifying table...",
-        "sql-alter-error": "Modifying failed",
-        "sql-alter-success": "Modifying applied",
-        "sql-applying": "Applying query...",
+        "sql-alter-loading": "Modifying table…",
+        "sql-alter-error": "Error in SQL query.",
+        "sql-alter-success": "Modifying applied.",
+        "sql-applying": "Applying query…",
         "sql-error": "Error in SQL query.",
         "sql-success": "SQL query applied."
       },
@@ -1337,8 +1423,8 @@
         "cartocss": "CARTOCSS"
       },
       "notifier": {
-        "css-error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "<span class='CDB-Text is-semibold'>CartoCSS applied.</span>"
+        "css-error": "<span class='CDB-Text u-errorTextColor'>Error in CartoCSS styles.</span>",
+        "css-success": "CartoCSS applied."
       },
       "messages": {
         "fetched": "Schema fetched, select a style",
@@ -1442,11 +1528,11 @@
     },
     "widgets": {
       "notifier": {
-        "delete": "<span class='CDB-Text is-semibold'>Widget deleted correctly.</span>",
-        "success": "<span class='CDB-Text is-semibold'>Widget successfully added.</span>",
-        "error": "<span class='CDB-Text is-semibold u-errorTextColor'>Error adding widget:</span> %{error}",
-        "loading": "<span class='CDB-Text is-semibold'>Adding widget…</span>",
-        "updating": "<span class='CDB-Text is-semibold'>Updating widget…</span>"
+        "delete": "Widget deleted correctly.",
+        "success": "Widget successfully added.",
+        "error": "<span class='u-errorTextColor'>Error adding widget:</span> %{error}",
+        "loading": "Adding widget…",
+        "updating": "Updating widget…"
       },
       "widgets-view": {
         "add_widget": "Add widget"

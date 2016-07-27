@@ -69,7 +69,7 @@ module CartoDB
       end
     end
     class ExportJob
-      attr_reader :logger
+      attr_reader :logger, :json_file
 
       REDIS_KEYS = {
         mapviews: {
@@ -125,7 +125,7 @@ module CartoDB
           }
         }
       }.freeze
-      TABLE_NULL_EXCEPTIONS = ['table_quota'].freeze # those won't be discarded if set to NULL
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'builder_enabled'].freeze # those won't be discarded if set to NULL
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -451,6 +451,7 @@ module CartoDB
 
         @start = Time.now
         @logger = options[:logger] || default_logger
+        @@exportjob_logger = options[:export_job_logger]
 
         job_uuid = @options[:job_uuid] || SecureRandom.uuid
         export_log = { job_uuid:     job_uuid,
@@ -490,7 +491,8 @@ module CartoDB
               )
             end
 
-            File.open("#{@options[:path]}user_#{@user_id}.json", "w") do |f|
+            @json_file = "user_#{@user_id}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(user_info.to_json)
             end
             set_user_mover_banner(@user_id) if options[:set_banner]
@@ -512,7 +514,8 @@ module CartoDB
 
             dump_org_metadata if @options[:metadata]
             data = { organization: @org_metadata, users: @org_users.to_a, groups: @org_groups, split_user_schemas: @options[:split_user_schemas] }
-            File.open("#{@options[:path]}org_#{@org_metadata['id']}.json", "w") do |f|
+            @json_file = "org_#{@org_metadata['id']}.json"
+            File.open("#{@options[:path]}#{json_file}", "w") do |f|
               f.write(data.to_json)
             end
 
@@ -535,7 +538,9 @@ module CartoDB
                                                              path: @options[:path],
                                                              job_uuid: job_uuid,
                                                              from_org: true,
-                                                             schema_mode: true)
+                                                             schema_mode: true,
+                                                             logger: @logger,
+                                                             export_job_logger: exportjob_logger)
             end
           end
         rescue => e

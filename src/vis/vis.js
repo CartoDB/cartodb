@@ -324,28 +324,40 @@ var VisModel = Backbone.Model.extend({
   },
 
   _newLayerModels: function (vizjson) {
-    var layerModels = [];
     var layersOptions = {
       https: this.get('https'),
       vis: this
     };
-    _.each(vizjson.layers, function (layerData) {
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        var layersData;
-        if (layerData.type === 'layergroup') {
-          layersData = layerData.options.layer_definition.layers;
-        } else {
-          layersData = layerData.options.named_map.layers;
-        }
-        _.each(layersData, function (layerData) {
-          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
-        });
-      } else {
-        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
-      }
+    // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
+    // will be merged and released. Leaving this here for backwards compatibility
+    // and to make sure everything still works fine during the release and next
+    // few moments (e.g: some viz.json files might be cached, etc.).
+    var layersData = this._flattenLayers(vizjson.layers);
+    return _.map(layersData, function (layerData) {
+      return Layers.create(layerData.type, layerData, layersOptions);
     });
+  },
 
-    return layerModels;
+  _flattenLayers: function (vizjsonLayers) {
+    return _.chain(vizjsonLayers)
+      .map(function (vizjsonLayer) {
+        if (vizjsonLayer.type === 'layergroup') {
+          return vizjsonLayer.options.layer_definition.layers;
+        }
+
+        if (vizjsonLayer.type === 'namedmap') {
+          // Layers inside of a "namedmap" layer don't have a type, so we need to
+          // add manually add it here, so that the factory knows what model should be created.
+          return _.map(vizjsonLayer.options.named_map.layers, function (layer) {
+            layer.type = 'CartoDB';
+            return layer;
+          });
+        }
+
+        return vizjsonLayer;
+      })
+      .flatten()
+      .value();
   }
 });
 

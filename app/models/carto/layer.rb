@@ -61,7 +61,7 @@ module Carto
         table_name
       else
         schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
-        "#{schema_prefix}#{options['table_name']}"
+        "#{schema_prefix}\"#{options['table_name']}\""
       end
     end
 
@@ -167,7 +167,7 @@ module Carto
         table_name = sym_options[:table_name]
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
-          %{ select * from "#{user_name}".#{table_name} }
+          %{ select * from "#{user_name}"."#{table_name}" }
         else
           "SELECT * FROM #{qualified_table_name(user)}"
         end

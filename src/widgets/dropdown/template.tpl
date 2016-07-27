@@ -12,19 +12,6 @@
         </div>
     </button>
   </li>
-  <li class="CDB-Dropdown-item">
-    <button class="CDB-Dropdown-link js-togglePinned">
-        Pin widget
-        <div>
-          <% if (pinned) { %>
-            <input class="CDB-Toggle js-inputPinned" checked="checked" type="checkbox" name="pinned">
-          <% } else { %>
-            <input class="CDB-Toggle js-inputPinned" type="checkbox" name="pinned">
-          <% } %>
-          <span class="u-iBlock CDB-ToggleFace"></span>
-        </div>
-    </button>
-  </li>
 
   <% if (flags.normalizeHistogram) { %>
   <li class="CDB-Dropdown-item">

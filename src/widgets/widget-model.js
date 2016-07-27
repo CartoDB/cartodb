@@ -15,8 +15,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   defaultState: {
-    'collapsed': false,
-    'pinned': false
+    'collapsed': false
   },
 
   initialize: function (attrs, opts) {

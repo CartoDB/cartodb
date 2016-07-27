@@ -15,8 +15,7 @@ module.exports = cdb.core.View.extend({
 
   events: {
     'click .js-toggleNormalized': '_toggleNormalized',
-    'click .js-toggleCollapsed': '_toggleCollapsed',
-    'click .js-togglePinned': '_togglePinned'
+    'click .js-toggleCollapsed': '_toggleCollapsed'
   },
 
   initialize: function (opts) {
@@ -35,7 +34,6 @@ module.exports = cdb.core.View.extend({
       this.model.attributes,
       { flags: this.options.flags || {} }, {
         'normalized': false,
-        'pinned': false,
         'collapsed': false
       }
     )));
@@ -46,7 +44,6 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.model);
 
     this.model.bind('change:widget_dropdown_open', this._onChangeOpen, this);
-    this.model.bind('change:pinned change:collapsed', this.render, this);
 
     this._$container.delegate(this._target, 'click',
       _.bind(this._toggleClick, this)
@@ -89,11 +86,6 @@ module.exports = cdb.core.View.extend({
     } else {
       this._close();
     }
-  },
-
-  _togglePinned: function () {
-    var pinned = !this.model.get('pinned');
-    this.model.set('pinned', pinned);
   },
 
   _toggleCollapsed: function () {

@@ -420,12 +420,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         legend: nil,
         visible: nil,
         options: {
-            sql: "select * from \"#{layer.options['table_name']}\"",
-            layer_name: layer.options['table_name'],
-            cartocss: @tested_class::EMPTY_CSS,
-            cartocss_version: layer.options['style_version'],
-            interactivity: layer.options['interactivity']
-          }
+          sql: "select * from \"#{layer.options['table_name']}\"",
+          layer_name: layer.options['table_name'],
+          cartocss: @tested_class::EMPTY_CSS,
+          cartocss_version: layer.options['style_version'],
+          interactivity: layer.options['interactivity']
+        }
       }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
@@ -484,13 +484,13 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         legend: layer.legend,
         visible: true,
         options: {
-            # yes... this ones come as symbols and not strings as the others (sigh)
-            sql: "select * from \"#{layer.options['table_name']}\"",
-            layer_name: layer.options['table_name'],
-            cartocss: layer.options['tile_style'],
-            cartocss_version: layer.options['style_version'],
-            interactivity: layer.options['interactivity']
-          }
+          # yes... this ones come as symbols and not strings as the others (sigh)
+          sql: "select * from \"#{layer.options['table_name']}\"",
+          layer_name: layer.options['table_name'],
+          cartocss: layer.options['tile_style'],
+          cartocss_version: layer.options['style_version'],
+          interactivity: layer.options['interactivity']
+        }
       }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2

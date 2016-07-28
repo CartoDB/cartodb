@@ -556,7 +556,8 @@
           "toggle": {
             "read": "Read",
             "write": "Write"
-          }
+          },
+          "add-people": "Add people"
         }
       },
       "add-analysis": {

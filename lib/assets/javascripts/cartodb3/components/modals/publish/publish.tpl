@@ -4,9 +4,7 @@
     <ul class="u-flex u-alignCenter">
       <li class="js-dropdown u-rSpace--xl"></li>
       <% if (!isSimple) { %>
-      <li class="u-rSpace--xl">
-        <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
-        <span class="u-iBlock js-share-users"></span>
+      <li class="js-share-users">
       </li>
       <% } %>
       <li class="CDB-Text CDB-Size-medium u-altTextColor js-update">

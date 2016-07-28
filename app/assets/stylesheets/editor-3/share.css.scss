@@ -32,12 +32,8 @@
   }
 }
 
-.Share-hr {
-  width: 80%;
-  max-width: 640px;
-  margin: $baseSize * 4 auto 0;
-  border: 0;
-  border-top: 1px solid $cMainLine;
+.Share-with.is-hidden {
+  display: none;
 }
 
 .Share-user {

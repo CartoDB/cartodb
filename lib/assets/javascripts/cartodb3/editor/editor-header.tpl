@@ -17,10 +17,9 @@
         <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </button>
       <% if (!isSimple) { %>
-      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
-      <span class="u-iBlock js-share-users u-rSpace"></span>
+      <div class="js-share-users"></div>
       <% } %>
-      <span class="CDB-Text CDB-Size-medium u-altTextColor u-lSpace"><%- published %></span>
+      <div class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></div>
     </div>
   </div>
 </div>

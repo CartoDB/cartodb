@@ -12,7 +12,12 @@
   right: 0;
   min-width: 246px;
   max-width: 272px;
+  visibility: hidden;
   z-index: 100;
+
+  &.has-visibility {
+    visibility: visible;
+  }
 }
 .CustomList--small {
   width: 215px;

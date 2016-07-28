@@ -249,6 +249,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_node_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/overlay_spec.rb \
+	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
@@ -258,6 +259,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/maps_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
+	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \

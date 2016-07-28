@@ -1,5 +1,5 @@
 <button class="Publish-modalButton CDB-Button CDB-Button--primary CDB-Button--small u-rSpace js-button <% if (isDisabled) {%>is-disabled<% } %>">
-  <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">
+  <div class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-iBlock">
         <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">
@@ -18,5 +18,5 @@
       <%- _t('components.modals.publish.publish-btn') %>
       <% } %>
     <% } %>
-  </span>
+  </div>
 </button> <%- publishedOn %>

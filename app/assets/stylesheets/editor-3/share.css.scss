@@ -60,6 +60,7 @@
 .Share-permission {
   @include display-flex();
   @include align-items(center);
+  @include transition(border 200ms ease-in);
   margin-bottom: $baseSize;
   padding: $baseSize * 2;
   border: 1px solid $cWhite;
@@ -67,8 +68,7 @@
   background-color: $cWhite;
 
   &.is-selected {
-    border: 1px solid $cHighlight;
-    background-color: rgba($cHighlight, 0.1);
+    border: 1px solid $cBlue;
   }
 }
 

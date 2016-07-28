@@ -11,11 +11,17 @@
       <%- name %>
     </div>
 
-    <% if (role) { %>
+
     <div class="CDB-Text u-mainTextColor u-tSpace CDB-Size-medium u-ellipsis">
-      <i class="Tag Tag--outline Tag--<%- role %> CDB-Text CDB-Size-small u-upperCase"><%- role %></i>
+      <% if (role) { %>
+        <i class="Tag Tag--outline Tag--<%- role %> CDB-Text CDB-Size-small u-upperCase"><%- role %></i>
+      <% } %>
+
+      <% if (users) { %>
+        <%- users %>
+      <% } %>
     </div>
-    <% } %>
+
 
     <% if (description) { %>
     <div class="CDB-Text u-mainTextColor u-tSpace CDB-Size-medium u-ellipsis">

@@ -1,17 +1,17 @@
-var OverlaysFactory = require('./overlays-factory');
+var _ = require('underscore');
+var InfowindowView = require('../geo/ui/infowindow-view');
+var InfowindowModel = require('../geo/ui/infowindow-model');
 
 /**
  * Manages the infowindows for a map. It listens to changes on the collection
  * of layers and binds a new infowindow view/model to CartoDB.js whenever the
  * collection of layers changes
  */
-var InfowindowManager = function (vis, visView, options) {
+var InfowindowManager = function (vis, options) {
   options = options || {};
   if (!vis) throw new Error('vis is required');
-  if (!visView) throw new Error('visView is required');
 
   this._vis = vis;
-  this._visView = visView;
   this._showEmptyFields = options.showEmptyFields;
 };
 
@@ -47,11 +47,15 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
 };
 
 InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerModel) {
-  this._infowindowView = OverlaysFactory.create('infowindow', layerModel.infowindow.toJSON(), {
-    visView: this._visView,
-    map: this._map
+  var infowindowAttrs = _.pick(layerModel.infowindow.toJSON(), [
+    'template', 'fields', 'template_name', 'template_type'
+  ]);
+  this._infowindowModel = new InfowindowModel(infowindowAttrs);
+  this._infowindowView = new InfowindowView({
+    model: this._infowindowModel,
+    mapView: this._mapView
   });
-  this._infowindowModel = this._infowindowView.model;
+
   this._mapView.addInfowindow(this._infowindowView);
 };
 

@@ -70,7 +70,7 @@ var Vis = View.extend({
     this.mapView.render();
 
     // Infowindows && Tooltips
-    var infowindowManager = new InfowindowManager(this.model, this, {
+    var infowindowManager = new InfowindowManager(this.model, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
     infowindowManager.manage(this.mapView, this.model.map);

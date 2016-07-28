@@ -4,9 +4,9 @@
       <button class="u-actionTextColor js-back CDB-Size-medium u-rSpace">
         <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
       </button>
-      <i class="Tag Tag--outline is-orange-dark CDB-Text CDB-Size-small u-upperCase">
+      <span class="CDB-Text CDB-Size-medium">
         <%- _t('components.modals.publish.privacy.password.title') %>
-      </i>
+      </span>
     </li>
   </ul>
 </div>

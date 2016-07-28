@@ -231,7 +231,6 @@
 .Publish-modalHeader {
   @include flex(0 0 auto);
   padding: $baseSize * 3 0;
-  text-align: left;
 }
 
 .Publish-modalBody {
@@ -274,7 +273,6 @@
 
 .Publish-modalButton {
   height: 24px;
-  overflow: hidden;
 }
 
 .CDB-NavSubmenu-item.is-selected .Publish-modalLink {

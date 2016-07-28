@@ -5,11 +5,9 @@
   position: relative;
 }
 
-.Privacy-dropdown .Privacy-dropdownTrigger {
-  height: 24px;
+.Privacy-dropdownTrigger {
   padding-right: $halfBaseSize;
   padding-left: $halfBaseSize;
-  overflow: hidden;
 }
 
 .Privacy-dropdownButton {
@@ -26,7 +24,7 @@
   right: 0;
   left: 0;
   width: 248px;
-  z-index: 100;
+  z-index: 2;
 }
 
 .Privacy-passwordField {

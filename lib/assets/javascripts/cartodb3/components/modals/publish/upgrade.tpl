@@ -7,7 +7,7 @@
     </svg>
   </div>
   <div class="Upgrade-body">
-    <div class="CDB-Text CDB-Size-large"><%- title %></div>
-    <div class="CDB-Text CDB-Size-medium u-altTextColor "><%= desc %></div>
+    <h2 class="CDB-Text CDB-Size-large"><%- title %></h2>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor "><%= desc %></p>
   </div>
 </div>

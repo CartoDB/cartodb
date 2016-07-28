@@ -3,12 +3,12 @@
     <div class="CDB-Text CDB-Size-huge is-light u-ellipsis u-bSpace--m"><%- name %></div>
     <ul class="u-flex u-alignCenter">
       <li class="js-dropdown u-rSpace--xl"></li>
-      <li class="u-rSpace--xl">
-        <% if (!isSimple) { %>
-        <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
-        <span class="u-iBlock js-share-users"></span>
-        <% } %>
-      </li>
+      <% if (!isSimple) { %>
+        <li class="u-rSpace--xl">
+          <img class="Share-user Share-user--big u-iBlock" src="<%- avatar %>">
+          <span class="u-iBlock js-share-users"></span>
+        </li>
+      <% } %>
       <li class="CDB-Text CDB-Size-medium u-altTextColor js-update">
       </li>
   </div>

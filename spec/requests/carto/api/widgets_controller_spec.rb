@@ -8,7 +8,7 @@ include Carto::UUIDHelper
 
 shared_context 'layer hierarchy' do
   before(:each) do
-    @map = FactoryGirl.create(:carto_map_with_layers)
+    @map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
     @layer = @map.layers.first
     @widget = FactoryGirl.create(:widget, layer: @layer)
     @visualization = FactoryGirl.create(:carto_visualization, map: @map, privacy: Carto::Visualization::PRIVACY_PRIVATE, user_id: @user1.id)
@@ -72,7 +72,7 @@ describe Carto::Api::WidgetsController do
   include_context 'layer hierarchy'
 
   before(:each) do
-    @public_map = FactoryGirl.create(:carto_map_with_layers)
+    @public_map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
     @public_layer = @public_map.layers.first
     @public_widget = FactoryGirl.create(:widget, layer: @public_layer)
 
@@ -190,7 +190,7 @@ describe Carto::Api::WidgetsController do
     end
 
     it 'returns 422 if layer id do not match map' do
-      other_map = FactoryGirl.create(:carto_map_with_layers)
+      other_map = FactoryGirl.create(:carto_map_with_layers, user_id: @user1.id)
       other_layer = other_map.data_layers.first
       other_layer.should_not be_nil
 

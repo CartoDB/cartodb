@@ -10,13 +10,13 @@
 
     <ul class="Filters-group js-links-list">
       <li class="Filters-typeItem js-filter-type">
-        <button class="js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-connect <%- listingType === 'import' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
+        <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-connect <%- listingType === 'import' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
           <%- _t('components.modals.add-layer.navigation.connect-dataset') %>
         </button>
       </li>
       <% if (showDatasets) { %>
         <li class="Filters-typeItem js-filter-type">
-          <button class="js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-datasets <%- listingType === 'datasets' && shared !== 'only' && !library ? 'is-selected' : '' %>">
+          <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-datasets <%- listingType === 'datasets' && shared !== 'only' && !library ? 'is-selected' : '' %>">
             <% if (totalItems) { %>
               <strong><%- totalItems %></strong>
             <% } %>
@@ -25,7 +25,7 @@
         </li>
         <% if (isInsideOrg) { %>
           <li class="Filters-typeItem js-filter-type">
-            <button class="js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-shared <%- listingType === 'datasets' && shared === "only" ? 'is-selected' : '' %>">
+            <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-shared <%- listingType === 'datasets' && shared === "only" ? 'is-selected' : '' %>">
               <% if (totalShared) { %>
                 <strong><%- totalShared %></strong>
               <% } %>
@@ -35,7 +35,7 @@
         <% } %>
       <% } %>
       <li class="Filters-typeItem js-filter-type">
-        <button class="js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
+        <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-library <%- listingType === 'datasets' && library ? 'is-selected' : '' %>">
           <%- _t('components.modals.add-layer.navigation.data-library') %>
         </button>
       </li>
@@ -54,7 +54,7 @@
   </div>
 
   <div class="js-order-list">
-    <button class="js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-create-empty <%- listingType === 'scratch' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
+    <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-create-empty <%- listingType === 'scratch' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
       <%- _t('components.modals.add-layer.navigation.create-empty-' + createModelType) %>
     </button>
   </div>

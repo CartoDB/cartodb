@@ -49,6 +49,7 @@ module.exports = Model.extend({
     opts = opts || {};
 
     if (!opts.map) throw new Error('map is required');
+    if (!opts.vis) throw new Error('vis is required');
     if (!opts.analysisCollection) throw new Error('analysisCollection is required');
     if (!attrs.source) throw new Error('source is a required attr');
 
@@ -58,6 +59,7 @@ module.exports = Model.extend({
 
     this.layer = opts.layer;
     this._map = opts.map;
+    this._vis = opts.vis;
     this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneCancelSync.bind(this);
@@ -136,16 +138,16 @@ module.exports = Model.extend({
     if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
       layerDataProvider.applyFilter(this, filter);
     } else {
-      this._reloadMap();
+      this._reloadVis();
     }
   },
 
   /**
    * @protected
    */
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
-    this._map.reload(
+    this._vis.reload(
       _.extend(
         opts, {
           sourceId: this.getSourceId()
@@ -154,8 +156,8 @@ module.exports = Model.extend({
     );
   },
 
-  _reloadMapAndForceFetch: function () {
-    this._reloadMap({
+  _reloadVisAndForceFetch: function () {
+    this._reloadVis({
       forceFetch: true
     });
   },
@@ -303,7 +305,7 @@ module.exports = Model.extend({
       var isFilterEmpty = this.filter.isEmpty();
       this.filter.remove();
       if (!isFilterEmpty) {
-        this._reloadMap();
+        this._reloadVis();
       }
     }
 

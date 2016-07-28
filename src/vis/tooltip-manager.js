@@ -25,7 +25,7 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
     var layerView = this._mapView.getLayerViewByLayerCid(layerModel.cid);
 
     layerModel.tooltip.fields.bind('reset', function () {
-      this._reloadMap();
+      this._reloadVis();
     }, this);
 
     if (!layerView.tooltipView) {
@@ -35,9 +35,9 @@ TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
   }
 };
 
-TooltipManager.prototype._reloadMap = function (options) {
+TooltipManager.prototype._reloadVis = function (options) {
   options = options || {};
-  this._map.reload(options);
+  this._vis.reload(options);
 };
 
 TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {

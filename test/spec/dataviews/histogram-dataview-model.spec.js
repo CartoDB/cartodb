@@ -7,6 +7,8 @@ describe('dataviews/histogram-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
+
     this.filter = new RangeFilter();
 
     this.layer = new Model();
@@ -20,6 +22,7 @@ describe('dataviews/histogram-dataview-model', function () {
       source: { id: 'a0' }
     }, {
       map: this.map,
+      vis: this.vis,
       layer: this.layer,
       filter: this.filter,
       analysisCollection: new Backbone.Collection()
@@ -43,6 +46,7 @@ describe('dataviews/histogram-dataview-model', function () {
       source: { id: 'a0' }
     }, {
       map: this.map,
+      vis: this.vis,
       layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider']),
       filter: this.filter,
       analysisCollection: new Backbone.Collection()
@@ -144,21 +148,21 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when column changes', function () {
     it('should reload map and force fetch', function () {
-      this.map.reload.calls.reset();
+      this.vis.reload.calls.reset();
       this.model.set('column', 'random_col');
-      expect(this.map.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
+      expect(this.vis.reload).toHaveBeenCalledWith({ forceFetch: true, sourceId: 'a0' });
     });
   });
 
   describe('when bins change', function () {
     beforeEach(function () {
-      this.map.reload.calls.reset();
+      this.vis.reload.calls.reset();
       spyOn(this.model.filter, 'unsetRange');
       this.model.set('bins', 123);
     });
 
     it('should refresh data on bins change', function () {
-      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
       expect(this.model.fetch).toHaveBeenCalled();
     });
 
@@ -173,14 +177,14 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when start change', function () {
     beforeEach(function () {
-      this.map.reload.calls.reset();
+      this.vis.reload.calls.reset();
       spyOn(this.model.filter, 'unsetRange');
 
       this.model.set('start', 0);
     });
 
     it('should refresh data on bins change', function () {
-      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
       expect(this.model.fetch).toHaveBeenCalled();
     });
 
@@ -195,13 +199,13 @@ describe('dataviews/histogram-dataview-model', function () {
 
   describe('when end change', function () {
     beforeEach(function () {
-      this.map.reload.calls.reset();
+      this.vis.reload.calls.reset();
       spyOn(this.model.filter, 'unsetRange');
       this.model.set('end', 0);
     });
 
     it('should refresh data on bins change', function () {
-      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
       expect(this.model.fetch).toHaveBeenCalled();
     });
 

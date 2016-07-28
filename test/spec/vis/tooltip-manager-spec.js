@@ -7,10 +7,7 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
-    var windshaftMap = new Backbone.Model({});
-    this.map = new Map({}, {
-      windshaftMap: windshaftMap
-    });
+    this.map = new Map();
     this.layerView = new Backbone.Model();
     var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     layerViewFactory.createLayerView.and.returnValue(this.layerView);
@@ -26,7 +23,8 @@ describe('src/vis/tooltip-manager.js', function () {
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
     this.vis = {
-      mapView: this.mapView
+      mapView: this.mapView,
+      reload: jasmine.createSpy('reload')
     };
   });
 
@@ -41,7 +39,7 @@ describe('src/vis/tooltip-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     this.map.layers.reset([ layer ]);
 
@@ -62,7 +60,7 @@ describe('src/vis/tooltip-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
@@ -82,7 +80,7 @@ describe('src/vis/tooltip-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
@@ -102,7 +100,7 @@ describe('src/vis/tooltip-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var layer2 = new CartoDBLayer({
       tooltip: {
@@ -112,7 +110,7 @@ describe('src/vis/tooltip-manager.js', function () {
           'position': 1
         }]
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
@@ -137,7 +135,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -149,7 +147,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
@@ -209,7 +207,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names1'
       }
-    });
+    }, { vis: this.vis });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -221,7 +219,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);
@@ -239,7 +237,7 @@ describe('src/vis/tooltip-manager.js', function () {
   it('should disable the tooltipView if the layerModel doesn\'t have tooltip data', function () {
     spyOn(this.mapView, 'addOverlay');
 
-    var layer1 = new CartoDBLayer({});
+    var layer1 = new CartoDBLayer({}, { vis: this.vis });
     var layer2 = new CartoDBLayer({
       tooltip: {
         template: 'template2',
@@ -251,7 +249,7 @@ describe('src/vis/tooltip-manager.js', function () {
         }],
         alternative_names: 'alternative_names2'
       }
-    });
+    }, { vis: this.vis });
 
     var tooltipManager = new TooltipManager(this.vis);
     tooltipManager.manage(this.mapView, this.map);

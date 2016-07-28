@@ -9,11 +9,13 @@ describe('dataviews/dataview-collection', function () {
   it('should remove item when removed', function () {
     var map = jasmine.createSpyObj('map', ['getViewBounds', 'off']);
     map.getViewBounds.and.returnValue([[0, 0], [0, 0]]);
+    var vis = jasmine.createSpyObj('vis', ['reload']);
     var layer = new Backbone.Model();
     layer.getDataProvider = function () {};
     var dataviewModel = new DataviewModel({source: {id: 'a0'}}, {
-      analysisCollection: new Backbone.Collection(),
       map: map,
+      vis: vis,
+      analysisCollection: new Backbone.Collection(),
       layer: layer
     });
     this.collection.add(dataviewModel);

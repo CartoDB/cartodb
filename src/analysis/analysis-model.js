@@ -17,12 +17,12 @@ module.exports = Model.extend({
       throw new Error('chamshaftReference is required');
     }
 
-    if (!opts.map) {
-      throw new Error('map is required');
+    if (!opts.vis) {
+      throw new Error('vis is required');
     }
 
     this._camshaftReference = opts.camshaftReference;
-    this._map = opts.map;
+    this._vis = opts.vis;
     this._initBinds();
   },
 
@@ -53,18 +53,18 @@ module.exports = Model.extend({
     this.bind('change:type', function () {
       this.unbind(null, null, this);
       this._initBinds();
-      this._reloadMap();
+      this._reloadVis();
     }, this);
 
     _.each(this.getParamNames(), function (paramName) {
-      this.bind('change:' + paramName, this._reloadMap, this);
+      this.bind('change:' + paramName, this._reloadVis, this);
     }, this);
   },
 
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
     opts.error = this._onMapReloadError.bind(this);
-    this._map.reload(opts);
+    this._vis.reload(opts);
   },
 
   _onMapReloadError: function () {

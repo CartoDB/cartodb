@@ -122,7 +122,7 @@ module Carto
                              end
 
         auth_tokens = @visualization.needed_auth_tokens
-        vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
+        vizjson[:auth_tokens] = auth_tokens unless auth_tokens.present?
 
         parent = @visualization.parent
         if parent

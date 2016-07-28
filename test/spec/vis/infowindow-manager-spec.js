@@ -23,7 +23,6 @@ describe('src/vis/infowindow-manager.js', function () {
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
     this.vis = {
-      mapView: this.mapView,
       reload: jasmine.createSpy('reload')
     };
   });
@@ -188,7 +187,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -227,7 +225,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template2',
       'alternative_names': 'alternative_names2',
-      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -340,7 +337,6 @@ describe('src/vis/infowindow-manager.js', function () {
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
       'alternative_names': 'alternative_names1',
-      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -409,8 +405,6 @@ describe('src/vis/infowindow-manager.js', function () {
     // InfowindowModel has been updated
     expect(infowindowModel.attributes).toEqual({
       'template': 'template1',
-      'alternative_names': 'alternative_names1',
-      'template_name': undefined,
       'template_type': 'underscore',
       'offset': [
         28,
@@ -430,6 +424,7 @@ describe('src/vis/infowindow-manager.js', function () {
         ],
         'data': {}
       },
+      'alternative_names': 'alternative_names1',
       'latlng': [
         100,
         200

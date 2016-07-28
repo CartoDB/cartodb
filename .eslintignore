@@ -28,7 +28,6 @@
 **/src/core/view.js
 **/src/geo/cartodb-layer-common.js
 **/src/geo/geocoder/nokia-geocoder.js
-**/src/geo/geocoder/yahoo-geocoder.js
 **/src/geo/geometry-view.js
 **/src/geo/geometry.js
 **/src/geo/gmaps/cartodb-default-options.js
@@ -106,10 +105,7 @@
 **/src/ui/common/table.js
 **/src/ui/common/tabpane.js
 **/src/vis/image/queue.js
-**/src/vis/overlays.js
 **/src/vis/vis/infowindow-template.js
-**/src/vis/vis/overlay.js
-**/src/vis/vis/overlays.js
 **/test/fail-tests-if-have-errors-in-src.js
 **/test/install-source-map-support.js
 **/test/spec/api/sql.spec.js
@@ -149,5 +145,4 @@
 **/test/spec/ui/common/notification.spec.js
 **/test/spec/ui/common/table.spec.js
 **/test/spec/ui/common/tabpane.spec.js
-**/test/spec/vis/overlay_spec.js
 **/test/unit/geo/geometry.spec.js

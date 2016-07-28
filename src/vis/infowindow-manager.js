@@ -1,4 +1,6 @@
-var Overlay = require('./vis/overlay');
+var _ = require('underscore');
+var InfowindowView = require('../geo/ui/infowindow-view');
+var InfowindowModel = require('../geo/ui/infowindow-model');
 
 /**
  * Manages the infowindows for a map. It listens to changes on the collection
@@ -45,8 +47,15 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
 };
 
 InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerModel) {
-  this._infowindowView = Overlay.create('infowindow', this._vis, layerModel.infowindow.toJSON());
-  this._infowindowModel = this._infowindowView.model;
+  var infowindowAttrs = _.pick(layerModel.infowindow.toJSON(), [
+    'template', 'fields', 'template_name', 'template_type'
+  ]);
+  this._infowindowModel = new InfowindowModel(infowindowAttrs);
+  this._infowindowView = new InfowindowView({
+    model: this._infowindowModel,
+    mapView: this._mapView
+  });
+
   this._mapView.addInfowindow(this._infowindowView);
 };
 

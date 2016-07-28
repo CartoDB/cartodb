@@ -1118,6 +1118,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",
         "category": {

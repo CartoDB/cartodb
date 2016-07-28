@@ -96,7 +96,7 @@
 
           <div class="FormAccount-rowData in-block u-vspace-s">
             <div class="RadioButton">
-              <input class="CDB-Radio" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_checked %> <%= is_disabled %> required>
+              <input class="CDB-Radio js-changeMobileAppType" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_checked %> <%= is_disabled %> required>
               <span class="CDB-Radio-face"></span>
               <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-lSpace--xl <%= is_disabled == 'disabled' ? 'u-altTextColor' : 'u-secondaryTextColor' %>"><%= type.capitalize %></label>
             </div>

@@ -5,17 +5,16 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var Layers = require('../../../src/vis/vis/layers');
-require('../../../src/vis/layers'); // Layers.register calls
+var LayersFactory = require('../../../src/vis/layers-factory');
 
-describe('vis/layers', function () {
+describe('vis/layers-factory', function () {
   beforeEach(function () {
     this.vis = jasmine.createSpyObj('vis', ['reload']);
   });
 
   describe('https/http', function () {
     it('torque layer should not rewrite to http if https is not present', function () {
-      var layer = Layers.create('torque', {
+      var layer = LayersFactory.create('torque', {
         type: 'torque',
         sql_api_port: 123,
         sql_api_domain: 'carto.com',
@@ -26,7 +25,7 @@ describe('vis/layers', function () {
     });
 
     it('torque layer should rewrite to https if the domain is not carto.com and https option is set to true', function () {
-      var layer = Layers.create('torque', {
+      var layer = LayersFactory.create('torque', {
         type: 'torque',
         sql_api_port: 123,
         sql_api_domain: 'carto.com',
@@ -40,7 +39,7 @@ describe('vis/layers', function () {
     });
 
     it('basemaps with a true explicit https property should be forced to https', function () {
-      var layer = Layers.create('tiled', {
+      var layer = LayersFactory.create('tiled', {
         type: 'Tiled',
         urlTemplate: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
       }, {

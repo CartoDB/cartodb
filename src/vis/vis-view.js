@@ -1,13 +1,11 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var log = require('cdb.log');
 var util = require('cdb.core.util');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
-var Layers = require('./vis/layers');
 var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
@@ -342,19 +340,6 @@ var Vis = View.extend({
       }, this);
     }
     return v;
-  },
-
-  createLayer: function (layerData) {
-    var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
-    return this.mapView.createLayer(layerModel);
-  },
-
-  throwError: function (msg, lyr) {
-    log.error(msg);
-    var self = this;
-    _.defer(function () {
-      self.trigger('error', msg, lyr);
-    });
   },
 
   // returns an array of layers

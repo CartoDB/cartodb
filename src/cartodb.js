@@ -27,7 +27,6 @@ cdb.log = require('cdb.log');
 cdb.errors = require('cdb.errors');
 cdb.templates = require('cdb.templates');
 cdb.createVis = require('./api/create-vis');
-cdb.createLayer = require('./api/create-layer');
 cdb.LZMA = require('lzma');
 
 cdb.core.Profiler = require('cdb.core.Profiler');
@@ -59,7 +58,6 @@ cdb.geo.WMSLayer = require('./geo/map/wms-layer');
 cdb.geo.PlainLayer = require('./geo/map/plain-layer');
 cdb.geo.TorqueLayer = require('./geo/map/torque-layer');
 cdb.geo.CartoDBLayer = require('./geo/map/cartodb-layer');
-cdb.geo.Layers = require('./geo/map/layers');
 cdb.geo.Map = require('./geo/map');
 cdb.geo.MapView = require('./geo/map-view');
 
@@ -93,8 +91,6 @@ cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
 cdb.geo.ui.Tooltip = require('./geo/ui/tooltip-view');
 
 cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
-cdb.vis.Layers = require('./vis/vis/layers');
 cdb.vis.Vis = require('./vis/vis');
-require('./vis/layers'); // Layers.register calls
 
 module.exports = cdb;

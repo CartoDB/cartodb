@@ -12,7 +12,6 @@ var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 
 var OverlaysFactory = require('../../../src/vis/overlays-factory');
-require('../../../src/vis/layers'); // Layers.register calls
 
 describe('vis/vis-view', function () {
   beforeEach(function () {

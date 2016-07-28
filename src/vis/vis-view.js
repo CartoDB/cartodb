@@ -37,11 +37,7 @@ var Vis = View.extend({
   },
 
   render: function () {
-    // TODO: Get this from this.model
-    var options = {};
-
     // Create the MapView
-
     var div = $('<div>').css({
       position: 'relative',
       width: '100%',
@@ -87,7 +83,7 @@ var Vis = View.extend({
       this.addLegends();
     }
 
-    this._resetOverlays(options);
+    this._resetOverlays({});
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -320,11 +316,6 @@ var Vis = View.extend({
   },
 
   addOverlay: function (overlay) {
-    // TODO: Fix this
-    //  var overlay = OverlaysFactory.create('test', { a: 'something' }, {
-    //    visView: 'visView',
-    //    map: 'map'
-    //  });
     var v = OverlaysFactory.create(overlay.type, overlay, {
       visView: this,
       map: this.model.map

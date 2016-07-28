@@ -7,15 +7,15 @@ var AnalysisFactory = function (opts) {
   if (!opts.analysisCollection) {
     throw new Error('analysisCollection option is required');
   }
-  if (!opts.map) {
-    throw new Error('map option is required');
+  if (!opts.vis) {
+    throw new Error('vis option is required');
   }
 
   this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
-  this._map = opts.map;
+  this._vis = opts.vis;
 };
 
 /**
@@ -40,7 +40,7 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
     }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
-      map: this._map
+      vis: this._vis
     });
     this._addAnalysisToCollection(analysis);
     analysis.bind('destroy', this._onAnalysisRemoved, this);

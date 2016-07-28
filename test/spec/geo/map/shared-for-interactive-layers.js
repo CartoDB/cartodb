@@ -12,7 +12,7 @@ module.exports = function (LayerModel) {
 
   _.each(METHODS, function (method) {
     it('should respond to .' + method, function () {
-      var layer = new LayerModel();
+      var layer = new LayerModel({}, { vis: this.vis });
 
       expect(typeof layer[method] === 'function').toBeTruthy();
     });

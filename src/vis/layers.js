@@ -47,8 +47,6 @@ Layers.register('tilejson', function (data, options) {
   }
   return new TileLayer({
     urlTemplate: url
-  }, {
-    map: options.map
   });
 });
 
@@ -83,7 +81,7 @@ Layers.register('background', function (data, options) {
 Layers.register('cartodb', function (data, options) {
   normalizeOptions(data, options);
   return new CartoDBLayer(data, {
-    map: options.map
+    vis: options.vis
   });
 });
 
@@ -99,7 +97,7 @@ Layers.register('torque', function (data, options) {
     }
   }
   return new TorqueLayer(data, {
-    map: options.map
+    vis: options.vis
   });
 });
 

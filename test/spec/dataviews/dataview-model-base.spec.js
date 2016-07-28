@@ -37,7 +37,7 @@ describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = function () {};
-    this.map.reload = function () {};
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
 
     this.analysisCollection = new Backbone.Collection();
@@ -48,8 +48,9 @@ describe('dataviews/dataview-model-base', function () {
     this.model = new DataviewModelBase({
       source: {id: 'a0'}
     }, {
-      map: this.map,
       layer: this.layer,
+      map: this.map,
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
@@ -57,7 +58,7 @@ describe('dataviews/dataview-model-base', function () {
     this.analysisFactory = new AnalysisFactory({
       analysisCollection: this.analysisCollection,
       camshaftReference: fakeCamshaftReference,
-      map: jasmine.createSpyObj('map', ['reload'])
+      vis: this.vis
     });
 
     // Disable debounce
@@ -349,7 +350,6 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('bindings to the filter', function () {
     beforeEach(function () {
-      spyOn(this.map, 'reload');
       this.layer = new Backbone.Model({
         id: 'layerId'
       });
@@ -361,8 +361,9 @@ describe('dataviews/dataview-model-base', function () {
       new DataviewModelBase({ // eslint-disable-line
         source: { id: 'a0' }
       }, {
-        map: this.map,
         layer: this.layer,
+        map: this.map,
+        vis: this.vis,
         filter: filter,
         analysisCollection: this.analysisCollection
       });
@@ -370,7 +371,7 @@ describe('dataviews/dataview-model-base', function () {
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
+      expect(this.vis.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
     });
   });
 
@@ -379,7 +380,7 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadMap');
+      spyOn(this.model, '_reloadVis');
       spyOn(this.model.layer, 'off').and.callThrough();
       spyOn(this.a0, 'off').and.callThrough();
 
@@ -398,7 +399,7 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should reload the map if there is a filter and it is not empty', function () {
-      expect(this.model._reloadMap).toHaveBeenCalled();
+      expect(this.model._reloadVis).toHaveBeenCalled();
     });
 
     it('should stop listening to events', function () {
@@ -451,6 +452,7 @@ describe('dataviews/dataview-model-base', function () {
       }, {
         layer: this.layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -468,6 +470,7 @@ describe('dataviews/dataview-model-base', function () {
       }, {
         layer: this.layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -484,6 +487,7 @@ describe('dataviews/dataview-model-base', function () {
       }, {
         layer: this.layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -500,8 +504,6 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should apply the filter to the data provider when the filter changes and data provider can apply filters to the dataview', function () {
-      spyOn(this.map, 'reload');
-
       var filter = new Backbone.Model();
       var dataview = new DataviewModelBase({ // eslint-disable-line
         column: 'columnName',
@@ -509,6 +511,7 @@ describe('dataviews/dataview-model-base', function () {
       }, {
         layer: this.layer,
         map: this.map,
+        vis: this.vis,
         filter: filter,
         analysisCollection: this.analysisCollection
       });
@@ -518,13 +521,11 @@ describe('dataviews/dataview-model-base', function () {
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
       expect(this.geoJSONDataProvider.applyFilter).toHaveBeenCalledWith(dataview, filter);
     });
 
     it("should NOT apply the filter to the data provider when the filter changes and data provider CAN'T apply filters to the dataview", function () {
-      spyOn(this.map, 'reload');
-
       var filter = new Backbone.Model();
       var dataview = new DataviewModelBase({ // eslint-disable-line
         column: 'columnName',
@@ -532,6 +533,7 @@ describe('dataviews/dataview-model-base', function () {
       }, {
         layer: this.layer,
         map: this.map,
+        vis: this.vis,
         filter: filter,
         analysisCollection: this.analysisCollection
       });
@@ -541,7 +543,7 @@ describe('dataviews/dataview-model-base', function () {
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).toHaveBeenCalled();
+      expect(this.vis.reload).toHaveBeenCalled();
       expect(this.geoJSONDataProvider.applyFilter).not.toHaveBeenCalled();
     });
   });
@@ -561,6 +563,7 @@ describe('dataviews/dataview-model-base', function () {
       }, { // eslint-disable-line
         layer: layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -581,6 +584,7 @@ describe('dataviews/dataview-model-base', function () {
       }, { // eslint-disable-line
         layer: layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -603,6 +607,7 @@ describe('dataviews/dataview-model-base', function () {
       }, { // eslint-disable-line
         layer: layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 
@@ -623,6 +628,7 @@ describe('dataviews/dataview-model-base', function () {
       }, { // eslint-disable-line
         layer: layer,
         map: this.map,
+        vis: this.vis,
         analysisCollection: this.analysisCollection
       });
 

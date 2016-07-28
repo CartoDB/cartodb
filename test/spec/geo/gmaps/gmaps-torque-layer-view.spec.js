@@ -18,12 +18,13 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
       layerGroupModel: new Backbone.Model()
     });
 
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     var model = new TorqueLayer({
       type: 'torque',
       sql: 'select * from table',
       cartocss: '#test {}',
       'torque-steps': 100
-    });
+    }, { vis: this.vis });
     spyOn(torque, 'GMapsTorqueLayer').and.callThrough();
     map.addLayer(model);
     this.view = mapView._layerViews[model.cid];

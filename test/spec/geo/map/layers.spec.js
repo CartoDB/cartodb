@@ -8,6 +8,7 @@ describe('geo/map/layers', function () {
   var layers;
 
   beforeEach(function () {
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     layers = new Layers();
   });
 
@@ -39,9 +40,9 @@ describe('geo/map/layers', function () {
 
   it('should re-assign order when new layers are added to the collection', function () {
     var baseLayer = new TileLayer();
-    var layer1 = new CartoDBLayer();
-    var layer2 = new CartoDBLayer();
-    var layer3 = new CartoDBLayer();
+    var layer1 = new CartoDBLayer({}, { vis: this.vis });
+    var layer2 = new CartoDBLayer({}, { vis: this.vis });
+    var layer3 = new CartoDBLayer({}, { vis: this.vis });
 
     // Sets the order to 0
     layers.add(baseLayer);
@@ -66,7 +67,7 @@ describe('geo/map/layers', function () {
     expect(layer3.get('order')).toEqual(1);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3 ]);
 
-    var torqueLayer = new TorqueLayer({});
+    var torqueLayer = new TorqueLayer({}, { vis: this.vis });
 
     // Torque layer should be at the top
     layers.add(torqueLayer);
@@ -91,7 +92,7 @@ describe('geo/map/layers', function () {
     expect(tiledLayer.get('order')).toEqual(5);
     expect(layers.pluck('order')).toEqual([ 0, 1, 2, 3, 4, 5 ]);
 
-    var layer4 = new CartoDBLayer({});
+    var layer4 = new CartoDBLayer({}, { vis: this.vis });
     layers.add(layer4);
 
     expect(baseLayer.get('order')).toEqual(0);
@@ -106,9 +107,9 @@ describe('geo/map/layers', function () {
 
   it('should re-assign order when new layers are removed from the collection', function () {
     var baseLayer = new TileLayer();
-    var layer1 = new CartoDBLayer();
-    var layer2 = new CartoDBLayer();
-    var torqueLayer = new TorqueLayer({});
+    var layer1 = new CartoDBLayer({}, { vis: this.vis });
+    var layer2 = new CartoDBLayer({}, { vis: this.vis });
+    var torqueLayer = new TorqueLayer({}, { vis: this.vis });
     var labelsLayer = new TileLayer();
 
     // Sets the order to 0

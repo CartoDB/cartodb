@@ -15,11 +15,13 @@ module.exports = Model.extend({
 
   initialize: function (attrs, opts) {
     if (!opts.map) throw new Error('map is required');
+    if (!opts.vis) throw new Error('vis is required');
     if (!opts.analysisCollection) throw new Error('analysisCollection is required');
     if (!opts.dataviewsCollection) throw new Error('dataviewsCollection is required');
     if (!opts.analysisCollection) throw new Error('analysisCollection is required');
 
     this._map = opts.map;
+    this._vis = opts.vis;
     this._analysisCollection = opts.analysisCollection;
     this._dataviewsCollection = opts.dataviewsCollection;
     this._analysisCollection = opts.analysisCollection;
@@ -38,6 +40,7 @@ module.exports = Model.extend({
     return this._newModel(
       new CategoryDataviewModel(attrs, {
         map: this._map,
+        vis: this._vis,
         layer: layerModel,
         filter: categoryFilter,
         analysisCollection: this._analysisCollection
@@ -51,6 +54,7 @@ module.exports = Model.extend({
     return this._newModel(
       new FormulaDataviewModel(attrs, {
         map: this._map,
+        vis: this._vis,
         layer: layerModel,
         analysisCollection: this._analysisCollection
       })
@@ -68,6 +72,7 @@ module.exports = Model.extend({
     return this._newModel(
       new HistogramDataviewModel(attrs, {
         map: this._map,
+        vis: this._vis,
         layer: layerModel,
         filter: rangeFilter,
         analysisCollection: this._analysisCollection
@@ -81,6 +86,7 @@ module.exports = Model.extend({
     return this._newModel(
       new ListDataviewModel(attrs, {
         map: this._map,
+        vis: this._vis,
         layer: layerModel,
         analysisCollection: this._analysisCollection
       })

@@ -12,6 +12,7 @@ describe('core/geo/map', function () {
   var map;
 
   beforeEach(function () {
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     map = new Map();
   });
 
@@ -82,12 +83,6 @@ describe('core/geo/map', function () {
   });
 
   it('should adjust zoom to layer', function () {
-    spyOn(map, 'reload').and.callFake(function (options) {
-      options && options.success && options.success();
-    });
-
-    map.instantiateMap();
-
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
@@ -114,17 +109,16 @@ describe('core/geo/map', function () {
 
   it('should update the attributions of the map when layers are reset/added/removed', function () {
     map = new Map();
-    map.instantiateMap();
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' });
-    var layer4 = new CartoDBLayer({ attribution: '' });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
 
     map.layers.reset([ layer1, layer2, layer3, layer4 ]);
 
@@ -135,7 +129,7 @@ describe('core/geo/map', function () {
       '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { vis: this.vis });
 
     map.layers.add(layer);
 
@@ -166,7 +160,7 @@ describe('core/geo/map', function () {
     ]);
 
     // Addind a layer with the default attribution
-    layer = new CartoDBLayer();
+    layer = new CartoDBLayer({}, { vis: this.vis });
 
     map.layers.add(layer, { at: 0 });
 
@@ -178,108 +172,10 @@ describe('core/geo/map', function () {
     ]);
   });
 
-  describe('bindings to collection of layers', function () {
-    beforeEach(function () {
-      spyOn(map, 'reload').and.callFake(function (options) {
-        options && options.success && options.success();
-      });
-
-      map.instantiateMap();
-
-      map.reload.calls.reset();
-    });
-
-    it('should reload the map when layers are resetted', function () {
-      map.layers.reset([{ id: 'layer1' }]);
-
-      expect(map.reload).toHaveBeenCalled();
-    });
-
-    it('should reload the map when a new layer is added', function () {
-      map.layers.add({ id: 'layer1' });
-
-      expect(map.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
-      });
-    });
-
-    it('should reload the map when a layer is removed', function () {
-      var layer = map.layers.add({ id: 'layer1' }, { silent: true });
-      map.layers.remove(layer);
-
-      expect(map.reload).toHaveBeenCalledWith({
-        sourceId: 'layer1'
-      });
-    });
-  });
-
-  describe('reload', function () {
-    beforeEach(function () {
-      this.windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      this.map = new Map({}, {
-        windshaftMap: this.windshaftMap
-      });
-    });
-
-    describe("when map hasn't been instantiated yet", function () {
-      it('should NOT instantiate map', function (done) {
-        this.map.reload({});
-
-        setTimeout(function () {
-          expect(this.windshaftMap.createInstance).not.toHaveBeenCalled();
-
-          done();
-        }.bind(this), 25);
-      });
-    });
-
-    describe('when map has been instantiated once', function () {
-      beforeEach(function () {
-        this.map.instantiateMap();
-      });
-
-      it('should instantiate map and forward options', function (done) {
-        this.map.reload({
-          a: 1,
-          b: 2,
-          sourceId: 'sourceId',
-          forceFetch: 'forceFetch',
-          success: 'success'
-        });
-
-        setTimeout(function () {
-          expect(this.windshaftMap.createInstance).toHaveBeenCalledWith({
-            sourceId: 'sourceId',
-            forceFetch: 'forceFetch',
-            success: 'success'
-          });
-
-          done();
-        }.bind(this), 25);
-      });
-
-      it('should be debounced', function (done) {
-        // Reload the map 1000 times in a row
-        for (var i = 0; i < 1000; i++) {
-          this.map.reload();
-        }
-
-        setTimeout(function () {
-          expect(this.windshaftMap.createInstance).toHaveBeenCalled();
-
-          // windshaftMap.createInstance is debounced and has only been called once
-          expect(this.windshaftMap.createInstance.calls.count()).toEqual(1);
-          done();
-        }.bind(this), 25);
-      });
-    });
-  });
-
   describe('API methods', function () {
     beforeEach(function () {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
       this.map = new Map({}, {
-        windshaftMap: windshaftMap
+        vis: {}
       });
     });
 
@@ -450,7 +346,7 @@ describe('core/geo/map', function () {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });
 
       map.layers.reset(layer1);
     });

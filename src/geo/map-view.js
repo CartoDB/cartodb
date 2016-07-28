@@ -39,41 +39,42 @@ var MapView = View.extend({
     this.bind('clean', this._removeLayers, this);
   },
 
-  render: function() {
+  render: function () {
+    this._addLayers();
     return this;
   },
 
   /**
   * add a infowindow to the map
   */
-  addInfowindow: function(infoWindowView) {
+  addInfowindow: function (infoWindowView) {
     this.addOverlay(infoWindowView);
   },
 
-  addOverlay: function(overlay) {
+  addOverlay: function (overlay) {
     if (overlay) {
       this.$el.append(overlay.render().el);
       this.addView(overlay);
     }
   },
 
-  isMapAlreadyCreated: function() {
+  isMapAlreadyCreated: function () {
     return this.options.map_object;
   },
 
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */
-  _setModelProperty: function(prop) {
+  _setModelProperty: function (prop) {
     this._unbindModel();
     this.map.set(prop);
-    if(prop.center !== undefined || prop.zoom !== undefined) {
+    if (prop.center !== undefined || prop.zoom !== undefined) {
       var b = this.getBounds();
       this.map.set({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
       });
-      if(this.autoSaveBounds) {
+      if (this.autoSaveBounds) {
         this._saveLocation();
       }
     }
@@ -81,40 +82,40 @@ var MapView = View.extend({
   },
 
   /** bind model properties */
-  _bindModel: function() {
+  _bindModel: function () {
     this._unbindModel();
-    this.map.bind('change:view_bounds_sw',  this._changeBounds, this);
-    this.map.bind('change:view_bounds_ne',  this._changeBounds, this);
-    this.map.bind('change:zoom',            this._setZoom, this);
-    this.map.bind('change:scrollwheel',     this._setScrollWheel, this);
-    this.map.bind('change:keyboard',        this._setKeyboard, this);
-    this.map.bind('change:center',          this._setCenter, this);
-    this.map.bind('change:attribution',     this.setAttribution, this);
+    this.map.bind('change:view_bounds_sw', this._changeBounds, this);
+    this.map.bind('change:view_bounds_ne', this._changeBounds, this);
+    this.map.bind('change:zoom', this._setZoom, this);
+    this.map.bind('change:scrollwheel', this._setScrollWheel, this);
+    this.map.bind('change:keyboard', this._setKeyboard, this);
+    this.map.bind('change:center', this._setCenter, this);
+    this.map.bind('change:attribution', this.setAttribution, this);
   },
 
   /** unbind model properties */
-  _unbindModel: function() {
-    this.map.unbind('change:view_bounds_sw',  null, this);
-    this.map.unbind('change:view_bounds_ne',  null, this);
-    this.map.unbind('change:zoom',            null, this);
-    this.map.unbind('change:scrollwheel',     null, this);
-    this.map.unbind('change:keyboard',        null, this);
-    this.map.unbind('change:center',          null, this);
-    this.map.unbind('change:attribution',     null, this);
+  _unbindModel: function () {
+    this.map.unbind('change:view_bounds_sw', null, this);
+    this.map.unbind('change:view_bounds_ne', null, this);
+    this.map.unbind('change:zoom', null, this);
+    this.map.unbind('change:scrollwheel', null, this);
+    this.map.unbind('change:keyboard', null, this);
+    this.map.unbind('change:center', null, this);
+    this.map.unbind('change:attribution', null, this);
   },
 
-  _changeBounds: function() {
+  _changeBounds: function () {
     var bounds = this.map.getViewBounds();
-    if(bounds) {
+    if (bounds) {
       this.showBounds(bounds);
     }
   },
 
-  showBounds: function(bounds) {
+  showBounds: function (bounds) {
     this.map.fitBounds(bounds, this.getSize());
   },
 
-  _addLayers: function(layerCollection, options) {
+  _addLayers: function (layerCollection, options) {
     var self = this;
     this._removeLayers();
     this.map.layers.each(function (layerModel) {
@@ -125,7 +126,7 @@ var MapView = View.extend({
     });
   },
 
-  _addLayer: function(layerModel, layerCollection, options) {
+  _addLayer: function (layerModel, layerCollection, options) {
     var layerView;
     if (layerModel.get('type').toLowerCase() === 'cartodb') {
       layerView = this._addGroupedLayer(layerModel);
@@ -188,15 +189,15 @@ var MapView = View.extend({
     delete this._layerViews[layerModel.cid];
   },
 
-  getLayerViewByLayerCid: function(cid) {
+  getLayerViewByLayerCid: function (cid) {
     var l = this._layerViews[cid];
-    if(!l) {
-      log.debug("layer with cid " + cid + " can't be get");
+    if (!l) {
+      log.debug('layer with cid ' + cid + " can't be get");
     }
     return l;
   },
 
-  setAttribution: function() {
+  setAttribution: function () {
     throw new Error('Subclasses of src/geo/map-view.js must implement .setAttribution');
   },
 
@@ -204,40 +205,40 @@ var MapView = View.extend({
     throw new Error('Subclasses of src/geo/map-view.js must implement .getNativeMap');
   },
 
-  _addLayerToMap: function() {
+  _addLayerToMap: function () {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._addLayerToMap');
   },
 
-  _setZoom: function(model, z) {
+  _setZoom: function (model, z) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._setZoom');
   },
 
-  _setCenter: function(model, center) {
+  _setCenter: function (model, center) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._setCenter');
   },
 
-  _addGeomToMap: function(geom) {
+  _addGeomToMap: function (geom) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._addGeomToMap');
   },
 
-  _removeGeomFromMap: function(geo) {
+  _removeGeomFromMap: function (geo) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
   },
 
-  setAutoSaveBounds: function() {
+  setAutoSaveBounds: function () {
     this.autoSaveBounds = true;
   },
 
-  _saveLocation: _.debounce(function() {
+  _saveLocation: _.debounce(function () {
     this.map.save(null, { silent: true });
   }, 1000),
 
-  _addGeometry: function(geom) {
+  _addGeometry: function (geom) {
     var view = this._addGeomToMap(geom);
     this.geometries[geom.cid] = view;
   },
 
-  _removeGeometry: function(geo) {
+  _removeGeometry: function (geo) {
     var geo_view = this.geometries[geo.cid];
     this._removeGeomFromMap(geo_view);
     delete this.geometries[geo.cid];

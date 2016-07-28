@@ -121,11 +121,11 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
     if (layerModel.infowindow.hasFields()) {
       this._updateInfowindowModel(layerModel.infowindow);
       if (this._infowindowModel.get('visibility')) {
-        this._reloadMapAndFetchAttributes(layerView, layerModel);
+        this._reloadVisAndFetchAttributes(layerView, layerModel);
         return;
       }
 
-      this._reloadMap();
+      this._reloadVis();
     } else {
       if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
         this._infowindowModel.set('visibility', false);
@@ -134,13 +134,13 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
   }, this);
 };
 
-InfowindowManager.prototype._reloadMap = function (options) {
+InfowindowManager.prototype._reloadVis = function (options) {
   options = options || {};
-  this._map.reload(options);
+  this._vis.reload(options);
 };
 
-InfowindowManager.prototype._reloadMapAndFetchAttributes = function (layerView, layerModel) {
-  this._reloadMap({
+InfowindowManager.prototype._reloadVisAndFetchAttributes = function (layerView, layerModel) {
+  this._reloadVis({
     success: function () {
       this._fetchAttributes(layerView, layerModel);
     }.bind(this)

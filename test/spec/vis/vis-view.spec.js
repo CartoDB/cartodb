@@ -7,12 +7,11 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
-var Overlay = require('../../../src/vis/vis/overlay');
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
 
-require('../../../src/vis/overlays'); // Overlay.register calls
+var OverlaysFactory = require('../../../src/vis/overlays-factory');
 
 describe('vis/vis-view', function () {
   beforeEach(function () {
@@ -221,7 +220,7 @@ describe('vis/vis-view', function () {
 
   describe('.getOverlaysByType', function () {
     it('should retrieve the overlays of a given type', function () {
-      Overlay.register('wadus', function (data, vis) {
+      OverlaysFactory.register('wadus', function (data, vis) {
         return new View();
       });
 

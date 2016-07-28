@@ -194,8 +194,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.vis).toEqual(jasmine.any(Object));
       expect(cdb.vis.Loader).toBe(cdb.core.Loader);
 
-      expect(cdb.vis.Overlay).toEqual(jasmine.any(Object));
-      expect(cdb.vis.Overlays).toEqual(jasmine.any(Function));
       expect(cdb.vis.Vis).toEqual(jasmine.any(Function));
       expect(cdb.vis.INFOWINDOW_TEMPLATE).toEqual(jasmine.any(Object));
     });

@@ -91,9 +91,6 @@ cdb.geo.ui.InfoBox = require('./geo/ui/infobox');
 cdb.geo.ui.Tooltip = require('./geo/ui/tooltip-view');
 
 cdb.vis.INFOWINDOW_TEMPLATE = require('./vis/vis/infowindow-template');
-cdb.vis.Overlay = require('./vis/vis/overlay');
-cdb.vis.Overlays = require('./vis/vis/overlays');
 cdb.vis.Vis = require('./vis/vis');
-require('./vis/overlays'); // Overlay.register calls
 
 module.exports = cdb;

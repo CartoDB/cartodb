@@ -2,9 +2,9 @@
 
 <div class="Card-body u-bSpace--xl">
   <% if (isPrivate) { %>
-  <div class="CDB-Text CDB-Size-large u-altTextColor u-bSpace--m"><%- title %></div>
+    <h3 class="CDB-Text CDB-Size-large u-altTextColor u-bSpace--m"><%- title %></h3>
   <% } else { %>
-  <div class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></div>
+    <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></h3>
   <% } %>
   <div class="CDB-Text CDB-Size-medium u-altTextColor">
     <%= body %>

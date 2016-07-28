@@ -5,10 +5,29 @@ module Carto
   module LayerTableDependencies
     def affected_tables
       return [] unless maps.first.present? && options.present?
-      (tables_from_query_option + tables_from_table_name_option).compact.uniq
+      node_id = options.symbolize_keys[:source]
+      if node_id.present?
+        visualization_id = map.visualization.id
+        node = AnalysisNode.find_by_natural_id(visualization_id, node_id)
+        return [] unless node
+        dependencies = node.source_descendants.map do |source_node|
+          tables_by_query = tables_from_query(source_node.params[:query])
+          table_name = source_node.options[:table_name]
+          tables_by_name = table_name ? tables_from_names([table_name], user) : []
+
+          tables_by_query + tables_by_name
+        end
+        dependencies.flatten.compact.uniq
+      else
+        (tables_from_query_option + tables_from_table_name_option).compact.uniq
+      end
     end
 
     def tables_from_query_option
+      tables_from_query(query)
+    end
+
+    def tables_from_query(query)
       tables_from_names(affected_table_names(query), user)
     rescue => e
       # INFO: this covers changes that CartoDB can't track.

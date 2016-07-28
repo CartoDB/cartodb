@@ -272,7 +272,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def get_auth_tokens
     tokens = get_named_map[:template][:auth][:valid_tokens]
-    raise CartoDB::InvalidMember if tokens.present?
+    raise CartoDB::InvalidMember if tokens.empty?
 
     tokens
   end

@@ -149,7 +149,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         'order' => 13,
         'options' => {
           'fake' => 'value',
-          'table_name' => "#{@user_1.username}.#{table_name}",
+          'table_name' => "#{@user_1.username}.\"#{table_name}\"",
           'user_name' => @user_1.username
         },
         'infowindow' => {
@@ -318,7 +318,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
             sql_api_port: nil,
             layer_name: layer.options['table_name'],
             'table_name' => layer.options['table_name'],
-            'query' => "select * from #{layer.options['table_name']}"
+            'query' => "select * from \"#{layer.options['table_name']}\""
           }
       }
 
@@ -420,7 +420,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         legend: nil,
         visible: nil,
         options: {
-            sql: "select * from #{layer.options['table_name']}",
+            sql: "select * from \"#{layer.options['table_name']}\"",
             layer_name: layer.options['table_name'],
             cartocss: @tested_class::EMPTY_CSS,
             cartocss_version: layer.options['style_version'],
@@ -485,7 +485,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
         visible: true,
         options: {
             # yes... this ones come as symbols and not strings as the others (sigh)
-            sql: "select * from #{layer.options['table_name']}",
+            sql: "select * from \"#{layer.options['table_name']}\"",
             layer_name: layer.options['table_name'],
             cartocss: layer.options['tile_style'],
             cartocss_version: layer.options['style_version'],

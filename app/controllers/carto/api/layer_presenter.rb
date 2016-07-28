@@ -123,9 +123,9 @@ module Carto
           # TODO: Legacy support: Remove 'user_name' and use always :viewer_user and :user
           user_name = layer_opts['user_name']
           if user_name.include?('-')
-            "\"#{layer_opts['user_name']}\".#{layer_opts['table_name']}"
+            "\"#{layer_opts['user_name']}\".\"#{layer_opts['table_name']}\""
           else
-            "#{layer_opts['user_name']}.#{layer_opts['table_name']}"
+            "#{layer_opts['user_name']}.\"#{layer_opts['table_name']}\""
           end
         end
       end
@@ -298,7 +298,7 @@ module Carto
 
       def default_query_for(layer_options)
         if viewer_is_owner?
-          "select * from #{layer_options['table_name']}"
+          "select * from \"#{layer_options['table_name']}\""
         else
           "select * from #{qualify_table_name}"
         end

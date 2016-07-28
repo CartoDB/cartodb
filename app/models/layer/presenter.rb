@@ -92,8 +92,8 @@ module CartoDB
           # this case happens when you share a layer already shared with you
           if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
             poro['options']['table_name'] = schema_name.include?('-') ?
-              "\"#{schema_name}\".#{poro['options']['table_name']}" :
-              "#{schema_name}.#{poro['options']['table_name']}"
+              "\"#{schema_name}\".\"#{poro['options']['table_name']}\"" :
+              "#{schema_name}.\"#{poro['options']['table_name']}\""
           end
         end
         poro
@@ -266,10 +266,10 @@ module CartoDB
                      layer_options['user_name']
                    end
 
-            return "select * from #{name}.#{layer_options['table_name']}"
+            return "select * from #{name}.\"#{layer_options['table_name']}\""
           end
         end
-        "select * from #{layer_options.fetch('table_name')}"
+        "select * from \"#{layer_options.fetch('table_name')}\""
       end
 
       def public_options

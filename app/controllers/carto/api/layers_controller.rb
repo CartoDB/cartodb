@@ -14,9 +14,9 @@ module Carto
       def layers_by_map
         raise RecordNotFound if @parent.nil?
 
-        layers = @parent.layers(@parent).map { |layer|
-            Carto::Api::LayerPresenter.new(layer, { viewer_user: current_user, user: @parent.user }).to_poro
-          }
+        layers = @parent.layers(@parent).map do |layer|
+          Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
+        end
 
         render_jsonp layers: layers, total_entries: layers.size
       end
@@ -64,6 +64,19 @@ module Carto
         raise RecordNotFound if vis.nil? || !vis.is_viewable_by_user?(current_user)
 
         @parent = Carto::Map.where(id: params[:map_id]).first
+      end
+
+      private
+
+      def owner_user(layer)
+        if current_user.nil? || @parent.user.id != current_user.id
+          # This keeps backwards compatibility with map user assignment. See #8974
+          @parent.user
+        elsif layer.options && layer.options['user_name'].present?
+          ::User.where(username: layer.options['user_name']).first
+        else
+          layer.user
+        end
       end
 
     end

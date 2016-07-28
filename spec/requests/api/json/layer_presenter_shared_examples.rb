@@ -466,14 +466,14 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       vizjson.should == expected_vizjson
 
       # torque layer, different viewer, UUID table name
-      layer = Layer.create({
-          kind: 'torque',
-          options: {
-            'table_name' => '000cd294-b124-4f82-b569-0f7fe41d2db8',
-            # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
-            'user_name' => @user_1.database_schema
-            },
-        })
+      layer = Layer.create(
+        kind: 'torque',
+        options: {
+          'table_name' => '000cd294-b124-4f82-b569-0f7fe41d2db8',
+          # This is only for compatibility with old LayerModule::Presenter, new one checkes in the presenter options
+          'user_name' => @user_1.database_schema
+        }
+      )
       layer = instance_of_tested_model(layer)
 
       expected_vizjson[:id] = layer.id
@@ -483,12 +483,12 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
       expected_vizjson[:options]['query'] = "select * from public.\"#{layer.options['table_name']}\""
       expected_vizjson[:options]['user_name'] = @user_1.database_schema
 
-      presenter_options =  {
-          visualization_id: stat_tag,
-          viewer_user: @user_2,
-          # New presenter way of sending a viewer that's different from the owner
-          user: @user_1
-        }
+      presenter_options = {
+        visualization_id: stat_tag,
+        viewer_user: @user_2,
+        # New presenter way of sending a viewer that's different from the owner
+        user: @user_1
+      }
 
       vizjson = instance_of_tested_class(layer, presenter_options).to_vizjson_v2
       vizjson.should == expected_vizjson
@@ -605,7 +605,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           'fields' => nil,
           'template_name' => "infowindow_light",
           'template' => "<div></div>",
-          'alternative_names' => { },
+          'alternative_names' => {},
           'width' => 200,
           'maxHeight' => 100
         },
@@ -613,7 +613,7 @@ shared_examples_for "layer presenters" do |tested_klass, model_klass|
           'fields' => nil,
           'template_name' => "tooltip_light",
           'template' => "<div></div>",
-          'alternative_names' => { },
+          'alternative_names' => {},
           'maxHeight' => 180
         }
       )

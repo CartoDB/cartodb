@@ -28,7 +28,6 @@
 **/src/core/view.js
 **/src/geo/cartodb-layer-common.js
 **/src/geo/geocoder/nokia-geocoder.js
-**/src/geo/geocoder/yahoo-geocoder.js
 **/src/geo/geometry-view.js
 **/src/geo/geometry.js
 **/src/geo/gmaps/cartodb-default-options.js

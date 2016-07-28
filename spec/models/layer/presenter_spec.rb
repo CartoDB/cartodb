@@ -24,8 +24,7 @@ describe CartoDB::LayerModule::Presenter do
       )
 
       vizjson = CartoDB::LayerModule::Presenter.new(layer).to_vizjson_v2
-      vizjson.fetch(:options).fetch(:sql)
-        .should == 'bogus template select * from "bogus_table"'
+      vizjson.fetch(:options).fetch(:sql).should == 'bogus template select * from "bogus_table"'
 
       layer = OpenStruct.new(
         public_values: { 'options' => {'visible' => nil} },

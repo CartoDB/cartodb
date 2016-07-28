@@ -5,13 +5,13 @@
         <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
       </button>
       <i class="Tag Tag--outline is-orange-dark CDB-Text CDB-Size-small u-upperCase">
-        <%- _t('components.modals.privacy.password.title') %>
+        <%- _t('components.modals.publish.privacy.password.title') %>
       </i>
     </li>
   </ul>
 </div>
 <ul class="CustomList-list js-customList">
   <li class="Privacy-passwordField CustomList-item">
-    <input type="password" class="CDB-Text CDB-InputText js-input" placeholder="<%- _t('components.modals.privacy.password.placeholder') %>">
+    <input type="password" class="CDB-Text CDB-InputText js-input" placeholder="<%- _t('components.modals.privacy.publish.password.placeholder') %>">
   </li>
 </ul>

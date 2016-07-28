@@ -105,7 +105,7 @@ describe Carto::Admin::MobileAppsController do
   end
 
   describe '#update' do
-    let(:update_app) { MOBILE_APP.slice(:name, :description, :icon_url) }
+    let(:update_app) { MOBILE_APP.slice(:name, :description, :icon_url, :app_type) }
 
     it 'updates app in Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)

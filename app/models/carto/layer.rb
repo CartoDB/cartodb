@@ -1,8 +1,11 @@
 require 'active_record'
 require_relative './carto_json_serializer'
+require_dependency 'carto/table_utils'
 
 module Carto
   class Layer < ActiveRecord::Base
+    include Carto::TableUtils
+
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
@@ -61,7 +64,7 @@ module Carto
         table_name
       else
         schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
-        "#{schema_prefix}\"#{options['table_name']}\""
+        "#{schema_prefix}#{safe_table_name_quoting(options['table_name'])}"
       end
     end
 

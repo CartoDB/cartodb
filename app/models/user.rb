@@ -73,6 +73,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
+  DEFAULT_MAX_LAYERS = 8
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -204,7 +205,7 @@ class User < Sequel::Model
         self.google_maps_key = self.organization.google_maps_key
         self.google_maps_private_key = self.organization.google_maps_private_key
       end
-      self.max_layers ||= 6
+      self.max_layers ||= DEFAULT_MAX_LAYERS
       self.private_tables_enabled ||= true
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true

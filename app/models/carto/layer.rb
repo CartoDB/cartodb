@@ -216,6 +216,10 @@ module Carto
       end
     end
 
+    def register_table_dependencies
+      self.user_tables = affected_tables if data_layer?
+    end
+
     private
 
     def tables_from_names(table_names, user)

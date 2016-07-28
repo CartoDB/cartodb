@@ -61,7 +61,7 @@ module Carto
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
       visualization_member.store
 
-      visualization_member.map.layers.map(&:register_table_dependencies)
+      map.data_layers.each(&:register_table_dependencies)
 
       visualization
     end

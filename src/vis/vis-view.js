@@ -7,12 +7,8 @@ var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
-var InfowindowModel = require('../geo/ui/infowindow-model');
-var Infowindow = require('../geo/ui/infowindow-view');
-var Template = require('../core/template');
 var Layers = require('./vis/layers');
-var Overlay = require('./vis/overlay');
-var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
+var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 
@@ -75,12 +71,12 @@ var Vis = View.extend({
     this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
 
     // Infowindows && Tooltips
-    var infowindowManager = new InfowindowManager(this, {
+    var infowindowManager = new InfowindowManager(this.model, this, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
     infowindowManager.manage(this.mapView, this.model.map);
 
-    var tooltipManager = new TooltipManager(this);
+    var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);
 
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
@@ -323,9 +319,15 @@ var Vis = View.extend({
   },
 
   addOverlay: function (overlay) {
-    overlay.map = this.model.map;
-
-    var v = Overlay.create(overlay.type, this, overlay);
+    // TODO: Fix this
+    //  var overlay = OverlaysFactory.create('test', { a: 'something' }, {
+    //    visView: 'visView',
+    //    map: 'map'
+    //  });
+    var v = OverlaysFactory.create(overlay.type, overlay, {
+      visView: this,
+      map: this.model.map
+    });
 
     if (v) {
       // Save tiles loader view for later
@@ -396,104 +398,6 @@ var Vis = View.extend({
     setTimeout(function () {
       self.model.centerMapToOrigin();
     }, 150);
-  }
-}, {
-  /**
-   * adds an infowindow to the map controlled by layer events.
-   * it enables interaction and overrides the layer interacivity
-   * ``fields`` array of column names
-   * ``map`` native map object, leaflet of gmaps
-   * ``layer`` cartodb layer (or sublayer)
-   */
-  addInfowindow: function (map, layer, fields, opts) {
-    var options = _.defaults(opts || {}, {
-      infowindowTemplate: INFOWINDOW_TEMPLATE.light,
-      templateType: 'mustache',
-      triggerEvent: 'featureClick',
-      templateName: 'light',
-      extraFields: [],
-      cursorInteraction: true
-    });
-
-    if (!map) throw new Error('map is not valid');
-    if (!layer) throw new Error('layer is not valid');
-    if (!fields && fields.length === undefined) throw new Error('fields should be a list of strings');
-
-    var f = [];
-    fields = fields.concat(options.extraFields);
-    for (var i = 0; i < fields.length; ++i) {
-      f.push({ name: fields, order: i });
-    }
-
-    var infowindowModel = new InfowindowModel({
-      fields: f,
-      template_name: options.templateName
-    });
-
-    var infowindow = new Infowindow({
-      model: infowindowModel,
-      mapView: map.viz.mapView,
-      template: new Template({
-        template: options.infowindowTemplate,
-        type: options.templateType
-      }).asFunction()
-    });
-
-    map.viz.mapView.addInfowindow(infowindow);
-
-    layer.bind(options.triggerEvent, function (e, latlng, pos, data, layer) {
-      var render_fields = [];
-      for (var f = 0; f < fields.length; ++f) {
-        var field = fields[f];
-        var d = data[field];
-        if (d) {
-          render_fields.push({
-            title: field,
-            value: d,
-            index: 0
-          });
-        }
-      }
-
-      infowindow.model.set({
-        content: {
-          fields: render_fields,
-          data: data
-        }
-      });
-
-      infowindow
-        .setLatLng(latlng)
-        .showInfowindow();
-      infowindow.adjustPan();
-    }, infowindow);
-
-    // remove the callback on clean
-    infowindow.bind('clean', function () {
-      layer.unbind(options.triggerEvent, null, infowindow);
-    });
-
-    if (options.cursorInteraction) {
-      Vis.addCursorInteraction(map, layer);
-    }
-
-    return infowindow;
-  },
-
-  addCursorInteraction: function (map, layer) {
-    var mapView = map.viz.mapView;
-    layer.bind('mouseover', function () {
-      mapView.setCursor('pointer');
-    });
-
-    layer.bind('mouseout', function (m, layer) {
-      mapView.setCursor('auto');
-    });
-  },
-
-  removeCursorInteraction: function (map, layer) {
-    var mapView = map.viz.mapView;
-    layer.unbind(null, null, mapView);
   }
 });
 

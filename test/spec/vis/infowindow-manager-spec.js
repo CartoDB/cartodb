@@ -26,8 +26,11 @@ describe('src/vis/infowindow-manager.js', function () {
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
     this.vis = {
-      mapView: this.mapView
+      reload: jasmine.createSpy('reload')
     };
+
+    this.visView = new Backbone.View();
+    this.visView.mapView = this.mapView;
   });
 
   it('should add a new infowindow view to the map view when new layers were previously reset', function () {
@@ -45,7 +48,7 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer ]);
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     expect(this.mapView.addInfowindow).toHaveBeenCalled();
@@ -64,7 +67,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -84,7 +87,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -114,7 +117,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer1, layer2 ]);
@@ -151,7 +154,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer1, layer2 ]);
@@ -287,7 +290,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     spyOn(this.layerView, 'bind');
@@ -316,7 +319,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer1 ]);
@@ -383,7 +386,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer1 ]);
@@ -461,7 +464,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -510,7 +513,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -554,7 +557,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -599,7 +602,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
@@ -671,7 +674,7 @@ describe('src/vis/infowindow-manager.js', function () {
       }
     });
 
-    var infowindowManager = new InfowindowManager(this.vis);
+    var infowindowManager = new InfowindowManager(this.vis, this.visView);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer1, layer2 ]);

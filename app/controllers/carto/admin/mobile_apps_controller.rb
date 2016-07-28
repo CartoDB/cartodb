@@ -71,10 +71,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def update
-    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url)
+    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url, :app_type)
     @mobile_app.name = updated_attributes[:name]
     @mobile_app.icon_url = updated_attributes[:icon_url]
     @mobile_app.description = updated_attributes[:description]
+    @mobile_app.app_type = updated_attributes[:app_type]
 
     unless @mobile_app.valid?
       @max_dev_users = Carto::MobileApp::MAX_DEV_USERS
@@ -107,12 +108,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
     redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
-  end
-
-  def api_keys
-    respond_to do |format|
-      format.html { render 'mobile_app_api_keys' }
-    end
   end
 
   private

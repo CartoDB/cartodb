@@ -22,15 +22,12 @@
     <%= render :partial => 'admin/shared/api_keys_subheader' %>
     <div class="Filters-separator"></div>
 
+    <%= render :partial => 'carto/admin/mobile_apps/mobile_plan_info' %>
+
     <% if @mobile_apps.empty? %>
-
       <%= render :partial => 'carto/admin/mobile_apps/no_mobile_apps' %>
-
     <% else %>
-
-      <%= render :partial => 'carto/admin/mobile_apps/mobile_plan_info' %>
       <%= render :partial => 'carto/admin/mobile_apps/show' %>
-
     <% end %>
   </div>
 

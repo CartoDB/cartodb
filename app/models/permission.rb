@@ -447,9 +447,8 @@ module CartoDB
         end
       end
 
-      if e.table? and (org or users.any?)
-        e.invalidate_cache
-      end
+      e.invalidate_cache
+      e.save_named_map
     end
 
     def users_with_permissions(access)

@@ -125,21 +125,17 @@ module Carto
       end
 
       def layers_vizjson(forced_privacy_version)
-        basemap_layer = basemap_layer_vizjson
-        layers_data = []
-        layers_data.push(basemap_layer) if basemap_layer
+        ordered_layers = (
+          [basemap_layer] +
+          @visualization.data_layers +
+          @visualization.other_layers +
+          non_basemap_base_layers).compact
 
         if display_named_map?(@visualization, forced_privacy_version)
-          layers_data += named_map_vizjson_for_layers(@visualization.data_layers)
-          layers_data += named_map_vizjson_for_layers(@visualization.other_layers)
+          named_map_vizjson_for_layers(ordered_layers)
         else
-          layers_data += anonymous_vizjson_for_layers(@visualization.data_layers)
-          layers_data += anonymous_vizjson_for_layers(@visualization.other_layers)
+          anonymous_vizjson_for_layers(ordered_layers)
         end
-
-        layers_data += non_basemap_base_layers
-
-        layers_data.compact.flatten
       end
 
       def named_map_vizjson_for_layers(layers)
@@ -154,21 +150,13 @@ module Carto
         end
       end
 
-      def basemap_layer_vizjson
-        layer = @visualization.user_layers.first
-        VizJSON3LayerPresenter.new(layer, configuration).to_vizjson if layer
+      def basemap_layer
+        @visualization.user_layers.first
       end
 
       def non_basemap_base_layers
         base_layers = @visualization.user_layers
-        if base_layers.empty?
-          []
-        else
-          # Remove the basemap, which is always first
-          base_layers.slice(1, base_layers.length).map do |layer|
-            VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
-          end
-        end
+        base_layers.empty? ? [] : base_layers.slice(1, base_layers.length)
       end
 
       def named_map_analysis_json(analysis)
@@ -237,7 +225,9 @@ module Carto
       # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
       def to_vizjson
         layer_vizjson = VizJSON3LayerPresenter.new(@layer, @configuration).to_vizjson
-        if layer_vizjson[:type] == 'torque'
+        if @layer.user_layer?
+          layer_vizjson
+        elsif layer_vizjson[:type] == 'torque'
           data_for_torque_layer(layer_vizjson)
         else
           data_for_carto_layer(layer_vizjson)

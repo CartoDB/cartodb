@@ -1269,6 +1269,7 @@
         "street-address-help": "In which column are your street addresses stored?",
         "target": "Target layer",
         "time": "Time",
+        "time-seconds": "Time (Seconds)",
         "top-range": "Top range",
         "tracts": "Tracts",
         "type": "Type",

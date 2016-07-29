@@ -7,6 +7,9 @@
 
   <div class="Editor-HeaderInfo-inner">
     <div class="Editor-HeaderInfo-title u-bSpace js-header">
+      <span class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
+        <%- letter %>
+      </span>
     </div>
     <div class="u-flex">
       <% if (isTableSource) { %>

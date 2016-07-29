@@ -9,12 +9,16 @@ This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be ru
 This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
 ghost tables, importing common data and automatic index creation.
 
+There is also a fix on Varnish invalidation triggers in user databases to fix some edge cases where tables would not be properly invalidated on Varnish (see https://github.com/CartoDB/cartodb/issues/7868).
+This fix is loaded to newly created users, but it needs to be applied manually to all existing user databases by running: `rake cartodb:db:load_varnish_trigger`.
+
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
 
 ### Bug Fixes
+* Invalidations not being tagged properly when Surrogate-Key contained special regex characters (+, /)
 * Incorrect error message when password validation failed
 * Fix visualization not found error when exporting maps created from datasets
 * Performance improvements updating visualizations

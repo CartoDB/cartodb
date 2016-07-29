@@ -543,11 +543,7 @@
           },
           "role": {
             "viewer": "Viewer",
-            "builder": "Builder",
-            "group": {
-              "user": "%{count} user",
-              "users": "%{count} users"
-            }
+            "builder": "Builder"
           },
           "tooltip": {
             "group": "Access is inherited from group %{name}",

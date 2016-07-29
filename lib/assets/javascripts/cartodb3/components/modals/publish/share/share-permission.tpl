@@ -18,7 +18,7 @@
       <% } %>
 
       <% if (users) { %>
-        <%- users %>
+        <div class="js-users"></div>
       <% } %>
     </div>
 

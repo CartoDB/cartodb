@@ -81,7 +81,7 @@
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
       <td bgcolor="#ffffff">
-        <div align="center" style="padding: 0px 15px 0px 15px; background-image: url('http://cartodb.s3.amazonaws.com/mails/metrics/confetti.png'); background-position: center top; background-repeat: no-repeat;">
+        <div align="center" style="padding: 0px 15px 0px 15px; <%= @invitation.present? ? "background-image: url('http://cartodb.s3.amazonaws.com/mails/metrics/confetti.png'); background-position: center top; background-repeat: no-repeat;" : "" %>">
           <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; width: 100% !important;">
             <tr>
               <td style="padding: 20px 0px 65px 0px;" class="logo">
@@ -120,8 +120,7 @@
               <table border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="left" valign="middle" style="font-size: 13px; line-height: 20px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #979EA1;">
-                    Made in Madrid & New York City since 2012 · Unsubscribe<br>
-                    View this email as a webpage here
+                    CARTO · Made in Madrid & New York City since 2012
                   </td>
                 </tr>
               </table>

@@ -13,7 +13,7 @@ class Carto::Analysis < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
-  after_save :update_layer_dependencies
+  after_save :update_map_dataset_dependencies
   after_save :notify_map_change
   after_destroy :notify_map_change
 
@@ -63,8 +63,8 @@ class Carto::Analysis < ActiveRecord::Base
     valid
   end
 
-  def update_layer_dependencies
-    map.data_layers.each(&:register_table_dependencies)
+  def update_map_dataset_dependencies
+    map.update_dataset_dependencies
   end
 
   def notify_map_change

@@ -147,14 +147,14 @@ module CartoDB
         errors = []
         if params.blank?
           errors << "Connection parameters are missing"
-        elsif params['dsn'].blank? && (params['driver'].blank? || params['database'].blank?)
+        elsif params['dsn'].blank? && params['driver'].blank?
           errors << "Missing required connection parameters"
         end
         errors
       end
 
       def connector_name
-        @params['connection']['dsn'] || @params['connection']['driver']
+        Carto::DB::Sanitize.sanitize_identifier @params['connection']['dsn'] || @params['connection']['driver']
       end
 
       def server_name
@@ -181,37 +181,46 @@ module CartoDB
       end
 
       def create_server_command
-        options = server_params.map { |k, v| "#{k} '#{v}'" } * ",\n"
         %{
           CREATE SERVER #{server_name}
             FOREIGN DATA WRAPPER odbc_fdw
-            OPTIONS (#{options});
+            #{options_clause(server_params)};
           CREATE USER MAPPING FOR "#{@user.database_username}" SERVER #{server_name};
           CREATE USER MAPPING FOR postgres SERVER #{server_name};
         }
       end
 
       def create_foreign_table_command
-        options = table_params
         if @columns.present?
-          options_list = options.map { |k, v| "#{k} '#{v}'" } * ",\n"
           %{
             CREATE FOREIGN TABLE #{qualified_foreign_table_name} (#{@columns * ','})
               SERVER #{server_name}
-              OPTIONS (#{options_list});
+              #{options_clause(table_params)};
             GRANT SELECT ON #{qualified_foreign_table_name} TO "#{@user.database_username}";
            }
         else
-          options = options.merge(prefix: foreign_prefix)
-          options_list = options.map { |k, v| "#{k} '#{v}'" } * ",\n"
+          options = table_params.merge(prefix: foreign_prefix)
           %{
             IMPORT FOREIGN SCHEMA #{@params['schema'] || @params['connection']['database'] || 'schema'}
               FROM SERVER #{server_name}
               INTO #{foreign_table_schema}
-              OPTIONS (#{options_list});
+              #{options_clause(options)};
             GRANT SELECT ON #{qualified_foreign_table_name} TO "#{@user.database_username}";
            }
         end
+      end
+
+      def options_clause(options)
+        if options.present?
+          options_list = options.map { |k, v| "#{k} '#{escape_single_quotes v}'" } * ",\n"
+          "OPTIONS (#{options_list})"
+        else
+          ''
+        end
+      end
+
+      def escape_single_quotes(text)
+        text.gsub("'", "''")
       end
 
       def drop_server_command

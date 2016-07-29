@@ -94,7 +94,7 @@ module Carto
       end
 
       def app_type_available?(app_type, current_apps_enabled)
-        (!@mobile_app.persisted? && current_apps_enabled) || app_type_selected?(app_type)
+        (!@mobile_app.persisted? && current_apps_enabled) || app_type_selected?(app_type) || (@mobile_app.persisted? && current_apps_enabled)
       end
 
       def app_type_selected?(app_type)

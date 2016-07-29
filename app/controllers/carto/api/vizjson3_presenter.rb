@@ -129,33 +129,28 @@ module Carto
         layers_data = []
         layers_data.push(basemap_layer) if basemap_layer
 
-        named_map = display_named_map?(@visualization, forced_privacy_version)
-        layers_data += data_layers_vizjson(named_map)
-
-        layers_data.push(other_layers_vizjson(named_map))
+        if display_named_map?(@visualization, forced_privacy_version)
+          layers_data += named_map_vizjson_for_layers(@visualization.data_layers)
+          layers_data += named_map_vizjson_for_layers(@visualization.other_layers)
+        else
+          layers_data += anonymous_vizjson_for_layers(@visualization.data_layers)
+          layers_data += anonymous_vizjson_for_layers(@visualization.other_layers)
+        end
 
         layers_data += non_basemap_base_layers
 
         layers_data.compact.flatten
       end
 
-      def data_layers_vizjson(display_named_map)
-        @visualization.data_layers.map do |layer|
-          if display_named_map
-            VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson
-          else
-            VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
-          end
+      def named_map_vizjson_for_layers(layers)
+        layers.map do |layer|
+          VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson
         end
       end
 
-      def other_layers_vizjson(display_named_map)
-        @visualization.other_layers.map do |layer|
-          if display_named_map
-            VizJSON3NamedMapLayerPresenter.new(layer, configuration).to_vizjson
-          else
-            VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
-          end
+      def anonymous_vizjson_for_layers(layers)
+        layers.map do |layer|
+          VizJSON3LayerPresenter.new(layer, configuration).to_vizjson
         end
       end
 

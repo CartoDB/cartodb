@@ -5,16 +5,8 @@
     </button>
   </div>
   <div class="Editor-HeaderInfo-inner">
-    <div class="Editor-HeaderInfo-title">
+    <div class="Editor-HeaderInfo-title js-context-menu">
       <div class="Editor-HeaderInfo-titleText js-header"></div>
-
-      <div class="CDB-Shape">
-        <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
-          <div class="CDB-Shape-threePointsItem"></div>
-          <div class="CDB-Shape-threePointsItem"></div>
-          <div class="CDB-Shape-threePointsItem"></div>
-        </button>
-      </div>
     </div>
 
     <div class="u-flex">

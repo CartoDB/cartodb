@@ -12,6 +12,6 @@
     </div>
   <% } %>
 </div>
-<p class="Editor-ListAnalysis-title CDB-Text CDB-Size-small u-secondaryTextColor u-ellipsis" title="<%- title %>">
-  <%- title %> <span class="u-altTextColor u-lSpace"><%- layerName %></span>
+<p class="Editor-ListAnalysis-title CDB-Text CDB-Size-small u-secondaryTextColor u-ellipsis u-flex" title="<%- title %>">
+  <%- title %> <span class="u-altTextColor u-lSpace u-ellipsis"><%- layerName %></span>
 </p>

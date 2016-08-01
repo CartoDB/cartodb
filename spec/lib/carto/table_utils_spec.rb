@@ -30,15 +30,15 @@ describe Carto::TableUtils do
   end
 
   describe '#safe_schema_and_table_quoting' do
-  it 'quotes table names only if needed' do
-    table_utils.safe_schema_and_table_quoting('public', 'my_table').should eq 'public.my_table'
-    table_utils.safe_schema_and_table_quoting('public', 'my-table').should eq 'public."my-table"'
-    table_utils.safe_schema_and_table_quoting('public', 'my""ta-ble').should eq 'public."my""ta-ble"'
-  end
+    it 'quotes table names only if needed' do
+      table_utils.safe_schema_and_table_quoting('public', 'my_table').should eq 'public.my_table'
+      table_utils.safe_schema_and_table_quoting('public', 'my-table').should eq 'public."my-table"'
+      table_utils.safe_schema_and_table_quoting('public', 'my""ta-ble').should eq 'public."my""ta-ble"'
+    end
 
-  it 'does not quote already quoted strings' do
-    table_utils.safe_schema_and_table_quoting('public', '"my-table"').should eq 'public."my-table"'
-    table_utils.safe_schema_and_table_quoting('public', '"my""ta-ble"').should eq 'public."my""ta-ble"'
-  end
+    it 'does not quote already quoted strings' do
+      table_utils.safe_schema_and_table_quoting('public', '"my-table"').should eq 'public."my-table"'
+      table_utils.safe_schema_and_table_quoting('public', '"my""ta-ble"').should eq 'public."my""ta-ble"'
+    end
   end
 end

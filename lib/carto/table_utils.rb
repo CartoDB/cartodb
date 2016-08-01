@@ -18,8 +18,8 @@ module Carto
 
     private
 
-    ALREADY_QUOTED = /\A".*"\Z/.freeze
-    VALID_CHARACTERS = /[a-z][A-Z][0-9]_$/.freeze
+    ALREADY_QUOTED = /\A".*"\Z/
+    VALID_CHARACTERS = /[a-z][A-Z][0-9]_$/
 
     def dashes_quoting(name)
       name && !name.match(ALREADY_QUOTED) && name.include?('-') ? "\"#{name}\"" : name

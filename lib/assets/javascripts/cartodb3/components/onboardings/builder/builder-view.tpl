@@ -1,10 +1,14 @@
-<div class="BuilderOnboarding-fake"></div>
-<div class="BuilderOnboarding-fake2"></div>
+<div class="BuilderOnboarding-pad"></div>
+<div class="BuilderOnboarding-pad2"></div>
 <div class="BuilderOnboarding-contentWrapper is-step0 js-step">
   <div class="BuilderOnboarding-body">
     <div class="BuilderOnboarding-header is-step0">
-      <p class="CDB-Text Onboarding-headerTitle"><%- _t('builder-onboarding.welcome')%></p>
+      <p class="CDB-Text Onboarding-headerTitle"><%- _t('builder-onboarding.title')%></p>
       <p class="CDB-Text Onboarding-headerText"><%- name %></p>
+
+      <p class="CDB-Text BuilderOnboarding-description">
+        <%- _t('builder-onboarding.description')%>
+      </p>
     </div>
 
     <div class="BuilderOnboarding-footer is-step0">
@@ -79,6 +83,6 @@
   </div>
 </div>
 
-<div class="BuilderOnboarding-fake3"></div>
-<div class="BuilderOnboarding-fake4"></div>
-<div class="BuilderOnboarding-fake5"></div>
+<div class="BuilderOnboarding-pad3"></div>
+<div class="BuilderOnboarding-pad4"></div>
+<div class="BuilderOnboarding-pad5"></div>

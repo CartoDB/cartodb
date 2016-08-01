@@ -16,7 +16,6 @@
   margin-bottom: $sMargin-element;
 }
 
-
 .BuilderOnboarding-contentWrapper {
   @include flex(1);
   @include opacity(0.88);
@@ -54,10 +53,24 @@
   display: none;
 }
 
+.BuilderOnboarding-footer .BuilderOnboarding-footerButtons,
 .BuilderOnboarding-contentWrapper .BuilderOnboarding-header p,
 .BuilderOnboarding-contentWrapper .BuilderOnboarding-step p {
   @include opacity(0);
-  @include transition(opacity, 250ms, ease-in-out, 1s);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step p {
+  @include transition(opacity, 100ms, ease-in-out, 100ms);
+}
+
+
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-footer.is-step0 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-footer.is-step1 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-footer.is-step2 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-footer.is-step3 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-footer.is-step4 .BuilderOnboarding-footerButtons {
+  @include opacity(1);
 }
 
 .BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-header.is-step0 p,
@@ -87,13 +100,14 @@
   @include opacity(0);
 }
 
-
 .BuilderOnboarding-body {
   width: auto;
-  margin: 0 50px;
+  margin: 0 80px;
 }
 
 .BuilderOnboarding-description {
+  @include transition(width, 100ms, ease-in-out);
+  width: 445px;
   margin-bottom: $sMargin-elementInline;
   color: #FFF;
   font-size: $sFontSize-larger;
@@ -101,87 +115,95 @@
   line-height: $sLineHeight-normal;
 }
 
-.BuilderOnboarding-fake {
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad4 {
   @include opacity(0.88);
   background: #2E3C43;
 }
 
-.BuilderOnboarding-fake4 {
-  @include opacity(0.88);
-  background: #2E3C43;
-}
+$sWidgetsPadWidth: 322px;
 
-.BuilderOnboarding-fake5 {
+.BuilderOnboarding-pad4,
+.BuilderOnboarding-pad5 {
+  @include transition(all, 200ms, ease-in-out, 300ms);
   position: absolute;
   top: 0;
-  right: -300px;
-  width: 300px;
+  right: -$sWidgetsPadWidth;
+  width: $sWidgetsPadWidth;
   height: 100%;
-  background: red;
-  @include transition(right, 250ms, ease-in-out, 300ms);
+  background: image-url('layout/widgets.png') no-repeat center center;
   z-index: 0;
 }
 
-.BuilderOnboarding-fake,
-.BuilderOnboarding-fake2,
-.BuilderOnboarding-fake3,
-.BuilderOnboarding-fake4 {
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad2,
+.BuilderOnboarding-pad3,
+.BuilderOnboarding-pad4 {
   @include transition(width, 300ms, ease-in-out);
   width: 0;
   height: 100%;
   z-index: 10;
 }
 
+
 .BuilderOnboarding.step1 {
-  .BuilderOnboarding-fake2 {
+  .BuilderOnboarding-pad2 {
     width: 72px;
   }
 }
 .BuilderOnboarding.step2 {
-  .BuilderOnboarding-fake {
+  .BuilderOnboarding-pad {
     width: 72px;
   }
-  .BuilderOnboarding-fake2 {
-    width: 346px;
+  .BuilderOnboarding-pad2 {
+    width: 345px;
+  }
+  .BuilderOnboarding-pad5 {
+    @include transition(right, 0, ease-in-out, 0);
+    right: -$sWidgetsPadWidth;
   }
 }
+
 .BuilderOnboarding.step3 {
-  .BuilderOnboarding-fake2 {
+  .BuilderOnboarding-pad2 {
     width: 0;
   }
-  .BuilderOnboarding-fake4 {
-    width: 305px;
+  .BuilderOnboarding-pad3 {
+    @include flex(1);
+  }
+
+  .BuilderOnboarding-description {
+    width: 200px;
+  }
+
+  .BuilderOnboarding-pad4 {
+    @include transition(right, 0, ease-in-out, 0);
+    right: 0;
+    width: $sWidgetsPadWidth - 13;
     background: #2E3C43;
   }
-  .BuilderOnboarding-fake3 {
-    @include flex(1);
-    width: 0;
-  }
-}
-.BuilderOnboarding.step4 {
-  .BuilderOnboarding-fake {
-    flex: 1;
-  }
-  .BuilderOnboarding-fake4 {
-    width: 305px;
-    background: none;
-  }
-}
 
-.BuilderOnboarding.step2 {
-  .BuilderOnboarding-fake5 {
-    @include transition(right, 0, ease-in-out, 0);
-    right: -300px;
+  .BuilderOnboarding-contentWrapper {
+    @include flex(0 0 416px);
   }
-}
-
-.BuilderOnboarding.step3 {
-  .BuilderOnboarding-fake5 {
+  .BuilderOnboarding-pad5 {
     right: 0;
   }
 }
+
 .BuilderOnboarding.step4 {
-  .BuilderOnboarding-fake5 {
+  .BuilderOnboarding-pad {
+    @include flex(1);
+  }
+  .BuilderOnboarding-pad4 {
+    position: relative;
+    width: $sWidgetsPadWidth;
+    background: none;
+  }
+  .BuilderOnboarding-description {
+    width: 445px;
+  }
+  .BuilderOnboarding-pad5 {
     right: 0;
   }
 }

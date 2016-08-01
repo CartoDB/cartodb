@@ -18,7 +18,7 @@
     "december": "December"
   },
   "builder-onboarding": {
-    "welcome": "Welcome to the Builder",
+    "welcome": "Welcome to the Builder,",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",
     "toolbar": {
@@ -26,7 +26,7 @@
       "description": ""
     },
     "configurator": {
-      "title": "Configurator"
+      "title": "Configurator",
       "description": ""
     },
     "map": {

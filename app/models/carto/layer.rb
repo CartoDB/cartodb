@@ -74,10 +74,6 @@ module Carto
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }.freeze
 
-    def affected_tables
-      (tables_from_query_option + tables_from_table_name_option).compact.uniq
-    end
-
     def affected_tables_readable_by(user)
       affected_tables.select { |ut| ut.readable_by?(user) }
     end

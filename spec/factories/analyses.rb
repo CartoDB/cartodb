@@ -47,24 +47,4 @@ FactoryGirl.define do
       }
     end
   end
-
-  factory :analysis_point_in_polygon, class: Carto::Analysis do
-    ignore do
-      source_table 'subway_stops'
-      source_query nil
-      target_table 'districts'
-      target_query nil
-    end
-
-    analysis_definition do
-      {
-        id: unique_string,
-        type: "intersection",
-        params: {
-          source: AnalysisFactoryHelper.source_analysis_for_table(source_table, source_query),
-          target: AnalysisFactoryHelper.source_analysis_for_table(target_table, target_query)
-        }
-      }
-    end
-  end
 end

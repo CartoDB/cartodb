@@ -10,6 +10,8 @@ function CartoDBLayerCommon() {
 
 CartoDBLayerCommon.prototype = {
 
+  // TODO: Can we remove .show, .hide, .toggle and .isVisible ?
+
   // the way to show/hidelayer is to set opacity
   // removing the interactivty at the same time
   show: function() {
@@ -47,12 +49,6 @@ CartoDBLayerCommon.prototype = {
    * @params layer {Boolean} Choose if wants interaction or not
    */
   setInteraction: function(layerIndexInLayerGroup, enableInteraction) {
-    // shift arguments to maintain compatibility
-    if (enableInteraction === undefined) {
-      enableInteraction = layerIndexInLayerGroup;
-      layerIndexInLayerGroup = 0;
-    }
-
     this.interactionEnabled[layerIndexInLayerGroup] = enableInteraction;
     if (enableInteraction) {
       this._enableInteraction(layerIndexInLayerGroup);

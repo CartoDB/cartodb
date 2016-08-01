@@ -30,6 +30,7 @@ var AnonymousMap = MapBase.extend({
   },
 
   _calculateLayerOptions: function (layerModel) {
+    // TODO: Only send "interactivity" and "attributes" options for "CartoDB" layers
     var options = {
       cartocss: layerModel.get('cartocss'),
       cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,

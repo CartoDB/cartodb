@@ -147,16 +147,16 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
-    var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    this._adjustTilePoint(tilePoint);
-
-    var tiles = [EMPTY_GIF];
-    if (this.tilejson) {
-      tiles = this.tilejson.tiles;
+    if (!this.tilejson) {
+      var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      return EMPTY_GIF;
     }
 
+    // L.TileLayer.prototype.getTileUrl.call(this, tilePoint) seems to work
+    // fine as long as this.options.subdomains is set to something like 'abcd'
+    this._adjustTilePoint(tilePoint);
+    var tiles = this.tilejson.tiles;
     var index = (tilePoint.x + tilePoint.y) % tiles.length;
-
     return L.Util.template(tiles[index], L.Util.extend({
       z: this._getZoomForUrl(),
       x: tilePoint.x,

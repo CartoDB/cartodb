@@ -20,7 +20,7 @@
   height: 100%;
 }
 
-.Onboarding-fake {
+.Onboarding-fake2 {
   @include flex(0 0 415px);
   height: 100%;
 }
@@ -28,6 +28,7 @@
 .Onboarding-body {
   width: 466px;
 }
+
 .Onboarding-contentWrapper {
   @include flex(1);
   @include opacity(0.88);
@@ -121,4 +122,183 @@
 
 .Onboarding-readMore:hover {
   text-decoration: none;
+}
+
+
+.BuilderOnboarding {
+  @include display-flex();
+  height: 100%;
+}
+
+.BuilderOnboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.BuilderOnboarding-contentWrapper {
+  @include flex(1);
+  @include opacity(0.88);
+  @include display-flex();
+  @include align-items(center);
+  height: 100%;
+  background: #2E3C43;
+  pointer-events: all;
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 {
+  @include justify-content(center);
+}
+
+.BuilderOnboarding-contentWrapper.is-step1 {
+  @include justify-content(flex-start);
+}
+
+.BuilderOnboarding-contentWrapper.is-step2 {
+  @include justify-content(flex-start);
+}
+
+.BuilderOnboarding-contentWrapper.is-step3 {
+  @include justify-content(flex-start);
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 {
+  @include justify-content(flex-end);
+}
+
+.BuilderOnboarding-forget,
+.BuilderOnboarding-header,
+.BuilderOnboarding-footer,
+.BuilderOnboarding-step {
+  display: none;
+}
+
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-header p,
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-step p {
+  @include opacity(0);
+  @include transition(opacity, 250ms, ease-in-out, 1s);
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-header.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-step.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-step.is-step1 p,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-step.is-step2 p,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-step.is-step3 p,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step.is-step4 p {
+  @include opacity(1);
+}
+
+.BuilderOnboarding.step0 .BuilderOnboarding-header,
+.BuilderOnboarding.step0 .BuilderOnboarding-footer.is-step0,
+.BuilderOnboarding.step1 .BuilderOnboarding-footer.is-step1,
+.BuilderOnboarding.step2 .BuilderOnboarding-footer.is-step2,
+.BuilderOnboarding.step3 .BuilderOnboarding-footer.is-step3,
+.BuilderOnboarding.step4 .BuilderOnboarding-footer.is-step4,
+.BuilderOnboarding.step0 .BuilderOnboarding-step.is-step0,
+.BuilderOnboarding.step1 .BuilderOnboarding-step.is-step1,
+.BuilderOnboarding.step2 .BuilderOnboarding-step.is-step2,
+.BuilderOnboarding.step3 .BuilderOnboarding-step.is-step3,
+.BuilderOnboarding.step4 .BuilderOnboarding-step.is-step4 {
+  display: block;
+}
+
+.BuilderOnboarding.step0 .BuilderOnboarding-step.is-step1 {
+  @include opacity(0);
+}
+
+
+.BuilderOnboarding-body {
+  width: auto;
+  margin: 0 50px;
+}
+
+.BuilderOnboarding-description {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-normal;
+}
+
+.BuilderOnboarding-fake {
+  @include opacity(0.88);
+  background: #2E3C43;
+}
+
+.BuilderOnboarding-fake4 {
+  @include opacity(0.88);
+  background: #2E3C43;
+}
+
+.BuilderOnboarding-fake5 {
+  position: absolute;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100%;
+  background: red;
+  @include transition(right, 250ms, ease-in-out, 300ms);
+  z-index: 0;
+}
+
+.BuilderOnboarding-fake,
+.BuilderOnboarding-fake2,
+.BuilderOnboarding-fake3,
+.BuilderOnboarding-fake4 {
+  @include transition(width, 300ms, ease-in-out);
+  width: 0;
+  height: 100%;
+  z-index: 10;
+}
+
+.BuilderOnboarding.step1 {
+  .BuilderOnboarding-fake2 {
+    width: 72px;
+  }
+}
+.BuilderOnboarding.step2 {
+  .BuilderOnboarding-fake {
+    width: 72px;
+  }
+  .BuilderOnboarding-fake2 {
+    width: 346px;
+  }
+}
+.BuilderOnboarding.step3 {
+  .BuilderOnboarding-fake2 {
+    width: 0;
+  }
+  .BuilderOnboarding-fake4 {
+    width: 305px;
+    background: #2E3C43;
+  }
+  .BuilderOnboarding-fake3 {
+    @include flex(1);
+    width: 0;
+  }
+}
+.BuilderOnboarding.step4 {
+  .BuilderOnboarding-fake {
+    flex: 1;
+  }
+  .BuilderOnboarding-fake4 {
+    width: 305px;
+    background: none;
+  }
+}
+
+.BuilderOnboarding.step2 {
+  .BuilderOnboarding-fake5 {
+    @include transition(right, 0, ease-in-out, 0);
+    right: -300px;
+  }
+}
+
+.BuilderOnboarding.step3 {
+  .BuilderOnboarding-fake5 {
+    right: 0;
+  }
+}
+.BuilderOnboarding.step4 {
+  .BuilderOnboarding-fake5 {
+    right: 0;
+  }
 }

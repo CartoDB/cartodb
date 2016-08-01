@@ -75,6 +75,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
+	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \

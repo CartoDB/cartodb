@@ -10,6 +10,12 @@ module Carto
       dashes_quoting(schema_name)
     end
 
+    def safe_schema_and_table_quoting(schema_name, table_name)
+      safe_schema = safe_schema_name_quoting(schema_name)
+      safe_table_name = safe_table_name_quoting(table_name)
+      "#{safe_schema}.#{safe_table_name}"
+    end
+
     private
 
     def dashes_quoting(name)

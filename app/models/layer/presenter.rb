@@ -94,9 +94,7 @@ module CartoDB
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
           if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
-            safe_schema = safe_schema_name_quoting(schema_name)
-            safe_table_name = safe_table_name_quoting(poro['options']['table_name'])
-            poro['options']['table_name'] = "#{safe_schema}.#{safe_table_name}"
+            poro['options']['table_name'] = safe_schema_and_table_quoting(schema_name, poro['options']['table_name'])
           end
         end
         poro

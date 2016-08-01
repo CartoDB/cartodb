@@ -170,7 +170,7 @@ module Carto
         table_name = sym_options[:table_name]
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
-          %{ select * from "#{user_name}"."#{table_name}" }
+          %{ select * from "#{user_name}".#{safe_table_name_quoting(table_name)} }
         else
           "SELECT * FROM #{qualified_table_name(user)}"
         end

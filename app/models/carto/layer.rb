@@ -28,7 +28,7 @@ module Carto
     end
 
     def tables_from_query(query)
-      tables_from_names(affected_table_names(query), user)
+      query.present? ? tables_from_names(affected_table_names(query), user) : []
     rescue => e
       # INFO: this covers changes that CartoDB can't track.
       # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).

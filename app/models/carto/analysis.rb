@@ -13,6 +13,7 @@ class Carto::Analysis < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
   belongs_to :user, class_name: Carto::User
 
+  after_save :update_map_dataset_dependencies
   after_save :notify_map_change
   after_destroy :notify_map_change
 
@@ -60,6 +61,10 @@ class Carto::Analysis < ActiveRecord::Base
       child_in_hash.replace(filter_valid_properties(child))
     end
     valid
+  end
+
+  def update_map_dataset_dependencies
+    map.update_dataset_dependencies
   end
 
   def notify_map_change

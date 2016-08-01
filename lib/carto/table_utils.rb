@@ -19,7 +19,7 @@ module Carto
     private
 
     def dashes_quoting(name)
-      name && name.include?('-') ? "\"#{name}\"" : name
+      name && name.include?('-') && !name.match(/".*"/) ? "\"#{name}\"" : name
     end
   end
 end

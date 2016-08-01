@@ -159,8 +159,11 @@
       @include align-items(center, center);
       height:45px;
       margin:0;
+      
+      .dropdown > ul > li {
+        margin:0px;
+      }
 
-      li { margin:7px; }
 
       .privacy {
 
@@ -210,24 +213,13 @@
         a.btn {
           @include bb_button_style;
           height: 40px;
-          line-height:40px;
+          line-height: 40px;
           span {
             @include inline-block();
           }
           &.dropdown {
-            padding: 0 24px 0 5px;
+            padding: 0px 18px 0px 6px;
           }
-        }
-
-
-        &:after {
-          position:absolute;
-          content:'';
-          top:0px;
-          right:0;
-          margin:0 10px 0 0;
-          width: 1px;
-          height: 16px;
         }
 
         &:last-child {
@@ -248,3 +240,8 @@
       right: 20px;
     }
   }
+
+.add_new_layer {
+  height: 40px;
+  line-height: 40px;
+}

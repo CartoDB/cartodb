@@ -224,12 +224,10 @@
 @mixin actionButton {
     background-color: $Teal5;
     border: 1px solid $Black;
-    box-shadow: $button_shadow;
     border-radius: 2px;
     color: $Grey1;
     &:hover {
 	background-color: $Teal3;
-	box-shadow: $button_shadow_hover;
 	}
     &:active {
 	background-color: $Teal7;
@@ -245,13 +243,18 @@
     background-position: center;
     border-radius: 2px;
     color: $Grey1; 
+    font-size: 13px;
+    line-height: 17px;
     padding: 0px 6px;
+    text-decoration: none;
+    text-transform: capitalize;
 
       &:hover {
         background-color: $btn_background_hover;
       }
       &:active {
         background-color: $btn_background_press;
+        text-decoration: none;
       }
       &.disabled, &:disabled:hover {
         background-color: $btn_background_disabled;
@@ -262,6 +265,29 @@
     background-color: $Amber1;
     border: 1px solid $Black;
     border-radius: 2px;
+    color: $Black;
     line-height: 19px;
     padding: 0px 6px;
+    //&:focus {
+      //border: 1px solid $focus_visual_color;
+      //box-shadow: inset 0px 0px 0px 1px $Black;
+   // }
  }
+
+ //dropdown list
+ @mixin bb_list_separator {
+    border-bottom: 1px solid rgba($Black, .32);
+ }
+
+//sidebar layer header
+@mixin bb_sidebar_layer_header {
+    background-color: $layer_header_background;
+    border-bottom: 1px solid $Black;
+    font-size: 15px;
+    font-family: "AvenirNext_Demi";
+    height: 30px;
+    line-height: 30px;
+    &:hover {
+      background-color: $layer_header_background_hover;
+    }
+  } 

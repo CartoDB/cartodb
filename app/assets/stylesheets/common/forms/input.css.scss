@@ -1,21 +1,14 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
+@import "../../variables/mixins";
 
 // Default form styles as defined by style guide
 //
 // -------------------------------------------------------------------------------------------------------------------
 
 .Input {
-  border: 1px solid $cForms-border;
-  height: $sForms-elementHeight;
-  color: $cTypography-paragraphs;
-  border-radius: $sForms-borderRadius;
-  padding: 0 $sMargin-elementInline;
+  @include bb_entry_style;
 
-  ::-webkit-input-placeholder { color: $cTypography-help;  }
-  :-moz-placeholder { color: $cTypography-help;  }
-  ::-moz-placeholder {  color: $cTypography-help;  }
-  :-ms-input-placeholder {  color: $cTypography-help;  }
 }
 .Input--slim {
   height: $sMargin-group;

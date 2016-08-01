@@ -124,10 +124,8 @@ body.is-inDialog {
   position: relative;
   background: none;
 }
-.Dialog-footer {
-  padding: $sMargin-group 0;
+.Dialog-footer {  
   text-align: center;
-  border-top: 1px solid $Black;
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {

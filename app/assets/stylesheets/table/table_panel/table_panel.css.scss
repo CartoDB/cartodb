@@ -15,16 +15,16 @@
 $corner_radius: 0px;
 
 .table_panel {
-  position:fixed;
-  right:-537px;
-  top:79px;
   bottom:0px;
-  width:601px;
-
   background-color: rgba(0,0,0, 0.32);  
   border-left: 1px solid $Black;
   border-bottom:0;
   border-right:0;
+  overflow: visible !important;
+  position:fixed;
+  right:-537px;
+  top:68px;
+  width:601px;
   z-index:20;
 
   .collapse {
@@ -35,9 +35,9 @@ $corner_radius: 0px;
     left: -21px;
     position: absolute;
     width: 20px;
-    height: 32px;
+    height: 29px;
     padding: 0px;
-    top: -1px;
+    top: 0px;
     background-image: url(../images/bb_icon_open.png);
     &.open {
       background-image: url(../images/bb_icon_collapse.png);
@@ -50,7 +50,6 @@ $corner_radius: 0px;
     width:100%;
     height:100%;
     background:$DarkGrey2;
-    border-top:1px solid $Black;
     z-index:1;
   } 
 
@@ -105,4 +104,8 @@ $corner_radius: 0px;
 //bb_override_lineheight
 .table_panel.opened .layer_panel.vis .layer-info {
   line-height: 28px;
+}
+
+.subtext {
+  color: $Grey7;
 }

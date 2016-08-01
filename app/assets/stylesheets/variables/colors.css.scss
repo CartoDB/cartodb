@@ -18,7 +18,7 @@ $DarkGrey4: #272727;    // BG of Popup Grid
 $DarkGrey5: #232323;
 $DarkGrey6: #202020;    // Grid BG Highlight, Navigator BG
 $DarkGrey7: #1d1d1d;
-$DarkGrey8: #181818;    // BG Grid
+$DarkGrey8: #181818;    // BG Grid 
 $DarkGrey9: #131313;
 $Black: #000;
 
@@ -228,10 +228,10 @@ $checkbox_dirty_bg: #ebddbd;
 $checkbox_shadow: inset 0px 1px 0px rgba(255, 255, 255, 0.1),
                   inset 0px 8px 4px 0px rgba(255, 255, 255, 0.1);
 
-// tabs
+//tabs
 $tab_bg_normal: $DarkGrey4;
 $tab_bg_hover: #434343;
-$tab_bg_selected: $Grey9;
+$tab_bg_selected: $DarkGrey3;
 $tab_bg_pressed: -webkit-linear-gradient(top, #101111, #1b1b1b);
 
 //focus visual style
@@ -252,6 +252,17 @@ $tabBgHover:  rgba(134, 134, 134, 0.65);
 
 //dropdown 
 $dropdownBorder: 1px solid $Grey2;
+
+//side panel 
+$layer_header_background: $DarkGrey5;
+$layer_header_background_hover: $DarkGrey4;
+$layer_header_background_active: $DarkGrey1;
+$layer_header_background_active_hover: $Grey9;
+$sidebar_panel_background: $DarkGrey3; 
+
+//toolbar
+$tool_bar_background: $DarkGrey8; 
+
 
 //end terminal color
 

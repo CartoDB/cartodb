@@ -10,20 +10,8 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 .Button {
   @include display-flex();
   @include align-items(center, center);
-  height: $sButton-height;
-  padding: 0 16px;
-  background: $btn_background_normal;
-  border: 1px solid $Black;
-  border-radius: 2px;
-  outline: none;
-  text-align: center;
-  text-decoration: none;
-  &:hover {
-    background: $btn_background_hover;
- }
- &:active {
-    background: $btn_background_press;
-  }    
+  @include bb_button_style;
+   
 }
 .Button--inline {
   display: inline-block;
@@ -34,11 +22,6 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button,
 .Button span {
-  color: #FFFFFF;
-  font-size: $sFontSize-smallUpperCase;
-  font-weight: $sFontWeight-bold;
-  line-height: $sLineHeight-button;
-  text-transform: uppercase;
   white-space: nowrap;
   box-sizing: border-box;
 }

@@ -1615,8 +1615,8 @@
       }
     },
     "analysis": {
-      "pending": "Analysis %{nodeId} running",
-      "waiting": "Analysis %{nodeId} enqueued",
+      "pending": "Analysis %{nodeId} running...",
+      "waiting": "Analysis %{nodeId} enqueued...",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted"

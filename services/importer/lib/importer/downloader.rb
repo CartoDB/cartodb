@@ -207,9 +207,11 @@ module CartoDB
       end
 
       def set_downloaded_source_file(available_quota_in_bytes = nil)
-        raise_if_over_storage_quota(requested_quota: content_length_from(headers),
-                                    available_quota: available_quota_in_bytes.to_i,
-                                    user_id: @options[:user_id])
+        if available_quota_in_bytes
+          raise_if_over_storage_quota(requested_quota: content_length_from(headers),
+                                      available_quota: available_quota_in_bytes.to_i,
+                                      user_id: @options[:user_id])
+        end
 
         @etag           = etag_from(headers)
         @last_modified  = last_modified_from(headers)

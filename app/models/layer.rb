@@ -9,6 +9,8 @@ require_relative 'carto/layer'
 class Layer < Sequel::Model
   include Carto::TableUtils
 
+  include Carto::LayerTableDependencies
+
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
   ALLOWED_KINDS = %W{ carto tiled background gmapsbase torque wms }
@@ -89,12 +91,6 @@ class Layer < Sequel::Model
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
     super
-  end
-
-  # Returns an array of tables used on the layer
-  def affected_tables
-    return [] unless maps.first.present? && options.present?
-    (tables_from_query_option + tables_from_table_name_option).compact.uniq
   end
 
   def key
@@ -209,22 +205,11 @@ class Layer < Sequel::Model
     affected_tables.map { |table| add_user_table(table) }
   end
 
-  def tables_from_query_option
-    return [] unless query.present?
-    ::Table.get_all_by_names(affected_table_names, user)
-  rescue => exception
-    []
+  def tables_from_names(table_names, user)
+    ::Table.get_all_by_names(table_names, user)
   end
 
-  def tables_from_table_name_option
-    sym_options = options.symbolize_keys
-    user_name = sym_options[:user_name]
-    table_name = sym_options[:table_name]
-    schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
-    ::Table.get_all_by_names(["#{schema_prefix}#{table_name}"], user)
-  end
-
-  def affected_table_names
+  def affected_table_names(query)
     CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
   end
 

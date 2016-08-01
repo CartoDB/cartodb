@@ -8,7 +8,7 @@
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m"><%- _t('editor.layers.analysis-form.reference-layer-pluralize', { smart_count: 1 }) %></p>
       <div class="u-tSpace-xl CDB-Text CDB-Fieldset">
         <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.input') %></p>
-        <div class="Editor-formInput" data-editors="source"></div>
+        <div class="Editor-formInput u-ellipsis" data-editors="source"></div>
       </div>
     </div>
   </div>

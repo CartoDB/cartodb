@@ -23,8 +23,7 @@
     </<%- privacyDOMElement %>>
     <% if (isOwner) { %>
       <% if (!isSimple) { %>
-      <img class="Share-user u-iBlock u-rSpace" src="<%- avatar %>">
-      <span class="u-iBlock js-share-users u-rSpace"></span>
+      <div class="js-share-users"></div>
       <% } %>
     <% } %>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>

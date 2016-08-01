@@ -3,7 +3,7 @@
     <div class="CDB-Text CDB-Size-huge is-light u-ellipsis u-bSpace--m"><%- name %></div>
     <ul class="u-flex u-alignCenter">
       <li class="js-dropdown u-rSpace--xl"></li>
-      <% if (!isSimple) { %>
+      <% if (hasShareStats) { %>
       <li class="js-share-users">
       </li>
       <% } %>

@@ -1,6 +1,11 @@
 3.14.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
+ - `bundle exec rake carto:db:set_carto_attribution`
+ - Update basemaps configuration to use CARTO as a category instead of CartoDB
+
+### NOTICE
 This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
 ghost tables, importing common data and automatic index creation.
 

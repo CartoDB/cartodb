@@ -9,7 +9,7 @@
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>">
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">

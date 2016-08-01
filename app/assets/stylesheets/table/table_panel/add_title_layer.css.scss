@@ -9,27 +9,35 @@
   @import "../../old_common/vars";
   @import "../../old_common/mixins";
   @import "../variables/colors";
+  @import "../variables/mixins"; 
 
-  .title_layer {
+  .title_layer { 
     position:relative;
-    height:55px;
-    margin-top:-15px;
-    line-height:35px;
-    @include transform-style("linear");
-    @include transition-property("height");
-    @include transition-duration(250ms);
+    height:30px;
+    line-height:30px;
+      &.open {
+        > .title-bar {
+          background-color: $layer_header_background_active;
+          &:hover {
+            background-color: $layer_header_background_active_hover;
+          }
+        }
+      }
 
     .title-bar {
+      @include bb_sidebar_layer_header;
       position: relative;
       width: 100%;
-      height: 30px;
       background-image: url("../images/bb_icon_globe.png");
       background-position: 24px center;
       background-repeat: no-repeat;
+      .title-label {
+        margin-left: 66px;
+      }
+    
 
       a.info {
         text-decoration: none;
-        margin-left: 36px;
         color: $White;
       }
 
@@ -37,54 +45,38 @@
       // (Title layer text)
       .action.title {
         @include inline-block();
-        margin:0 0 0 27px;
-        font:500 17px $text-fonts;
-        line-height:20px;
-        letter-spacing:0;
-      }
-
-      &:hover {
-        cursor:pointer;
-
-        .action.title { color: #3A77A6; }
+        line-height:30px;
       }
     }
 
      .title-layer-body {
 
-      background-color: white;
-      height: 80%;
-      width: 100%;
+      background-color: $sidebar_panel_background;
+      height: 100%;
+      width: 385px;
       position: relative;
-      overflow-y: scroll;
       margin-left: 65px;
 
       .title-layer-contents {
 
-          width: 90%;
+          width: 100%;
           display: block;
+          padding-right: 12px;
 
         div.metadata-form {
-          letter-spacing: 0;
-
-          margin-bottom: 20px;
-
           .Form-row {
             .Form-input--long {
               width: 100%;
             }
-
           }
 
           .Dialog-stickyFooter {
             position: relative;
             width: 100%;
-            background: #F9F9F9;
 
             .EditVisMetadata-formFooter {
               display: block;
               width: 100%;
-              border-bottom: 1px solid #ddd;
             }
           }
 

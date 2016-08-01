@@ -17,20 +17,15 @@
     width: 100%;
     top: 0;
     left: 0;
-    padding: 10px;
-    background: $Black;
+    line-height: 19px;
     z-index:10;
-
-    @include box-sizing(border-box);
     font-size: 13px;
-    font-style: italic;
-
-    p { padding: 0 25px 0 44px; }
+    color: $Grey1;
 
     .close {
       position: absolute;
-      right: 27px;
-      top: 12px;
+      right: 12px;
+      top: 5px;
 
       display:block;
       vertical-align:middle;

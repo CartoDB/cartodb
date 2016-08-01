@@ -227,7 +227,7 @@ div.map {
     @include inline-block();
 
     & > li.button {
-
+      
       &.canvas_setup, &.add_overlay, &.toggle_slides, &.export_image {
 
         position:relative;
@@ -243,6 +243,7 @@ div.map {
       &.add_overlay {
           position: relative;
           padding-right: 18px;
+
           > .thumb { @include map-sprite(add_element);  }
           &:after {
             content: "";

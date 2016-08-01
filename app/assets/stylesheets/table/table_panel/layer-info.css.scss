@@ -13,6 +13,7 @@
   @import "../../old_common/mixins";
   @import "../../old_common/form-elements";
   @import "../../variables/colors";
+  @import "../../variables/mixins";
 
 
   // LOCAL VARS
@@ -21,19 +22,13 @@
  
   // Layer info, as name, order, ... etc
   //bb_layer_header 
-  .layer-info {
-    background-color: $DarkGrey6;
-    border-bottom: 1px solid $Black;
+  .layer-info { 
+    @include bb_sidebar_layer_header;
     position:absolute;
-    top:0; right:0; bottom:auto; left:0;
-    line-height:25px;
-    height:30px;
+    top:0; right:0; bottom:auto; left:0;    
     z-index:0;
-
-
     div.left {width:82%;}
     div.right {width:45px; margin-right:20px;}
-
     
     // Layer info block
     .info {
@@ -129,11 +124,12 @@
       &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
       &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
     }
-    &:hover {
-      cursor: pointer;
-    }
+    
   }
 //active layer header
-.layer_panel.active .layer-info {
+.layer_panel.active > .layer-info {
   background: $DarkGrey1;
+   &:hover {
+      background-color: $layer_header_background_active_hover;
+    }
 }

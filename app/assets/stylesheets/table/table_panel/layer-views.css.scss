@@ -24,7 +24,7 @@
   // bb_layer_view
   .layer-views {
     position:absolute; 
-    top:31px;
+    top:30px;
     right:0;  
     left:65px;
     bottom:0;
@@ -45,7 +45,7 @@
     // For any 
     & > div {
       @include inline-block();
-      width:100%;
+      width:auto;
       height:100%;
     }
 

@@ -19,10 +19,8 @@
   @import "../../../variables/colors";   
   @import "../../../variables/mixins";
 
-
   div.filters_panel {
-    width:100%;
-    @include box-sizing(border-box);
+    width:auto;
 
     h3 { padding-left:30px; }
 
@@ -183,18 +181,14 @@
 
       .filter { // generic styles for all the filters
         position:relative;
-
         padding: 15px 0 0 0;
-
         border-bottom: 1px solid $DarkGrey6;
-
         text-align:left;
 
         .header {
           position:relative;
-          padding: 5px 0;
           margin: 0;
-          width: 340px;
+          width: 100%;
 
           text-align:left;
 
@@ -203,13 +197,16 @@
 
           .hidden { display: none; }
 
-          .legend    { float:left; margin: 0 5px 0 0;  color: $Grey1; text-align: left; max-width: 180px; }
+          .legend    { margin: 0 5px 0 0;  color: $Grey1; text-align: left; max-width: 180px; }
           .empty     { float: left; display:none; color: #FF9999; vertical-align: top; }
           .only      { float: left; display:none; color: #FFAB37; vertical-align: top; }
           .loading   { float: left; display:none; color: #FFAB37; vertical-align: top; }
           .range     { float:left;  display:none; color: $Amber1; }
 
-          .title  { float: left; margin: 0 0 0 30px; }
+          .title  { float: left; }
+          .min, .max {
+            width: 150px;
+          }
         }
 
         &.date .range { clear:both; margin: 6px 0 0 0; }
@@ -220,9 +217,8 @@
           float: right; 
           display:block;
           @include opacity(0);
-
           @include size(13px);
-          @include position(21px, 30px, false, false);
+          @include position(12px, 12px, false, false);
           @include simple-transition(opacity, 150ms);
           @include common-sprite(close_grey);
 
@@ -248,10 +244,6 @@
           .loading, .empty, .only   { display: block; }
         }
 
-      }
-
-      .header, .items {
-        @include box-sizing(border-box);
       }
 
       .header .title .controllers {
@@ -502,14 +494,13 @@
 
     // Histogram filter
     ul.filters .filter.histogram {
-
+      padding: 12px;
       text-align:center;
-
       .empty  { display:none; }
 
       .loading   { display:block; }
 
-      .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
+      .hist { margin: auto; position: relative; @include inline-block(); top: 6px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }
       .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }

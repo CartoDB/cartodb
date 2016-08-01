@@ -273,7 +273,6 @@
     min-width:20px;
     width:auto!important;
     padding:2px 19px 2px 4px;
-    height:15px;
     margin:0;
     background-color: $Amber1;
     border:1px solid $Black;
@@ -655,22 +654,14 @@
   */
 
   .rounded {
-    padding:3px 12px;
-    background:white;
-    @include border-radius(25px);
-    font-weight:bold;
-    font-size:11px;
-    line-height:12px;
-    color:#3474AF;
+    @include border-radius(2px);
     text-transform: uppercase;
-    @include box-shadow(rgba(black,0.09) 0 0 2px 2px);
 
     &:hover {text-decoration:none;}
 
     &.white {
       &:hover {
         text-decoration:none;
-        @include box-shadow(rgba(black,0.19) 0 0 2px 2px);
       }
     }
 

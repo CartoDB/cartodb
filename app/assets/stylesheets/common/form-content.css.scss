@@ -132,7 +132,6 @@ $sLabel-width: 140px;
   @include align-items(center);
   width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
-  margin-right: $sMargin-element;
 }
 
 .Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
@@ -160,17 +159,10 @@ $sLabel-width: 140px;
 .Form-rowData--step ~ .Form-rowDataExtra { top: 0 }
 
 .Form-input {
+  @include bb_entry_style;
   position: relative;
   height: 38px;
-  padding: 0 12px;
-  outline: none;
-  background-color: $Amber1;
-  border: 1px solid $Black;
-  border-radius: 2px;
-  color: $Black;
-  z-index: 2;
 
-  &:focus { border-color: #999 }
 }
 
 .Form-inputField {
@@ -220,10 +212,6 @@ $sLabel-width: 140px;
 .Form-input.Form-input--error:focus,
 .Form-input.Form-input--error:hover { border-color: rgba(#DD3B37,1) }
 
-.Form-input::-webkit-input-placeholder { font-style: italic; color: rgb(110, 83, 49) }
-.Form-input:-moz-placeholder           { font-style: italic; color: #AAA }
-.Form-input::-moz-placeholder          { font-style: italic; color: #AAA }
-.Form-input:-ms-input-placeholder      { font-style: italic; color: #AAA }
 // Sizes
 .Form-input--longer { width: 434px }
 .Form-input--long { width: 354px }
@@ -524,24 +512,19 @@ $sLabel-width: 140px;
   text-align: center;
 }
 .Form-tags {
+  @include bb_entry_style;
   position: relative;
   width: 100%;
   min-height: 38px;
   padding: 0;
   outline: none;
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  background: white;
   z-index: 2;
 }
-.Form-tagsList.tagit { padding: 0 5px 5px 5px }
+
 .Form-tagsList.tagit .tagit-choice {
   padding: 0 30px 0 11px;
   margin: 5px 5px 0 0;
-  line-height: 28px;
-  background: #EFF8FF;
-  color: #746E76;
-  border-radius: 2px;
+  line-height: 19px;
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close {
   line-height: normal;
@@ -553,21 +536,7 @@ $sLabel-width: 140px;
   &:hover { color: #AAA }
 }
 .Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
-.Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style: italic;
-  color: #AAA
-}
-.Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style: italic;
-  color: #AAA
-}
-.Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
-  font-weight: $sFontWeight-normal;
-  font-style: italic;
-  color: #AAA
-}
+
 .Form-tags.is-focus { border-color: #999 }
 .Form-tags.is-disabled {
   background: $cStructure-grayBkg;

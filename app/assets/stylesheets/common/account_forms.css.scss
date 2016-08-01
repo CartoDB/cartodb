@@ -247,23 +247,6 @@ $sLabel-width: 140px;
 .FormAccount-input.FormAccount-input--error:hover {
   border-color: rgba(#dd3B37, 1);
 }
-
-.FormAccount-input::-webkit-input-placeholder {
-  color: #aaaaaa;
-  font-style: italic;
-}
-.FormAccount-input:-moz-placeholder {
-  color: #aaaaaa;
-  font-style: italic;
-}
-.FormAccount-input::-moz-placeholder {
-  color: #aaaaaa;
-  font-style: italic;
-}
-.FormAccount-input:-ms-input-placeholder {
-  color: #aaaaaa;
-  font-style: italic;
-}
 // Sizes
 .FormAccount-input--totalwidth {
   width: 100%;
@@ -669,10 +652,7 @@ $sLabel-width: 140px;
 .FormAccount-tagsList--placeholder {
   position: absolute;
   left: 0;
-  padding: 0 0 0 12px;
-  color: #AAAAAA;
-  font-style: italic;
-  font-weight: 300;
+  padding: 0 0 0 12px;  
   line-height: 38px;
 }
 

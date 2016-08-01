@@ -63,21 +63,13 @@ module VisualizationsControllerHelper
   end
 
   # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
-  def get_priority_visualization(visualization_id, force_name: false, user_id: nil, organization_id: nil)
-    builder = if force_name
-                Carto::VisualizationQueryBuilder.new.with_name(visualization_id)
-              else
-                Carto::VisualizationQueryBuilder.new.with_id_or_name(visualization_id)
-              end
-
-    builder.with_user_id(user_id)
-           .with_organization_id(organization_id)
-           .build
-           .all
-           .sort { |vis_a, _vis_b|
-             vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
-           }
-           .first
+  def get_priority_visualization(visualization_id, user_id: nil, organization_id: nil)
+    params = { user_id: user_id, organization_id: organization_id }
+    visualization = get_priority_visualization_forcing_name(visualization_id, params.merge(force_name: false))
+    unless visualization
+      visualization = get_priority_visualization_forcing_name(visualization_id, params.merge(force_name: true))
+    end
+    visualization
   end
 
   def load_visualization_from_id_or_name(id_or_name)
@@ -91,13 +83,13 @@ module VisualizationsControllerHelper
     viz_locator = VisualizationLocator.new(id_or_name, force_name: force_name)
 
     visualization = if viz_locator.id
-                      get_priority_visualization(viz_locator.id, force_name: force_name)
+                      get_priority_visualization_forcing_name(viz_locator.id, force_name: force_name)
                     else
                       user = extract_user_from_request_and_viz_locator(viz_locator)
                       if user.nil?
                         nil
                       else
-                        get_priority_visualization(viz_locator.name, force_name: force_name, user_id: user.id)
+                        get_priority_visualization_forcing_name(viz_locator.name, force_name: force_name, user_id: user.id)
                       end
                     end
 
@@ -117,5 +109,24 @@ module VisualizationsControllerHelper
   def generate_anonymous_map_vizjson3(visualization, params)
     Carto::Api::VizJSON3Presenter.new(visualization)
                                  .to_anonymous_map_vizjson(https_request: is_https?, vector: params[:vector] == 'true')
+  end
+
+  private
+
+  def get_priority_visualization_forcing_name(visualization_id, force_name: false, user_id: nil, organization_id: nil)
+    builder = if force_name
+                Carto::VisualizationQueryBuilder.new.with_name(visualization_id)
+              else
+                Carto::VisualizationQueryBuilder.new.with_id_or_name(visualization_id)
+              end
+
+    builder.with_user_id(user_id)
+           .with_organization_id(organization_id)
+           .build
+           .all
+           .sort { |vis_a, _vis_b|
+             vis_a.type == Carto::Visualization::TYPE_CANONICAL ? -1 : 1
+           }
+           .first
   end
 end

@@ -119,6 +119,10 @@ class Carto::Map < ActiveRecord::Base
     visualizations.first
   end
 
+  def update_dataset_dependencies
+    data_layers.each(&:register_table_dependencies)
+  end
+
   private
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

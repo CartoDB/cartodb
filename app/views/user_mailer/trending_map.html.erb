@@ -11,8 +11,28 @@
 
         <!-- MESSAGE CONTENT -->
         <tr>
-          <td align="left" style="font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #647083;">
-            <p><img alt="Trophy" src=" http://carto-email-assets.s3.amazonaws.com/trophy.png" width="15" height="15" style="display: inline-block; margin: 0 auto; vertical-align: middle;" border="0"> <%= @greetings.sample.capitalize %>! Your <strong><%= @map_name %></strong> has received more than <strong><%= number_to_human(@mapviews).downcase %> map views</strong>!</p>
+          <td align="left" style="padding-bottom: 8px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #647083;">
+            <table cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left"><img src="http://carto-email-assets.s3.amazonaws.com/top-left-grey-corner.png"></td>
+                <td align="middle" style="background-color: #F9F9F9;"></td>
+                <td align="right"><img src="http://carto-email-assets.s3.amazonaws.com/top-right-grey-corner.png"></td>
+              </tr>
+
+              <tr>
+                <td style="background-color: #F9F9F9;"></td>
+                <td style="background-color: #F9F9F9; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #647083;">
+                  <p><img alt="Trophy" src="http://carto-email-assets.s3.amazonaws.com/trophy.png" width="15" height="15" style="display: inline-block; margin: 0 auto; vertical-align: middle;" border="0"> <%= @greetings.sample.capitalize %>! Your <strong><%= @map_name %></strong> has received more than <strong><%= number_to_human(@mapviews).downcase %> map views</strong>!</p>
+                </td>
+                <td style="background-color: #F9F9F9;"></td>
+              </tr>
+
+              <tr>
+                <td align="left"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-left-grey-corner.png"></td>
+                <td align="middle" style="background-color: #F9F9F9;"></td>
+                <td align="right"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-right-grey-corner.png"></td>
+              </tr>
+            </table>
           </td>
         </tr>
 

@@ -5,8 +5,8 @@
       <div class="CDB-infowindow-inner">
         <ul class="CDB-infowindow-list">
           <li class="CDB-infowindow-listItem">
-            <h5 class="CDB-infowindow-subtitle">{{{ select-fields }}}</h5>
-            <h4 class="CDB-infowindow-title">{{{ no-fields }}}</h4>
+            <h5 class="CDB-infowindow-subtitle"><%- subtitle %></h5>
+            <h4 class="CDB-infowindow-title"><%- title %></h4>
           </li>
         </ul>
       </div>

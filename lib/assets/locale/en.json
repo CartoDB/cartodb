@@ -17,7 +17,29 @@
     "november": "November",
     "december": "December"
   },
-
+  "builder-onboarding": {
+    "welcome": "Welcome to the Builder",
+    "take-tour": "Take a tour",
+    "edit-map": "Edit your map",
+    "toolbar": {
+      "title": "ToolBar",
+      "description": ""
+    },
+    "configurator": {
+      "title": "Configurator"
+      "description": ""
+    },
+    "map": {
+      "title": "Map",
+      "description": ""
+    },
+    "widgets": {
+      "title": "Widgets bar",
+      "description": ""
+    },
+    "skip": "skip",
+    "next": "next",
+  },
   "analyses-onboarding": {
     "done": "Done",
     "finished": "has finished",

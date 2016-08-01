@@ -1535,6 +1535,20 @@
         "loading": "Adding widget…",
         "updating": "Updating widget…"
       },
+      "options": {
+        "remove": "Delete...",
+        "rename": "Rename",
+        "edit": "Edit"
+      },
+      "delete": {
+        "confirm": "ok, delete it",
+        "cancel": "cancel",
+        "desc": "The widget cannot be recovered, be sure before proceeding.",
+        "title": "You are about to delete the widget %{name}",
+        "error": "Error deleting widget %{name}: %{error}",
+        "loading": "Removing the widget %{name}...",
+        "success": "Widget %{name} deleted"
+      },
       "widgets-view": {
         "add_widget": "Add widget"
       },

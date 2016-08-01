@@ -8,7 +8,7 @@
     </div>
 
     <div class="BuilderOnboarding-footer is-step0">
-      <div class="Onboarding-footerButtons">
+      <div class="BuilderOnboarding-footerButtons">
         <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-start">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.take-tour')%></span>
         </button>
@@ -21,7 +21,7 @@
       <div class="u-iBlock is-step1">
         <input class="CDB-Checkbox js-forget" type="checkbox" id="forget-me" name="forget-me" value="true">
         <span class="u-iBlock CDB-Checkbox-face"></span>
-        <label for="forget-me" class="Onboarding-forgetLabel Checkbox-label CDB-Text CDB-Size-small u-altTextColor u-lSpace"><%- _t('analyses-onboarding.never-show-message') %></label>
+        <label for="forget-me" class="BuilderOnboarding-forgetLabel Checkbox-label CDB-Text CDB-Size-small u-altTextColor u-lSpace"><%- _t('analyses-onboarding.never-show-message') %></label>
       </div>
     </div>
 
@@ -58,7 +58,7 @@
     </div>
 
     <div class="BuilderOnboarding-footer is-step1 is-step2 is-step3">
-      <div class="Onboarding-footerButtons">
+      <div class="BuilderOnboarding-footerButtons">
         <button class="CDB-Button CDB-Button--secondary CDB-Button--white CDB-Button--big Onboarding-footer--marginRight js-close">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.skip')%></span>
         </button>
@@ -70,7 +70,7 @@
     </div>
 
     <div class="BuilderOnboarding-footer is-step4">
-      <div class="Onboarding-footerButtons">
+      <div class="BuilderOnboarding-footerButtons">
         <button class="CDB-Button CDB-Button--primary CDB-Button--big js-close">
           <span class="CDB-Button-Text CDB-Text u-upperCase is-semibold CDB-Size-medium"><%- _t('builder-onboarding.edit-map')%></span>
         </button>

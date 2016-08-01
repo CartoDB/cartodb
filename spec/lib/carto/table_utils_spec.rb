@@ -9,9 +9,15 @@ describe Carto::TableUtils do
 
   shared_examples 'safe quoting' do
     # https://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-    it 'quotes table names only if needed' do
+    it 'does not quotes table names if not needed' do
+      table_utils.safe_table_name_quoting('mytable1').should eq 'mytable1'
       table_utils.safe_table_name_quoting('my_table').should eq 'my_table'
+      table_utils.safe_table_name_quoting('my$table').should eq 'my$table'
+    end
+
+    it 'quotes table names if needed' do
       table_utils.safe_table_name_quoting('my-table').should eq '"my-table"'
+      table_utils.safe_table_name_quoting('02-34').should eq '"02-34"'
       table_utils.safe_table_name_quoting('my""ta-ble').should eq '"my""ta-ble"'
     end
 

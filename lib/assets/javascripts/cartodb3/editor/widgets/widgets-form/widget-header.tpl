@@ -5,9 +5,10 @@
     </button>
   </div>
   <div class="Editor-HeaderInfo-inner">
-    <div class="Editor-HeaderInfo-title u-bSpace">
-      <h2 class="Editor-HeaderInfo-titleText CDB-Text CDB-Size-huge is-light u-ellipsis"><%- title %></h2>
+    <div class="Editor-HeaderInfo-title js-context-menu">
+      <div class="Editor-HeaderInfo-titleText js-header"></div>
     </div>
+
     <div class="u-flex">
       <span class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-rSpace u-upperCase"
         style="background-color: <%- sourceColor %>;"><%- source %></span>

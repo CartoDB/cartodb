@@ -55,13 +55,13 @@ module Carto
           end
           layer.save if changed
         end
-
-        map.data_layers.each(&:register_table_dependencies)
       end
 
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
       visualization_member.store
+
+      visualization_member.map.layers.map(&:register_table_dependencies)
 
       visualization
     end

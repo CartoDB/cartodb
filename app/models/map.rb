@@ -158,10 +158,6 @@ class Map < Sequel::Model
     @visualizations_collection ||= CartoDB::Visualization::Collection.new.fetch(map_id: [id]).to_a
   end
 
-  def visualization
-    visualizations.first
-  end
-
   def process_privacy_in(layer)
     return self unless layer.uses_private_tables?
 

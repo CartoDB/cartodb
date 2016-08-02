@@ -3,11 +3,12 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module PropertiesHelper
-      def visualization_properties(table_visualization, origin: nil)
+      def visualization_properties(visualization, origin: nil)
         properties = {
-          vis_id: table_visualization.id,
-          privacy: table_visualization.privacy,
-          type: table_visualization.type
+          vis_id: visualization.id,
+          privacy: visualization.privacy,
+          type: visualization.type,
+          created_at: visualization.created_at
         }
 
         properties[:origin] = origin if origin

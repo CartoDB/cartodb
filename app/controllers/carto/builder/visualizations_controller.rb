@@ -18,7 +18,7 @@ module Carto
       before_filter :editable_visualizations_only, only: :show
 
       # TODO: remove this when analysis logic lives in the backend
-      before_filter :ensure_source_analyses, if: :has_analyses?
+      before_filter :ensure_source_analyses, unless: :has_analyses?
 
       after_filter :update_user_last_activity,
                    :track_builder_visit, only: :show
@@ -55,7 +55,7 @@ module Carto
       end
 
       def has_analyses?
-        @visualization.analyses.empty?
+        @visualization.analyses.any?
       end
 
       def ensure_source_analyses

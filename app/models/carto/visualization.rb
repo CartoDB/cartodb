@@ -371,6 +371,17 @@ class Carto::Visualization < ActiveRecord::Base
     analyses.any? || widgets.any? || mapcapped?
   end
 
+  def add_source_analyses
+    return unless analyses.empty?
+
+    carto_and_torque_layers.each_with_index do |layer, index|
+      analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+      layer.options[:source] = analysis.natural_id if analysis.save
+      layer.options[:letter] = analysis.natural_id.first
+      layer.save
+    end
+  end
+
   private
 
   def named_maps_api

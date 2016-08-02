@@ -14,13 +14,13 @@ class OrganizationMailer < ActionMailer::Base
   def invitation(invitation, email)
     @invitation = invitation
 
-    @title = "You are invited to join the #{@invitation.organization.name} organization at CARTO"
+    @subject = "You are invited to join the #{@invitation.organization.name} organization at CARTO #{@invitation.viewer? ? 'as a viewer' : ''}"
 
     base_url = CartoDB.base_url(@invitation.organization.name)
     token = invitation.token(email)
     @invitation_signup_link = "#{base_url}#{CartoDB.path(self, 'signup', invitation_token: token, email: email)}"
 
-    mail to: email, subject: @title
+    mail to: email, subject: @subject
   end
 
   def seat_limit_reached(organization)

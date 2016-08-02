@@ -2,48 +2,36 @@
 
 <% content_for :body do %>
   <tr>
-    <td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-collapse: separate !important; width: 100% !important;">
-        <!-- TITLE -->
+    <td align="left">
+      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: separate !important;">
         <tr>
-          <td align="left" style="padding-bottom: 32px; font-weight: bold; text-transform: uppercase; font-size: 22px; font-family: 'Montserrat', Helvetica, Arial, sans-serif; color: #2E3C43;"><%= @subject %></td>
-        </tr>
-
-        <!-- MESSAGE CONTENT -->
-        <tr>
-          <td align="left">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: separate !important;">
-              <tr>
-                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-left-green-corner.png"></td>
-                <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
-                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-right-green-corner.png"></td>
-              </tr>
-
-              <tr>
-                <td width="16px" style="background-color: #73C86B;"></td>
-                <td style="background-color: #73C86B; font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #ffffff;">
-                  <img alt="Like" src="http://carto-email-assets.s3.amazonaws.com/check.png" width="44" height="44" style="display: block; padding-bottom: 36px;" border="0">
-                  <p style="font-size: 24px;"><strong>Shared map with you</strong></p>
-                  <p style="margin-bottom: 0;">Your colleague <%= @visualization.user.username %> has shared a new map called <strong><%= @visualization.name %></strong> with you.</p>
-                </td>
-                <td width="16px" style="background-color: #73C86B;"></td>
-              </tr>
-
-              <tr>
-                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-left-green-corner.png"></td>
-                <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
-                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-right-green-corner.png"></td>
-              </tr>
-            </table>
-          </td>
+          <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-left-green-corner.png"></td>
+          <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
+          <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-right-green-corner.png"></td>
         </tr>
 
         <tr>
-          <td align="left" style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083; padding-top: 80px;">
-            <p><a href="<%= @link %>" target="_blank" style="color: #1785FB">Go to the map</a></p>
+          <td width="16px" style="background-color: #73C86B;"></td>
+          <td style="background-color: #73C86B; font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #ffffff;">
+            <img alt="Like" src="http://carto-email-assets.s3.amazonaws.com/check.png" width="44" height="44" style="display: block; padding-bottom: 36px;" border="0">
+            <p style="font-size: 24px;"><strong>Shared map with you</strong></p>
+            <p style="margin-bottom: 0;">Your colleague <%= @visualization.user.username %> has shared a new map called <strong><%= @visualization.name %></strong> with you.</p>
           </td>
+          <td width="16px" style="background-color: #73C86B;"></td>
+        </tr>
+
+        <tr>
+          <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-left-green-corner.png"></td>
+          <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
+          <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-right-green-corner.png"></td>
         </tr>
       </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083; padding-top: 80px;">
+      <p><a href="<%= @link %>" target="_blank" style="color: #1785FB">Go to the map</a></p>
     </td>
   </tr>
 <% end %>

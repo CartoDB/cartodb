@@ -37,30 +37,10 @@
   /* iOS BLUE LINKS */
   .appleBody a {color:#68440a; text-decoration: none;}
   .appleFooter a {color:#999999; text-decoration: none;}
-
-  /* MOBILE STYLES */
-  @media screen and (max-width: 525px) {
-
-    /* ADJUSTS LAYOUT OF LOGO IMAGE */
-    td[class="logo"]{
-      text-align: left;
-      padding: 20px 0 20px 0 !important;
-    }
-
-    td[class="logo"] img{
-      margin:0 auto!important;
-    }
-
-    /* FULL-WIDTH TABLES */
-    table[class="responsive-table"]{
-      width:100%!important;
-    }
-
-  }
 </style>
 </head>
 <body style="margin: 0; padding: 0;">
-  <!-- LOGO -->
+  <!-- LOGO AND HEADER -->
   <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
       <td bgcolor="#ffffff">
@@ -87,7 +67,17 @@
     <tr>
       <td bgcolor="#ffffff" align="center" style="padding: 0px 15px 72px 15px;">
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 620px; width: 100% !important;">
-          <%= yield :body %>
+          <tr>
+            <td>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-collapse: separate !important; width: 100% !important;">
+                <!-- MESSAGE TITLE -->
+                <%= render partial: 'user_mailer/email_subject' %>
+
+                <!-- MESSAGE CONTENT -->
+                <%= yield :body %>
+              </table>
+            </td>
+          </tr>
         </table>
       </td>
     </tr>

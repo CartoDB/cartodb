@@ -7,6 +7,11 @@ class Carto::AnalysisNode
 
   attr_reader :definition
 
+  def self.find_by_natural_id(visualization_id, natural_id)
+    analyses = Carto::Analysis.where(visualization_id: visualization_id).all
+    analyses.lazy.map { |analysis| analysis.analysis_node.find_by_id(natural_id) }.find(&:present?)
+  end
+
   def id
     definition[:id]
   end
@@ -43,6 +48,11 @@ class Carto::AnalysisNode
   def table_source?(table_name)
     # Maybe check params[:query]
     source? && options && options[:table_name] == table_name
+  end
+
+  def source_descendants
+    return [self] if source?
+    children.map(&:source_descendants).flatten
   end
 
   private

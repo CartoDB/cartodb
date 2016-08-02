@@ -15,7 +15,7 @@ module Carto
     private
 
     def only_valid_categories
-      !notifications.keys.any? do |category|
+      notifications.keys.none? do |category|
         errors.add(:notifications, "Invalid category: #{category}") unless VALID_CATEGORIES.include?(category)
       end
     end

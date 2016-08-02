@@ -31,6 +31,15 @@ $tableBorderColor: $cSecondaryLine;
   overflow-y: hidden;
   z-index: 2;
 }
+.Table::before {
+  height: 65px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  background: $cThirdBackground;
+  content: '';
+}
 .Table--relative {
   top: 0;
   right: 0;
@@ -41,6 +50,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-head {
   background: $cThirdBackground;
+  position: relative;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;

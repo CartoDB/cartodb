@@ -30,9 +30,15 @@ module Carto
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
+        @builder_notifications = builder_notifications
       end
 
       private
+
+      def builder_notifications
+        carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
+        carto_viewer ? carto_viewer.notifications_for_category(:builder) : {}
+      end
 
       def redirect_to_editor_if_forced
         redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id]) if current_user.force_editor?

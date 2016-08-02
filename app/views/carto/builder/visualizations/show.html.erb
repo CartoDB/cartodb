@@ -10,6 +10,7 @@
   var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
   var analysesData = <%= safe_js_object @analyses_data.to_json %>
   var basemaps = <%= safe_js_object @basemaps.to_json %>
+  var builderNotifications = <%= safe_js_object @builder_notifications.to_json %>
 
   var ACTIVE_LOCALE = 'en';
 </script>

@@ -12,13 +12,14 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced, only: :show
-      before_filter :load_derived_visualization, only: :show
+      before_filter :redirect_to_editor_if_forced,
+                    :load_derived_visualization, only: :show
       before_filter :authors_only
-      before_filter :editable_visualizations_only, only: :show
+      before_filter :editable_visualizations_only,
+                    :ensure_source_analyses, only: :show # TODO: remove this when analysis logic lives in the backend
 
-      after_filter :update_user_last_activity, only: :show
-      after_filter :track_builder_visit, only: :show
+      after_filter :update_user_last_activity,
+                   :track_builder_visit, only: :show
 
       layout 'application_builder'
 
@@ -49,6 +50,10 @@ module Carto
 
       def editable_visualizations_only
         render_404 unless @visualization.editable?
+      end
+
+      def ensure_source_analyses
+        @visualization.add_source_analyses if @visualization.analyses.empty?
       end
 
       def unauthorized

@@ -71,7 +71,9 @@
             <td>
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-collapse: separate !important; width: 100% !important;">
                 <!-- MESSAGE TITLE -->
-                <%= render partial: 'user_mailer/email_subject' %>
+                <tr>
+                  <td align="left" style="padding-bottom: 32px; font-weight: bold; text-transform: uppercase; font-size: 22px; font-family: 'Montserrat', Helvetica, Arial, sans-serif; color: #2E3C43;"><%= @subject %></td>
+                </tr>
 
                 <!-- MESSAGE CONTENT -->
                 <%= yield :body %>

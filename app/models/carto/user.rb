@@ -472,6 +472,10 @@ class Carto::User < ActiveRecord::Base
     auth_token.present? ? auth_token : generate_auth_token
   end
 
+  def notifications_for_category(category)
+    notifications.notifications[category] || {}
+  end
+
   private
 
   def generate_auth_token

@@ -5,12 +5,12 @@ require_relative './carto_json_serializer'
 module Carto
   class UserNotification < ActiveRecord::Base
     belongs_to :user
-    serialize :notifications, ::Carto::CartoJsonSerializer
+    serialize :notifications, ::Carto::CartoJsonSymbolizerSerializer
 
     validates :user, presence: true
     validate  :only_valid_categories
 
-    VALID_CATEGORIES = %w(builder).freeze
+    VALID_CATEGORIES = [:builder].freeze
 
     private
 

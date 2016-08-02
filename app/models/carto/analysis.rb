@@ -38,7 +38,7 @@ class Carto::Analysis < ActiveRecord::Base
     user_id = user.id if user
 
     analysis_definition = {
-      id: 'abcdefghijklmnopqrstuv'[index],
+      id: 'abcdefghijklmnopqrstuvwxyz'[index] + '0',
       type: 'source',
       params: { query: layer.default_query(user) },
       options: { table_name: layer.options[:table_name] }

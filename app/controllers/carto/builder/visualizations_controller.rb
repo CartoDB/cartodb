@@ -15,8 +15,10 @@ module Carto
       before_filter :redirect_to_editor_if_forced,
                     :load_derived_visualization, only: :show
       before_filter :authors_only
-      before_filter :editable_visualizations_only,
-                    :ensure_source_analyses, only: :show # TODO: remove this when analysis logic lives in the backend
+      before_filter :editable_visualizations_only, only: :show
+
+      # TODO: remove this when analysis logic lives in the backend
+      before_filter :ensure_source_analyses, if: :has_analyses?
 
       after_filter :update_user_last_activity,
                    :track_builder_visit, only: :show
@@ -52,8 +54,13 @@ module Carto
         render_404 unless @visualization.editable?
       end
 
+      def has_analyses?
+        @visualization.analyses.empty?
+      end
+
       def ensure_source_analyses
-        @visualization.add_source_analyses if @visualization.analyses.empty?
+        @visualization.add_source_analyses
+        @visualization.reload
       end
 
       def unauthorized

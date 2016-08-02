@@ -139,7 +139,8 @@ module BoundingBoxHelper
 
   def self.save_bounding_box(bounds, table_name, column_name, id)
     polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
-    update_sql = %Q{UPDATE #{Carto::TableUtilsInstance.new.safe_table_name_quoting(table_name)} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
+    safe_table_name = Carto::TableUtilsInstance.new.safe_table_name_quoting(table_name)
+    update_sql = %{UPDATE #{safe_table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
     Rails::Sequel.connection.run(update_sql)
   end
 end

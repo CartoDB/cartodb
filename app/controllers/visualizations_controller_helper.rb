@@ -89,7 +89,8 @@ module VisualizationsControllerHelper
                       if user.nil?
                         nil
                       else
-                        get_priority_visualization_forcing_name(viz_locator.name, force_name: force_name, user_id: user.id)
+                        get_priority_visualization_forcing_name(
+                          viz_locator.name, force_name: force_name, user_id: user.id)
                       end
                     end
 

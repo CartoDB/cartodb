@@ -9,11 +9,16 @@ module Carto
 
     VALID_CATEGORIES = [:builder].freeze
 
-    def notifications_for(category)
+    def notifications_for_category(category)
       raise "Invalid notification category #{category}" unless VALID_CATEGORIES.include?(category)
 
-      notifications[category] = {} unless notifications.include?(category)
-      notifications[category]
+      notifications[category] || {}
+    end
+
+    def set_notifications_for_category(category, notifications)
+      raise "Invalid notification category #{category}" unless VALID_CATEGORIES.include?(category)
+
+      notifications[category] = notifications
     end
   end
 end

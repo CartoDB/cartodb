@@ -26,7 +26,7 @@ module Carto
     end
 
     def can_be_quoted?(name)
-      !name.include?('.')
+      name && !name.include?('.')
     end
   end
 

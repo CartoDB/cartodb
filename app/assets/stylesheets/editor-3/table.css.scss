@@ -32,11 +32,11 @@ $tableBorderColor: $cSecondaryLine;
   z-index: 2;
 }
 .Table::before {
-  height: 65px;
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
+  height: 65px;
   background: $cThirdBackground;
   content: '';
 }

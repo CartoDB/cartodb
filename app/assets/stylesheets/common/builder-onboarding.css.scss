@@ -3,9 +3,16 @@
 @import '../variables/sizes';
 @import 'cdb-variables/colors';
 
+$sSmallDescriptionWidth: 200px;
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$sWidgetsPadWidth: 322px;
+$cBackgroundColor: #2E3C43;
+
 .BuilderOnboarding {
   @include display-flex();
   height: 100%;
+  pointer-events: auto;
 }
 
 .BuilderOnboarding-footer {
@@ -22,7 +29,7 @@
   @include display-flex();
   @include align-items(center);
   height: 100%;
-  background: #2E3C43;
+  background: $cBackgroundColor;
   pointer-events: all;
 }
 
@@ -31,13 +38,7 @@
 }
 
 .BuilderOnboarding-contentWrapper.is-step1 {
-  @include justify-content(flex-start);
-}
-
 .BuilderOnboarding-contentWrapper.is-step2 {
-  @include justify-content(flex-start);
-}
-
 .BuilderOnboarding-contentWrapper.is-step3 {
   @include justify-content(flex-start);
 }
@@ -68,10 +69,7 @@
 .BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-footer.is-step1 .BuilderOnboarding-footerButtons,
 .BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-footer.is-step2 .BuilderOnboarding-footerButtons,
 .BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-footer.is-step3 .BuilderOnboarding-footerButtons,
-.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-footer.is-step4 .BuilderOnboarding-footerButtons {
-  @include opacity(1);
-}
-
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-footer.is-step4 .BuilderOnboarding-footerButtons,
 .BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-header.is-step0 p,
 .BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-step.is-step0 p,
 .BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-step.is-step1 p,
@@ -81,21 +79,21 @@
   @include opacity(1);
 }
 
-.BuilderOnboarding.step0 .BuilderOnboarding-header,
-.BuilderOnboarding.step0 .BuilderOnboarding-footer.is-step0,
-.BuilderOnboarding.step1 .BuilderOnboarding-footer.is-step1,
-.BuilderOnboarding.step2 .BuilderOnboarding-footer.is-step2,
-.BuilderOnboarding.step3 .BuilderOnboarding-footer.is-step3,
-.BuilderOnboarding.step4 .BuilderOnboarding-footer.is-step4,
-.BuilderOnboarding.step0 .BuilderOnboarding-step.is-step0,
-.BuilderOnboarding.step1 .BuilderOnboarding-step.is-step1,
-.BuilderOnboarding.step2 .BuilderOnboarding-step.is-step2,
-.BuilderOnboarding.step3 .BuilderOnboarding-step.is-step3,
-.BuilderOnboarding.step4 .BuilderOnboarding-step.is-step4 {
+.BuilderOnboarding.is-step0 .BuilderOnboarding-header,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-footer.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-footer.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-footer.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-footer.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-footer.is-step4,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-step.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-step.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-step.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-step.is-step4 {
   display: block;
 }
 
-.BuilderOnboarding.step0 .BuilderOnboarding-step.is-step1 {
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step1 {
   @include opacity(0);
 }
 
@@ -106,7 +104,7 @@
 
 .BuilderOnboarding-description {
   @include transition(width, 100ms, ease-in-out);
-  width: 445px;
+  width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
   color: #FFF;
   font-size: $sFontSize-larger;
@@ -117,10 +115,8 @@
 .BuilderOnboarding-pad,
 .BuilderOnboarding-pad4 {
   @include opacity(0.88);
-  background: #2E3C43;
+  background: $cBackgroundColor;
 }
-
-$sWidgetsPadWidth: 322px;
 
 .BuilderOnboarding-pad4,
 .BuilderOnboarding-pad5 {
@@ -144,12 +140,15 @@ $sWidgetsPadWidth: 322px;
   z-index: 10;
 }
 
-.BuilderOnboarding.step1 {
+.BuilderOnboarding.is-step1 {
   .BuilderOnboarding-pad2 {
     width: 72px;
   }
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
 }
-.BuilderOnboarding.step2 {
+.BuilderOnboarding.is-step2 {
   .BuilderOnboarding-pad {
     width: 72px;
   }
@@ -160,9 +159,12 @@ $sWidgetsPadWidth: 322px;
     @include transition(right, 0, ease-in-out, 0);
     right: -$sWidgetsPadWidth;
   }
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
 }
 
-.BuilderOnboarding.step3 {
+.BuilderOnboarding.is-step3 {
   .BuilderOnboarding-pad2 {
     width: 0;
   }
@@ -171,14 +173,14 @@ $sWidgetsPadWidth: 322px;
   }
 
   .BuilderOnboarding-description {
-    width: 200px;
+    width: $sSmallDescriptionWidth;
   }
 
   .BuilderOnboarding-pad4 {
     @include transition(right, 0, ease-in-out, 0);
     right: 0;
     width: $sWidgetsPadWidth - 13;
-    background: #2E3C43;
+    background: $cBackgroundColor;
   }
 
   .BuilderOnboarding-contentWrapper {
@@ -189,7 +191,7 @@ $sWidgetsPadWidth: 322px;
   }
 }
 
-.BuilderOnboarding.step4 {
+.BuilderOnboarding.is-step4 {
   .BuilderOnboarding-pad {
     @include flex(1);
   }
@@ -199,7 +201,7 @@ $sWidgetsPadWidth: 322px;
     background: none;
   }
   .BuilderOnboarding-description {
-    width: 445px;
+    width: $sRegularDescriptionWidth;
   }
   .BuilderOnboarding-pad5 {
     right: 0;

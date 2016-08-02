@@ -664,7 +664,7 @@ class Table
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
 
-    new_name = get_valid_name(value)
+    new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
     unless new?

@@ -13,10 +13,13 @@ module Carto
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
       def update
-        category = params[:category].to_sym
-        @notifications.set_notifications_for_category(category, params[:notifications])
-        @notifications.save
-        render_jsonp({ notifications: @notifications.notifications_for_category(category) }, 200)
+        category = params[:category]
+        @notifications.notifications[category] = params[:notifications]
+        if @notifications.save
+          render_jsonp({ notifications: @notifications.notifications[category] }, 200)
+        else
+          render_jsonp({ errors: @notifications.errors.to_h }, 422)
+        end
       end
 
       private

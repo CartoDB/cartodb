@@ -222,18 +222,19 @@
 
 //Buttons 
 @mixin actionButton {
-    background-color: $Teal5;
-    border: 1px solid $Black;
-    border-radius: 2px;
-    color: $Grey1;
-    &:hover {
-	background-color: $Teal3;
-	}
-    &:active {
-	background-color: $Teal7;
-	
-	}
-}
+  background-color: $Teal5;
+  border: 1px solid $Black;
+  border-radius: 2px;
+  color: $Grey1;
+  &:hover {
+    background-color: $Teal3;
+    color: white;
+  }
+  &:active {
+    background-color: $Teal7;
+    color: white;
+    }
+  }
 
 //bloomberg theme
 //button 
@@ -241,9 +242,12 @@
     background-color: $btn_background_normal;
     background-repeat: no-repeat;
     background-position: center;
+    border: 1px solid $Black;
     border-radius: 2px;
     color: $Grey1; 
+    cursor: default;
     font-size: 13px;
+    height: 19px;
     line-height: 17px;
     padding: 0px 6px;
     text-decoration: none;
@@ -260,6 +264,7 @@
         background-color: $btn_background_disabled;
       }
  }
+
 //Entry style
  @mixin bb_entry_style {
     background-color: $Amber1;
@@ -274,7 +279,19 @@
    // }
  }
 
+@mixin bb_big_button {
+  height: 30px;
+  line-height: 28px;
+  padding: 0px 12px;
+}
+
+
  //dropdown list
+ @mixin bb_dropdown {
+    background: $DarkGrey7;
+    border: $dropdownBorder;
+    padding: 12px 0px;
+ }
  @mixin bb_list_separator {
     border-bottom: 1px solid rgba($Black, .32);
  }

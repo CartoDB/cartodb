@@ -18,12 +18,10 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
   margin: 0 $sMargin-elementInline;
 }
 .Button--centered {
-  margin: auto;
-}
+  margin: auto;}
 .Button,
 .Button span {
-  white-space: nowrap;
-  box-sizing: border-box;
+  white-space: nowrap;  
 }
 .Button-inner {
   line-height: $sButton-height;
@@ -53,7 +51,7 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
 }
 .Button--positive {
   @include actionButton;
-
+  @include bb_big_button;
   &.is-disabled:hover {
 	pointer-events: none; 
  }

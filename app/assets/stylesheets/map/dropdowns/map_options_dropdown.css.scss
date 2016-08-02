@@ -16,13 +16,21 @@ div.dropdown.map_options_dropdown {
   display: block;
   background: transparent;
   border: none;
-  width: 383px;
+  width: 361px;
+
+  > .title {
+    margin-bottom: 12px; 
+    > h2 {
+      font-size: 15px;
+      color: $White;
+      line-height: 19px;
+
+    }
+  }
 
   ul {
     line-height: 19px;
     margin: 0;
-    padding: 12px;
-    width: 100%;
 
     li {
       @include display-flex();

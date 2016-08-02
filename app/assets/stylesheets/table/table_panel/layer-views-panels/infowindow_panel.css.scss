@@ -16,6 +16,7 @@
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
   @import "../../../variables/colors";
+  @import "../../../variables/mixins";
   @import "../../../old_common/form-elements";
 
 
@@ -240,10 +241,8 @@
 
     .fields {
       li {
+        @include bb_list_separator;
         padding:13px 0;
-        font-size: 15px;
-        color: $cGray4;
-        border-bottom:1px solid rgba(#999999,0.25);
         overflow:hidden;
 
         & > span {

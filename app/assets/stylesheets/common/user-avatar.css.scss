@@ -12,6 +12,8 @@
 .UserAvatar {
   @include display-flex();
   @include align-items(center);
+  visibility: hidden;
+  //hide user dropdown
 }
 .UserAvatar.is-in-list {
   margin-left: $sMargin-min;

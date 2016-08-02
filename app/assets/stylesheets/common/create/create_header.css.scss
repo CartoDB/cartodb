@@ -10,7 +10,6 @@
 
 }
 .CreateDialog-header.with-separator {
- border-bottom: 1px solid $Black;
  }
 .CreateDialog-headerSteps {
   display: block;
@@ -40,8 +39,6 @@
   color: $cTypography-help;
 }
 .CreateDialog-header .Dialog-headerText {
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
   color: $cTypography-help;
 }
 .CreateDialog-header .Dialog-headerIconBadge {

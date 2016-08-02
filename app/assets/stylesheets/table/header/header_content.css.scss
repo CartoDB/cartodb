@@ -212,13 +212,12 @@
 
         a.btn {
           @include bb_button_style;
-          height: 40px;
-          line-height: 40px;
+          @include bb_big_button;
           span {
             @include inline-block();
           }
           &.dropdown {
-            padding: 0px 18px 0px 6px;
+            padding: 0px 30px 0px 12px;
           }
         }
 
@@ -242,6 +241,7 @@
   }
 
 .add_new_layer {
-  height: 40px;
-  line-height: 40px;
+  @include bb_big_button;
+  border-radius: 0px 2px 2px 0px;
+  border-left: 0px;
 }

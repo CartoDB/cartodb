@@ -21,12 +21,10 @@
       z-index:1;
 
       a.tab {
-        height: 40px;
         @include inline-block();
-        text-transform: uppercase;
-        @include border-radius(1px);
         @include bb_button_style; 
-        line-height: 40px;
+        @include bb_big_button;
+        font-weight: normal;   
       }
     }
   }

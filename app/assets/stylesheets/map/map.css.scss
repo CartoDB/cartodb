@@ -270,10 +270,6 @@ div.map {
       padding: 0 6px 0 2px;
     }
 
-    .search-bar-input {
-      width: 240px;
-    }
-
     .search-bar-browse {
       float: right;
       text-transform: none;
@@ -498,14 +494,13 @@ div.map {
   div.cartodb-map {
 
     & > div.cartodb-searchbox {
+      @include bb_entry_style;
       width: 160px;
       top: 20px;
-      right: 77px;
+      right: 96px;
       float: right;
       position: absolute;
 
-      background-color: $Amber1;
-      border: 1px solid $Black;
       input {
         width: 150px;
       }
@@ -937,7 +932,11 @@ div.cartodb-popup.dark  {
 }
 
 .search-bar-input {
+  border-radius: 2px 0px 0px 2px;
   width: 240px;
+  height: 30px;
+  line-height: 30px;
+
 }
 
 .search-bar-browse {
@@ -947,24 +946,17 @@ div.cartodb-popup.dark  {
 
 
 div.search-result-dropdown {
-  border:1px solid #ff9e24;
-  border-radius:2px;
-  background-color:#202020;
+  @include bb_dropdown;
 }
 
 .search-result-list {
   list-style-type:none;
 }
 
-.search-result-list li.remote {
-  color: #D0BBA1;
-}
-
 .search-result-row {
-  padding:5px;
-  height:18px;
-  color: #FF9E24;
-
+  height: 19px;
+  line-height: 19px;
+  padding: 0px 12px;
   .name {
     background: none;
     width: 250px;
@@ -988,8 +980,8 @@ div.search-result-dropdown {
 }
 
 .search-result-row:hover {
-  background:#454545;
-  cursor: pointer;
+  background:$DarkGrey2;
+  
 }
 
 .search-result-row.no-result:hover {
@@ -998,7 +990,10 @@ div.search-result-dropdown {
 }
 
 .search-result-row.selected {
-  background:#373737;
+  background-color: $SelectionBlue3;
+  &:hover{
+    background-color: $SelectionBlue2;
+  }
 }
 
 .search-result-row .found-sub {

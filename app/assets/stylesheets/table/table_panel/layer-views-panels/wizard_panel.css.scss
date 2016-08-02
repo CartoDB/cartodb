@@ -13,6 +13,7 @@
   @import "../../../old_common/vars";
   @import "../../../old_common/mixins";
   @import "../../../variables/colors";
+  @import "../../../variables/mixins";
 
   // LOCAL VARS
   $corner_radius: 6px;
@@ -217,11 +218,12 @@
         margin:15px 0 0 0;
 
         li {
+          @include bb_list_separator;
           overflow:hidden;
           display:block;
           width:100%;
           padding:13px 0;
-          border-bottom:1px solid $DarkGrey9;
+          
 
           & > span:first-child {
             float:left;

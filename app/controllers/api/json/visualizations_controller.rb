@@ -248,8 +248,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         if (current_viewer.id != vis.user.id)
-          vis_preview_image = Carto::StaticMapsURLHelper.new.url_for_static_map(request, vis, 600, 300)
-          send_like_email(vis, current_viewer, vis_preview_image)
+          protocol = request.protocol.sub('://', '')
+          vis_url = Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(vis, protocol, 600, 300)
+          send_like_email(vis, current_viewer, vis_url)
         end
 
         Carto::Tracking::Events::LikedMap.new(current_viewer, vis).report

@@ -376,6 +376,7 @@ class Carto::Visualization < ActiveRecord::Base
 
     carto_and_torque_layers.each_with_index do |layer, index|
       analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+
       layer.options[:source] = analysis.natural_id if analysis.save
       layer.options[:letter] = analysis.natural_id.first
       layer.save

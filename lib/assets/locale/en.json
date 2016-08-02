@@ -19,24 +19,24 @@
   },
   "builder-onboarding": {
     "title": "Welcome to the Builder,",
-    "description": "Let us show you all the new and exciting things you can do with CARTO now!",
+    "description": "Let us show you all the new and exciting things that you can do with CARTO.",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",
     "toolbar": {
       "title": "Toolbar",
-      "description": "The toolbar on the left side of the screen let you access to your dashboard, edit your map, and configure its settings."
+      "description": "The toolbar provides options to access to your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
       "title": "Editor pane",
-      "description": "Mange all the elements of your map from this pane: add layers and widgets, import datasets, customize analyses, and change styles."
+      "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {
       "title": "Map",
-      "description": "Your map will reflect your changes instantly."
+      "description": "Your map reflects changes instantly."
     },
     "widgets": {
       "title": "Widgets pane",
-      "description": "The widgets you add to your map will appear on the right side of the screen."
+      "description": "The widgets you add to your map appear directly on your visualization."
     },
     "skip": "skip",
     "next": "next",

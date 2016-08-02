@@ -34,6 +34,7 @@ class Carto::User < ActiveRecord::Base
 
   belongs_to :organization, inverse_of: :users
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
+  has_one :notifications, class_name: Carto::UserNotification, inverse_of: :user
 
   has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
   has_many :feature_flags, through: :feature_flags_user
@@ -66,6 +67,12 @@ class Carto::User < ActiveRecord::Base
   alias_method :assets_dataset, :assets
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
+
+  # Auto creates notifications on first access
+  def notifications_with_creation
+    notifications_without_creation || build_notifications(user: self, notifications: {})
+  end
+  alias_method_chain :notifications, :creation
 
   def self.columns
     super.reject { |c| c.name == "arcgis_datasource_enabled" }

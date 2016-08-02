@@ -37,13 +37,11 @@ class Carto::Analysis < ActiveRecord::Base
     visualization_id = visualization.id if visualization
     user_id = user.id if user
 
-    layer_options = layer.options
-
     analysis_definition = {
       id: 'abcdefghijklmnopqrstuv'[index],
       type: 'source',
       params: { query: layer.default_query(user) },
-      options: { table_name: layer_options[:table_name] }
+      options: { table_name: layer.options[:table_name] }
     }
 
     new(visualization_id: visualization_id, user_id: user_id, analysis_definition: analysis_definition)

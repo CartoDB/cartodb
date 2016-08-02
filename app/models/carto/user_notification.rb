@@ -7,18 +7,17 @@ module Carto
     belongs_to :user
     serialize :notifications, ::Carto::CartoJsonSerializer
 
-    VALID_CATEGORIES = [:builder].freeze
+    validates :user, presence: true
+    validate  :only_valid_categories
 
-    def notifications_for_category(category)
-      raise "Invalid notification category #{category}" unless VALID_CATEGORIES.include?(category)
+    VALID_CATEGORIES = %w(builder).freeze
 
-      notifications[category] || {}
-    end
+    private
 
-    def set_notifications_for_category(category, notifications)
-      raise "Invalid notification category #{category}" unless VALID_CATEGORIES.include?(category)
-
-      notifications[category] = notifications
+    def only_valid_categories
+      !notifications.keys.any? do |category|
+        errors.add(:notifications, "Invalid category: #{category}") unless VALID_CATEGORIES.include?(category)
+      end
     end
   end
 end

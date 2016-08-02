@@ -49,8 +49,8 @@ $tableBorderColor: $cSecondaryLine;
   border-top: 1px solid $cMainLine;
 }
 .Table-head {
-  background: $cThirdBackground;
   position: relative;
+  background: $cThirdBackground;
 }
 .Table-headItem {
   border-right: 1px solid $tableBorderColor;

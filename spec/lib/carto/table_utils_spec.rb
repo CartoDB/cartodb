@@ -25,6 +25,13 @@ describe Carto::TableUtils do
       table_utils.safe_table_name_quoting('"my-table"').should eq '"my-table"'
       table_utils.safe_table_name_quoting('"my""ta-ble"').should eq '"my""ta-ble"'
     end
+
+    it 'does not quote names with schema, even if they are wrong (quoting should be fixed upstream)' do
+      ['user.table', '"user".table', 'user."table"', '"user"."table"',
+       'u-ser.t-able', '"u-ser".t-able', 'u-ser."t-able"', '"u-ser"."t-able"'].each do |table_name|
+         table_utils.safe_table_name_quoting(table_name).should eq table_name
+      end
+    end
   end
 
   describe '#safe_table_name_quoting' do

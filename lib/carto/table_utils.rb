@@ -3,11 +3,11 @@ module Carto
     # Returns a (double) quoted table name if needed (if it contains a dash, for example).
     # Coupled to lib/assets/javascripts/cartodb3/helpers/utils.js#safeTableNameQuoting
     def safe_table_name_quoting(table_name)
-      dashes_quoting(table_name)
+      can_be_quoted?(table_name) ? dashes_quoting(table_name) : table_name
     end
 
     def safe_schema_name_quoting(schema_name)
-      dashes_quoting(schema_name)
+      can_be_quoted?(schema_name) ? dashes_quoting(schema_name) : schema_name
     end
 
     def safe_schema_and_table_quoting(schema_name, table_name)
@@ -23,6 +23,10 @@ module Carto
 
     def dashes_quoting(name)
       name && !name.match(ALREADY_QUOTED) && name =~ NON_VALID_CHARACTERS ? "\"#{name}\"" : name
+    end
+
+    def can_be_quoted?(name)
+      !name.include?('.')
     end
   end
 

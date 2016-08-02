@@ -1402,7 +1402,8 @@
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "pixel"
+        "heatmap": "pixel",
+        "animated": "animated"
       },
       "style-form": {
         "type": {

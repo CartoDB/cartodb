@@ -25,4 +25,9 @@ module Carto
       name && !name.match(ALREADY_QUOTED) && name =~ NON_VALID_CHARACTERS ? "\"#{name}\"" : name
     end
   end
+
+  # Used for class methods
+  class TableUtilsInstance
+    include TableUtils
+  end
 end

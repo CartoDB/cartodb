@@ -29,6 +29,26 @@ class Carto::Analysis < ActiveRecord::Base
     analysis
   end
 
+  def self.source_analysis_for_layer(layer, index)
+    map = layer.map
+    visualization = map.visualization if map
+    user = visualization.user if visualization
+
+    visualization_id = visualization.id if visualization
+    user_id = user.id if user
+
+    layer_options = layer.options
+
+    analysis_definition = {
+      id: 'abcdefghijklmnopqrstuv'[index],
+      type: 'source',
+      params: { query: layer.default_query(user) },
+      options: { table_name: layer_options[:table_name] }
+    }
+
+    new(visualization_id: visualization_id, user_id: user_id, analysis_definition: analysis_definition)
+  end
+
   def analysis_definition_for_api
     filter_valid_properties(analysis_node)
   end

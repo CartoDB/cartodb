@@ -108,27 +108,55 @@ module CartoDB
 
       private
 
-      ACCEPTED_PARAMETERS = %w(connection schema table sql_query sql_count encoding).freeze
-      SERVER_OPTIONS = %w(dsn driver host port database).freeze
+      ACCEPTED_PARAMETERS = %w(connection schema table sql_query sql_count encoding columns).freeze
       REQUIRED_PARAMETERS = %w(connection table).freeze
 
+      SERVER_OPTIONS = %w(dsn driver host server address port database).freeze
+      USER_OPTIONS   = %w(uid pwd user username password).freeze
+
+      def fetch_ignoring_case(hash, key)
+        if hash
+          k, _v = hash.find { |k, _v| k.to_s.downcase == key.to_s.downcase }
+          k
+        end
+      end
+
+      def connection_options(options)
+        # Prefix option names with "odbc_"
+        Hash[options.map { |option_name, option_value| ["odbc_#{option_name}", option_value] }]
+      end
+
       def server_params
-        @params['connection'].slice(*SERVER_OPTIONS)
+        params = @connection.select { |k, _v| k.downcase.in? SERVER_OPTIONS }
+        conection_options params
+      end
+
+      def user_params
+        params = @connection.select { |k, _v| k.downcase.in? USER_OPTIONS }
+        conection_options params
       end
 
       def table_params
-        @params['connection'].except(*SERVER_OPTIONS).merge(@params.except('connection'))
+        params = @connection.reject { |k, _v| k.downcase.in? SERVER_OPTIONS + USER_OPTIONS }
+        conection_options(params).merge(@options)
       end
 
       # Parse @json_params and extract @params
       def extract_params
         @params = JSON.load(@json_params)
 
+        # parameters that will be passed in the OPTIONS clause
+        @options = @params.dup
+
         # Extract columns of the result table from the parameters
         # Column definitions are expected in SQL syntax, e.g.
         #     columns=id int, name text
-        @columns = @params.delete 'columns'
+        @columns = @options.delete 'columns'
         @columns = @columns.split(',').map(&:strip) if @columns
+
+        @connection = @options.delete 'connection'
+        @dsn        = fetch_ignoring_case(@connection, 'dsn')
+        @driver     = fetch_ignoring_case(@connection, 'driver')
       end
 
       def validate_params!
@@ -138,23 +166,23 @@ module CartoDB
         if missing_parameters.present?
           errors << "Missing required parameters #{missing_parameters * ','}"
         end
-        errors += connection_params_errors(@params['connection'])
+        errors += connection_params_errors
         errors << "Invalid parameters: #{invalid_params * ', '}" if invalid_params.present?
         raise InvalidParametersError.new(errors * "\n") if errors.present?
       end
 
-      def connection_params_errors(params)
+      def connection_params_errors
         errors = []
-        if params.blank?
+        if @connection.blank?
           errors << "Connection parameters are missing"
-        elsif params['dsn'].blank? && params['driver'].blank?
+        elsif @dsn.blank? && @driver.blank?
           errors << "Missing required connection parameters"
         end
         errors
       end
 
       def connector_name
-        Carto::DB::Sanitize.sanitize_identifier @params['connection']['dsn'] || @params['connection']['driver']
+        Carto::DB::Sanitize.sanitize_identifier @dsn || @driver
       end
 
       def server_name
@@ -165,8 +193,12 @@ module CartoDB
         "#{server_name}_"
       end
 
+      def result_table_name
+        Carto::DB::Sanitize.sanitize_identifier @options['table']
+      end
+
       def foreign_table_name
-        "#{foreign_prefix}#{@params['table'] || 'table'}"
+        "#{foreign_prefix}#{result_table_name}"
       end
 
       def foreign_table_schema
@@ -185,8 +217,12 @@ module CartoDB
           CREATE SERVER #{server_name}
             FOREIGN DATA WRAPPER odbc_fdw
             #{options_clause(server_params)};
-          CREATE USER MAPPING FOR "#{@user.database_username}" SERVER #{server_name};
-          CREATE USER MAPPING FOR postgres SERVER #{server_name};
+          CREATE USER MAPPING FOR "#{@user.database_username}"
+            SERVER #{server_name}
+            #{options_clause(user_params)};
+          CREATE USER MAPPING FOR postgres
+            SERVER #{server_name}
+            #{options_clause(user_params)};
         }
       end
 
@@ -200,8 +236,11 @@ module CartoDB
            }
         else
           options = table_params.merge(prefix: foreign_prefix)
+          schema = @options['schema'] ||
+                   fetch_ignoring_case(@connection, 'schema') ||
+                   fetch_ignoring_case(@connection, 'database')
           %{
-            IMPORT FOREIGN SCHEMA #{@params['schema'] || @params['connection']['database'] || 'schema'}
+            IMPORT FOREIGN SCHEMA #{schema}
               FROM SERVER #{server_name}
               INTO #{foreign_table_schema}
               #{options_clause(options)};
@@ -210,9 +249,17 @@ module CartoDB
         end
       end
 
+      def quote_option_name(option)
+        if option && option.downcase != option
+          %{"#{option}"}
+        else
+          option
+        end
+      end
+
       def options_clause(options)
         if options.present?
-          options_list = options.map { |k, v| "#{k} '#{escape_single_quotes v}'" } * ",\n"
+          options_list = options.map { |k, v| "#{quote_option_name k} '#{escape_single_quotes v}'" } * ",\n"
           "OPTIONS (#{options_list})"
         else
           ''
@@ -243,7 +290,7 @@ module CartoDB
         @job.success_status = !error
         @job.logger.store
         Result.new(
-          name:           @params['table'],
+          name:           result_table_name,
           schema:         schema,
           tables:         [table_name],
           success:        @job.success_status,

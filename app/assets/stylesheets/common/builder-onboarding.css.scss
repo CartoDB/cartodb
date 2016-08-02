@@ -37,8 +37,8 @@ $cBackgroundColor: #2E3C43;
   @include justify-content(center);
 }
 
-.BuilderOnboarding-contentWrapper.is-step1 {
-.BuilderOnboarding-contentWrapper.is-step2 {
+.BuilderOnboarding-contentWrapper.is-step1,
+.BuilderOnboarding-contentWrapper.is-step2,
 .BuilderOnboarding-contentWrapper.is-step3 {
   @include justify-content(flex-start);
 }

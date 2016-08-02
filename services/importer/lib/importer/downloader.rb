@@ -15,11 +15,12 @@ require_relative './url_translator/kimono_labs'
 require_relative './unp'
 require_relative '../../../../lib/carto/http/client'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class Downloader
-
+      include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
       # in seconds
@@ -114,6 +115,7 @@ module CartoDB
         raise UploadError if url.nil?
 
         @http_options = http_options
+        @options = options
         @importer_config = options[:importer_config]
         @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
@@ -204,8 +206,13 @@ module CartoDB
         self
       end
 
-      def set_downloaded_source_file(available_quota_in_bytes=nil)
-        raise_if_over_storage_quota(headers, available_quota_in_bytes)
+      def set_downloaded_source_file(available_quota_in_bytes = nil)
+        if available_quota_in_bytes
+          raise_if_over_storage_quota(requested_quota: content_length_from(headers),
+                                      available_quota: available_quota_in_bytes.to_i,
+                                      user_id: @options[:user_id])
+        end
+
         @etag           = etag_from(headers)
         @last_modified  = last_modified_from(headers)
         return self unless modified?
@@ -214,12 +221,6 @@ module CartoDB
 
         self.source_file  = nil unless modified?
         self
-      end
-
-      def raise_if_over_storage_quota(headers, available_quota_in_bytes=nil)
-        return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if
-          content_length_from(headers) > available_quota_in_bytes.to_i
       end
 
       def headers

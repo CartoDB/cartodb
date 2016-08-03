@@ -238,7 +238,8 @@ module CartoDB
           options = table_params.merge(prefix: foreign_prefix)
           schema = @options['schema'] ||
                    fetch_ignoring_case(@connection, 'schema') ||
-                   fetch_ignoring_case(@connection, 'database')
+                   fetch_ignoring_case(@connection, 'database') ||
+                   'public'
           %{
             IMPORT FOREIGN SCHEMA #{schema}
               FROM SERVER #{server_name}

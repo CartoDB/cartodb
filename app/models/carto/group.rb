@@ -133,7 +133,16 @@ module Carto
       organization.database_name
     end
 
+    def get_auth_token
+      auth_token || generate_auth_token
+    end
+
     private
+
+    def generate_auth_token
+      update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+      auth_token
+    end
 
     # TODO: PG Format("%I", strvar); ?
     def self.valid_group_name(display_name)

@@ -188,11 +188,9 @@ describe('src/vis/model-updater', function () {
       expect(layer1.get('meta')).toEqual('metadataLayer0');
       expect(layer1.setOk).toHaveBeenCalled();
       expect(layer2.get('meta')).toEqual('metadataLayer1');
-      expect(layer2.get('urls')).toEqual({
-        tiles: [
-          'http://documentation.carto.com/{z}/{x}/{y}.torque'
-        ]
-      });
+      expect(layer2.get('tileURLTemplates')).toEqual([
+        'http://documentation.carto.com/{z}/{x}/{y}.torque'
+      ]);
       expect(layer2.setOk).toHaveBeenCalled();
     });
 

@@ -10,6 +10,7 @@ var torque = require('torque.js');
 describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     var map = new Map();
     var mapView = new GoogleMapsMapView({
       el: container,
@@ -18,17 +19,18 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
       layerGroupModel: new Backbone.Model()
     });
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
-    var model = new TorqueLayer({
+    this.model = new TorqueLayer({
       type: 'torque',
       sql: 'select * from table',
       cartocss: '#test {}',
       'torque-steps': 100
     }, { vis: this.vis });
     spyOn(torque, 'GMapsTorqueLayer').and.callThrough();
-    map.addLayer(model);
-    this.view = mapView._layerViews[model.cid];
+    map.addLayer(this.model);
+    this.view = mapView._layerViews[this.model.cid];
   });
+
+  SharedTestsForTorqueLayer.call(this);
 
   it('should apply TorqueLayer initialize method on the extended view with a bunch of attrs', function () {
     expect(torque.GMapsTorqueLayer).toHaveBeenCalled();
@@ -36,6 +38,4 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
     var attrs = torque.GMapsTorqueLayer.calls.argsFor(0)[0];
     expect(attrs.cartocss).toEqual(jasmine.any(String));
   });
-
-  SharedTestsForTorqueLayer.call(this);
 });

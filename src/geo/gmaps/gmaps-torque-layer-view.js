@@ -31,7 +31,7 @@ _.extend(
         this.setCartoCSS(this.model.get('cartocss'));
       }
 
-      if ('urls' in changed) {
+      if ('tileURLTemplates' in changed) {
         // REAL HACK
         this.provider.templateUrl = this.model.getTileURLTemplates()[0];
         // set meta

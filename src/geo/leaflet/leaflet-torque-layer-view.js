@@ -45,7 +45,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.setCartoCSS(this.model.get('cartocss'));
     }
 
-    if ('urls' in changed) {
+    if ('tileURLTemplates' in changed) {
       // REAL HACK
       this.provider.templateUrl = this.model.getTileURLTemplates()[0];
       // set meta
@@ -53,7 +53,7 @@ var LeafletTorqueLayer = L.TorqueLayer.extend({
       this.model.set(this.model.get('meta'));
       // this needs to be deferred in order to break the infinite loop
       // of setReady changing keys and keys updating the model
-      // If we do this in the next iteration 'urls' will not be in changedAttributes
+      // If we do this in the next iteration 'tileURLTemplates' will not be in changedAttributes
       // so this will not pass through this code
       setTimeout(function () {
         this.provider._setReady(true);

@@ -30,15 +30,15 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     map = new Map(null);
 
-    var layerGroupModel = new Backbone.Model({ type: 'layergroup' });
-    layerGroupModel.hasTileURLTemplates = function () { return true; };
-    layerGroupModel.getTileURLTemplates = function () { return [ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]; };
+    this.layerGroupModel = new Backbone.Model({ type: 'layergroup' });
+    this.layerGroupModel.hasTileURLTemplates = function () { return true; };
+    this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]; };
 
     mapView = new LeafletMapView({
       el: container,
       map: map,
       layerViewFactory: new LeafletLayerViewFactory(),
-      layerGroupModel: layerGroupModel
+      layerGroupModel: this.layerGroupModel
     });
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';

@@ -156,6 +156,10 @@ var TorqueLayer = LayerModelBase.extend({
     var end = this.get('end');
     var step = (steps * (1000*timestamp - start)) / (end - start);
     return step;
+  },
+
+  getTileURLTemplates: function () {
+    return this.get('tileURLTemplates');
   }
 });
 

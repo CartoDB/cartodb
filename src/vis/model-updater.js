@@ -79,7 +79,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   }), function (layerModel, layerIndex) {
     layerModel.set('meta', windshaftMap.getLayerMetadata(layerIndex));
     if (layerModel.get('type') === 'torque') {
-      layerModel.set('urls', windshaftMap.getTiles('torque'));
+      layerModel.set('tileURLTemplates', windshaftMap.getTiles('torque').tiles);
     }
     layerModel.setOk();
   }, this);

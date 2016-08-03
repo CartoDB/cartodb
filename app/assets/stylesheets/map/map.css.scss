@@ -111,7 +111,7 @@ div.map {
   &.derived { // VISUALIZATION'S MAP
 
     div.cartodb-legend-stack {
-      @include position(false, 20px, 20px, false);
+      @include position(false, 100px, 20px, false);
     }
 
     &.hide_legends div.cartodb-map div.cartodb-legend-stack {

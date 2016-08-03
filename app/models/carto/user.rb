@@ -460,7 +460,10 @@ class Carto::User < ActiveRecord::Base
   def get_auth_tokens
     tokens = [get_auth_token]
 
-    tokens << organization.get_auth_token if has_organization?
+    if has_organization?
+      tokens << organization.get_auth_token
+      tokens += groups.map(&:get_auth_token)
+    end
 
     tokens
   end

@@ -909,6 +909,7 @@ class User < Sequel::Model
     tokens = [get_auth_token]
     if has_organization?
       tokens << organization.get_auth_token
+      tokens += groups.map(&:get_auth_token)
     end
     tokens
   end

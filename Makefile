@@ -258,6 +258,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/carto/api/user_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \

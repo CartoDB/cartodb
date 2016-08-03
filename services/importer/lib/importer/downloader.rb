@@ -107,7 +107,7 @@ module CartoDB
       end
 
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new("[[:word:]]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
+        @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)

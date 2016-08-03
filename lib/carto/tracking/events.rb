@@ -82,6 +82,12 @@ module Carto
         end
       end
 
+      class PublishedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Published map', visualization_properties(visualization))
+        end
+      end
+
       class ExceededQuota < TrackingEvent
         def initialize(user, quota_overage: 0)
           super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})

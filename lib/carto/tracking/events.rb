@@ -5,19 +5,23 @@ module Carto
     module PropertiesHelper
       def visualization_properties(visualization, origin: nil)
         created_at = visualization.created_at
-        lifetime_in_days_with_decimal = (Time.now.utc - created_at).to_f / 60 / 60 / 24
+        lifetime_in_days_with_decimals = days_with_decimals(Time.now.utc - created_at)
 
         properties = {
           vis_id: visualization.id,
           privacy: visualization.privacy,
           type: visualization.type,
           object_created_at: created_at,
-          lifetime: lifetime_in_days_with_decimal
+          lifetime: lifetime_in_days_with_decimals
         }
 
         properties[:origin] = origin if origin
 
         properties
+      end
+
+      def days_with_decimals(time_object)
+        time_object.to_f / 60 / 60 / 24
       end
     end
 
@@ -45,13 +49,13 @@ module Carto
         def event_properties
           now = Time.now.utc
           user_created_at = @user.created_at
-          user_age_in_days_with_decimal = (now - user_created_at).to_f / 60 / 60 / 24
+          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
           {
             username: @user ? @user.username : nil,
             email: @user ? @user.email : nil,
             plan: @user ? @user.account_type : nil,
-            user_active_for: user_age_in_days_with_decimal,
+            user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
             organization: @user && @user.organization_user? ? @user.organization.name : nil,
             event_origin: 'Editor',

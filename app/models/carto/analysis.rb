@@ -3,7 +3,11 @@
 require 'json'
 require_relative './carto_json_serializer'
 
+require_dependency 'carto/table_utils'
+
 class Carto::Analysis < ActiveRecord::Base
+  include Carto::TableUtils
+
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
   validates :analysis_definition, carto_json_symbolizer: true
   validate :validate_user_not_viewer
@@ -37,11 +41,13 @@ class Carto::Analysis < ActiveRecord::Base
     visualization_id = visualization.id if visualization
     user_id = user.id if user
 
+    qualified_table_name = safe_schema_and_table_quoting(layer.options[:user_name], layer.options[:table_name])
+
     analysis_definition = {
       id: 'abcdefghijklmnopqrstuvwxyz'[index] + '0',
       type: 'source',
       params: { query: layer.default_query(user) },
-      options: { table_name: layer.options[:table_name] }
+      options: { table_name: qualified_table_name }
     }
 
     new(visualization_id: visualization_id, user_id: user_id, analysis_definition: analysis_definition)

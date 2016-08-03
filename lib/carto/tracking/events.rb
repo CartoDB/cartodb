@@ -4,11 +4,14 @@ module Carto
   module Tracking
     module PropertiesHelper
       def visualization_properties(visualization, origin: nil)
+        created_at = visualization.created_at
+
         properties = {
           vis_id: visualization.id,
           privacy: visualization.privacy,
           type: visualization.type,
-          created_at: visualization.created_at
+          created_at: created_at,
+          lifetime: Time.now.utc - created_at
         }
 
         properties[:origin] = origin if origin

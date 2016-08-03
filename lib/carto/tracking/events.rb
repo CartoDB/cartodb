@@ -3,15 +3,6 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module PropertiesHelper
-      def user_properties(user)
-        {
-          username: user.username,
-          email: user.email,
-          plan: user.account_type,
-          organization: (user.organization_user? ? user.organization.name : nil)
-        }
-      end
-
       def visualization_properties(table_visualization, origin: nil)
         properties = {
           vis_id: table_visualization.id,
@@ -76,6 +67,12 @@ module Carto
         end
       end
 
+      class ExceededQuota < TrackingEvent
+        def initialize(user, quota_overage: 0)
+          super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})
+        end
+      end
+
       class ScoredTrendingMap < TrackingEvent
         def initialize(user, visualization, views)
           super(user, 'Scored trending map', properties(visualization, views))
@@ -92,31 +89,25 @@ module Carto
         end
       end
 
-      class VistedPrivatePage < TrackingEvent
+      class VisitedPrivatePage < TrackingEvent
         def initialize(user, page)
-          super(user, 'Visited private page', properties(user, page))
-        end
-
-        private
-
-        def properties(user, page)
-          { page: page, event_origin: 'Editor', creation_time: Time.now.utc }.merge(user_properties(user))
+          super(user, 'Visited private page', { page: page })
         end
       end
 
-      class VisitedPrivateDashboard < VistedPrivatePage
+      class VisitedPrivateDashboard < VisitedPrivatePage
         def initialize(user)
           super(user, 'dashboard')
         end
       end
 
-      class VisitedPrivateBuilder < VistedPrivatePage
+      class VisitedPrivateBuilder < VisitedPrivatePage
         def initialize(user)
           super(user, 'builder')
         end
       end
 
-      class VisitedPrivateDataset < VistedPrivatePage
+      class VisitedPrivateDataset < VisitedPrivatePage
         def initialize(user)
           super(user, 'dataset')
         end

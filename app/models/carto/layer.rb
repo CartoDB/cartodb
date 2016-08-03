@@ -1,5 +1,6 @@
 require 'active_record'
 require_relative './carto_json_serializer'
+require_dependency 'carto/table_utils'
 
 module Carto
   module LayerTableDependencies
@@ -47,6 +48,7 @@ module Carto
   end
 
   class Layer < ActiveRecord::Base
+    include Carto::TableUtils
     include LayerTableDependencies
 
     serialize :options, CartoJsonSerializer
@@ -92,7 +94,7 @@ module Carto
         table_name
       else
         schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
-        "#{schema_prefix}#{options['table_name']}"
+        "#{schema_prefix}#{safe_table_name_quoting(options['table_name'])}"
       end
     end
 
@@ -198,7 +200,7 @@ module Carto
         table_name = sym_options[:table_name]
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
-          %{ select * from "#{user_name}".#{table_name} }
+          %{ select * from "#{user_name}".#{safe_table_name_quoting(table_name)} }
         else
           "SELECT * FROM #{qualified_table_name(user)}"
         end

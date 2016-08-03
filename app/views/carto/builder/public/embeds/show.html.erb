@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:title) do %><%= @vizjson[:title].nil? ? 'Untitled map' : @vizjson[:title] %><% end %>
 
 <%= content_for(:description) do %><%= @vizjson[:description] ? "#{@vizjson[:description].strip_tags}. " : "" %>Map created by <%= @vizjson[:user][:fullname] %> in CARTO<% end %>

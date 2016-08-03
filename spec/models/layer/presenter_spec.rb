@@ -10,7 +10,24 @@ describe CartoDB::LayerModule::Presenter do
   describe '#to_vizjson_v2' do
     it 'wraps the sql if query_wrapper available' do
       layer = OpenStruct.new(
-        public_values: { 'options' => {'visible' => nil} },
+        public_values: { 'options' => { 'visible' => nil } },
+        tooltip: { 'template' => 'blahblah' },
+        kind:           'carto',
+        options: {
+          'query'         => '',
+          'tile_style'    => '',
+          'interactivity' => '',
+          'style_version' => '',
+          'table_name'    => '000cd294-b124-4f82-b569-0f7fe41d2db8',
+          'query_wrapper' => 'bogus tpl <%= sql %>'
+        }
+      )
+
+      vizjson = CartoDB::LayerModule::Presenter.new(layer).to_vizjson_v2
+      vizjson.fetch(:options).fetch(:sql).should eq 'bogus tpl select * from "000cd294-b124-4f82-b569-0f7fe41d2db8"'
+
+      layer = OpenStruct.new(
+        public_values: { 'options' => { 'visible' => nil } },
         tooltip: { 'template' => 'blahblah' },
         kind:           'carto',
         options: {
@@ -24,8 +41,7 @@ describe CartoDB::LayerModule::Presenter do
       )
 
       vizjson = CartoDB::LayerModule::Presenter.new(layer).to_vizjson_v2
-      vizjson.fetch(:options).fetch(:sql)
-        .should == 'bogus template select * from bogus_table'
+      vizjson.fetch(:options).fetch(:sql).should eq 'bogus template select * from bogus_table'
 
       layer = OpenStruct.new(
         public_values: { 'options' => {'visible' => nil} },

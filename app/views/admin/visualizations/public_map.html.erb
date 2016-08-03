@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:title) do %><%= @visualization.name %><% end %>
 
 <%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>

@@ -140,11 +140,12 @@ module Carto
       end
 
       def common_options_for_carto_and_torque_layers(layer, index)
-        layer_options = layer.options
+        layer_options = layer.options.with_indifferent_access
+        tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
         options = {
           id: layer.id,
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
+          cartocss: tile_style.present? ? tile_style : EMPTY_CSS,
           cartocss_version: layer_options.fetch('style_version')
         }
 

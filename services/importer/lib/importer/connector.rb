@@ -128,17 +128,17 @@ module CartoDB
 
       def server_params
         params = @connection.select { |k, _v| k.downcase.in? SERVER_OPTIONS }
-        conection_options params
+        connection_options params
       end
 
       def user_params
         params = @connection.select { |k, _v| k.downcase.in? USER_OPTIONS }
-        conection_options params
+        connection_options params
       end
 
       def table_params
         params = @connection.reject { |k, _v| k.downcase.in? SERVER_OPTIONS + USER_OPTIONS }
-        conection_options(params).merge(@options)
+        connection_options(params).merge(@options)
       end
 
       # Parse @json_params and extract @params

@@ -29,9 +29,4 @@ module Carto
       name && !name.include?('.')
     end
   end
-
-  # Used for class methods
-  class TableUtilsInstance
-    include TableUtils
-  end
 end

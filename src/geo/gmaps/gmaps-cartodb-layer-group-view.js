@@ -1,3 +1,4 @@
+/* global Image */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 require('leaflet');
@@ -75,13 +76,10 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
 
   this.options = _.defaults(opts, CartoDBDefaultOptions);
   this.tiles = 0;
-  this.tilejson = null;
   this.interaction = [];
 
   // Bind changes to the urls of the layer model
-  layerModel.bind('change:urls', function () {
-    this.update();
-  }, this);
+  layerModel.bind('change:urls', this.update, this);
 
   wax.g.connector.call(this, opts);
 
@@ -165,12 +163,12 @@ _.extend(
       var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
       var self = this;
-      var ie = 'ActiveXObject' in window,
-        ielt9 = ie && !document.addEventListener;
+      var ie = 'ActiveXObject' in window;
+      var ielt9 = ie && !document.addEventListener;
 
       this.options.added = true;
-
-      if (this.tilejson === null) {
+      var urls = this.model.get('urls');
+      if (!urls) {
         var key = zoom + '/' + coord.x + '/' + coord.y;
         var i = this.cache[key] = new Image(256, 256);
         i.src = EMPTY_GIF;
@@ -214,16 +212,15 @@ _.extend(
 
     clear: function () {
       this._clearInteraction();
-      self.finishLoading && self.finishLoading();
+      this.finishLoading && this.finishLoading();
     },
 
     update: function (done) {
       this.loading && this.loading();
 
-      var tilejson = this.model.get('urls');
-      if (tilejson) {
-        this.tilejson = tilejson;
-        this.options.tiles = tilejson.tiles;
+      var urls = this.model.get('urls');
+      if (urls) {
+        this.options.tiles = urls.tiles;
         this.tiles = 0;
         this.cache = {};
         this._reloadInteraction();

@@ -96,7 +96,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     this.fire = this.trigger;
 
     // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this._onTileJSONChange, this);
+    layerModel.bind('change:urls', this._onURLsChanged, this);
 
     this.addProfiling();
 
@@ -147,7 +147,10 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
-    if (!this.tilejson) {
+    var urls = this.model.get('urls');
+
+    // Tile and grid URLS have not been set yet
+    if (!urls) {
       var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       return EMPTY_GIF;
     }
@@ -155,9 +158,9 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     // L.TileLayer.prototype.getTileUrl.call(this, tilePoint) seems to work
     // fine as long as this.options.subdomains is set to something like 'abcd'
     this._adjustTilePoint(tilePoint);
-    var tiles = this.tilejson.tiles;
-    var index = (tilePoint.x + tilePoint.y) % tiles.length;
-    return L.Util.template(tiles[index], L.Util.extend({
+    var tilesURLTemplate = urls.tiles;
+    var index = (tilePoint.x + tilePoint.y) % tilesURLTemplate.length;
+    return L.Util.template(tilesURLTemplate[index], L.Util.extend({
       z: this._getZoomForUrl(),
       x: tilePoint.x,
       y: tilePoint.y
@@ -203,15 +206,14 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   },
 
   /**
-   * On tileJSON change,
+   * On tile and grid URLs change,
    * it generates a new url for tiles and refresh leaflet layer
    * do not collide with leaflet _update
    */
-  _onTileJSONChange: function () {
-    var tilejson = this.model.get('urls');
-    if (tilejson) {
-      this.tilejson = tilejson;
-      this.setUrl(this.tilejson.tiles[0]);
+  _onURLsChanged: function () {
+    var urls = this.model.get('urls');
+    if (urls) {
+      this.setUrl(urls.tiles[0]);
       // manage interaction
       this._reloadInteraction();
       // TODO: Is this necessary?

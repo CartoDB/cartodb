@@ -267,7 +267,7 @@ module CartoDB
       end
 
       def escape_single_quotes(text)
-        text.gsub("'", "''")
+        text.to_s.gsub("'", "''")
       end
 
       def drop_server_command

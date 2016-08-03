@@ -1,5 +1,5 @@
 <div class="CDB-HeaderInfo">
-  <div class="CDB-HeaderNumeration CDB-Text is-semibold u-rSpace--m">1</div>
+  <div class="CDB-HeaderNumeration CDB-Text is-semibold u-rSpace--m">3</div>
 
   <div class="CDB-HeaderInfo-Inner CDB-Text">
     <div class="CDB-HeaderInfo-Title u-bSpace--m">

@@ -261,24 +261,20 @@ describe CartoDB::Importer2::Runner do
     end
 
     it 'logs multiple subresource import times' do
-      runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @fake_multiple_downloader_2,
-                            log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
-                          })
+      runner = CartoDB::Importer2::Runner.new(pg: @pg_options,
+                                              downloader: @fake_multiple_downloader_2,
+                                              log: @fake_log,
+                                              user: @user)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
       @importer_stats_spy.timed_block_suffix_count('run.subresource').should eq 2
     end
 
     it 'logs multiple subresource import flow times' do
-      runner = CartoDB::Importer2::Runner.new({
-                            pg: @pg_options,
-                            downloader: @fake_multiple_downloader_2,
-                            log: @fake_log,
-                            user: CartoDB::Importer2::Doubles::User.new
-                          })
+      runner = CartoDB::Importer2::Runner.new(pg: @pg_options,
+                                              downloader: @fake_multiple_downloader_2,
+                                              log: @fake_log,
+                                              user: @user)
       spy_runner_importer_stats(runner, @importer_stats_spy)
       runner.run
       @importer_stats_spy.timed_block_suffix_count('run.subresource.datasource_metadata').should eq 2

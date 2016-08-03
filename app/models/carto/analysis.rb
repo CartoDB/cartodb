@@ -6,7 +6,7 @@ require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 
 class Carto::Analysis < ActiveRecord::Base
-  include Carto::TableUtils
+  extend Carto::TableUtils
 
   serialize :analysis_definition, ::Carto::CartoJsonSymbolizerSerializer
   validates :analysis_definition, carto_json_symbolizer: true

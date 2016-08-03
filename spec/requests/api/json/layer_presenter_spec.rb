@@ -27,7 +27,7 @@ describe Api::Json::LayersController do
 
   describe 'to_vizjson_v2() specific behaviour' do
     before(:all) do
-      puts "Testing class #{tested_klass.to_s} with model #{model_klass.to_s}"
+      puts "Testing class #{tested_klass} with model #{model_klass}"
 
       @user_1 = FactoryGirl.create(:valid_user)
       @user_2 = FactoryGirl.create(:valid_user)
@@ -118,7 +118,7 @@ describe Api::Json::LayersController do
         kind: 'torque',
         options: {
           'query' => 'SELECT * FROM my_test_table LIMIT 5',
-          'table_name' => 'my_test_table',
+          'table_name' => 'my_test_table'
         }
       )
       layer = instance_of_tested_model(layer)
@@ -135,21 +135,21 @@ describe Api::Json::LayersController do
       vizjson.should eq expected_vizjson
 
       # torque layer, with wrapping
-      layer = Layer.create({
-          kind: 'torque',
-          options: {
-            'query' => 'SELECT * FROM my_test_table LIMIT 5',
-            'table_name' => 'my_test_table',
-            'query_wrapper' =>  "select * from (<%= sql %>)",
-            # This options shouldn't appear as is not listed at presnter TORQUE_ATTRS
-            'wadus' => 'whatever'
-            }
-        })
+      layer = Layer.create(
+        kind: 'torque',
+        options: {
+          'query' => 'SELECT * FROM my_test_table LIMIT 5',
+          'table_name' => 'my_test_table',
+          'query_wrapper' =>  "select * from (<%= sql %>)",
+          # This options shouldn't appear as is not listed at presnter TORQUE_ATTRS
+          'wadus' => 'whatever'
+        }
+      )
       layer = instance_of_tested_model(layer)
 
-      presenter_options =  {
-          visualization_id: stat_tag
-        }
+      presenter_options = {
+        visualization_id: stat_tag
+      }
 
       expected_vizjson[:id] = layer.id
       expected_vizjson[:options]['query'] = "select * from (#{layer.options['query']})"

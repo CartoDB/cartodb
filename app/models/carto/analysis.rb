@@ -35,13 +35,21 @@ class Carto::Analysis < ActiveRecord::Base
 
   def self.source_analysis_for_layer(layer, index)
     map = layer.map
-    visualization = map.visualization if map
-    user = visualization.user if visualization
+    visualization = map.visualization
+    user = visualization.user
 
-    visualization_id = visualization.id if visualization
-    user_id = user.id if user
+    visualization_id = visualization.id
+    user_id = user.id
 
-    qualified_table_name = safe_schema_and_table_quoting(layer.options[:user_name], layer.options[:table_name])
+    layer_options = layer.options
+    username = layer_options[:user_name]
+    table_name = layer_options[:table_name]
+
+    qualified_table_name = if username && username != user.username
+                             safe_schema_and_table_quoting(username, table_name)
+                           else
+                             table_name
+                           end
 
     analysis_definition = {
       id: 'abcdefghijklmnopqrstuvwxyz'[index] + '0',

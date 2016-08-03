@@ -78,4 +78,12 @@ describe Carto::AnalysisNode do
       @node.find_by_id('404').should be_nil
     end
   end
+
+  describe '#source_descendants' do
+    it 'find all descendant of a node of type source' do
+      sources = @node.source_descendants
+      sources.count.should eq 2
+      sources.all?(&:source?).should be_true
+    end
+  end
 end

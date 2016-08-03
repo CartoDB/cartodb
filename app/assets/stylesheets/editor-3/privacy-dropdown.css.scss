@@ -1,0 +1,32 @@
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Privacy-dropdown {
+  position: relative;
+}
+
+.Privacy-dropdownTrigger {
+  padding-right: $halfBaseSize;
+  padding-left: $halfBaseSize;
+}
+
+.Privacy-dropdownButton {
+  width: 100%;
+
+  &.is-selected {
+    background: rgba($cHighlight, 0.16);
+  }
+}
+
+.Editor-PrivacyDialog {
+  position: absolute;
+  top: $baseSize * 4;
+  right: 0;
+  left: 0;
+  width: 248px;
+  z-index: 11;
+}
+
+.Privacy-passwordField {
+  padding: $baseSize $baseSize + 4;
+}

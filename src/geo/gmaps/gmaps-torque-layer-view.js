@@ -33,7 +33,7 @@ _.extend(
 
       if ('urls' in changed) {
         // REAL HACK
-        this.provider.templateUrl = this.model.get('urls').tiles[0];
+        this.provider.templateUrl = this.model.getTileURLTemplates()[0];
         // set meta
         _.extend(this.provider.options, this.model.get('meta'));
         this.model.set(this.model.get('meta'));

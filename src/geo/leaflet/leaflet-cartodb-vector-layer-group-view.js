@@ -61,8 +61,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   },
 
   _onURLsChanged: function () {
-    var urls = this.model.get('urls');
-    this.setUrl(urls.tiles[0]);
+    this.setUrl(this.model.getTileURLTemplates()[0]);
   },
 
   onAdd: function (map) {

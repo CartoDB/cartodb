@@ -167,9 +167,7 @@ _.extend(
       var ielt9 = ie && !document.addEventListener;
 
       this.options.added = true;
-      var urls = this.model.get('urls');
-      // TODO: !urls || urls.tiles.length === 0
-      if (!urls) {
+      if (!this.model.hasTileURLTemplates()) {
         var key = zoom + '/' + coord.x + '/' + coord.y;
         var i = this.cache[key] = new Image(256, 256);
         i.src = EMPTY_GIF;
@@ -181,7 +179,7 @@ _.extend(
       var im = wax.g.connector.prototype.getTile.call(this, coord, zoom, ownerDocument);
 
       // in IE8 semi transparency does not work and needs filter
-      if ( ielt9 ) {
+      if (ielt9) {
         setImageOpacityIE8(im, this.options.opacity);
       }
       im.style.opacity = this.options.opacity;
@@ -219,9 +217,8 @@ _.extend(
     update: function (done) {
       this.loading && this.loading();
 
-      var urls = this.model.get('urls');
-      if (urls) {
-        this.options.tiles = urls.tiles;
+      if (this.model.hasTileURLTemplates()) {
+        this.options.tiles = this.model.getTileURLTemplates();
         this.tiles = 0;
         this.cache = {};
         this._reloadInteraction();

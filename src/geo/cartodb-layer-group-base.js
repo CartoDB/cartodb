@@ -40,6 +40,14 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
     return false;
   },
 
+  getTileURLTemplates: function () {
+    return (this.get('urls') && this.get('urls').tiles && this.get('urls').tiles) || [];
+  },
+
+  hasTileURLTemplates: function () {
+    return this.getTileURLTemplates().length > 0;
+  },
+
   /**
    * Returns a TileJSON format object for the given layerIndex
    * @param  {number} layerIndex The index of one of the CartoDB layers grouped by this class.

@@ -73,7 +73,7 @@ describe('geo/cartodb-layer-group-base', function () {
     });
   });
 
-  describe('fetchAttributes', function () {
+  describe('.fetchAttributes', function () {
     it('should trigger a request to the right URL', function () {
       var callback = jasmine.createSpy('callback');
       var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
@@ -161,6 +161,63 @@ describe('geo/cartodb-layer-group-base', function () {
 
       expect(callback).toHaveBeenCalledWith('attributes!');
       expect($.ajax.calls.mostRecent().args[0].url).toEqual('http://wadus.com/0/attributes/1000?api_key=THE_API_KEY');
+    });
+  });
+
+  describe('.getTileURLTemplates', function () {
+    beforeEach(function () {
+      this.cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+    });
+
+    it('should return an empty array there are NO urls yet', function () {
+      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([]);
+    });
+
+    it('should return an empty array if there are NO tile URL templates', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        tiles: []
+      });
+      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([]);
+    });
+
+    it('should return an array with the tile URL templates', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        tiles: [ 'url1', 'url2' ]
+      });
+
+      expect(this.cartoDBLayerGroup.getTileURLTemplates()).toEqual([
+        'url1',
+        'url2'
+      ]);
+    });
+  });
+
+  describe('.hasTileURLTemplates', function () {
+    beforeEach(function () {
+      this.cartoDBLayerGroup = new MyCartoDBLayerGroup({}, {
+        layersCollection: this.layersCollection
+      });
+    });
+
+    it('should return false if there are NO urls yet', function () {
+      expect(this.cartoDBLayerGroup.hasTileURLTemplates()).toBe(false);
+    });
+
+    it('should return false if there are NO tile URL templates', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        tiles: []
+      });
+      expect(this.cartoDBLayerGroup.hasTileURLTemplates()).toBe(false);
+    });
+
+    it('should return true if there are tile URL templates', function () {
+      this.cartoDBLayerGroup.set('urls', {
+        tiles: [ 'url1', 'url2' ]
+      });
+
+      expect(this.cartoDBLayerGroup.hasTileURLTemplates()).toBe(true);
     });
   });
 });

@@ -147,21 +147,15 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
-    var urls = this.model.get('urls');
-
-    // Tile and grid URLS have not been set yet
-    // TODO: !urls || urls.tiles.length === 0
-    if (!urls) {
+    if (!this.model.hasTileURLTemplates()) {
       var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       return EMPTY_GIF;
     }
 
-    // L.TileLayer.prototype.getTileUrl.call(this, tilePoint) seems to work
-    // fine as long as this.options.subdomains is set to something like 'abcd'
     this._adjustTilePoint(tilePoint);
-    var tilesURLTemplate = urls.tiles;
-    var index = (tilePoint.x + tilePoint.y) % tilesURLTemplate.length;
-    return L.Util.template(tilesURLTemplate[index], L.Util.extend({
+    var tilesURLTemplates = this.model.getTileURLTemplates();
+    var index = (tilePoint.x + tilePoint.y) % tilesURLTemplates.length;
+    return L.Util.template(tilesURLTemplates[index], L.Util.extend({
       z: this._getZoomForUrl(),
       x: tilePoint.x,
       y: tilePoint.y
@@ -212,9 +206,8 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
    * do not collide with leaflet _update
    */
   _onURLsChanged: function () {
-    var urls = this.model.get('urls');
-    if (urls) {
-      this.setUrl(urls.tiles[0]);
+    if (this.model.hasTileURLTemplates()) {
+      this.setUrl(this.model.getTileURLTemplates()[0]);
       // manage interaction
       this._reloadInteraction();
       // TODO: Is this necessary?

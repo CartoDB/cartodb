@@ -119,7 +119,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'simple' do
       it 'is generated from several types' do
-        types_generating_simple = %w(polygon bubble choropleth category torque torque_cat)
+        types_generating_simple = %w(polygon bubble choropleth category)
         types_generating_simple.each do |type_generating_simple|
           layer = build_layer_with_wizard_properties('type' => type_generating_simple)
           poro_options = presenter_with_style_properties(layer).to_poro['options']
@@ -691,17 +691,21 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
-      shared_examples_for 'torque blend wizard family' do
+      shared_examples_for 'torque animated family' do
         describe 'torque-blend-mode' do
           it 'becomes blending' do
             expect(@properties).to include('blending' => torque_blend_mode)
           end
         end
+
+        it 'type is animated' do
+          expect(@style).to include('type' => 'animated')
+        end
       end
 
       describe 'torque' do
         it_behaves_like 'torque wizard family'
-        it_behaves_like 'torque blend wizard family'
+        it_behaves_like 'torque animated family'
 
         let(:torque_blend_mode) { "lighter" }
         let(:property) { "fecha_date" }
@@ -740,7 +744,8 @@ describe Carto::Api::LayerPresenter do
         before(:each) do
           layer = build_layer_with_wizard_properties(torque_wizard_properties)
           options = presenter_with_style_properties(layer).to_poro['options']
-          @properties = options['style_properties']['properties']
+          @style = options['style_properties']
+          @properties = @style['properties']
           @animated = @properties['animated']
           @fill = @properties['fill']
           @fill_color = @fill['color']
@@ -769,7 +774,7 @@ describe Carto::Api::LayerPresenter do
 
     describe 'torque cat' do
       it_behaves_like 'torque wizard family'
-      it_behaves_like 'torque blend wizard family'
+      it_behaves_like 'torque animated family'
 
       let(:torque_blend_mode) { "lighter" }
       let(:property) { "fecha_date" }
@@ -821,7 +826,8 @@ describe Carto::Api::LayerPresenter do
       before(:each) do
         layer = build_layer_with_wizard_properties(torque_cat_wizard_properties)
         options = presenter_with_style_properties(layer).to_poro['options']
-        @properties = options['style_properties']['properties']
+        @style = options['style_properties']
+        @properties = @style['properties']
         @animated = @properties['animated']
         @fill = @properties['fill']
         @fill_color = @fill['color']

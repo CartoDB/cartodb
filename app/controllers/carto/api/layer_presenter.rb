@@ -363,8 +363,8 @@ module Carto
         'bubble' => 'simple',
         'choropleth' => 'simple',
         'category' => 'simple',
-        'torque' => 'simple',
-        'torque_cat' => 'simple',
+        'torque' => 'animated',
+        'torque_cat' => 'animated',
         'cluster' => 'simple',
         'torque_heat' => 'heatmap'
       }.freeze

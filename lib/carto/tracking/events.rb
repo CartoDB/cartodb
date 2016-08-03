@@ -42,13 +42,19 @@ module Carto
         private
 
         def event_properties
+          now = Time.now.utc
+          user_created_at = @user.created_at
+          user_age_in_days_with_decimal = (now - user_created_at).to_f / 60 / 60 / 24
+
           {
             username: @user ? @user.username : nil,
             email: @user ? @user.email : nil,
             plan: @user ? @user.account_type : nil,
+            user_age: user_age_in_days_with_decimal,
+            user_created_at: user_created_at,
             organization: @user && @user.organization_user? ? @user.organization.name : nil,
             event_origin: 'Editor',
-            creation_time: Time.now.utc
+            creation_time: now
           }
         end
       end

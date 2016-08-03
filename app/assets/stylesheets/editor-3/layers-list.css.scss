@@ -163,11 +163,13 @@
 }
 .Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
 .Editor-ListAnalysis-item.ui-draggable {
+   // scss-lint:disable VendorPrefix
   cursor: move;
   cursor: -webkit-grab;
   cursor: -moz-grab;
 }
 .Editor-ListAnalysis-item.ui-draggable-dragging {
+   // scss-lint:disable VendorPrefix
   width: 100%;
   cursor: move;
   cursor: -webkit-grabbing;

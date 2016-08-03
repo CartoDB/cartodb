@@ -405,7 +405,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
-  width: 213px;
+  width: 300px;
   height: 50px;
   padding: 0 10px 0 74px;
   @include background(image-url('layout/export-files.png') no-repeat 10px 10px $Amber1);

@@ -58,7 +58,6 @@
             padding: 14px;
             @include border-radius(5px);
 
-            font-size: 15px;
             a { color:  #666; text-decoration:underline; }
             a:hover { color: #333; }
           }
@@ -74,8 +73,6 @@
           width: 212px;
           margin: 0 auto 17px auto;
           padding: 0;
-          font-size: 15px;
-          color: #666666;
         }
 
         .form_combo {
@@ -83,7 +80,6 @@
           display:block;
           width: 200px;
           padding: 10px;
-          @include border-radius(5px);
 
           & > div { text-align: left; }
 

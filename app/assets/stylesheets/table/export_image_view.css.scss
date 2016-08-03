@@ -27,8 +27,7 @@
 }
 .ExportImageView--help {
   position: relative;
-  color: rgba(#FFF, 0.4);
-  font-size: 13px;
+  color: $
   text-align: center;
 }
 .ExportImageView-Header .Button {
@@ -224,6 +223,7 @@ $resizeHandlerSize: 8px;
   opacity: 0.2;
 }
 .CanvasExport {
+  border: 1px solid $White;
   .ui-resizable { position: relative; }
   .ui-resizable-handle {
     position: absolute;

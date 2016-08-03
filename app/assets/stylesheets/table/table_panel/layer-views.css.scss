@@ -45,7 +45,7 @@
     // For any 
     & > div {
       @include inline-block();
-      width:auto;
+      width:100%;
       height:100%;
     }
 

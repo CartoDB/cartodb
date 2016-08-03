@@ -276,6 +276,7 @@
     margin:0;
     background-color: $Amber1;
     border:1px solid $Black;
+    height: 19px;
     @include border-radius(2px);
 	
 
@@ -308,7 +309,7 @@
         min-width:20px;
         width:auto!important;
         padding:2px 19px 2px 4px;
-        height:15px;
+        height:19px;
         margin:0;
         border:1px solid $Black;
         @include border-radius(2px);

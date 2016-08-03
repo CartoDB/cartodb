@@ -20,7 +20,7 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     CartoDBd3Layer.prototype.initialize.call(this);
 
     // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this._onTileJSONChanged, this);
+    layerModel.bind('change:urls', this._onURLsChanged, this);
 
     layerModel.layers.bind('change:cartocss', function (child, style) {
       var index = child.get('order') - 1;
@@ -60,9 +60,9 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     layerModel.setDataProvider(new GeoJSONDataProvider(this, layerIndex));
   },
 
-  _onTileJSONChanged: function () {
-    var tilejson = this.model.get('urls');
-    this.setUrl(tilejson.tiles[0]);
+  _onURLsChanged: function () {
+    var urls = this.model.get('urls');
+    this.setUrl(urls.tiles[0]);
   },
 
   onAdd: function (map) {

@@ -9,7 +9,9 @@ module CartoDB
 
       def create_default_overlays
         create_share_overlay(@visualization, 2)
-        create_search_overlay(@visualization, 3)
+        if @visualization.user.has_feature_flag?('bbg_pro_ui')
+          create_search_overlay(@visualization, 3)
+        end
         create_zoom_overlay(@visualization, 6)
         create_loader_overlay(@visualization, 8)
 

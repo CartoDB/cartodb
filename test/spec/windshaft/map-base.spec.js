@@ -24,7 +24,7 @@ describe('windshaft/map-base', function () {
     // Disable ajax for these tests
     spyOn($, 'ajax').and.callFake(function () {});
 
-    this.windshaftMapInstance = {
+    this.windshaftResponse = {
       layergroupid: 'layergroupid',
       metadata: {
         layers: [
@@ -218,7 +218,7 @@ describe('windshaft/map-base', function () {
     describe('when request succeeds', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
-          options.success(this.windshaftMapInstance);
+          options.success(this.windshaftResponse);
         }.bind(this));
       });
 
@@ -356,7 +356,7 @@ describe('windshaft/map-base', function () {
         });
 
         expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
-        expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
+        expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftResponse.metadata);
       });
 
       it('should use the modelUpdater to update internal models', function () {
@@ -1224,6 +1224,23 @@ describe('windshaft/map-base', function () {
           'https': 'https://example2.com'
         }
       });
+    });
+  });
+
+  describe('.supportsSubdomains', function () {
+    it('should return true if urlTemplate uses http', function () {
+      this.windshaftMap.set({
+        urlTemplate: 'http://{username}.carto.com'
+      });
+
+      expect(this.windshaftMap.supportsSubdomains()).toBe(true);
+    });
+
+    it('should return false if urlTemplate uses https', function () {
+      this.windshaftMap.set({
+        urlTemplate: 'https://{username}.carto.com'
+      });
+      expect(this.windshaftMap.supportsSubdomains()).toBe(false);
     });
   });
 });

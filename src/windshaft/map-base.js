@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-var log = require('cdb.log');
+var log = require('../cdb.log');
 var Request = require('./request');
 var RequestTracker = require('./request-tracker');
 var WindshaftError = require('./error');
@@ -175,6 +175,10 @@ var WindshaftMap = Backbone.Model.extend({
     ].join('/');
   },
 
+  getIndexesOfMapnikLayers: function () {
+    return this._getLayerIndexesByType('mapnik');
+  },
+
   _getHost: function (subhost) {
     var userName = this.get('userName');
     var protocol = this._useHTTPS() ? 'https' : 'http';
@@ -221,6 +225,10 @@ var WindshaftMap = Backbone.Model.extend({
     });
 
     return metadata[analysisId];
+  },
+
+  supportsSubdomains: function () {
+    return !this._useHTTPS();
   },
 
   getTiles: function (layerType) {

@@ -168,6 +168,7 @@ _.extend(
 
       this.options.added = true;
       var urls = this.model.get('urls');
+      // TODO: !urls || urls.tiles.length === 0
       if (!urls) {
         var key = zoom + '/' + coord.x + '/' + coord.y;
         var i = this.cache[key] = new Image(256, 256);

@@ -150,6 +150,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     var urls = this.model.get('urls');
 
     // Tile and grid URLS have not been set yet
+    // TODO: !urls || urls.tiles.length === 0
     if (!urls) {
       var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       return EMPTY_GIF;

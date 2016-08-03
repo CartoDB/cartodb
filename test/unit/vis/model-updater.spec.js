@@ -1,21 +1,30 @@
+var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Backbone = require('backbone');
 var ModelUpdater = require('../../../src/vis/model-updater');
 var WindshaftError = require('../../../src/windshaft/error');
 
 describe('src/vis/model-updater', function () {
   beforeEach(function () {
-    this.windshaftMap = new Backbone.Model();
-    this.windshaftMap.getBaseURL = function () {
-      return 'baseURL';
-    };
-    this.windshaftMap.getTiles = function () {
-      return 'tileJSON';
-    };
+    this.fakeVis = jasmine.createSpyObj('vis', ['reload']);
+
+    // TODO: Use the real things
+    this.windshaftMap = new Backbone.Model({
+      urlTemplate: 'http://{user}.carto.com:80',
+      userName: 'documentation'
+    });
+    this.windshaftMap.getBaseURL = jasmine.createSpy('getBaseURL').and.returnValue('http://documentation.carto.com');
+    this.windshaftMap.getLayerMetadata = jasmine.createSpy('getLayerMetadata').and.callFake(function () {
+      return 'metadata';
+    });
+    this.windshaftMap.getTiles = jasmine.createSpy('getTiles').and.returnValue('tileJSON');
+    this.windshaftMap.getIndexesOfMapnikLayers = jasmine.createSpy('getIndexesOfMapnikLayers').and.returnValue([0]);
+    this.windshaftMap.supportsSubdomains = jasmine.createSpy('supportsSubdomains').and.returnValue(false);
 
     this.visModel = new Backbone.Model();
     this.visModel.setOk = jasmine.createSpy('setOk');
     this.visModel.setError = jasmine.createSpy('setError');
     this.layerGroupModel = new Backbone.Model();
+    this.layerGroupModel.layers = new Backbone.Collection();
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
     this.dataviewsCollection = new Backbone.Collection();
@@ -34,15 +43,107 @@ describe('src/vis/model-updater', function () {
   });
 
   describe('.updateModels', function () {
-    it('should update the layerGroupModel', function () {
-      expect(this.layerGroupModel.get('baseURL')).not.toBeDefined();
-      expect(this.layerGroupModel.get('urls')).not.toBeDefined();
+    beforeEach(function () {
+      // TODO: Remove this!
+      this.windshaftMap.getTiles.and.returnValue({
+        tiles: [
+          'http://documentation.carto.com/{z}/{x}/{y}.png'
+        ],
+        grids: [
+          'http://documentation.carto.com/{z}/{x}/{y}/grid.json'
+        ]
+      });
+      this.windshaftMap.getBaseURL.and.returnValue('http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0');
+    });
 
-      this.modelUpdater.updateModels(this.windshaftMap);
+    describe('layerGroupModel', function () {
+      it('should set the baseURL the layerGroupModel', function () {
+        expect(this.layerGroupModel.get('baseURL')).not.toBeDefined();
 
-      // Assert that layerGroup has been updated
-      expect(this.layerGroupModel.get('baseURL')).toEqual('baseURL');
-      expect(this.layerGroupModel.get('urls')).toEqual('tileJSON');
+        this.modelUpdater.updateModels(this.windshaftMap);
+
+        // Assert that layerGroup has been updated
+        expect(this.layerGroupModel.get('baseURL')).toEqual('http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0');
+      });
+
+      describe('tile urls', function () {
+        it('should generate tile URLs', function () {
+          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+
+          this.layerGroupModel.layers.reset([ layer1, layer2 ]);
+
+          // For Windshaft, layers are in positions 0 and 1
+          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([0, 1]);
+
+          this.modelUpdater.updateModels(this.windshaftMap);
+
+          expect(this.layerGroupModel.get('urls').tiles.length).toEqual(1);
+
+          // Tile URL template will fetch tiles for layers #0 and #1
+          expect(this.layerGroupModel.get('urls').tiles[0]).toEqual('http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0,1/{z}/{x}/{y}.png');
+        });
+
+        it('should not include indexes for hidden layers in tile URLs', function () {
+          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+
+          // Hide the first CartoDB layer
+          layer1.set('visible', false, { silent: true });
+
+          this.layerGroupModel.layers.reset([ layer1, layer2 ]);
+
+          // For Windshaft, layers are in positions 1 and 2
+          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1, 2]);
+
+          this.modelUpdater.updateModels(this.windshaftMap);
+
+          expect(this.layerGroupModel.get('urls').tiles.length).toEqual(1);
+
+          // Tile URL template will only fetch tiles for layer #2
+          expect(this.layerGroupModel.get('urls').tiles[0]).toEqual('http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/2/{z}/{x}/{y}.png');
+        });
+
+        it('when all layers are hidden', function () {
+          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+          var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+
+          // Hide all layers
+          layer1.set('visible', false, { silent: true });
+          layer2.set('visible', false, { silent: true });
+
+          this.layerGroupModel.layers.reset([ layer1, layer2 ]);
+
+          // For Windshaft, layers are in positions 1 and 2
+          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1, 2]);
+
+          this.modelUpdater.updateModels(this.windshaftMap);
+
+          // No URLs have been generated (no tiles should be fetched)
+          expect(this.layerGroupModel.get('urls').tiles.length).toEqual(0);
+        });
+
+        it('should include subdomains if map supports it', function () {
+          this.windshaftMap.supportsSubdomains.and.returnValue(true);
+
+          var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+
+          this.layerGroupModel.layers.reset([ layer1 ]);
+
+          // For Windshaft, layers are in positions 1 and 2
+          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1]);
+
+          this.modelUpdater.updateModels(this.windshaftMap);
+
+          // No URLs have been generated (no tiles should be fetched)
+          expect(this.layerGroupModel.get('urls').tiles).toEqual([
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.png',
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.png',
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.png',
+            'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/1/{z}/{x}/{y}.png'
+          ]);
+        });
+      });
     });
 
     it('should update layer models', function () {
@@ -53,27 +154,45 @@ describe('src/vis/model-updater', function () {
       layer2.setOk = jasmine.createSpy();
       this.layersCollection.reset([ layer0, layer1, layer2 ]);
 
-      this.windshaftMap.getLayerMetadata = function (index) {
+      this.windshaftMap.getLayerMetadata.and.callFake(function (index) {
         if (index === 0) {
           return 'metadataLayer0';
         }
         if (index === 1) {
           return 'metadataLayer1';
         }
-      };
+      });
 
-      this.windshaftMap.getTiles = function (layerType) {
+      this.windshaftMap.getTiles.and.callFake(function (layerType) {
         if (layerType === 'torque') {
-          return 'tileURLS';
+          return {
+            tiles: [
+              'http://documentation.carto.com/{z}/{x}/{y}.torque'
+            ]
+          };
         }
-      };
+        if (layerType === 'mapnik') {
+          return {
+            tiles: [
+              'http://documentation.carto.com/{z}/{x}/{y}.png'
+            ],
+            grids: [
+              'http://documentation.carto.com/{z}/{x}/{y}/grid.json'
+            ]
+          };
+        }
+      });
 
       this.modelUpdater.updateModels(this.windshaftMap);
 
       expect(layer1.get('meta')).toEqual('metadataLayer0');
       expect(layer1.setOk).toHaveBeenCalled();
       expect(layer2.get('meta')).toEqual('metadataLayer1');
-      expect(layer2.get('urls')).toEqual('tileURLS');
+      expect(layer2.get('urls')).toEqual({
+        tiles: [
+          'http://documentation.carto.com/{z}/{x}/{y}.torque'
+        ]
+      });
       expect(layer2.setOk).toHaveBeenCalled();
     });
 

@@ -38,9 +38,37 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
+  var tileSchema = '{z}/{x}/{y}';
+  var tileExtension = '.png';
+  var subdomains = [''];
+  if (windshaftMap.supportsSubdomains()) {
+    subdomains = ['0', '1', '2', '3'];
+  }
+
+  var urls = {
+    tiles: [],
+    grids: windshaftMap.getTiles('mapnik').grids
+  };
+
+  var indexOfMapnikLayers = windshaftMap.getIndexesOfMapnikLayers();
+  var indexOfVisibleLayers = [];
+
+  this._layerGroupModel.layers.each(function (layerModel, layerIndex) {
+    if (layerModel.isVisible()) {
+      indexOfVisibleLayers.push(indexOfMapnikLayers[layerIndex]);
+    }
+  });
+
+  if (indexOfVisibleLayers.length > 0) {
+    _.each(subdomains, function (subdomain) {
+      var tileURLTempate = windshaftMap.getBaseURL(subdomain) + '/' + indexOfVisibleLayers.join(',') + '/' + tileSchema + tileExtension;
+      urls.tiles.push(tileURLTempate);
+    });
+  }
+
   this._layerGroupModel.set({
     baseURL: windshaftMap.getBaseURL(),
-    urls: windshaftMap.getTiles('mapnik')
+    urls: urls
   });
 };
 

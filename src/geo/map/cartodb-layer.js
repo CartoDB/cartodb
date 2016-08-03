@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var config = require('cdb.config');
+var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');

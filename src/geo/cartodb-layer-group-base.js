@@ -2,6 +2,7 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 var util = require('cdb.core.util');
 
+// TODO: This could be a collection!
 var CartoDBLayerGroupBase = Backbone.Model.extend({
   defaults: {
     visible: true

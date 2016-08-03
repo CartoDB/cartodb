@@ -116,7 +116,7 @@ module CartoDB
 
       def fetch_ignoring_case(hash, key)
         if hash
-          k, _v = hash.find { |k, _v| k.to_s.downcase == key.to_s.downcase }
+          k, _v = hash.detect { |k, _v| k.to_s.casecmp(key.to_s) == 0 }
           k
         end
       end

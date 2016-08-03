@@ -141,8 +141,8 @@ module CartoDB
           legend:     layer.legend,
           options:    {
             stat_tag:           options.fetch(:visualization_id),
-            maps_api_template: fix_torque_maps_api_template(ApplicationHelper.maps_api_template(api_templates_type)),
-            sql_api_template: ApplicationHelper.sql_api_template(api_templates_type),
+            maps_api_template:  ApplicationHelper.maps_api_template(api_templates_type),
+            sql_api_template:   ApplicationHelper.sql_api_template(api_templates_type),
             # tiler_* is kept for backwards compatibility
             tiler_protocol:     (configuration[:tiler]["public"]["protocol"] rescue nil),
             tiler_domain:       (configuration[:tiler]["public"]["domain"] rescue nil),
@@ -282,21 +282,6 @@ module CartoDB
         infowindow.nil? ? nil : infowindow.select { |key, value|
                                                     INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
                                                   }
-      end
-
-      def fix_torque_maps_api_template(maps_api_template)
-        if visualization_owner_is_table_owner?
-          maps_api_template
-        else
-          # This fixes #9017 avoding Torque request to table owner named map instead of visualization owner.
-          # See https://github.com/CartoDB/torque/blob/8a14fe546ac411829b5f52bb575526ad5ecb79f8/lib/torque/provider/windshaft.js#L361
-          maps_api_template.gsub('{user}', visualization_user_name)
-        end
-      end
-
-      def visualization_owner_is_table_owner?
-        layer.options.nil? || layer.options['user_name'].nil? || layer.user.nil? ||
-          layer.options['user_name'] == visualization_user_name
       end
 
       def visualization_user_name

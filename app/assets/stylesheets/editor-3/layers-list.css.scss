@@ -161,9 +161,17 @@
   display: block;
   margin-right: 0;
 }
+.Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
+.Editor-ListAnalysis-item.ui-draggable {
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
 .Editor-ListAnalysis-item.ui-draggable-dragging {
   width: 100%;
   cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
   z-index: 1000;
 }
 .Editor-ListAnalysis-inner {
@@ -277,7 +285,3 @@
   text-align: center;
   z-index: -1;
 }
-
-
-
-

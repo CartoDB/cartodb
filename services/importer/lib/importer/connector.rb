@@ -114,6 +114,9 @@ module CartoDB
       SERVER_OPTIONS = %w(dsn driver host server address port database).freeze
       USER_OPTIONS   = %w(uid pwd user username password).freeze
 
+      MAX_PG_IDENTIFIER_LEN = 60
+      MIN_TAB_ID_LEN        = 10
+
       def fetch_ignoring_case(hash, key)
         if hash
           _k, v = hash.find { |k, _v| k.to_s.casecmp(key.to_s) == 0 }
@@ -182,7 +185,9 @@ module CartoDB
       end
 
       def connector_name
-        Carto::DB::Sanitize.sanitize_identifier @dsn || @driver
+        max_len = MAX_PG_IDENTIFIER_LEN - @unique_suffix.size - MIN_TAB_ID_LEN - 1
+        name = Carto::DB::Sanitize.sanitize_identifier @dsn || @driver
+        name[0...max_len]
       end
 
       def server_name
@@ -194,11 +199,12 @@ module CartoDB
       end
 
       def result_table_name
-        Carto::DB::Sanitize.sanitize_identifier @options['table']
+        name = Carto::DB::Sanitize.sanitize_identifier @options['table']
       end
 
       def foreign_table_name
-        "#{foreign_prefix}#{result_table_name}"
+        max_len = MAX_PG_IDENTIFIER_LEN - foreign_prefix.size
+        "#{foreign_prefix}#{result_table_name[0...max_len]}"
       end
 
       def foreign_table_schema

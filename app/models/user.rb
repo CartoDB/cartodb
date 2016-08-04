@@ -18,6 +18,7 @@ require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -25,6 +26,7 @@ class User < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   self.strict_param_setting = false
 
@@ -914,14 +916,6 @@ class User < Sequel::Model
     tokens
   end
 
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
-  end
-
   # Should return the number of tweets imported by this user for the specified period of time, as an integer
   def get_twitter_imports_count(options = {})
     date_from, date_to = quota_dates(options)
@@ -1657,18 +1651,6 @@ class User < Sequel::Model
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
   def set_last_password_change_date

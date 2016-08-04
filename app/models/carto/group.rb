@@ -2,6 +2,7 @@
 
 require 'active_record'
 require_dependency 'cartodb/errors'
+require_dependency 'carto/helpers/auth_token_generator'
 require_relative 'paged_model'
 
 module Carto
@@ -17,6 +18,7 @@ module Carto
   # - remove_users_with_extension
   class Group < ActiveRecord::Base
     include PagedModel
+    include AuthTokenGenerator
 
     belongs_to :organization, class_name: Carto::Organization
     has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
@@ -133,16 +135,7 @@ module Carto
       organization.database_name
     end
 
-    def get_auth_token
-      auth_token || generate_auth_token
-    end
-
     private
-
-    def generate_auth_token
-      update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
-      auth_token
-    end
 
     # TODO: PG Format("%I", strvar); ?
     def self.valid_group_name(display_name)

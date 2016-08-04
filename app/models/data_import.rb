@@ -897,7 +897,15 @@ class DataImport < Sequel::Model
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
-    results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+
+    if results.any?
+      results.each do |result|
+        CartoDB::Metrics.new.report(:import, payload_for(result))
+        Carto::Tracking::Events::ConnectionFactory.build(user, result: result).report
+      end
+    elsif state == STATE_FAILURE
+      Carto::Tracking::Events::FailedConnection.new(user).report
+    end
   end
 
   def importer_stats_aggregator

@@ -1,31 +1,7 @@
 <% content_for(:subject) { @subject } %>
 
 <% content_for :body do %>
-  <tr>
-    <td>
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: separate !important; margin-bottom: 8px;">
-        <tr>
-          <td style="line-height: 0px; font-size: 0; height: 16px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-left-grey-corner.png"></td>
-          <td style="line-height: 0px; font-size: 0; height: 16px; background-color: #F9F9F9;"></td>
-          <td style="line-height: 0px; font-size: 0; height: 16px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-right-grey-corner.png"></td>
-        </tr>
-
-        <tr>
-          <td width="16px" style="background-color: #F9F9F9;"></td>
-          <td style="background-color: #F9F9F9; font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-            <p style="margin: 0;"><img alt="Like" src="http://carto-email-assets.s3.amazonaws.com/heart.png" width="16" height="15" style="display: inline-block; margin: 0 auto; vertical-align: middle;" border="0"> <%= @greetings.sample.capitalize %>! <strong><a href="<%= @viewer_datasets_link %>" style="color: #666666;"><%= @viewer_name %></a></strong> likes your dataset <strong><%= @dataset_name %></strong>!</p>
-          </td>
-          <td width="16px" style="background-color: #F9F9F9;"></td>
-        </tr>
-
-        <tr>
-          <td style="line-height: 0px; font-size: 0; height: 16px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-left-grey-corner.png"></td>
-          <td style="line-height: 0px; font-size: 0; height: 16px; background-color: #F9F9F9;"></td>
-          <td style="line-height: 0px; font-size: 0; height: 16px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-right-grey-corner.png"></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+  <%= render :partial => 'user_mailer/messages/table_liked', :layout => 'layouts/mailer/grey_layout' %>
 
   <tr>
     <td align="left" style="background:url('<%= @preview_image %>'); width: 100% !important; height: 200px;">

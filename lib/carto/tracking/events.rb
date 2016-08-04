@@ -89,33 +89,30 @@ module Carto
       end
 
       class ConnectionEvent < TrackingEvent
-        def initialize(user, name, result, datasource, service)
-          super(user, name, properties(result, datasource, service))
+        def initialize(user, name, result, data_from, imported_from)
+          super(user, name, properties(result, data_from, imported_from))
         end
 
         private
 
-        def properties(result, datasource, service)
-          properties = { datasource: datasource, service: service }
+        def properties(result, data_from, imported_from)
+          properties = { data_from: data_from, imported_from: imported_from }
 
-          if result
-            properties[:extension] = result.extension || ''
-            properties[:error_code] = result.error_code || ''
-          end
+          properties[:file_type] = result.extension if result
 
           properties
         end
       end
 
       class SuccessfulConnection < ConnectionEvent
-        def initialize(user, result: nil, datasource: '', service: '')
-          super(user, 'Successful connection', result, datasource, service)
+        def initialize(user, result: nil, data_from: '', imported_from: '')
+          super(user, 'Successful connection', result, data_from, imported_from)
         end
       end
 
       class FailedConnection < ConnectionEvent
-        def initialize(user, result: nil, datasource: '', service: '')
-          super(user, 'Failed connection', result, datasource, service)
+        def initialize(user, result: nil, data_from: '', imported_from: '')
+          super(user, 'Failed connection', result, data_from, imported_from)
         end
       end
 
@@ -231,15 +228,15 @@ module Carto
       end
 
       class ConnectionFactory
-        def self.build(user, result: nil, datasource: '', service: '')
+        def self.build(user, result: nil, data_from: '', imported_from: '')
           if result.success?
             Carto::Tracking::Events::SuccessfulConnection.new(user, result: result,
-                                                                    datasource: datasource,
-                                                                    service: service)
+                                                                    data_from: data_from,
+                                                                    imported_from: imported_from)
           else
             Carto::Tracking::Events::FailedConnection.new(user, result: result,
-                                                                datasource: datasource,
-                                                                service: service)
+                                                                data_from: data_from,
+                                                                imported_from: imported_from)
           end
         end
       end

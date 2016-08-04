@@ -72,15 +72,24 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
       return
     end
 
-    connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env)
-                                       .merge('host' => params[:database_host],
-                                              'database' => 'postgres'
-                                             ) { |_, o, n| n.nil? ? o : n }
-    conn = ::Sequel.connect(connection_params)
-    disk_space = conn.fetch('SELECT * FROM cartodb.cdb_get_avail_disk_space();').first
-    close_sequel_connection(conn)
+    begin
+      connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env)
+                                         .merge('host' => params[:database_host],
+                                                'database' => 'postgres'
+                                               ) { |_, o, n| n.nil? ? o : n }
+      conn = ::Sequel.connect(connection_params)
+      message = conn.fetch('SELECT * FROM cartodb.cdb_get_avail_disk_space();').first
+      status = 200
+    rescue => e
+      message = { error: 'Error getting available disk space in DB' }
+      status = 500
+      CartoDB::Logger.error(message: message[:error], exception: e,
+                            database_host: params[:database_host])
+    ensure
+      close_sequel_connection(conn)
+    end
 
-    respond_with(disk_space)
+    respond_with(message, status: status)
   end
 
 end # Superadmin::PlatformController

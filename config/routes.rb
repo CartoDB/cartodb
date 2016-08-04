@@ -617,6 +617,7 @@ CartoDB::Application.routes.draw do
     get '/superadmin/stats/total_maps' => 'platform#total_maps'
     get '/superadmin/stats/total_active_users' => 'platform#total_active_users'
     get '/superadmin/stats/total_likes' => 'platform#total_likes'
+    get '/superadmin/stats/database_host_fs_usage' => 'platform#database_host_fs_usage'
   end
 
 end

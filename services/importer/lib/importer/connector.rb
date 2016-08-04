@@ -199,7 +199,7 @@ module CartoDB
       end
 
       def result_table_name
-        name = Carto::DB::Sanitize.sanitize_identifier @options['table']
+        Carto::DB::Sanitize.sanitize_identifier @options['table']
       end
 
       def foreign_table_name

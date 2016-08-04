@@ -10,6 +10,9 @@
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
+.Options-form .Editor-formInner {
+  margin-top: 0;
+}
 .Editor-formInner .CDB-Legend {
   padding-top: 9px;
 }

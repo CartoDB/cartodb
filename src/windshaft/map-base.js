@@ -1,5 +1,5 @@
-var Backbone = require('backbone');
 var _ = require('underscore');
+var Backbone = require('backbone');
 var WindshaftConfig = require('./config');
 var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 var log = require('../cdb.log');
@@ -11,11 +11,6 @@ var TILE_EXTENSIONS_BY_LAYER_TYPE = {
   'mapnik': '.png',
   'torque': '.json.torque'
 };
-
-var LAYER_TYPES = [
-  'CartoDB',
-  'torque'
-];
 
 /* The max number of times the same map can be instantiated */
 var MAP_INSTANTIATION_LIMIT = 3;
@@ -161,22 +156,12 @@ var WindshaftMap = Backbone.Model.extend({
     }, {});
   },
 
-  _getLayers: function () {
-    return this._layersCollection.select(function (layer) {
-      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
-    });
-  },
-
   getBaseURL: function (subhost) {
     return [
       this._getHost(subhost),
       WindshaftConfig.MAPS_API_BASE_URL,
       this.get('layergroupid')
     ].join('/');
-  },
-
-  getIndexesOfMapnikLayers: function () {
-    return this._getLayerIndexesByType('mapnik');
   },
 
   _getHost: function (subhost) {
@@ -197,15 +182,14 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   getDataviewMetadata: function (dataviewId) {
-    // Try to get dataview's metadata from this.get('metadata').dataview
-    var dataviews = this.get('metadata') && this.get('metadata').dataviews;
+    var dataviews = this._getDataviews();
     if (dataviews && dataviews[dataviewId]) {
       return dataviews[dataviewId];
     }
 
     // Try to get dataview's metatadta from the 'widgets' dictionary inside the metadata of each of the layers
     dataviews = {};
-    var layersDataviews = _.compact(_.map(this.get('metadata').layers, function (layer) { return layer.widgets; }));
+    var layersDataviews = _.compact(_.map(this._getLayers(), function (layer) { return layer.widgets; }));
     _.each(layersDataviews, function (layerDataviews) {
       _.extend(dataviews, layerDataviews);
     });
@@ -217,7 +201,7 @@ var WindshaftMap = Backbone.Model.extend({
 
   getAnalysisNodeMetadata: function (analysisId) {
     var metadata = {};
-    var nodes = _.map(this.get('metadata').analyses, function (analysis) {
+    var nodes = _.map(this._getAnalyses(), function (analysis) {
       return analysis.nodes;
     });
     _.each(nodes, function (node) {
@@ -227,8 +211,12 @@ var WindshaftMap = Backbone.Model.extend({
     return metadata[analysisId];
   },
 
-  supportsSubdomains: function () {
-    return !this._useHTTPS();
+  getSupportedSubdomains: function () {
+    if (!this._useHTTPS()) {
+      return ['0', '1', '2', '3'];
+    }
+
+    return [''];
   },
 
   getTiles: function (layerType) {
@@ -240,7 +228,7 @@ var WindshaftMap = Backbone.Model.extend({
       subdomains = [''];
     }
 
-    var layerIndexes = this._getLayerIndexesByType(layerType);
+    var layerIndexes = this.getLayerIndexesByType(layerType);
     if (layerIndexes.length) {
       for (var i = 0; i < subdomains.length; ++i) {
         var subdomain = subdomains[i];
@@ -248,7 +236,7 @@ var WindshaftMap = Backbone.Model.extend({
 
         // for mapnik layers add grid json too
         if (layerType === 'mapnik') {
-          for (var layerIndex = 0; layerIndex < this.get('metadata').layers.length; ++layerIndex) {
+          for (var layerIndex = 0; layerIndex < this._getLayers().length; ++layerIndex) {
             var mapnikLayerIndex = this._getLayerIndexByType(layerIndex, 'mapnik');
             if (mapnikLayerIndex >= 0) {
               grids[layerIndex] = grids[layerIndex] || [];
@@ -316,7 +304,7 @@ var WindshaftMap = Backbone.Model.extend({
   getLayerMetadata: function (layerIndex) {
     var layerMeta = {};
     var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
-    var layers = this.get('metadata') && this.get('metadata').layers;
+    var layers = this._getLayers();
     if (layers && layers[metadataLayerIndex]) {
       layerMeta = layers[metadataLayerIndex].meta || {};
     }
@@ -324,7 +312,7 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _localLayerIndexToWindshaftLayerIndex: function (layerIndex) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
+    var layers = this._getLayers();
     var hasTiledLayer = layers.length > 0 && (layers[0].type === 'http' || layers[0].type === 'plain');
     return hasTiledLayer ? ++layerIndex : layerIndex;
   },
@@ -332,26 +320,27 @@ var WindshaftMap = Backbone.Model.extend({
   /**
    * Returns the indexes of the layer of a given type, as the tiler kwows it.
    *
-   * @param {string|array} types - Type or types of layers
+   * @param {string|array} layerType - Type of layer
    */
-  _getLayerIndexesByType: function (types) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
+  getLayerIndexesByType: function (layerType) {
+    return _.reduce(this._getLayers(), function (layerIndexes, layer, index) {
+      if (layer.type === layerType) {
+        layerIndexes.push(index);
+      }
+      return layerIndexes;
+    }, []);
+  },
 
-    if (!layers) {
-      return;
-    }
-    var layerIndexes = [];
-    for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      var isValidType = false;
-      if (types && types.length > 0) {
-        isValidType = types.indexOf(layer.type) !== -1;
-      }
-      if (isValidType) {
-        layerIndexes.push(i);
-      }
-    }
-    return layerIndexes;
+  _getLayers: function () {
+    return (this.get('metadata') && this.get('metadata').layers) || [];
+  },
+
+  _getDataviews: function () {
+    return (this.get('metadata') && this.get('metadata').dataviews) || [];
+  },
+
+  _getAnalyses: function () {
+    return (this.get('metadata') && this.get('metadata').analyses) || [];
   },
 
   /**
@@ -361,7 +350,7 @@ var WindshaftMap = Backbone.Model.extend({
    * @param {string} layerType - type of the layers
    */
   _getLayerIndexByType: function (index, layerType) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
+    var layers = this._getLayers();
 
     if (!layers) {
       return index;

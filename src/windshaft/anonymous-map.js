@@ -3,6 +3,11 @@ var MapBase = require('./map-base');
 
 var DEFAULT_CARTOCSS_VERSION = '2.1.0';
 
+var LAYER_TYPES = [
+  'CartoDB',
+  'torque'
+];
+
 var AnonymousMap = MapBase.extend({
   toJSON: function () {
     return {
@@ -13,7 +18,7 @@ var AnonymousMap = MapBase.extend({
   },
 
   _calculateLayersSection: function () {
-    return _.chain(this._getLayers())
+    return _.chain(this._getCartoDBAndTorqueLayers())
       .map(this._calculateLayerJSON, this)
       .compact()
       .value();
@@ -65,7 +70,7 @@ var AnonymousMap = MapBase.extend({
 
   _calculateAnalysesSection: function () {
     var analyses = [];
-    var sourceIdsFromLayers = _.chain(this._getLayers())
+    var sourceIdsFromLayers = _.chain(this._getCartoDBAndTorqueLayers())
       .map(function (layerModel) {
         return layerModel.get('source');
       })
@@ -105,7 +110,7 @@ var AnonymousMap = MapBase.extend({
   },
 
   _getLayerById: function (layerId) {
-    return _.find(this._getLayers(), function (layerModel) {
+    return _.find(this._getCartoDBAndTorqueLayers(), function (layerModel) {
       return layerModel.id === layerId;
     });
   },
@@ -132,6 +137,12 @@ var AnonymousMap = MapBase.extend({
   _isAnyDataviewLinkedTo: function (layerModel) {
     return this._dataviewsCollection.any(function (dataviewModel) {
       return dataviewModel.layer === layerModel;
+    });
+  },
+
+  _getCartoDBAndTorqueLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
     });
   }
 });

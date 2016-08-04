@@ -1227,20 +1227,20 @@ describe('windshaft/map-base', function () {
     });
   });
 
-  describe('.supportsSubdomains', function () {
-    it('should return true if urlTemplate uses http', function () {
+  describe('.getSupportedSubdomains', function () {
+    it('should return supported subdomains if urlTemplate uses http', function () {
       this.windshaftMap.set({
         urlTemplate: 'http://{username}.carto.com'
       });
 
-      expect(this.windshaftMap.supportsSubdomains()).toBe(true);
+      expect(this.windshaftMap.getSupportedSubdomains()).toBe(['0', '1', '2', '3']);
     });
 
-    it('should return false if urlTemplate uses https', function () {
+    it('should return no subdomains if urlTemplate uses https', function () {
       this.windshaftMap.set({
         urlTemplate: 'https://{username}.carto.com'
       });
-      expect(this.windshaftMap.supportsSubdomains()).toBe(false);
+      expect(this.windshaftMap.getSupportedSubdomains()).toBe(['']);
     });
   });
 });

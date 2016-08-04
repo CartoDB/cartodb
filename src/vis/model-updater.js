@@ -1,5 +1,6 @@
 var _ = require('underscore');
 
+// TODO: Could be renamed to windshaft-integrations.js
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.
@@ -38,38 +39,47 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
-  var tileSchema = '{z}/{x}/{y}';
-  var tileExtension = '.png';
-  var subdomains = [''];
-  if (windshaftMap.supportsSubdomains()) {
-    subdomains = ['0', '1', '2', '3'];
-  }
-
   var urls = {
-    tiles: [],
-    grids: windshaftMap.getTiles('mapnik').grids
+    tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
+    grids: this._calculateGridURLTemplatesForCadrtoDBLayers(windshaftMap)
   };
-
-  var indexOfMapnikLayers = windshaftMap.getIndexesOfMapnikLayers();
-  var indexOfVisibleLayers = [];
-
-  this._layerGroupModel.layers.each(function (layerModel, layerIndex) {
-    if (layerModel.isVisible()) {
-      indexOfVisibleLayers.push(indexOfMapnikLayers[layerIndex]);
-    }
-  });
-
-  if (indexOfVisibleLayers.length > 0) {
-    _.each(subdomains, function (subdomain) {
-      var tileURLTempate = windshaftMap.getBaseURL(subdomain) + '/' + indexOfVisibleLayers.join(',') + '/' + tileSchema + tileExtension;
-      urls.tiles.push(tileURLTempate);
-    });
-  }
 
   this._layerGroupModel.set({
     baseURL: windshaftMap.getBaseURL(),
     urls: urls
   });
+};
+
+ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
+  var urlTemplates = [];
+
+  var indexesOfVisibleMapnikLayers = this._calculateIndexesOfVisibleMapnikLayers(windshaftMap);
+
+  if (indexesOfVisibleMapnikLayers.length > 0) {
+    _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+      urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain, indexesOfVisibleMapnikLayers));
+    }, this);
+  }
+
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._calculateIndexesOfVisibleMapnikLayers = function (windshaftMap) {
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  return _.reduce(this._layersCollection.getCartoDBLayers(), function (indexes, layerModel, layerIndex) {
+    if (layerModel.isVisible()) {
+      indexes.push(indexesOfMapnikLayers[layerIndex]);
+    }
+    return indexes;
+  }, []);
+};
+
+ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap, subdomain, indexesOfVisibleMapnikLayers) {
+  return windshaftMap.getBaseURL(subdomain) + '/' + indexesOfVisibleMapnikLayers.join(',') + '/{z}/{x}/{y}.png';
+};
+
+ModelUpdater.prototype._calculateGridURLTemplatesForCadrtoDBLayers = function (windshaftMap) {
+  return windshaftMap.getTiles('mapnik').grids;
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {

@@ -1,4 +1,5 @@
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var LayersCollection = require('../../../src/geo/map/layers');
 var Backbone = require('backbone');
 var ModelUpdater = require('../../../src/vis/model-updater');
 var WindshaftError = require('../../../src/windshaft/error');
@@ -17,15 +18,15 @@ describe('src/vis/model-updater', function () {
       return 'metadata';
     });
     this.windshaftMap.getTiles = jasmine.createSpy('getTiles').and.returnValue('tileJSON');
-    this.windshaftMap.getIndexesOfMapnikLayers = jasmine.createSpy('getIndexesOfMapnikLayers').and.returnValue([0]);
-    this.windshaftMap.supportsSubdomains = jasmine.createSpy('supportsSubdomains').and.returnValue(false);
+    this.windshaftMap.getLayerIndexesByType = jasmine.createSpy('getLayerIndexesByType').and.returnValue([0]);
+    this.windshaftMap.getSupportedSubdomains = jasmine.createSpy('getSupportedSubdomains').and.returnValue(['']);
 
     this.visModel = new Backbone.Model();
     this.visModel.setOk = jasmine.createSpy('setOk');
     this.visModel.setError = jasmine.createSpy('setError');
     this.layerGroupModel = new Backbone.Model();
     this.layerGroupModel.layers = new Backbone.Collection();
-    this.layersCollection = new Backbone.Collection();
+    this.layersCollection = new LayersCollection();
     this.analysisCollection = new Backbone.Collection();
     this.dataviewsCollection = new Backbone.Collection();
 
@@ -71,10 +72,11 @@ describe('src/vis/model-updater', function () {
           var layer1 = new CartoDBLayer({}, { vis: this.visModel });
           var layer2 = new CartoDBLayer({}, { vis: this.visModel });
 
+          this.layersCollection.reset([ layer1, layer2 ]);
           this.layerGroupModel.layers.reset([ layer1, layer2 ]);
 
           // For Windshaft, layers are in positions 0 and 1
-          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([0, 1]);
+          this.windshaftMap.getLayerIndexesByType.and.returnValue([0, 1]);
 
           this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -91,10 +93,11 @@ describe('src/vis/model-updater', function () {
           // Hide the first CartoDB layer
           layer1.set('visible', false, { silent: true });
 
+          this.layersCollection.reset([ layer1, layer2 ]);
           this.layerGroupModel.layers.reset([ layer1, layer2 ]);
 
           // For Windshaft, layers are in positions 1 and 2
-          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1, 2]);
+          this.windshaftMap.getLayerIndexesByType.and.returnValue([1, 2]);
 
           this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -112,10 +115,11 @@ describe('src/vis/model-updater', function () {
           layer1.set('visible', false, { silent: true });
           layer2.set('visible', false, { silent: true });
 
+          this.layersCollection.reset([ layer1, layer2 ]);
           this.layerGroupModel.layers.reset([ layer1, layer2 ]);
 
           // For Windshaft, layers are in positions 1 and 2
-          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1, 2]);
+          this.windshaftMap.getLayerIndexesByType.and.returnValue([1, 2]);
 
           this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -124,14 +128,15 @@ describe('src/vis/model-updater', function () {
         });
 
         it('should include subdomains if map supports it', function () {
-          this.windshaftMap.supportsSubdomains.and.returnValue(true);
+          this.windshaftMap.getSupportedSubdomains.and.returnValue(['0', '1', '2', '3']);
 
           var layer1 = new CartoDBLayer({}, { vis: this.visModel });
 
+          this.layersCollection.reset([ layer1 ]);
           this.layerGroupModel.layers.reset([ layer1 ]);
 
           // For Windshaft, layers are in positions 1 and 2
-          this.windshaftMap.getIndexesOfMapnikLayers.and.returnValue([1]);
+          this.windshaftMap.getLayerIndexesByType.and.returnValue([1]);
 
           this.modelUpdater.updateModels(this.windshaftMap);
 
@@ -148,7 +153,7 @@ describe('src/vis/model-updater', function () {
 
     it('should update layer models', function () {
       var layer0 = new Backbone.Model({ type: 'Tiled' });
-      var layer1 = new Backbone.Model({ type: 'CartoDB' });
+      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
       layer1.setOk = jasmine.createSpy();
       var layer2 = new Backbone.Model({ type: 'torque' });
       layer2.setOk = jasmine.createSpy();

@@ -926,7 +926,9 @@ class Table
       if Table.column_names_for(user_database, name, self.owner).include?(new_name)
         raise 'Column already exists'
       end
-      user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
+      user_database.execute %{
+          ALTER TABLE "#{name}" RENAME COLUMN "#{old_name}" TO "#{new_name}"
+      }
     end
   end #rename_column
 
@@ -1497,7 +1499,9 @@ class Table
             type = DEFAULT_THE_GEOM_TYPE
           end
         else
-          owner.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          owner.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
         end
       else # Ensure a the_geom column, of type point by default
         type = DEFAULT_THE_GEOM_TYPE

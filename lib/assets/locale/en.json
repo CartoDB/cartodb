@@ -1637,11 +1637,11 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Style",
+          "title-label": "Behaviour",
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",
-          "description": "Description",
+          "description": "Define how your widget interacts with the data",
           "yes": "Yes",
           "no": "No"
         },

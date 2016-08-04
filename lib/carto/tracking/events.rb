@@ -82,6 +82,33 @@ module Carto
         end
       end
 
+      class ConnectionEvent < TrackingEvent
+        def initialize(user, name, result)
+          super(user, name, properties(result))
+        end
+
+        private
+
+        def properties(result)
+          {
+            extension: result ? result.extension : '',
+            error_code: result ? result.error_code : ''
+          }
+        end
+      end
+
+      class SuccessfulConnection < ConnectionEvent
+        def initialize(user, result: nil)
+          super(user, 'Successful connection', result)
+        end
+      end
+
+      class FailedConnection < ConnectionEvent
+        def initialize(user, result: nil)
+          super(user, 'Failed connection', result)
+        end
+      end
+
       class ExceededQuota < TrackingEvent
         def initialize(user, quota_overage: 0)
           super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})
@@ -189,6 +216,16 @@ module Carto
             Carto::Tracking::Events::DeletedMap.new(user, visualization)
           else
             Carto::Tracking::Events::DeletedDataset.new(user, visualization)
+          end
+        end
+      end
+
+      class ConnectionFactory
+        def self.build(user, result: nil)
+          if result.success?
+            Carto::Tracking::Events::SuccessfulConnection.new(user, result: result)
+          else
+            Carto::Tracking::Events::FailedConnection.new(user, result: result)
           end
         end
       end

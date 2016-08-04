@@ -356,7 +356,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def allowed_auth_tokens
-    permission.entities_with_read_permission.map(&:get_auth_token)
+    entities = [user] + permission.entities_with_read_permission
+    entities.map(&:get_auth_token)
   end
 
   def mapcapped?

@@ -67,7 +67,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
 
   def database_host_fs_usage
     unless params[:database_host]
-      respond_with({ error: %q|Parameter 'database_host' must be supplied| },
+      respond_with({ error: "Parameter 'database_host' must be supplied" },
                    status: 400)
       return
     end

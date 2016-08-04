@@ -139,19 +139,18 @@
   margin-bottom: 8px;
   background: #FFF;
 }
-.Editor-ListAnalysis-item.has-error {
-  .Editor-ListAnalysis-itemError {
-    display: block;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid $cWhite;
-    border-radius: 50px;
-    background-color: $cError;
-    content: ' ';
-  }
+
+.Editor-ListAnalysis-itemError {
+  display: block;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid $cWhite;
+  border-radius: 50px;
+  background-color: $cError;
+  content: ' ';
 }
 
 .Editor-ListAnalysis-item:last-child {
@@ -161,9 +160,19 @@
   display: block;
   margin-right: 0;
 }
+.Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
+.Editor-ListAnalysis-item.ui-draggable {
+   // scss-lint:disable VendorPrefix
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
 .Editor-ListAnalysis-item.ui-draggable-dragging {
+   // scss-lint:disable VendorPrefix
   width: 100%;
   cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
   z-index: 1000;
 }
 .Editor-ListAnalysis-inner {
@@ -277,7 +286,3 @@
   text-align: center;
   z-index: -1;
 }
-
-
-
-

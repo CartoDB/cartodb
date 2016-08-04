@@ -17,13 +17,6 @@
   text-align: center;
 }
 
-.CodeMirror-message {
-  padding: 0 10px;
-  border-top: 1px solid #3A484E;
-  background-color: #27333A;
-  text-align: left;
-}
-
 .CodeMirror-bullet {
   @include transform(translateY(-50%));
   position: absolute;
@@ -38,7 +31,10 @@
 
 .CodeMirror-error {
   @include display-flex();
-  padding: $halfBaseSize 0;
+  padding: $halfBaseSize 10px;
+  border-top: 1px solid #3A484E;
+  background-color: #27333A;
+  text-align: left;
   line-height: $sLineHeight-medium;
 }
 

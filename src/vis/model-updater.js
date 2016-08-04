@@ -77,6 +77,8 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   _.each(this._layersCollection.select(function (layerModel) {
     return LAYER_TYPES.indexOf(layerModel.get('type')) >= 0;
   }), function (layerModel, layerIndex) {
+    // TODO: Don't use layerIndex here. Instead get indexes of mapnik and torque layers
+    // and match it with 'CartoDB' and 'torque' layer sin this._layersCollection
     layerModel.set('meta', windshaftMap.getLayerMetadata(layerIndex));
     if (layerModel.get('type') === 'torque') {
       layerModel.set('tileURLTemplates', windshaftMap.getTiles('torque').tiles);

@@ -86,3 +86,4 @@
 <div class="BuilderOnboarding-pad3"></div>
 <div class="BuilderOnboarding-pad4"></div>
 <div class="BuilderOnboarding-pad5"></div>
+<div class="BuilderOnboarding-shadow"></div>

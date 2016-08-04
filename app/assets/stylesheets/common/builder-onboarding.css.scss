@@ -6,7 +6,7 @@
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
 $sBigDescriptionWidth: 550px;
-$sWidgetsPadWidth: 322px;
+$sWidgetsPadWidth: 378px;
 $cBackgroundColor: #2E3C43;
 
 .BuilderOnboarding {
@@ -31,6 +31,7 @@ $cBackgroundColor: #2E3C43;
   height: 100%;
   background: $cBackgroundColor;
   pointer-events: all;
+  z-index: 5;
 }
 
 .BuilderOnboarding-contentWrapper.is-step0 {
@@ -214,3 +215,12 @@ $cBackgroundColor: #2E3C43;
   cursor: pointer;
 }
 
+.BuilderOnboarding-shadow {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: $sWidgetsPadWidth - 13;
+  height: 60px;
+  z-index: 1;
+}

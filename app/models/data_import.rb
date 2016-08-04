@@ -901,12 +901,13 @@ class DataImport < Sequel::Model
     if results.any?
       results.each do |result|
         CartoDB::Metrics.new.report(:import, payload_for(result))
+
         Carto::Tracking::Events::ConnectionFactory.build(user, result: result,
-                                                               imported_from: data_type,
-                                                               data_from: data_source).report
+                                                               imported_from: service_name,
+                                                               data_from: data_type).report
       end
     elsif state == STATE_FAILURE
-      Carto::Tracking::Events::FailedConnection.new(user, imported_from: data_type, data_from: data_source).report
+      Carto::Tracking::Events::FailedConnection.new(user, imported_from: service_name, data_from: data_type).report
     end
   end
 

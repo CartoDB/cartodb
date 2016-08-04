@@ -334,6 +334,15 @@ var VisModel = Backbone.Model.extend({
     // few moments (e.g: some viz.json files might be cached, etc.).
     var layersData = this._flattenLayers(vizjson.layers);
     return _.map(layersData, function (layerData) {
+      // Torque layers need some extra attributes that are present
+      // in the datasource entry of the viz.json
+      if (layerData.type === 'torque') {
+        layerData = _.extend(layerData, {
+          'user_name': vizjson.datasource.user_name,
+          'maps_api_template': vizjson.datasource.maps_api_template,
+          'stat_tag': vizjson.datasource.stat_tag
+        });
+      }
       return LayersFactory.create(layerData.type, layerData, layersOptions);
     });
   },

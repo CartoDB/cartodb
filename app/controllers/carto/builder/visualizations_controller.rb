@@ -12,13 +12,16 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced, only: :show
-      before_filter :load_derived_visualization, only: :show
+      before_filter :redirect_to_editor_if_forced,
+                    :load_derived_visualization, only: :show
       before_filter :authors_only
       before_filter :editable_visualizations_only, only: :show
 
-      after_filter :update_user_last_activity, only: :show
-      after_filter :track_builder_visit, only: :show
+      # TODO: remove this when analysis logic lives in the backend
+      before_filter :ensure_source_analyses, unless: :has_analyses?
+
+      after_filter :update_user_last_activity,
+                   :track_builder_visit, only: :show
 
       layout 'application_builder'
 
@@ -30,9 +33,15 @@ module Carto
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
+        @builder_notifications = builder_notifications
       end
 
       private
+
+      def builder_notifications
+        carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
+        carto_viewer ? carto_viewer.notifications_for_category(:builder) : {}
+      end
 
       def redirect_to_editor_if_forced
         redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id]) if current_user.force_editor?
@@ -49,6 +58,15 @@ module Carto
 
       def editable_visualizations_only
         render_404 unless @visualization.editable?
+      end
+
+      def has_analyses?
+        @visualization.analyses.any?
+      end
+
+      def ensure_source_analyses
+        @visualization.add_source_analyses
+        @visualization.reload
       end
 
       def unauthorized

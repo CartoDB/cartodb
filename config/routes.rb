@@ -498,6 +498,8 @@ CartoDB::Application.routes.draw do
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
         get 'download' => 'visualization_exports#download', as: :download
       end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
     end
   end
 

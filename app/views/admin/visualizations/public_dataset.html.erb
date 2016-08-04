@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:page_title) do %><%= @table.name.gsub(/_/," ") %><% end %>
 
 <%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
@@ -19,7 +21,7 @@
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
 
   <script>
-    var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
+    var table_name          = '<%=raw @table.qualified_table_name %>';
     var table_id            = '<%= @table.id %>';
     var schema              = <%= safe_js_object @table.schema.to_json %>;
     var user_name           = '<%= @user.username %>';

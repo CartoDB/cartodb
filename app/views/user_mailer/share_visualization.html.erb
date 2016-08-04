@@ -3,50 +3,44 @@
 <% content_for :body do %>
   <tr>
     <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-collapse: separate !important; width: 100% !important;">
+        <!-- TITLE -->
         <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
+          <td align="left" style="padding-bottom: 32px; font-weight: bold; text-transform: uppercase; font-size: 22px; font-family: 'Montserrat', Helvetica, Arial, sans-serif; color: #2E3C43;"><%= @subject %></td>
         </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
+
+        <!-- MESSAGE CONTENT -->
         <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
+          <td align="left">
+            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: separate !important;">
               <tr>
-                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Your colleague <%= @visualization.user.username %> has shared a new map called <strong><%= @visualization.name %></strong> with you.</p>
+                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-left-green-corner.png"></td>
+                <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
+                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/top-right-green-corner.png"></td>
+              </tr>
+
+              <tr>
+                <td width="16px" style="background-color: #73C86B;"></td>
+                <td style="background-color: #73C86B; font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #ffffff;">
+                  <img alt="Like" src="http://carto-email-assets.s3.amazonaws.com/check.png" width="44" height="44" style="display: block; padding-bottom: 36px;" border="0">
+                  <p style="font-size: 24px;"><strong>Shared map with you</strong></p>
+                  <p style="margin-bottom: 0;">Your colleague <%= @visualization.user.username %> has shared a new map called <strong><%= @visualization.name %></strong> with you.</p>
                 </td>
+                <td width="16px" style="background-color: #73C86B;"></td>
+              </tr>
+
+              <tr>
+                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-left-green-corner.png"></td>
+                <td style="line-height: 0px; font-size: 0; height: 20px; background-color: #73C86B;"></td>
+                <td style="line-height: 0px; font-size: 0; height: 20px;"><img src="http://carto-email-assets.s3.amazonaws.com/bottom-right-green-corner.png"></td>
               </tr>
             </table>
           </td>
         </tr>
 
         <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #1181FB; border-top: 15px solid #1181FB; border-bottom: 15px solid #1181FB; border-left: 25px solid #1181FB; border-right: 25px solid #1181FB; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; display: inline-block; text-transform: uppercase;" class="mobile-button">Go to the map</a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
+          <td align="left" style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083; padding-top: 80px;">
+            <p><a href="<%= @link %>" target="_blank" style="color: #1785FB">Go to the map</a></p>
           </td>
         </tr>
       </table>

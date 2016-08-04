@@ -1,11 +1,14 @@
 # encoding: utf-8
 require 'json'
 require 'ejs'
+require_dependency 'carto/table_utils'
 
 module CartoDB
   # Natural naming would be "Layer", but it collides with Layer class
   module LayerModule
     class Presenter
+      include Carto::TableUtils
+
       EMPTY_CSS = '#dummy{}'
 
       TORQUE_ATTRS = %w(
@@ -91,9 +94,7 @@ module CartoDB
           # if the table_name already have a schema don't add another one
           # this case happens when you share a layer already shared with you
           if user_name != options[:viewer_user].username && !poro['options']['table_name'].include?('.')
-            poro['options']['table_name'] = schema_name.include?('-') ?
-              "\"#{schema_name}\".#{poro['options']['table_name']}" :
-              "#{schema_name}.#{poro['options']['table_name']}"
+            poro['options']['table_name'] = safe_schema_and_table_quoting(schema_name, poro['options']['table_name'])
           end
         end
         poro
@@ -266,10 +267,10 @@ module CartoDB
                      layer_options['user_name']
                    end
 
-            return "select * from #{name}.#{layer_options['table_name']}"
+            return "select * from #{name}.#{safe_table_name_quoting(layer_options['table_name'])}"
           end
         end
-        "select * from #{layer_options.fetch('table_name')}"
+        "select * from #{safe_table_name_quoting(layer_options.fetch('table_name'))}"
       end
 
       def public_options

@@ -1,3 +1,9 @@
+<% if (renderLoading) { %>
+<div class="Data-loaderContainer">
+  <div class="CDB-Loader is-visible"></div>
+</div>
+<% } %>
+
 <div class="FormPlaceholder-paragraph u-tSpace-m u-flex">
   <div class="FormPlaceholder-step u-rSpace--m"></div>
   <div class="FormPlaceholder-inner">

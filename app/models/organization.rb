@@ -4,6 +4,7 @@ require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Organization < Sequel::Model
 
@@ -19,6 +20,7 @@ class Organization < Sequel::Model
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -322,14 +324,6 @@ class Organization < Sequel::Model
     users.map { |u| u.tags(exclude_shared, type) }.flatten
   end
 
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
-  end
-
   def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
     CartoDB::Visualization::Collection.new.fetch(
         user_id:  self.users.map(&:id),
@@ -469,17 +463,5 @@ class Organization < Sequel::Model
 
   def name_exists_in_users?
     !::User.where(username: self.name).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 end

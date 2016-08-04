@@ -3,10 +3,12 @@
 require_relative 'layer/presenter'
 require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'
+require_dependency 'carto/table_utils'
 require_relative 'carto/layer'
 
-
 class Layer < Sequel::Model
+  include Carto::TableUtils
+
   include Carto::LayerTableDependencies
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
@@ -178,7 +180,7 @@ class Layer < Sequel::Model
   end
 
   def qualified_table_name(viewer_user)
-    "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    "#{viewer_user.sql_safe_database_schema}.#{safe_table_name_quoting(options['table_name'])}"
   end
 
   def user

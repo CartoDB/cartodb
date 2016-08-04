@@ -1,0 +1,1 @@
+<img class="Share-user u-rSpace js-avatar" src="<%- avatar %>" data-title="<%- username %>">

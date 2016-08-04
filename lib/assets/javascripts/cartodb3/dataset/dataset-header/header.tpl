@@ -17,10 +17,15 @@
       </div>
     </button>
   </div>
-  <div class="u-bSpace--xl">
+  <div class="u-bSpace--xl u-flex u-alignCenter">
     <<%- privacyDOMElement %> class="u-rSpace--m u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
       <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
     </<%- privacyDOMElement %>>
+    <% if (isOwner) { %>
+      <% if (!isSimple) { %>
+      <div class="js-share-users"></div>
+      <% } %>
+    <% } %>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>
   </div>
 </div>

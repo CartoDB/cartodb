@@ -356,6 +356,23 @@
       "none": "No tags",
       "placeholder": "Add tags"
     },
+    "pagination-search": {
+      "filter": {
+        "search": "Search",
+        "placeholder": "Search by username or email"
+      },
+      "loading": {
+        "title": "Loading..."
+      },
+      "error": {
+        "title": "Error",
+        "desc": "Oops there was an error."
+      },
+      "no-results": {
+        "title": "'Oh! No results",
+        "desc": "Unfortunately we could not find anything with these parameters"
+      }
+    },
     "modals": {
       "add-basemap": {
         "modal-title": "Add a custom basemap",
@@ -438,87 +455,118 @@
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
       },
-      "privacy": {
-        "privacy": "privacy",
-        "cancel-btn": "CANCEL",
-        "save-btn": "SAVE",
-        "back-btn": "GO BACK",
-        "public": {
-          "type": "PUBLIC",
-          "title": "Public",
-          "body": "Everyone can view your table and download it"
+      "publish": {
+        "done-btn": "Done",
+        "update-btn": "Update",
+        "publish-btn": "Publish",
+        "publishing-btn": "Publishing",
+        "updating-btn": "Updating",
+        "menu": {
+          "share": "Share with colleagues",
+          "publish": "publish"
         },
-        "link": {
-          "type": "LINK",
-          "title": "Link",
-          "body": "Only the people with a shared link can view the data"
-        },
-        "password": {
-          "type": "PASSWORD",
-          "title": "Password",
-          "body": "Set a password and share only with specific people"
-        },
-        "private": {
-          "type": "PRIVATE",
-          "title": "Private",
-          "body": "Nobody can access this dataset"
-        },
-        "share": "Hey, maybe it's a good time to <a href=\"#\">share with your colleagues</a>.",
-        "subtitle": "Although we really believe in the power of open data, you can also protect your tables",
-        "error": {
-          "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
-        },
-        "loading": "Saving your data..."
-      },
-      "share": {
-        "done-btn": "DONE",
-        "publish-btn": "PUBLISH",
-        "back-btn": "GO BACK",
-        "published": "Published %{when}",
-        "unpublished": "Never published.",
-        "last-published": "Last version of your map was published <span class='CDB-Text is-semibold'>on %{date}</span>",
-        "unpublished-header": "Click on Publish to start sharing your map on the web",
-        "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
-        "get-link": {
-          "title": "Get the link",
-          "body": "Send to your friends, coworkers, or post in your social networks.",
-          "link": "",
-          "copy": "COPY",
-          "select": "SELECT",
+        "privacy": {
+          "privacy": "privacy",
+          "public": {
+            "type": "PUBLIC",
+            "title": "Public",
+            "body": "Everyone can view your table and download it"
+          },
+          "link": {
+            "type": "LINK",
+            "title": "Link",
+            "body": "Only the people with a shared link can view the data"
+          },
+          "password": {
+            "type": "PASSWORD",
+            "title": "Password",
+            "body": "Set a password and share only with specific people",
+            "placeholder": "Type your password"
+          },
           "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to share your map. Right now it's private."
-          }
+            "type": "PRIVATE",
+            "title": "Private",
+            "body": "Nobody can access this dataset"
+          },
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "upgrade": {
+            "title": "Interested on sharing within your organization?",
+            "desc": "%{contact} for try one of our Enterprise plans",
+            "contact": "Contact us",
+            "mail": "sales@carto.com"
+          },
+          "loading": "Saving your data..."
         },
-        "embed": {
-          "title": "Embed it",
-          "body": "Insert your map into your blog, website, or simple application.",
-          "link": "Get a simple URL.",
-          "copy": "COPY",
-          "select": "SELECT",
-          "private": {
-            "body": "<span class='CDB-Text is-semibold'>Your map is private</span>. Change your <a href='#'' class='js-change-privacy'>privacy settings</a> to embed your map. Right now it's private."
-          }
-        },
-        "cartodbjs": {
-          "title": "CARTO.js",
-          "body": "Add your map to your applications using this URL.",
-          "link": "Read more.",
-          "copy": "COPY",
-          "select": "SELECT"
-        },
-        "mobile-sdk": {
-          "title": "CARTO Mobile SDK",
-          "body": "Add your map to your native mobile applications using this line of code.",
-          "link": "Read more.",
-          "copy": "COPY",
-          "select": "SELECT"
-        },
-        "error": {
-          "title": "We couldn't save your data",
-          "subtitle": "We had an internal error trying to save your data. We recommend you try again."
-        },
-        "loading": "Saving your data..."
+        "share": {
+          "published": "Published %{when}",
+          "unpublished": "Never published.",
+          "last-published": "Last updated %{date}",
+          "unpublished-header": "Click on Publish to start sharing your map on the web",
+          "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
+          "upgradeLabel": "Upgrade",
+          "upgradeLink": "https://carto.com/pricing/#pricing-standard",
+          "upgrade": "%{upgradeLink} to share with your colleagues?",
+          "private": "PRIVATE",
+          "get-link": {
+            "title": "Get the link",
+            "body": "Send to your friends, coworkers, or post it in your social networks.",
+            "link": "",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to get the link"
+            }
+          },
+          "embed": {
+            "title": "Embed it",
+            "body": "Insert your map into your blog, website, or simple application.",
+            "link": "Get a simple URL.",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to embed map"
+            }
+          },
+          "cartodbjs": {
+            "title": "CARTO.js",
+            "body": "Add your map to your applications using this URL.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "mobile-sdk": {
+            "title": "CARTO Mobile SDK",
+            "body": "Add your map to your native mobile applications using this line of code.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "loading": "Saving your data...",
+          "organization": {
+            "title": "Default settings for your Organization",
+            "desc": "New users will have this permission"
+          },
+          "role": {
+            "viewer": "Viewer",
+            "builder": "Builder"
+          },
+          "tooltip": {
+            "group": "Access is inherited from group %{name}",
+            "org": "Access is inherited from organization",
+          },
+          "toggle": {
+            "read": "Read",
+            "write": "Write"
+          },
+          "add-people": "Add people"
+        }
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -1590,11 +1638,11 @@
           "operation-column": "operation column"
         },
         "style": {
-          "title-label": "Style",
+          "title-label": "Behaviour",
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",
-          "description": "Description",
+          "description": "Define how your widget interacts with the data",
           "yes": "Yes",
           "no": "No"
         },

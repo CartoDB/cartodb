@@ -3,25 +3,25 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module PropertiesHelper
-      def user_properties(user)
-        {
-          username: user.username,
-          email: user.email,
-          plan: user.account_type,
-          organization: (user.organization_user? ? user.organization.name : nil)
-        }
-      end
+      def visualization_properties(visualization, origin: nil)
+        created_at = visualization.created_at
+        lifetime_in_days_with_decimals = days_with_decimals(Time.now.utc - created_at)
 
-      def visualization_properties(table_visualization, origin: nil)
         properties = {
-          vis_id: table_visualization.id,
-          privacy: table_visualization.privacy,
-          type: table_visualization.type
+          vis_id: visualization.id,
+          privacy: visualization.privacy,
+          type: visualization.type,
+          object_created_at: created_at,
+          lifetime: lifetime_in_days_with_decimals
         }
 
         properties[:origin] = origin if origin
 
         properties
+      end
+
+      def days_with_decimals(time_object)
+        time_object.to_f / 60 / 60 / 24
       end
     end
 
@@ -47,13 +47,19 @@ module Carto
         private
 
         def event_properties
+          now = Time.now.utc
+          user_created_at = @user.created_at
+          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+
           {
             username: @user ? @user.username : nil,
             email: @user ? @user.email : nil,
             plan: @user ? @user.account_type : nil,
+            user_active_for: user_age_in_days_with_decimals,
+            user_created_at: user_created_at,
             organization: @user && @user.organization_user? ? @user.organization.name : nil,
             event_origin: 'Editor',
-            creation_time: Time.now.utc
+            creation_time: now
           }
         end
       end
@@ -76,6 +82,18 @@ module Carto
         end
       end
 
+      class PublishedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Published map', visualization_properties(visualization))
+        end
+      end
+
+      class ExceededQuota < TrackingEvent
+        def initialize(user, quota_overage: 0)
+          super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})
+        end
+      end
+
       class ScoredTrendingMap < TrackingEvent
         def initialize(user, visualization, views)
           super(user, 'Scored trending map', properties(visualization, views))
@@ -92,31 +110,25 @@ module Carto
         end
       end
 
-      class VistedPrivatePage < TrackingEvent
+      class VisitedPrivatePage < TrackingEvent
         def initialize(user, page)
-          super(user, 'Visited private page', properties(user, page))
-        end
-
-        private
-
-        def properties(user, page)
-          { page: page, event_origin: 'Editor', creation_time: Time.now.utc }.merge(user_properties(user))
+          super(user, 'Visited private page', { page: page })
         end
       end
 
-      class VisitedPrivateDashboard < VistedPrivatePage
+      class VisitedPrivateDashboard < VisitedPrivatePage
         def initialize(user)
           super(user, 'dashboard')
         end
       end
 
-      class VisitedPrivateBuilder < VistedPrivatePage
+      class VisitedPrivateBuilder < VisitedPrivatePage
         def initialize(user)
           super(user, 'builder')
         end
       end
 
-      class VisitedPrivateDataset < VistedPrivatePage
+      class VisitedPrivateDataset < VisitedPrivatePage
         def initialize(user)
           super(user, 'dataset')
         end

@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/data-provider');
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
-var L = window.L;
 
 describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function () {
   beforeEach(function () {
@@ -114,5 +113,4 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
 
     expect(view.setUrl).toHaveBeenCalledWith('http://0.ashbu.cartocdn.com/documentation/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png');
   });
-
 });

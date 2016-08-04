@@ -1177,6 +1177,11 @@
           "title-label": "Style",
           "select-style": "Select style",
           "color": "Color"
+        },
+        "saving": {
+          "loading": "Saving new basemap...",
+          "error": "Error saving new basemap.",
+          "success": "Basemap saved successfully."
         }
       },
       "labels": {

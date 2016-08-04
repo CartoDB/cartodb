@@ -67,15 +67,15 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
 
   def database_host_fs_usage
     unless params[:database_host]
-      respond_with({ error: %Q|Parameter 'database_host' must be supplied| },
-                     status: 400)
+      respond_with({ error: %q|Parameter 'database_host' must be supplied| },
+                   status: 400)
       return
     end
 
     connection_params = ::Rails::Sequel.configuration.environment_for(Rails.env)
-      .merge('host' => params[:database_host],
-             'database' => 'postgres'
-      ) { |_, o, n| n.nil? ? o : n }
+                                       .merge('host' => params[:database_host],
+                                              'database' => 'postgres'
+                                             ) { |_, o, n| n.nil? ? o : n }
     conn = ::Sequel.connect(connection_params)
     disk_space = conn.fetch('SELECT * FROM cartodb.cdb_get_avail_disk_space();').first
     close_sequel_connection(conn)

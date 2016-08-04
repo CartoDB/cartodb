@@ -514,6 +514,54 @@ describe('vis/vis', function () {
       expect(a1.get('source')).toEqual(a0);
     });
 
+    it('should use datasource attrs to initialize torque layers properly', function () {
+      var vizjson = fakeVizJSON();
+      vizjson.datasource = {
+        maps_api_template: 'MAPS_API_TEMPLATE',
+        user_name: 'USER_NAME1',
+        stat_tag: 'STAT_TAG'
+      };
+      vizjson.layers = [{
+        'id': '3e25bab9-77d5-43c3-aedd-fb4c904a7f6d',
+        'type': 'torque',
+        'options': {
+          'attribution': 'ATTRIBUTION',
+          'visible': true,
+          'table_name': 'TABLE_NAME',
+          'user_name': 'USER_NAME2'
+        },
+        'cartocss': 'CARTOCSS',
+        'cartocss_version': '2.1.1',
+        'sql': 'SQL',
+        'source': 'SOURCE'
+      }];
+
+      this.vis.load(new VizJSON(vizjson));
+
+      expect(this.vis.getLayer(0).attributes).toEqual({
+        'id': '3e25bab9-77d5-43c3-aedd-fb4c904a7f6d',
+        'type': 'torque',
+        'cartocss': 'CARTOCSS',
+        'cartocss_version': '2.1.1',
+        'sql': 'SQL',
+        'source': 'SOURCE',
+        'user_name': 'USER_NAME2',
+        'maps_api_template': 'MAPS_API_TEMPLATE',
+        'stat_tag': 'STAT_TAG',
+        'attribution': 'ATTRIBUTION',
+        'visible': true,
+        'table_name': 'TABLE_NAME',
+        'isRunning': false,
+        'renderRange': {
+          'start': undefined,
+          'end': undefined
+        },
+        'steps': 0,
+        'step': 0,
+        'time': undefined
+      });
+    });
+
     describe('polling', function () {
       beforeEach(function () {
         spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });

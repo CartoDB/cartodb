@@ -82,6 +82,12 @@ module Carto
         end
       end
 
+      class PublishedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Published map', visualization_properties(visualization))
+        end
+      end
+
       class ConnectionEvent < TrackingEvent
         def initialize(user, name, result)
           super(user, name, properties(result))

@@ -139,19 +139,18 @@
   margin-bottom: 8px;
   background: #FFF;
 }
-.Editor-ListAnalysis-item.has-error {
-  .Editor-ListAnalysis-itemError {
-    display: block;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid $cWhite;
-    border-radius: 50px;
-    background-color: $cError;
-    content: ' ';
-  }
+
+.Editor-ListAnalysis-itemError {
+  display: block;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid $cWhite;
+  border-radius: 50px;
+  background-color: $cError;
+  content: ' ';
 }
 
 .Editor-ListAnalysis-item:last-child {

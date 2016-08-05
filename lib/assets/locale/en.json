@@ -1288,6 +1288,7 @@
         "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",
+        "setup-analysis": "Setup analysis",
         "intact": "Intact",
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",

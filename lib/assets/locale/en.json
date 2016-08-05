@@ -1492,7 +1492,13 @@
           "title": "LAYER HIDDEN",
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
-        }
+        },
+        "torque-exists": {
+          "title": "TORQUE LAYER",
+          "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
+          "accept": "CONTINUE",
+          "cancel": "CANCEL"
+        },
       },
       "components": {
         "fill": "Fill",

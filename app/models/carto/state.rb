@@ -25,8 +25,12 @@ class Carto::State < ActiveRecord::Base
     self.json ||= Hash.new
   end
 
-  def accessible_by?(user)
-    public? || user_id == user.id
+  def writable_by?(user)
+    user_id == user.id
+  end
+
+  def viewable_by?(user)
+    public? || writable_by?(user)
   end
 
   def public?

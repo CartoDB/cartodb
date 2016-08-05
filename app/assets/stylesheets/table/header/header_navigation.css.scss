@@ -33,7 +33,7 @@
   // Global error element
   div.globalerror {
     position: absolute;
-    top:auto;
+    top:57px;
     left:0;
     bottom:0;
     width:100%;
@@ -44,20 +44,15 @@
     z-index:0;
 
     p {
-      @include border-top-radius(3px);
-      margin-top:39px;
       @include inline-block();
-      height:14px;
-      width:auto;
-      padding:8px 15px;
-      line-height:15px;
-      background:rgba(0,0,0,0.35);
-      font:normal 13px $text-fonts;
-      color:white;
+      margin-top:39px;
+      width:auto;      
+      line-height:30px;
+      padding: 0px 12px;
 
       &.error {
-        color: #EB2466;
-        background-color: #FFEBF1;
+        color: $Red1;
+        background: $White;
       }
 
       &.warn {

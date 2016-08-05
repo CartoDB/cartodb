@@ -726,6 +726,7 @@ div.map {
     width: 100%;
     height: 37px;
     margin: -18px 0 0 0;
+    top: 69px;
     z-index:1;
 
     p {
@@ -733,21 +734,15 @@ div.map {
       left: 50%;
       display: inline;
       margin: 0 0 0 -50%;
-      padding: 12px 0;
+      padding: 0px 12px;
       width: 100%;
-      border-bottom: 1px solid #ccc;
-      background-color: #E5FAEA;
-      color: #333;
-      color: #666666;
+      background-color: $White;
       text-align: center;
-      font-size: 13px;
-      font-family: $text-fonts;
       text-indent:0;
       z-index:2;
       @include transform-style("linear");
       @include transition-property("text-indent");
       @include transition-duration(300ms);
-      @include box-shadow(rgba(0, 0, 0, 0.055) 0 3px 1px 0);
 
       &.warn {
         background-color: rgba(#FFFFBF, 0.90);
@@ -957,9 +952,11 @@ div.search-result-dropdown {
   height: 19px;
   line-height: 19px;
   padding: 0px 12px;
+  min-width: 200px;
+  font-size: 15px;
   .name {
     background: none;
-    width: 250px;
+    max-width: 150px;
     margin-right: 15px;
     float: left;
     text-transform: none;
@@ -970,12 +967,14 @@ div.search-result-dropdown {
 
   .tags {
     background: none;
-    width: 300px;
+    color: $Amber1;
+    max-width: 210px;
     float: right;
     text-transform: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
   }
 }
 
@@ -990,9 +989,9 @@ div.search-result-dropdown {
 }
 
 .search-result-row.selected {
-  background-color: $SelectionBlue3;
+  background-color: $DarkGrey1;
   &:hover{
-    background-color: $SelectionBlue2;
+    background-color: $DarkGrey1;
   }
 }
 

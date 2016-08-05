@@ -302,17 +302,6 @@
     @include inline-block();
   }
 
-  input {
-    position:absolute;
-    top:5px;
-    left:5px;
-    right:65px;
-    bottom:5px;
-    &:focus {
-      outline:none;
-    }
-  }
-
   a.ok {
     @include bb_button_style;
   }

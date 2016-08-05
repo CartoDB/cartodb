@@ -156,6 +156,9 @@ $sEditButtonSize: 50px;
   height: 170px;
   overflow: hidden;
   z-index: 1;
+  &:hover {
+    cursor: pointer;
+  }
 }
 .MapCard-header.is-loading .MapCard-loader {
   display: block;

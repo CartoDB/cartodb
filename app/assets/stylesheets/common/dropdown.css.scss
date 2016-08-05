@@ -17,10 +17,9 @@
 @import "../variables/colors";
 
 .Dropdown {
+  @include bb_dropdown;
   position: absolute;
   display: none;
-  background:$DarkGrey7;
-  border: 1px solid $Grey2;
   /* x-offset, y-offset, blur, size, color */
   z-index: 100000000; // to be on top of avatar and attribution overlays on public dashboard
 

@@ -40,6 +40,52 @@
       }
 //end bloomberg fonts//
 
+/* scroll bar */
+            ::-webkit-scrollbar {
+        width: 12px; 
+        height: 12px;
+        background: transparent;
+        border: none;
+        box-sizing: border-box;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #131313;
+        }
+
+        ::-webkit-scrollbar-thumb:vertical {
+            background: url("lzr_b2_scroll_thumb_grip_vertical.png") #545454;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 1px solid black;
+            height: 15px;
+        }
+
+        ::-webkit-scrollbar-thumb:vertical:hover {
+            background: url("lzr_b2_scroll_thumb_grip_vertical.png") #666 no-repeat center;
+        }
+
+        ::-webkit-scrollbar-track:vertical {
+            background: #131313;
+            border: 1px solid black; 
+        }
+
+        ::-webkit-scrollbar-thumb:horizontal {
+            background: url("lzr_b2_scroll_thumb_grip_horizontal.png") #545454;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 1px solid black;
+        }
+
+        ::-webkit-scrollbar-thumb:horizontal:hover {
+            background: url("lzr_b2_scroll_thumb_grip_horizontal.png") #666 no-repeat center;
+        }
+
+        ::-webkit-scrollbar-track:horizontal {
+            background: #131313;
+            border: 1px solid black; 
+        }
+
 
 
 * {

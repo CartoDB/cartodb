@@ -8,13 +8,8 @@
 body {
   min-width: $w;
 }
+//bb_editor_override
 a {
-  color: #2483B4;
-  text-decoration: none;
-  &:hover {
-    text-decoration: none;
-    color: #333;
-  }
   &.disabled {
     @include opacity(0.3);
     &:hover {

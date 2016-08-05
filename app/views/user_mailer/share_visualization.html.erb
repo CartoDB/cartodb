@@ -1,11 +1,5 @@
-<% content_for(:subject) { @subject } %>
+<%- message = "<img alt='Like' src='http://carto-email-assets.s3.amazonaws.com/check.png' width='44' height='44' style='display: block; padding-bottom: 36px;' border='0'><p style='font-size: 24px; color: #ffffff;'><strong>Shared map with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@visualization.user.username} has shared a new map called <strong>#{@visualization.name}</strong> with you.</p>" %>
 
-<% content_for :body do %>
-  <%= render :partial => 'user_mailer/messages/share_visualization', :layout => 'layouts/mailer/green_layout' %>
+<%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
 
-  <tr>
-    <td align="left" style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083; padding-top: 80px;">
-      <p><a href="<%= @link %>" target="_blank" style="color: #1785FB">Go to the map</a></p>
-    </td>
-  </tr>
-<% end %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your map' } %>

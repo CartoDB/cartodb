@@ -905,13 +905,13 @@ class DataImport < Sequel::Model
         Carto::Tracking::Events::ConnectionFactory.build(user, result: result,
                                                                imported_from: service_name,
                                                                data_from: data_type,
-                                                               sync: synchronization_id).report
+                                                               sync: sync?).report
       end
     elsif state == STATE_FAILURE
       Carto::Tracking::Events::FailedConnection.new(user,
                                                     imported_from: service_name,
                                                     data_from: data_type,
-                                                    sync: synchronization_id).report
+                                                    sync: sync?).report
     end
   end
 
@@ -1046,5 +1046,9 @@ class DataImport < Sequel::Model
                             event: 'Created dataset',
                             type: 'Invalid import result',
                             exception: exception)
+  end
+
+  def sync?
+    synchronization_id.present?
   end
 end

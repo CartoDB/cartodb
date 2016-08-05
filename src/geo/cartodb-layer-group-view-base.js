@@ -1,7 +1,6 @@
-// TODO: Rename to cartodb-layer-group-view-base
 var _ = require('underscore');
 
-function CartoDBLayerCommon (layerGroupModel) {
+function CartoDBLayerGroupViewBase (layerGroupModel) {
   this.visible = true;
   this.interactionEnabled = [];
 
@@ -9,7 +8,7 @@ function CartoDBLayerCommon (layerGroupModel) {
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
 }
 
-CartoDBLayerCommon.prototype = {
+CartoDBLayerGroupViewBase.prototype = {
   _reload: function () {
     throw new Error('_reload must be implemented');
   },
@@ -86,4 +85,4 @@ CartoDBLayerCommon.prototype = {
   tilesOk: function () {}
 };
 
-module.exports = CartoDBLayerCommon;
+module.exports = CartoDBLayerGroupViewBase;

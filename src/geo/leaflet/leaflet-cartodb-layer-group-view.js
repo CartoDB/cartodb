@@ -4,7 +4,7 @@ var wax = require('wax.cartodb.js');
 var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');
-var CartoDBLayerCommon = require('../cartodb-layer-common');
+var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
@@ -14,7 +14,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   includes: [
     Backbone.Events,
     LeafletLayerView.prototype,
-    CartoDBLayerCommon.prototype
+    CartoDBLayerGroupViewBase.prototype
   ],
 
   interactionClass: wax.leaf.interaction,
@@ -99,7 +99,7 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     this.addProfiling();
 
-    CartoDBLayerCommon.call(this, layerModel);
+    CartoDBLayerGroupViewBase.call(this, layerModel);
     L.TileLayer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
   },

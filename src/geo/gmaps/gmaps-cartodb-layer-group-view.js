@@ -7,7 +7,7 @@ require('leaflet');
 var wax = require('wax.cartodb.js');
 var CartoDBDefaultOptions = require('./cartodb-default-options');
 var Projector = require('./projector');
-var CartoDBLayerCommon = require('../cartodb-layer-common');
+var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var Profiler = require('cdb.core.Profiler');
 
 var OPACITY_FILTER = 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)';
@@ -87,7 +87,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   _.extend(this.options, opts);
   GMapsLayerView.call(this, layerModel, this, gmapsMap);
   this.projector = new Projector(opts.map);
-  CartoDBLayerCommon.call(this, layerModel);
+  CartoDBLayerGroupViewBase.call(this, layerModel);
 };
 
 // TODO: Do we need this?
@@ -96,7 +96,7 @@ GMapsCartoDBLayerGroupView.prototype.interactionClass = wax.g.interaction;
 _.extend(
   GMapsCartoDBLayerGroupView.prototype,
   GMapsCartoDBLayerGroupView.prototype,
-  CartoDBLayerCommon.prototype,
+  CartoDBLayerGroupViewBase.prototype,
   GMapsCartoDBLayerGroupView.prototype,
   GMapsLayerView.prototype,
   {

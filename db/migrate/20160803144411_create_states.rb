@@ -5,7 +5,6 @@ Sequel.migration do
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
       String   :json, null: false, type: 'json'
-      String   :channel, null: false, type: 'text', default: 'public'
 
       foreign_key :user_id, :users, type: :uuid, null: false, on_delete: :cascade
       foreign_key :visualization_id, :visualizations, type: :uuid, null: false, on_delete: :cascade

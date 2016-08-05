@@ -24,4 +24,12 @@ class Carto::State < ActiveRecord::Base
   def ensure_json
     self.json ||= Hash.new
   end
+
+  def accessible_by?(user)
+    public? || user_id == user.id
+  end
+
+  def public?
+    channel == 'public'
+  end
 end

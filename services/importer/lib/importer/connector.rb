@@ -93,10 +93,12 @@ module CartoDB
       end
 
       def visualizations
+        # This method is needed to make the interface of Connector compatible with Runner
         []
       end
 
       def warnings
+        # This method is needed to make the interface of Connector compatible with Runner
         []
       end
 
@@ -107,12 +109,18 @@ module CartoDB
       end
 
       def etag
+        # This method is needed to make the interface of Connector compatible with Runner,
+        # but we have no meningful data to return here.
       end
 
       def checksum
+        # This method is needed to make the interface of Connector compatible with Runner,
+        # but we have no meningful data to return here.
       end
 
       def last_modified
+        # This method is needed to make the interface of Connector compatible with Runner,
+        # but we have no meningful data to return here.
       end
 
       private

@@ -106,6 +106,15 @@ module CartoDB
         end
       end
 
+      def etag
+      end
+
+      def checksum
+      end
+
+      def last_modified
+      end
+
       private
 
       ACCEPTED_PARAMETERS = %w(connection schema table sql_query sql_count encoding columns).freeze

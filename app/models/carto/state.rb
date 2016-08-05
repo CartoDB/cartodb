@@ -9,13 +9,9 @@ class Carto::State < ActiveRecord::Base
 
   default_scope order('created_at DESC')
 
-  PRIVATE_CHANNEL = 'public'.freeze
-  PUBLIC_CHANNEL 'private'.freeze
-
   serialize :json, ::Carto::CartoJsonSymbolizerSerializer
 
   validates :json, carto_json_symbolizer: true
-  validates :channel, inclusion: { in: [PRIVATE_CHANNEL, PUBLIC_CHANNEL] }
   validates :visualization, :user, presence: true
 
   before_save :ensure_json
@@ -24,17 +20,5 @@ class Carto::State < ActiveRecord::Base
 
   def ensure_json
     self.json ||= Hash.new
-  end
-
-  def writable_by?(user)
-    user_id == user.id
-  end
-
-  def viewable_by?(user)
-    public? || writable_by?(user)
-  end
-
-  def public?
-    channel == 'public'
   end
 end

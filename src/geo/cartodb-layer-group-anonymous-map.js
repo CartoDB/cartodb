@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var CartoDBLayerGroupBase = require('./cartodb-layer-group-base');
 
 var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
@@ -8,7 +9,7 @@ var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
   _convertToWindshaftLayerIndex: function (layerIndex) {
     var layers = {};
     var i = 0;
-    this.layers.each(function (layer, index) {
+    _.each(this.getLayers(), function (layer, index) {
       if (layer.isVisible()) {
         layers[index] = i;
         i++;
@@ -20,10 +21,6 @@ var CartoDBLayerGroupAnonymousMap = CartoDBLayerGroupBase.extend({
     }
 
     return index;
-  },
-
-  _convertToMapnikLayerIndex: function (layerIndex) {
-    return this._convertToWindshaftLayerIndex(layerIndex);
   }
 });
 

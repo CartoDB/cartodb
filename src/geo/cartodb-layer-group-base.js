@@ -1,8 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var util = require('cdb.core.util');
+var util = require('../core/util');
 
-// TODO: This could be a collection!
 var CartoDBLayerGroupBase = Backbone.Model.extend({
   defaults: {
     visible: true
@@ -15,54 +14,38 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
       throw new Error('layersCollection option is required');
     }
     this._layersCollection = options.layersCollection;
-
-    this.layers = new Backbone.Collection(options.layers || []);
-
-    this._layersCollection.bind('reset', this._resetLayers, this);
-    this._layersCollection.bind('add', this._resetLayers, this);
-    this._layersCollection.bind('remove', this._resetLayers, this);
   },
 
-  _resetLayers: function () {
-    var cartoDBLayers = this._layersCollection.getCartoDBLayers();
-    this.layers.reset(cartoDBLayers);
+  getLayers: function () {
+    return this._layersCollection.getCartoDBLayers();
   },
 
   getIndexOf: function (layerModel) {
-    return this.layers.indexOf(layerModel);
+    return this.getLayers().indexOf(layerModel);
   },
 
   getLayerAt: function (index) {
-    return this.layers.at(index);
+    return this.getLayers()[index];
   },
 
   isEqual: function () {
     return false;
   },
 
+  hasURLs: function () {
+    return !!this.get('urls');
+  },
+
   getTileURLTemplates: function () {
-    return (this.get('urls') && this.get('urls').tiles && this.get('urls').tiles) || [];
+    return (this.get('urls') && this.get('urls').tiles) || [];
   },
 
   hasTileURLTemplates: function () {
     return this.getTileURLTemplates().length > 0;
   },
 
-  /**
-   * Returns a TileJSON format object for the given layerIndex
-   * @param  {number} layerIndex The index of one of the CartoDB layers grouped by this class.
-   */
-  getTileJSONFromTiles: function (layerIndex) {
-    var urls = this.get('urls');
-    if (urls) {
-      return {
-        tilejson: '2.0.0',
-        scheme: 'xyz',
-        grids: urls.grids[this._convertToMapnikLayerIndex(layerIndex)],
-        tiles: urls.tiles,
-        formatter: function (options, data) { return data; }
-      };
-    }
+  getGridURLTemplates: function (layerIndex) {
+    return (this.get('urls') && this.get('urls').grids && this.get('urls').grids[layerIndex]) || [];
   },
 
   /**
@@ -71,16 +54,6 @@ var CartoDBLayerGroupBase = Backbone.Model.extend({
    */
   _convertToWindshaftLayerIndex: function (layerIndex) {
     throw new Error('_convertToWindshaftLayerIndex must be implemented');
-  },
-
-  /**
-   * Converts the index of a 'CartoDB' layer in this layerGroup to
-   * the corresponding index of that same layer in the Windshaft Map Instance,
-   * only considering 'mapnik' layers (eg: ignoring possible `http` below the
-   * `mapnik` layers ).
-   */
-  _convertToMapnikLayerIndex: function (layerIndex) {
-    throw new Error('_convertToMapnikLayerIndex must be implemented');
   },
 
   fetchAttributes: function (layerIndex, featureID, callback) {

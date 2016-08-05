@@ -41,7 +41,7 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
     tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
-    grids: this._calculateGridURLTemplatesForCadrtoDBLayers(windshaftMap)
+    grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap)
   };
 
   this._layerGroupModel.set({
@@ -50,14 +50,13 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   });
 };
 
+// TODO: Move to windshaftMap? (would need to know which layers are visible)
 ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];
-
   var indexesOfVisibleMapnikLayers = this._calculateIndexesOfVisibleMapnikLayers(windshaftMap);
-
   if (indexesOfVisibleMapnikLayers.length > 0) {
     _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-      urlTemplates.push(this._generateTileURLTemplate(windshaftMap, subdomain, indexesOfVisibleMapnikLayers));
+      urlTemplates.push(this._generatePNGTileURLTemplate(windshaftMap, subdomain, indexesOfVisibleMapnikLayers));
     }, this);
   }
 
@@ -74,12 +73,29 @@ ModelUpdater.prototype._calculateIndexesOfVisibleMapnikLayers = function (windsh
   }, []);
 };
 
-ModelUpdater.prototype._generateTileURLTemplate = function (windshaftMap, subdomain, indexesOfVisibleMapnikLayers) {
-  return windshaftMap.getBaseURL(subdomain) + '/' + indexesOfVisibleMapnikLayers.join(',') + '/{z}/{x}/{y}.png';
+ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, subdomain, layerIndexes) {
+  return windshaftMap.getBaseURL(subdomain) + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.png';
 };
 
-ModelUpdater.prototype._calculateGridURLTemplatesForCadrtoDBLayers = function (windshaftMap) {
-  return windshaftMap.getTiles('mapnik').grids;
+// TODO: Move to windshaftMap?
+ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  // TODO: windshaftMap.getLayerIndexesByType('mapnik') -> give it a name
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  if (indexesOfMapnikLayers.length > 0) {
+    _.each(indexesOfMapnikLayers, function (index) {
+      var layerUrlTemplates = [];
+      _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+        layerUrlTemplates.push(this._generateGridURLTemplate(windshaftMap, subdomain, index));
+      }, this);
+      urlTemplates.push(layerUrlTemplates);
+    }, this);
+  }
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, subdomain, index) {
+  return windshaftMap.getBaseURL(subdomain) + '/' + index + '/{z}/{x}/{y}.grid.json';
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
@@ -91,10 +107,24 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
     // and match it with 'CartoDB' and 'torque' layer sin this._layersCollection
     layerModel.set('meta', windshaftMap.getLayerMetadata(layerIndex));
     if (layerModel.get('type') === 'torque') {
-      layerModel.set('tileURLTemplates', windshaftMap.getTiles('torque').tiles);
+      layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     }
     layerModel.setOk();
   }, this);
+};
+
+// TODO: Move to windshaftMap?
+ModelUpdater.prototype._calculateTileURLTemplatesForTorqueLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  var indexesOfTorqueLayers = windshaftMap.getLayerIndexesByType('torque');
+  if (indexesOfTorqueLayers.length > 0) {
+    urlTemplates.push(this._generateTorqueTileURLTemplate(windshaftMap, indexesOfTorqueLayers));
+  }
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, layerIndexes) {
+  return windshaftMap.getBaseURL() + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.torque';
 };
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {

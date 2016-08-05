@@ -61,7 +61,7 @@ CartoDBLayerCommon.prototype = {
 
   _enableInteraction: function (layerIndexInLayerGroup) {
     var self = this;
-    var tilejson = this.model.getTileJSONFromTiles(layerIndexInLayerGroup);
+    var tilejson = this._generateTileJSON(layerIndexInLayerGroup);
     if (tilejson) {
       var previousLayerInteraction = this.interaction[layerIndexInLayerGroup];
       if (previousLayerInteraction) {
@@ -82,6 +82,18 @@ CartoDBLayerCommon.prototype = {
           o.layer = layerIndexInLayerGroup;
           self._manageOffEvents(self.options.map, o);
         });
+    }
+  },
+
+  _generateTileJSON: function (layerIndexInLayerGroup) {
+    if (this.model.hasURLs()) {
+      return {
+        tilejson: '2.0.0',
+        scheme: 'xyz',
+        grids: this.model.getGridURLTemplates(layerIndexInLayerGroup),
+        tiles: this.model.getTileURLTemplates(),
+        formatter: function (options, data) { return data; }
+      };
     }
   },
 
@@ -107,11 +119,11 @@ CartoDBLayerCommon.prototype = {
 
     // Enable interaction for the layers that have interaction
     // (are visible AND have tooltips OR infowindows)
-    this.model.layers.each(function(layer, index) {
+    _.each(this.model.getLayers(), function (layer, index) {
       if (layer.hasInteraction()) {
         this.setInteraction(index, true);
       }
-    }.bind(this))
+    }, this);
   },
 
   _clearInteraction: function() {

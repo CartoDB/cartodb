@@ -7,10 +7,6 @@ var CartoDBLayerGroupNamedMap = CartoDBLayerGroupBase.extend({
 
   _convertToWindshaftLayerIndex: function (layerIndex) {
     return ++layerIndex;
-  },
-
-  _convertToMapnikLayerIndex: function (layerIndex) {
-    return layerIndex;
   }
 });
 

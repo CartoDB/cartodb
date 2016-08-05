@@ -1233,14 +1233,14 @@ describe('windshaft/map-base', function () {
         urlTemplate: 'http://{username}.carto.com'
       });
 
-      expect(this.windshaftMap.getSupportedSubdomains()).toBe(['0', '1', '2', '3']);
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['0', '1', '2', '3']);
     });
 
     it('should return no subdomains if urlTemplate uses https', function () {
       this.windshaftMap.set({
         urlTemplate: 'https://{username}.carto.com'
       });
-      expect(this.windshaftMap.getSupportedSubdomains()).toBe(['']);
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['']);
     });
   });
 });

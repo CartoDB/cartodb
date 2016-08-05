@@ -59,6 +59,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
+  has_one :state, class_name: Carto::State
+
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end
@@ -372,6 +374,12 @@ class Carto::Visualization < ActiveRecord::Base
 
   def uses_builder_features?
     analyses.any? || widgets.any? || mapcapped?
+  end
+
+  def state
+    Carto::State.find(state_id)
+  rescue
+    Carto::State.create(visualization_id: id, user_id: user_id)
   end
 
   private

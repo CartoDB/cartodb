@@ -693,6 +693,12 @@ module CartoDB
         mapcaps.exists?
       end
 
+      def state
+        Carto::State.find(state_id)
+      rescue
+        Carto::State.create(visualization_id: id, user_id: user_id)
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

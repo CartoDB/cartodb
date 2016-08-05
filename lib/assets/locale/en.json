@@ -1517,6 +1517,13 @@
             "xor": "xor"
           }
         },
+        "type": {
+          "label": "Type",
+          "options": {
+            "heatmap": "Heatmap",
+            "points": "Points"
+          }
+        },
         "aggregation-value": "Operation",
         "aggregation-size": {
           "label": "Size",

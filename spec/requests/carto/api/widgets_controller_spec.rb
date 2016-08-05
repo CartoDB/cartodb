@@ -223,6 +223,22 @@ describe Carto::Api::WidgetsController do
         response.status.should == 403
       end
     end
+
+    it 'assigns consecutive orders for widgets for the same visualization' do
+      # Note: First widget is already created in the layer hierarchy context
+
+      payload = widget_payload(layer_id: @layer.id)
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 201
+        response.body[:order].should == 2
+      end
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 201
+        response.body[:order].should == 3
+      end
+
+      Carto::Widget.where(layer_id: @layer.id).destroy_all
+    end
   end
 
   describe '#update' do

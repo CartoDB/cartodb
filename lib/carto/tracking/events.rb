@@ -89,14 +89,14 @@ module Carto
       end
 
       class ConnectionEvent < TrackingEvent
-        def initialize(user, name, result, data_from, imported_from)
-          super(user, name, properties(result, data_from, imported_from))
+        def initialize(user, name, result, data_from, imported_from, sync)
+          super(user, name, properties(result, data_from, imported_from, sync))
         end
 
         private
 
-        def properties(result, data_from, imported_from)
-          properties = { data_from: data_from, imported_from: imported_from }
+        def properties(result, data_from, imported_from, sync)
+          properties = { data_from: data_from, imported_from: imported_from, sync: sync }
 
           properties[:file_type] = result.extension if result
 
@@ -105,13 +105,13 @@ module Carto
       end
 
       class SuccessfulConnection < ConnectionEvent
-        def initialize(user, result: nil, data_from: '', imported_from: '')
-          super(user, 'Successful connection', result, data_from, imported_from)
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
+          super(user, 'Successful connection', result, data_from, imported_from, sync)
         end
       end
 
       class FailedConnection < ConnectionEvent
-        def initialize(user, result: nil, data_from: '', imported_from: '')
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
           super(user, 'Failed connection', result, data_from, imported_from)
         end
       end
@@ -228,15 +228,18 @@ module Carto
       end
 
       class ConnectionFactory
-        def self.build(user, result: nil, data_from: '', imported_from: '')
+        def self.build(user, result: nil, data_from: '', imported_from: '', sync: false)
+          parameters = {
+            result: result,
+            data_from: data_from,
+            imported_from: imported_from,
+            sync: sync
+          }
+
           if result.success?
-            Carto::Tracking::Events::SuccessfulConnection.new(user, result: result,
-                                                                    data_from: data_from,
-                                                                    imported_from: imported_from)
+            Carto::Tracking::Events::SuccessfulConnection.new(user, parameters)
           else
-            Carto::Tracking::Events::FailedConnection.new(user, result: result,
-                                                                data_from: data_from,
-                                                                imported_from: imported_from)
+            Carto::Tracking::Events::FailedConnection.new(user, parameters)
           end
         end
       end

@@ -1421,7 +1421,7 @@
       "notifier": {
         "sql-alter-loading": "Modifying table…",
         "sql-alter-error": "Error in SQL query.",
-        "sql-alter-success": "Modifying applied.",
+        "sql-alter-success": "Modification applied.",
         "sql-applying": "Applying query…",
         "sql-error": "Error in SQL query.",
         "sql-success": "SQL query applied."

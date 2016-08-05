@@ -21,7 +21,7 @@ module Carto
         order = if order_param.present?
                   order_param
                 else
-                  @map.visualization.widgets.count + 1
+                  @map.visualization.widgets.count
                 end
         widget = Carto::Widget.new(
           layer_id: @layer_id,

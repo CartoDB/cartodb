@@ -46,7 +46,7 @@ shared_context 'layer hierarchy' do
     if payload[:order].present?
       response_widget[:order].should == payload[:order]
     else
-      response_widget[:order].should == @visualization.widgets.count
+      response_widget[:order].should == @visualization.widgets.count - 1
     end
   end
 
@@ -226,15 +226,16 @@ describe Carto::Api::WidgetsController do
 
     it 'assigns consecutive orders for widgets for the same visualization' do
       # Note: First widget is already created in the layer hierarchy context
+      @map.visualization.widgets.each(&:destroy)
 
       payload = widget_payload(layer_id: @layer.id)
       post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 201
-        response.body[:order].should == 2
+        response.body[:order].should == 0
       end
       post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @layer.id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 201
-        response.body[:order].should == 3
+        response.body[:order].should == 1
       end
 
       Carto::Widget.where(layer_id: @layer.id).destroy_all

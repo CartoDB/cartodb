@@ -112,7 +112,7 @@ module Carto
 
       class FailedConnection < ConnectionEvent
         def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
-          super(user, 'Failed connection', result, data_from, imported_from)
+          super(user, 'Failed connection', result, data_from, imported_from, sync)
         end
       end
 

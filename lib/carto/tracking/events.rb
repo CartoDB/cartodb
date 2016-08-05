@@ -104,9 +104,9 @@ module Carto
         end
       end
 
-      class SuccessfulConnection < ConnectionEvent
+      class CompletedConnection < ConnectionEvent
         def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
-          super(user, 'Successful connection', result, data_from, imported_from, sync)
+          super(user, 'Completed connection', result, data_from, imported_from, sync)
         end
       end
 
@@ -237,7 +237,7 @@ module Carto
           }
 
           if result.success?
-            Carto::Tracking::Events::SuccessfulConnection.new(user, parameters)
+            Carto::Tracking::Events::CompletedConnection.new(user, parameters)
           else
             Carto::Tracking::Events::FailedConnection.new(user, parameters)
           end

@@ -17,9 +17,15 @@ module Carto
       end
 
       def create
+        order_param = params[:order]
+        order = if order_param.present?
+                  order_param
+                else
+                  @map.visualization.widgets.count
+                end
         widget = Carto::Widget.new(
           layer_id: @layer_id,
-          order: Carto::Widget.where(layer_id: @layer_id).count + 1,
+          order: order,
           type: params[:type],
           title: params[:title],
           options: params[:options],

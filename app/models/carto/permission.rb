@@ -12,7 +12,7 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'.freeze
   TYPE_GROUP        = 'group'.freeze
 
-  belongs_to :owner, class_name: Carto::User, select: Carto::User::SELECT_WITH_DATABASE
+  belongs_to :owner, class_name: Carto::User, select: Carto::User::DEFAULT_SELECT
   has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
   def acl

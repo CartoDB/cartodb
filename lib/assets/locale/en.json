@@ -148,6 +148,10 @@
       "title": "Centroid from geometries",
       "short-title": "Centroid"
     },
+    "convex-hull": {
+      "title": "Convex Hull",
+      "short-title": "Convex Hull"
+    },
     "area-of-influence": {
       "title": "Create areas of influence",
       "short-title": "AOI"
@@ -599,6 +603,10 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
+          "convex-hull": {
+            "title": "Convex Hull",
+            "desc": "Calculates the minimum geometry that encloses all geometries of your dataset."
+          },
           "aggregate-intersection": {
             "title": "Intersect second layer",
             "desc": "Intersect with a second layer and calculate aggregations on the fly."
@@ -1276,6 +1284,7 @@
         "georeference-long-lat": "Lon/Lat Columns",
         "georeference-postal-code": "Postal Codes",
         "georeference-street-address": "Street Addresses",
+        "group-by": "Group by",
         "hide": "Hide",
         "input": "Input",
         "input-layer": "Define your input layer",

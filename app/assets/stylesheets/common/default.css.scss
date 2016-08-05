@@ -103,6 +103,11 @@ body {
   font-family: "Bloomberg_Prop_K";
   font-size: 12px;
   line-height: 19px;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 a {

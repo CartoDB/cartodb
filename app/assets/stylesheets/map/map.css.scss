@@ -554,6 +554,10 @@ div.map {
     @include transition-duration(300ms);
   }
 
+  .leaflet-control-attribution.leaflet-control {
+    right: 67px;
+  }
+
   div.cartodb-legend {
     @include position(false, 0, 20px, false);
     margin: 0 80px 0 0;
@@ -767,6 +771,9 @@ div.map {
       div.cartodb-searchbox {
         margin-right:520px;
       }
+      .leaflet-control-attribution.leaflet-control {
+        right: 75px;
+      }
     }
 
     &.map.derived.mobile .mobile_bkg:before {
@@ -794,7 +801,6 @@ div.map {
       div.cartodb-searchbox {
         margin-right:375px;
       }
-
     }
 
     // Table

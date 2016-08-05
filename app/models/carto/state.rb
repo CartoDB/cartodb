@@ -9,12 +9,13 @@ class Carto::State < ActiveRecord::Base
 
   default_scope order('created_at DESC')
 
-  STATE_CHANNELS = ['public', 'private'].freeze
+  PRIVATE_CHANNEL = 'public'.freeze
+  PUBLIC_CHANNEL 'private'.freeze
 
   serialize :json, ::Carto::CartoJsonSymbolizerSerializer
 
   validates :json, carto_json_symbolizer: true
-  validates :channel, inclusion: { in: STATE_CHANNELS }
+  validates :channel, inclusion: { in: [PRIVATE_CHANNEL, PUBLIC_CHANNEL] }
   validates :visualization, :user, presence: true
 
   before_save :ensure_json

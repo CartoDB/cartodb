@@ -1,4 +1,5 @@
 /* global Image */
+/* global google */
 var _ = require('underscore');
 var GMapsLayerView = require('./gmaps-layer-view');
 require('leaflet');
@@ -10,6 +11,7 @@ var CartoDBLayerCommon = require('../cartodb-layer-common');
 var Profiler = require('cdb.core.Profiler');
 
 var OPACITY_FILTER = 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF)';
+var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 function setImageOpacityIE8 (img, opacity) {
   var v = Math.round(opacity * 100);
@@ -78,9 +80,6 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   this.tiles = 0;
   this.interaction = [];
 
-  // Bind changes to the urls of the layer model
-  layerModel.bind('change:urls', this.update, this);
-
   wax.g.connector.call(this, opts);
 
   // lovely wax connector overwrites options so set them again
@@ -88,7 +87,7 @@ var GMapsCartoDBLayerGroupView = function (layerModel, gmapsMap) {
   _.extend(this.options, opts);
   GMapsLayerView.call(this, layerModel, this, gmapsMap);
   this.projector = new Projector(opts.map);
-  CartoDBLayerCommon.call(this);
+  CartoDBLayerCommon.call(this, layerModel);
 };
 
 // TODO: Do we need this?
@@ -160,8 +159,6 @@ _.extend(
     },
 
     getTile: function (coord, zoom, ownerDocument) {
-      var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
       var self = this;
       var ie = 'ActiveXObject' in window;
       var ielt9 = ie && !document.addEventListener;
@@ -214,7 +211,11 @@ _.extend(
       this.finishLoading && this.finishLoading();
     },
 
-    update: function (done) {
+    update: function () {
+      this._reload.apply(this, arguments);
+    },
+
+    _reload: function () {
       this.loading && this.loading();
 
       if (this.model.hasTileURLTemplates()) {
@@ -224,10 +225,8 @@ _.extend(
         this._reloadInteraction();
         this.refreshView();
         this.ok && this.ok();
-        done && done();
       } else {
         this.error && this.error('URLs have not been fetched yet');
-        done && done();
       }
     },
 
@@ -236,7 +235,7 @@ _.extend(
       var map = this.options.map;
       map.overlayMapTypes.forEach(
         function (layer, i) {
-          if (layer == self) {
+          if (layer === self) {
             map.overlayMapTypes.setAt(i, self);
             return;
           }

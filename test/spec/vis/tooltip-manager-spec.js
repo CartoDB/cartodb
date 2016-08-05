@@ -4,7 +4,7 @@ var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
-var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group-base');
+var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
 
 describe('src/vis/tooltip-manager.js', function () {

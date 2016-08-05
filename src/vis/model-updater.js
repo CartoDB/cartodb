@@ -41,11 +41,12 @@ ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFet
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   var urls = {
     tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
-    grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap)
+    grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
+    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
   };
 
   this._layerGroupModel.set({
-    baseURL: windshaftMap.getBaseURL(),
+    indexOfLayersInWindshaft: windshaftMap.getLayerIndexesByType('mapnik'),
     urls: urls
   });
 };
@@ -53,28 +54,15 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
 // TODO: Move to windshaftMap? (would need to know which layers are visible)
 ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];
-  var indexesOfVisibleMapnikLayers = this._calculateIndexesOfVisibleMapnikLayers(windshaftMap);
-  if (indexesOfVisibleMapnikLayers.length > 0) {
-    _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
-      urlTemplates.push(this._generatePNGTileURLTemplate(windshaftMap, subdomain, indexesOfVisibleMapnikLayers));
-    }, this);
-  }
+  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+    urlTemplates.push(this._generatePNGTileURLTemplate(windshaftMap, subdomain));
+  }, this);
 
   return urlTemplates;
 };
 
-ModelUpdater.prototype._calculateIndexesOfVisibleMapnikLayers = function (windshaftMap) {
-  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
-  return _.reduce(this._layersCollection.getCartoDBLayers(), function (indexes, layerModel, layerIndex) {
-    if (layerModel.isVisible()) {
-      indexes.push(indexesOfMapnikLayers[layerIndex]);
-    }
-    return indexes;
-  }, []);
-};
-
-ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, subdomain, layerIndexes) {
-  return windshaftMap.getBaseURL(subdomain) + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.png';
+ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, subdomain) {
+  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.png';
 };
 
 // TODO: Move to windshaftMap?
@@ -96,6 +84,21 @@ ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (wi
 
 ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, subdomain, index) {
   return windshaftMap.getBaseURL(subdomain) + '/' + index + '/{z}/{x}/{y}.grid.json';
+};
+
+ModelUpdater.prototype._calculateAttributesBaseURLsForCartoDBLayers = function (windshaftMap) {
+  var urls = [];
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  if (indexesOfMapnikLayers.length > 0) {
+    _.each(indexesOfMapnikLayers, function (index) {
+      urls.push(this._generateAttributesBaseURL(windshaftMap, index));
+    }, this);
+  }
+  return urls;
+};
+
+ModelUpdater.prototype._generateAttributesBaseURL = function (windshaftMap, index) {
+  return windshaftMap.getBaseURL() + '/' + index + '/attributes';
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
@@ -124,7 +127,7 @@ ModelUpdater.prototype._calculateTileURLTemplatesForTorqueLayers = function (win
 };
 
 ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, layerIndexes) {
-  return windshaftMap.getBaseURL() + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.torque';
+  return windshaftMap.getBaseURL() + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.json.torque';
 };
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {

@@ -10,6 +10,7 @@ var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
+var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
@@ -30,9 +31,9 @@ describe('geo/leaflet/leaflet-map-view', function () {
 
     map = new Map(null);
 
-    this.layerGroupModel = new Backbone.Model({ type: 'layergroup' });
-    this.layerGroupModel.hasTileURLTemplates = function () { return true; };
-    this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]; };
+    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new Backbone.Collection() });
+    spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
+    spyOn(this.layerGroupModel, 'getTileURLTemplates').and.returnValue([ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]);
 
     mapView = new LeafletMapView({
       el: container,

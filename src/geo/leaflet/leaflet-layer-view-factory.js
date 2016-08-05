@@ -27,7 +27,6 @@ LeafletLayerViewFactory.prototype._constructors = {
   'plain': LeafletPlainLayerView,
   'gmapsbase': LeafletGmapsTiledLayerView,
   'layergroup': LayerGroupViewConstructor,
-  'namedmap': LayerGroupViewConstructor,
   'torque': LeafletTorqueLayerView
 };
 

@@ -19,7 +19,7 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'cartocss'],
 
   TORQUE_LAYER_CARTOCSS_PROPS: [
     '-torque-frame-count',

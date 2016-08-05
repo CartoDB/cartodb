@@ -5,9 +5,9 @@ var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow-view');
-var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
+var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
-var LayerGroupModel = CartoDBLayerGroupBase;
+var LayerGroupModel = CartoDBLayerGroup;
 
 describe('core/geo/map-view', function () {
   beforeEach(function () {

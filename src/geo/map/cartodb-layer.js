@@ -11,7 +11,7 @@ var CartoDBLayer = LayerModelBase.extend({
     visible: true
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'sql_wrap', 'cartocss'],
 
   initialize: function (attrs, options) {
     attrs = attrs || {};

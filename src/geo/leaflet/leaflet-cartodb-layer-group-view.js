@@ -8,6 +8,8 @@ var CartoDBLayerCommon = require('../cartodb-layer-common');
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   includes: [
     Backbone.Events,
@@ -95,12 +97,9 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     this.fire = this.trigger;
 
-    // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this._onURLsChanged, this);
-
     this.addProfiling();
 
-    CartoDBLayerCommon.call(this);
+    CartoDBLayerCommon.call(this, layerModel);
     L.TileLayer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
@@ -148,7 +147,6 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
     if (!this.model.hasTileURLTemplates()) {
-      var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       return EMPTY_GIF;
     }
 
@@ -200,20 +198,14 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     }
   },
 
-  /**
-   * On tile and grid URLs change,
-   * it generates a new url for tiles and refresh leaflet layer
-   * do not collide with leaflet _update
-   */
-  _onURLsChanged: function () {
+  _reload: function () {
     if (this.model.hasTileURLTemplates()) {
       this.setUrl(this.model.getTileURLTemplates()[0]);
       // manage interaction
       this._reloadInteraction();
-      // TODO: Is this necessary?
       this.ok && this.ok();
     } else {
-      this.error && this.error('URLs have not been fetched yet');
+      this.setUrl(EMPTY_GIF);
     }
   },
 

@@ -5,7 +5,6 @@ var OverlaysFactory = require('../../../src/vis/overlays-factory');
 describe('vis/overlays-factory', function () {
   var createFakeLayerView = function () {
     var view = new Backbone.View();
-    view.setInteraction = function () {};
     return view;
   };
 

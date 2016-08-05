@@ -8,8 +8,7 @@ var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
-var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
-var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
+var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('./model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
@@ -92,23 +91,21 @@ var VisModel = Backbone.Model.extend({
     // Create the WindhaftClient
     var endpoint;
     var WindshaftMapClass;
-    var CartoDBLayerGroupClass;
 
     var datasource = vizjson.datasource;
     var isNamedMap = !!datasource.template_name;
 
     if (isNamedMap) {
       endpoint = [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/');
-      CartoDBLayerGroupClass = CartoDBLayerGroupNamedMap;
       WindshaftMapClass = WindshaftNamedMap;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      CartoDBLayerGroupClass = CartoDBLayerGroupAnonymousMap;
       WindshaftMapClass = WindshaftAnonymousMap;
     }
 
-    this.layerGroupModel = new CartoDBLayerGroupClass({
-      apiKey: this.get('apiKey')
+    this.layerGroupModel = new CartoDBLayerGroup({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     }, {
       layersCollection: this._layersCollection
     });

@@ -46,6 +46,10 @@
       .action.title {
         @include inline-block();
         line-height:30px;
+        &:hover {
+          color: $Teal1;
+          cursor: pointer;
+        }
       }
     }
 

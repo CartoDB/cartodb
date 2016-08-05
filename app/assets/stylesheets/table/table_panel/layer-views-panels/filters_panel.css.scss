@@ -128,27 +128,13 @@
     .add_filter {
       display:none;
       position:relative;
-      width: 385px;
-      margin: 0 0 40px 0;
-
-      & > a.add {
-        position:relative;
-        top: 15px;
-        padding: 15px;
-        color: #6A9DCA;
-        font-size: 20px;
-      }
-
+      text-align: left;
+      margin-top: 6px;
       .combo {
-
-        
-
         display:none;
-        @include box-sizing(border-box);
         position:relative;
         top: 0;
         padding: 24px;
-
         width: 100%;
         background: #FFF9E7;
 
@@ -384,7 +370,7 @@
             border: 4px solid transparent;
             position: absolute;
             bottom: 0;
-            left: 14px;
+            left: 7px;
             right: 0;
             width: 0px;
           }
@@ -397,14 +383,14 @@
               bottom: 7px;
               top: 0px;
             }
-            margin-right: -3px;
+            margin-right: -6px;
           }
 
           &.down {
             @include border-radius(0 2px 2px 0);
             &:before {
               border-top: 4px solid $Grey1;
-              top: 9px;
+              top: 7px;
               
             }
     
@@ -421,14 +407,13 @@
         li {
           clear:both;
           overflow:hidden;
-
           position:relative;
           padding: 10px 0 10px 15px;
           margin: 0;
-          
-          border-top: 1px solid $Black;
 
-          cursor: pointer;
+          &:hover {
+            cursor: pointer;
+          }
 
           p {
 

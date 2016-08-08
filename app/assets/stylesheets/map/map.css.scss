@@ -24,7 +24,7 @@ div.map {
 }
 
 div.map, .mobile_bkg {
-  padding: 84px 84px 20px 20px;
+  padding: 20px 84px 20px 20px;
 }
 
 div.map.animated .cartodb-map {
@@ -479,7 +479,7 @@ div.map {
 
   &.table div.cartodb-map {
 
-    @include position(-1px, 0, 0, 0);
+    @include position(0, 0, 0, 0);
     @include border-radius(0);
 
   }
@@ -548,6 +548,7 @@ div.map {
   div.cartodb-legend-stack,
   div.cartodb-share,
   div.cartodb-layer-selector-box,
+  div.cartodb-inset-map-box,
   div.cartodb-searchbox {
     @include transform-style("linear");
     @include transition-property("margin");

@@ -6,6 +6,7 @@ module Carto
     class UserCreationsController < ::Api::ApplicationController
 
       skip_before_filter :api_authorization_required
+      skip_before_filter :http_header_authentication, only: [:show]
 
       ssl_required :show
 

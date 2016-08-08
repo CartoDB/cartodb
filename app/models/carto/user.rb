@@ -5,11 +5,13 @@ require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
+require_dependency 'carto/helpers/auth_token_generator'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -22,9 +24,7 @@ class Carto::User < ActiveRecord::Base
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
-                   "users.viewer".freeze
-
-  SELECT_WITH_DATABASE = "#{DEFAULT_SELECT}, users.quota_in_bytes, users.database_host".freeze
+                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -460,7 +460,10 @@ class Carto::User < ActiveRecord::Base
   def get_auth_tokens
     tokens = [get_auth_token]
 
-    tokens << organization.get_auth_token if has_organization?
+    if has_organization?
+      tokens << organization.get_auth_token
+      tokens += groups.map(&:get_auth_token)
+    end
 
     tokens
   end
@@ -469,18 +472,10 @@ class Carto::User < ActiveRecord::Base
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token
 
-    auth_token.present? ? auth_token : generate_auth_token
+    auth_token || generate_auth_token
   end
 
   def notifications_for_category(category)
     notifications.notifications[category] || {}
-  end
-
-  private
-
-  def generate_auth_token
-    update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
-
-    auth_token
   end
 end

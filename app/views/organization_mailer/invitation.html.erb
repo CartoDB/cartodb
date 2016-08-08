@@ -1,36 +1,20 @@
-<% content_for(:subject) { @subject } %>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>Hello and welcome!</p>
+    <p>Join the <%= @invitation.organization.name %> organization in CARTO. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
+    <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
+    <p>You can see their message below:</p>
+  </td>
+</tr>
 
-<% content_for :body do %>
-  <tr>
-    <td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-collapse: separate !important; width: 100% !important;">
-        <!-- TITLE -->
-        <tr>
-          <td align="left" style="padding-bottom: 32px; font-weight: bold; text-transform: uppercase; font-size: 22px; font-family: 'Montserrat', Helvetica, Arial, sans-serif; color: #2E3C43;">You are invited to join the <%= @invitation.organization.name_to_display %> organization at CARTO<%= @invitation.viewer? ? ' as a viewer' : '' %></td>
-        </tr>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p><i><%= simple_format(@invitation.welcome_text) %></i></p>
+  </td>
+</tr>
 
-        <!-- MESSAGE CONTENT -->
-        <tr>
-          <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-            <p>Hello and welcome!</p>
-            <p>Join the <%= @invitation.organization.name %> organization in CARTO. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
-            <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
-            <p>You can see their message below:</p>
-          </td>
-        </tr>
-
-        <tr>
-          <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-            <i><%= simple_format(@invitation.welcome_text) %></i>
-          </td>
-        </tr>
-
-        <tr>
-          <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-            <p>Happy mapping!</p>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>Happy mapping!</p>
+  </td>
+</tr>

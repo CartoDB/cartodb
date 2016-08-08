@@ -10,6 +10,7 @@ module Carto
 
         before_filter :load_visualization, only: [:show, :show_protected]
         before_filter :load_vizjson, only: [:show, :show_protected]
+        before_filter :load_auth_tokens, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
@@ -32,6 +33,9 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
           render_404 unless @visualization
+        end
+
+        def load_auth_tokens
           @auth_tokens = if @visualization.password_protected?
                            @visualization.get_auth_tokens
                          elsif @visualization.organization?

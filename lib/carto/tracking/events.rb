@@ -48,18 +48,24 @@ module Carto
 
         def event_properties
           now = Time.now.utc
+
+          properties = user_properties(now: now)
+          properties.merge(event_origin: 'Editor', creation_time: now)
+        end
+
+        def user_properties(now: Time.now.utc)
+          return {} unless @user
+
           user_created_at = @user.created_at
           user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
           {
-            username: @user ? @user.username : nil,
-            email: @user ? @user.email : nil,
-            plan: @user ? @user.account_type : nil,
+            username: @user.username,
+            email: @user.email,
+            plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
-            organization: @user && @user.organization_user? ? @user.organization.name : nil,
-            event_origin: 'Editor',
-            creation_time: now
+            organization: @user.organization_user? ? @user.organization.name : nil)
           }
         end
       end

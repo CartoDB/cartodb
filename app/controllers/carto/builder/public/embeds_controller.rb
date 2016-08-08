@@ -34,7 +34,7 @@ module Carto
           render_404 unless @visualization
           @auth_tokens = if @visualization.password_protected?
                            @visualization.get_auth_tokens
-                         else
+                         elsif @visualization.organization?
                            current_viewer.get_auth_tokens
                          end
         end

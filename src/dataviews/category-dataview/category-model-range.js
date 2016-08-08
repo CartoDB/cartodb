@@ -18,7 +18,7 @@ module.exports = Model.extend({
     var url = this.get('url');
     var queryOptions = [];
     if (this.get('apiKey')) {
-      queryOptions.push('api_key=' + this.get('apiKey'));
+      url += '?api_key=' + this.get('apiKey');
     } else if (this.get('authToken')) {
       var authToken = this.get('authToken');
       if (authToken instanceof Array) {
@@ -28,8 +28,8 @@ module.exports = Model.extend({
       } else {
         queryOptions.push('auth_token=' + authToken);
       }
+      url += '?' + queryOptions.join('&');
     }
-    url += '?' + queryOptions.join('&');
     return url;
   },
 

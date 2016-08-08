@@ -32,6 +32,11 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
           render_404 unless @visualization
+          @auth_tokens = if @visualization.password_protected?
+                           @visualization.get_auth_tokens
+                         else
+                           current_viewer.get_auth_tokens
+                         end
         end
 
         def load_vizjson

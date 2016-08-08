@@ -15,6 +15,7 @@
     position:relative;
     height:30px;
     line-height:30px;
+    background:$DarkGrey2;
       &.open {
         > .title-bar {
           background-color: $layer_header_background_active;
@@ -61,6 +62,13 @@
       width: 385px;
       position: relative;
       margin-left: 65px;
+
+      .wrapper {
+        position:absolute;
+        top:0; left:0; bottom:0; right:0;
+        overflow:auto;
+        margin-bottom:30px;
+      }
 
       .title-layer-contents {
 

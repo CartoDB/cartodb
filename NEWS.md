@@ -13,6 +13,11 @@ ghost tables, importing common data and automatic index creation.
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
+* Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
+  * `sudo apt-get update`
+  * `sudo apt-get install gdal2.1-static-bin`
+  * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
+
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

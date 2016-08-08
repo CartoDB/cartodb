@@ -376,11 +376,10 @@ class Carto::Visualization < ActiveRecord::Base
     analyses.any? || widgets.any? || mapcapped?
   end
 
-  def state
-    Carto::State.find(state_id)
-  rescue
-    Carto::State.create(visualization_id: id, user_id: user_id)
+  def state_with_creation
+    state_without_creation || build_state(user_id: user_id)
   end
+  alias_method_chain :state, :creation
 
   private
 

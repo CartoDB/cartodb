@@ -355,8 +355,9 @@ class Carto::Visualization < ActiveRecord::Base
     CartoDB::Varnish.new.purge(varnish_vizjson_key)
   end
 
-  def all_users_with_read_permission
-    permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
+  def allowed_auth_tokens
+    entities = [user] + permission.entities_with_read_permission
+    entities.map(&:get_auth_token)
   end
 
   def mapcapped?

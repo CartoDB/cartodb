@@ -1,6 +1,9 @@
 require_relative '../../../../spec_helper'
+require_relative '../../../../factories/organizations_contexts.rb'
 
 describe Carto::Builder::Public::EmbedsController do
+  include Warden::Test::Helpers
+
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
     @map = FactoryGirl.create(:map, user_id: @user.id)
@@ -49,6 +52,17 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 403
     end
 
+    it 'embeds private visualizations if logged in' do
+      @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+      @visualization.save
+
+      login_as(@user)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include @visualization.name
+    end
+
     it 'does not embed password protected viz' do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
@@ -63,6 +77,42 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: UUIDTools::UUID.timestamp_create.to_s)
 
       response.status.should == 404
+    end
+
+    describe 'in organizations' do
+      include_context 'organization with users helper'
+
+      before(:each) do
+        @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+        @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id)
+        @org_visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @org_visualization.save
+
+        share_visualization(@org_visualization, @org_user_1)
+      end
+
+      it 'does not embed private visualizations' do
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 403
+        response.body.should include 'Embed error | CARTO'
+      end
+
+      it 'embeds private visualizations if logged in as allowed user' do
+        login_as(@org_user_1)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 200
+        response.body.should include @org_visualization.name
+      end
+
+      it 'embeds private visualizations if logged in as not allowed user' do
+        login_as(@org_user_2)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 403
+        response.body.should include 'Embed error | CARTO'
+      end
     end
   end
 

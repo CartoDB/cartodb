@@ -34,12 +34,14 @@ module.exports = DataviewModelBase.extend({
 
     // Internal model for calculating total amount of values in the category
     this._rangeModel = new CategoryModelRange({
-      apiKey: this.get('apiKey')
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     });
 
     this._data = new CategoriesCollection();
     this._searchModel = new SearchModel({
-      apiKey: this.get('apiKey')
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     });
 
     this.on('change:column change:aggregation change:aggregation_column', this._reloadVisAndForceFetch, this);

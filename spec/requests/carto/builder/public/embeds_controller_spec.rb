@@ -89,6 +89,8 @@ describe Carto::Builder::Public::EmbedsController do
         @org_visualization.save
 
         share_visualization(@org_visualization, @org_user_1)
+        Carto::Visualization.any_instance.unstub(:organization?)
+        Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
       end
 
       it 'does not embed private visualizations' do

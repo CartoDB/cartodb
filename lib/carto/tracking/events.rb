@@ -20,6 +20,22 @@ module Carto
         properties
       end
 
+      def user_properties(user, now: Time.now.utc)
+        return {} unless user
+
+        user_created_at = user.created_at
+        user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+
+        {
+          username: user.username,
+          email: user.email,
+          plan: user.account_type,
+          user_active_for: user_age_in_days_with_decimals,
+          user_created_at: user_created_at,
+          organization: user.organization_user? ? user.organization.name : nil
+        }
+      end
+
       def days_with_decimals(time_object)
         time_object.to_f / 60 / 60 / 24
       end
@@ -49,24 +65,8 @@ module Carto
         def event_properties
           now = Time.now.utc
 
-          properties = user_properties(now: now)
+          properties = user_properties(@user, now: now)
           properties.merge(event_origin: 'Editor', creation_time: now)
-        end
-
-        def user_properties(now: Time.now.utc)
-          return {} unless @user
-
-          user_created_at = @user.created_at
-          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
-
-          {
-            username: @user.username,
-            email: @user.email,
-            plan: @user.account_type,
-            user_active_for: user_age_in_days_with_decimals,
-            user_created_at: user_created_at,
-            organization: @user.organization_user? ? @user.organization.name : nil)
-          }
         end
       end
 

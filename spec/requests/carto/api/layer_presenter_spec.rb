@@ -661,10 +661,6 @@ describe Carto::Api::LayerPresenter do
 
       shared_examples_for 'torque wizard family' do
         describe 'animated' do
-          it 'is enabled if it contains any torque-related properties' do
-            expect(@animated).to include('enabled' => true)
-          end
-
           it 'property becomes attribute' do
             expect(@animated).to include('attribute' => property)
           end
@@ -979,6 +975,10 @@ describe Carto::Api::LayerPresenter do
       describe 'properties' do
         before(:each) do
           @properties = @style['properties']
+        end
+
+        it 'animated is enabled if it contains any torque-related properties' do
+          expect(@animated).to include('enabled' => true)
         end
 
         describe 'fill' do

@@ -1492,6 +1492,11 @@
         "properties": {
           "title-label": "Style",
           "desc": "Change the visualization"
+        },
+        "unanimatable": {
+          "desc": "Not any numeric or date column found in your data.",
+          "body": "You can change your column's type in the %{link}.",
+          "label": "table view"
         }
       },
       "code-mirror": {

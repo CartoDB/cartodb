@@ -56,14 +56,15 @@
   width: 100%;
 }
 
+
 .CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
   opacity: .8 !important;
-  display: block;
+ /* display: block;*/
   margin: 2px !important;
   background: none !important;
 }
 .CustomList-list--visible.ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
-  min-height: 36px;
+ /* min-height: 36px;*/
 }
 
 .Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail {

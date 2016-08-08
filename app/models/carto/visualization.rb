@@ -152,7 +152,7 @@ class Carto::Visualization < ActiveRecord::Base
     is_public? || is_link_privacy?
   end
 
-  def is_writable_by_user(user)
+  def writable_by?(user)
     (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 

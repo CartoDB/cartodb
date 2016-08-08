@@ -50,7 +50,7 @@ module Carto
       end
 
       def authors_only
-        unauthorized unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
+        unauthorized unless !current_user.nil? && @visualization.writable_by?(current_user)
       end
 
       def editable_visualizations_only

@@ -9,7 +9,7 @@ require 'json'
 # 2.0.2: export username
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.2'.freeze
+    CURRENT_VERSION = '2.0.3'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i

@@ -11,7 +11,6 @@ module Carto
           created_at: @state.created_at,
           updated_at: @state.updated_at,
           json: @state.json,
-          channel: @user.channel,
           user: Carto::Api::UserPresenter.new(@state.user).to_public_poro
         }
       end

@@ -1,9 +1,6 @@
 require_relative '../../../../spec_helper'
-require_relative '../../../../factories/users_helper'
 
 describe Carto::Builder::Public::EmbedsController do
-  include_context 'users helper'
-
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
     @map = FactoryGirl.create(:map, user_id: @user.id)
@@ -17,7 +14,7 @@ describe Carto::Builder::Public::EmbedsController do
   after(:all) do
     @map.destroy
     @visualization.destroy
-    @user.destroy
+    User[@user.id].destroy
   end
 
   describe '#show' do

@@ -67,6 +67,12 @@ module Carto
         visualization.user = Carto::User.new(username: exported_user[:username])
       end
 
+      # This is optional as it was added in version 2.0.3
+      exported_state = exported_visualization[:state]
+      if exported_state
+        visualization.state = build_state_from_hash(exported_state)
+      end
+
       active_layer_order = exported_layers.index { |l| l['active_layer'] }
       if active_layer_order
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
@@ -169,6 +175,12 @@ module Carto
         source_id: exported_widget[:source_id]
       )
     end
+
+    def build_state_from_hash(exported_state)
+      return nil unless exported_state
+
+      Carto::State.new(json: exported_state[:json])
+    end
   end
 
   module VisualizationsExportService2Exporter
@@ -213,7 +225,8 @@ module Carto
         layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
-        user: export_user(visualization.user)
+        user: export_user(visualization.user),
+        state: export_state(visualization.state)
       }
     end
 
@@ -271,6 +284,12 @@ module Carto
     def exported_analysis(analysis)
       {
         analysis_definition: analysis.analysis_definition
+      }
+    end
+
+    def export_state(state)
+      {
+        json: state.json
       }
     end
   end

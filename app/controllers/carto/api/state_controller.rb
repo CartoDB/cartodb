@@ -1,3 +1,5 @@
+# encoding utf-8
+
 module Carto
   module Api
     class StateController < ::Api::ApplicationController

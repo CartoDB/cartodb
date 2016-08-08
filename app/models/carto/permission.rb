@@ -12,7 +12,7 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'.freeze
   TYPE_GROUP        = 'group'.freeze
 
-  belongs_to :owner, class_name: Carto::User, select: Carto::User::SELECT_WITH_DATABASE
+  belongs_to :owner, class_name: Carto::User, select: Carto::User::DEFAULT_SELECT
   has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
   def acl
@@ -39,6 +39,21 @@ class Carto::Permission < ActiveRecord::Base
   DELETED_COLUMNS = ['entity_id', 'entity_type'].freeze
   def self.columns
     super.reject { |c| DELETED_COLUMNS.include?(c.name) }
+  end
+
+  def entities_with_read_permission
+    entities = acl.map do |entry|
+      entity_id = entry[:id]
+      case entry[:type]
+      when TYPE_USER
+        Carto::User.where(id: entity_id).first
+      when TYPE_ORGANIZATION
+        Carto::Organization.where(id: entity_id).first
+      when TYPE_GROUP
+        Carto::Group.where(id: entity_id).first
+      end
+    end
+    entities.compact.uniq
   end
 
   private

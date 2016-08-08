@@ -493,8 +493,7 @@ CartoDB::Application.routes.draw do
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
-        # resources :snapshots, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
-        resource :state, only: :update
+        resource :state, only: [:update]
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do

@@ -441,4 +441,21 @@ shared_examples_for "user models" do
       @user1.get_obs_general_calls.should == 120
     end
   end
+
+  describe 'single user' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      User[@user.id].destroy
+    end
+
+    it 'generates auth_tokens and save them for future accesses' do
+      token = @user.get_auth_token
+      token.should be
+      @user.reload
+      @user.get_auth_token.should eq token
+    end
+  end
 end

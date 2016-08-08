@@ -10,20 +10,21 @@
   </script>
 <% end %>
 
-<div class="Sessions" style="<%= background %>">
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
       <div class="u-inner">
         <div class="Sessions-center Sessions--centered">
-          <div class="Logo js-logo is-loading">
-            <span class="Logo--avatar">
-              <i class="CDB-IconFont CDB-IconFont-cartoFante" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>"></i>
-            </span>
-            <span class="Logo-sub Sessions-logoNotification js-notification" style="color: <%= @organization && @organization.color ? darken_color(@organization.color,0.7) : "#292E33" %>">
-              <i class="CDB-IconFont CDB-IconFont-check js-successNotification"></i>
-              <span class="js-errorNotification">!</span>
-            </span>
+          <div class="Sessions-logoContainer">
+            <picture class="Navbar-brand">
+              <% if @organization.present? %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <% else %>
+                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+              <% end %>
+            </picture>
           </div>
+
           <div class="js-info">
             <h1 class="Sessions-title u-tspace-m">Your account is being created</h1>
             <p class="Sessions-description">It will take us some time, just a few seconds.</p>

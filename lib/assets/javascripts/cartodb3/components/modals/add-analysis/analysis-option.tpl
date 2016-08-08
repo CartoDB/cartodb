@@ -1,4 +1,4 @@
-<div class="ModalBlockList-itemInput">
+<div class="ModalBlockList-itemInput CDB-Size-large">
   <input class="CDB-Radio" type="radio" value="true"
       <% if (selected) { %>checked="checked"<% } %>
       <% if (!enabled) { %>disabled="disabled"<% } %>

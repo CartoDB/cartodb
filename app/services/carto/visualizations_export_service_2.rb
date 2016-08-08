@@ -6,9 +6,10 @@ require 'json'
 #   - No Odyssey support: export fails if any of parent_id / prev_id / next_id / slide_transition_options are set.
 #   - Privacy is exported, but permissions are not.
 # 2.0.1: export Widget.source_id
+# 2.0.2: export username
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.1'.freeze
+    CURRENT_VERSION = '2.0.2'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -59,6 +60,12 @@ module Carto
         overlays: build_overlays_from_hash(exported_overlays),
         analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) }
       )
+
+      # This is optional as it was added in version 2.0.2
+      exported_user = exported_visualization[:user]
+      if exported_user
+        visualization.user = Carto::User.new(username: exported_user[:username])
+      end
 
       active_layer_order = exported_layers.index { |l| l['active_layer'] }
       if active_layer_order
@@ -205,7 +212,14 @@ module Carto
         map: export_map(visualization.map),
         layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
         overlays: visualization.overlays.map { |o| export_overlay(o) },
-        analyses: visualization.analyses.map { |a| exported_analysis(a) }
+        analyses: visualization.analyses.map { |a| exported_analysis(a) },
+        user: export_user(visualization.user)
+      }
+    end
+
+    def export_user(user)
+      {
+        username: user.username
       }
     end
 

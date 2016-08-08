@@ -1,26 +1,14 @@
 <form class="DatePicker-timers">
   <div class="DatePicker-timersField u-rSpace--xl">
-    <label class="u-upperCase CDB-Text- is-semibold CDB-Size-small u-rSpace--m">
-      HOUR
-    </label>
-    <div class="DatePicker-timersInput" data-editors="fromHour"></div>
+    <div class="DatePicker-timersInput" data-fields="fromHour"></div>
   </div>
   <div class="DatePicker-timersField u-rSpace--xl">
-    <label class="u-upperCase CDB-Text is-semibold CDB-Size-small u-rSpace--m">
-      MIN
-    </label>
-    <div class="DatePicker-timersInput" data-editors="fromMin"></div>
+    <div class="DatePicker-timersInput" data-fields="fromMin"></div>
   </div>
   <div class="DatePicker-timersField DatePicker-timersField--spaced u-rSpace--xl">
-    <label class="u-upperCase CDB-Text is-semibold CDB-Size-small u-rSpace--m">
-      HOUR
-    </label>
-    <div class="DatePicker-timersInput" data-editors="toHour"></div>
+    <div class="DatePicker-timersInput" data-fields="toHour"></div>
   </div>
   <div class="DatePicker-timersField">
-    <label class="u-upperCase CDB-Text is-semibold CDB-Size-small u-rSpace--m">
-      MIN
-    </label>
-    <div class="DatePicker-timersInput" data-editors="toMin"></div>
+    <div class="DatePicker-timersInput" data-fields="toMin"></div>
   </div>
 </form>

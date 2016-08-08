@@ -77,7 +77,6 @@
 
 .ModalBlockList-item {
   @include display-flex();
-  @include align-items(baseline);
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
@@ -90,7 +89,7 @@
 }
 
 .ModalBlockList-itemInput {
-  margin-right: 16px;
+  margin-right: $baseSize;
 }
 
 .ModalBlockList-item:hover {
@@ -203,6 +202,7 @@
   color: $cSecondaryText;
   text-align: left;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .Editor-navButtonsItemLink:hover {
@@ -216,4 +216,76 @@
   box-shadow: 1px 0 0 $cBlue, -1px 0 0 $cBlue, 0 1px 0 $cBlue, 0 -1px 0 $cBlue;
 }
 
+.Modal-containerList {
+  width: 528px;
+  margin: 0 auto;
+}
+
+.Publish-modal {
+  @include display-flex();
+  @include flex-direction(column);
+  width: 100%;
+  height: 100%;
+}
+
+.Publish-modalHeader {
+  @include flex(0 0 auto);
+  padding: $baseSize * 3 0;
+}
+
+.Publish-modalBody {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
+  position: relative;
+  padding-bottom: 100px;
+  overflow: hidden;
+}
+
+.Publish-modalBody.is-simple,
+.Publish-modalFooter,
+.Publish-modalContent {
+  background-color: $cThirdBackground;
+}
+
+.Publish-modalShadow {
+  width: 100%;
+  background-color: $cWhite;
+}
+
+.Publish-modalMenu,
+.Publish-modalShadow {
+  position: relative;
+  // In orden to change border by shadow, uncomment this
+  // min-height: 5px; // to be able to show the shadow if no content inside.
+  // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid $cMainLine;
+  z-index: 1;
+}
+
+.Publish-modalShare {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex-grow(1);
+  @include justify-content(center);
+  @include align-items(center);
+}
+
+.Publish-modalButton {
+  height: 24px;
+}
+
+.CDB-NavSubmenu-item.is-selected .Publish-modalLink {
+  border-color: $cMainText;
+}
+
+.Upgrade-icon {
+  padding: $baseSize;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+}
+
+.Upgrade-body {
+  text-align: left;
+}
 

@@ -114,7 +114,7 @@
 }
 
 .Filters-searchLink {
-  @include display-flex();
+  display: block;
   color: #1181FB;
 }
 .Filters-searchLink:after {
@@ -193,6 +193,8 @@ a.Filters-cleanSearch { line-height:32px }
 }
 .Filters-typeLink.is-selected {
   color:$cTypography-linkSelected;
+  height: 17px;
+  display: block;
 
   &:before {
     content:'';

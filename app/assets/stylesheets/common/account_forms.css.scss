@@ -470,11 +470,10 @@ $sLabel-width: 140px;
   }
 }
 .FormAccount-link {
-  color: $cTypography-link;
+  color: #1181FB;
   font-weight: normal;
-  text-decoration: underline;
   &:hover {
-    color: $cTypography-linkHover;
+    text-decoration: underline;
     cursor: pointer;
   }
 }

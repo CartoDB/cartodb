@@ -321,9 +321,7 @@ CartoDB::Application.routes.draw do
     # 1b Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
 
-    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit] do
-      get 'api_keys', on: :member
-    end
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
   end
 
   scope :module => 'carto/api', :format => :json do
@@ -500,6 +498,8 @@ CartoDB::Application.routes.draw do
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
         get 'download' => 'visualization_exports#download', as: :download
       end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
     end
   end
 
@@ -597,6 +597,13 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+  end
+
+  scope module: 'carto' do
+    namespace :superadmin do
+      resources :user_migration_exports, only: [:show, :create]
+      resources :user_migration_imports, only: [:show, :create]
+    end
   end
 
   scope :module => 'superadmin', :format => :json do

@@ -3,12 +3,16 @@
 @import 'cdb-variables/sizes';
 
 .Notifier {
+  @include css3-prefix(hyphens, auto);
   margin: 0 -25px;
   padding: 0 $baseSize * 3;
   border-top: 1px solid $cSecondaryLine;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   &.is-dark {
     border-color: #3A484E;
+    background: $cMainBg;
   }
 
   &:empty {
@@ -41,7 +45,6 @@
   @include flex(1);
   min-width: 0; // To prevent firefox screw up
   padding-right: $baseSize * 2;
-  word-break: break-all;
 }
 
 .Notifier-actions {
@@ -56,3 +59,10 @@
   margin-top: 1px;
 }
 
+// Loader styles
+.Notifier .CDB-LoaderIcon .CDB-LoaderIcon-path {
+  stroke: rgba(0, 0, 0, 0.24);
+}
+.Notifier.is-dark .CDB-LoaderIcon .CDB-LoaderIcon-path {
+  stroke: rgba(255, 255, 255, 0.88);
+}

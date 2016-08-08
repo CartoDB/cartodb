@@ -10,6 +10,14 @@ $elementWidthShort: 120px;
 $elementPadding: 14px 14px 18px;
 $tableBorderColor: $cSecondaryLine;
 
+.Table-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: $cMainBg;
+}
 .Table {
   @include display-flex();
   @include flex-direction(column);
@@ -18,19 +26,30 @@ $tableBorderColor: $cSecondaryLine;
   right: $baseSize * 2;
   bottom: $baseSize * 2;
   left: $baseSize * 2;
+  background: $cWhite;
   overflow-x: auto;
   overflow-y: hidden;
-  background: $cThirdBackground;
   z-index: 2;
+}
+.Table::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 65px;
+  background: $cThirdBackground;
+  content: '';
 }
 .Table--relative {
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  padding: 0;
   border-top: 1px solid $cMainLine;
 }
 .Table-head {
+  position: relative;
   background: $cThirdBackground;
 }
 .Table-headItem {
@@ -42,7 +61,7 @@ $tableBorderColor: $cSecondaryLine;
 }
 .Table-headItemInfo {
   margin-top: 2px;
-  font-family: 'Monaco';
+  font-family: 'Monaco', 'Monospace';
 }
 .Table-headItemWrapper {
   width: $elementWidth;
@@ -109,7 +128,7 @@ $tableBorderColor: $cSecondaryLine;
   position: absolute;
   width: 100%;
   height: 100%;
-  background: #FFF;
+  background: $cWhite;
 }
 .Table-body tbody {
   @include display-flex();
@@ -214,6 +233,7 @@ $tableBorderColor: $cSecondaryLine;
   color: $cAltText;
 }
 // Disabled state color
+.Table.is-disabled .Table-headItemName,
 .Table.is-disabled .Table-cell .CDB-Text,
 .Table.is-disabled .Table-cell .CDB-Text.is-number,
 .Table.is-disabled .Table-cell .CDB-Text.is-cartodbId {
@@ -268,6 +288,9 @@ $tableBorderColor: $cSecondaryLine;
 .Table-editorDate {
   margin-left: -8px;
 }
+.Table-editorDate .CDB-Legend {
+  display: none;
+}
 .Table-editorDate .Editor-formInner {
   display: inline-block;
   margin: 0 0 0 8px;
@@ -282,6 +305,3 @@ $tableBorderColor: $cSecondaryLine;
 .Table-editorDate input[name="time"] {
   width: 68px;
 }
-
-
-

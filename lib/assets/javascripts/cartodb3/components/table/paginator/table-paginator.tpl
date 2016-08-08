@@ -15,7 +15,7 @@
   <% if (!size) {%>
    <span class="u-mainTextColor">…</span>
   <% } else { %>
-    <span class="u-mainTextColor"><%- page * 40 %></span>
+    <span class="u-mainTextColor"><%- (page * 40) + 1 %></span>
     <span class="u-altTextColor u-lSpace u-rSpace"><%- _t('components.table.rows.paginator.to') %></span>
     <span class="u-mainTextColor"><%- (page * 40) + size %></span>
   <% } %>

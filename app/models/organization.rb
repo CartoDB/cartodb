@@ -4,6 +4,7 @@ require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Organization < Sequel::Model
 
@@ -19,6 +20,7 @@ class Organization < Sequel::Model
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -289,6 +291,9 @@ class Organization < Sequel::Model
       :obs_snapshot_block_price => self.obs_snapshot_block_price,
       :obs_general_quota        => self.obs_general_quota,
       :obs_general_block_price  => self.obs_general_block_price,
+      :geocoder_provider => self.geocoder_provider,
+      :isolines_provider => self.isolines_provider,
+      :routing_provider => self.routing_provider,
       :seats                    => self.seats,
       :twitter_username         => self.twitter_username,
       :location                 => self.twitter_username,
@@ -317,14 +322,6 @@ class Organization < Sequel::Model
 
   def tags(type, exclude_shared=true)
     users.map { |u| u.tags(exclude_shared, type) }.flatten
-  end
-
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
   end
 
   def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
@@ -409,7 +406,10 @@ class Organization < Sequel::Model
       'obs_general_quota', obs_general_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date
+      'period_end_date', period_end_date,
+      'geocoder_provider', geocoder_provider,
+      'isolines_provider', isolines_provider,
+      'routing_provider', routing_provider
   end
 
   def require_organization_owner_presence!
@@ -463,17 +463,5 @@ class Organization < Sequel::Model
 
   def name_exists_in_users?
     !::User.where(username: self.name).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 end

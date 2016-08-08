@@ -20,7 +20,8 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.9.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.10.1'.freeze
+      ODBC_FDW_VERSION = '0.0.1'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -78,6 +79,7 @@ module CartoDB
 
         # Rebuild the geocoder api user config to reflect that is an organization user
         install_and_configure_geocoder_api_extension
+        install_odbc_fdw
       end
 
       # INFO: main setup for non-org users
@@ -91,6 +93,7 @@ module CartoDB
         create_geocoding_schema
         load_cartodb_functions
         install_and_configure_geocoder_api_extension
+        install_odbc_fdw
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
 
@@ -458,6 +461,18 @@ module CartoDB
             db.run(build_entity_config_sql)
           end
         end
+      end
+
+      def install_odbc_fdw
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run('CREATE EXTENSION IF NOT EXISTS odbc_fdw SCHEMA public')
+            db.run("ALTER EXTENSION odbc_fdw UPDATE TO '#{ODBC_FDW_VERSION}'")
+          end
+        end
+      rescue Sequel::DatabaseError
+        # For the time being we'll be resilient to the odbc_fdw not being available
+        # and just proceed without installing it.
       end
 
       def setup_organization_owner

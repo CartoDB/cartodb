@@ -6,7 +6,7 @@
     </div>
     <p class="CDB-Text u-upperCase CDB-Size-small u-altTextColor u-bSpace--xl"><%- _t('editor.settings.preview.options.subtitle') %></p>
     <div class="u-flex u-justifySpace">
-      <div class="js-settings"></div>
+      <div class="js-settings Options-form"></div>
     </div>
 
   </div>

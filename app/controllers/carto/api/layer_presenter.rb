@@ -467,7 +467,7 @@ module Carto
                         raise "Unsupported source type: #{@source_type}"
                       end
 
-        destination['attribute'] = wpp['property'] if destination
+        destination['attribute'] = wpp['property']
       end
 
       def generate_drawing_properties(wpp)

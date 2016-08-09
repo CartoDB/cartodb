@@ -41,6 +41,21 @@ class Carto::Permission < ActiveRecord::Base
     super.reject { |c| DELETED_COLUMNS.include?(c.name) }
   end
 
+  def entities_with_read_permission
+    entities = acl.map do |entry|
+      entity_id = entry[:id]
+      case entry[:type]
+      when TYPE_USER
+        Carto::User.where(id: entity_id).first
+      when TYPE_ORGANIZATION
+        Carto::Organization.where(id: entity_id).first
+      when TYPE_GROUP
+        Carto::Group.where(id: entity_id).first
+      end
+    end
+    entities.compact.uniq
+  end
+
   private
 
   def permitted?(user, permission_type)

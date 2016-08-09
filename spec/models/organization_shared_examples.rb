@@ -56,4 +56,10 @@ shared_examples_for "organization models" do
 
   end
 
+  it 'generates auth_tokens and save them for future accesses' do
+    token = get_organization.get_auth_token
+    token.should be
+    get_organization.reload
+    get_organization.get_auth_token.should eq token
+  end
 end

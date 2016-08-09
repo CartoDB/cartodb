@@ -334,7 +334,7 @@ module Carto
         type = if @source_type == 'density'
                  wpp['geometry_type'] == 'Rectangles' ? 'squares' : 'hexabins'
                elsif @source_type == 'torque_heat'
-                 wpp['heat-animated'] ? 'animated' : 'heatmap'
+                 wpp['heat-animated'] ? 'animation' : 'heatmap'
                else
                  STYLE_PROPERTIES_TYPE[@source_type]
                end
@@ -367,8 +367,8 @@ module Carto
         'bubble' => 'simple',
         'choropleth' => 'simple',
         'category' => 'simple',
-        'torque' => 'animated',
-        'torque_cat' => 'animated',
+        'torque' => 'animation',
+        'torque_cat' => 'animation',
         'cluster' => 'simple'
       }.freeze
 
@@ -413,7 +413,7 @@ module Carto
         'source-over' => 'src-over'
       }.freeze
 
-      ANIMATED_TYPES = ['animated', 'heatmap'].freeze
+      ANIMATED_TYPES = ['animation', 'heatmap'].freeze
 
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties, type)
         spp = {}
@@ -438,7 +438,7 @@ module Carto
           merge_into_if_present(spp, 'animated', generate_animated(wpp))
         end
 
-        set_animated_style(spp) if type == 'animated'
+        set_animated_style(spp) if type == 'animation'
 
         set_property(spp, wpp)
 

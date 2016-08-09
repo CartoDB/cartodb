@@ -695,7 +695,7 @@ describe Carto::Api::LayerPresenter do
         it_behaves_like 'torque wizard family'
 
         it 'type is animated' do
-          expect(@style).to include('type' => 'animated')
+          expect(@style).to include('type' => 'animation')
         end
       end
 

@@ -1169,6 +1169,11 @@
         "success": "Layer renamed to %{name}",
         "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
+      "moveTorqueLayer": {
+        "loading": "Moving torque layer at the beginning...",
+        "success": "Layer moved",
+        "error": "Error moving the layer..."
+      },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",

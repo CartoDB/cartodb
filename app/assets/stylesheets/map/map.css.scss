@@ -111,7 +111,7 @@ div.map {
   &.derived { // VISUALIZATION'S MAP
 
     div.cartodb-legend-stack {
-      @include position(false, 100px, 20px, false);
+      @include position(false, 20px, 20px, false);
     }
 
     &.hide_legends div.cartodb-map div.cartodb-legend-stack {
@@ -417,7 +417,7 @@ div.map {
     box-sizing: border-box;
     @include inline-block();
     @include bb_button_style;
-    padding: 10px 14px 10px 37px;
+    padding: 5px 8px 6px 35px;
     margin: 0 3px 0 0;
     height: auto;
     min-width: 70px;
@@ -553,10 +553,6 @@ div.map {
     @include transform-style("linear");
     @include transition-property("margin");
     @include transition-duration(300ms);
-  }
-
-  .leaflet-control-attribution.leaflet-control {
-    right: 67px;
   }
 
   div.cartodb-legend {
@@ -770,10 +766,7 @@ div.map {
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
       div.cartodb-searchbox {
-        margin-right:520px;
-      }
-      .leaflet-control-attribution.leaflet-control {
-        right: 75px;
+        margin-right:600px;
       }
     }
 
@@ -800,7 +793,7 @@ div.map {
       div.cartodb-layer-selector-box,
       div.cartodb-legend-stack,
       div.cartodb-searchbox {
-        margin-right:375px;
+        margin-right:455px;
       }
     }
 

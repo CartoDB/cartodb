@@ -589,7 +589,6 @@ module Carto
       }.freeze
 
       DEFAULT_ANIMATED = {
-        'enabled' => false,
         'attribute' => nil,
         'overlap' => false,
         'duration' => 30,
@@ -603,7 +602,9 @@ module Carto
 
         apply_direct_mapping(animated, wpp, ANIMATED_DIRECT_MAPPING)
 
-        animated['enabled'] = true if animated.present? && type != 'animated'
+        if type != 'animated'
+          animated['enabled'] = animated.present?
+        end
 
         DEFAULT_ANIMATED.merge(animated)
       end

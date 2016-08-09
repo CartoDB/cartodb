@@ -697,6 +697,10 @@ describe Carto::Api::LayerPresenter do
         it 'type is animated' do
           expect(@style).to include('type' => 'animated')
         end
+
+        it "doesn't include redundant animated enabled option" do
+          expect(@animated).not_to include('enabled')
+        end
       end
 
       describe 'torque' do

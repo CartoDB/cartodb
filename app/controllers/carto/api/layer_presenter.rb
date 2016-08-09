@@ -432,7 +432,10 @@ module Carto
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
-        merge_into_if_present(spp, 'animated', generate_animated(wpp)) if type == 'animated'
+        if type == 'animated'
+          merge_into_if_present(spp, 'animated', generate_animated(wpp))
+          spp['style'] = @source_type == 'torque_heat' ? 'heatmap' : 'simple'
+        end
 
         set_property(spp, wpp)
 

@@ -225,14 +225,9 @@ module Carto
 
       def auth
         method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, @visualization.user.get_auth_tokens]
+                                 [AUTH_TYPE_SIGNED, [@visualization.get_auth_token]]
                                elsif @visualization.organization?
-                                 auth_tokens = @visualization.all_users_with_read_permission
-                                                             .map(&:get_auth_tokens)
-                                                             .flatten
-                                                             .uniq
-
-                                 [AUTH_TYPE_SIGNED, auth_tokens]
+                                 [AUTH_TYPE_SIGNED, @visualization.allowed_auth_tokens]
                                else
                                  [AUTH_TYPE_OPEN, nil]
                                end

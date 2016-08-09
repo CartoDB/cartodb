@@ -3,9 +3,11 @@ require_relative '../visualization/stats'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::AuthTokenGenerator
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -360,8 +362,9 @@ class Carto::Visualization < ActiveRecord::Base
     CartoDB::Varnish.new.purge(varnish_vizjson_key)
   end
 
-  def all_users_with_read_permission
-    permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
+  def allowed_auth_tokens
+    entities = [user] + permission.entities_with_read_permission
+    entities.map(&:get_auth_token)
   end
 
   def mapcapped?
@@ -374,6 +377,22 @@ class Carto::Visualization < ActiveRecord::Base
 
   def uses_builder_features?
     analyses.any? || widgets.any? || mapcapped?
+  end
+
+  def add_source_analyses
+    return unless analyses.empty?
+
+    carto_and_torque_layers.each_with_index do |layer, index|
+      analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+
+      if analysis.save
+        layer.options[:source] = analysis.natural_id
+        layer.options[:letter] = analysis.natural_id.first
+        layer.save
+      else
+        CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
+      end
+    end
   end
 
   def state_with_creation

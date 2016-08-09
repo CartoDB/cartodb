@@ -154,7 +154,9 @@ module CartoDB
         return nil unless the_geom_data
 
         if the_geom_data[:typname] != 'geometry'
-          user.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          user.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
           return nil
         end
 

@@ -53,6 +53,7 @@ CartoDB::Application.routes.draw do
         namespace :public, path: '/' do
           match 'embed', to: 'embeds#show', via: :get
           match 'embed_protected', to: 'embeds#show_protected', via: :post
+          match 'embed_protected', to: 'embeds#show', via: :get
         end
       end
 

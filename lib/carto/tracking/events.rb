@@ -20,6 +20,22 @@ module Carto
         properties
       end
 
+      def user_properties(user, now: Time.now.utc)
+        return {} unless user
+
+        user_created_at = user.created_at
+        user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+
+        {
+          username: user.username,
+          email: user.email,
+          plan: user.account_type,
+          user_active_for: user_age_in_days_with_decimals,
+          user_created_at: user_created_at,
+          organization: user.organization_user? ? user.organization.name : nil
+        }
+      end
+
       def days_with_decimals(time_object)
         time_object.to_f / 60 / 60 / 24
       end
@@ -48,19 +64,9 @@ module Carto
 
         def event_properties
           now = Time.now.utc
-          user_created_at = @user.created_at
-          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
-          {
-            username: @user ? @user.username : nil,
-            email: @user ? @user.email : nil,
-            plan: @user ? @user.account_type : nil,
-            user_active_for: user_age_in_days_with_decimals,
-            user_created_at: user_created_at,
-            organization: @user && @user.organization_user? ? @user.organization.name : nil,
-            event_origin: 'Editor',
-            creation_time: now
-          }
+          properties = user_properties(@user, now: now)
+          properties.merge(event_origin: 'Editor', creation_time: now)
         end
       end
 
@@ -79,6 +85,40 @@ module Carto
       class DeletedMap < TrackingEvent
         def initialize(user, visualization)
           super(user, 'Deleted map', visualization_properties(visualization))
+        end
+      end
+
+      class PublishedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Published map', visualization_properties(visualization))
+        end
+      end
+
+      class ConnectionEvent < TrackingEvent
+        def initialize(user, name, result, data_from, imported_from, sync)
+          super(user, name, properties(result, data_from, imported_from, sync))
+        end
+
+        private
+
+        def properties(result, data_from, imported_from, sync)
+          properties = { data_from: data_from, imported_from: imported_from, sync: sync }
+
+          properties[:file_type] = result.extension if result
+
+          properties
+        end
+      end
+
+      class CompletedConnection < ConnectionEvent
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
+          super(user, 'Completed connection', result, data_from, imported_from, sync)
+        end
+      end
+
+      class FailedConnection < ConnectionEvent
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
+          super(user, 'Failed connection', result, data_from, imported_from, sync)
         end
       end
 
@@ -189,6 +229,23 @@ module Carto
             Carto::Tracking::Events::DeletedMap.new(user, visualization)
           else
             Carto::Tracking::Events::DeletedDataset.new(user, visualization)
+          end
+        end
+      end
+
+      class ConnectionFactory
+        def self.build(user, result: nil, data_from: '', imported_from: '', sync: false)
+          parameters = {
+            result: result,
+            data_from: data_from,
+            imported_from: imported_from,
+            sync: sync
+          }
+
+          if result.success?
+            Carto::Tracking::Events::CompletedConnection.new(user, parameters)
+          else
+            Carto::Tracking::Events::FailedConnection.new(user, parameters)
           end
         end
       end

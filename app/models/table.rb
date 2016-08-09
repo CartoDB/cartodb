@@ -18,11 +18,12 @@ require_relative '../model_factories/layer_factory'
 require_relative '../model_factories/map_factory'
 require_relative '../../lib/cartodb/stats/user_tables'
 require_relative '../../lib/cartodb/stats/importer'
-
+require_dependency 'carto/table_utils'
 require_dependency 'carto/valid_table_name_proposer'
 
 class Table
   extend Forwardable
+  include Carto::TableUtils
 
    # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
@@ -664,7 +665,7 @@ class Table
     value = value.downcase if value
     return if value == @user_table[:name] || value.blank?
 
-    new_name = get_valid_name(value)
+    new_name = register_table_only ? value : get_valid_name(value)
 
     # Do not keep track of name changes until table has been saved
     unless new?
@@ -925,7 +926,9 @@ class Table
       if Table.column_names_for(user_database, name, self.owner).include?(new_name)
         raise 'Column already exists'
       end
-      user_database.rename_column(name, old_name.to_sym, new_name.to_sym)
+      user_database.execute %{
+          ALTER TABLE "#{name}" RENAME COLUMN "#{old_name}" TO "#{new_name}"
+      }
     end
   end #rename_column
 
@@ -1248,7 +1251,7 @@ class Table
   end
 
   def qualified_table_name
-    "\"#{owner.database_schema}\".\"#{@user_table.name}\""
+    safe_schema_and_table_quoting(owner.database_schema, @user_table.name)
   end
 
   def database_schema
@@ -1496,7 +1499,9 @@ class Table
             type = DEFAULT_THE_GEOM_TYPE
           end
         else
-          owner.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          owner.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
         end
       else # Ensure a the_geom column, of type point by default
         type = DEFAULT_THE_GEOM_TYPE

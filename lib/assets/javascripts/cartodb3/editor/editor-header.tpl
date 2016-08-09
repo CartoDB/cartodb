@@ -8,7 +8,10 @@
       <button class="u-rSpace--m u-actionTextColor js-privacy">
         <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </button>
-      <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></span>
+      <% if (!isSimple) { %>
+      <div class="js-share-users"></div>
+      <% } %>
+      <div class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></div>
     </div>
   </div>
 </div>

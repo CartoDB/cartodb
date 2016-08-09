@@ -426,11 +426,6 @@ module CartoDB
         permission.users_with_permissions(permission_types)
       end
 
-      def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY,
-                                CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
-      end
-
       def varnish_key
         sorted_table_names = related_tables.map{ |table|
           "#{user.database_schema}.#{table.name}"
@@ -830,9 +825,9 @@ module CartoDB
 
       # @param table Table
       def propagate_name_to(table)
-        table.name = self.name
-        table.register_table_only = self.register_table_only
-        table.update(name: self.name)
+        table.register_table_only = register_table_only
+        table.name = name
+        table.update(name: name)
         if name_changed
           support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
         end

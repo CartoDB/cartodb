@@ -65,7 +65,7 @@ class UserMailer < ActionMailer::Base
     @map_name = visualization.name
     @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
     @preview_image = visualization_preview_image
-    @subject = "Your map #{@map_name} got some love!"
+    @subject = "Your map got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     mail_tracker = get_mail_tracker('like_map')
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show_map', id: visualization.id)}#{mail_tracker}"
@@ -79,7 +79,7 @@ class UserMailer < ActionMailer::Base
     @dataset_name = canonical_visualization.name
     @viewer_name = (!viewer_user.name.nil? && !viewer_user.name.empty?) ? viewer_user.name : viewer_user.username
     @preview_image = visualization_preview_image
-    @subject = "Your dataset #{@dataset_name} got some love!"
+    @subject = "Your dataset got some love!"
     @greetings = ["congrats", "congratulations", "cool", "awesome", "hooray", "nice", "wow", "rad", "bravo", "yay", "boom"]
     mail_tracker = get_mail_tracker('like_map')
     @link = "#{@user.public_url}#{CartoDB.path(self, 'public_visualizations_show', id: canonical_visualization.id)}#{mail_tracker}"

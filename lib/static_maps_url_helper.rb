@@ -14,6 +14,11 @@ module Carto
         static_maps_image_url_fragment(visualization.id, map_width, map_height)
     end
 
+    def url_for_static_map_with_visualization(visualization, request_protocol, map_width, map_height)
+      static_maps_base_url(visualization.user.username, request_protocol) +
+        static_maps_image_url_fragment(visualization.id, map_width, map_height)
+    end
+
     private
 
     # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either

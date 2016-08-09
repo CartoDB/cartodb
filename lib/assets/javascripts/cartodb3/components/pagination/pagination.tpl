@@ -5,7 +5,7 @@
   <% m.pagesToDisplay().forEach(function(page) { %>
     <% if (page > 0) { %>
       <li class="Pagination-listItem <%- m.isCurrentPage(page) ? 'is-current' : '' %>">
-        <a class="Pagination-listItemInner Pagination-listItemInner--link" href="<%- m.urlTo(page) %>" data-page="<%- page %>"><%- page %></a>
+        <a class="Pagination-listItemInner Pagination-listItemInner--link js-listItem" href="<%- m.urlTo(page) %>" data-page="<%- page %>"><%- page %></a>
       </li>
     <% } else { %>
       <li class="Pagination-listItem Pagination-listItem">

@@ -24,6 +24,7 @@ require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../services/importer/lib/importer/connector'
+require_relative '../../services/importer/lib/importer/exceptions'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
@@ -173,7 +174,8 @@ class DataImport < Sequel::Model
   def run_import!
     self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
-    log.append "Running on server #{self.server} with PID: #{Process.pid}"
+    log.append "Running on server #{server} with PID: #{Process.pid}"
+
     begin
       success = !!dispatch
     rescue TokenExpiredOrInvalidError => ex
@@ -187,18 +189,22 @@ class DataImport < Sequel::Model
     end
 
     log.append 'After dispatch'
-    if self.results.empty?
+
+    if results.empty?
       self.error_code = 1002
       self.state      = STATE_FAILURE
       save
     end
 
-    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(self.id).get()
+    self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(id).get
     success ? handle_success : handle_failure
     log.store
     Rails.logger.debug log.to_s
+
     self
   rescue CartoDB::QuotaExceeded => quota_exception
+    Carto::Tracking::Events::ExceededQuota.new(current_user).report
+
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
     self
@@ -800,7 +806,7 @@ class DataImport < Sequel::Model
   end
 
   def get_downloader(datasource_provider)
-    log.append "Fetching datasource #{datasource_provider.to_s} metadata for item id #{service_item_id}"
+    log.append "Fetching datasource #{datasource_provider} metadata for item id #{service_item_id}"
 
     metadata = datasource_provider.get_resource_metadata(service_item_id)
 
@@ -809,23 +815,30 @@ class DataImport < Sequel::Model
     end
 
     if datasource_provider.providers_download_url?
-      downloader = CartoDB::Importer2::Downloader.new(
-          (metadata[:url].present? && datasource_provider.providers_download_url?) ? metadata[:url] : data_source,
-          { http_timeout: ::DataImport.http_timeout_for(current_user) },
-          { importer_config: Cartodb.config[:importer] }
-      )
-      log.append "File will be downloaded from #{downloader.url}"
+      metadata_url = metadata[:url]
+      resource_url = (metadata_url.present? && datasource_provider.providers_download_url?) ? metadata_url : data_source
+
+      log.append "File will be downloaded from #{resource_url}"
+
+      http_options = { http_timeout: ::DataImport.http_timeout_for(current_user) }
+      options = {
+        importer_config: Cartodb.config[:importer],
+        user_id: current_user.id
+      }
+
+      CartoDB::Importer2::Downloader.new(resource_url, http_options, options)
     else
       log.append 'Downloading file data from datasource'
-      downloader = CartoDB::Importer2::DatasourceDownloader.new(
-        datasource_provider, metadata, {
-                                         http_timeout: ::DataImport.http_timeout_for(current_user),
-                                         importer_config: Cartodb.config[:importer]
-                                       }, log
-      )
-    end
 
-    downloader
+      http_timeout = ::DataImport.http_timeout_for(current_user)
+      options = {
+        http_timeout: http_timeout,
+        importer_config: Cartodb.config[:importer],
+        user_id: current_user.id
+      }
+
+      CartoDB::Importer2::DatasourceDownloader.new(datasource_provider, metadata, options, log)
+    end
   end
 
   def hit_platform_limit?(datasource, metadata, user)
@@ -884,7 +897,22 @@ class DataImport < Sequel::Model
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
-    results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+
+    if results.any?
+      results.each do |result|
+        CartoDB::Metrics.new.report(:import, payload_for(result))
+
+        Carto::Tracking::Events::ConnectionFactory.build(user, result: result,
+                                                               imported_from: service_name,
+                                                               data_from: data_type,
+                                                               sync: sync?).report
+      end
+    elsif state == STATE_FAILURE
+      Carto::Tracking::Events::FailedConnection.new(user,
+                                                    imported_from: service_name,
+                                                    data_from: data_type,
+                                                    sync: sync?).report
+    end
   end
 
   def importer_stats_aggregator
@@ -1018,5 +1046,9 @@ class DataImport < Sequel::Model
                             event: 'Created dataset',
                             type: 'Invalid import result',
                             exception: exception)
+  end
+
+  def sync?
+    synchronization_id.present?
   end
 end

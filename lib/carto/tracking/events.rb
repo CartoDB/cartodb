@@ -3,25 +3,41 @@ require_dependency 'carto/tracking/segment_wrapper'
 module Carto
   module Tracking
     module PropertiesHelper
-      def user_properties(user)
-        {
-          username: user.username,
-          email: user.email,
-          plan: user.account_type,
-          organization: (user.organization_user? ? user.organization.name : nil)
-        }
-      end
+      def visualization_properties(visualization, origin: nil)
+        created_at = visualization.created_at
+        lifetime_in_days_with_decimals = days_with_decimals(Time.now.utc - created_at)
 
-      def visualization_properties(table_visualization, origin: nil)
         properties = {
-          vis_id: table_visualization.id,
-          privacy: table_visualization.privacy,
-          type: table_visualization.type
+          vis_id: visualization.id,
+          privacy: visualization.privacy,
+          type: visualization.type,
+          object_created_at: created_at,
+          lifetime: lifetime_in_days_with_decimals
         }
 
         properties[:origin] = origin if origin
 
         properties
+      end
+
+      def user_properties(user, now: Time.now.utc)
+        return {} unless user
+
+        user_created_at = user.created_at
+        user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+
+        {
+          username: user.username,
+          email: user.email,
+          plan: user.account_type,
+          user_active_for: user_age_in_days_with_decimals,
+          user_created_at: user_created_at,
+          organization: user.organization_user? ? user.organization.name : nil
+        }
+      end
+
+      def days_with_decimals(time_object)
+        time_object.to_f / 60 / 60 / 24
       end
     end
 
@@ -47,14 +63,10 @@ module Carto
         private
 
         def event_properties
-          {
-            username: @user ? @user.username : nil,
-            email: @user ? @user.email : nil,
-            plan: @user ? @user.account_type : nil,
-            organization: @user && @user.organization_user? ? @user.organization.name : nil,
-            event_origin: 'Editor',
-            creation_time: Time.now.utc
-          }
+          now = Time.now.utc
+
+          properties = user_properties(@user, now: now)
+          properties.merge(event_origin: 'Editor', creation_time: now)
         end
       end
 
@@ -76,6 +88,46 @@ module Carto
         end
       end
 
+      class PublishedMap < TrackingEvent
+        def initialize(user, visualization)
+          super(user, 'Published map', visualization_properties(visualization))
+        end
+      end
+
+      class ConnectionEvent < TrackingEvent
+        def initialize(user, name, result, data_from, imported_from, sync)
+          super(user, name, properties(result, data_from, imported_from, sync))
+        end
+
+        private
+
+        def properties(result, data_from, imported_from, sync)
+          properties = { data_from: data_from, imported_from: imported_from, sync: sync }
+
+          properties[:file_type] = result.extension if result
+
+          properties
+        end
+      end
+
+      class CompletedConnection < ConnectionEvent
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
+          super(user, 'Completed connection', result, data_from, imported_from, sync)
+        end
+      end
+
+      class FailedConnection < ConnectionEvent
+        def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
+          super(user, 'Failed connection', result, data_from, imported_from, sync)
+        end
+      end
+
+      class ExceededQuota < TrackingEvent
+        def initialize(user, quota_overage: 0)
+          super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})
+        end
+      end
+
       class ScoredTrendingMap < TrackingEvent
         def initialize(user, visualization, views)
           super(user, 'Scored trending map', properties(visualization, views))
@@ -92,31 +144,25 @@ module Carto
         end
       end
 
-      class VistedPrivatePage < TrackingEvent
+      class VisitedPrivatePage < TrackingEvent
         def initialize(user, page)
-          super(user, 'Visited private page', properties(user, page))
-        end
-
-        private
-
-        def properties(user, page)
-          { page: page, event_origin: 'Editor', creation_time: Time.now.utc }.merge(user_properties(user))
+          super(user, 'Visited private page', { page: page })
         end
       end
 
-      class VisitedPrivateDashboard < VistedPrivatePage
+      class VisitedPrivateDashboard < VisitedPrivatePage
         def initialize(user)
           super(user, 'dashboard')
         end
       end
 
-      class VisitedPrivateBuilder < VistedPrivatePage
+      class VisitedPrivateBuilder < VisitedPrivatePage
         def initialize(user)
           super(user, 'builder')
         end
       end
 
-      class VisitedPrivateDataset < VistedPrivatePage
+      class VisitedPrivateDataset < VisitedPrivatePage
         def initialize(user)
           super(user, 'dataset')
         end
@@ -183,6 +229,23 @@ module Carto
             Carto::Tracking::Events::DeletedMap.new(user, visualization)
           else
             Carto::Tracking::Events::DeletedDataset.new(user, visualization)
+          end
+        end
+      end
+
+      class ConnectionFactory
+        def self.build(user, result: nil, data_from: '', imported_from: '', sync: false)
+          parameters = {
+            result: result,
+            data_from: data_from,
+            imported_from: imported_from,
+            sync: sync
+          }
+
+          if result.success?
+            Carto::Tracking::Events::CompletedConnection.new(user, parameters)
+          else
+            Carto::Tracking::Events::FailedConnection.new(user, parameters)
           end
         end
       end

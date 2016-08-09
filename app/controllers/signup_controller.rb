@@ -7,11 +7,12 @@ class SignupController < ApplicationController
 
   layout 'frontend'
 
-  ssl_required :signup, :create, :create_http_authentication
+  ssl_required :signup, :create, :create_http_authentication, :create_http_authentication_in_progress
 
-  skip_before_filter :http_header_authentication, only: [:create_http_authentication]
+  skip_before_filter :http_header_authentication,
+                     only: [:create_http_authentication, :create_http_authentication_in_progress]
 
-  before_filter :load_organization, only: [:create_http_authentication]
+  before_filter :load_organization, only: [:create_http_authentication, :create_http_authentication_in_progress]
   before_filter :check_organization_quotas, only: [:create_http_authentication]
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
@@ -102,6 +103,15 @@ class SignupController < ApplicationController
     CartoDB.report_exception(e, "Creating user with HTTP authentication", new_user: account_creator.user.inspect)
     flash.now[:error] = e.message
     render_500
+  end
+
+  def create_http_authentication_in_progress
+    authenticator = Carto::HttpHeaderAuthentication.new
+    if !authenticator.creation_in_progress?(request)
+      redirect_to CartoDB.url(self, 'login')
+    else
+      render 'shared/signup_confirmation'
+    end
   end
 
   private

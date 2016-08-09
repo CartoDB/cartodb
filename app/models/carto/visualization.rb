@@ -276,10 +276,6 @@ class Carto::Visualization < ActiveRecord::Base
     [get_auth_token]
   end
 
-  def needed_auth_tokens
-    (password_protected? || organization?) ? get_auth_tokens : []
-  end
-
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end

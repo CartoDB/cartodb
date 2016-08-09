@@ -13,7 +13,7 @@ class SignupController < ApplicationController
                      only: [:create_http_authentication, :create_http_authentication_in_progress]
 
   before_filter :load_organization, only: [:create_http_authentication, :create_http_authentication_in_progress]
-  before_filter :check_organization_quotas, only: [:create_http_authentication, :create_http_authentication_in_progress]
+  before_filter :check_organization_quotas, only: [:create_http_authentication]
   before_filter :load_mandatory_organization, only: [:signup, :create]
   before_filter :disable_if_ldap_configured
   before_filter :initialize_google_plus_config

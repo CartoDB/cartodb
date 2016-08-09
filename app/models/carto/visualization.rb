@@ -377,7 +377,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def state_with_creation
-    state_without_creation || build_state(user_id: user_id)
+    state_without_creation || create_state(user_id: user_id)
   end
   alias_method_chain :state, :creation
 

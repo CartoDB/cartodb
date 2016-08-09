@@ -333,6 +333,8 @@ module Carto
 
         type = if @source_type == 'density'
                  wpp['geometry_type'] == 'Rectangles' ? 'squares' : 'hexabins'
+               elsif @source_type == 'torque_heat'
+                 wpp['heat-animated'] ? 'animated' : 'heatmap'
                else
                  STYLE_PROPERTIES_TYPE[@source_type]
                end
@@ -367,8 +369,7 @@ module Carto
         'category' => 'simple',
         'torque' => 'animated',
         'torque_cat' => 'animated',
-        'cluster' => 'simple',
-        'torque_heat' => 'heatmap'
+        'cluster' => 'simple'
       }.freeze
 
       SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density'].freeze
@@ -431,7 +432,7 @@ module Carto
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
-        merge_into_if_present(spp, 'animated', generate_animated(wpp, type))
+        merge_into_if_present(spp, 'animated', generate_animated(wpp)) if type == 'animated'
 
         set_property(spp, wpp)
 
@@ -460,7 +461,7 @@ module Carto
                         raise "Unsupported source type: #{@source_type}"
                       end
 
-        destination['attribute'] = wpp['property']
+        destination['attribute'] = wpp['property'] if destination
       end
 
       def generate_drawing_properties(wpp)
@@ -599,14 +600,10 @@ module Carto
         'trails' => 2
       }.freeze
 
-      def generate_animated(wpp, type)
+      def generate_animated(wpp)
         animated = {}
 
         apply_direct_mapping(animated, wpp, ANIMATED_DIRECT_MAPPING)
-
-        if type != 'animated'
-          animated['enabled'] = animated.present?
-        end
 
         DEFAULT_ANIMATED.merge(animated)
       end

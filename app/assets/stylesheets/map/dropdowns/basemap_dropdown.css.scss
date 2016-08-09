@@ -28,7 +28,7 @@
   & > .thumb {
 
     margin: 0 5px 0 0;
-    @include position(6px, false, false, 6px);
+    @include position(3px, false, false, 3px);
     @include inline-block();
     @include size(22px);    
 

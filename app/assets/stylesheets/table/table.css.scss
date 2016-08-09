@@ -31,13 +31,13 @@
 
 div.panes {
   position:absolute;
-  top:69px;
+  top:47px;
   right:0;
   bottom:0;
   left:0;
 
   // Should be value of default panes top + height of table_title below
-  &.table-view { top: 128px; }
+  &.table-view { top: 97px; }
 
   .emptyTableContainer {
     position:fixed;
@@ -93,12 +93,13 @@ div.table {
 
   .table_title {
     position: fixed;
-    top: 78px;
+    top: 46px;
     left: 0;
     right: 0;
     height: 50px;
     z-index: 2;
-    background: whitesmoke;
+    background: $DarkGrey6;
+    color: $Grey1;
     padding: 5px;
   }
 
@@ -166,12 +167,12 @@ div.table {
               position:fixed;
               @include inline-block();
               width: inherit;
-              height:41px;
-              margin-top:1px;
+              height:67px;
+              margin-top:-1px;
               padding:10px 0 15px;
               background: #232323;
               border-bottom:1px solid $Black;
-	      box-shadow: $button_shadow;
+	            box-shadow: $button_shadow;
               z-index:1;
 
               &:after {

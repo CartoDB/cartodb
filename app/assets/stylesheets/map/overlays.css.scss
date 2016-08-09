@@ -202,6 +202,7 @@
 }
 .overlay-properties ul {
   margin: 3px 0 0 0;
+  float: left;
 }
 .overlay-properties ul li {
   @include inline-block();
@@ -526,7 +527,8 @@
     height: 16px;
     width: 17px;
     padding: 3px;
-    line-height: 16px;
+    line-height: 10px;
+    font-size: 8px;
 
     @include border-radius(90px);
 

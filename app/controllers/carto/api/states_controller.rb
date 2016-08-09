@@ -31,7 +31,7 @@ module Carto
       end
 
       def check_writer
-        @visualization.writable_by?(current_viewer)
+        raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_viewer)
       end
 
       def load_state

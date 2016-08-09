@@ -902,8 +902,6 @@ describe Carto::Api::LayerPresenter do
 
       describe 'fill' do
         it 'transform color_ramp to color range' do
-          # Commented because it might change soon
-          # expect(@fill_color).to include('range' => "['#FFEDA0', '#FEB24C', '#F03B20']")
           expect(@fill_color).to include('range' => color_ramp)
         end
       end

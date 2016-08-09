@@ -10,8 +10,8 @@ module Carto
 
         before_filter :load_visualization, only: [:show, :show_protected]
         before_filter :load_vizjson, only: [:show, :show_protected]
-        before_filter :load_auth_tokens, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
+        before_filter :load_auth_tokens, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
 
@@ -39,7 +39,7 @@ module Carto
           @auth_tokens = if @visualization.password_protected?
                            @visualization.get_auth_tokens
                          elsif @visualization.organization?
-                           current_viewer.get_auth_tokens
+                           current_viewer ? current_viewer.get_auth_tokens : []
                          end
         end
 

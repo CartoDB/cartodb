@@ -1179,6 +1179,8 @@
         "success": "Layer deleted correctly."
       },
       "layer": {
+        "animated": "A",
+        "heatmap": "H",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",

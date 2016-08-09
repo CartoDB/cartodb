@@ -1,12 +1,14 @@
-<div class="Editor-ListLayer-dragIcon">
-  <div class="CDB-Shape">
-    <div class="CDB-Shape-rectsHandle is-small">
-      <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-first"></div>
-      <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-second"></div>
-      <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-third"></div>
+<% if (!isTorque) { %>
+  <div class="Editor-ListLayer-dragIcon">
+    <div class="CDB-Shape">
+      <div class="CDB-Shape-rectsHandle is-small">
+        <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-first"></div>
+        <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-second"></div>
+        <div class="CDB-Shape-rectsHandleItem CDB-Shape-rectsHandleItem--grey is-third"></div>
+      </div>
     </div>
   </div>
-</div>
+<% } %>
 <div class="Editor-ListLayer-itemHeader">
   <div class="Editor-ListLayer-media u-rSpace--m js-thumbnail" style="background: <%- color %>; color: #fff">
     <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- letter %></p>
@@ -15,6 +17,23 @@
     <div class="Editor-ListLayer-title">
       <div class="Editor-ListLayer-titleText js-header"></div>
       <ul class="Editor-HeaderInfo-actions">
+        <li class="Editor-HeaderInfo-actionsItem">
+          <% if (isTorque) { %>
+            <span class="Tag Tag-fill
+            <% if (isAnimated) { %>
+              Tag-fill--yellow
+            <% } else { %>
+              Tag-fill--red
+            <% } %>
+            CDB-Text CDB-Size-small u-rSpace u-upperCase">
+              <% if (isAnimated) { %>
+                <%- _t('editor.layers.layer.animated') %>
+              <% } else { %>
+                <%- _t('editor.layers.layer.heatmap') %>
+              <% } %>
+            </span>
+          <% } %>
+        </li>
         <li class="Editor-HeaderInfo-actionsItem CDB-Shape">
           <button class="js-toggle">
             <% if (isVisible) { %>

@@ -43,6 +43,7 @@ module Carto
                                                  else
                                                    @visualization
                                                  end
+        end
 
         def load_auth_tokens
           @auth_tokens = if @visualization.password_protected?

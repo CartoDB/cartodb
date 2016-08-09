@@ -1481,7 +1481,7 @@
         "squares": "squares",
         "regions": "Adm. Regions",
         "heatmap": "pixel",
-        "animated": "animated"
+        "animation": "animated"
       },
       "style-form": {
         "type": {

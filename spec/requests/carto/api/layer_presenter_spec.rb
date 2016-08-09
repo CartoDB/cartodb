@@ -973,6 +973,18 @@ describe Carto::Api::LayerPresenter do
           }
       end
 
+      before(:each) do
+        layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
+        options = presenter_with_style_properties(layer).to_poro['options']
+
+        @style = options['style_properties']
+        @properties = @style['properties']
+        @animated = @properties['animated']
+        @fill = @properties['fill']
+        @fill_color = @fill['color']
+        @fill_size = @fill['size']
+      end
+
       describe 'animated' do
         let(:torque_resolution) { 8 }
         let(:marker_opacity) { 0.4 }
@@ -981,22 +993,6 @@ describe Carto::Api::LayerPresenter do
         let(:torque_duration) { 10 }
         let(:property) { "actor_post" }
         let(:animated) { true }
-
-        before(:each) do
-          layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
-          options = presenter_with_style_properties(layer).to_poro['options']
-
-          @style = options['style_properties']
-          @properties = @style['properties']
-          @animated = @properties['animated']
-          @fill = @properties['fill']
-          @fill_color = @fill['color']
-          @fill_size = @fill['size']
-        end
-
-        it 'is generated from torque_heat' do
-          expect(@style).to include('type' => 'animated')
-        end
 
         it_behaves_like 'torque animated family'
         it_behaves_like 'heatmap'
@@ -1010,18 +1006,6 @@ describe Carto::Api::LayerPresenter do
         let(:torque_duration) { 10 }
         let(:property) { "cartodb_id" }
         let(:animated) { false }
-
-        before(:each) do
-          layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
-          options = presenter_with_style_properties(layer).to_poro['options']
-
-          @style = options['style_properties']
-          @properties = @style['properties']
-          @animated = @properties['animated']
-          @fill = @properties['fill']
-          @fill_color = @fill['color']
-          @fill_size = @fill['size']
-        end
 
         it 'is generated from torque_heat' do
           expect(@style).to include('type' => 'heatmap')

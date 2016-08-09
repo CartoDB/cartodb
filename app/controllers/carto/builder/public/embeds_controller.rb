@@ -45,8 +45,11 @@ module Carto
         end
 
         def ensure_viewable
-          return(render 'admin/visualizations/embed_map_error', status: 403) if @visualization.private?
-          return(render 'show_protected', status: 403) if @visualization.password_protected?
+          if @visualization.password_protected?
+            return(render 'show_protected', status: 403)
+          elsif !@visualization.is_viewable_by_user?(current_viewer)
+            return(render 'admin/visualizations/embed_map_error', status: 403)
+          end
         end
       end
     end

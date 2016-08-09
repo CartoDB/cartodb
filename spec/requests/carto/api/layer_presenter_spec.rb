@@ -653,8 +653,32 @@ describe Carto::Api::LayerPresenter do
 
       shared_examples_for 'torque wizard family' do
         describe 'animated' do
+          it 'property becomes attribute' do
+            expect(@animated).to include('attribute' => property)
+          end
+
+          it 'property becomes attribute only at animated' do
+            expect(@fill['color']).not_to include('attribute' => property)
+          end
+
+          it 'torque-duration becomes duration' do
+            expect(@animated).to include('duration' => torque_duration)
+          end
+
           it 'torque-resolution becomes resolution' do
             expect(@animated).to include('resolution' => torque_resolution)
+          end
+
+          it 'torque-frame-count becomes steps' do
+            expect(@animated).to include('steps' => torque_frame_count)
+          end
+
+          it 'torque-trails becomes trails' do
+            expect(@animated).to include('trails' => torque_trails)
+          end
+
+          it "doesn't include redundant animated enabled option" do
+            expect(@animated).not_to include('enabled')
           end
         end
       end
@@ -672,32 +696,6 @@ describe Carto::Api::LayerPresenter do
 
         it 'type is animated' do
           expect(@style).to include('type' => 'animated')
-        end
-
-        describe 'animated' do
-          it 'property becomes attribute' do
-            expect(@animated).to include('attribute' => property)
-          end
-
-          it 'property becomes attribute only at animated' do
-            expect(@fill['color']).not_to include('attribute' => property)
-          end
-
-          it 'torque-duration becomes duration' do
-            expect(@animated).to include('duration' => torque_duration)
-          end
-
-          it 'torque-frame-count becomes steps' do
-            expect(@animated).to include('steps' => torque_frame_count)
-          end
-
-          it 'torque-trails becomes trails' do
-            expect(@animated).to include('trails' => torque_trails)
-          end
-
-          it "doesn't include redundant animated enabled option" do
-            expect(@animated).not_to include('enabled')
-          end
         end
       end
 
@@ -912,15 +910,7 @@ describe Carto::Api::LayerPresenter do
     end
 
     describe 'heatmap' do
-      let(:torque_resolution) { 8 }
-      let(:marker_opacity) { 0.4 }
-      let(:torque_trails) { 2 }
-      let(:torque_frame_count) { 32 }
-      let(:torque_duration) { 10 }
-
       shared_examples_for 'heatmap' do
-        it_behaves_like 'torque wizard family'
-
         describe 'aggregation' do
           before(:each) do
             @aggregation = @style['aggregation']
@@ -961,31 +951,38 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
-      describe 'animated' do
-        let(:property) { "actor_post" }
-        let(:heatmap_wizard_properties) do
-          { "type" => "torque_heat",
-            "properties" =>
-              {
-                "marker-width" => 35,
-                "layer-type" => "torque",
-                "marker-file" => "url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png)",
-                "image-filters" => "colorize-alpha(blue, cyan, lightgreen, yellow , orange, red)",
-                "marker-opacity" => marker_opacity,
-                "heat-animated" => true,
-                "torque-cumulative" => false,
-                "property" => property,
-                "torque-duration" => torque_duration,
-                "torque-frame-count" => torque_frame_count,
-                "torque-trails" => torque_trails,
-                "torque-resolution" => torque_resolution,
-                "zoom" => 3,
-                "geometry_type" => "point",
-                "text-placement-type" => "simple",
-                "text-label-position-tolerance" => 10
-              }
+      let(:heatmap_wizard_properties) do
+        { "type" => "torque_heat",
+          "properties" =>
+            {
+              "marker-width" => 35,
+              "layer-type" => "torque",
+              "marker-file" => "url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png)",
+              "image-filters" => "colorize-alpha(blue, cyan, lightgreen, yellow , orange, red)",
+              "marker-opacity" => marker_opacity,
+              "heat-animated" => animated,
+              "torque-cumulative" => false,
+              "property" => property,
+              "torque-duration" => torque_duration,
+              "torque-frame-count" => torque_frame_count,
+              "torque-trails" => torque_trails,
+              "torque-resolution" => torque_resolution,
+              "zoom" => 3,
+              "geometry_type" => "point",
+              "text-placement-type" => "simple",
+              "text-label-position-tolerance" => 10
             }
-        end
+          }
+      end
+
+      describe 'animated' do
+        let(:torque_resolution) { 8 }
+        let(:marker_opacity) { 0.4 }
+        let(:torque_trails) { 2 }
+        let(:torque_frame_count) { 32 }
+        let(:torque_duration) { 10 }
+        let(:property) { "actor_post" }
+        let(:animated) { true }
 
         before(:each) do
           layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
@@ -1003,29 +1000,18 @@ describe Carto::Api::LayerPresenter do
           expect(@style).to include('type' => 'animated')
         end
 
-        it_behaves_like 'heatmap'
         it_behaves_like 'torque animated family'
+        it_behaves_like 'heatmap'
       end
 
       describe 'without animation' do
-        let(:heatmap_wizard_properties) do
-          { "type" => "torque_heat",
-            "properties" =>
-              {
-                "marker-width" => 35,
-                "layer-type" => "torque",
-                "marker-file" => "url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png)",
-                "image-filters" => "colorize-alpha(blue, cyan, lightgreen, yellow , orange, red)",
-                "marker-opacity" => marker_opacity,
-                "heat-animated" => false,
-                "torque-resolution" => torque_resolution,
-                "zoom" => 3,
-                "geometry_type" => "point",
-                "text-placement-type" => "simple",
-                "text-label-position-tolerance" => 10
-              }
-            }
-        end
+        let(:torque_resolution) { 8 }
+        let(:marker_opacity) { 0.4 }
+        let(:torque_trails) { 2 }
+        let(:torque_frame_count) { 1 }
+        let(:torque_duration) { 10 }
+        let(:property) { "cartodb_id" }
+        let(:animated) { false }
 
         before(:each) do
           layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
@@ -1043,11 +1029,8 @@ describe Carto::Api::LayerPresenter do
           expect(@style).to include('type' => 'heatmap')
         end
 
+        it_behaves_like 'torque wizard family'
         it_behaves_like 'heatmap'
-
-        it 'does not include animation' do
-          expect(@animated).to be_nil
-        end
       end
     end
 

@@ -413,6 +413,8 @@ module Carto
         'source-over' => 'src-over'
       }.freeze
 
+      ANIMATED_TYPES = ['animated', 'heatmap'].freeze
+
       def wizard_properties_properties_to_style_properties_properties(wizard_properties_properties, type)
         spp = {}
         wpp = wizard_properties_properties
@@ -432,10 +434,11 @@ module Carto
 
         merge_into_if_present(spp, 'labels', generate_labels(wpp))
 
-        if type == 'animated'
+        if ANIMATED_TYPES.include?(type)
           merge_into_if_present(spp, 'animated', generate_animated(wpp))
-          spp['style'] = @source_type == 'torque_heat' ? 'heatmap' : 'simple'
         end
+
+        spp['style'] = @source_type == 'torque_heat' ? 'heatmap' : 'simple' if type == 'animated'
 
         set_property(spp, wpp)
 

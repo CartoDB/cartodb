@@ -103,7 +103,6 @@ body.is-inDialog {
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
-  padding-bottom: 100px;
   overflow: auto;
 }
 .Dialog-body.Dialog-body--share {
@@ -132,6 +131,9 @@ body.is-inDialog {
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
+}
+.Dialog-body .ListingContent {
+  margin-bottom: 100px;
 }
 .Dialog-footer {
   padding: $sMargin-group 0;

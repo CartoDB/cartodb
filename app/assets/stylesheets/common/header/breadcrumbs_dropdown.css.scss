@@ -2,7 +2,7 @@
 @import "../../variables/colors";
 @import "../../variables/sizes";
 
-.BreadcrumbsDropdown { width: 260px }
+.BreadcrumbsDropdown { width: 150px }
 .BreadcrumbsDropdown--compact { width: 120px }
 .BreadcrumbsDropdown-list {
   display: block;
@@ -12,7 +12,7 @@
 .BreadcrumbsDropdown-listItem {
   display: block;
   margin-top: 0!important;
-  padding: $sMargin-element !important;
+  padding: 5px !important;
 }
 .BreadcrumbsDropdown-listItem.is-dark {
   background: $DarkGrey8;
@@ -31,7 +31,7 @@
 .BreadcrumbsDropdown-options {}
 .BreadcrumbsDropdown-optionsItem {
   display: block;
-  font-size: $sFontSize-large;
+  font-size: 13px;
   font-weight: $sFontWeight-normal;
 }
 .BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px }

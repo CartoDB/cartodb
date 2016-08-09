@@ -290,7 +290,7 @@
  @mixin bb_dropdown {
     background: $DarkGrey7;
     border: $dropdownBorder;
-    padding: 12px 0px;
+    padding: 5px;
  }
  @mixin bb_list_separator {
     border-bottom: 1px solid rgba($Black, .32);

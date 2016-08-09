@@ -16,8 +16,19 @@ module.exports = Model.extend({
 
   url: function () {
     var url = this.get('url');
+    var queryOptions = [];
     if (this.get('apiKey')) {
       url += '?api_key=' + this.get('apiKey');
+    } else if (this.get('authToken')) {
+      var authToken = this.get('authToken');
+      if (authToken instanceof Array) {
+        _.each(authToken, function (token) {
+          queryOptions.push('auth_token[]=' + token);
+        });
+      } else {
+        queryOptions.push('auth_token=' + authToken);
+      }
+      url += '?' + queryOptions.join('&');
     }
     return url;
   },

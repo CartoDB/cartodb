@@ -65,12 +65,12 @@ describe('src/api/create-vis', function () {
     var vizJSON = _.extend(fakeVizJSON, {
       title: 'TITLE',
       description: 'DESCRIPTION',
-      auth_tokens: ['AUTH_TOKEN'],
       legends: true,
       https: true
     });
     var visModel = createVis(this.containerId, vizJSON, {
       apiKey: 'API_KEY',
+      authToken: 'AUTH_TOKEN',
       show_empty_infowindow_fields: true,
       skipMapInstantiation: true
     });

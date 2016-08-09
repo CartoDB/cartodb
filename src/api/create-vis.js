@@ -29,11 +29,14 @@ var createVis = function (el, vizjson, options) {
 
   var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
 
+  // TODO: We can check if all required options are present here! eg: if viz.json has some analyses
+  // apiKey or authToken will be required (otherwise we know requests to Windshaft will fail)...
+
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
-    authToken: vizjson.auth_tokens && vizjson.auth_tokens.length && vizjson.auth_tokens[0],
+    authToken: options.authToken,
     showLegends: options.legends === true || vizjson.legends === true,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true

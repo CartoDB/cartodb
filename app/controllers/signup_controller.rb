@@ -100,8 +100,11 @@ class SignupController < ApplicationController
 
   def create_http_authentication_in_progress
     authenticator = Carto::HttpHeaderAuthentication.new
-    render_500 unless authenticator.autocreation_enabled? && authenticator.creation_in_progress?(request)
-    render 'shared/signup_confirmation'
+    if !authenticator.creation_in_progress?(request)
+      redirect_to CartoDB.url(self, 'login')
+    else
+      render 'shared/signup_confirmation'
+    end
   end
 
   private

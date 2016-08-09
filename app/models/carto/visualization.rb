@@ -34,9 +34,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :permission
 
-  has_one :state, class_name: Carto::State
-  has_many :viewers, class_name: Carto::User
-
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
 

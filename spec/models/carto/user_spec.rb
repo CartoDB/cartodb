@@ -11,6 +11,10 @@ describe Carto::User do
     def get_user_by_id(user_id)
       Carto::User.where(id: user_id).first
     end
+
+    def create_user
+      FactoryGirl.create(:carto_user)
+    end
   end
 
   describe '#needs_password_confirmation?' do

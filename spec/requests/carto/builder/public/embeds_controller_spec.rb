@@ -1,8 +1,7 @@
 require_relative '../../../../spec_helper'
-require_relative '../../../../factories/users_helper'
+require_relative '../../../../factories/organizations_contexts.rb'
 
 describe Carto::Builder::Public::EmbedsController do
-  include_context 'users helper'
   include Warden::Test::Helpers
 
   before(:all) do
@@ -19,7 +18,7 @@ describe Carto::Builder::Public::EmbedsController do
   after(:all) do
     @map.destroy
     @visualization.destroy
-    @user.destroy
+    User[@user.id].destroy
   end
 
   describe '#show' do
@@ -61,6 +60,17 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 403
     end
 
+    it 'embeds private visualizations if logged in' do
+      @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+      @visualization.save
+
+      login_as(@user)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 200
+      response.body.should include @visualization.name
+    end
+
     it 'does not embed password protected viz' do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
@@ -77,18 +87,53 @@ describe Carto::Builder::Public::EmbedsController do
       response.status.should == 404
     end
 
-    it 'includes auth tokens for privately shared visualizations' do
-      @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-      @visualization.save
+    describe 'in organizations' do
+      include_context 'organization with users helper'
 
-      Carto::Visualization.any_instance.stubs(:organization?).returns(true)
+      before(:each) do
+        @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+        @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id)
+        @org_visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @org_visualization.save
 
-      login_as(@user)
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id, vector: true)
+        share_visualization(@org_visualization, @org_user_1)
+        Carto::Visualization.any_instance.unstub(:organization?)
+        Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
+      end
 
-      response.status.should == 200
-      @user.reload
-      @user.get_auth_tokens.each { |token| response.body.should include token }
+      it 'does not embed private visualizations' do
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 403
+        response.body.should include 'Embed error | CARTO'
+      end
+
+      it 'embeds private visualizations if logged in as allowed user' do
+        login_as(@org_user_1)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 200
+        response.body.should include @org_visualization.name
+      end
+
+      it 'embeds private visualizations if logged in as not allowed user' do
+        login_as(@org_user_2)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
+
+        response.status.should == 403
+        response.body.should include 'Embed error | CARTO'
+      end
+
+      it 'includes auth tokens for privately shared visualizations' do
+        login_as(@org_user_1)
+        get builder_visualization_public_embed_url(visualization_id: @org_visualization.id, vector: true)
+
+        response.status.should == 200
+        @org_user_1.reload
+        auth_tokens = @org_user_1.get_auth_tokens
+        auth_tokens.count.should eq 2
+        auth_tokens.each { |token| response.body.should include token }
+      end
     end
   end
 

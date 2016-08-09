@@ -3,9 +3,11 @@ require_relative '../visualization/stats'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::AuthTokenGenerator
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 

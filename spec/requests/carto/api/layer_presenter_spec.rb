@@ -665,12 +665,12 @@ describe Carto::Api::LayerPresenter do
             expect(@animated).to include('duration' => torque_duration)
           end
 
-          it 'torque-resolution becomes resolution' do
-            expect(@animated).to include('resolution' => torque_resolution)
-          end
-
           it 'torque-frame-count becomes steps' do
             expect(@animated).to include('steps' => torque_frame_count)
+          end
+
+          it 'torque-resolution becomes resolution' do
+            expect(@animated).to include('resolution' => torque_resolution)
           end
 
           it 'torque-trails becomes trails' do
@@ -683,7 +683,7 @@ describe Carto::Api::LayerPresenter do
         end
       end
 
-      shared_examples_for 'torque with blending family' do
+      shared_examples_for 'torque blend wizard family' do
         describe 'torque-blend-mode' do
           it 'becomes blending' do
             expect(@properties).to include('blending' => torque_blend_mode)
@@ -700,8 +700,8 @@ describe Carto::Api::LayerPresenter do
       end
 
       describe 'torque' do
-        it_behaves_like 'torque with blending family'
         it_behaves_like 'torque animated family'
+        it_behaves_like 'torque blend wizard family'
 
         let(:torque_blend_mode) { "lighter" }
         let(:property) { "fecha_date" }
@@ -769,8 +769,8 @@ describe Carto::Api::LayerPresenter do
     end
 
     describe 'torque cat' do
-      it_behaves_like 'torque with blending family'
       it_behaves_like 'torque animated family'
+      it_behaves_like 'torque blend wizard family'
 
       let(:torque_blend_mode) { "lighter" }
       let(:property) { "fecha_date" }

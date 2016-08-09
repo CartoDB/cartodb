@@ -9,7 +9,8 @@ class SignupController < ApplicationController
 
   ssl_required :signup, :create, :create_http_authentication, :create_http_authentication_in_progress
 
-  skip_before_filter :http_header_authentication, only: [:create_http_authentication, :create_http_authentication_in_progress]
+  skip_before_filter :http_header_authentication,
+                     only: [:create_http_authentication, :create_http_authentication_in_progress]
 
   before_filter :load_organization, only: [:create_http_authentication, :create_http_authentication_in_progress]
   before_filter :check_organization_quotas, only: [:create_http_authentication, :create_http_authentication_in_progress]

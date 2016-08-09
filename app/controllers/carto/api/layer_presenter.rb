@@ -438,7 +438,7 @@ module Carto
           merge_into_if_present(spp, 'animated', generate_animated(wpp))
         end
 
-        spp['style'] = @source_type == 'torque_heat' ? 'heatmap' : 'simple' if type == 'animated'
+        set_animated_style(spp) if type == 'animated'
 
         set_property(spp, wpp)
 
@@ -468,6 +468,10 @@ module Carto
                       end
 
         destination['attribute'] = wpp['property']
+      end
+
+      def set_animated_style(spp)
+        spp['style'] = @source_type == 'torque_heat' ? 'heatmap' : 'simple'
       end
 
       def generate_drawing_properties(wpp)

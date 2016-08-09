@@ -134,7 +134,6 @@ body.is-inDialog {
 }
 .Dialog-body .ListingContent {
   margin-bottom: 100px;
-  margin-top: 260px\9;
 }
 .Dialog-footer {
   padding: $sMargin-group 0;
@@ -374,5 +373,12 @@ $sNarrower-width: 620px;
   100% {
     @include opacity(0.0);
     @include transform(scale(2.0));
+  }
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  .Dialog-body .ListingContent {
+    margin-bottom: 260px;
   }
 }

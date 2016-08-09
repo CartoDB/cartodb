@@ -11,7 +11,6 @@
 <% } %>
 <div class="Editor-ListLayer-itemHeader">
   <div class="Editor-ListLayer-media u-rSpace--m js-thumbnail" style="background: <%- color %>; color: #fff">
-    <p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- letter %></p>
   </div>
   <div class="Editor-ListLayer-inner">
     <div class="Editor-ListLayer-title">

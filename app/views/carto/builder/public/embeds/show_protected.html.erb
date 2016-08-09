@@ -25,7 +25,7 @@
         <h3>This map is protected by password</h3>
       </div>
       <div class="content">
-        <%= form_tag 'embed_protected', method: :post do %>
+        <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
           <input type="password" name="password" placeholder="Insert your password"/>
           <span class="icon"></span>
 

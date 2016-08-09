@@ -49,7 +49,7 @@ module Carto
         end
 
         def load_state
-          @state = @visualization_for_vizjson_and_state.state
+          @state = @visualization_for_vizjson_and_state.state.json
         end
 
         def ensure_viewable

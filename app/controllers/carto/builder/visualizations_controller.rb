@@ -28,7 +28,7 @@ module Carto
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
-        @state = @visualization.state
+        @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
         @builder_notifications = builder_notifications

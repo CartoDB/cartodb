@@ -28,7 +28,7 @@ module Carto
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
       regenerated_visualization.permission = visualization.permission
 
-      regenerated_visualization.populate_ids(ensure_ids_json)
+      regenerated_visualization.populate_ids(lazy_ids_json)
 
       regenerated_visualization
     end

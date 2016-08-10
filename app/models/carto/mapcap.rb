@@ -17,18 +17,18 @@ module Carto
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
-    before_validation :generate_export_json, :generate_ids_json
+    before_validation :lazy_export_json, :lazy_ids_json
 
     validates :ids_json, carto_json_symbolizer: true
     validates :export_json, carto_json_symbolizer: true
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_hash_export(export_json)
+      regenerated_visualization = build_visualization_from_hash_export(lazy_export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
       regenerated_visualization.permission = visualization.permission
 
-      regenerated_visualization.populate_ids(ids_json)
+      regenerated_visualization.populate_ids(ensure_ids_json)
 
       regenerated_visualization
     end
@@ -39,12 +39,12 @@ module Carto
 
     private
 
-    def generate_export_json
-      self.export_json = export_visualization_json_hash(visualization_id, visualization.user)
+    def lazy_export_json
+      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user)
     end
 
-    def generate_ids_json
-      self.ids_json = visualization.ids_json
+    def lazy_ids_json
+      self.ids_json ||= visualization.ids_json
     end
 
     def notify_map_change

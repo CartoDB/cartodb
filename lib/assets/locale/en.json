@@ -400,7 +400,7 @@
       "add-basemap": {
         "modal-title": "Add a custom basemap",
         "modal-desc": "Select from these great resources",
-        "adding-new-basemap": "Adding new basemap…",
+        "adding-basemap": "Adding new basemap…",
         "add-basemap-error": "Could not add basemap",
         "add-btn": "Add basemap",
         "validating": "Validating…",

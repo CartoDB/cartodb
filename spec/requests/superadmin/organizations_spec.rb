@@ -140,10 +140,10 @@ feature "Superadmin's organization API" do
       share_table(table, @org_user_1, @org_user_2)
 
       delete_json superadmin_user_path(@org_user_1), {}, superadmin_headers do |response|
-        response.status.should eq 422
-        response.body[:error].should eq 'Error destroying user: Cannot delete user, has shared entities'
+        response.status.should eq 204
       end
-      ::User[@org_user_1.id].should be
+      ::User[@org_user_1.id].should be_nil
+      ::UserTable[table.id].should be_nil
     end
   end
 

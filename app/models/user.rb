@@ -293,7 +293,7 @@ class User < Sequel::Model
   end
 
   def shared_entities
-    CartoDB::Permission.where(owner_id: id).select { |p| p.acl.present? }
+    CartoDB::Permission.where(owner_id: id).all.select { |p| p.acl.present? }
   end
 
   def has_shared_entities?

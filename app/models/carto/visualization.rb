@@ -393,6 +393,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
   alias_method_chain :state, :creation
 
+  def for_presentation
+    mapcapped? ? latest_mapcap.regenerate_visualization : self
+  end
+
   private
 
   def named_maps_api

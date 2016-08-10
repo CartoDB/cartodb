@@ -139,9 +139,11 @@ feature "Superadmin's organization API" do
       table = create_random_table(@org_user_1)
       share_table(table, @org_user_1, @org_user_2)
 
-      expect do
-        @org_user_1.destroy
-      end.to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
+      delete_json superadmin_user_path(@org_user_1), {}, superadmin_headers do |response|
+        response.status.should eq 422
+        response.body[:error].should eq 'Error destroying user: Cannot delete user, has shared entities'
+      end
+      ::User[@org_user_1.id].should be
     end
   end
 

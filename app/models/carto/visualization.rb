@@ -384,14 +384,14 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def ids_json
-    layers_hash = layers.map do |layer|
-      { layer_id: layer.id, widgets: layer.widgets(&:id) }
+    layers_for_hash = layers.map do |layer|
+      { layer_id: layer.id, widgets: layer.widgets.map(&:id) }
     end
 
     {
       visualization_id: id,
       map_id: map.id,
-      layers: layers_hash
+      layers: layers_for_hash
     }
   end
 

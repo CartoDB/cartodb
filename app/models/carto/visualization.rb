@@ -404,7 +404,7 @@ class Carto::Visualization < ActiveRecord::Base
       stored_layer_id = stored_layer_ids[:layer_id]
 
       layer.id = stored_layer_id
-      layer.maps = [visualizaiton.map]
+      layer.maps = [map]
 
       layer.widgets.each_with_index do |widget, widget_index|
         widget.id = stored_layer_ids[:widgets][widget_index]

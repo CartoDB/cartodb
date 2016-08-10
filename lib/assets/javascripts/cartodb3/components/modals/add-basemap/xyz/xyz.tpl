@@ -13,7 +13,7 @@
         <button class="Checkbox-input"></button>
         <label class="Checkbox-label">TMS</label>
       </div>
-      <div class="Form-inputError js-error"></div>
+      <div class="Form-inputError Form-inputError--small js-error"></div>
     </div>
   </div>
 </div>

@@ -1,11 +1,7 @@
 // Custom styles for custom basemap styles
 // --------------------------------------------------
 
-
-.CustomBasemap {}
-
 // XYZ panel view
-.XYZPanel {}
 .XYZPanel-inputIcon--loader {
   right: 75px;
 }
@@ -14,13 +10,15 @@
   top: 10px;
   right: 14px;
   z-index: 2;
-  &:hover { cursor: pointer }
-}
 
+  &:hover {
+    cursor: pointer;
+  }
+}
 
 // WMS panel view
 .WMSSSelectLayer-Filter {
   width: 900px;
-  margin:auto;
+  margin: auto;
   z-index: 0;
 }

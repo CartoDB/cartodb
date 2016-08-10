@@ -282,14 +282,11 @@ feature "Superadmin's users API" do
   end
 
   scenario "user delete success" do
-    pending "This scenario is failing and needs to be fixed, but the destroy action is actually working"
     user = create_user
-    delete_json superadmin_user_path(user), superadmin_headers do |response|
+    delete_json superadmin_user_path(user), {}, superadmin_headers do |response|
       response.status.should == 204
     end
     ::User[user.id].should be_nil
-
-    user.destroy
   end
 
   scenario "user dump success" do

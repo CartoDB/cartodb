@@ -594,7 +594,7 @@ module Carto
           end
 
           it 'should have the right definition' do
-            @analysis_hash.should eq @analysis.analysis_definition
+            @analysis_hash.should eq @analysis.analysis_definition_for_api
           end
         end
       end

@@ -1170,7 +1170,7 @@
         "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
       "moveTorqueLayer": {
-        "loading": "Moving torque layer at the beginning...",
+        "loading": "Moving torque layer to first position...",
         "success": "Layer moved",
         "error": "Error moving the layer..."
       },
@@ -1184,8 +1184,8 @@
         "success": "Layer deleted correctly."
       },
       "layer": {
-        "animated": "A",
-        "heatmap": "H",
+        "animated": "Animated",
+        "heatmap": "Pixel",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",

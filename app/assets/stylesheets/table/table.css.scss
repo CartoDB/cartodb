@@ -37,7 +37,7 @@ div.panes {
   left:0;
 
   // Should be value of default panes top + height of table_title below
-  &.table-view { top: 97px; }
+  &.table-view { top: 77px; }
 
   .emptyTableContainer {
     position:fixed;
@@ -96,11 +96,13 @@ div.table {
     top: 46px;
     left: 0;
     right: 0;
-    height: 50px;
+    height: 30px;
     z-index: 2;
     background: $DarkGrey6;
     color: $Grey1;
-    padding: 5px;
+    padding: 5px 5px 5px 10px;
+    font-size: 19px;
+    line-height: 21px;
   }
 
   table {

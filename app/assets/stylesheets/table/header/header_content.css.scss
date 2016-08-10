@@ -24,9 +24,9 @@
 
     div.left {
       position:relative;
-      width:65%;
+      width:auto;
       height:auto;
-      margin-left:17px;
+      margin-left:20px;
       z-index: 10;
 
       // Back button
@@ -203,7 +203,7 @@
       position: absolute;
       right: 0;
       width:auto;
-      margin:10px 35px 0 0;
+      margin:8px 20px 0 0;
 
       li {
         position:relative;

@@ -77,6 +77,7 @@ module CartoDB
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
+      attribute :auth_token,          String, default: nil
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil
@@ -516,13 +517,16 @@ module CartoDB
         digest
       end
 
-      def get_auth_tokens
-        named_map = get_named_map
-        raise CartoDB::InvalidMember unless named_map
+      def get_auth_token
+        if auth_token.nil?
+          auth_token = make_auth_token
+          store
+        end
+        auth_token
+      end
 
-        tokens = named_map.template[:template][:auth][:valid_tokens]
-        raise CartoDB::InvalidMember if tokens.size == 0
-        tokens
+      def get_auth_tokens
+        [get_auth_token]
       end
 
       def supports_private_maps?

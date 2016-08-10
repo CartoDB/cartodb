@@ -42,6 +42,9 @@
   pointer-events: none;
   content: '';
 }
+.Mosaic-item--dashed::before {
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
 .Mosaic-item:hover::before {
   @include transition(all, 300ms);
   border: 1px solid rgba(0, 0, 0, 0.24);
@@ -63,4 +66,8 @@
   overflow: hidden;
   pointer-events: none;
 }
-
+.Mosaic-button {
+  line-height: 40px;
+  width: 40px;
+  color: #1785FB;
+}

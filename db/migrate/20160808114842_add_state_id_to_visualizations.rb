@@ -7,7 +7,6 @@ Sequel.migration do
 
   down do
     alter_table :visualizations do
-      drop_constraint :visualizations_state_id_fkey
       drop_column :state_id
     end
   end

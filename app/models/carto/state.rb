@@ -16,6 +16,21 @@ class Carto::State < ActiveRecord::Base
 
   before_save :ensure_json
 
+  def repopulate_widget_ids(widgets)
+    return if widgets.empty?
+
+    new_widgets_json = {}
+    widgets_json = json[:widgets]
+    widgets.each_with_index do |widget, index|
+      new_widgets_json[widget.id.to_sym] = widgets_json[widgets_json.keys[index]]
+    end
+
+    new_json = json
+    new_json[:widgets] = new_widgets_json
+
+    update_attribute(:json, new_json)
+  end
+
   private
 
   def ensure_json

@@ -413,6 +413,8 @@ class Carto::Visualization < ActiveRecord::Base
         widget.layer_id = stored_layer_id
       end
     end
+
+    # state.repopulate_widget_ids(widgets)
   end
 
   def state_with_creation

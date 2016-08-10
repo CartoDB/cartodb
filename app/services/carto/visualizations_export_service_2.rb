@@ -209,6 +209,8 @@ module Carto
     def export_visualization(visualization, user)
       layers = visualization.layers_with_data_readable_by(user)
 
+      byebug
+
       {
         name: visualization.name,
         description: visualization.description,

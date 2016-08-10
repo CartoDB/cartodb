@@ -144,9 +144,10 @@ class Organization < Sequel::Model
   end
 
   def destroy_non_owner_users
-    non_owner_users.each { |u|
-      u.destroy
-    }
+    non_owner_users.each do |user|
+      user.shared_entities.map(&:entity).each(&:delete)
+      user.destroy
+    end
   end
 
   def non_owner_users

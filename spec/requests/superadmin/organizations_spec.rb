@@ -84,8 +84,20 @@ feature "Superadmin's organization API" do
     organization.map_view_quota.should == 800000
   end
 
-  scenario "organization delete success" do
-    pending "Delete is not implemented yet"
+  describe "organization delete success" do
+    include_context 'organization with users helper'
+    include TableSharing
+
+    it 'destroys organizations (even with shared entities)' do
+      table = create_random_table(@org_user_1)
+      share_table_with_user(table, @org_user_2)
+
+      delete_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
+        puts response.body
+        response.status.should eq 204
+      end
+      Organization[@organization.id].should be_nil
+    end
   end
 
   scenario "organization get info success" do
@@ -146,17 +158,6 @@ feature "Superadmin's organization API" do
       ::User[@org_user_1.id].should be
       ::UserTable[table.id].should be
     end
-
-    it 'deletes an user with shared entities if forced to' do
-      table = create_random_table(@org_user_1)
-      share_table(table, @org_user_1, @org_user_2)
-
-      delete_json superadmin_user_path(@org_user_1), { destroy_shared: true }, superadmin_headers do |response|
-        response.status.should eq 204
-      end
-      ::User[@org_user_1.id].should be_nil
-      ::UserTable[table.id].should be_nil
-    end
   end
 
   describe 'sharing users destruction logic' do
@@ -207,8 +208,6 @@ feature "Superadmin's organization API" do
       }.not_to raise_error(CartoDB::BaseCartoDBError, "Cannot delete user, has shared entities")
     end
   end
-
-
 
   private
 

@@ -56,7 +56,6 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def destroy
-    @user.shared_entities.map(&:entity).each(&:delete) if params[:destroy_shared]
     @user.destroy
     respond_with(:superadmin, @user)
   rescue => e

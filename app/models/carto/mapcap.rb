@@ -28,7 +28,9 @@ module Carto
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
       regenerated_visualization.permission = visualization.permission
 
-      repopulate_ids(regenerated_visualization)
+      regenerated_visualization.populate_ids(ids_json)
+
+      regenerated_visualization
     end
 
     def self.latest_for_visualization(visualization_id)
@@ -42,31 +44,7 @@ module Carto
     end
 
     def generate_ids_json
-      self.ids_json = {
-        visualization_id: visualization.id,
-        map_id: visualization.map.id,
-        layers: visualization.layers.map { |layer| { layer_id: layer.id, widgets: layer.widgets.map(&:id) } }
-      }
-    end
-
-    def repopulate_ids(regenerated_visualization)
-      regenerated_visualization.id = ids_json[:visualization_id]
-      regenerated_visualization.map.id = ids_json[:map_id]
-
-      regenerated_visualization.map.layers.each_with_index do |layer, index|
-        stored_layer_ids = ids_json[:layers][index]
-        stored_layer_id = stored_layer_ids[:layer_id]
-
-        layer.id = stored_layer_id
-        layer.maps = [regenerated_visualization.map]
-
-        layer.widgets.each_with_index do |widget, widget_index|
-          widget.id = stored_layer_ids[:widgets][widget_index]
-          widget.layer_id = stored_layer_id
-        end
-      end
-
-      regenerated_visualization
+      self.ids_json = visualization.ids_json
     end
 
     def notify_map_change

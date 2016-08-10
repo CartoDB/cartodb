@@ -19,7 +19,7 @@
         <% if (isTorque) { %>
           <li class="Editor-HeaderInfo-actionsItem u-rSpace">
             <% if (isAnimated) { %>
-              <svg width="19px" height="8px" viewBox="222 24 19 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <svg class="js-torqueIcon" width="19px" height="8px" viewBox="222 24 19 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-tooltip="<%- _t('editor.layers.layer.animated') %>">
                 <g id="Animated-Icon" opacity="0.6" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(222.000000, 24.000000)">
                   <rect id="Rectangle-649" fill="#2E3C43" x="11" y="0" width="8" height="8" rx="4"></rect>
                   <rect id="Rectangle-649" fill="#2E3C43" opacity="0.5" x="5" y="0" width="8" height="8" rx="4"></rect>
@@ -27,7 +27,7 @@
                 </g>
               </svg>
             <% } else { %>
-              <svg width="31px" height="17px" viewBox="563 512 31 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <svg class="js-torqueIcon" width="31px" height="17px" viewBox="563 512 31 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-tooltip="<%- _t('editor.layers.layer.heatmap') %>">
                 <g id="Group" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(563.000000, 512.000000)">
                   <ellipse id="Oval-120" fill="#E6E8E8" transform="translate(27.020000, 12.197917) rotate(-90.000000) translate(-27.020000, -12.197917) " cx="27.02" cy="12.1979167" rx="3.875" ry="3.84"></ellipse>
                   <path d="M26.93,13.0729167 C27.3442136,13.0729167 27.68,12.7371302 27.68,12.3229167 C27.68,11.9087031 27.3442136,11.5729167 26.93,11.5729167 C26.5157864,11.5729167 26.18,11.9087031 26.18,12.3229167 C26.18,12.7371302 26.5157864,13.0729167 26.93,13.0729167 Z" id="Oval-120-Copy-2" fill="#828A8F" opacity="0.8" transform="translate(26.930000, 12.322917) rotate(-90.000000) translate(-26.930000, -12.322917) "></path>

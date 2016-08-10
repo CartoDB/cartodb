@@ -113,8 +113,10 @@ module.exports = cdb.core.View.extend({
 
   _renderScroll: function () {
     Ps.initialize(this._container(), {
-      wheelSpeed: 2,
-      wheelPropagation: true,
+      wheelSpeed: 1,
+      wheelPropagation: false,
+      swipePropagation: true,
+      stopPropagationOnClick: false,
       minScrollbarLength: 20
     });
   },

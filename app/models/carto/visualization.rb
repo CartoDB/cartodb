@@ -275,10 +275,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def get_auth_tokens
-    tokens = get_named_map[:template][:auth][:valid_tokens]
-    raise CartoDB::InvalidMember if tokens.empty?
-
-    tokens
+    [get_auth_token]
   end
 
   def mapviews
@@ -384,6 +381,36 @@ class Carto::Visualization < ActiveRecord::Base
         layer.save
       else
         CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
+      end
+    end
+  end
+
+  def ids_json
+    layers_for_hash = layers.map do |layer|
+      { layer_id: layer.id, widgets: layer.widgets.map(&:id) }
+    end
+
+    {
+      visualization_id: id,
+      map_id: map.id,
+      layers: layers_for_hash
+    }
+  end
+
+  def populate_ids(ids_json)
+    self.id = ids_json[:visualization_id]
+    map.id = ids_json[:map_id]
+
+    map.layers.each_with_index do |layer, index|
+      stored_layer_ids = ids_json[:layers][index]
+      stored_layer_id = stored_layer_ids[:layer_id]
+
+      layer.id = stored_layer_id
+      layer.maps = [map]
+
+      layer.widgets.each_with_index do |widget, widget_index|
+        widget.id = stored_layer_ids[:widgets][widget_index]
+        widget.layer_id = stored_layer_id
       end
     end
   end

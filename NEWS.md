@@ -9,6 +9,10 @@ This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be ru
 This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
 ghost tables, importing common data and automatic index creation.
 
+### NOTICE
+This release changes the way visualization tokens are stored, so am igration task has to be run for password
+protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_auth_tokens`
+
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
@@ -27,6 +31,7 @@ ghost tables, importing common data and automatic index creation.
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
 * Forward compatibility for infowindows at Builder
+* Several auth_token related fixes
 
 3.13.0 (2016-XX-XX)
 -------------------

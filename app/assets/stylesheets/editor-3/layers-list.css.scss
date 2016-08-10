@@ -29,6 +29,10 @@
   background: $cWhite;
   cursor: default;
 }
+.Editor-ListLayer-item.is-animated:hover {
+  border: 1px solid $cSecondaryLine;
+  cursor: default;
+}
 .Editor-ListLayer-item.is-animated::before {
   position: absolute;
   top: -20px;
@@ -38,7 +42,7 @@
   border-top: 1px solid $cMainLine;
   border-bottom: 1px solid $cMainLine;
   background: $cThirdBackground;
-  background-image: repeating-linear-gradient(-45deg, transparent, transparent 1px, rgba(0, 0, 0, 0.01) 1px, rgba(0, 0, 0, 0.01) 10px);
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
   content: '';
   z-index: -1;
 }

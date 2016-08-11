@@ -18,3 +18,8 @@
 .DatasetsPaginator .Pagination {
   @include justify-content(flex-end, end);
 }
+
+//Fix Pagination for add layer modal
+.Tab-paneContent .DatasetsPaginator {
+  margin: 0 auto 95px;
+}

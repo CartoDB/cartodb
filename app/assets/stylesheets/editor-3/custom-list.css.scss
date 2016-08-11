@@ -55,3 +55,24 @@
 .CustomList-itemLink {
   width: 100%;
 }
+
+/* TODO move to cartoassets and change to border-top and :first-child */
+.CDB-ListDecoration-item:last-type-of {
+  border-bottom: 0;
+}
+
+.CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
+  @include opacity(0.8);
+  display: block;
+  margin-right: 2px;
+  background: none;
+}
+
+.CustomList-list--visible.ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
+  min-height: 36px;
+}
+
+.Editor-panel .CustomList-list--visible .ps-scrollbar-y,
+.Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail {
+  width: 4px !important;
+}

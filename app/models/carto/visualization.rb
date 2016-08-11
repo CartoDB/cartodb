@@ -58,7 +58,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
-  has_one :state, class_name: Carto::State
+  has_one :state, class_name: Carto::State, autosave: true
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -417,20 +417,16 @@ class Carto::Visualization < ActiveRecord::Base
     # state.repopulate_widget_ids(widgets)
   end
 
-  def state
-    if state_id
-      Carto::State.find(state_id)
-    else
-      state = Carto::State.create!(visualization_id: id, user_id: user.id)
-      self.state_id = state.id
-    end
-  end
-
   def for_presentation
     mapcapped? ? latest_mapcap.regenerate_visualization : self
   end
 
   private
+
+  def state_with_default
+    state_without_default || build_state(user: user)
+  end
+  alias_method_chain :state, :default
 
   def named_maps_api
     Carto::NamedMaps::Api.new(self)

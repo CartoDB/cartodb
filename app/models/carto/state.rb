@@ -14,7 +14,7 @@ class Carto::State < ActiveRecord::Base
   validates :json, carto_json_symbolizer: true
   validates :visualization, :user, presence: true
 
-  before_save :ensure_json
+  after_initialize :ensure_json
 
   def repopulate_widget_ids(widgets)
     return if widgets.empty?

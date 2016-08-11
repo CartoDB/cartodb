@@ -128,6 +128,10 @@
   },
 
   "analyses": {
+    "connect-with-lines": {
+      "title": "Connect with lines",
+      "short-title": "Connect with lines"
+    },
     "georeference": {
       "title": "Georeference",
       "short-title": "Georeference"
@@ -599,6 +603,10 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
+          "connect-with-lines": {
+            "title": "Connect with lines",
+            "desc": "????" // TODO: complete this
+          },
           "aggregate-intersection": {
             "title": "Intersect second layer",
             "desc": "Intersect with a second layer and calculate aggregations on the fly."
@@ -1228,6 +1236,19 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "order": "Order",
+        "order-by": "Order by",
+        "asc": "ASC",
+        "desc": "DESC",
+        "line-to-single-point": "To Single Point",
+        "line-to-layer-all-to-all": "To Layer",
+        "line-sequential": "Sequential",
+        "to-closest": "To closest",
+        "all-to-all": "All to all",
+        "car": "Car",
+        "walk": "Walk",
+        "bicycle": "Bicycle",
+        "public_transport": "Public transport",
         "input-num": "Input #%{num}",
         "define-two-layers": "Define two layers",
         "keep-columns": "Select the columns you want to keep",

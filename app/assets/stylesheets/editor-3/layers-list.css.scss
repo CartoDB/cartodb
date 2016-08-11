@@ -22,6 +22,34 @@
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
 }
+.Editor-ListLayer-item.is-animated {
+  position: relative;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: $cWhite;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated:hover {
+  border: 1px solid $cSecondaryLine;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated::before {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  bottom: -20px;
+  left: -25px;
+  border-top: 1px solid $cMainLine;
+  border-bottom: 1px solid $cMainLine;
+  background: $cThirdBackground;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
+  content: '';
+  z-index: -1;
+}
+// First layer?, no margin top
+.Editor-ListLayer-item.is-animated:first-child {
+  margin-top: 1px;
+}
 
 .Editor-ListLayer-item.has-error {
   &::after {

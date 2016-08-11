@@ -58,7 +58,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
-  has_one :state, class_name: Carto::State, autosave: true
+  has_one :state, class_name: Carto::State, autosave: true, dependent: :destroy
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -424,7 +424,15 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def state_with_default
-    state_without_default || build_state(user: user)
+    byebug
+    Carto::State.find(state_id)
+  rescue ActiveRecord::RecordNotFound
+    new_state = create_state(user: user)
+    self.state_id = new_state.id
+
+    save
+
+    new_state
   end
   alias_method_chain :state, :default
 

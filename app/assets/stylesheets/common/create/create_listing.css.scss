@@ -18,3 +18,16 @@
 .DatasetsPaginator .Pagination {
   @include justify-content(flex-end, end);
 }
+
+//Fix Pagination for modal 
+
+.Tab-paneContent .DatasetsPaginator {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 6;
+}
+ .DatasetsPaginator .Pagination {
+  @include justify-content(center);
+}
+

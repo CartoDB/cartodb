@@ -424,7 +424,6 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def state_with_default
-    byebug
     Carto::State.find(state_id)
   rescue ActiveRecord::RecordNotFound
     new_state = create_state(user: user)

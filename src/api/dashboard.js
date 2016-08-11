@@ -33,11 +33,15 @@ Dashboard.prototype = {
   },
 
   getState: function () {
-    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
-    var mapState = this.getMapState(); // TODO
     var state = {};
+    var mapState = this.getMapState(); // TODO
     if (!_.isEmpty(mapState)) state.map = mapState;
-    if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
+    /*
+    * Disabled widget states until issues are fixed.
+    * See https://github.com/CartoDB/deep-insights.js/issues/416
+    * var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    * if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
+    */
     return state;
   },
 

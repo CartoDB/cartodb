@@ -500,7 +500,7 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Link",
+            "title": "People with Link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {

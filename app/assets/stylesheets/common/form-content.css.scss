@@ -283,9 +283,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   @include transition(margin, 200ms, ease-in-out);
 }
-.Form-inputError.Form-inputError--small {
-  font-size: 12px;
-}
 .Form-inputError.is-visible {
   margin-top: 15px;
 }

@@ -407,6 +407,9 @@
         "saving": "Saving layer…",
         "fetching": "Fetching layers…",
         "get-layers": "Get layers",
+        "xyz":{
+          "not-valid": "It does not look like a valid XYZ URL"
+        }
       },
       "export-data": {
         "title": "Export data",

@@ -56,21 +56,22 @@
   width: 100%;
 }
 
+.CDB-ListDecoration-item:last-of-type {
+  border-bottom: 0;
+}
 
 .CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
-  opacity: .8 !important;
- /* display: block;*/
-  margin: 2px !important;
-  background: none !important;
+  display: block;
+  opacity: 0.8;
+  margin-right: 2px;
+  background: none;
 }
+
 .CustomList-list--visible.ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
- /* min-height: 36px;*/
+ min-height: 36px;
 }
 
-.Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail {
-  width: 4px !important;
+.CustomList-list--visible .ps-scrollbar-y,
+.CustomList-list--visible .ps-scrollbar-y-rail {
+  width: 4px;
 }
-.Editor-panel .CustomList-list--visible .ps-scrollbar-y {
-  width: 4px !important;
-}
-

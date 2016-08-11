@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.9
 // uncompressed version: cartodb.uncompressed.js
-// sha: a2b8834622f2b4d3b849a7e810cff998d982844d
+// sha: 22abea44dc35b3cfe1e4aadb9295a5b2fb916f90
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -26322,7 +26322,7 @@ if(!window.JSON) {
 
     cdb.config = new Config();
     cdb.config.set({
-      cartodb_attributions: "CartoDB <a href=\"http://cartodb.com/attributions\" target=\"_blank\">attribution</a>",
+      cartodb_attributions: "",
       cartodb_logo_link: "http://www.cartodb.com"
     });
 
@@ -27293,6 +27293,66 @@ cdb.geo.geocoder.NOKIA = {
       });
   }
 }
+
+cdb.geo.geocoder.BING = {
+
+  keys: {
+    api_key:   "AjpDgTq-h1SPLZfoD8fxeLqWRlQ8JqoM17ZwiNN27jOn82uddopEz04yR_nlNhh4",
+  },
+
+  geocode: function(address, callback) {
+    address = address.toLowerCase()
+      .replace(/é/g,'e')
+      .replace(/á/g,'a')
+      .replace(/í/g,'i')
+      .replace(/ó/g,'o')
+      .replace(/ú/g,'u');
+
+      var protocol = '';
+      if(location.protocol.indexOf('https') === -1) {
+        protocol = 'https:';
+      }
+      $.ajax({
+          url: protocol + '//dev.virtualearth.net/REST/v1/Locations?q=' + encodeURIComponent(address) + '&maxResults=1' + '&key=' + this.keys.api_key,
+          dataType: 'jsonp',
+          jsonp: "jsonp",
+          success: function(data){
+            var coordinates = [];
+            if (data && data.resourceSets[0].resources) {
+            
+              var res = data.resourceSets[0].resources;
+
+              for(var i in res) {
+                var r=res[i],position;
+
+                if(r.point){
+                  position = {
+                    lat: r.point.coordinates[0],
+                    lon: r.point.coordinates[1]
+                  };
+                }
+
+                if (r.bbox) {
+                  position.boundingbox = {
+                    north: r.bbox[2],
+                    south: r.bbox[0],
+                    east: r.bbox[3],
+                    west: r.bbox[1]
+                  }
+                }
+                
+                coordinates.push(position);
+            }
+          }
+          if (callback) {
+            callback.call(this, coordinates);
+        }
+        }
+      }
+    );
+  }
+}
+
 
 
 /**
@@ -31544,7 +31604,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     this._showLoader();
     // Remove previous pin
     this._destroySearchPin();
-    cdb.geo.geocoder.NOKIA.geocode(address, function(places) {
+    cdb.geo.geocoder.BING.geocode(address, function(places) {
       self._onResult(places);
       // Hide loader
       self._hideLoader();

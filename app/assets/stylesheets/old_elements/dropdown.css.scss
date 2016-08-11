@@ -19,10 +19,10 @@
     &:before {
       content:' ';
       position:absolute;
-      display:block!important;
       width:0;
       height:0;
       z-index:10;
+      display: none;
     }
 
     // Tick for 12 possibilities
@@ -80,10 +80,11 @@
       &:after {
         content:' ';
         position:absolute;
-        display:block!important;
+        
         width:0;
         height:0;
         z-index:1;
+        display: none;
       }
 
       // Tick for 12 possibilities

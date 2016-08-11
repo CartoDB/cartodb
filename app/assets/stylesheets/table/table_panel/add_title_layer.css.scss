@@ -13,27 +13,30 @@
 
   .title_layer { 
     position:relative;
-    height:30px;
-    line-height:30px;
+    line-height:40px;
 
-      &.open {
-        > .title-bar {
-          background-color: $layer_header_background_active;
-          &:hover {
-            background-color: $layer_header_background_active_hover;
-          }
+      &.open {     
+        > .title-layer-body {
+          background-color: $sidebar_panel_background;
         }
       }
 
-    .title-bar {
-      @include bb_sidebar_layer_header;
-      position: relative;
-      width: 100%;
+    > .title-bar {
       background-image: url("../images/bb_icon_globe.png");
+      background-color: $Grey9;
       background-position: 24px center;
       background-repeat: no-repeat;
+      font-family: "AvenirNext_Demi";
+      font-size: 15px;
+      height: 40px;
+      line-height: 40px;
+      position: relative;
+      width: 100%;
       .title-label {
         margin-left: 66px;
+      }
+      &:hover {
+        background-color: $Grey8;
       }
     
 
@@ -46,7 +49,6 @@
       // (Title layer text)
       .action.title {
         @include inline-block();
-        line-height:30px;
         &:hover {
           color: $Teal1;
           cursor: pointer;
@@ -55,13 +57,10 @@
     }
 
      .title-layer-body {
-
-      background-color: $sidebar_panel_background;
       height: 100%;
       padding: 12px;
-      width: 385px;
-      position: relative;
-      margin-left: 65px;
+      width: auto;
+      position: relative;      
 
       .wrapper {
         position:absolute;

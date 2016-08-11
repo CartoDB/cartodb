@@ -24,11 +24,12 @@
   //bb_layer_header 
   .layer-info { 
     @include bb_sidebar_layer_header;
+    display: flex;
     position:absolute;
     top:0; right:0; bottom:auto; left:0;    
     z-index:0;
-    div.left {width:82%;}
-    div.right {width:46px; margin-right:12px;}
+    div.left {flex:1 1 auto;}
+    div.right {margin-right:12px;}
     
     // Layer info block
     .info {
@@ -114,12 +115,13 @@
 
     // Remove button
     .remove {
-      width:13px;
-      height:13px;
-      margin-left:5px;
-      @include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:0) no-repeat);
-      &:hover {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-13px) no-repeat);}
-      &:active {@include background(sprite($common-sprites, close_grey, $offset-x:0, $offset-y:-26px) no-repeat);}
+      width:9px;
+      height:9px;
+      margin-left:6px;
+      background: url(../images/close_layer.png) no-repeat center;
+      &:hover {
+        background-image: url(../images/close_layer_hover.png); 
+      }
     }
     
   }

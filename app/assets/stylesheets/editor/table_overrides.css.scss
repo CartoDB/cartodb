@@ -8,36 +8,18 @@
 div.table table thead tr th>div label { line-height: 0.8 }
 div.table table thead tr th>div p.auto { padding-right: 38px }
 .header_content div.left h1 a.title {
-  font-size: 20px;
-  font-weight: $sFontWeight-bold;
-  font-family: 'Lato', sans-serif;
+  font-size: 15px;
 }
 .header_content div.left div.metadata p a {
   font-size: 15px;
-  font-weight: $sFontWeight-lighter;
 }
 
 div.vis_navigation nav .hidden {
   display: none !important;
 }
 
-div.table table tbody tr td div.cell,
-div.map .option-button,
-.select2-results .select2-result-label,
-.form_spinner,
-.infowindow_panel .fields li .switches,
-.infowindow_panel .fields li.drag_field {
-  line-height: 1;
-}
+
 .CodeMirror { font-size: 15px }
 
 div.legends_panel div.forms.panel_content .right .checkbox { margin-top:11px; line-height:1 }
-
-
-// New dialogs
-.Dialog-headerTitle,
-.Dialog-headerText,
-.IntermediateInfo-title {
-  font-family: 'Lato', sans-serif; // TODO: remove when old styles are deleted
-}
 

@@ -232,9 +232,8 @@
         padding:3px;
         border:1px solid rgba(0,0,0,0.2);
         border-left:0;
-        font:normal 11px $text-fonts;
         line-height:13px;
-        @include border-right-radius(3px);
+        @include border-right-radius(2px);
         letter-spacing:0px;
         color:#666666;
         &:focus {

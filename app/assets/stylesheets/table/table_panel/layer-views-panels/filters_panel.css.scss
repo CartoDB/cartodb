@@ -156,14 +156,12 @@
     }
 
     ul.filters {
-      position:relative;
-
-      width: 385px;
+      padding: 0;
       margin: 0;
+      position:relative;
 
       .filter { // generic styles for all the filters
         position:relative;
-        padding: 15px 0 0 0;
         border-bottom: 1px solid $DarkGrey6;
         text-align:left;
 
@@ -201,10 +199,10 @@
           @include opacity(0);
           @include size(13px);
           @include position(12px, 12px, false, false);
-          @include simple-transition(opacity, 150ms);
-          @include common-sprite(close_grey);
-
-          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
+          background: url(../images/close_layer.png) no-repeat center;
+          &:hover {
+            background-image: url(../images/close_layer_hover.png); 
+          }
         }
       }
     }
@@ -475,7 +473,6 @@
 
     // Histogram filter
     ul.filters .filter.histogram {
-      padding: 12px;
       text-align:center;
       .empty  { display:none; }
 

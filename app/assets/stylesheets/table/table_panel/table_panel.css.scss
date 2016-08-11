@@ -16,11 +16,9 @@ $corner_radius: 0px;
 
 .table_panel {
   bottom:0px;
-  background-color: rgba(0,0,0, 0.32);  
-  border-left: 1px solid $Black;
-  border-bottom:0;
-  border-right:0;
+  background-color: rgba(#fff, .05);   
   overflow: visible !important;
+  padding: 12px;
   position:fixed;
   right:-452px;
   top:46px;
@@ -30,14 +28,13 @@ $corner_radius: 0px;
   .collapse {
     @include bb_button_style;
     border-radius: 0px;
-    border: 1px solid black;
-    border-right: 0px;
-    left: -21px;
+    border: none;
+    left: -27px;
     position: absolute;
-    width: 20px;
-    height: 29px;
+    width: 26px;
+    height: 40px;
     padding: 0px;
-    top: 0px;
+    top: 12px;
     background-image: url(../images/bb_icon_open.png);
     &.open {
       background-image: url(../images/bb_icon_collapse.png);
@@ -47,15 +44,10 @@ $corner_radius: 0px;
 //bb_layer_panel
   .layer_panel {
     position:relative;
-    width:100%;
     height:100%;
     background:$DarkGrey2;
     z-index:1;
   } 
-
-
-
-
 
   ////////////////////////////////
   // ANIMATIONS FOR LAYER_PANEL //
@@ -69,7 +61,7 @@ $corner_radius: 0px;
       content:'';
       position:absolute;
       top: 10px;
-      left: 10px;
+      left: 10px; 
       right: 10px;
       bottom: 0;
       border:2px dashed #AAA;
@@ -89,7 +81,7 @@ $corner_radius: 0px;
       font:bold 17px $text-fonts;
       color:#CDCDCD;
       line-height:20px;
-      letter-spacing: 0;
+      letter-spacing: 0; 
       z-index:1;
     }
   }

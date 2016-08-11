@@ -255,6 +255,7 @@
 
       &:hover {
         background-color: $btn_background_hover;
+        cursor: default;
       }
       &:active {
         background-color: $btn_background_press;
@@ -290,7 +291,7 @@
  @mixin bb_dropdown {
     background: $DarkGrey7;
     border: $dropdownBorder;
-    padding: 5px;
+    padding: 12px 0px;
  }
  @mixin bb_list_separator {
     border-bottom: 1px solid rgba($Black, .32);
@@ -299,7 +300,7 @@
 //sidebar layer header
 @mixin bb_sidebar_layer_header {
     background-color: $layer_header_background;
-    border-bottom: 1px solid $Black;
+    border-bottom: 1px solid $DarkGrey2;
     font-size: 15px;
     font-family: "AvenirNext_Demi";
     height: 30px;

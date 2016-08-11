@@ -118,7 +118,6 @@ feature "Superadmin's organization API" do
 
     it "gets all organizations" do
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
-        byebug
         response.status.should == 200
         response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)
         response.body.length.should >= 2

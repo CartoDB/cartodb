@@ -1497,7 +1497,9 @@
           "desc": "Configure how the aggregation works"
         },
         "properties": {
-          "title-label": "Style",
+          "title-label-point": "Style",
+          "title-label-line": "Lines style",
+          "title-label-polygon": "Polygons style",
           "desc": "Change the visualization"
         },
         "unanimatable": {

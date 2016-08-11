@@ -9,6 +9,13 @@
         <% } %>
       />
     <span class="u-iBlock CDB-Radio-face"></span>
-    <label class="u-iBlock u-lSpace" for="<%- item.id %>"><%- item.label %></label>
+    <span class="u-iBlock CDB-Radio-face"></span>
+      <% if (item.help) { %>
+        <span class="js-help is-underlined u-lSpace" data-tooltip="<%- item.help %>">
+      <% } %>
+      <%- item.label %>
+      <% if (item.help) { %>
+        </span>
+      <% } %>
   </li>
 <% }); %>

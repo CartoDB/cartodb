@@ -1,1 +1,1 @@
-<img src="<%= backgroundImage %>" class="Mosaic-image" />
+<img src="<%= imgURL %>" class="Mosaic-image js-thumbnailImg" />

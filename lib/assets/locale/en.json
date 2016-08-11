@@ -1242,6 +1242,8 @@
         "no-coincidence": "When no coincidence no row will be added",
         "columns": "Columns",
         "admin-region": "Admin. Region",
+        "dissolved-help": "Combine polygons tracts which have equal ranges",
+        "intact-help": "Keep all polygon tracts as individual polygons",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",

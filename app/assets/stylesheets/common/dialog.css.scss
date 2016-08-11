@@ -103,7 +103,6 @@ body.is-inDialog {
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
-  padding-bottom: 100px;
   overflow: auto;
 }
 .Dialog-body.Dialog-body--share {
@@ -132,6 +131,9 @@ body.is-inDialog {
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
+}
+.Dialog-body .ListingContent {
+  margin-bottom: 100px;
 }
 .Dialog-footer {
   padding: $sMargin-group 0;
@@ -371,5 +373,12 @@ $sNarrower-width: 620px;
   100% {
     @include opacity(0.0);
     @include transform(scale(2.0));
+  }
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  .Dialog-body .ListingContent {
+    margin-bottom: 200px;
   }
 }

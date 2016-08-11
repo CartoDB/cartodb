@@ -501,7 +501,7 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Link",
+            "title": "People with Link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
@@ -1177,6 +1177,11 @@
         "success": "Layer renamed to %{name}",
         "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
       },
+      "moveTorqueLayer": {
+        "loading": "Moving torque layer to first position...",
+        "success": "Layer moved",
+        "error": "Error moving the layer..."
+      },
       "delete": {
         "confirm": "ok, delete it",
         "cancel": "cancel",
@@ -1187,6 +1192,8 @@
         "success": "Layer deleted correctly."
       },
       "layer": {
+        "animated": "Animated",
+        "heatmap": "Pixel",
         "analysis": "Analysis",
         "add-analysis": "Add analysis",
         "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
@@ -1208,6 +1215,11 @@
           "title-label": "Style",
           "select-style": "Select style",
           "color": "Color"
+        },
+        "saving": {
+          "loading": "Saving new basemap...",
+          "error": "Error saving new basemap.",
+          "success": "Basemap saved successfully."
         }
       },
       "labels": {
@@ -1483,7 +1495,8 @@
         "hexabins": "hexabins",
         "squares": "squares",
         "regions": "Adm. Regions",
-        "heatmap": "pixel"
+        "heatmap": "pixel",
+        "animation": "animated"
       },
       "style-form": {
         "type": {
@@ -1494,8 +1507,15 @@
           "desc": "Configure how the aggregation works"
         },
         "properties": {
-          "title-label": "Style",
+          "title-label-point": "Style",
+          "title-label-line": "Lines style",
+          "title-label-polygon": "Polygons style",
           "desc": "Change the visualization"
+        },
+        "unanimatable": {
+          "desc": "Not any numeric or date column found in your data.",
+          "body": "You can change your column's type in the %{link}.",
+          "label": "table view"
         }
       },
       "code-mirror": {
@@ -1524,7 +1544,13 @@
           "title": "LAYER HIDDEN",
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
-        }
+        },
+        "torque-exists": {
+          "title": "TORQUE LAYER",
+          "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
+          "accept": "CONTINUE",
+          "cancel": "CANCEL"
+        },
       },
       "components": {
         "fill": "Fill",
@@ -1547,6 +1573,13 @@
             "overlay": "overlay",
             "src-over": "src-over",
             "xor": "xor"
+          }
+        },
+        "type": {
+          "label": "Type",
+          "options": {
+            "heatmap": "Heatmap",
+            "points": "Points"
           }
         },
         "aggregation-value": "Operation",
@@ -1610,13 +1643,6 @@
       }
     },
     "widgets": {
-      "notifier": {
-        "delete": "Widget deleted correctly.",
-        "success": "Widget successfully added.",
-        "error": "<span class='u-errorTextColor'>Error adding widget:</span> %{error}",
-        "loading": "Adding widget…",
-        "updating": "Updating widget…"
-      },
       "options": {
         "remove": "Delete...",
         "rename": "Rename",
@@ -1701,6 +1727,16 @@
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted"
+    },
+    "widgets": {
+      "delete": "Widget deleted correctly.",
+      "success": "Widget successfully added.",
+      "error": {
+        "title": "Error adding widget:",
+        "body": "%{body} %{error}"
+      },
+      "loading": "Adding widget…",
+      "updating": "Updating widget…"
     }
   }
 }

@@ -47,7 +47,7 @@ module Carto
         download_path = CartoDB.path(self, 'visualization_export_download', download_path_params)
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id, download_path: download_path)
 
-        Carto::Tracking::Events::ExportedMap.new(current_user, @visualization).report
+        Carto::Tracking::Events::ExportedMap.new(current_viewer, @visualization).report if current_viewer
 
         render_jsonp(VisualizationExportPresenter.new(visualization_export).to_poro, 201)
       end

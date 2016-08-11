@@ -897,7 +897,22 @@ class DataImport < Sequel::Model
     import_log.merge!(decorate_log(self))
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
-    results.each { |result| CartoDB::Metrics.new.report(:import, payload_for(result)) }
+
+    if results.any?
+      results.each do |result|
+        CartoDB::Metrics.new.report(:import, payload_for(result))
+
+        Carto::Tracking::Events::ConnectionFactory.build(user, result: result,
+                                                               imported_from: service_name,
+                                                               data_from: data_type,
+                                                               sync: sync?).report
+      end
+    elsif state == STATE_FAILURE
+      Carto::Tracking::Events::FailedConnection.new(user,
+                                                    imported_from: service_name,
+                                                    data_from: data_type,
+                                                    sync: sync?).report
+    end
   end
 
   def importer_stats_aggregator
@@ -1031,5 +1046,9 @@ class DataImport < Sequel::Model
                             event: 'Created dataset',
                             type: 'Invalid import result',
                             exception: exception)
+  end
+
+  def sync?
+    synchronization_id.present?
   end
 end

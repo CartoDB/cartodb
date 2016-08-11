@@ -104,9 +104,6 @@ module Carto
                                visualization_analyses.map(&:analysis_definition)
                              end
 
-        auth_tokens = @visualization.needed_auth_tokens
-        vizjson[:auth_tokens] = auth_tokens unless auth_tokens.empty?
-
         parent = @visualization.parent
         if parent
           vizjson[:title] = parent.qualified_name(user)

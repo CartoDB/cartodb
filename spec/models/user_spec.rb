@@ -25,6 +25,10 @@ describe 'refactored behaviour' do
     def get_user_by_id(user_id)
       ::User.where(id: user_id).first
     end
+
+    def create_user
+      FactoryGirl.create(:valid_user)
+    end
   end
 
 end

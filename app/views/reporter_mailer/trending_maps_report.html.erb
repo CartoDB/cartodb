@@ -1,56 +1,16 @@
-<% content_for(:subject) { @subject } %>
-
-<% content_for :body do %>
-  <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">Trending Maps Report</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8 border-bottom: 1px solid #dddddd; width: 100% !important;">
-              <% if @trending_visualizations.length > 0 %>
-                <% @trending_visualizations.each do |vis_id, map_data| %>
-                  <tr>
-                    <td align="left" style="padding: 10px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
-                      <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Trending map <a href="<%= "#{map_data['user_public_url']}#{CartoDB.path(self, 'public_visualizations_public_map', { id: vis_id })}" %>" ><%= map_data["visualization_name"] %></a> by <a href="mailto:<%= map_data["user_mail"] %>"><%= map_data["user"] %></a> with <strong><%= map_data["mapviews"] %> mapviews</strong></p>
-                    </td>
-                  </tr>
-                <% end %>
-              <% else %>
-                <tr>
-                  <td align="left" style="padding: 10px 50px 10px 50px; font-family: Helvetica, Arial, sans-serif;">
-                    <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">No trending maps for today</p>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
-
-<% content_for :footer do %>
-  <tr>
-    <td style="padding: 20px 0px 20px 0px;">
-      <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-          <td align="center" valign="middle" style="font-size: 12px; line-height: 18px; font-family: Helvetica, Arial, sans-serif; color:#999;">
-            &copy; <%= Time.now.year %> CartoDB
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
+<tr>
+  <td>
+    <% if @trending_visualizations.length > 0 %>
+      <ul style="padding-left: 17px;">
+        <% @trending_visualizations.each do |vis_id, map_data| %>
+          <%- public_url = "#{map_data['user_public_url']}#{CartoDB.path(self, 'public_visualizations_public_map', { id: vis_id })}" %>
+          <li style="margin: 0; font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+            <p style="margin: 8px 0;">Trending map <a href="<%= public_url %>" target="_blank" style="color: #1785FB"><%= map_data["visualization_name"] %></a> by <a href="mailto:<%= map_data["user_mail"] %>" target="_blank" style="color: #1785FB"><%= map_data["user"] %></a> with <strong><%= map_data["mapviews"] %> mapviews</strong>.</p>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p style="font-size: 16px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">No trending maps for today</p>
+    <% end %>
+  </td>
+</tr>

@@ -34,6 +34,23 @@
   }
 }
 
+.Tag-fill {
+  background-color: $cThirdBackground;
+  color: $cWhite;
+}
+.Tag-fill--yellow {
+  background: #FFB927;
+}
+.Tag-fill--orange {
+  background: $cAlert;
+}
+.Tag-fill--red {
+  background: $cError;
+}
+.Tag-fill--blue {
+  background: $cBlue;
+}
+
 .Tag--big {
   height: 24px;
   padding: 0 8px;

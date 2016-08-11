@@ -1,5 +1,6 @@
 <ul class="u-flex u-alignCenter Editor-contextSwitcher u-flex u-alignCenter js-mapTableView
-  <% if (isThereWidgets) { %>is-moved<% } %>
+  <% if (isThereOtherWidgets) { %>is-moved<% } %>
+  <% if (isThereTimeSeries) { %>has-timeSeries<% } %>
   ">
   <li class="Editor-contextSwitcherItem">
     <div class="Editor-contextSwitcherButton js-showTable">

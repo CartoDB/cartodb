@@ -417,10 +417,14 @@ class Carto::Visualization < ActiveRecord::Base
     # state.repopulate_widget_ids(widgets)
   end
 
-  def state_with_creation
-    state_without_creation || create_state(user_id: user_id)
+  def state
+    if state_id
+      Carto::State.find(state_id)
+    else
+      state = Carto::State.create!(visualization_id: id, user_id: user.id)
+      self.state_id = state.id
+    end
   end
-  alias_method_chain :state, :creation
 
   def for_presentation
     mapcapped? ? latest_mapcap.regenerate_visualization : self

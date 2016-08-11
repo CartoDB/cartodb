@@ -1490,9 +1490,7 @@
       },
       "style-form": {
         "type": {
-          "title-label-point": "Aggregation",
-          "title-label-line": "Lines layer",
-          "title-label-polygon": "Polygons layer",
+          "title-label": "Aggregation"
         },
         "aggregation": {
           "title-label": "Aggregation Options",

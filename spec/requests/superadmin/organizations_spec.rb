@@ -4,9 +4,9 @@ require_relative '../../acceptance_helper'
 feature "Superadmin's organization API" do
   before(:all) do
     # Capybara.current_driver = :rack_test
-    @organization = create_organization_with_users(name: 'vizzuality')
+    @organization1 = create_organization_with_users(name: 'vizzuality')
     @organization2 = create_organization_with_users(name: 'vizzuality-2')
-    @org_atts = @organization.values
+    @org_atts = @organization1.values
   end
 
   scenario "Http auth is needed" do
@@ -76,10 +76,10 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization update success" do
-    put_json superadmin_organization_path(@organization), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
+    put_json superadmin_organization_path(@organization1), { :organization => { :display_name => "Update Test", :map_view_quota => 800000 } }, superadmin_headers do |response|
       response.status.should == 204
     end
-    organization = Organization[@organization.id]
+    organization = Organization[@organization1.id]
     organization.display_name.should == "Update Test"
     organization.map_view_quota.should == 800000
   end
@@ -87,6 +87,10 @@ feature "Superadmin's organization API" do
   describe "organization delete success" do
     include_context 'organization with users helper'
     include TableSharing
+
+    after(:all) do
+      @organization_2.destroy
+    end
 
     it 'destroys organizations (even with shared entities)' do
       table = create_random_table(@org_user_1)
@@ -100,44 +104,45 @@ feature "Superadmin's organization API" do
   end
 
   scenario "organization get info success" do
-    get_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
+    get_json superadmin_organization_path(@organization1), {}, superadmin_headers do |response|
       response.status.should == 200
-      response.body[:id].should == @organization.id
+      response.body[:id].should == @organization1.id
     end
   end
 
   describe "GET /superadmin/organization" do
 
     before(:all) do
-      @organization.owner.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+      @organization1.owner.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
     end
 
     it "gets all organizations" do
       get_json superadmin_organizations_path, {}, superadmin_headers do |response|
+        byebug
         response.status.should == 200
-        response.body.map { |u| u["name"] }.should include(@organization.name, @organization2.name)
+        response.body.map { |u| u["name"] }.should include(@organization1.name, @organization2.name)
         response.body.length.should >= 2
       end
     end
     it "gets overquota organizations" do
-      Organization.stubs(:overquota).returns [@organization]
+      Organization.stubs(:overquota).returns [@organization1]
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body[0]["name"].should == @organization.name
+        response.body[0]["name"].should == @organization1.name
         response.body.length.should == 1
       end
     end
     it "returns geocoding and mapviews quotas and uses for all organizations" do
-      Organization.stubs(:overquota).returns [@organization]
+      Organization.stubs(:overquota).returns [@organization1]
       ::User.any_instance.stubs(:get_geocoding_calls).returns(100)
       ::User.any_instance.stubs(:get_api_calls).returns (0..30).to_a
       get_json superadmin_organizations_path, { overquota: true }, superadmin_headers do |response|
         response.status.should == 200
-        response.body[0]["name"].should == @organization.name
-        response.body[0]["geocoding"]['quota'].should == @organization.geocoding_quota
-        response.body[0]["geocoding"]['monthly_use'].should == @organization.get_geocoding_calls
-        response.body[0]["api_calls_quota"].should == @organization.map_view_quota
-        response.body[0]["api_calls"].should == @organization.get_api_calls
+        response.body[0]["name"].should == @organization1.name
+        response.body[0]["geocoding"]['quota'].should == @organization1.geocoding_quota
+        response.body[0]["geocoding"]['monthly_use'].should == @organization1.get_geocoding_calls
+        response.body[0]["api_calls_quota"].should == @organization1.map_view_quota
+        response.body[0]["api_calls"].should == @organization1.get_api_calls
         response.body.length.should == 1
       end
     end

@@ -9,7 +9,6 @@
         <% } %>
       />
     <span class="u-iBlock CDB-Radio-face"></span>
-    <span class="u-iBlock CDB-Radio-face"></span>
       <% if (item.help) { %>
         <span class="js-help is-underlined u-lSpace" data-tooltip="<%- item.help %>">
       <% } %>

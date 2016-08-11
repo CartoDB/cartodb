@@ -17,18 +17,20 @@ module Carto
     after_save :notify_map_change, :update_named_map
     after_destroy :notify_map_change
 
-    before_validation :generate_export_json, :generate_ids_json
+    before_validation :lazy_export_json, :lazy_ids_json
 
     validates :ids_json, carto_json_symbolizer: true
     validates :export_json, carto_json_symbolizer: true
 
     def regenerate_visualization
-      regenerated_visualization = build_visualization_from_hash_export(export_json)
+      regenerated_visualization = build_visualization_from_hash_export(lazy_export_json)
 
       regenerated_visualization.user = regenerated_visualization.map.user = visualization.user
       regenerated_visualization.permission = visualization.permission
 
-      repopulate_ids(regenerated_visualization)
+      regenerated_visualization.populate_ids(lazy_ids_json)
+
+      regenerated_visualization
     end
 
     def self.latest_for_visualization(visualization_id)
@@ -37,36 +39,12 @@ module Carto
 
     private
 
-    def generate_export_json
-      self.export_json = export_visualization_json_hash(visualization_id, visualization.user)
+    def lazy_export_json
+      self.export_json ||= export_visualization_json_hash(visualization_id, visualization.user)
     end
 
-    def generate_ids_json
-      self.ids_json = {
-        visualization_id: visualization.id,
-        map_id: visualization.map.id,
-        layers: visualization.layers.map { |layer| { layer_id: layer.id, widgets: layer.widgets.map(&:id) } }
-      }
-    end
-
-    def repopulate_ids(regenerated_visualization)
-      regenerated_visualization.id = ids_json[:visualization_id]
-      regenerated_visualization.map.id = ids_json[:map_id]
-
-      regenerated_visualization.map.layers.each_with_index do |layer, index|
-        stored_layer_ids = ids_json[:layers][index]
-        stored_layer_id = stored_layer_ids[:layer_id]
-
-        layer.id = stored_layer_id
-        layer.maps = [regenerated_visualization.map]
-
-        layer.widgets.each_with_index do |widget, widget_index|
-          widget.id = stored_layer_ids[:widgets][widget_index]
-          widget.layer_id = stored_layer_id
-        end
-      end
-
-      regenerated_visualization
+    def lazy_ids_json
+      self.ids_json ||= visualization.ids_json
     end
 
     def notify_map_change

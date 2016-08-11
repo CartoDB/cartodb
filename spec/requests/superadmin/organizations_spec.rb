@@ -93,7 +93,6 @@ feature "Superadmin's organization API" do
       share_table_with_user(table, @org_user_2)
 
       delete_json superadmin_organization_path(@organization), {}, superadmin_headers do |response|
-        puts response.body
         response.status.should eq 204
       end
       Organization[@organization.id].should be_nil

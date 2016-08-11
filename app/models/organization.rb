@@ -136,10 +136,10 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_groups
     destroy_non_owner_users
-    if self.owner
-      self.owner.destroy
+    if owner
+      owner.destroy
     else
-      self.destroy
+      destroy
     end
   end
 

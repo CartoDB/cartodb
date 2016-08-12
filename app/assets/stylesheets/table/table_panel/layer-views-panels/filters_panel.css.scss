@@ -134,10 +134,7 @@
         display:none;
         position:relative;
         top: 0;
-        padding: 24px;
-        width: 100%;
-        background: #FFF9E7;
-
+        
         .remove {
           margin: 0 0 0 7px;
           @include inline-block();
@@ -163,7 +160,11 @@
       .filter { // generic styles for all the filters
         position:relative;
         border-bottom: 1px solid $DarkGrey6;
+        padding-top:12px;
         text-align:left;
+        &:first-child {
+          padding-top: 0;
+        }
 
         .header {
           position:relative;
@@ -308,7 +309,7 @@
 
         }
 
-        .scroll { width: 380px; max-height: 156px; overflow: hidden; outline:none; }
+        .scroll { width: 370px; max-height: 156px; overflow: hidden; outline:none; }
 
       } // data
 
@@ -398,15 +399,14 @@
 
       .items {
         text-align:left;
-        margin: 0 0 0 30px;
         padding: 0;
-        width: 325px;
+        width: 350px;
 
         li {
           clear:both;
           overflow:hidden;
           position:relative;
-          padding: 10px 0 10px 15px;
+          padding-left: 15px;
           margin: 0;
 
           &:hover {
@@ -425,21 +425,9 @@
 
           &:last-child { margin-bottom: 0; }
 
-          &:before {
-            @include position(15px, false, false, 0);
-            content: '';
-            @include size(9px);
-
-            background: #fff;
-            border: none;
-            @include border-radius(200px);
-            @include scale(0);
-            @include simple-transition(scale, 220ms);
-          }
-
           &:after {
             @include opacity(1);
-            @include position(13px, false, false, 0);
+            @include position(4px, false, false, 0);
             width: 11px;
             height: 11px;
             content: "";
@@ -448,7 +436,6 @@
             border: 1px solid $Black;
             border-radius: 2px;
             position: absolute;
-            
             }
 
           &.selected:after  { 
@@ -458,13 +445,11 @@
             background-size: 7px 7px;
             background-color: $SelectionBlue2;
           }
-          &.selected:before { background: #82D992; @include scale(1); }
           
 
           .value {
             position:absolute;
-            top: 11px; right: 0; 
-            font-size:13px;
+            right: 0; 
             color:$Grey1;
           }
         }

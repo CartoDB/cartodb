@@ -93,9 +93,8 @@
   .form_color {
     position:relative;
     @include inline-block();
+    vertical-align: top;
     width:44px;
-    height:21px;
-
     $rad: 2px;
 
     a {

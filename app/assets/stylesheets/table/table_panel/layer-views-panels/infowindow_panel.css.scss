@@ -51,14 +51,14 @@
           text-align:center;
           @include border-top-radius(3px);
           background:$DarkGrey2;
-	  color: $Grey7;
-	  &:hover {
-		background: $tab_bg_hover;
-		text-decoration: none;
-	  }
+      	  color: $Grey7;
+      	  &:hover {
+        		background: $tab_bg_hover;
+        		text-decoration: none;
+        	 }
 	
           &.selected {
-		background: $DarkGrey6;
+		        background: $DarkGrey6;
             position:relative;
             color:$Grey1;
             text-decoration:none;
@@ -285,8 +285,9 @@
         }
 
         &.drag_field {
-          padding: 15px 0 15px 10px;
+          padding: 6px 0 6px 10px;
           @include table-sprite(drag_points, $offset-y:23px);
+          background-position: 0 -219px;
         }
 
         &.ui-sortable-helper {

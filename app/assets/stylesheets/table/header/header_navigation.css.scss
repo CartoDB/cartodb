@@ -33,12 +33,13 @@
   // Global error element
   div.globalerror {
     position: absolute;
-    top:57px;
+    top:67px;
     left:0;
     bottom:0;
     width:100%;
     height:30px;
     padding:0;
+    pointer-events: none;
     overflow:hidden;
     text-align:center;
     z-index:0;

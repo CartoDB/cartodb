@@ -7,6 +7,8 @@
 
   @import "compass/css3/inline-block";
   @import "compass/css3/transform";
+  @import "../variables/colors";
+  @import "../variables/mixins";
 
 
   /*
@@ -16,7 +18,7 @@
         <span style="max-width: 120px;">empty</span>
       </div>
     </div>
-  */
+  */ 
 
 
   .edit_in_place {

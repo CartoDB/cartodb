@@ -245,14 +245,11 @@
           }
 
           .input {
-            @include bb_entry_style;
 
             .value { margin-right: 5px; }
             .value.empty { color: #ccc; }
 
             input {
-              font-size: 13px;
-              padding: 4px 7px;
               width:150px;
             }
           }

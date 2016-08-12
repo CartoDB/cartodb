@@ -41,7 +41,9 @@ div.dropdown.map_options_dropdown {
       border:none;
       border-bottom: 1px solid rgba($Black, .32);
       cursor: default;
+      padding: 6px 0px;
       position:relative;
+
       /* -- remove icons
       &:before {
         content: '';

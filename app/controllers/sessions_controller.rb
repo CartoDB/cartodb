@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
 
   def new
     if logged_in?(CartoDB.extract_subdomain(request))
-      redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
+      redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: false}) and return
     end
   end
 
@@ -36,7 +36,7 @@ class SessionsController < ApplicationController
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
+    redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: false})
   end
 
 

@@ -150,6 +150,17 @@ module Carto
             query, query, username, queryPrefix, queryPrefix, queryLike, queryLike, query
           ).all
 
+        if !current_user.has_feature_flag?('bbg_disabled_shared_empty_dataset') then
+          emptyDatasetName = Cartodb.config[:shared_empty_dataset_name]
+
+          layers.each_with_index do |layer, index|
+            if layer[:name] == emptyDatasetName then
+              layers.delete_at(index)
+              break
+            end
+          end
+        end
+
         render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
       end
 

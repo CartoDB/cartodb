@@ -5,11 +5,7 @@
 // Dashboard filters
 // ---
 .Filters {
-  position: absolute;
   display:block;
-  top: 0;
-  left: 0;
-  width:100%;
   background: transparent;
   z-index: 10;
 }
@@ -48,6 +44,7 @@
   height: 81px;
   padding: 0;
   overflow:hidden;
+  width: 810px;
 }
 .Filters-inner {
   display:block;

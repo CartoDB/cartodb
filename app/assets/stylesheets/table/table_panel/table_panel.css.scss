@@ -28,12 +28,12 @@ $corner_radius: 0px;
     @include bb_button_style;
     border-radius: 0px;
     border: none;
-    left: -27px;
+    left: -20px;
     position: absolute;
-    width: 26px;
-    height: 40px;
+    width: 20px;
+    height: 30px;
     padding: 0px;
-    top: 12px;
+    top: 0;
     background-image: url(../images/bb_icon_open.png);
     &.open {
       background-image: url(../images/bb_icon_collapse.png);

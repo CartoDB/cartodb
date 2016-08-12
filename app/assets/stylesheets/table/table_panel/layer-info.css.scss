@@ -38,12 +38,12 @@
       top:0!important;
       width: 100%;
       text-align: left;
-      padding-left: 24px;
+      padding-left: 12px;
 
       * {@include inline-block(); vertical-align:middle;}
 
       // Order element
-      .order {
+      > .order {
         width:14px;        
         height: 14px;
         text-align:center;
@@ -54,15 +54,14 @@
       }
 
       // Layer name
-      .name {
-        max-width:80%;
-        width:auto;
+      > .name {
         @include text-overflow();
-        overflow:hidden;
-        margin-left:23px;
-        font-size:15px;
         color:$Grey1;
+        font-size:15px;
         line-height:20px;
+        margin-left:12px;
+        overflow:hidden;
+        width:auto;
 
         i.synced {
           @include inline-block();

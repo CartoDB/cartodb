@@ -16,13 +16,12 @@ div.dropdown.map_options_dropdown {
   display: block;
   background: transparent;
   border: none;
-  width: 361px;
-  padding-left:20px;
+  width: 100%;
 
   > .title {
     margin-bottom: 12px; 
     > h2 {
-      font-size: 15px;
+      font-size: 12px;
       color: $White;
       line-height: 19px;
 
@@ -38,22 +37,22 @@ div.dropdown.map_options_dropdown {
       @include justify-content(space-between, justify);
       @include align-items(center, center);
       margin: 0;
-      padding: 10px 0;
+      padding: 0px;
       border:none;
       border-bottom: 1px solid rgba($Black, .32);
       cursor: default;
       position:relative;
-
+      /* -- remove icons
       &:before {
         content: '';
         position:absolute;
-        top: 14px;
+        top: 4px;
         width: 10px;
         height: 10px;
       }
 
       &.title:before {
-        top: 12px;
+        
         width: 10px; height: 11px;
         @include map-sprite(map_options_title);
       }
@@ -74,20 +73,20 @@ div.dropdown.map_options_dropdown {
       }
 
       &.share:before {
-        top: 12px;
+        
         width: 13px; height: 13px;
         left: -3px;
         @include map-sprite(map_options_share);
       }
 
       &.zoom:before {
-        top: 11px;
+        
         width: 9px; height: 14px;
         @include map-sprite(map_options_zoom);
       }
 
       &.scrollwheel:before {
-        top: 10px;
+        
         left: 2px;
         width: 11px; height: 16px;
         @include map-sprite(map_options_scrollwheel);
@@ -107,18 +106,17 @@ div.dropdown.map_options_dropdown {
         width: 9px; height: 10px;
         @include map-sprite(map_options_legends);
       }
+       */
 
       &:last-child {
         border:none;
         padding-bottom: 0;
       }
+     
 
+      p { margin: 0px}
 
-      p { margin-left: 17px; }
-
-      &.active, &.active p { color: #666666; }
       &, p {
-        color: #b9b9b9;
         @include simple-transition(color, 100ms);
       }
 

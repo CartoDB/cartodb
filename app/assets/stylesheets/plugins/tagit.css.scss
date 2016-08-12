@@ -1,22 +1,19 @@
 ul.tagit {
-    padding: 1px 5px;
     overflow: auto;
     margin-left: inherit; /* usually we don't want the regular ul margins. */
     margin-right: inherit;
+    padding-left: 0px;
 }
 ul.tagit li {
     display: block;
     float: left;
-    margin: 2px 5px 2px 0;
 }
 ul.tagit li.tagit-choice {
-    padding: .2em 18px .2em .5em;
+    
     position: relative;
     line-height: inherit;
 }
-ul.tagit li.tagit-new {
-    padding: .25em 4px .25em 0;
-}
+
 
 ul.tagit li.tagit-choice a.tagit-label {
     cursor: pointer;

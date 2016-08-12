@@ -24,7 +24,7 @@
     > .title-bar {
       background-image: url("../images/bb_icon_globe.png");
       background-color: $Grey9;
-      background-position: 24px center;
+      background-position: 12px center;
       background-repeat: no-repeat;
       font-family: "AvenirNext_Demi";
       font-size: 15px;
@@ -33,7 +33,7 @@
       position: relative;
       width: 100%;
       .title-label {
-        margin-left: 66px;
+        margin-left: 40px;
       }
       &:hover {
         background-color: $Grey8;
@@ -64,9 +64,8 @@
 
       .wrapper {
         position:absolute;
-        top:0; left:0; bottom:0; right:0;
+        top:12px; left:12px; bottom:0; right:12px;
         overflow:auto;
-        margin-bottom:30px;
       }
 
       .title-layer-contents {
@@ -84,9 +83,10 @@
             }
           }
           .Form-row {
-            .Form-input--long {
+            .Form-input--long, .Form-rowData--long {
               width: 100%;
             }
+
           }
 
           .Dialog-stickyFooter {

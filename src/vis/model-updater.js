@@ -74,15 +74,27 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId,
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
   this._analysisCollection.each(function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
+    var attrs;
     if (analysisMetadata) {
-      var attrs = {
+      attrs = {
         status: analysisMetadata.status,
         url: analysisMetadata.url[this._getProtocol()],
         query: analysisMetadata.query
       };
+
       attrs = _.omit(attrs, analysisNode.getParamNames());
-      analysisNode.set(attrs);
-      analysisNode.setOk();
+
+      if (analysisMetadata.error_message) {
+        attrs = _.extend(attrs, {
+          error: {
+            message: analysisMetadata.error_message
+          }
+        });
+        analysisNode.set(attrs);
+      } else {
+        analysisNode.set(attrs);
+        analysisNode.setOk();
+      }
     }
   }, this);
 };

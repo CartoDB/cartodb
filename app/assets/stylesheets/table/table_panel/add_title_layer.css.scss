@@ -13,27 +13,30 @@
 
   .title_layer { 
     position:relative;
-    height:30px;
-    line-height:30px;
+    line-height:40px;
 
-      &.open {
-        > .title-bar {
-          background-color: $layer_header_background_active;
-          &:hover {
-            background-color: $layer_header_background_active_hover;
-          }
+      &.open {     
+        > .title-layer-body {
+          background-color: $sidebar_panel_background;
         }
       }
 
-    .title-bar {
-      @include bb_sidebar_layer_header;
+    > .title-bar {
+      background-image: url("../images/bb_icon_globe.png");
+      background-color: $Grey9;
+      background-position: 12px center;
+      background-repeat: no-repeat;
+      font-family: "AvenirNext_Demi";
+      font-size: 15px;
+      height: 30px;
+      line-height: 30px;
       position: relative;
       width: 100%;
-      background-image: url("../images/bb_icon_globe.png");
-      background-position: 24px center;
-      background-repeat: no-repeat;
       .title-label {
-        margin-left: 66px;
+        margin-left: 40px;
+      }
+      &:hover {
+        background-color: $Grey8;
       }
     
 
@@ -46,7 +49,6 @@
       // (Title layer text)
       .action.title {
         @include inline-block();
-        line-height:30px;
         &:hover {
           color: $Teal1;
           cursor: pointer;
@@ -55,19 +57,15 @@
     }
 
      .title-layer-body {
-
-      background-color: $sidebar_panel_background;
       height: 100%;
       padding: 12px;
-      width: 385px;
-      position: relative;
-      margin-left: 65px;
+      width: auto;
+      position: relative;      
 
       .wrapper {
         position:absolute;
-        top:0; left:0; bottom:0; right:0;
+        top:12px; left:12px; bottom:0; right:12px;
         overflow:auto;
-        margin-bottom:30px;
       }
 
       .title-layer-contents {
@@ -85,9 +83,13 @@
             }
           }
           .Form-row {
-            .Form-input--long {
+            .Form-input--long, .Form-rowData--long {
               width: 100%;
+              resize: none;
+              height: 40px;
+              min-height: 40px;
             }
+
           }
 
           .Dialog-stickyFooter {

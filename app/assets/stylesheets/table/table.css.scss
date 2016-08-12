@@ -174,7 +174,6 @@ div.table {
               padding:10px 0 15px;
               background: #232323;
               border-bottom:1px solid $Black;
-	            box-shadow: $button_shadow;
               z-index:1;
 
               &:after {
@@ -211,17 +210,15 @@ div.table {
                   &:after {
                     @include inline-block();
                     position:relative;
-                    left:2px;
-                    border-top:3px solid $Grey1;
-                    border-right:3px solid transparent;
-                    border-left:3px solid transparent;
+                    left:3px;
+                    border-top:5px solid $Grey1;
+                    border-right:4px solid transparent;
+                    border-left:4px solid transparent;
                     content:'';
+                    top: 5px;
                   }
 
                   &:hover {
-                    color:#565656;
-                    text-decoration:none;
-                    &:after {border-top-color:#565656;}
                   }
 
 
@@ -407,16 +404,17 @@ div.table {
           }
 
           div.cell {
+            color:$Amber1;
             display:block;
-            overflow: hidden;
-            padding:15px 10px;
+            font-size: 15px;
+            line-height: 19px;
+            max-height:26px;
             max-width:280px;
             min-height:13px;
-            max-height:26px;
-            color:$Amber1;
+            overflow: hidden;
+            padding: 0px 12px;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-size:13px;
 
             &.disabled {
               color: $Amber1;

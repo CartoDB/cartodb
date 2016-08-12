@@ -31,7 +31,7 @@
     bottom:0;
     background:$DarkGrey3;
     border-left: 1px solid $DarkGrey6;
-    padding: 0px 12px;
+    padding: 12px;
     z-index:5;
 
 
@@ -62,7 +62,7 @@
       .wrapper {
         position:absolute;
         top:0; left:0; bottom:0; right:0;
-        padding:0 30px 16px 30px;
+        padding: 0px 12px;
         overflow:auto;
       }
       

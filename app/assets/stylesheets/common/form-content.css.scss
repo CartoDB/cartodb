@@ -44,7 +44,6 @@ $sLabel-width: 140px;
 .Form-row {
   @include display-flex();
   @include justify-content(flex-start, start);
-  padding: 10px 0;
 }
 .Form-title + .Form-row {
   padding-top: 0;
@@ -132,12 +131,10 @@ $sLabel-width: 140px;
   @include align-items(center);
   width: 380px;
   min-height: 40px; // if there's no input on row (e.g. only radio buttons), to avoid "jumpy" behaviour on re-renders
-  margin-right: $sMargin-element;
-  margin-left: $sMargin-element;
 }
 
 .Form-rowData.Form-rowData--alignLeft { @include justify-content(flex-start, start) }
-.Form-rowData--withLabel { margin-bottom: 30px }
+.Form-rowData--withLabel { margin-bottom: 12px }
 .Form-rowData--noMargin { margin: 0 }
 
 // RowData sizes
@@ -302,7 +299,6 @@ $sLabel-width: 140px;
 }
 
 .Form-textarea {
-  padding: 9px 12px;
   min-height: 110px;
   max-height: 110px;
 }
@@ -517,16 +513,12 @@ $sLabel-width: 140px;
   @include bb_entry_style;
   position: relative;
   width: 100%;
-  min-height: 38px;
-  padding: 0;
   outline: none;
   z-index: 2;
 }
 
 .Form-tagsList.tagit .tagit-choice {
-  padding: 0 30px 0 11px;
-  margin: 5px 5px 0 0;
-  line-height: 19px;
+  padding: 0px 26px 0px 6px;  
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close {
   line-height: normal;
@@ -534,10 +526,9 @@ $sLabel-width: 140px;
 }
 .Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
   display: inline-block;
-  color: #C5CCD1;
-  &:hover { color: #AAA }
+  color: $DarkGrey2;
+  font-size: 9px;
 }
-.Form-tagsList.tagit li.tagit-new { padding: 7px 4px 2px 7px }
 
 .Form-tags.is-focus { border-color: #999 }
 .Form-tags.is-disabled {

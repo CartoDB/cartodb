@@ -15,6 +15,7 @@
   @import "../../../old_common/form-elements";
   @import "../../../old_common/mixins";
   @import "../../../variables/colors";
+  @import "../../../variables/mixins";
 
   div.legends_panel {
     display:block;
@@ -234,8 +235,6 @@
           font-size: 15px;
           position:relative;
 
-          label.empty { font-style: italic; }
-
           label {
             @include inline-block();
             white-space: nowrap;
@@ -246,14 +245,11 @@
           }
 
           .input {
-            @include default-input();
 
             .value { margin-right: 5px; }
             .value.empty { color: #ccc; }
 
             input {
-              font-size: 13px;
-              padding: 4px 7px;
               width:150px;
             }
           }

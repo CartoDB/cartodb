@@ -28,7 +28,7 @@
 }
 .cartodb-mobile .cartodb-attribution {
   max-width: 150px;
-  font:11px/1 "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font:11px/1;
 }
 
 .cartodb-mobile .aside .layer-container .layers .cartodb-mobile-layer h3 {
@@ -86,7 +86,7 @@
     content: '';
     position: absolute;
     left: 8px;
-    top: 6px;
+    top: 4px;
     display: block;
     width: 10px;
     height: 9px;
@@ -197,16 +197,17 @@
 .overlay-properties {
   position: absolute;
   top: 100px;
-  left: 35px;
+  left: 12px;
   width: 1250px;
 }
 .overlay-properties ul {
-  margin: 3px 0 0 0;
+  margin-top: 3px;
+  padding-left: 0px;
   float: left;
 }
 .overlay-properties ul li {
   @include inline-block();
-  padding: 0 10px;
+  padding-right: 12px;
   border-right: 1px solid $Black;
 }
 .overlay-properties ul li:last-child {
@@ -232,8 +233,7 @@
 }
 .overlay-properties ul li > span {
   margin: 0 0 5px 0;
-  font-size: 13px;
-  color: $White;
+  color: $Grey1;
   display:block;
   font-weight:normal;
   line-height:12px;
@@ -632,7 +632,6 @@ div.cartodb-zoom .info {
   margin:17px 0 0 0;
   width: 28px;
   padding: 8px 0 7px 0;
-  font:normal 13px "Helvetica",Arial;
   line-height: normal;
   color:$White;
   text-align: center;
@@ -790,9 +789,7 @@ div.dropdown.properties_dropdown {
       }
 
       &:hover { background: #fff; }
-
     }
-
   }
 
 } // .properties_dropdown

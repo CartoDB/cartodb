@@ -13,49 +13,64 @@
 */
 
 .form_spinner {
+  @include bb_entry_style;
   position:relative;
   display: inline-block;
   min-width:20px;
   width:auto;
-  padding:2px 19px 2px 4px;
-  line-height: 20px;
+  padding:0px 19px 0px 4px;
   margin:0;
-  background: $Amber1;
-  border:1px solid $Black;
-  
-
-
-  &:hover { cursor: pointer }
-
-  &:hover, .input:hover {
+  > input {
+    border: none;
+    padding: 0px;
   }
 
-  &:hover input.value {
+  &.with-label {
+      margin: 0;
+      padding: 0;
+      height: auto;
+      border: none;
+      background: none;
 
- }
+      .label {
+        margin: 0 4px 0 0;
+        font-size: 11px;
+        color: $Grey2;
+        cursor: default;
+      }
 
-  input.value {
-    float:none;
-    margin:0;
-    padding:0;
-    width:25px;
-    text-align:left;
-    line-height:15px;
-    font-size:13px;
-    color:$Black;
-    background: none;
-    border:none;
-    &:focus {
-      outline:none;
-      color:$Black;
+      .input {
+        position:relative;
+        @include inline-block();
+        min-width:20px;
+        width:auto!important;
+        padding:0px 19px 0px 4px;
+        height:19px;
+        margin:0;
+        border:1px solid $Black;
+        background-color: $Amber1;
+        > .value {
+          border: none;
+        }
+      }
+
     }
-  }
+
+
 
   a {
+    @include bb_button_style;
+    border-radius: 0px;
+    border: none;
     position:absolute;
     right:0;
     width:14px;
     height:9px;
+    color: transparent;
+    &:hover {
+      color: transparent;
+    }
+
 
     &:before {
       content:' ';
@@ -82,14 +97,6 @@
         top: 3px;
         border-top:4px solid $Grey2;
       }
-    }
-
-    &:hover {
-	     background-color: $btn_background_hover;
-    }
-
-    &:active {
-      background-color: $btn_background_press;
     }
   }
 

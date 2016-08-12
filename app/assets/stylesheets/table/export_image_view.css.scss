@@ -132,8 +132,9 @@
   width: auto;
   padding: 0 5px;
   box-sizing: border-box;
-  background: rgba(#FFF, 0.75);
+  background: rgba(#000, 0.32);
   font-size: 11px;
+  color: $Grey2;
 }
 .ExportHelper.ExportHelper--legend {
   display: inline-block;

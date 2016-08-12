@@ -125,11 +125,9 @@
       left:0;
       max-height:30%;
       padding:17px 17px 17px 52px;
-      background:#FFF7E0;
+      background:$White;
       color:#888;
       z-index:2;
-      font-size:13px;
-      border-top:1px solid #EBDCE0;
       letter-spacing:0;
 
       p {
@@ -153,7 +151,7 @@
         padding:0;
         z-index:1001; // Filter shadow forces me to do it :S
 
-        p { padding:20px 30px }
+        p { padding:12px}
 
         &.editor {
           bottom:79px;

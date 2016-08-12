@@ -735,20 +735,16 @@ div.map {
       position: fixed;
       left: 50%;
       display: inline;
-      margin: 0 0 0 -50%;
+      margin: -3px 0 0 -50%;
       padding: 0px 12px;
       width: 100%;
-      background-color: $White;
+      background-color: $Black;
       text-align: center;
       text-indent:0;
       z-index:2;
       @include transform-style("linear");
       @include transition-property("text-indent");
       @include transition-duration(300ms);
-
-      &.warn {
-        background-color: rgba(#FFFFBF, 0.90);
-      }
     }
   } //div.sqlview
 

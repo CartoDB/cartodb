@@ -7,6 +7,8 @@
 
   @import "compass/css3/inline-block";
   @import "compass/css3/transform";
+  @import "../variables/colors";
+  @import "../variables/mixins";
 
 
   /*
@@ -16,38 +18,24 @@
         <span style="max-width: 120px;">empty</span>
       </div>
     </div>
-  */
+  */ 
 
 
   .edit_in_place {
 
     .value {
+      @include bb_button_style;
       position:relative;
-      padding: 0 5px 3px 5px;
       margin:4px 5px 0 0;
-      color: #666666;
-      font-size:15px;
       z-index: 100;
-
-      @include transform(skew(-25deg));
-      background: rgba(#FFDC73, .3);
-
-      &:hover {
-        background: rgba(#FFDC73, .5);
-      }
 
       span {
         @include inline-block();
-        padding:1px;
-
-        @include transform(skew(25deg));
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         max-width: 150px;
       }
-
-      &.empty { font-style: italic; }
     }
 
     &.disabled .value {

@@ -26,7 +26,7 @@
       position:relative;
       width:auto;
       height:auto;
-      margin-left:20px;
+      margin-left:12px;
       z-index: 10;
 
       // Back button
@@ -159,6 +159,7 @@
       @include align-items(center, center);
       height:45px;
       margin:0;
+      padding: 0px;
       
       .dropdown > ul > li {
         margin:0px;
@@ -203,7 +204,8 @@
       position: absolute;
       right: 0;
       width:auto;
-      margin:8px 20px 0 0;
+      margin:8px 12px 0 0;
+      display: flex;
 
       li {
         position:relative;
@@ -236,8 +238,8 @@
     .export-options {
       position: absolute;
       top: 100px;
-      right: 20px;
     }
+
   }
 
 .add_new_layer {

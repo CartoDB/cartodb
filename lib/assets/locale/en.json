@@ -1736,6 +1736,16 @@
           "title": "Error in CartoCSS styles:"
         },
         "success": "CartoCSS applied."
+    },
+    "sql": {
+      "alter-loading": "Modifying table…",
+      "alter-success": "Modifying applied.",
+      "applying": "Applying query…",
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Error in SQL query:"
+      },
+      "success": "SQL query applied."
     }
   }
 }

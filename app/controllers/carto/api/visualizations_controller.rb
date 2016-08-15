@@ -60,6 +60,22 @@ module Carto
             total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
           })
         end
+
+        if current_user && !current_user.has_feature_flag?('bbg_disabled_shared_empty_dataset') then
+          emptyDatasetName = Cartodb.config[:shared_empty_dataset_name]
+          datalibUsername = Cartodb.config[:common_data]['username']
+          if current_user[:username] != datalibUsername && params[:q] != emptyDatasetName then
+            response[:visualizations].each_with_index do |layer, index|
+              if layer[:name] == emptyDatasetName then
+                response[:visualizations].delete_at(index)
+                response[:total_entries] -= 1
+                response[:total_user_entries] -= 1
+                break
+              end
+            end
+          end
+        end
+
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)

@@ -20,7 +20,8 @@
   @import "../../../variables/mixins";
 
   div.filters_panel {
-    width:auto;
+    width:100%;
+    @include box-sizing(border-box);
 
     h3 { padding-left:30px; }
 
@@ -34,6 +35,10 @@
 
       @include size(100%, 30px);
 
+    }
+
+    .sql-and-or-toggle {
+      margin-right: 15px;
     }
 
     .content {
@@ -129,12 +134,23 @@
       display:none;
       position:relative;
       text-align: left;
-      margin-top: 6px;
+      width: 360px;
+      margin: 0;
+
+      & > a.add {
+        position:relative;
+        top: 15px;
+        float: left;
+      }
+
       .combo {
         display:none;
+        @include box-sizing(border-box);
         position:relative;
         top: 0;
-        
+        padding: 6px;
+        width: 100%;
+
         .remove {
           margin: 0 0 0 7px;
           @include inline-block();
@@ -156,6 +172,7 @@
       padding: 0;
       margin: 0;
       position:relative;
+      width: 360px;
 
       .filter { // generic styles for all the filters
         position:relative;
@@ -169,7 +186,7 @@
         .header {
           position:relative;
           margin: 0;
-          width: 100%;
+          width: 315px;
 
           text-align:left;
 
@@ -178,11 +195,11 @@
 
           .hidden { display: none; }
 
-          .legend    { margin: 0 5px 0 0;  color: $Grey1; text-align: left; max-width: 180px; }
+          .legend    { float:left; margin: 0 5px 0 0; color: $Grey1; text-align: left; max-width: 180px; }
           .empty     { float: left; display:none; color: #FF9999; vertical-align: top; }
           .only      { float: left; display:none; color: #FFAB37; vertical-align: top; }
           .loading   { float: left; display:none; color: #FFAB37; vertical-align: top; }
-          .range     { float:left;  display:none; color: $Amber1; }
+          .range, .range-number     { float:left;  display:none; color: $Amber1; }
 
           .title  { float: left; }
           .min, .max {
@@ -190,7 +207,7 @@
           }
         }
 
-        &.date .range { clear:both; margin: 6px 0 0 0; }
+        &.date .range, .range-number { clear:both; margin: 6px 0 0 0; }
 
         &:hover .remove { @include opacity(1); }
 
@@ -204,6 +221,20 @@
           &:hover {
             background-image: url(../images/close_layer_hover.png); 
           }
+        }
+
+        .remove-inline {
+          float: right;
+          margin-top: 4px;
+          margin-right: 5px;
+
+          @include opacity(1);
+
+          @include size(13px);
+          @include simple-transition(opacity, 150ms);
+          @include common-sprite(close_grey);
+
+          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
       }
     }
@@ -225,6 +256,10 @@
           .loading, .empty, .only   { display: block; }
         }
 
+      }
+
+      .header, .items {
+        @include box-sizing(border-box);
       }
 
       .header .title .controllers {
@@ -309,7 +344,7 @@
 
         }
 
-        .scroll { width: 370px; max-height: 156px; overflow: hidden; outline:none; }
+        .scroll { width: 355x; max-height: 156px; overflow: hidden; outline:none; }
 
       } // data
 
@@ -394,13 +429,41 @@
             }
     
           }
-        } 
+        }
+      }
+
+      .operations {
+        margin: 0 0 0 30px;
+        padding: 0;
+        width: 325px;
+
+        li {
+          clear:both;
+          overflow:hidden;
+
+          position:relative;
+          padding: 10px 0 10px 5px;
+          margin: 0;
+          color: #666666;
+          font-size:13px;
+          border-top: 1px solid rgba(#999, .25);
+
+          input {
+            width: 145px;
+          }
+
+          .invisible {
+            visibility: hidden;
+          }
+
+          &:last-child { margin-bottom: 0; }
+        }
       }
 
       .items {
         text-align:left;
         padding: 0;
-        width: 350px;
+        width: 325px;
 
         li {
           clear:both;
@@ -463,7 +526,10 @@
 
       .loading   { display:block; }
 
-      .hist { margin: auto; position: relative; @include inline-block(); top: 6px; }
+      .range-number { height: 35px; }
+      .range-number input { width: 45%; }
+      .range-number .subtext { display: none; }
+      .hist { margin: auto; position: relative; @include inline-block(); bottom: -3px; }
       .background.bar { fill: #E5E5E5; }
       .foreground.bar { fill: #4DC964; fill-opacity: .3; }
       .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }

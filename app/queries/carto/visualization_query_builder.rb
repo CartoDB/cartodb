@@ -67,6 +67,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_excluded_names(names)
+    @excluded_names = names
+    self
+  end
+
   def without_synced_external_sources
     @exclude_synced_external_sources = true
     self
@@ -206,6 +211,10 @@ class Carto::VisualizationQueryBuilder
 
     if @excluded_ids and !@excluded_ids.empty?
       query = query.where('visualizations.id not in (?)', @excluded_ids)
+    end
+
+    if @excluded_names and !@excluded_names.empty?
+      query = query.where('visualizations.name not in (?)', @excluded_names)
     end
 
     if @name

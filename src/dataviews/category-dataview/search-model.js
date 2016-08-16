@@ -17,6 +17,15 @@ module.exports = Model.extend({
     var url = this.get('url') + '/search?q=' + encodeURIComponent(this.get('q'));
     if (this.get('apiKey')) {
       url += '&api_key=' + this.get('apiKey');
+    } else if (this.get('authToken')) {
+      var authToken = this.get('authToken');
+      if (authToken instanceof Array) {
+        _.each(authToken, function (token) {
+          url += '&auth_token[]=' + token;
+        });
+      } else {
+        url += '&auth_token=' + authToken;
+      }
     }
     return url;
   },

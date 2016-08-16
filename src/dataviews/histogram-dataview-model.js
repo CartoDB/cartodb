@@ -43,7 +43,8 @@ module.exports = DataviewModelBase.extend({
     // Internal model for calculating all the data in the histogram (without filters)
     this._unfilteredData = new HistogramDataModel({
       bins: this.get('bins'),
-      apiKey: this.get('apiKey')
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     });
 
     this._unfilteredData.bind('change:data', function (mdl, data) {

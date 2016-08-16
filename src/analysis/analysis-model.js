@@ -32,7 +32,15 @@ module.exports = Model.extend({
       if (this.get('apiKey')) {
         url += '?api_key=' + this.get('apiKey');
       } else if (this.get('authToken')) {
-        url += '?auth_token=' + this.get('authToken');
+        var authToken = this.get('authToken');
+        if (authToken instanceof Array) {
+          var tokens = _.map(authToken, function (token) {
+            return 'auth_token[]=' + token;
+          });
+          url += '?' + tokens.join('&');
+        } else {
+          url += '?auth_token=' + authToken;
+        }
       }
       return url;
     }

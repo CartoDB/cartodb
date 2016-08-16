@@ -25,7 +25,14 @@ module.exports = Model.extend({
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {
-      params.push('auth_token=' + this.get('authToken'));
+      var authToken = this.get('authToken');
+      if (authToken instanceof Array) {
+        _.each(authToken, function (token) {
+          params.push('auth_token[]=' + token);
+        });
+      } else {
+        params.push('auth_token=' + authToken);
+      }
     }
     return this.get('url') + '?' + params.join('&');
   },

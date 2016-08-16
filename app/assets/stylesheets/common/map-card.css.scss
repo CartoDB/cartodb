@@ -101,9 +101,6 @@ $sEditButtonSize: 50px;
 
   .DefaultDescription {
     @include line-clamp(2);
-    &:after{
-	    @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey8);
-	}
   }
 }
 .MapCard-desc--fake {
@@ -114,20 +111,13 @@ $sEditButtonSize: 50px;
   text-align: center;
 }
 .MapCard-tags {
-  @include line-clamp(1);
+  
   position: relative;
-  &:after {
-   @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey8);
-}
+  
 }
 .MapCard--selectable {
   &:hover {
     background-color: $DarkGrey7;
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
-	 @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey7)
-    
-    }
     .MapviewsGraph-bar {
       cursor: pointer;
       fill: rgba(#FFFFFF, 1);
@@ -136,10 +126,6 @@ $sEditButtonSize: 50px;
   &.is-selected {
     background-color: $DarkGrey2;
     
-    .MapCard-desc .DefaultDescription:after,
-    .MapCard-tags:after {
-      @include background-horizontal(rgba(255, 255, 255, 0), $DarkGrey2);
-    }
     .MapviewsGraph-bar {
      cursor: pointer;
       fill: rgba(#FFFFFF, 1);
@@ -273,9 +259,8 @@ $sEditButtonSize: 50px;
   @include justify-content(space-between, justify);
   @include align-items(center);
   @include flex-direction(column);
-  border-radius: $sCard-borderRadius;
-  padding: $sMargin-element;
   height: 140px;
+  padding: 12px;
   @include opacity(1);
   @include transition(opacity, $opacityTransition);
   z-index: 1;
@@ -330,8 +315,6 @@ $sEditButtonSize: 50px;
   @include justify-content(space-between, justify);
   @include align-items(center);
   width: 100%;
-  padding-top: $sMargin-elementInline;
-  border-top: 1px solid $Black;
 }
 .MapCard.MapCard--borderless .MapCard-contentFooter {
   border-top: none;

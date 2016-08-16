@@ -46,14 +46,14 @@
     <form class="Filters-searchForm js-search-form">
       <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- ( tag && (':' + tag) ) || q %>" placeholder="<%- _t('components.modals.add-layer.navigation.search-placeholder') %>" />
       <% if (tag || q) { %>
-        <button type="button" class="Filters-cleanSearch js-clean-search">
+        <button type="button" class="Filters-cleanSearch js-clean-search u-actionTextColor">
           <i class="CDB-IconFont CDB-IconFont-close"></i>
         </button>
       <% } %>
     </form>
   </div>
 
-  <div class="js-order-list">
+  <div class="Filters-addLayer js-order-list">
     <button class="Filters-typeLink js-typeItem u-actionTextColor CDB-Text is-semibold u-upperCase CDB-Size-medium js-create-empty <%- listingType === 'scratch' ? 'is-selected' : '' %> <%- !canCreateDataset ? 'is-disabled' : '' %>">
       <%- _t('components.modals.add-layer.navigation.create-empty-' + createModelType) %>
     </button>

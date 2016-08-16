@@ -404,13 +404,16 @@
       "add-basemap": {
         "modal-title": "Add a custom basemap",
         "modal-desc": "Select from these great resources",
-        "adding-new-basemap": "Adding new basemap…",
+        "adding-basemap": "Adding new basemap…",
         "add-basemap-error": "Could not add basemap",
         "add-btn": "Add basemap",
         "validating": "Validating…",
         "saving": "Saving layer…",
         "fetching": "Fetching layers…",
         "get-layers": "Get layers",
+        "xyz":{
+          "not-valid": "It does not look like a valid XYZ URL"
+        }
       },
       "export-data": {
         "title": "Export data",
@@ -1205,6 +1208,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",
         "category": {
@@ -1250,6 +1254,8 @@
         "no-coincidence": "When no coincidence no row will be added",
         "columns": "Columns",
         "admin-region": "Admin. Region",
+        "dissolved-help": "Combine polygons tracts which have equal ranges",
+        "intact-help": "Keep all polygon tracts as individual polygons",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",

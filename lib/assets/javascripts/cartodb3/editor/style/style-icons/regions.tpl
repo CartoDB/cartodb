@@ -1,5 +1,5 @@
-<svg width="56px" height="24px" viewBox="0 0 56 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+<svg width="56px" height="24px" viewBox="0 0 56 24">
+    <g id="Symbols">
         <g id="Aggregation-/-Admin-Regions" transform="translate(-16.000000, -16.000000)" class="Style-fill">
             <g id="regions">
                 <g transform="translate(16.000000, 16.000000)">

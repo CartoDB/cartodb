@@ -1,5 +1,5 @@
 <div class="BlockList-media u-rSpace--xl js-thumbnail">
-  <img src="<%- imgURL %>" class="BlockList-mediaImg" />
+  <img src="<%- imgURL %>" class="BlockList-mediaImg js-thumbnailImg" />
 </div>
 <div class="BlockList-inner">
   <div class="BlockList-title u-bSpace">

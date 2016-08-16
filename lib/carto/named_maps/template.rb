@@ -202,7 +202,7 @@ module Carto
       end
 
       def analyses_definitions
-        @visualization.analyses.map(&:analysis_definition)
+        @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
       def stats_aggregator

@@ -1,5 +1,5 @@
-<svg width="52px" height="23px" viewBox="0 0 52 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+<svg width="52px" height="23px" viewBox="0 0 52 23">
+    <g id="Symbols">
         <g id="Aggregation-/-Hexabins" transform="translate(-15.000000, -17.000000)" class="Style-fill">
             <g id="Hexabins">
                 <g transform="translate(15.000000, 17.000000)">

@@ -55,6 +55,7 @@
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();
+  @include align-items(center);
 }
 .Editor-HeaderInfo-actionsItem {
   margin-left: 4px;

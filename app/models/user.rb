@@ -292,13 +292,13 @@ class User < Sequel::Model
     !has_shared_entities?
   end
 
+  def shared_entities
+    CartoDB::Permission.where(owner_id: id).all.select { |p| p.acl.present? }
+  end
+
   def has_shared_entities?
     # Right now, cannot delete users with entities shared with other users or the org.
-    has_shared_entities = false
-    CartoDB::Permission.where(owner_id: self.id).each { |permission|
-      has_shared_entities = has_shared_entities || !permission.acl.empty?
-    }
-    has_shared_entities
+    shared_entities.any?
   end
 
   def before_destroy

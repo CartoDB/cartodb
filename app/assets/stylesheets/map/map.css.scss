@@ -953,7 +953,8 @@ div.search-result-dropdown {
   font-size: 15px;
   .name {
     background: none;
-    max-width: 150px;
+    max-width: 250px;
+    min-width: 180px;
     margin-right: 15px;
     float: left;
     text-transform: none;
@@ -966,6 +967,7 @@ div.search-result-dropdown {
     background: none;
     color: $Amber1;
     max-width: 210px;
+    min-width: 180px;
     float: right;
     text-transform: none;
     white-space: nowrap;

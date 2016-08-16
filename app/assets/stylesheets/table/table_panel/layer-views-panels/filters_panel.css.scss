@@ -135,7 +135,7 @@
       position:relative;
       text-align: left;
       width: 360px;
-      margin: 0;
+      margin: 0 0 40px 0;
 
       & > a.add {
         position:relative;
@@ -148,8 +148,9 @@
         @include box-sizing(border-box);
         position:relative;
         top: 0;
-        padding: 6px;
+        padding: 15px 6px 6px 6px;
         width: 100%;
+        height: 70px;
 
         .remove {
           margin: 0 0 0 7px;
@@ -388,6 +389,7 @@
 
         .scrollers {
           float: right;
+          margin-right: 20px;
 
           &.hidden { display: none; }
 

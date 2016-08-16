@@ -64,8 +64,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
-  font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-lighter;
+  font-size: 15px;
   color: white;
 
   &:hover {

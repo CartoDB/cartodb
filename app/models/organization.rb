@@ -136,17 +136,18 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_groups
     destroy_non_owner_users
-    if self.owner
-      self.owner.destroy
+    if owner
+      owner.destroy
     else
-      self.destroy
+      destroy
     end
   end
 
   def destroy_non_owner_users
-    non_owner_users.each { |u|
-      u.destroy
-    }
+    non_owner_users.each do |user|
+      user.shared_entities.map(&:entity).each(&:delete)
+      user.destroy
+    end
   end
 
   def non_owner_users

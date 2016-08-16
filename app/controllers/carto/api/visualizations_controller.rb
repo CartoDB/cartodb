@@ -53,11 +53,26 @@ module Carto
           total_entries: vqb.build.count
         }
         if current_user
+          # query_builder_with_filter_from_hash builds the vis list using params, these do the same
+          # queries statically to provide counts in the header regardless of which tab is shown.
           # Prefetching at counts removes duplicates
           response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types)
+                                                             .with_user_id(current_user.id)
+                                                             .build.count,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types)
+                                                      .with_liked_by_user_id(current_user.id)
+                                                      .build.count,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types)
+                                                       .with_shared_with_user_id(current_user.id)
+                                                       .with_user_id_not(current_user.id)
+                                                       .with_prefetch_table
+                                                       .build.count,
+            total_library: VisualizationQueryBuilder.new.with_type(Carto::Visualization::TYPE_REMOTE)
+                                                        .with_user_id(current_user.id)
+                                                        .without_synced_external_sources
+                                                        .without_imported_remote_visualizations
+                                                        .build.count
           })
         end
         render_jsonp(response)

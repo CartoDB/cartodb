@@ -250,13 +250,14 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @exclude_synced_external_sources
-      query = query.joins(%Q{
+      query = query.joins(%{
                             LEFT JOIN external_sources es
                               ON es.visualization_id = visualizations.id
                           })
-                   .joins(%Q{
+                   .joins(%{
                             LEFT JOIN external_data_imports edi
-                              ON  edi.external_source_id = es.id
+                              ON edi.external_source_id = es.id
+                              AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
                               #{exclude_only_synchronized}
                           })
                    .where("edi.id IS NULL")

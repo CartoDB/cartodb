@@ -71,6 +71,14 @@
   }
   .NoDatasets-illustration--secondary { @include background(image-url('layout/connect-dataset.png') center center no-repeat) }
 }
+.ContentResult.dataset-select-notice {
+  width: 100%;
+  max-width: 940px;
+  height: 40px;
+  min-height: 0px;
+  padding: 15px 0 0 0;
+  text-align: left;
+}
 .ContentResult-smallLoader {
   position: absolute;
   top: -2px;

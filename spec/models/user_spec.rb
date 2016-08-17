@@ -2108,6 +2108,7 @@ describe User do
       max_import_file_size = 6666666666
       max_import_table_row_count = 55555555
       max_concurrent_import_count = 44
+      max_layers = 11
 
       # create an owner
       organization = create_org('org-user-creation-db-checks-organization', disk_quota * 10, 10)
@@ -2117,6 +2118,8 @@ describe User do
       user1.max_import_file_size = max_import_file_size
       user1.max_import_table_row_count = max_import_table_row_count
       user1.max_concurrent_import_count = max_concurrent_import_count
+
+      user1.max_layers = 11
 
       user1.save
       organization.owner_id = user1.id
@@ -2158,6 +2161,8 @@ describe User do
       user.max_import_file_size.should eq max_import_file_size
       user.max_import_table_row_count.should eq max_import_table_row_count
       user.max_concurrent_import_count.should eq max_concurrent_import_count
+
+      user.max_layers.should eq max_layers
 
       # Just to be sure all following checks will not falsely report ok using wrong schema
       user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC

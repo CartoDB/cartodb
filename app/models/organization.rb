@@ -431,6 +431,10 @@ class Organization < Sequel::Model
     owner ? owner.max_concurrent_import_count : ::User::DEFAULT_MAX_CONCURRENT_IMPORT_COUNT
   end
 
+  def max_layers
+    owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
+  end
+
   private
 
   def destroy_groups

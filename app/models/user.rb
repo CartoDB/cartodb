@@ -211,10 +211,11 @@ class User < Sequel::Model
         self.google_maps_key = organization.google_maps_key
         self.google_maps_private_key = organization.google_maps_private_key
 
-        if(!organization_owner?)
+        if !organization_owner?
           self.max_import_file_size ||= organization.max_import_file_size
           self.max_import_table_row_count ||= organization.max_import_table_row_count
           self.max_concurrent_import_count ||= organization.max_concurrent_import_count
+          self.max_layers ||= organization.max_layers
         end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS

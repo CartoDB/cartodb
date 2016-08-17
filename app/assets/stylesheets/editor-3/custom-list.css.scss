@@ -67,11 +67,9 @@
   margin-right: 2px;
   background: none;
 }
-
 .CustomList-list--visible.ps-container>.ps-scrollbar-y-rail>.ps-scrollbar-y {
-  min-height: 36px;
+  min-height: 16px;
 }
-
 .Editor-panel .CustomList-list--visible .ps-scrollbar-y,
 .Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail {
   width: 4px !important;

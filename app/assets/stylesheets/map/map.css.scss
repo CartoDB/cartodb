@@ -767,6 +767,10 @@ div.map {
       }
     }
 
+    &.map.derived .ExportHelper--legend.cartodb-legend-stack {
+      margin-right:0 !important;
+    }
+
     &.map.derived.mobile .mobile_bkg:before {
       left: -300px;
     }
@@ -792,6 +796,10 @@ div.map {
       div.cartodb-searchbox {
         margin-right:455px;
       }
+    }
+
+    &.narrow.map.derived .ExportHelper--legend.cartodb-legend-stack {
+      margin-right:0 !important;
     }
 
     // Table

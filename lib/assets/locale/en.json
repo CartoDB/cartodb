@@ -152,6 +152,18 @@
       "title": "Convex Hull",
       "short-title": "Convex Hull"
     },
+    "concave-hull": {
+      "title": "Concave Hull",
+      "short-title": "Concave Hull"
+    },
+    "bounding-box": {
+      "title": "Bounding Box",
+      "short-title": "Bounding Box"
+    },
+    "bounding-circle": {
+      "title": "Bounding Circle",
+      "short-title": "Bounding Circle"
+    },
     "area-of-influence": {
       "title": "Create areas of influence",
       "short-title": "AOI"
@@ -606,9 +618,9 @@
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
         "option-types": {
-          "convex-hull": {
-            "title": "Convex Hull",
-            "desc": "Calculates the minimum geometry that encloses all geometries of your dataset."
+          "group-points": {
+            "title": "Group Points into Polygons",
+            "desc": "Aggregate points into polygons such as convex hulls or bounding boxes."
           },
           "aggregate-intersection": {
             "title": "Intersect second layer",
@@ -1247,12 +1259,6 @@
         "hover": "Hover"
       },
       "analysis-form": {
-        "input-num": "Input #%{num}",
-        "define-two-layers": "Define two layers",
-        "keep-columns": "Select the columns you want to keep",
-        "foreign-keys": "Foreign Keys",
-        "no-coincidence": "When no coincidence no row will be added",
-        "columns": "Columns",
         "admin-region": "Admin. Region",
         "dissolved-help": "Combine polygons tracts which have equal ranges",
         "intact-help": "Keep all polygon tracts as individual polygons",
@@ -1263,6 +1269,8 @@
         "aggregate-column": "Aggregate column",
         "apply-btn": "Apply",
         "boundaries": "Boundaries",
+        "bounding-box": "Bounding Box",
+        "bounding-circle": "Bounding Circle",
         "by": "By",
         "by-bike": "bike",
         "by-car": "car",
@@ -1274,8 +1282,16 @@
         "city-help": "In which column are your city names stored?",
         "clusters-num": "# of clusters",
         "column": "Column",
+        "columns": "Columns",
+        "concave-hull": "Concave Hull",
         "confirm-analysis": "Confirm",
+        "convex-hull": "Convex Hull",
         "country": "Country",
+        "define-two-layers": "Define two layers",
+        "foreign-keys": "Foreign Keys",
+        "input-num": "Input #%{num}",
+        "keep-columns": "Select the columns you want to keep",
+        "no-coincidence": "When no coincidence no row will be added",
         "country-help": "In which column are your country names stored?",
         "create-btn": "Apply",
         "data-observatory-measurement-area": "Country",

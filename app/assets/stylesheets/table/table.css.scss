@@ -520,6 +520,7 @@ div.table {
     // Loaders
     tfoot {
       padding:100px 0;
+      background: none;
 
       &.sql_loader {
 
@@ -543,10 +544,10 @@ div.table {
       }
 
       &.page_loader {
-        border:1px solid #ECECEC;
+        border:1px solid transparent;
         border-right:0;
         border-left:0;
-        background:white;
+        background:none;
         z-index:-1;
 
         th {

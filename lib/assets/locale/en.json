@@ -1562,12 +1562,14 @@
             "none": "none",
             "darken": "darken",
             "lighten": "lighten",
+            "lighter": "lighter",
             "color-dodge": "color-dodge",
             "color-burn": "color-burn",
             "multiply": "multiply",
             "screen": "screen",
             "overlay": "overlay",
             "src-over": "src-over",
+            "source-over": "source-over",
             "xor": "xor"
           }
         },

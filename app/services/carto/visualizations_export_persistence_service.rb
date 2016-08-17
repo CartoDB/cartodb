@@ -33,6 +33,13 @@ module Carto
           analysis.user_id = user.id
         end
 
+        state = visualization.state
+        if state
+          visualization.state = Carto::State.new(visualization: visualization,
+                                                 user: visualization.user,
+                                                 json: state.json)
+        end
+
         # INFO: workaround for array saves not working
         tags = visualization.tags
         visualization.tags = nil
@@ -58,11 +65,6 @@ module Carto
 
         map.data_layers.each(&:register_table_dependencies)
       end
-
-      state = visualization.state
-      state.visualization = visualization
-      state.user = visualization.user
-      state.save
 
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch

@@ -178,8 +178,6 @@ module Carto
     end
 
     def build_state_from_hash(exported_state)
-      return nil unless exported_state
-
       Carto::State.new(json: exported_state[:json])
     end
   end

@@ -92,6 +92,10 @@ class User < Sequel::Model
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
+  DEFAULT_MAX_IMPORT_FILE_SIZE = 157286400
+  DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500000
+  DEFAULT_MAX_CONCURRENT_IMPORT_COUNT = 3
+
   COMMON_DATA_ACTIVE_DAYS = 31
 
   self.raise_on_typecast_failure = false
@@ -203,9 +207,15 @@ class User < Sequel::Model
     self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
     if self.organization_user?
       if new? || column_changed?(:organization_id)
-        self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.google_maps_key = self.organization.google_maps_key
-        self.google_maps_private_key = self.organization.google_maps_private_key
+        self.twitter_datasource_enabled = organization.twitter_datasource_enabled
+        self.google_maps_key = organization.google_maps_key
+        self.google_maps_private_key = organization.google_maps_private_key
+
+        if(!organization_owner?)
+          self.max_import_file_size ||= organization.max_import_file_size
+          self.max_import_table_row_count ||= organization.max_import_table_row_count
+          self.max_concurrent_import_count ||= organization.max_concurrent_import_count
+        end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS
       self.private_tables_enabled ||= true

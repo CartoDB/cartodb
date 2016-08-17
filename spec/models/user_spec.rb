@@ -2105,11 +2105,19 @@ describe User do
 
       disk_quota = 1234567890
       user_timeout_secs = 666
+      max_import_file_size = 6666666666
+      max_import_table_row_count = 55555555
+      max_concurrent_import_count = 44
 
       # create an owner
       organization = create_org('org-user-creation-db-checks-organization', disk_quota * 10, 10)
       user1 = create_user email: 'user1@whatever.com', username: 'creation-db-checks-org-owner', password: 'user11'
       user1.organization = organization
+
+      user1.max_import_file_size = max_import_file_size
+      user1.max_import_table_row_count = max_import_table_row_count
+      user1.max_concurrent_import_count = max_concurrent_import_count
+
       user1.save
       organization.owner_id = user1.id
       organization.save
@@ -2146,6 +2154,10 @@ describe User do
       CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
+
+      user.max_import_file_size.should eq max_import_file_size
+      user.max_import_table_row_count.should eq max_import_table_row_count
+      user.max_concurrent_import_count.should eq max_concurrent_import_count
 
       # Just to be sure all following checks will not falsely report ok using wrong schema
       user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC

@@ -1521,10 +1521,6 @@
         "values": "VALUES",
         "cartocss": "CARTOCSS"
       },
-      "notifier": {
-        "css-error": "<span class='CDB-Text u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "CartoCSS applied."
-      },
       "messages": {
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
@@ -1735,6 +1731,23 @@
       },
       "loading": "Adding widget…",
       "updating": "Updating widget…"
+    },
+    "cartocss": {
+        "error": {
+          "body": "%{body} %{error}",
+          "title": "Error in CartoCSS styles:"
+        },
+        "success": "CartoCSS applied."
+    },
+    "sql": {
+      "alter-loading": "Modifying table…",
+      "alter-success": "Modifying applied.",
+      "applying": "Applying query…",
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Error in SQL query:"
+      },
+      "success": "SQL query applied."
     }
   }
 }

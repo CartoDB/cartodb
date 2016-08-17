@@ -85,7 +85,8 @@
     margin-left: 10px;
   }
 }
-.Filters-group.is-hidden {
+.Filters-group.is-hidden,
+.Filters-addLayer.is-hidden {
   display: none;
 }
 .Filters-group.is-searching {

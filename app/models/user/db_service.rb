@@ -349,14 +349,16 @@ module CartoDB
               revoke_all_on_database_from(conn, database_with_conflicts, username)
               revoke_all_memberships_on_database_to_role(conn, username)
               drop_owned_by_user(conn, username)
+
               conflict_database_conn = @user.in_database(
                 as: :cluster_admin,
                 'database' => database_with_conflicts
               )
               drop_owned_by_user(conflict_database_conn, username)
               ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema].each do |s|
-                drop_users_privileges_in_schema(s, [username])
+                drop_users_privileges_in_schema(s, [username], conn: conflict_database_conn)
               end
+              DBService.close_sequel_connection(conflict_database_conn)
               retry
             end
           else
@@ -513,7 +515,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.17.0'
+          cdb_extension_target_version = '0.17.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -791,15 +793,14 @@ module CartoDB
         !database.fetch(query).first.nil?
       end
 
-      def drop_users_privileges_in_schema(schema, accounts)
-        @user.in_database(as: :superuser, statement_timeout: 600000) do |user_database|
-          return unless schema_exists?(schema, user_database)
+      def drop_users_privileges_in_schema(schema, accounts, conn: nil)
+        user_database = conn || @user.in_database(as: :superuser, statement_timeout: 600000)
+        return unless schema_exists?(schema, user_database)
 
-          user_database.transaction do
-            accounts
-              .select { |role| role_exists?(user_database, role) }
-              .each { |role| revoke_privileges(user_database, schema, "\"#{role}\"") }
-          end
+        user_database.transaction do
+          accounts
+            .select { |role| role_exists?(user_database, role) }
+            .each { |role| revoke_privileges(user_database, schema, "\"#{role}\"") }
         end
       end
 

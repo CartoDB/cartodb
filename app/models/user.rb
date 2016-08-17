@@ -92,6 +92,10 @@ class User < Sequel::Model
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
+  DEFAULT_MAX_IMPORT_FILE_SIZE = 157286400
+  DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500000
+  DEFAULT_MAX_CONCURRENT_IMPORT_COUNT = 3
+
   COMMON_DATA_ACTIVE_DAYS = 31
 
   self.raise_on_typecast_failure = false
@@ -203,9 +207,16 @@ class User < Sequel::Model
     self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
     if self.organization_user?
       if new? || column_changed?(:organization_id)
-        self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.google_maps_key = self.organization.google_maps_key
-        self.google_maps_private_key = self.organization.google_maps_private_key
+        self.twitter_datasource_enabled = organization.twitter_datasource_enabled
+        self.google_maps_key = organization.google_maps_key
+        self.google_maps_private_key = organization.google_maps_private_key
+
+        if !organization_owner?
+          self.max_import_file_size ||= organization.max_import_file_size
+          self.max_import_table_row_count ||= organization.max_import_table_row_count
+          self.max_concurrent_import_count ||= organization.max_concurrent_import_count
+          self.max_layers ||= organization.max_layers
+        end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS
       self.private_tables_enabled ||= true
@@ -292,13 +303,13 @@ class User < Sequel::Model
     !has_shared_entities?
   end
 
+  def shared_entities
+    CartoDB::Permission.where(owner_id: id).all.select { |p| p.acl.present? }
+  end
+
   def has_shared_entities?
     # Right now, cannot delete users with entities shared with other users or the org.
-    has_shared_entities = false
-    CartoDB::Permission.where(owner_id: self.id).each { |permission|
-      has_shared_entities = has_shared_entities || !permission.acl.empty?
-    }
-    has_shared_entities
+    shared_entities.any?
   end
 
   def before_destroy

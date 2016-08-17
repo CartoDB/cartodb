@@ -5,17 +5,14 @@
 //
 // --------------------------------------------------
 .DefaultTitle {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-larger;
-  line-height: 20px;
-  color: $Grey1;;
+  color: $Grey1;
+  font-weight: normal;
+  margin: 0px;
 }
 .DefaultTitle.is-disabled {
   color: rgba($cTypography-paragraphs, 0.4);
 }
 .DefaultTitle-link {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-larger;
   color: $Grey1;
   &:hover {
     color: $White;

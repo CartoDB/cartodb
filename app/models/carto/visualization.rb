@@ -58,7 +58,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
-  has_one :state, class_name: Carto::State, autosave: true, dependent: :destroy
+  belongs_to :state, class_name: Carto::State, dependent: :destroy
+  after_commit :presist_state, unless: :state_persisted? # Can't use autosave since ORMs fight
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -413,27 +414,32 @@ class Carto::Visualization < ActiveRecord::Base
         widget.layer_id = stored_layer_id
       end
     end
-
-    # state.repopulate_widget_ids(widgets)
   end
 
   def for_presentation
     mapcapped? ? latest_mapcap.regenerate_visualization : self
   end
 
+  def state
+    super ? super : build_state
+  end
+
   private
 
-  def state_with_default
-    Carto::State.find(state_id)
-  rescue ActiveRecord::RecordNotFound
-    new_state = create_state(user: user)
-    self.state_id = new_state.id
-
-    save
+  def build_state
+    new_state = Carto::State.create!(user: user, visualization: self)
+    update_attribute(:state_id, new_state.id) if persisted?
 
     new_state
   end
-  alias_method_chain :state, :default
+
+  def persist_state
+    state.save
+  end
+
+  def state_persisted?
+    state.persisted?
+  end
 
   def named_maps_api
     Carto::NamedMaps::Api.new(self)

@@ -58,15 +58,14 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
-  belongs_to :state, class_name: Carto::State, dependent: :destroy
-  after_commit :presist_state, unless: :state_persisted? # Can't use autosave since ORMs fight
+  belongs_to :state, class_name: Carto::State, autosave: true
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end
 
   def ==(other_visualization)
-    self.id == other_visualization.id
+    id == other_visualization.id
   end
 
   def size
@@ -433,12 +432,8 @@ class Carto::Visualization < ActiveRecord::Base
     new_state
   end
 
-  def persist_state
-    state.save
-  end
-
-  def state_persisted?
-    state.persisted?
+  def persist_state_if_needed
+    state.save unless state.persisted?
   end
 
   def named_maps_api

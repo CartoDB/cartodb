@@ -59,7 +59,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
   belongs_to :state, class_name: Carto::State
-  after_commit :save_state_if_needed
+  after_save :save_state_if_needed
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -434,7 +434,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_state_if_needed
-    state.save if persisted? && !state.persisted?
+    state.save unless state.persisted?
   end
 
   def named_maps_api

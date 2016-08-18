@@ -210,6 +210,7 @@ describe Carto::VisualizationsExportService2 do
 
   def verify_state_vs_export(state, state_export)
     state_export_json = state_export[:json] if state_export
+    state_export_json ||= {}
 
     state.json.should eq state_export_json
   end

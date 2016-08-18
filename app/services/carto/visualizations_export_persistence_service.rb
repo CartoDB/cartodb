@@ -59,12 +59,6 @@ module Carto
         map.data_layers.each(&:register_table_dependencies)
       end
 
-      state = visualization.state
-      if state
-        visualization.state = Carto::State.new(visualization: visualization,
-                                               user: user,
-                                               json: state.json)
-      end
       visualization.save
 
       # Propagate changes (named maps, default permissions and so on)

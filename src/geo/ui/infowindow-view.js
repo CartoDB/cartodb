@@ -95,6 +95,10 @@ var Infowindow = View.extend({
     return wait_callback;
   },
 
+  isCustomTemplate: function () {
+    return this.model.get('template_name') === '' && this.model.get('template') !== '';
+  },
+
   /**
    *  Render infowindow content
    */
@@ -107,8 +111,12 @@ var Infowindow = View.extend({
 
       var data = this.model.get('content') ? this.model.get('content').data : {};
 
-      // Sanitized fields
-      fields = _.map(fields, this._sanitizeField, this);
+      // If a custom template is not applied, let's sanitize
+      // fields for the template rendering
+      if (!this.isCustomTemplate) {
+        // Sanitized fields
+        fields = _.map(fields, this._sanitizeField, this);
+      }
 
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.

@@ -62,9 +62,10 @@ module Carto
       state = visualization.state
       if state
         visualization.state = Carto::State.new(visualization: visualization,
-                                               user: visualization.user,
+                                               user: user,
                                                json: state.json)
       end
+      visualization.save
 
       # Propagate changes (named maps, default permissions and so on)
       visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch

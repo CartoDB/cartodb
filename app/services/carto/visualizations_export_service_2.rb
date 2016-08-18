@@ -68,11 +68,8 @@ module Carto
         visualization.user = Carto::User.new(username: exported_user[:username])
       end
 
-      # This is optional as it was added in version 2.0.3
-      exported_state = exported_visualization[:state]
-      if exported_state
-        visualization.state = build_state_from_hash(exported_state)
-      end
+      # Added in version 2.0.3
+      visualization.state = build_state_from_hash(exported_visualization[:state])
 
       active_layer_order = exported_layers.index { |l| l['active_layer'] }
       if active_layer_order
@@ -178,7 +175,7 @@ module Carto
     end
 
     def build_state_from_hash(exported_state)
-      Carto::State.new(json: exported_state[:json])
+      Carto::State.new(json: exported_state ? exported_state[:json] : nil)
     end
   end
 

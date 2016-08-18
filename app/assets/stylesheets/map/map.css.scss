@@ -540,6 +540,7 @@ div.map {
         color: $Amber1;
       }
       &.custom, &.cluster, &.bubble, &.color, &.intensity, &.density { display: block; }
+      border-bottom: none;
     }
   }
 

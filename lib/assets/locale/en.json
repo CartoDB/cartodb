@@ -112,6 +112,12 @@
       "custom-column": "This column contains the data requested from the Data Observatory",
       "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
     },
+    "group-points": {
+      "title": "Group points into polygons",
+      "the-geom": "This column was updated to polygons encompassing the input points.",
+      "category": "This will be the category over which the polygons were calculated",
+      "description": "Group points into polygons used group %{method} to create new polygons."
+    },
     "georeference": {
       "title": "Georeference",
       "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
@@ -147,6 +153,10 @@
     "centroid": {
       "title": "Centroid from geometries",
       "short-title": "Centroid"
+    },
+    "group-points": {
+      "title": "Group Points into Polygons",
+      "short-title": "Group points"
     },
     "convex-hull": {
       "title": "Convex Hull",
@@ -1263,6 +1273,7 @@
         "dissolved-help": "Combine polygons tracts which have equal ranges",
         "intact-help": "Keep all polygon tracts as individual polygons",
         "admin-region-help": "In which column are your region names stored?",
+        "method": "Method",
         "aggregate": "Aggregate",
         "aggregate-by": "Aggregate by",
         "aggregate-by-help": "Will calculate aggregate values for each centroid",
@@ -1393,6 +1404,8 @@
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
         "measure-by": "Measure by",
+        "value-aggregation": "Value aggregation",
+        "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
         "value": "Value",
         "weight": "Weight",
         "weight-column": "Weight column",

@@ -58,7 +58,6 @@
         @include text-overflow();
         color:$Grey1;
         font-size:15px;
-        line-height:20px;
         margin-left:12px;
         overflow:hidden;
         width:auto;
@@ -118,6 +117,7 @@
       height:9px;
       margin-left:6px;
       background: url(../images/close_layer.png) no-repeat center;
+      vertical-align: middle;
       &:hover {
         background-image: url(../images/close_layer_hover.png); 
       }

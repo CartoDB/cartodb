@@ -60,7 +60,7 @@ describe Carto::Api::StatesController do
     end
 
     it 'update a state' do
-      put update_state_url, state: state do |response|
+      put update_state_url, json: state do |response|
         response.status.should eq 200
 
         state_should_be_correct(response)

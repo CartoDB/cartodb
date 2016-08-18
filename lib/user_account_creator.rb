@@ -77,7 +77,7 @@ module CartoDB
     end
 
     def with_http_headers(headers)
-      puts "Trying to create user with http_headers"
+      puts "user-auto-creation : Trying to create user with http_headers"
       with_email(headers['email'])
       with_username(headers['persistent-id'])
       with_password(SecureRandom.hex)
@@ -104,9 +104,11 @@ module CartoDB
     end
 
     def valid?
+      puts "user-auto-creation : inside user_account_creator::valid"
       build
 
       if @organization
+        puts "user-auto-creation : organization exists"
         if @organization.owner.nil?
           if !promote_to_organization_owner?
             @custom_errors[:organization] = ["Organization owner is not set. Administrator must login first."]
@@ -114,8 +116,10 @@ module CartoDB
         else
           validate_organization_soft_limits
         end
+        puts "user-auto-creation : after validate_organization_soft_limits"
 
         if @organization.strong_passwords_enabled && @created_via != Carto::UserCreation::CREATED_VIA_LDAP
+          puts "user-auto-creation : strong password"
           password_validator = Carto::StrongPasswordValidator.new
           password_errors = password_validator.validate(@user.password)
 
@@ -125,6 +129,7 @@ module CartoDB
         end
       end
 
+      puts "user-auto-creation : user valid #{@user.valid?}"
       @user.valid? && @user.validate_credentials_not_taken_in_central && @custom_errors.empty?
     end
 
@@ -133,11 +138,16 @@ module CartoDB
     end
 
     def enqueue_creation(current_controller)
+      puts "user-auto-creation : inside user_account_creator::enqueue_creation"
       user_creation = build_user_creation
       user_creation.save
+     
+      puts "user-auto-creation : save the user_creation info"
 
       blp_user_info = build_blp_user_info
       blp_user_info.save
+      
+      puts "user-auto-creation : saved the blp_user_info"
 
       common_data_url = CartoDB::Visualization::CommonDataService.build_url(current_controller)
       ::Resque.enqueue(::Resque::UserJobs::Signup::NewUser,
@@ -155,6 +165,7 @@ module CartoDB
     end
 
     def build_blp_user_info
+      puts "user-auto-creation : inside build_blp_user_info"
       user_info = UserInfo.new;
       user_info.uuid =  @blp_user_info[:uuid]
       user_info.username =  @blp_user_info[:username]
@@ -167,11 +178,14 @@ module CartoDB
     end
 
     def build
+      puts "user-auto-creation : inside user_account_creator build"
       return if @built
 
       if @google_user_data
+        puts "user-auto-creation : Trying to create with google data"
         @google_user_data.set_values(@user)
       else
+        puts "user-auto-creation : building user with header #{@user_params[PARAM_EMAIL]}"
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD]
         @user.password_confirmation = @user_params[PARAM_PASSWORD]

@@ -75,16 +75,19 @@ class SignupController < ApplicationController
 
   def create_http_authentication
 
-    logger.info "inside create http header authentication"
+    logger.info "user-auto-creation : inside create http header authentication"
 
     request.headers.each { |key, value| logger.info "key #{key} val #{value}" }
 
     authenticator = Carto::HttpHeaderAuthentication.new
+    logger.info "user-auto-creation : before 404"
     render_404 and return false unless authenticator.autocreation_enabled?
+    logger.info "user-auto-creation : before 500"
     render_500 and return false unless authenticator.autocreation_valid?(request)
+    logger.info "user-auto-creation : before 403"
     render_403 and return false unless authenticator.valid?(request)
 
-    logger.info "checking with_http_headers"
+    logger.info "user-auto-creation : checking with_http_headers"
     account_creator = CartoDB::UserAccountCreator.
       new(Carto::UserCreation::CREATED_VIA_HTTP_AUTENTICATION).
 #      with_email_only(authenticator.email(request))
@@ -92,14 +95,19 @@ class SignupController < ApplicationController
 
     account_creator = account_creator.with_organization(@organization) if @organization
 
+    logger.info "user-auto-creation : checking with_http_headers"
+
     if account_creator.valid?
+      logger.info "user-auto-creation : before trigger_account_creation"
       trigger_account_creation(account_creator)
 
       render 'shared/signup_confirmation'
     else
+      logger.info "user-auto-creation : account_creator.valid failed"
       render_500
     end
   rescue => e
+    logger.info "user-auto-creation : reporting exception, message #{e.message}"
     CartoDB.report_exception(e, "Creating user with HTTP authentication", new_user: account_creator.user.inspect)
     flash.now[:error] = e.message
     render_500

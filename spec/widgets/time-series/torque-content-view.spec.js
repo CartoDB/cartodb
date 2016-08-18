@@ -20,7 +20,9 @@ describe('widgets/time-series/torque-content-view', function () {
     this.dataviewModel.sync = function (method, model, options) {
       this.options = options;
     }.bind(this);
-    this.torqueLayerModel = new cdb.geo.TorqueLayer();
+    this.torqueLayerModel = new cdb.geo.TorqueLayer({}, {
+      vis: vis
+    });
     var widgetModel = new WidgetModel({}, {
       dataviewModel: this.dataviewModel
     });

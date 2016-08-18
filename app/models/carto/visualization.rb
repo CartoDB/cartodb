@@ -59,7 +59,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
   belongs_to :state, class_name: Carto::State
-  after_save :save_state_if_changed
+  after_save :save_state_if_needed
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -427,14 +427,22 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def build_state
-    new_state = Carto::State.create!(user: user, visualization: self)
-    update_attribute(:state_id, new_state.id) if persisted?
+    new_state = Carto::State.new(user: user, visualization: self)
 
     new_state
   end
 
-  def save_state_if_changed
-    state.save if state.changed?
+  def save_state_if_needed
+    current_state = state
+
+    if current_state.changed?
+      current_state.visualization = self unless current_state.visualization
+      current_state.user = user unless current_state.user
+
+      if current_state.save!
+        update_attribute(:state_id, current_state.id) unless state_id
+      end
+    end
   end
 
   def named_maps_api

@@ -113,7 +113,7 @@ var Infowindow = View.extend({
 
       // If a custom template is not applied, let's sanitize
       // fields for the template rendering
-      if (!this.isCustomTemplate) {
+      if (!this.isCustomTemplate()) {
         // Sanitized fields
         fields = _.map(fields, this._sanitizeField, this);
       }

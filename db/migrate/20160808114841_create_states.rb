@@ -11,7 +11,7 @@ Sequel.migration do
     end
 
     alter_table :states do
-      add_index [:user_id, :visualization_id]
+      add_index [:visualization_id, :user_id]
     end
   end
 

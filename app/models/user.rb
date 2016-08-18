@@ -696,7 +696,7 @@ class User < Sequel::Model
   end
 
   def avatar
-    self.avatar_url.nil? ? "//#{self.default_avatar}" : self.avatar_url
+    self.avatar_url.nil? ? "//#{self.default_avatar}" : "http://" + self.avatar_url
   end
 
   def default_avatar

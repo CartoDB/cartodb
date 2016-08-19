@@ -5,9 +5,6 @@ require_dependency 'oauth/github/config'
 
 module Carto
   class GithubController < ApplicationController
-    include SessionsHelper
-    include SignupHelper
-
     ssl_required  :github
     before_filter :initialize_github_config
 

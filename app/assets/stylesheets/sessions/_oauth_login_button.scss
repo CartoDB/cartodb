@@ -1,0 +1,40 @@
+@import 'compass/css3/border-radius';
+
+.Sessions-oauthContainer {
+  @include display-flex();
+  @include justify-content(space-between);
+
+  .Sessions-oauthButton {
+    margin-left: 8px;
+  }
+
+  .Sessions-oauthButton:first-child {
+    margin-left: 0;
+  }
+}
+
+.Sessions-oauthButton {
+  width: 100%;
+  min-width: 156px;
+  max-width: 320px;
+  height: 49px;
+  @include flex(1);
+}
+
+.Sessions-githubButton {
+  background: #162945;
+  color: #ffffff;
+  @include border-radius(4px);
+  border: 1px solid rgba(255, 255, 255, .2);
+  transition: all .15s;
+  cursor: pointer;
+  background-image: image-url('layout/sessions/github_logo_white.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &:hover {
+    color: #162945;
+    background-color: #ffffff;
+    background-image: image-url('layout/sessions/github_logo_black.svg');
+  }
+}

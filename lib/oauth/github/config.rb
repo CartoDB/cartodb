@@ -4,12 +4,12 @@ module Carto
       attr_reader :client_id, :client_secret, :state
 
       def self.instance(state, after: nil)
-        Github::Config.new(state, after) if CartoDB.get_config(:oauth, 'github').present?
+        Github::Config.new(state, after) if Cartodb.get_config(:oauth, 'github').present?
       end
 
       def initialize(state, after)
-        @client_id = CartoDB.get_config(:oauth, 'github', 'client_id')
-        @client_secret = CartoDB.get_config(:oauth, 'github', 'client_secret')
+        @client_id = Cartodb.get_config(:oauth, 'github', 'client_id')
+        @client_secret = Cartodb.get_config(:oauth, 'github', 'client_secret')
         @state = state
         @after = after
       end

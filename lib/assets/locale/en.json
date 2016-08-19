@@ -493,6 +493,11 @@
         },
         "privacy": {
           "privacy": "privacy",
+          "cta": {
+            "title": "Want some privacy?",
+            "desc-trial": "Check our plans with 14 days trial",
+            "desc-notrial": "Upgrade your account!"
+          },
           "public": {
             "type": "PUBLIC",
             "title": "Public",

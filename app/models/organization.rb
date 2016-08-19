@@ -419,6 +419,22 @@ class Organization < Sequel::Model
     end
   end
 
+  def max_import_file_size
+    owner ? owner.max_import_file_size : ::User::DEFAULT_MAX_IMPORT_FILE_SIZE
+  end
+
+  def max_import_table_row_count
+    owner ? owner.max_import_table_row_count : ::User::DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT
+  end
+
+  def max_concurrent_import_count
+    owner ? owner.max_concurrent_import_count : ::User::DEFAULT_MAX_CONCURRENT_IMPORT_COUNT
+  end
+
+  def max_layers
+    owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
+  end
+
   private
 
   def destroy_groups

@@ -437,7 +437,7 @@ class Carto::Visualization < ActiveRecord::Base
       current_state.visualization = self unless current_state.visualization
       current_state.user = user unless current_state.user
 
-      if current_state.save!
+      if current_state.save
         update_attribute(:state_id, current_state.id) unless state_id
       end
     end

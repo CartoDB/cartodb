@@ -15,7 +15,8 @@ module Carto
       end
 
       def github_url(controller)
-        url = "https://github.com/login/oauth/authorize?client_id=#{client_id}&state=#{Rack::Utils.escape(state)}&scope=user"
+        escaped_state = Rack::Utils.escape(state)
+        url = "https://github.com/login/oauth/authorize?client_id=#{client_id}&state=#{escaped_state}&scope=user"
 
         params = {}
         params[:after] = @after if @after

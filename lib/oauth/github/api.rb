@@ -41,6 +41,24 @@ module Carto
         CartoDB::Logger.error(message: 'Error checking GitHub student', exception: e, access_token: access_token)
       end
 
+      def self.request(method, url, body: nil, headers: {})
+        headers['Accept'] = 'application/json'
+
+        response = Typhoeus::Request.new(
+          url,
+          method: method,
+          ssl_verifypeer: true,
+          timeout: 5,
+          headers: headers,
+          body: body
+        ).run
+        JSON.parse(response.body)
+      rescue => e
+        CartoDB::Logger.error(message: 'Error in request to GitHub', exception: e,
+                              method: method, url: url, body: body, headers: headers)
+        nil
+      end
+
       private
 
       def user_data
@@ -76,24 +94,6 @@ module Carto
 
       def authenticated_request(method, url, body: nil)
         self.class.request(method, url, body: body, headers: { 'Authorization' => "token #{@access_token}" })
-      end
-
-      def self.request(method, url, body: nil, headers: {})
-        headers['Accept'] = 'application/json'
-
-        response = Typhoeus::Request.new(
-          url,
-          method: method,
-          ssl_verifypeer: true,
-          timeout: 5,
-          headers: headers,
-          body: body
-        ).run
-        JSON.parse(response.body)
-      rescue => e
-        CartoDB::Logger.error(message: 'Error in request to GitHub', exception: e,
-                                     method: method, url: url, body: body, headers: headers)
-        nil
       end
     end
   end

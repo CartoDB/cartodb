@@ -14,14 +14,18 @@ module Carto
     def github
       code = params[:code]
       state = params[:state]
-      return render_not_authorized unless code && state == @github_config.state
+      return render_403 unless code && state == @github_config.state
       api = Github::Api.with_code(@github_config, code)
-      unless login(api)
-        render text: "Org signup"
+
+      user = login(api)
+      unless user
+        return redirect_to CartoDB.url(self, 'login')
       end
+
+      redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)
     rescue => e
       CartoDB::Logger.warning(exception: e, message: 'Error logging in via Github Oauth')
-      render_403
+      redirect_to CartoDB.url(self, 'login')
     end
 
     private
@@ -36,11 +40,13 @@ module Carto
       user = User.where(github_user_id: github_id).first
       unless user
         user = User.where(email: github_api.email, github_user_id: nil).first
-        return false unless user
+        return nil unless user
         user.update_column(:github_user_id, github_id)
       end
-
-      authenticate_session(Session.authenticated(user))
+      params[:github_api] = github_api
+      authenticate!(:github_oauth, scope: user.username)
+      CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
+      user
     end
   end
 end

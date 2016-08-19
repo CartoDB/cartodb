@@ -91,7 +91,9 @@
       // Edit menu
       &.edit {
         bottom:0;
-        a.merge_datasets {border-top:1px solid rgba(#999999,0.25);}
+        a.merge_datasets {
+          border-top:1px solid $DarkGrey8;
+        }
       }
 
       a {
@@ -157,7 +159,7 @@
         }
 
         &.add_feature {
-          border-top:1px solid $Black;
+          border-top:1px solid $DarkGrey8;
           background-image: url(../images/icons/add_feature.png);
           background-repeat: no-repeat;
           background-position: center;

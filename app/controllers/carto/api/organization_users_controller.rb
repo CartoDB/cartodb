@@ -58,7 +58,13 @@ module Carto
 
         account_creator.enqueue_creation(self)
 
-        render_jsonp Carto::Api::UserPresenter.new(account_creator.user, current_viewer: current_viewer).to_poro, 200
+        presentation = Carto::Api::UserPresenter.new(account_creator.user,
+                                                     current_viewer: current_viewer)
+                                                .to_poro
+
+        presentation.delete(:id) # We don't return the id since this API uses usernames
+
+        render_jsonp presentation, 200
       rescue => e
         CartoDB.notify_exception(e, user: account_creator.user.inspect)
 

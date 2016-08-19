@@ -38,7 +38,7 @@ describe Carto::Api::StatesController do
   before(:each) { bypass_named_maps }
 
   after(:all) do
-    Carto::FeatureFlag.where(name: 'editor-3').destroy
+    Carto::FeatureFlag.where(name: 'editor-3').first.destroy
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
 

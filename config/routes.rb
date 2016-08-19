@@ -66,6 +66,8 @@ CartoDB::Application.routes.draw do
         CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s
       }
     end
+
+    get '/github' => 'github#github', as: :github
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization

@@ -17,36 +17,18 @@ module Carto
       return render_not_authorized unless code && state == @github_config.state
       api = Github::Api.with_code(@github_config, code)
       unless login(api)
-        price_plan = @plan_recurly_code.present? ? PricePlan.find_by_recurly_plan_code(@plan_recurly_code) : nil
-        price_plan = choose_allowed_price_plan(price_plan)
-        price_plan_id = price_plan.id
-
-        user_params = {
-          username: api.username,
-          email: api.email,
-          github_user_id: api.id
-        }
-        @user = build_user(user_params)
-        if @user.valid?
-          create_user(user: @user, price_plan_id: price_plan_id)
-        else
-          @user.price_plan_id = price_plan_id
-          @github_access_token = api.access_token
-          render 'users/signup'
-        end
+        render text: "Org signup"
       end
     rescue => e
       CartoDB::Logger.warning(exception: e, message: 'Error logging in via Github Oauth')
-      return render_not_authorized
+      render_403
     end
 
     private
 
     def initialize_github_config
       @after_creation_callback = params[:after]
-      @plan_recurly_code = params[:plan]
-      @github_config = Github::Config.instance(form_authenticity_token, github_url,
-                                               plan: @plan_recurly_code, after: @after_creation_callback)
+      @github_config = Github::Config.instance(form_authenticity_token, after: @after_creation_callback)
     end
 
     def login(github_api)

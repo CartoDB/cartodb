@@ -31,8 +31,7 @@ module Carto
     private
 
     def initialize_github_config
-      @after_creation_callback = params[:after]
-      @github_config = Github::Config.instance(form_authenticity_token, after: @after_creation_callback)
+      @github_config = Github::Config.instance(form_authenticity_token)
     end
 
     def login(github_api)

@@ -3,15 +3,15 @@ module Carto
     class Config
       attr_reader :client_id, :client_secret, :state
 
-      def self.instance(state, after: nil)
-        Github::Config.new(state, after) if Cartodb.get_config(:oauth, 'github').present?
+      def self.instance(state, invitation_token: nil)
+        Github::Config.new(state, invitation_token) if Cartodb.get_config(:oauth, 'github').present?
       end
 
-      def initialize(state, after)
+      def initialize(state, invitation_token)
         @client_id = Cartodb.get_config(:oauth, 'github', 'client_id')
         @client_secret = Cartodb.get_config(:oauth, 'github', 'client_secret')
         @state = state
-        @after = after
+        @invitation_token = invitation_token
       end
 
       def github_url(controller)
@@ -19,7 +19,7 @@ module Carto
         url = "https://github.com/login/oauth/authorize?client_id=#{client_id}&state=#{escaped_state}&scope=user"
 
         params = {}
-        params[:after] = @after if @after
+        params[:invitation_token] = @invitation_token if @invitation_token
         redirect_uri = "#{base_callback_url(controller)}?#{URI.encode_www_form(params)}" unless params.empty?
         url += "&redirect_uri=#{CGI.escape(redirect_uri)}" if redirect_uri
 

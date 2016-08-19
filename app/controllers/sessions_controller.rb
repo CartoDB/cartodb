@@ -139,7 +139,8 @@ class SessionsController < ApplicationController
 
   def initialize_github_config
     unless @organization
-      @github_config = Carto::Github::Config.instance(form_authenticity_token, after: @after_creation_callback)
+      @github_config = Carto::Github::Config.instance(form_authenticity_token,
+                                                      invitation_token: params[:invitation_token])
       @button_color = @organization && @organization.color ? organization_color(@organization) : nil
     end
   end

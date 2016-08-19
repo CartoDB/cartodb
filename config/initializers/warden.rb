@@ -81,7 +81,7 @@ end
 
 Warden::Strategies.add(:github_oauth) do
   def valid_github_oauth_strategy_for_user(user)
-    user.organization.nil? || user.organization.auth_google_enabled
+    user.organization.nil?
   end
 
   def authenticate!
@@ -95,7 +95,7 @@ Warden::Strategies.add(:github_oauth) do
         user.github_user_id = github_id
         user.save
       end
-      success!(user)
+      valid_github_oauth_strategy_for_user(user) ? success!(user) : fail!
     else
       fail!
     end

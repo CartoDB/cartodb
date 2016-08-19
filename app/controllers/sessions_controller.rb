@@ -138,7 +138,7 @@ class SessionsController < ApplicationController
   end
 
   def initialize_github_config
-    unless @organization
+    unless @organization && !@organization.auth_github_enabled
       @github_config = Carto::Github::Config.instance(form_authenticity_token,
                                                       invitation_token: params[:invitation_token])
       @button_color = @organization && @organization.color ? organization_color(@organization) : nil

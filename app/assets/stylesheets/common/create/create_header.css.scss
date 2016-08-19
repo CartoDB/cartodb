@@ -40,6 +40,8 @@
 }
 .CreateDialog-header .Dialog-headerText {
   color: $cTypography-help;
+  visibility: hidden;
+
 }
 .CreateDialog-header .Dialog-headerIconBadge {
   position: absolute;

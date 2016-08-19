@@ -16,7 +16,6 @@ $corner_radius: 0px;
 
 .table_panel {
   bottom:0px;
-  background-color: rgba(#fff, .05);   
   overflow: visible !important;
   position:fixed;
   right:-452px;
@@ -26,15 +25,20 @@ $corner_radius: 0px;
 
   .collapse {
     @include bb_button_style;
+    background-color: $layer_header_background;
+    background-image: url(../images/bb_icon_open.png);
     border-radius: 0px;
     border: none;
+    border-right: 1px solid $Black;
     left: -20px;
     position: absolute;
     width: 20px;
     height: 40px;
     padding: 0px;
     top: 0;
-    background-image: url(../images/bb_icon_open.png);
+    &:hover {
+      background-color: $layer_header_background_hover;
+    }
     &.open {
       background-image: url(../images/bb_icon_collapse.png);
     } 
@@ -45,7 +49,11 @@ $corner_radius: 0px;
     position:relative;
     height:100%;
     background:$DarkGrey2;
+    border-top:1px solid $DarkGrey8; 
     z-index:1;
+    &:first-child {
+      border-top: 1px solid transparent;
+    }
   } 
 
   ////////////////////////////////
@@ -91,10 +99,6 @@ $corner_radius: 0px;
     cursor:move;
   }
 
-}
-//bb_override_lineheight
-.table_panel.opened .layer_panel.vis .layer-info {
-  line-height: 28px;
 }
 
 .subtext {

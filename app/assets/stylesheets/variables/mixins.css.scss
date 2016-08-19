@@ -301,11 +301,11 @@
 //sidebar layer header
 @mixin bb_sidebar_layer_header {
     background-color: $layer_header_background;
-    border-bottom: 1px solid $DarkGrey2;
+    border-bottom: 1px solid $DarkGrey8;
     font-size: 15px;
-    font-family: "AvenirNext_Demi";
+    font-family: "AvenirNext_regular";
     height: 30px;
-    line-height: 30px;
+    line-height: 26px;
     &:hover {
       background-color: $layer_header_background_hover;
     }

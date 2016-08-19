@@ -16,16 +16,20 @@
     line-height:40px;
 
       &.open {     
+        > .title-bar {
+          background-color: $layer_header_background_active; 
+          &:hover {
+            background-color: $layer_header_background_active_hover; 
+          }
+        }
+
         > .title-layer-body {
           background-color: $sidebar_panel_background;
         }
       }
 
     > .title-bar {
-      background-image: url("../images/bb_icon_globe.png");
-      background-color: $Grey9;
-      background-position: 12px center;
-      background-repeat: no-repeat;
+      background-color: $layer_header_background;
       font-family: "AvenirNext_Demi";
       font-size: 15px;
       height: 40px;
@@ -33,10 +37,10 @@
       position: relative;
       width: 100%;
       .title-label {
-        margin-left: 40px;
+        margin-left: 12px;
       }
       &:hover {
-        background-color: $Grey8;
+        background-color: $layer_header_background_hover;
       }
     
 
@@ -57,6 +61,7 @@
     }
 
      .title-layer-body {
+      border-top: 1px solid $DarkGrey8;
       height: 100%;
       padding: 12px;
       width: auto;

@@ -139,6 +139,7 @@ class SessionsController < ApplicationController
 
   def initialize_github_config
     @github_config = Carto::Github::Config.instance(form_authenticity_token, after: @after_creation_callback)
+    @button_color = @organization && @organization.color ? organization_color(@organization) : nil
   end
 
   def extract_username(request, params)

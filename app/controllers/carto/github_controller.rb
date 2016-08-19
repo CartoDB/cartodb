@@ -19,7 +19,35 @@ module Carto
 
       user = login(api)
       unless user
-        return redirect_to CartoDB.url(self, 'login')
+        # Signup
+        org_name = params[:organization]
+        @organization = ::Organization.where(name: org_name).first if org_name.present?
+        return redirect_to CartoDB.url(self, 'login') unless @organization.present? && @organization.auth_github_enabled
+
+        account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
+                          with_organization(@organization).
+                          with_invitation_token(params[:invitation_token])
+
+        account_creator.with_github_oauth_api(api)
+
+        if account_creator.valid?
+          trigger_account_creation(account_creator)
+          return render('shared/signup_confirmation')
+        else
+          @user = account_creator.user
+          errors = account_creator.validation_errors
+          CartoDB.notify_debug('User not valid at signup', { errors: errors } )
+          if errors['organization'] && !errors[:organization].empty?
+            @signup_source = 'Organization'
+            return render('shared/signup_issue')
+          else
+            if @user.errors.empty?
+              # No need for additional errors if there're field errors
+              flash.now[:error] = 'User not valid'
+            end
+            return render('signup/signup', status: @user.errors.empty? ? 200 : 422)
+          end
+        end
       end
 
       redirect_to user.public_url << CartoDB.path(self, 'dashboard', trailing_slash: true)

@@ -4,12 +4,10 @@
 .Privacy-dropdown {
   position: relative;
 }
-
 .Privacy-dropdownTrigger {
   padding-right: $halfBaseSize;
   padding-left: $halfBaseSize;
 }
-
 .Privacy-dropdownButton {
   width: 100%;
 
@@ -18,13 +16,19 @@
   }
 }
 
-.Editor-PrivacyDialog {
+.Privacy-dialog {
   position: absolute;
   top: $baseSize * 4;
   right: 0;
   left: 0;
   width: 248px;
   z-index: 11;
+}
+.Privacy-cta {
+  padding: $baseSize + 4;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
+  background: $cSecondaryBackground;
 }
 
 .Privacy-passwordField {

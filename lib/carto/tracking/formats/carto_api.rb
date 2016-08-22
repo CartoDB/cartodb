@@ -24,7 +24,7 @@ module Carto
           nil
         end
 
-        def to_segment_properties
+        def to_segment
           user = fetch_record(:user)
           visualization = fetch_record(:visualization)
 

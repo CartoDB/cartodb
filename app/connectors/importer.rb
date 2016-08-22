@@ -210,9 +210,9 @@ module CartoDB
         new_name
       rescue => exception
         drop("#{ORIGIN_SCHEMA}.#{current_name}")
-        CartoDB::Logger.debug(message: 'Error in table rename: dropping importer table', 
-                              exception: exception, 
-                              table_name: current_name, 
+        CartoDB::Logger.debug(message: 'Error in table rename: dropping importer table',
+                              exception: exception,
+                              table_name: current_name,
                               new_table_name: new_name,
                               data_import: @data_import_id)
         raise exception

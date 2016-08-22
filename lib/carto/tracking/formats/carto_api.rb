@@ -10,8 +10,12 @@ module Carto
           @hash = hash ? hash.with_indifferent_access : Hash.new
         end
 
+        # Symbol should be provided as a snake-case'd version the record's model class name.
+        # The id of said record should be provided with key: snake-case'd identifier + '_id'
+        # Only Cart:: records allowed!
+        #  Ex.: :super_duper_mdoel -> Carto::SuperDuperModel; { super_duper_model_id: xxx }
         def fetch_record(symbol)
-          symbol_string = symbol.to_s
+          symbol_string = symbol.to_s.downcase
           record_class_name = "Carto::#{symbol_string.camelize}".freeze
           record_id = "#{symbol_string}_id".freeze
 

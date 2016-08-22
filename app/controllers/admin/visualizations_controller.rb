@@ -118,8 +118,8 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.is_privacy_private? \
-                                                   and not (request.ssl? or request.local? or Rails.env.development?)
+    return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
+                                                && !(request.ssl? || request.local? || Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)

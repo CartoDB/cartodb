@@ -254,6 +254,10 @@ var Vis = View.extend({
         overlay.show();
       }
 
+      if (type === 'search') {
+        overlay.updatePosition(this._hasZoomOverlay());
+      }
+
       if (type === 'header') {
         var m = overlay.model;
 
@@ -273,6 +277,11 @@ var Vis = View.extend({
         overlay.render();
       }
     }, this);
+  },
+
+  _hasZoomOverlay: function () {
+    var overlays = this.model.overlaysCollection.pluck('type');
+    return overlays.indexOf('zoom') > -1;
   },
 
   _setupSublayers: function (layers, options) {

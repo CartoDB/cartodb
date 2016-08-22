@@ -8,17 +8,16 @@ module Carto
       ssl_required :update
 
       before_filter :load_visualization,
-                    :check_writer,
-                    :load_state, only: :update
+                    :check_writer, only: :update
 
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
       def update
-        @state.json = params[:json]
-        @state.save!
+        @visualization.state.json = params[:json]
+        @visualization.save!
 
-        render_jsonp(Carto::Api::StatePresenter.new(@state).to_hash)
+        render_jsonp(Carto::Api::StatePresenter.new(@visualization.state).to_hash)
       end
 
       private
@@ -32,10 +31,6 @@ module Carto
 
       def check_writer
         raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_viewer)
-      end
-
-      def load_state
-        @state = @visualization.state
       end
     end
   end

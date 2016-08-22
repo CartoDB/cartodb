@@ -4,10 +4,13 @@ module Carto
   module Tracking
     module Formats
       class Segment
-        def initialize(user: nil, visualization: nil, origin: nil)
+        def initialize(user: nil, visualization: nil, hash: {})
           @user = user
           @visualization = visualization
-          @origin = origin
+          @connection = hash[:connection]
+          @origin = hash[:origin]
+          @page = hash[:page]
+          @quota_overage = hash[:quota_overage]
         end
 
         def properties
@@ -15,6 +18,10 @@ module Carto
 
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
+          properties.merge!(connection_properties) if @connection
+
+          properties[:page] = @page if @page
+          properties[:quota_overage] = @quota_overage if @quota_overage
 
           properties
         end
@@ -54,6 +61,19 @@ module Carto
               user_created_at: user_created_at,
               organization: @user.organization_user? ? @user.organization.name : nil
             }
+          end
+
+          def connection_properties
+            properties = {
+              data_from: @connection[:data_from],
+              imported_from: @connection[:imported_from],
+              sync: @connection[:sync] || false
+            }
+
+            result = @connection[:result]
+            properties[:file_type] = result.extension if result
+
+            properties
           end
 
           def event_properties

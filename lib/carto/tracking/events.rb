@@ -42,88 +42,18 @@ module Carto
       class PublishedMap < Event
         include Carto::Tracking::Segment
       end
+
+      class CompletedConnection < Event
+        include Carto::Tracking::Segment
+      end
+
+      class FailedConnection < Event
+        include Carto::Tracking::Segment
+      end
     end
   end
 end
 
-      # module Segment
-      #   class Event
-      #     def initialize(user, name, properties)
-      #       @user = user
-      #       @name = name
-      #       @properties = properties
-      #     end
-
-      #     def report
-      #       Carto::Tracking::SegmentWrapper.new.send_event(@user, @name, @properties.merge(event_properties))
-      #     rescue => exception
-      #       CartoDB::Logger.warning(message: 'Carto::Tracking: Event couldn\'t be reported',
-      #                               exception: exception,
-      #                               properties: @properties,
-      #                               user: @user)
-      #     end
-
-      #     private
-
-      #     def event_properties
-      #       now = Time.now.utc
-
-      #       properties = user_properties(@user, now: now)
-      #       properties.merge(event_origin: 'Editor', creation_time: now)
-      #     end
-      #   end
-
-      #   class ExportedMap < Event
-      #     def initialize(user, visualization)
-      #       super(user, 'Exported map', visualization_properties(visualization))
-      #     end
-      #   end
-
-      #   class CreatedMap < Event
-      #     def initialize(user, visualization, origin: 'blank')
-      #       super(user, 'Created map', visualization_properties(visualization, origin: origin))
-      #     end
-      #   end
-
-      #   class DeletedMap < Event
-      #     def initialize(user, visualization)
-      #       super(user, 'Deleted map', visualization_properties(visualization))
-      #     end
-      #   end
-
-      #   class PublishedMap < Event
-      #     def initialize(user, visualization)
-      #       super(user, 'Published map', visualization_properties(visualization))
-      #     end
-      #   end
-
-      #   class ConnectionEvent < Event
-      #     def initialize(user, name, result, data_from, imported_from, sync)
-      #       super(user, name, properties(result, data_from, imported_from, sync))
-      #     end
-
-      #     private
-
-      #     def properties(result, data_from, imported_from, sync)
-      #       properties = { data_from: data_from, imported_from: imported_from, sync: sync }
-
-      #       properties[:file_type] = result.extension if result
-
-      #       properties
-      #     end
-      #   end
-
-      #   class CompletedConnection < ConnectionEvent
-      #     def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
-      #       super(user, 'Completed connection', result, data_from, imported_from, sync)
-      #     end
-      #   end
-
-      #   class FailedConnection < ConnectionEvent
-      #     def initialize(user, result: nil, data_from: '', imported_from: '', sync: false)
-      #       super(user, 'Failed connection', result, data_from, imported_from, sync)
-      #     end
-      #   end
 
       #   class ExceededQuota < Event
       #     def initialize(user, quota_overage: 0)

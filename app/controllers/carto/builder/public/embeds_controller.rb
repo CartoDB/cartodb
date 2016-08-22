@@ -38,7 +38,7 @@ module Carto
         def load_auth_tokens
           @auth_tokens = if @visualization.password_protected?
                            @visualization.get_auth_tokens
-                         elsif @visualization.organization?
+                         elsif @visualization.is_privacy_private?
                            current_viewer ? current_viewer.get_auth_tokens : []
                          end
         end

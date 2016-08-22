@@ -15,18 +15,9 @@ var TooltipManager = require('./tooltip-manager');
  */
 var Vis = View.extend({
   initialize: function () {
-    this.model.bind('change:loading', function () {
-      if (this.loader) {
-        if (this.model.get('loading')) {
-          this.loader.show();
-        } else {
-          this.loader.hide();
-        }
-      }
-    }, this);
-
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
+    this.model.on('change:loading', this._toggleLoader, this);
     this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
 
     this.overlays = [];
@@ -320,11 +311,6 @@ var Vis = View.extend({
     });
 
     if (v) {
-      // Save tiles loader view for later
-      if (overlay.type === 'loader') {
-        this.loader = v;
-      }
-
       this.mapView.addOverlay(v);
 
       this.overlays.push(v);
@@ -364,6 +350,21 @@ var Vis = View.extend({
     return _(this.overlays).filter(function (v) {
       return v.type === type;
     });
+  },
+
+  _toggleLoader: function () {
+    var loaderOverlay = this._getLoaderOverlay();
+    if (loaderOverlay) {
+      if (this.model.get('loading')) {
+        loaderOverlay.show();
+      } else {
+        loaderOverlay.hide();
+      }
+    }
+  },
+
+  _getLoaderOverlay: function () {
+    return this.getOverlay('loader');
   },
 
   _onResize: function () {

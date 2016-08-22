@@ -19,7 +19,7 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'cartocss'],
 
   TORQUE_LAYER_CARTOCSS_PROPS: [
     '-torque-frame-count',
@@ -156,6 +156,10 @@ var TorqueLayer = LayerModelBase.extend({
     var end = this.get('end');
     var step = (steps * (1000*timestamp - start)) / (end - start);
     return step;
+  },
+
+  getTileURLTemplates: function () {
+    return this.get('tileURLTemplates');
   }
 });
 

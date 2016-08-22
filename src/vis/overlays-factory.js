@@ -3,14 +3,10 @@ var Model = require('../core/model');
 var Template = require('../core/template');
 var Annotation = require('../geo/ui/annotation');
 var Header = require('../geo/ui/header');
-var InfoBox = require('../geo/ui/infobox');
-var Infowindow = require('../geo/ui/infowindow-view');
-var InfowindowModel = require('../geo/ui/infowindow-model');
 var LayerSelector = require('../geo/ui/layer-selector');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
-var TooltipView = require('../geo/ui/tooltip-view');
 var Zoom = require('../geo/ui/zoom/zoom-view');
 var FullScreen = require('../ui/common/fullscreen/fullscreen-view');
 var AttributionView = require('../geo/ui/attribution/attribution-view');
@@ -158,25 +154,6 @@ OverlaysFactory.register('loader', function (data) {
   return tilesLoader.render();
 });
 
-// infowindow
-OverlaysFactory.register('infowindow', function (data, visView, map) {
-  var infowindowModel = new InfowindowModel({
-    template: data.template,
-    alternative_names: data.alternative_names,
-    fields: data.fields,
-    template_name: data.template_name,
-    template_type: data.template_type
-  });
-
-  var infowindow = new Infowindow({
-    model: infowindowModel,
-    mapView: visView.mapView,
-    template: data.template
-  });
-
-  return infowindow;
-});
-
 // layer_selector
 OverlaysFactory.register('layer_selector', function (data, visView, map) {
   var options = data.options;
@@ -249,34 +226,6 @@ OverlaysFactory.register('search', function (data, visView, map) {
   }
   var search = new Search(opts);
   return search.render();
-});
-
-// tooltip
-OverlaysFactory.register('tooltip', function (data, visView, map) {
-  if (!data.layer && visView.getLayerViews().length <= 1) {
-    throw new Error('layer is null');
-  }
-  data.layer = data.layer || visView.getLayerViews()[1];
-  data.layer.setInteraction(true);
-  data.mapView = visView.mapView;
-  return new TooltipView(data);
-});
-
-OverlaysFactory.register('infobox', function (data, visView, map) {
-  var layer;
-  var layers = visView.getLayerViews();
-  if (!data.layer) {
-    if (layers.length > 1) {
-      layer = layers[1];
-    }
-    data.layer = layer;
-  }
-  if (!data.layer) {
-    throw new Error('layer is null');
-  }
-  data.layer.setInteraction(true);
-  var infobox = new InfoBox(data);
-  return infobox;
 });
 
 module.exports = OverlaysFactory;

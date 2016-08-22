@@ -13,11 +13,14 @@ TooltipManager.prototype.manage = function (mapView, map) {
   this._mapView = mapView;
   this._map = map;
 
-  this._map.layers.bind('reset', function (layers) {
-    layers.each(this._addTooltipForLayer, this);
-  }, this);
-  this._map.layers.each(this._addTooltipForLayer, this);
+  this._map.layers.bind('reset', this._addTooltipForLayers, this);
+  this._addTooltipForLayers();
+
   this._map.layers.bind('add', this._addTooltipForLayer, this);
+};
+
+TooltipManager.prototype._addTooltipForLayers = function (layerModels) {
+  this._map.layers.each(this._addTooltipForLayer, this);
 };
 
 TooltipManager.prototype._addTooltipForLayer = function (layerModel) {
@@ -61,10 +64,7 @@ TooltipManager.prototype._addTooltipOverlay = function (layerView, layerModel) {
 
 TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
   layerView.bind('featureOver', function (e, latlng, pos, data, layerIndex) {
-    var layerModel = layerView.model;
-    if (layerModel.layers) {
-      layerModel = layerModel.layers.at(layerIndex);
-    }
+    var layerModel = layerView.model.getLayerAt(layerIndex);
     if (!layerModel) {
       throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }

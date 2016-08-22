@@ -3,6 +3,8 @@ var Backbone = require('backbone');
 var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var LayersCollection = require('../../../src/geo/map/layers');
+var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var TooltipManager = require('../../../src/vis/tooltip-manager');
 
 describe('src/vis/tooltip-manager.js', function () {
@@ -162,9 +164,9 @@ describe('src/vis/tooltip-manager.js', function () {
     spyOn(tooltipView, 'setAlternativeNames');
     spyOn(tooltipView, 'enable');
 
-    this.layerView.model = {
-      layers: new Backbone.Collection([ layer1, layer2 ])
-    };
+    this.layerView.model = new CartoDBLayerGroup({}, {
+      layersCollection: new LayersCollection([ layer1, layer2 ])
+    });
 
     // Simulate the featureOver event on layer #0
     this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
@@ -261,9 +263,9 @@ describe('src/vis/tooltip-manager.js', function () {
 
     spyOn(tooltipView, 'disable');
 
-    this.layerView.model = {
-      layers: new Backbone.Collection([ layer1, layer2 ])
-    };
+    this.layerView.model = new CartoDBLayerGroup({}, {
+      layersCollection: new LayersCollection([ layer1, layer2 ])
+    });
 
     // Simulate the featureOver event on layer #0
     this.layerView.trigger('featureOver', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);

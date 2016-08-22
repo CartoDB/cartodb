@@ -246,75 +246,18 @@ describe('vis/vis-view', function () {
   });
 
   describe('.addOverlay', function () {
-    it('should throw an error if no layers are available', function () {
-      expect(function () {
-        this.visView.addOverlay({
-          type: 'tooltip',
-          template: 'test'
-        });
-      }.bind(this)).toThrow(new Error('layer is null'));
-    });
-
-    it('should add an overlay to the specified layer and enable interaction', function () {
-      var FakeLayer = function () {};
-      FakeLayer.prototype.setInteraction = function () {};
-      _.extend(FakeLayer.prototype, Backbone.Events);
-
-      var layer = new FakeLayer();
-
-      var tooltip = this.visView.addOverlay({
-        type: 'tooltip',
-        template: 'test',
-        layer: layer
+    it('should add an overlay to the map', function () {
+      spyOn(this.visView.mapView, 'addOverlay');
+      var overlay = this.visView.addOverlay({
+        type: 'zoom'
       });
 
-      expect(tooltip.options.layer).toEqual(layer);
-    });
+      expect(this.visView.mapView.addOverlay).toHaveBeenCalledWith(overlay);
+      expect(this.visView.overlays).toContain(overlay);
 
-    it('should add an overlay to the first layer and enable interaction', function () {
-      var vizjson = {
-        layers: [
-          {
-            type: 'tiled',
-            options: {
-              urlTemplate: ''
-            }
-          },
-          {
-            type: 'layergroup',
-            options: {
-              user_name: 'pablo',
-              maps_api_template: 'https://{user}.cartodb-staging.com:443',
-              layer_definition: {
-                stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-                layers: [{
-                  type: 'CartoDB'
-                }]
-              }
-            }
-          }
-        ],
-        user: {
-          fullname: 'Chuck Norris',
-          avatar_url: 'http://example.com/avatar.jpg'
-        },
-        datasource: {
-          user_name: 'wadus',
-          maps_api_template: 'https://{user}.example.com:443',
-          stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-          force_cors: true // This is sometimes set in the editor
-        }
-      };
+      overlay.clean();
 
-      this.visModel.load(new VizJSON(vizjson));
-      var tooltip = this.visView.addOverlay({
-        type: 'tooltip',
-        template: 'test'
-      });
-
-      var layerView = this.visView.getLayerViews()[1];
-
-      expect(tooltip.options.layer).toEqual(layerView);
+      expect(this.visView.overlays).not.toContain(overlay);
     });
   });
 });

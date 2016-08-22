@@ -124,28 +124,6 @@ describe('windshaft/anonymous-map', function () {
       });
     });
 
-    it('should not include hidden layers', function () {
-      this.cartoDBLayer1.set('visible', false, { silent: true });
-      this.cartoDBLayer3.set('visible', false, { silent: true });
-
-      expect(this.map.toJSON()).toEqual({
-        'layers': [
-          {
-            'id': 'layer2',
-            'type': 'cartodb',
-            'options': {
-              'sql': 'sql2',
-              'cartocss': 'cartoCSS2',
-              'cartocss_version': '2.0',
-              'interactivity': []
-            }
-          }
-        ],
-        'dataviews': {},
-        'analyses': []
-      });
-    });
-
     it('should include the sql_wrap option', function () {
       this.cartoDBLayer1.set('sql_wrap', 'sql_wrap_1', { silent: true });
 

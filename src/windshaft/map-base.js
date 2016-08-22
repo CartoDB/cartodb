@@ -1,21 +1,10 @@
-var Backbone = require('backbone');
 var _ = require('underscore');
+var Backbone = require('backbone');
 var WindshaftConfig = require('./config');
-var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-var log = require('cdb.log');
+var log = require('../cdb.log');
 var Request = require('./request');
 var RequestTracker = require('./request-tracker');
 var WindshaftError = require('./error');
-
-var TILE_EXTENSIONS_BY_LAYER_TYPE = {
-  'mapnik': '.png',
-  'torque': '.json.torque'
-};
-
-var LAYER_TYPES = [
-  'CartoDB',
-  'torque'
-];
 
 /* The max number of times the same map can be instantiated */
 var MAP_INSTANTIATION_LIMIT = 3;
@@ -57,6 +46,7 @@ var WindshaftMap = Backbone.Model.extend({
     throw new Error('Subclasses of windshaft/map-base must implement .toJSON');
   },
 
+  // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
     options = options || {};
 
@@ -161,12 +151,6 @@ var WindshaftMap = Backbone.Model.extend({
     }, {});
   },
 
-  _getLayers: function () {
-    return this._layersCollection.select(function (layer) {
-      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
-    });
-  },
-
   getBaseURL: function (subhost) {
     return [
       this._getHost(subhost),
@@ -192,16 +176,29 @@ var WindshaftMap = Backbone.Model.extend({
     return this.get('urlTemplate').indexOf('https') === 0;
   },
 
+  /**
+   * Returns the indexes of the layer of a given type, as the tiler kwows it.
+   *
+   * @param {string|array} layerType - Type of layer
+   */
+  getLayerIndexesByType: function (layerType) {
+    return _.reduce(this._getLayers(), function (layerIndexes, layer, index) {
+      if (layer.type === layerType) {
+        layerIndexes.push(index);
+      }
+      return layerIndexes;
+    }, []);
+  },
+
   getDataviewMetadata: function (dataviewId) {
-    // Try to get dataview's metadata from this.get('metadata').dataview
-    var dataviews = this.get('metadata') && this.get('metadata').dataviews;
+    var dataviews = this._getDataviews();
     if (dataviews && dataviews[dataviewId]) {
       return dataviews[dataviewId];
     }
 
     // Try to get dataview's metatadta from the 'widgets' dictionary inside the metadata of each of the layers
     dataviews = {};
-    var layersDataviews = _.compact(_.map(this.get('metadata').layers, function (layer) { return layer.widgets; }));
+    var layersDataviews = _.compact(_.map(this._getLayers(), function (layer) { return layer.widgets; }));
     _.each(layersDataviews, function (layerDataviews) {
       _.extend(dataviews, layerDataviews);
     });
@@ -213,7 +210,7 @@ var WindshaftMap = Backbone.Model.extend({
 
   getAnalysisNodeMetadata: function (analysisId) {
     var metadata = {};
-    var nodes = _.map(this.get('metadata').analyses, function (analysis) {
+    var nodes = _.map(this._getAnalyses(), function (analysis) {
       return analysis.nodes;
     });
     _.each(nodes, function (node) {
@@ -223,99 +220,18 @@ var WindshaftMap = Backbone.Model.extend({
     return metadata[analysisId];
   },
 
-  getTiles: function (layerType) {
-    layerType = layerType || 'mapnik';
-    var grids = [];
-    var tiles = [];
-    var subdomains = ['0', '1', '2', '3'];
-    if (this._useHTTPS()) {
-      subdomains = [''];
+  getSupportedSubdomains: function () {
+    if (!this._useHTTPS()) {
+      return ['0', '1', '2', '3'];
     }
 
-    var layerIndexes = this._getLayerIndexesByType(layerType);
-    if (layerIndexes.length) {
-      for (var i = 0; i < subdomains.length; ++i) {
-        var subdomain = subdomains[i];
-        tiles.push(this._getTileURLTemplate(subdomain, layerIndexes, layerType));
-
-        // for mapnik layers add grid json too
-        if (layerType === 'mapnik') {
-          for (var layerIndex = 0; layerIndex < this.get('metadata').layers.length; ++layerIndex) {
-            var mapnikLayerIndex = this._getLayerIndexByType(layerIndex, 'mapnik');
-            if (mapnikLayerIndex >= 0) {
-              grids[layerIndex] = grids[layerIndex] || [];
-              grids[layerIndex].push(this._getGridURLTemplate(subdomain, mapnikLayerIndex));
-            }
-          }
-        }
-      }
-    } else {
-      tiles = [EMPTY_GIF];
-    }
-
-    return {
-      tiles: tiles,
-      grids: grids
-    };
-  },
-
-  /**
-   * Generates the URL template for a given tile.
-   *
-   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1,2/{z}/{x}/{y}.png?api_key=...
-   */
-  _getTileURLTemplate: function (subdomain, layerIndexes, layerType) {
-    var baseURL = this.getBaseURL(subdomain);
-    var tileSchema = '{z}/{x}/{y}';
-    var tileExtension = TILE_EXTENSIONS_BY_LAYER_TYPE[layerType];
-    var url = baseURL + '/' + layerIndexes.join(',') + '/' + tileSchema + tileExtension;
-
-    return this._appendAuthParamsToURL(url);
-  },
-
-  /**
-   * Generates the URL template for the UTF-8 grid of a given tile and layer.
-   *
-   * EG: http://example.com:8181/api/v1/map/LAYERGROUP_ID/1/{z}/{x}/{y}.grid.json?api_key=...
-   */
-  _getGridURLTemplate: function (subdomain, layerIndex) {
-    var baseURL = this.getBaseURL(subdomain);
-    var tileSchema = '{z}/{x}/{y}';
-    var url = baseURL + '/' + layerIndex + '/' + tileSchema + '.grid.json';
-
-    return this._appendAuthParamsToURL(url);
-  },
-
-  _appendAuthParamsToURL: function (url) {
-    var params = [];
-    if (this.get('apiKey')) {
-      params.push('api_key=' + this.get('apiKey'));
-    } else if (this.get('authToken')) {
-      var authToken = this.get('authToken');
-      if (authToken instanceof Array) {
-        _.each(authToken, function (token) {
-          params.push('auth_token[]=' + token);
-        });
-      } else {
-        params.push('auth_token=' + authToken);
-      }
-    }
-
-    return this._appendParamsToURL(url, params);
-  },
-
-  _appendParamsToURL: function (url, params) {
-    if (params.length) {
-      return url + '?' + params.join('&');
-    }
-
-    return url;
+    return [''];
   },
 
   getLayerMetadata: function (layerIndex) {
     var layerMeta = {};
     var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
-    var layers = this.get('metadata') && this.get('metadata').layers;
+    var layers = this._getLayers();
     if (layers && layers[metadataLayerIndex]) {
       layerMeta = layers[metadataLayerIndex].meta || {};
     }
@@ -323,61 +239,21 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _localLayerIndexToWindshaftLayerIndex: function (layerIndex) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
+    var layers = this._getLayers();
     var hasTiledLayer = layers.length > 0 && (layers[0].type === 'http' || layers[0].type === 'plain');
     return hasTiledLayer ? ++layerIndex : layerIndex;
   },
 
-  /**
-   * Returns the indexes of the layer of a given type, as the tiler kwows it.
-   *
-   * @param {string|array} types - Type or types of layers
-   */
-  _getLayerIndexesByType: function (types) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
-
-    if (!layers) {
-      return;
-    }
-    var layerIndexes = [];
-    for (var i = 0; i < layers.length; i++) {
-      var layer = layers[i];
-      var isValidType = false;
-      if (types && types.length > 0) {
-        isValidType = types.indexOf(layer.type) !== -1;
-      }
-      if (isValidType) {
-        layerIndexes.push(i);
-      }
-    }
-    return layerIndexes;
+  _getLayers: function () {
+    return (this.get('metadata') && this.get('metadata').layers) || [];
   },
 
-  /**
-   * Returns the index of a layer of a given type, as the tiler kwows it.
-   *
-   * @param {integer} index - number of layer of the specified type
-   * @param {string} layerType - type of the layers
-   */
-  _getLayerIndexByType: function (index, layerType) {
-    var layers = this.get('metadata') && this.get('metadata').layers;
+  _getDataviews: function () {
+    return (this.get('metadata') && this.get('metadata').dataviews) || [];
+  },
 
-    if (!layers) {
-      return index;
-    }
-
-    var tilerLayerIndex = {};
-    var j = 0;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type === layerType) {
-        tilerLayerIndex[j] = i;
-        j++;
-      }
-    }
-    if (tilerLayerIndex[index] === undefined) {
-      return -1;
-    }
-    return tilerLayerIndex[index];
+  _getAnalyses: function () {
+    return (this.get('metadata') && this.get('metadata').analyses) || [];
   }
 });
 

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var config = require('cdb.config');
+var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
@@ -11,7 +11,7 @@ var CartoDBLayer = LayerModelBase.extend({
     visible: true
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'sql_wrap', 'cartocss'],
 
   initialize: function (attrs, options) {
     attrs = attrs || {};

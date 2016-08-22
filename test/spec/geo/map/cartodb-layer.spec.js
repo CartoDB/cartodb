@@ -21,7 +21,7 @@ describe('geo/map/cartodb-layer', function () {
   });
 
   describe('vis reloading', function () {
-    var ATTRIBUTES = ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'];
+    var ATTRIBUTES = ['sql', 'source', 'sql_wrap', 'cartocss'];
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {

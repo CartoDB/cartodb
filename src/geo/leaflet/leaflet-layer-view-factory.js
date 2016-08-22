@@ -4,7 +4,7 @@ var LeafletWMSLayerView = require('./leaflet-wms-layer-view');
 var LeafletPlainLayerView = require('./leaflet-plain-layer-view');
 var LeafletGmapsTiledLayerView = require('./leaflet-gmaps-tiled-layer-view');
 var LeafletCartoDBLayerGroupView = require('./leaflet-cartodb-layer-group-view');
-var LeafletTorqueLayer = require('./leaflet-torque-layer');
+var LeafletTorqueLayerView = require('./leaflet-torque-layer-view');
 var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer-group-view');
 
 var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
@@ -27,8 +27,7 @@ LeafletLayerViewFactory.prototype._constructors = {
   'plain': LeafletPlainLayerView,
   'gmapsbase': LeafletGmapsTiledLayerView,
   'layergroup': LayerGroupViewConstructor,
-  'namedmap': LayerGroupViewConstructor,
-  'torque': LeafletTorqueLayer
+  'torque': LeafletTorqueLayerView
 };
 
 LeafletLayerViewFactory.prototype.createLayerView = function (layerModel, mapModel) {

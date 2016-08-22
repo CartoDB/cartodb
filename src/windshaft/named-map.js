@@ -1,13 +1,8 @@
-var _ = require('underscore');
 var MapBase = require('./map-base.js');
 
 var NamedMap = MapBase.extend({
   toJSON: function () {
     var json = {};
-
-    _.each(this._getLayers(), function (layerModel, layerIndex) {
-      json['layer' + layerIndex] = layerModel.isVisible() ? 1 : 0;
-    });
 
     // Named map templates include both http, cartodb and torque layers
     // so we need to iterate through all the layers in the collection to

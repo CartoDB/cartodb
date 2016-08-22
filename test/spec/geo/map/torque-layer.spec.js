@@ -10,7 +10,7 @@ describe('geo/map/torque-layer', function () {
   sharedTestsForInteractiveLayers(TorqueLayer);
 
   describe('vis reloading', function () {
-    var ATTRIBUTES = ['visible', 'sql', 'source'];
+    var ATTRIBUTES = ['sql', 'source'];
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {

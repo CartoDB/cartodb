@@ -128,7 +128,7 @@ var MapView = View.extend({
 
   _addLayer: function (layerModel, layerCollection, options) {
     var layerView;
-    if (layerModel.get('type').toLowerCase() === 'cartodb') {
+    if (layerModel.get('type') === 'CartoDB') {
       layerView = this._addGroupedLayer(layerModel);
     } else {
       layerView = this._addIndividualLayer(layerModel);
@@ -179,7 +179,7 @@ var MapView = View.extend({
   _removeLayer: function (layerModel) {
     var layerView = this._layerViews[layerModel.cid];
     if (layerModel.get('type') === 'CartoDB') {
-      if (this._cartoDBLayerGroup.layers.size() === 0) {
+      if (this.map.layers.getCartoDBLayers().length === 0) {
         layerView.remove();
         this._cartoDBLayerGroupView = null;
       }

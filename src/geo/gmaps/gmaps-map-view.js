@@ -1,3 +1,4 @@
+/* global google */
 var _ = require('underscore');
 var log = require('cdb.log');
 var MapView = require('../map-view');
@@ -243,19 +244,6 @@ var GoogleMapsMapView = MapView.extend({
   }
 
 }, {
-
-  addLayerToMap: function(layer, map, pos) {
-    pos = pos || 0;
-    if (!layer) {
-      log.error("gmaps layer can't be null");
-    }
-    if (layer.getTile) {
-      map.overlayMapTypes.setAt(pos, layer);
-    } else {
-      layer.setMap(map);
-    }
-  },
-
   /**
    * create the view for the geometry model
    */

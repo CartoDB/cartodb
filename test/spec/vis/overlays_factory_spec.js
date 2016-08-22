@@ -5,7 +5,6 @@ var OverlaysFactory = require('../../../src/vis/overlays-factory');
 describe('vis/overlays-factory', function () {
   var createFakeLayerView = function () {
     var view = new Backbone.View();
-    view.setInteraction = function () {};
     return view;
   };
 
@@ -53,13 +52,10 @@ describe('vis/overlays-factory', function () {
     { type: 'header', data: { options: { extra: { } } } },
     { type: 'zoom', data: {} },
     { type: 'loader', data: {} },
-    { type: 'infowindow', data: {} },
     { type: 'layer_selector', data: {} },
     { type: 'fullscreen', data: {} },
     { type: 'share', data: {} },
-    { type: 'search', data: {} },
-    { type: 'tooltip', data: {} },
-    { type: 'infobox', data: {} }
+    { type: 'search', data: {} }
   ], function (testCase) {
     var overlayType = testCase.type;
     var overlayData = testCase.data;

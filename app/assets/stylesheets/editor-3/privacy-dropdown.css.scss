@@ -34,3 +34,12 @@
 .Privacy-passwordField {
   padding: $baseSize $baseSize + 4;
 }
+
+.Editor-PrivacyDialog {
+  position: absolute;
+  top: $baseSize * 4;
+  right: 0;
+  left: 0;
+  width: 248px;
+  z-index: 11;
+}

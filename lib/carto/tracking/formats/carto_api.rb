@@ -1,5 +1,7 @@
 # encoding utf-8
 
+require_relative 'segment'
+
 module Carto
   module Tracking
     module Formats
@@ -18,13 +20,10 @@ module Carto
           nil
         end
 
-        def to_hash
-          @hash
-        end
-
         def to_segment_properties
           user = fetch_record(:user)
           visualization = fetch_record(:visualization)
+          origin = @hash[:origin]
 
           Carto::Tracking::Formats::Segment.new(user: user, visualization: visualization)
                                            .properties

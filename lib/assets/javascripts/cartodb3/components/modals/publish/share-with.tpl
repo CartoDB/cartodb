@@ -1,5 +1,5 @@
 <% if (people > 0) { %>
-<img class="Share-user <%- avatarClass %> u-rSpace u-iBlock" src="<%- avatar %>">
+<div class="Share-user <%- avatarClass %> u-rSpace u-iBlock" style="background-image: url(<%- avatar %>)"></div>
 <span class="u-secondaryTextColor CDB-Text CDB-Size-small <%- separationClass %>">+ <%- people %></span>
 <% } else { %>
   <% if (hasAction) { %>

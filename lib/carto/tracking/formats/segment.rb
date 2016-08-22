@@ -11,6 +11,8 @@ module Carto
           @origin = hash[:origin]
           @page = hash[:page]
           @quota_overage = hash[:quota_overage]
+          @mapviews = hash[:mapviews]
+          @action = hash[:action]
         end
 
         def properties
@@ -22,6 +24,8 @@ module Carto
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
+          properties[:mapviews] = @mapviews if @mapviews
+          properties[:action] = @action if @action
 
           properties
         end
@@ -74,6 +78,28 @@ module Carto
             properties[:file_type] = result.extension if result
 
             properties
+          end
+
+          def trending_map_properties
+            {
+              map_id: @visualization.id,
+              map_name: @visualization.name,
+              mapviews: @views
+            }
+          end
+
+          def map_liking_properties
+            visualization_user = @visualization.user
+
+            {
+              action: @action,
+              vis_id: @visualization.id,
+              vis_name: @visualization.name,
+              vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
+              vis_author: visualization_user.username,
+              vis_author_email: visualization_user.email,
+              vis_author_id: visualization_user.id
+            }
           end
 
           def event_properties

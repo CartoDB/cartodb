@@ -90,39 +90,6 @@ module Carto
   end
 end
 
-      #   class MapLiking < Event
-      #     def initialize(user, visualization, action)
-      #       super(user, 'Liked map', properties(visualization, action))
-      #     end
-
-      #     private
-
-      #     def properties(visualization, action)
-      #       visualization_user = visualization.user
-      #       {
-      #         action: action,
-      #         vis_id: visualization.id,
-      #         vis_name: visualization.name,
-      #         vis_type: visualization.type == 'derived' ? 'map' : 'dataset',
-      #         vis_author: visualization_user.username,
-      #         vis_author_email: visualization_user.email,
-      #         vis_author_id: visualization_user.id
-      #       }
-      #     end
-      #   end
-
-      #   class LikedMap < MapLiking
-      #     def initialize(user, visualization)
-      #       super(user, visualization, 'like')
-      #     end
-      #   end
-
-      #   class DislikedMap < MapLiking
-      #     def initialize(user, visualization)
-      #       super(user, visualization, 'remove')
-      #     end
-      #   end
-
       #   class CreatedVisualizationFactory
       #     def self.build(user, visualization, origin: 'blank')
       #       if visualization.derived?

@@ -50,68 +50,45 @@ module Carto
       class FailedConnection < Event
         include Carto::Tracking::Segment
       end
+
+      class ExceededQuota < Event
+        include Carto::Tracking::Segment
+      end
+
+      class ScoredTrendingMap < Event
+        include Carto::Tracking::Segment
+      end
+
+      class VisitedPrivateBuilder < Event
+        include Carto::Tracking::Segment
+      end
+
+      class VisitedPrivateDashboard < Event
+        include Carto::Tracking::Segment
+      end
+
+      class VisitedPrivateDataset < Event
+        include Carto::Tracking::Segment
+      end
+
+      class CreatedDataset < Event
+        include Carto::Tracking::Segment
+      end
+
+      class DeletedDataset < Event
+        include Carto::Tracking::Segment
+      end
+
+      class LikedMap < Event
+        include Carto::Tracking::Segment
+      end
+
+      class DislikedMap < Event
+        include Carto::Tracking::Segment
+      end
     end
   end
 end
-
-
-      #   class ExceededQuota < Event
-      #     def initialize(user, quota_overage: 0)
-      #       super(user, 'Exceeded quota', quota_overage > 0 ? { quota_overage: quota_overage } : {})
-      #     end
-      #   end
-
-      #   class ScoredTrendingMap < Event
-      #     def initialize(user, visualization, views)
-      #       super(user, 'Scored trending map', properties(visualization, views))
-      #     end
-
-      #     private
-
-      #     def properties(visualization, views)
-      #       {
-      #         map_id: visualization.id,
-      #         map_name: visualization.fetch.name,
-      #         mapviews: views
-      #       }
-      #     end
-      #   end
-
-      #   class VisitedPrivatePage < Event
-      #     def initialize(user, page)
-      #       super(user, 'Visited private page', { page: page })
-      #     end
-      #   end
-
-      #   class VisitedPrivateDashboard < VisitedPrivatePage
-      #     def initialize(user)
-      #       super(user, 'dashboard')
-      #     end
-      #   end
-
-      #   class VisitedPrivateBuilder < VisitedPrivatePage
-      #     def initialize(user)
-      #       super(user, 'builder')
-      #     end
-      #   end
-
-      #   class VisitedPrivateDataset < VisitedPrivatePage
-      #     def initialize(user)
-      #       super(user, 'dataset')
-      #     end
-      #   end
-
-      #   class CreatedDataset < Event
-      #     def initialize(user, table_visualization, origin: 'blank')
-      #       super(user, 'Created dataset', visualization_properties(table_visualization, origin: origin))
-      #     end
-      #   end
-
-      #   class DeletedDataset < Event
-      #     def initialize(user, table_visualization)
-      #       super(user, 'Deleted dataset', visualization_properties(table_visualization))
-      #     end
-      #   end
 
       #   class MapLiking < Event
       #     def initialize(user, visualization, action)

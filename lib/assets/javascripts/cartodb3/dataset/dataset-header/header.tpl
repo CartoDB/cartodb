@@ -18,9 +18,11 @@
     </button>
   </div>
   <div class="u-bSpace--xl u-flex u-alignCenter">
-    <<%- privacyDOMElement %> class="u-rSpace--m u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
-      <i class="Tag Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
-    </<%- privacyDOMElement %>>
+    <div class="js-privacyDropdown u-rSpace--m">
+      <<%- privacyDOMElement %> class="u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
+        <i class="Tag Tag--big Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
+      </<%- privacyDOMElement %>>
+    </div>
     <% if (isOwner) { %>
       <% if (!isSimple) { %>
       <div class="js-share-users"></div>

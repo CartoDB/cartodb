@@ -20,7 +20,7 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.10.1'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.10.2'.freeze
       ODBC_FDW_VERSION = '0.0.1'.freeze
 
       def initialize(user)

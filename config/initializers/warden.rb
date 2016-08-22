@@ -79,6 +79,29 @@ Warden::Strategies.add(:google_access_token) do
   end
 end
 
+Warden::Strategies.add(:github_oauth) do
+  def valid_github_oauth_strategy_for_user(user)
+    user.organization.nil?
+  end
+
+  def authenticate!
+    if params[:github_api]
+      github_api = params[:github_api]
+      github_id = github_api.id
+      user = User.where(github_user_id: github_id).first
+      unless user
+        user = User.where(email: github_api.email, github_user_id: nil).first
+        fail! unless user
+        user.github_user_id = github_id
+        user.save
+      end
+      valid_github_oauth_strategy_for_user(user) ? success!(user) : fail!
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:ldap) do
   def authenticate!
     (fail! and return) unless (params[:email] && params[:password])

@@ -1,4 +1,5 @@
 @import "compass/css3/images";
+@import "compass/css3";
 @import "colors";
 
 // Mixins
@@ -310,3 +311,23 @@
       background-color: $layer_header_background_hover;
     }
   } 
+
+//color wheel;
+
+@mixin colorWheel($width: 11px) {
+  $borderWidth: $width/2;
+  $blurWidth: $width/5;
+  width: $width; height: $width;
+  border-radius: 50%;
+  background: grey;
+  overflow: hidden;
+  &:before {
+  content: '';
+  display: block;
+  border: $borderWidth solid;
+  border-color: yellow magenta orange green;
+  border-radius: 50%;
+  @include filter(blur($blurWidth));
+  }
+  box-shadow: 0px 0px 0px 1px black;
+}

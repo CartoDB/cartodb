@@ -19,6 +19,7 @@
   @import "../old_common/vars";
   @import "../old_elements/elements-sprite";
   @import "../variables/colors";
+  @import "../variables/mixins";
 
   // HORIZONTAL SLIDER (SPINNER)
 
@@ -146,21 +147,26 @@
       @include elements-sprite(image_color, $offset-x:2px, $offset-y:4px);
 
       span.handle {
-        top:6px;
-        right:6px;
-        left:auto;
-        @include border-radius(2px);
-        background:$spinner_bg;
+        @include bb_button_style;
+        border-radius: 0px 1px 1px 0px;
+        border: none;
+        border-left: 1px solid $Black;
+
+        top: 0px;
+        right: 0px;
+        width: 16px;
+        height: 17px;
+
+        left:auto; 
 
         b {
           top:3px;
-          left:2px;
-          width:0;
-          height:0;
-          border-left:2px solid transparent;
-          border-right:2px solid transparent;
-          border-top:3px solid white;
-          display: none;
+          left: 2px;
+          width:11px;
+          height:11px;
+          background: url(../images/beam_standard_button_icon_color.png) center no-repeat; 
+          color:transparent; 
+          
         }
       }
 
@@ -180,10 +186,6 @@
         width:44px;
         @include border-radius($rad);
         &:before { @include border-radius($rad) }
-      }
-
-      &:hover {
-        span.handle { background:rgba(black,0.4) }
       }
     }
   }

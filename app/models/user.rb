@@ -453,11 +453,12 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (oauth_signin? && last_password_change_date.nil?)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
   end
 
   def should_display_old_password?
-    self.needs_password_confirmation?
+    needs_password_confirmation?
   end
 
   # Some operations, such as user deletion, won't ask for password confirmation if password is not set

@@ -311,8 +311,8 @@ $cIcons-active:  rgba(#666, 1); // Active & hover
 $cForms-border: rgba(#CCC, 1);
 
 // Lateral nav buttons
-$cNavButton-default: rgba(#BBB, 1);
-$cNavButton-active: rgba(#888, 1);
+$cNavButton-default: $Grey2;
+$cNavButton-active: $White;
 
 // Navmenu
 $cNavmenu-arrow: #aaa;

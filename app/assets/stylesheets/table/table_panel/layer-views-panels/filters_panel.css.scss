@@ -226,16 +226,16 @@
 
         .remove-inline {
           float: right;
-          margin-top: 4px;
-          margin-right: 5px;
+          margin-top: 6px;
+          margin-right: 6px;
+          background: url(../images/close_layer.png) no-repeat center;
+          width: 9px;
+          height: 9px;
 
-          @include opacity(1);
+          &:hover {
+            background-image: url(../images/close_layer_hover.png); 
+          }
 
-          @include size(13px);
-          @include simple-transition(opacity, 150ms);
-          @include common-sprite(close_grey);
-
-          &:hover {@include common-sprite(close_grey, $offset-y:-13px);}
         }
       }
     }
@@ -435,20 +435,16 @@
       }
 
       .operations {
-        margin: 0 0 0 30px;
         padding: 0;
-        width: 325px;
+        width: 350px;
 
         li {
           clear:both;
           overflow:hidden;
 
           position:relative;
-          padding: 10px 0 10px 5px;
+          padding: 6px 0px;
           margin: 0;
-          color: #666666;
-          font-size:13px;
-          border-top: 1px solid rgba(#999, .25);
 
           input {
             width: 145px;
@@ -540,3 +536,14 @@
       .brush .resize path { fill: $Grey9; stroke: $Black; }
     }
   }
+
+ select {
+  @include bb_button_style;
+
+  &:focus {
+    outline: none;
+  }
+  option:hover {
+      background-color: yellow;
+}
+}

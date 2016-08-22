@@ -208,6 +208,9 @@ module CartoDB
         end
 
         new_name
+      rescue => exception
+        drop("#{ORIGIN_SCHEMA}.#{current_name}")
+        raise exception
       end
 
       def rename_the_geom_index_if_exists(current_name, new_name)

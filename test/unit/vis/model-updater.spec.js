@@ -158,6 +158,31 @@ describe('src/vis/model-updater', function () {
       expect(analysis2.setOk).toHaveBeenCalled();
     });
 
+    it('should update analysis models and "mark" them as failed', function () {
+      var getParamNames = function () { return []; };
+      var analysis1 = new Backbone.Model({ id: 'a1' });
+      this.analysisCollection.reset([ analysis1 ]);
+      analysis1.getParamNames = getParamNames;
+
+      this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
+        if (analysisId === 'a1') {
+          return {
+            error_message: 'wadus',
+            status: 'failed',
+            query: 'query_a1',
+            url: {
+              http: 'url_a1'
+            }
+          };
+        }
+      };
+
+      this.modelUpdater.updateModels(this.windshaftMap);
+
+      expect(analysis1.get('status')).toEqual('failed');
+      expect(analysis1.get('error')).toEqual({message: 'wadus'});
+    });
+
     it('should not update attributes that are original params (eg: query)', function () {
       var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
       analysis1.getParamNames = function () { return ['query']; };

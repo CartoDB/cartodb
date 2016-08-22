@@ -310,3 +310,12 @@
       background-color: $layer_header_background_hover;
     }
   } 
+
+//remove icon
+
+@mixin bb_remove_icon {
+ background: url(../images/beam_standard_button_icon_delete.png) no-repeat center;
+  &:hover {
+    background-image: url(../images/beam_standard_button_icon_delete.png); 
+  }
+}

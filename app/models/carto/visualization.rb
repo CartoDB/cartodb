@@ -427,19 +427,15 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def build_state
-    Carto::State.new(user: user, visualization: self)
+    self.state = Carto::State.new(user: user, visualization: self)
   end
 
   def save_state_if_needed
-    current_state = state
+    if state.changed?
+      state.visualization = self unless state.visualization
+      state.user = user unless state.user
 
-    if current_state.changed?
-      current_state.visualization = self unless current_state.visualization
-      current_state.user = user unless current_state.user
-
-      if current_state.save
-        update_attribute(:state_id, current_state.id) unless state_id
-      end
+      update_attribute(:state_id, state.id) if state.save && !state_id
     end
   end
 

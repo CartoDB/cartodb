@@ -18,14 +18,14 @@ module Carto
           Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro_without_id
         end
 
-        render_jsonp(presentations, 200)
+        render_jsonp presentations, 200
       end
 
       def show
         presentation = Carto::Api::UserPresenter.new(@user, current_viewer: current_viewer)
                                                 .to_poro_without_id
 
-        render_jsonp(presentation, 200)
+        render_jsonp presentation, 200
       end
 
       def create
@@ -108,10 +108,10 @@ module Carto
       end
 
       def destroy
-        render_jsonp("Can't delete org owner", 401) && return if @organization.owner_id == @user.id
+        render_jsonp "Can't delete org owner", 401 && return if @organization.owner_id == @user.id
 
         unless @user.can_delete
-          render_jsonp("Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410)
+          render_jsonp "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}", 410
         end
 
         @user.delete_in_central

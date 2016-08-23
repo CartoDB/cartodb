@@ -1,5 +1,4 @@
 <div class="Privacy-dropdown">
-  <% if (isDropdown) { %>
   <button class="Privacy-dropdownTrigger Tag Tag--big Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase js-toggle">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small is-dark u-flex">
@@ -11,11 +10,6 @@
       <%- privacy %>
     <% } %>
   </button>
-  <% } else { %>
-    <i class="Tag Tag--big Tag--outline u-flex u-alignCenter <%- cssClass %> CDB-Text CDB-Size-small u-upperCase">
-    <%- privacy %>
-    </i>
-  <% } %>
 
   <div class="js-dialog"></div>
 </div>

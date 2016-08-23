@@ -1,1 +1,1 @@
-<img class="Share-user u-rSpace js-avatar" src="<%- avatar %>" data-title="<%- username %>">
+<div class="Share-user u-rSpace js-avatar" style="background-image: url(<%- avatar %>)" data-title="<%- username %>"></div>

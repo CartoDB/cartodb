@@ -78,6 +78,21 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">GitHub Login</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="Toggler">
+              <%= f.check_box :auth_github_enabled, :id => "auth_github_enabled" %>
+              <%= label_tag(:auth_github_enabled, '') %>
+            </div>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Allow users to signup with their own GitHub account</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Strong Passwords</label>
           </div>
           <div class="FormAccount-rowData">

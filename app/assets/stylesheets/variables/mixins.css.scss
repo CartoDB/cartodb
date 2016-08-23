@@ -263,6 +263,7 @@
       }
       &.disabled, &:disabled:hover {
         background-color: $btn_background_disabled;
+        color: $Grey1;
       }
  }
 

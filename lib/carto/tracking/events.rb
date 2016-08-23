@@ -6,6 +6,8 @@ module Carto
   module Tracking
     module Segment
       def report_to_segment
+        return unless segment_enabled?
+
         segment_job = Resque::TrackingJobs::SendSegmentEvent
         properties = @format.to_segment
         user_id = @format.to_hash[:user_id]
@@ -13,6 +15,10 @@ module Carto
         raise 'Segment requires a user_id for reporting' unless user_id
 
         Resque.enqueue(segment_job, user_id, name, properties)
+      end
+
+      def segment_enabled?
+        Cartodb.config[:segment].present?
       end
     end
 
@@ -65,15 +71,7 @@ module Carto
         include Carto::Tracking::Segment
       end
 
-      class VisitedPrivateBuilder < Event
-        include Carto::Tracking::Segment
-      end
-
-      class VisitedPrivateDashboard < Event
-        include Carto::Tracking::Segment
-      end
-
-      class VisitedPrivateDataset < Event
+      class VisitedPrivatePage < Event
         include Carto::Tracking::Segment
       end
 

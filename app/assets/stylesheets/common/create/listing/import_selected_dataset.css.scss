@@ -5,20 +5,19 @@
 // Selected dataset styles
 
 $w: 820px;
-$br: 4px;
 
 .DatasetSelected {
   width: $w;
+  background-color: $DarkGrey3;
+  border-radius: 2px;
+  padding: 6px 12px;
   margin: 0 0 0 -20px;
-  background: white;
-  border: 1px solid #BBD7F2;
-  border-radius: $br;
+  padding: 6px 12px;
 }
 .DatasetSelected-item {
   @include display-flex();
   @include justify-content(flex-start, start);
   @include align-items(center, center);
-  padding: 20px;
 }
 .DatasetSelected-itemExt {
   width: 38px;
@@ -34,21 +33,21 @@ $br: 4px;
 .DatasetSelected-itemInfo { margin-left: 20px }
 .DatasetSelected-itemTitle {
   display: block;
-  font-size: $sFontSize-larger;
-  font-weight: $sFontWeight-normal;
-  color: $cTypography-headers;
+  font-weight: normal;
+  font-size: 15px;
+  margin: 0px;
+  color: $White;
 }
 .DatasetSelected-itemDescription {
   display: block;
   margin-top: 3px;
-  font-size: $sFontSize-normal;
-  color: $cTypography-secondary;
+  color: $Grey4;
 }
 .DatasetSelected-sync {
   display: block;
   background: white;
-  border-bottom-right-radius: $br;
-  border-bottom-left-radius: $br;
+  border-bottom-right-radius: 2px;
+  border-bottom-left-radius: 2px;
   overflow: hidden;
 }
 .DatasetSelected-syncOptions {

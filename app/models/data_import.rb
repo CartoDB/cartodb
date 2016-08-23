@@ -899,6 +899,7 @@ class DataImport < Sequel::Model
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
     properties = {
+      user_id: user.id,
       connection: {
         imported_from: service_name,
         data_from: data_type,

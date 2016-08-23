@@ -349,6 +349,9 @@ module Carto
 
         torque[:source] = @layer.options['source'] if @layer.options['source'].present?
 
+        sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+        torque[:sql_wrap] = sql_wrap if sql_wrap
+
         torque
       end
 

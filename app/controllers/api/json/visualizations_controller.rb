@@ -89,7 +89,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
-        Carto::Tracking::Events::CreatedVisualizationFactory.build(current_user, vis, origin: origin).report
+        properties = {
+          user_id: current_user.id,
+          origin: origin,
+          visualization_id: vis.id
+        }
+
+        if vis.derived?
+          Carto::Tracking::Events::CreatedMap.new(properties).report
+        else
+          Carto::Tracking::Events::CreatedDataset.new(properties).report
+        end
 
         render_jsonp(vis)
       rescue CartoDB::InvalidMember
@@ -166,11 +176,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
 
-        Carto::Tracking::Events::DeletedVisualizationFactory.build(current_user, vis).report
+        properties = { user_id: current_user.id, visualization_id: vis.id }
+        if vis.derived?
+          Carto::Tracking::Events::DeletedMap.new(properties).report
+        else
+          Carto::Tracking::Events::DeletedDataset.new(properties).report
+        end
 
         unless vis.table.nil?
           vis.table.dependent_visualizations.each do |dependent_vis|
-            Carto::Tracking::Events::DeletedVisualizationFactory.build(current_user, dependent_vis).report
+            properties = { user_id: current_user.id, visualization_id: dependent_vis.id }
+            if dependent_vis.derived?
+              Carto::Tracking::Events::DeletedMap.new(properties).report
+            else
+              Carto::Tracking::Events::DeletedDataset.new(properties).report
+            end
           end
         end
 
@@ -253,7 +273,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
           send_like_email(vis, current_viewer, vis_url)
         end
 
-        Carto::Tracking::Events::LikedMap.new(current_viewer, vis).report
+        Carto::Tracking::Events::LikedMap.new(user_id: current_viewer.id,
+                                              visualization_id: vis.id,
+                                              action: 'like').report
 
         render_jsonp(id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
       rescue KeyError => exception
@@ -283,7 +305,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        Carto::Tracking::Events::DislikedMap.new(current_viewer, vis).report
+        Carto::Tracking::Events::DislikedMap.new(user_id: current_viewer.id,
+                                                 visualization_id: vis.id,
+                                                 action: 'dislike').report
 
         render_jsonp(id: vis.id, likes: vis.likes.count, liked: false)
       rescue KeyError => exception

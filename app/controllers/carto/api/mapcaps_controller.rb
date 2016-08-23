@@ -78,7 +78,8 @@ module Carto
       end
 
       def track_published_map
-        Carto::Tracking::Events::PublishedMap.new(current_user, @visualization).report
+        Carto::Tracking::Events::PublishedMap.new(user_id: current_user.id,
+                                                  visualization_id: @visualization.id).report
       end
     end
   end

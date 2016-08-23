@@ -203,7 +203,7 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
-    Carto::Tracking::Events::ExceededQuota.new(current_user).report
+    Carto::Tracking::Events::ExceededQuota.new(user_id: current_user.id).report
 
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
@@ -898,20 +898,28 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
+    properties = {
+      connection: {
+        imported_from: service_name,
+        data_from: data_type,
+        sync: sync?
+      }
+    }
+
     if results.any?
       results.each do |result|
         CartoDB::Metrics.new.report(:import, payload_for(result))
 
-        Carto::Tracking::Events::ConnectionFactory.build(user, result: result,
-                                                               imported_from: service_name,
-                                                               data_from: data_type,
-                                                               sync: sync?).report
+        properties_with_result = properties.merge(result: result)
+
+        if result.success?
+          Carto::Tracking::Events::CompletedConnection.new(properties_with_result).report
+        else
+          Carto::Tracking::Events::FailedConnection.new(properties_with_result).report
+        end
       end
     elsif state == STATE_FAILURE
-      Carto::Tracking::Events::FailedConnection.new(user,
-                                                    imported_from: service_name,
-                                                    data_from: data_type,
-                                                    sync: sync?).report
+      Carto::Tracking::Events::FailedConnection.new(properties).report
     end
   end
 
@@ -1028,13 +1036,15 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::Tracking::Events::CreatedDataset.new(current_user, vis, origin: origin).report
+      Carto::Tracking::Events::CreatedDataset.new(user_id: current_user.id,
+                                                  visualization_id: vis.id,
+                                                  origin: origin).report
     end
 
     if visualization_id
-      visualization = Carto::Visualization.find(visualization_id)
-
-      Carto::Tracking::Events::CreatedMap.new(current_user, visualization, origin: 'import').report
+      Carto::Tracking::Events::CreatedMap.new(user_id: current_user,
+                                              visualization_id: visualization_id,
+                                              origin: 'import').report
     end
   rescue ActiveRecord::ActiveRecordError => exception
     CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',

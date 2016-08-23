@@ -7,8 +7,12 @@ module Carto
     module Segment
       def report_to_segment
         segment_job = Resque::TrackingJobs::SendSegmentEvent
+        properties = @format.to_segment
+        user_id = @format.to_hash[:user_id]
 
-        Resque.enqueue(segment_job, name, @format.to_segment)
+        raise 'Segment requires a user_id for reporting' unless user_id
+
+        Resque.enqueue(segment_job, user_id, name, properties)
       end
     end
 

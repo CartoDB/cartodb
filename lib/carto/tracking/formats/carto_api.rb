@@ -24,6 +24,10 @@ module Carto
           nil
         end
 
+        def to_hash
+          @hash
+        end
+
         def to_segment
           user = fetch_record(:user)
           visualization = fetch_record(:visualization)

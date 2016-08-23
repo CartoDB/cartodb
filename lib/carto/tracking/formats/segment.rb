@@ -33,8 +33,6 @@ module Carto
         private
 
           def visualization_properties
-            return {} unless @visualization
-
             created_at = @visualization.created_at
             lifetime_in_days_with_decimals = days_with_decimals(now - created_at)
 
@@ -52,8 +50,6 @@ module Carto
           end
 
           def user_properties
-            return {} unless @user
-
             user_created_at = @user.created_at
             user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 

@@ -15,7 +15,7 @@ module Carto
           @action = hash[:action]
         end
 
-        def properties
+        def to_hash
           properties = event_properties
 
           properties.merge!(user_properties) if @user

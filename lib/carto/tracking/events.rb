@@ -1,5 +1,7 @@
 # encoding utf-8
 
+require_dependency 'carto/tracking/formats/carto_api'
+
 module Carto
   module Tracking
     module Segment
@@ -12,8 +14,8 @@ module Carto
 
     module Events
       class Event
-        def initialize(format)
-          @format = format
+        def initialize(properties)
+          @format = Carto::Tracking::Formats::CartoApi.new(properties)
         end
 
         def name

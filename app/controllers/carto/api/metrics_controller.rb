@@ -27,7 +27,6 @@ module Carto
 
         modulized_name = "Carto::Tracking::Events::#{event_name.parameterize('_').camelize}"
         @event_class = modulized_name.constantize
-
       rescue NameError
         raise Carto::LoadError.new("Event not found: #{event_name}")
       end

@@ -47,25 +47,24 @@
 
     .ui-slider-vertical {
       position:absolute;
-      top:10px;
-      left:11px;
-      width:4px;
-      height:81px;
-      @include border-radius(10px);
-      background:#E5E5E5;
+      top:12px;
+      left:9px;
+      width:6px;
+      height:55px;
+      background:$Grey10;
+      border-radius: 5px;
 
       .ui-slider-handle {
-        position: absolute;
-        outline:none;
-        width:8px;
-        height:8px;
+        background:$White;
+        border-radius: 10px;
+        height:12px;
         left: 2px;
         margin-left: -5px;
         margin-bottom: -5px;
-        background:#397DBA;
-        border:1px solid #255078;
+        outline:none;
+        position: absolute;
+        width:12px;
         z-index: 2;
-        border-radius: 10px;
 
         &.ui-state-active,
         &.ui-state-focus,

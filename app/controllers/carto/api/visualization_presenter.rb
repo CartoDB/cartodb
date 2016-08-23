@@ -116,7 +116,7 @@ module Carto
       private
 
       def auth_tokens
-        if @visualization.password_protected?
+        if @visualization.password_protected? && @visualization.user.id == @current_viewer.id
           @visualization.get_auth_tokens
         elsif @visualization.is_privacy_private?
           @current_viewer.get_auth_tokens

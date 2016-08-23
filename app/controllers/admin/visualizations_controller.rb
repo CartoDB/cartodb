@@ -118,8 +118,8 @@ class Admin::VisualizationsController < Admin::AdminController
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? \
-                                                   and not (request.ssl? or request.local? or Rails.env.development?)
+    return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
+                                                && !(request.ssl? || request.local? || Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
@@ -137,7 +137,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @can_copy = false
 
     if current_user && @visualization.has_read_permission?(current_user)
-      if @visualization.organization?
+      if @visualization.is_privacy_private?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
         @api_key = current_user.api_key
@@ -214,7 +214,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
-    if current_user && @visualization.organization? &&
+    if current_user && @visualization.is_privacy_private? &&
        @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
@@ -494,8 +494,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def org_user_has_map_permissions?(user, visualization)
-    user && visualization && visualization.organization? &&
-      visualization.has_read_permission?(user)
+    user && visualization && visualization.has_read_permission?(user)
   end
 
   def resolve_visualization_and_table

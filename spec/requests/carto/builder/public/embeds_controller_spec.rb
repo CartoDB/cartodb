@@ -50,27 +50,6 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.should include("var authTokens = JSON.parse('null');")
     end
 
-    it 'does not embed private visualizations' do
-      @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-      @visualization.save
-
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
-
-      response.body.include?('Embed error | CARTO').should be true
-      response.status.should == 403
-    end
-
-    it 'embeds private visualizations if logged in' do
-      @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-      @visualization.save
-
-      login_as(@user)
-      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
-
-      response.status.should == 200
-      response.body.should include @visualization.name
-    end
-
     it 'does not embed password protected viz' do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
@@ -85,6 +64,44 @@ describe Carto::Builder::Public::EmbedsController do
       get builder_visualization_public_embed_url(visualization_id: UUIDTools::UUID.timestamp_create.to_s)
 
       response.status.should == 404
+    end
+
+    describe 'private visualizations' do
+      it 'cannot be embedded' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save
+
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+        response.body.include?('Embed error | CARTO').should be true
+        response.status.should == 403
+      end
+
+      it 'can be embedded if logged in' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save
+
+        login_as(@user)
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+        response.status.should == 200
+        response.body.should include @visualization.name
+      end
+
+      it 'include auth tokens in embed' do
+        @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+        @visualization.save
+
+        login_as(@user)
+        get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+        response.status.should == 200
+        response.body.should include @visualization.name
+
+        @user.reload
+        auth_tokens = @user.get_auth_tokens
+        auth_tokens.each { |token| response.body.should include token }
+      end
     end
 
     describe 'in organizations' do

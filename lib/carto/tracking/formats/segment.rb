@@ -32,83 +32,83 @@ module Carto
 
         private
 
-          def visualization_properties
-            created_at = @visualization.created_at
-            lifetime_in_days_with_decimals = days_with_decimals(now - created_at)
+        def visualization_properties
+          created_at = @visualization.created_at
+          lifetime_in_days_with_decimals = days_with_decimals(now - created_at)
 
-            properties = {
-              vis_id: @visualization.id,
-              privacy: @visualization.privacy,
-              type: @visualization.type,
-              object_created_at: created_at,
-              lifetime: lifetime_in_days_with_decimals
-            }
+          properties = {
+            vis_id: @visualization.id,
+            privacy: @visualization.privacy,
+            type: @visualization.type,
+            object_created_at: created_at,
+            lifetime: lifetime_in_days_with_decimals
+          }
 
-            properties[:origin] = @origin if @origin
+          properties[:origin] = @origin if @origin
 
-            properties
-          end
+          properties
+        end
 
-          def user_properties
-            user_created_at = @user.created_at
-            user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
+        def user_properties
+          user_created_at = @user.created_at
+          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
-            {
-              username: @user.username,
-              email: @user.email,
-              plan: @user.account_type,
-              user_active_for: user_age_in_days_with_decimals,
-              user_created_at: user_created_at,
-              organization: @user.organization_user? ? @user.organization.name : nil
-            }
-          end
+          {
+            username: @user.username,
+            email: @user.email,
+            plan: @user.account_type,
+            user_active_for: user_age_in_days_with_decimals,
+            user_created_at: user_created_at,
+            organization: @user.organization_user? ? @user.organization.name : nil
+          }
+        end
 
-          def connection_properties
-            properties = {
-              data_from: @connection[:data_from],
-              imported_from: @connection[:imported_from],
-              sync: @connection[:sync] || false
-            }
+        def connection_properties
+          properties = {
+            data_from: @connection[:data_from],
+            imported_from: @connection[:imported_from],
+            sync: @connection[:sync] || false
+          }
 
-            result = @connection[:result]
-            properties[:file_type] = result.extension if result
+          result = @connection[:result]
+          properties[:file_type] = result.extension if result
 
-            properties
-          end
+          properties
+        end
 
-          def trending_map_properties
-            {
-              map_id: @visualization.id,
-              map_name: @visualization.name,
-              mapviews: @views
-            }
-          end
+        def trending_map_properties
+          {
+            map_id: @visualization.id,
+            map_name: @visualization.name,
+            mapviews: @views
+          }
+        end
 
-          def map_liking_properties
-            visualization_user = @visualization.user
+        def map_liking_properties
+          visualization_user = @visualization.user
 
-            {
-              action: @action,
-              vis_id: @visualization.id,
-              vis_name: @visualization.name,
-              vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
-              vis_author: visualization_user.username,
-              vis_author_email: visualization_user.email,
-              vis_author_id: visualization_user.id
-            }
-          end
+          {
+            action: @action,
+            vis_id: @visualization.id,
+            vis_name: @visualization.name,
+            vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
+            vis_author: visualization_user.username,
+            vis_author_email: visualization_user.email,
+            vis_author_id: visualization_user.id
+          }
+        end
 
-          def event_properties
-            { event_origin: 'Editor', creation_time: now }
-          end
+        def event_properties
+          { event_origin: 'Editor', creation_time: now }
+        end
 
-          def days_with_decimals(time_object)
-            time_object.to_f / 60 / 60 / 24
-          end
+        def days_with_decimals(time_object)
+          time_object.to_f / 60 / 60 / 24
+        end
 
-          def now
-            @now ||= Time.now.utc
-          end
+        def now
+          @now ||= Time.now.utc
+        end
       end
     end
   end

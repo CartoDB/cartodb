@@ -136,17 +136,18 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_groups
     destroy_non_owner_users
-    if self.owner
-      self.owner.destroy
+    if owner
+      owner.destroy
     else
-      self.destroy
+      destroy
     end
   end
 
   def destroy_non_owner_users
-    non_owner_users.each { |u|
-      u.destroy
-    }
+    non_owner_users.each do |user|
+      user.shared_entities.map(&:entity).each(&:delete)
+      user.destroy
+    end
   end
 
   def non_owner_users
@@ -416,6 +417,22 @@ class Organization < Sequel::Model
     if owner.nil?
       raise Organization::OrganizationWithoutOwner.new(self)
     end
+  end
+
+  def max_import_file_size
+    owner ? owner.max_import_file_size : ::User::DEFAULT_MAX_IMPORT_FILE_SIZE
+  end
+
+  def max_import_table_row_count
+    owner ? owner.max_import_table_row_count : ::User::DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT
+  end
+
+  def max_concurrent_import_count
+    owner ? owner.max_concurrent_import_count : ::User::DEFAULT_MAX_CONCURRENT_IMPORT_COUNT
+  end
+
+  def max_layers
+    owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
   end
 
   private

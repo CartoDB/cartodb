@@ -519,6 +519,11 @@
         },
         "privacy": {
           "privacy": "privacy",
+          "cta": {
+            "title": "Want some privacy?",
+            "desc-trial": "Check our plans with 14 days trial",
+            "desc-notrial": "Upgrade your account!"
+          },
           "public": {
             "type": "PUBLIC",
             "title": "Public",
@@ -1269,6 +1274,16 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "quota": {
+          "cancel": "cancel",
+          "confirm": "confirm",
+          "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "loading": "Obtaining your quotas...",
+          "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "no-credits-message": "No credits available",
+          "title": "confirm your analysis"
+        },
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -1369,16 +1384,6 @@
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
         "postal-code-help": "In which column are your postal codes stored?",
-        "quota": {
-          "title": "confirm your analysis",
-          "loading": "Obtaining your quotas...",
-          "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
-          "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
-          "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
-          "no-credits-message": "No credits available",
-          "cancel": "cancel",
-          "confirm": "confirm"
-        },
         "radius": "Distance",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
         "result": "Result",
@@ -1419,6 +1424,8 @@
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
         "workflow": "Workflow",
+        "write-max-value": "Write max value",
+        "write-min-value": "Write min value",
         "yes": "Yes"
       },
       "infowindow": {
@@ -1482,7 +1489,7 @@
       "notifier": {
         "sql-alter-loading": "Modifying table…",
         "sql-alter-error": "Error in SQL query.",
-        "sql-alter-success": "Modifying applied.",
+        "sql-alter-success": "Modification applied.",
         "sql-applying": "Applying query…",
         "sql-error": "Error in SQL query.",
         "sql-success": "SQL query applied."
@@ -1564,10 +1571,6 @@
         "values": "VALUES",
         "cartocss": "CARTOCSS"
       },
-      "notifier": {
-        "css-error": "<span class='CDB-Text u-errorTextColor'>Error in CartoCSS styles.</span>",
-        "css-success": "CartoCSS applied."
-      },
       "messages": {
         "fetched": "Schema fetched, select a style",
         "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
@@ -1605,12 +1608,14 @@
             "none": "none",
             "darken": "darken",
             "lighten": "lighten",
+            "lighter": "lighter",
             "color-dodge": "color-dodge",
             "color-burn": "color-burn",
             "multiply": "multiply",
             "screen": "screen",
             "overlay": "overlay",
             "src-over": "src-over",
+            "source-over": "source-over",
             "xor": "xor"
           }
         },
@@ -1776,6 +1781,23 @@
       },
       "loading": "Adding widget…",
       "updating": "Updating widget…"
+    },
+    "cartocss": {
+        "error": {
+          "body": "%{body} %{error}",
+          "title": "Error in CartoCSS styles:"
+        },
+        "success": "CartoCSS applied."
+    },
+    "sql": {
+      "alter-loading": "Modifying table…",
+      "alter-success": "Modifying applied.",
+      "applying": "Applying query…",
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Error in SQL query:"
+      },
+      "success": "SQL query applied."
     }
   }
 }

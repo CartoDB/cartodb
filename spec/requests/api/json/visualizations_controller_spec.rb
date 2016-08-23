@@ -190,6 +190,7 @@ describe Api::Json::VisualizationsController do
 
     before(:each) do
       login(@user)
+      Resque.expects(:enqueue).with(any_parameters) # to account for metrics enqueue
     end
 
     it "when a map is liked should send an email to the owner" do

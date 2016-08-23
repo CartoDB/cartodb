@@ -5,7 +5,7 @@
 .WidgetList {
   @include display-flex;
   flex-wrap: wrap;
-  padding-top: 105px;
+  padding: 105px 0;
 }
 
 .WidgetList-option {

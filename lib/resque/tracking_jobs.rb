@@ -6,8 +6,9 @@ module Resque
       @queue = :tracker
 
       def self.perform(name, properties)
-        return unless key
+        return unless key = Cartodb.config[:segment]['api_key']
 
+        segment = Segment::Analytics.new(write_key: key)
         segment.track(event: name, properties: properties)
         segment.flush
       rescue => exception
@@ -15,14 +16,6 @@ module Resque
                                 exception: exception,
                                 event: name,
                                 properties: properties)
-      end
-
-      def key
-        @key ||= Cartodb.config[:segment]['api_key']
-      end
-
-      def segment
-        @segment ||= Segment::Analytics.new(write_key: key)
       end
     end
   end

@@ -12,13 +12,13 @@
   @import "../old_common/mixins";
   @import "../old_common/vars";
   @import "../old_elements/elements-sprite";
+  @import "../variables/mixins";
 
 
 
   // Related color dropdown
   div.dropdown.color_picker {
-    border:1px solid #999999;
-
+    padding: 12px;
     // Places
     div.top,
     div.content,
@@ -32,6 +32,7 @@
       text-align:center;
       @include border-top-radius(3px);
       border-bottom:1px solid #D6D6D6;
+      display: none;
 
       &.advanced {
         height:100px;
@@ -47,10 +48,9 @@
     div.content,
     div.bottom {
       overflow:auto;
-      padding:8px;
     }
 
-    div.bottom { padding-top:0 }
+    div.bottom { padding-top: 12px; }
 
 
     // Picker
@@ -142,14 +142,13 @@
       width:100%;
       margin:0;
       letter-spacing:-4px;
-      @include border-radius(2px);
 
       li {
         @include inline-block();
         vertical-align:top;
         letter-spacing:0px;
         width:12px;
-        height:20px;
+        height:19px;
         padding:0;
         margin:0;
         border:none;
@@ -157,41 +156,23 @@
         a {
           position:relative;
           width:12px;
-          height:20px;
+          height:19px;
           padding:0;
           margin:0;
-
+ 
           &:hover {
             z-index:2;
             &:before {
               content:' ';
               position:absolute;
-              top:-1px;
-              bottom:-1px;
-              left:-1px;
-              right:-1px;
+              top:0;
+              bottom:0;
+              left:0;
+              right:0;
               border:1px solid white;
               z-index:2;
             }
           }
-        }
-
-        &:first-child a { @include border-top-left-radius(2px) }
-        &:nth-child(16) a { @include border-bottom-left-radius(2px) }
-        &:nth-child(15) a {
-          @include border-top-right-radius(2px);
-          &:before { border-color:#ABABAB; @include border-top-right-radius(2px); }
-        }
-        &:last-child a { @include border-bottom-right-radius(2px) }
-      }
-
-      // Extra colors list
-      &.extra {
-        margin-top: 1px;
-
-        li {
-          &:first-child a { @include border-left-radius(2px) }
-          &:last-child a { @include border-right-radius(2px) }
         }
       }
     }
@@ -199,17 +180,17 @@
 
 
     .form_input_color {
-      width: 67px;
+      width: 80px;
       letter-spacing:-4px;
 
       span.color {
         position:relative;
         @include inline-block();
         vertical-align: top;
-        @include border-left-radius(3px);
         width:12px;
-        height:21px;
+        height:19px;
         letter-spacing:0px;
+        margin-right: 3px;
 
         &:before {
           content:' ';
@@ -219,29 +200,18 @@
           width:10px;
           height:19px;
           background:none;
-          @include border-left-radius(3px);
-          border:1px solid rgba(0,0,0,0.2);
         }
       }
 
       input.text {
+        @include bb_entry_style;
         @include inline-block();
         vertical-align:top;
-        width:48px;
-        height:13px;
-        padding:3px;
-        border:1px solid rgba(0,0,0,0.2);
+        width:61px;
+        height:19px;
         border-left:0;
-        line-height:13px;
-        @include border-right-radius(2px);
-        letter-spacing:0px;
-        color:#666666;
         &:focus {
           outline:none;
-          border-color:rgba(0,0,0,0.4);
-        }
-        &.error,&.error:focus {
-          border-color:rgba(#F84F40,0.8);
         }
       }
 

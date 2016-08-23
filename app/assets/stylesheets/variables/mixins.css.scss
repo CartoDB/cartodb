@@ -313,6 +313,7 @@
     }
   } 
 
+
 //color wheel;
 
 @mixin colorWheel($width: 11px) {
@@ -331,4 +332,13 @@
   @include filter(blur($blurWidth));
   }
   box-shadow: 0px 0px 0px 1px black;
+
+//remove icon
+
+@mixin bb_remove_icon {
+ background: url(../images/beam_standard_button_icon_delete.png) no-repeat center;
+  &:hover {
+    background-image: url(../images/beam_standard_button_icon_delete.png); 
+  }
+
 }

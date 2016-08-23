@@ -44,7 +44,7 @@ module Carto
       end
 
       def authorized_only
-        unauthorized unless current_user && @canonical_visualization.is_viewable_by_user?(current_user)
+        unauthorized unless current_user && @canonical_visualization.has_read_permission?(current_user)
       end
 
       def load_user_table

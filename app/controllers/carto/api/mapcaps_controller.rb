@@ -58,7 +58,7 @@ module Carto
       end
 
       def owners_only
-        raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
+        raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_user)
       end
 
       MAX_MAPCAPS_PER_MAP = 1

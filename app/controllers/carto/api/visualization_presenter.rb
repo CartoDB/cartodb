@@ -125,7 +125,6 @@ module Carto
         end
       end
 
-
       def related_tables
         related = @visualization.table ?
           @visualization.related_tables.select { |table| table.id != @visualization.table.id } :

@@ -30,7 +30,7 @@ module Carto
 
           Carto::Tracking::Formats::Segment.new(user: user,
                                                 visualization: visualization,
-                                                hash: @hash).properties
+                                                hash: @hash).to_hash
         end
       end
     end

@@ -5,7 +5,7 @@ require_relative 'segment'
 module Carto
   module Tracking
     module Formats
-      class CartoApi
+      class Internal
         def initialize(hash)
           @hash = hash ? hash.with_indifferent_access : Hash.new
         end

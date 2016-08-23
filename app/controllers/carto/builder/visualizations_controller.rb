@@ -31,6 +31,7 @@ module Carto
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
+        @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
         @builder_notifications = builder_notifications
@@ -53,7 +54,7 @@ module Carto
       end
 
       def authors_only
-        unauthorized unless !current_user.nil? && @visualization.is_writable_by_user(current_user)
+        unauthorized unless !current_user.nil? && @visualization.writable_by?(current_user)
       end
 
       def editable_visualizations_only

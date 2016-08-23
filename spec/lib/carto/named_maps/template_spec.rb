@@ -433,10 +433,6 @@ module Carto
             @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
           end
 
-          it 'for private visualizations' do
-            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-          end
-
           it 'for link visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_LINK
           end
@@ -458,6 +454,10 @@ module Carto
           it 'for organization private visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
             @visualization.stubs(:organization?).returns(true)
+          end
+
+          it 'for private visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
           end
 
           describe 'and include tokens' do

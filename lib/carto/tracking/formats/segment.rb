@@ -67,11 +67,9 @@ module Carto
           properties = {
             data_from: @connection[:data_from],
             imported_from: @connection[:imported_from],
-            sync: @connection[:sync] || false
+            sync: @connection[:sync] || false,
+            file_type: @connection[:file_type]
           }
-
-          result = @connection[:result]
-          properties[:file_type] = result.extension if result
 
           properties
         end

@@ -1,35 +1,35 @@
-# enconding utf-8
+# encoding utf-8
 
 module Carto
   module Api
     class MetricsController < ::Api::ApplicationController
-      ssl_required only: :create
+      include Carto::ControllerHelper
 
-      before_filter :load_event_class
+      ssl_required :create
 
-      rescue_from Carto::Tracking::Exceptions::UnprocessableEntity,
-                  with: :report_unprocessable_entity
+      before_filter :load_event_class, only: :create
+
+      rescue_from Carto::LoadError,
+                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        @event.new(params[:payload]).report!
+        @event_class.new(params[:properties]).report
+
+        render json: Hash.new, status: :created
       end
 
       private
 
-        def load_event_class
-          event_name = params[:name]
+      def load_event_class
+        event_name = params[:name]
 
-          @event = event_name.constantize
-        rescue NameError => exception
-          raise exception unless exception.message.include?(event_name)
+        raise Carto::UnprocesableEntityError.new('name not provided') unless event_name
 
-          byebug
-        end
-
-        def report_unprocessable_entity(exception)
-          render json: { missing_properties: exception.missing_properties },
-                 status: :unprocessable_entity
-        end
+        modulized_name = "Carto::Tracking::Events::#{event_name.parameterize('_').camelize}"
+        @event_class = modulized_name.constantize
+      rescue NameError
+        raise Carto::LoadError.new("Event not found: #{event_name}")
+      end
     end
   end
 end

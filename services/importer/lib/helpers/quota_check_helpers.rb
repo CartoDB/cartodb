@@ -14,9 +14,8 @@ module CartoDB
       end
 
       def report_over_quota(user_id, quota_overage: 0)
-        user = Carto::User.find(user_id)
-
-        Carto::Tracking::Events::ExceededQuota.new(user, quota_overage: quota_overage).report
+        Carto::Tracking::Events::ExceededQuota.new(user_id: user_id,
+                                                   quota_overage: quota_overage).report
       end
     end
   end

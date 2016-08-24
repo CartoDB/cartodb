@@ -16,6 +16,7 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
+* Oauth integration with GitHub
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`

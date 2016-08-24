@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.1.06",
+  "version": "4.1.10",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -156,7 +156,7 @@
     "test": "jasmine",
     "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
     "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
-    "preupdate-internal-deps": "rm -rf node_modules/camshaft-reference node_modules/cartoassets node_modules/cartodb-deep-insights.js node_modules/cartodb.js",
-    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
+    "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
+    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap"
   }
 }

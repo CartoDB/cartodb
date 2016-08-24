@@ -911,7 +911,7 @@ class DataImport < Sequel::Model
       results.each do |result|
         CartoDB::Metrics.new.report(:import, payload_for(result))
 
-        properties[:file_type] = result.extension
+        properties[:connection][:file_type] = result.extension
 
         if result.success?
           Carto::Tracking::Events::CompletedConnection.new(properties).report

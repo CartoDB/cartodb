@@ -11,7 +11,7 @@ module CartoDB
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',
-      what_about: "Something seems to be wrong with the cartodb install. Please contact Bloomberg Help Desk and we'll try to fix that quickly.",
+      what_about: "Something seems to be wrong with the installation. Please contact Bloomberg Help Desk and we'll try to fix that quickly.",
       source: ERROR_SOURCE_CARTODB
     },
     1000 => {
@@ -195,8 +195,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     2010 => {
-      title: 'Incompatible CartoDB table',
-      what_about: "There was an error when converting your table into a table. Please contact Bloomberg Help Desk and we will help you to load your data.",
+      title: 'Incompatible Maps Table',
+      what_about: "There was an error when converting your table into a Maps table. Please contact Bloomberg Help Desk and we will help you to load your data.",
       source: ERROR_SOURCE_USER
     },
     2011 => {

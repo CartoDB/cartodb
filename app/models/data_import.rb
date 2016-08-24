@@ -911,12 +911,12 @@ class DataImport < Sequel::Model
       results.each do |result|
         CartoDB::Metrics.new.report(:import, payload_for(result))
 
-        properties_with_file_type = result.extension
+        properties[:file_type] = result.extension
 
         if result.success?
-          Carto::Tracking::Events::CompletedConnection.new(properties_with_file_type).report
+          Carto::Tracking::Events::CompletedConnection.new(properties).report
         else
-          Carto::Tracking::Events::FailedConnection.new(properties_with_file_type).report
+          Carto::Tracking::Events::FailedConnection.new(properties).report
         end
       end
     elsif state == STATE_FAILURE

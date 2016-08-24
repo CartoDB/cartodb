@@ -1,12 +1,13 @@
 Sequel.migration do
+  no_transaction # indexes need to be created outside of the transaction
+
   up do
-    execute "commit;" # indexes need to be created outside of the transaction
-    execute %{
+    Rails::Sequel.connection.run %{
       CREATE INDEX CONCURRENTLY "visualizations_state_id_index" ON "visualizations" ("state_id");
     }
   end
 
   down do
-    execute %{ DROP INDEX "visualizations_state_id_index"; }
+    Rails::Sequel.connection.run %{ DROP INDEX "visualizations_state_id_index"; }
   end
 end

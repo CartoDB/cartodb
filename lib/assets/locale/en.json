@@ -116,7 +116,7 @@
       "title": "Group points into polygons",
       "the-geom": "This column was updated to polygons encompassing the input points.",
       "category": "This will be the category over which the polygons were calculated",
-      "description": "Group points into polygons used group %{method} to create new polygons."
+      "description": "Group points into polygons used '%{method}' to create new polygons."
     },
     "georeference": {
       "title": "Georeference",

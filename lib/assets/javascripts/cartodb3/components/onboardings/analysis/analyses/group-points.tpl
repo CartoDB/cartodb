@@ -16,7 +16,7 @@
 </ul>
 
 <p class="CDB-Text Onboarding-description">
-  <%- _t('analyses-onboarding.group-points.description', { method: type }) %>
+  <%- _t('analyses-onboarding.group-points.description', { method: _t('analyses.' + type + '.title') }) %>
 </p>
 
 <p class="CDB-Text Onboarding-description">

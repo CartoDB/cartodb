@@ -640,7 +640,7 @@
           "connect-with-lines": {
             "title": "Connect with lines",
             "desc": "????" // TODO: complete this
-          }
+          },
           "group-points": {
             "title": "Group points into polygons",
             "desc": "Aggregate points into polygons such as convex hulls or bounding boxes."

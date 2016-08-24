@@ -11,7 +11,7 @@ class HomeController < ApplicationController
   PG_VERSION = 'PostgreSQL 9.5'.freeze
   POSTGIS_VERSION = '2.2'
   CDB_VALID_VERSION = '0.17'
-  CDB_LATEST_VERSION = '0.17.0'
+  CDB_LATEST_VERSION = '0.17.1'
   REDIS_VERSION = '3.0'
   RUBY_BIN_VERSION = 'ruby 2.2.3'
   NODE_VERSION = 'v0.10'

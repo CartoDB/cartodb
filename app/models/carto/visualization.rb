@@ -58,12 +58,15 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
+  belongs_to :state, class_name: Carto::State
+  after_save :save_state_if_needed
+
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end
 
   def ==(other_visualization)
-    self.id == other_visualization.id
+    id == other_visualization.id
   end
 
   def size
@@ -149,7 +152,7 @@ class Carto::Visualization < ActiveRecord::Base
     is_public? || is_link_privacy?
   end
 
-  def is_writable_by_user(user)
+  def writable_by?(user)
     (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 
@@ -383,7 +386,58 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def ids_json
+    layers_for_hash = layers.map do |layer|
+      { layer_id: layer.id, widgets: layer.widgets.map(&:id) }
+    end
+
+    {
+      visualization_id: id,
+      map_id: map.id,
+      layers: layers_for_hash
+    }
+  end
+
+  def populate_ids(ids_json)
+    self.id = ids_json[:visualization_id]
+    map.id = ids_json[:map_id]
+
+    map.layers.each_with_index do |layer, index|
+      stored_layer_ids = ids_json[:layers][index]
+      stored_layer_id = stored_layer_ids[:layer_id]
+
+      layer.id = stored_layer_id
+      layer.maps = [map]
+
+      layer.widgets.each_with_index do |widget, widget_index|
+        widget.id = stored_layer_ids[:widgets][widget_index]
+        widget.layer_id = stored_layer_id
+      end
+    end
+  end
+
+  def for_presentation
+    mapcapped? ? latest_mapcap.regenerate_visualization : self
+  end
+
+  def state
+    super ? super : build_state
+  end
+
   private
+
+  def build_state
+    self.state = Carto::State.new(user: user, visualization: self)
+  end
+
+  def save_state_if_needed
+    if state.changed?
+      state.visualization = self unless state.visualization
+      state.user = user unless state.user
+
+      update_attribute(:state_id, state.id) if state.save && !state_id
+    end
+  end
 
   def named_maps_api
     Carto::NamedMaps::Api.new(self)

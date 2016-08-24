@@ -202,7 +202,7 @@ module Carto
       end
 
       def analyses_definitions
-        @visualization.analyses.map(&:analysis_definition)
+        @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
       def stats_aggregator
@@ -226,7 +226,7 @@ module Carto
       def auth
         method, valid_tokens = if @visualization.password_protected?
                                  [AUTH_TYPE_SIGNED, [@visualization.get_auth_token]]
-                               elsif @visualization.organization?
+                               elsif @visualization.is_privacy_private?
                                  [AUTH_TYPE_SIGNED, @visualization.allowed_auth_tokens]
                                else
                                  [AUTH_TYPE_OPEN, nil]

@@ -32,6 +32,13 @@
   margin-bottom: 16px;
 }
 
+.Modal-analysisContainer {
+  margin-bottom: 48px;
+}
+.Modal-analysisContainer:last-child {
+  margin-bottom: 120px;
+}
+
 .Modal-actions {
   @include display-flex();
   @include justify-content(center);

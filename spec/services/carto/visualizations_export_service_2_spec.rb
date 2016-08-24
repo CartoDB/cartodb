@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.2'
+      version: '2.0.3'
     }
   end
 
@@ -28,6 +28,7 @@ describe Carto::VisualizationsExportService2 do
       attributions: 'the attributions',
       bbox: '0103000000010000000500000031118AC72D246AC1A83916DE775E51C131118AC72D246AC18A9C928550D5614101D5E410F03E7' +
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
+      state: { json: { manolo: 'escobar' } },
       display_name: 'the display_name',
       map: {
         provider: 'leaflet',
@@ -173,6 +174,8 @@ describe Carto::VisualizationsExportService2 do
     visualization.bbox.should eq visualization_export[:bbox]
     visualization.display_name.should eq visualization_export[:display_name]
 
+    verify_state_vs_export(visualization.state, visualization_export[:state])
+
     visualization.encrypted_password.should be_nil
     visualization.password_salt.should be_nil
     visualization.locked.should be_false
@@ -203,6 +206,13 @@ describe Carto::VisualizationsExportService2 do
     map.view_bounds_ne.should eq map_export[:view_bounds_ne]
     map.scrollwheel.should eq map_export[:scrollwheel]
     map.legends.should eq map_export[:legends]
+  end
+
+  def verify_state_vs_export(state, state_export)
+    state_export_json = state_export[:json] if state_export
+    state_export_json ||= {}
+
+    state.json.should eq state_export_json
   end
 
   def verify_layers_vs_export(layers, layers_export, importing_user: nil)
@@ -338,6 +348,8 @@ describe Carto::VisualizationsExportService2 do
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
         visualization.created_at.should be_nil # Not set until persistence
         visualization.updated_at.should be_nil # Not set until persistence
+
+        visualization.state.id.should be_nil
 
         map = visualization.map
         map.id.should be_nil # Not set until persistence
@@ -498,6 +510,17 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.2 (without Visualization.state)' do
+          export_2_0_2 = export
+          export_2_0_2[:visualization].delete(:state)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_2.to_json)
+
+          visualization_export = export_2_0_2[:visualization]
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
+
         describe '2.0.1 (without username)' do
           it 'when not renaming tables' do
             export_2_0_1 = export

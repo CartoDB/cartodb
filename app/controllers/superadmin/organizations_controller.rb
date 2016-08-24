@@ -47,7 +47,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     respond_with(:superadmin, @organization)
   rescue => e
     Rollbar.report_message('Error deleting organization', 'error', error: e.inspect, organization: @organization)
-    respond_with({ errors: [ e.inspect ]})
+    render json: { errors: [e.inspect] }, status: 500
   end
 
   private

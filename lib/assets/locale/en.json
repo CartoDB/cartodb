@@ -1407,6 +1407,7 @@
         "street-address-help": "In which column are your street addresses stored?",
         "target": "Target layer",
         "target-percent": "Target percent",
+        "target-percent-help": "Convex hull lookalike",
         "time": "Time",
         "time-seconds": "Time (Seconds)",
         "top-range": "Top range",

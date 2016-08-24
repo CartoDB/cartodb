@@ -21,11 +21,11 @@ module Carto
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
           properties.merge!(connection_properties) if @connection
+          properties.merge!(map_liking_properties) if @action
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
           properties[:mapviews] = @mapviews if @mapviews
-          properties[:action] = @action if @action
 
           properties
         end
@@ -38,6 +38,7 @@ module Carto
 
           properties = {
             vis_id: @visualization.id,
+            vis_name: @visualization.name,
             privacy: @visualization.privacy,
             type: @visualization.type,
             object_created_at: created_at,
@@ -88,7 +89,6 @@ module Carto
           {
             action: @action,
             vis_id: @visualization.id,
-            vis_name: @visualization.name,
             vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
             vis_author: visualization_user.username,
             vis_author_email: visualization_user.email,

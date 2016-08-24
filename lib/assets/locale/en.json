@@ -155,7 +155,7 @@
       "short-title": "Centroid"
     },
     "group-points": {
-      "title": "Group Points into Polygons",
+      "title": "Group points into polygons",
       "short-title": "Group points"
     },
     "convex-hull": {
@@ -634,7 +634,7 @@
         "unknown-geometry-type": "unknown",
         "option-types": {
           "group-points": {
-            "title": "Group Points into Polygons",
+            "title": "Group points into polygons",
             "desc": "Aggregate points into polygons such as convex hulls or bounding boxes."
           },
           "aggregate-intersection": {

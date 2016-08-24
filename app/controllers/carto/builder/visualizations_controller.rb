@@ -75,7 +75,8 @@ module Carto
       end
 
       def track_builder_visit
-        Carto::Tracking::Events::VisitedPrivatePage.new(user_id: current_user.id).report
+        Carto::Tracking::Events::VisitedPrivatePage.new(user_id: current_user.id,
+                                                        page: 'builder').report
       end
     end
   end

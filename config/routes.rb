@@ -66,6 +66,8 @@ CartoDB::Application.routes.draw do
         CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s
       }
     end
+
+    get '/github' => 'github#github', as: :github
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -495,6 +497,7 @@ CartoDB::Application.routes.draw do
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resource :state, only: [:update]
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do

@@ -96,6 +96,12 @@ module CartoDB
       self
     end
 
+    def with_github_oauth_api(github_api)
+      @built = false
+      @github_api = github_api
+      self
+    end
+
     def valid?
       build
 
@@ -150,6 +156,13 @@ module CartoDB
 
       if @google_user_data
         @google_user_data.set_values(@user)
+      elsif @github_api
+        @user.github_user_id = @github_api.id
+        @user.username = @github_api.username
+        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
+        dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+        @user.password = dummy_password
+        @user.password_confirmation = dummy_password
       else
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD]

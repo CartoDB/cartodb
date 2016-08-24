@@ -1505,7 +1505,8 @@
           "title": "NO DATA AVAILABLE",
           "body": "There is no data available to be displayed."
         }
-      }
+      },
+      "error-sql": "Errors found in your SQL query. Fix them before continuing."
     },
     "infowindow": {
       "apply": "APPLY",

@@ -10,13 +10,13 @@
   <% if (category_column) { %>
   <li class="Onboarding-listItem">
     <div class="Onboarding-listItemValue"><%- category_column %></div>
-    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.group-points.category', { method: type }) %></p>
+    <p class="CDB-Text Onboarding-description"><%- _t('analyses-onboarding.group-points.category') %></p>
   </li>
   <% } %>
 </ul>
 
 <p class="CDB-Text Onboarding-description">
-  <%- _t('analyses-onboarding.group-points.description') %>
+  <%- _t('analyses-onboarding.group-points.description', { method: type }) %>
 </p>
 
 <p class="CDB-Text Onboarding-description">

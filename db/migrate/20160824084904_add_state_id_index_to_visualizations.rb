@@ -1,13 +1,12 @@
 Sequel.migration do
   up do
-    alter_table :visualizations do
-      add_index :state_id
-    end
+    execute "commit;" # indexes need to be created outside of the transaction
+    execute %{
+      CREATE INDEX CONCURRENTLY "visualizations_state_id_index" ON "visualizations" ("state_id");
+    }
   end
 
   down do
-    alter_table :visualizations do
-      drop_index :state_id
-    end
+    execute %{ DROP INDEX "visualizations_state_id_index"; }
   end
 end

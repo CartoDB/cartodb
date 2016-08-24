@@ -8,6 +8,8 @@ Sequel.migration do
   end
 
   down do
-    Rails::Sequel.connection.run %{ DROP INDEX "visualizations_state_id_index"; }
+    Rails::Sequel.connection.run %{
+      DROP INDEX CONCURRENTLY IF EXISTS "visualizations_state_id_index";
+    }
   end
 end

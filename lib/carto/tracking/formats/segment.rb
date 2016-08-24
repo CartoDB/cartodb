@@ -78,7 +78,7 @@ module Carto
           {
             map_id: @visualization.id,
             map_name: @visualization.name,
-            mapviews: @views
+            mapviews: @mapviews
           }
         end
 

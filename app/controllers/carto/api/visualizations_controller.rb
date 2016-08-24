@@ -166,7 +166,7 @@ module Carto
               FROM visualizations AS v
                   INNER JOIN users AS u ON u.id=v.user_id
                   LEFT JOIN external_sources AS es ON es.visualization_id = v.id
-                  LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id
+                  LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
               WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
               (
                 to_tsvector(coalesce(v.name, '')) @@ to_tsquery(?)

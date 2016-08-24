@@ -38,7 +38,6 @@ module Carto
 
           properties = {
             vis_id: @visualization.id,
-            vis_name: @visualization.name,
             privacy: @visualization.privacy,
             type: @visualization.type,
             object_created_at: created_at,
@@ -89,6 +88,7 @@ module Carto
           {
             action: @action,
             vis_id: @visualization.id,
+            vis_name: @visualization.name,
             vis_type: @visualization.type == 'derived' ? 'map' : 'dataset',
             vis_author: visualization_user.username,
             vis_author_email: visualization_user.email,

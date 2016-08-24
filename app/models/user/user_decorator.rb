@@ -104,7 +104,6 @@ module CartoDB
       if self.organization.present?
         data[:organization] = self.organization.to_poro
         data[:organization][:available_quota_for_user] = self.organization.unassigned_quota + self.quota_in_bytes
-        data[:organization][:user_count] = organization.users.count
       end
 
       if !groups.nil?

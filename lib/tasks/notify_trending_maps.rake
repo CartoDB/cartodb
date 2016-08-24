@@ -25,7 +25,7 @@ namespace :cartodb do
           trending_maps_lib.notify_trending_map(visualization_id, views, preview_image)
           Carto::Tracking::Events::ScoredTrendingMap.new(user_id: visualization.fetch.user.id,
                                                          visualization_id: visualization.id,
-                                                         views: views).report
+                                                         mapviews: views).report
         end
       end
 

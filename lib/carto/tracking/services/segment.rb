@@ -6,12 +6,9 @@ module Carto
           return unless segment_enabled?
 
           segment_job = Resque::TrackingJobs::SendSegmentEvent
-          properties = @format.to_segment
-          user_id = @format.to_hash[:user_id]
+          supplied_properties = @format.to_segment
 
-          raise 'Segment requires a user_id for reporting' unless user_id
-
-          Resque.enqueue(segment_job, user_id, name, properties)
+          Resque.enqueue(segment_job, supplied_properties[:user_id], name, supplied_properties)
         end
 
         def segment_enabled?

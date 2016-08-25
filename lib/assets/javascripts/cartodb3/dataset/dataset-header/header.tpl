@@ -23,10 +23,8 @@
         <i class="Tag Tag--big Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </<%- privacyDOMElement %>>
     </div>
-    <% if (isOwner) { %>
-      <% if (!isSimple) { %>
+    <% if (isOwner && isInsideOrg) { %>
       <div class="js-share-users"></div>
-      <% } %>
     <% } %>
     <span class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.updated', { ago: ago }) %></span>
   </div>

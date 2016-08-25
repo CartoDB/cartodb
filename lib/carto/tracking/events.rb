@@ -16,6 +16,13 @@ module Carto
         end
 
         def report
+          report!
+        rescue => exception
+          CartoDB::Logger.debug(message: 'Carto::Tracking: Couldn\'t report event',
+                                exception: exception)
+        end
+
+        def report!
           check_required_properties!
 
           report_to_methods = methods.select do |method_name|

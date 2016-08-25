@@ -7,6 +7,7 @@
 
 .Editor-formInner {
   @include display-flex();
+  @include align-items(baseline, baseline);
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
@@ -19,10 +20,15 @@
 .Editor-formInput {
   @include flex(1);
   position: relative;
+
 }
 .Editor-formInput:focus {
   outline: none;
 }
+.Editor-formInner--noMargin {
+  margin-top: 0;
+}
+
 .Editor-formInner--nested {
   position: relative;
 }

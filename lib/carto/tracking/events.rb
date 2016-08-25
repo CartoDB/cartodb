@@ -16,7 +16,11 @@ module Carto
         end
 
         def report
-          methods.select { |method_name| method_name =~ /^report_to/ }.each do |report_method|
+          report_to_methods = methods.select do |method_name|
+            method_name.start_with?('report_to')
+          end
+
+          report_to_methods.each do |report_method|
             send(report_method)
           end
         end

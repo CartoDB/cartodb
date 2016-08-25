@@ -1686,7 +1686,8 @@
         "animated-resolution": "resolution",
         "animated-steps": "steps",
         "animated-duration": "duration"
-      }
+      },
+      "error-sql": "Errors found in your SQL query. Fix them before continuing."
     },
     "widgets": {
       "options": {

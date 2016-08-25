@@ -1,4 +1,4 @@
-<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>Shared map with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@visualization.user.username} has shared a new map called <strong>#{@visualization.name}</strong> with you.</p>" %>
+<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>Map shared with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@visualization.user.username} has shared a new map called <strong>#{@visualization.name}</strong> with you.</p>" %>
 
 <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
 

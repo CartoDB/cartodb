@@ -1273,6 +1273,9 @@
         "click": "Click",
         "hover": "Hover"
       },
+      "analysis": {
+        "error-sql": "Errors found in your SQL query. Fix them before continuing."
+      },
       "analysis-form": {
         "quota": {
           "cancel": "cancel",

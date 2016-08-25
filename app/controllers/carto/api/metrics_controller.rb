@@ -13,7 +13,7 @@ module Carto
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        @event_class.new(params[:properties]).report
+        @event_class.new(params[:properties]).report!
 
         render json: Hash.new, status: :created
       end

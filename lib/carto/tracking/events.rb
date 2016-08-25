@@ -7,8 +7,9 @@ module Carto
   module Tracking
     module Events
       class Event
-        def initialize(properties)
+        def initialize(properties, current_viewer: nil)
           @format = Carto::Tracking::Formats::Internal.new(properties)
+          @current_viewer = current_viewer
         end
 
         def name
@@ -18,11 +19,12 @@ module Carto
         def report
           report!
         rescue => exception
-          CartoDB::Logger.debug(message: 'Carto::Tracking: Couldn\'t report event',
+          CartoDB::Logger.error(message: 'Carto::Tracking: Couldn\'t report event',
                                 exception: exception)
         end
 
         def report!
+          authorize! if @current_viewer
           check_required_properties!
 
           report_to_methods = methods.select do |method_name|
@@ -52,6 +54,18 @@ module Carto
             message = "#{name} is missing the following properties: #{missing_properties.join(', ')}"
 
             raise Carto::UnprocesableEntityError.new(message)
+          end
+        end
+
+        # Security strategies for different classes should be implemented here
+        def authorize!
+          @format.concerned_records.each do |record|
+            case record.class
+            when Carto::User
+              raise Carto::UnauthorizedError.new unless @current_viewer.id == record.id
+            when Carto::Visualization
+              raise Carto::UnauthorizedError.new unless record.has_read_permission?(@current_viewer)
+            end
           end
         end
       end

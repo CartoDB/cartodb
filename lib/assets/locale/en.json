@@ -1102,6 +1102,11 @@
     "button_add": "Add",
     "button_share": "SHARE",
     "unpublished-changes": "Unpublished changes",
+    "error-query": {
+      "body": "Errors found in your SQL query. %{action} before continuing.",
+      "label": "Fix them"
+    },
+
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",
@@ -1272,9 +1277,6 @@
       "infowindow-menu-tab-pane-labels": {
         "click": "Click",
         "hover": "Hover"
-      },
-      "analysis": {
-        "error-sql": "Errors found in your SQL query. Fix them before continuing."
       },
       "analysis-form": {
         "quota": {
@@ -1508,8 +1510,7 @@
           "title": "NO DATA AVAILABLE",
           "body": "There is no data available to be displayed."
         }
-      },
-      "error-sql": "Errors found in your SQL query. Fix them before continuing."
+      }
     },
     "infowindow": {
       "apply": "APPLY",
@@ -1689,8 +1690,7 @@
         "animated-resolution": "resolution",
         "animated-steps": "steps",
         "animated-duration": "duration"
-      },
-      "error-sql": "Errors found in your SQL query. Fix them before continuing."
+      }
     },
     "widgets": {
       "options": {

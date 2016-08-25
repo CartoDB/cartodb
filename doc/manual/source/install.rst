@@ -421,7 +421,8 @@ Editor
 * Initialize the metadata database
 
   .. code-block:: bash
-
+  
+    RAILS_ENV=development bundle exec rake db:setup
     RAILS_ENV=development bundle exec rake db:migrate
 
 * Create an admin user

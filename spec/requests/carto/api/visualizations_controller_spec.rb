@@ -285,6 +285,7 @@ describe Carto::Api::VisualizationsController do
 
       # This is only in the Carto::Visualization presenter (not in old member presenter)
       expected_visualization['uses_builder_features'] = false
+      expected_visualization['auth_tokens'] = nil # normalize_hash converts [] to nil
 
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279

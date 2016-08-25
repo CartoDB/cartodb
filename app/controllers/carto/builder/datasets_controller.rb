@@ -13,7 +13,7 @@ module Carto
 
       before_filter :redirect_to_editor_if_forced, only: :show
       before_filter :load_canonical_visualization, only: :show
-      before_filter :authors_only
+      before_filter :authorized_only
       before_filter :load_user_table, only: :show
       before_filter :editable_visualizations_only, only: :show
 
@@ -43,8 +43,8 @@ module Carto
         render_404 unless @canonical_visualization && @canonical_visualization.canonical?
       end
 
-      def authors_only
-        unauthorized unless current_user && @canonical_visualization.writable_by?(current_user)
+      def authorized_only
+        unauthorized unless current_user && @canonical_visualization.has_read_permission?(current_user)
       end
 
       def load_user_table

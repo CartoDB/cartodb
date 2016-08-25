@@ -73,21 +73,17 @@ class Admin::VisualizationsController < Admin::AdminController
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    unless @visualization.has_write_permission?(current_user)
-      if table_action
-        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
-      else
-        return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
-                                       id: request.params[:id], redirected: true)
-      end
-    end
-
-    if current_user.force_builder?
-      if table_action
+    if table_action
+      if current_user.force_builder? && @visualization.has_read_permission?(current_user)
         return redirect_to CartoDB.url(self, 'builder_dataset', id: request.params[:id])
-      else
-        return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
+      elsif !@visualization.has_write_permission?(current_user)
+        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
+    elsif !@visualization.has_write_permission?(current_user)
+      return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
+                                     id: request.params[:id], redirected: true)
+    elsif current_user.force_builder?
+      return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
     end
 
     respond_to { |format| format.html }

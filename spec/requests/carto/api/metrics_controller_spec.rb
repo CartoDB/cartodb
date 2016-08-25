@@ -20,14 +20,9 @@ describe Carto::Api::MetricsController do
     Carto::Tracking::Events::Event.descendants.each do |event_class|
       event = event_class.new(user_id: @user.id)
 
-      payload = {
-        name: event.name,
-        properties: {
-          user_id: @user.id
-        }
-      }
+      event_class.any_instance.stubs(:report!)
 
-      post_json metrics_url, payload do |response|
+      post_json metrics_url, name: event.name, properties: {} do |response|
         response.status.should eq 201
       end
     end
@@ -42,23 +37,33 @@ describe Carto::Api::MetricsController do
     end
   end
 
-  describe 'security' do
-    before(:all) do
-      logout(@user)
-      @intruder = FactoryGirl.create(:carto_user)
-      login(@intruder)
+  it 'should reject non logged requests' do
+    logout(@user)
+
+    post_json metrics_url, {} do |response|
+      response.status.should eq 403
     end
 
-    after(:all) do
-      logout(@intruder)
-      @intruder.destroy
-      login(@user)
-    end
+    login(@user)
+  end
 
-    it 'should reject unauthorized requests' do
-      post_json metrics_url, name: event_name do |response|
-        response.status.should eq 404
-        response.body[:errors].should eq "Event not found: #{event_name}"
-      end
-    end
+  # describe 'security' do
+  #   before(:all) do
+  #     logout(@user)
+  #     @intruder = FactoryGirl.create(:carto_user)
+  #     login(@intruder)
+  #   end
+
+  #   after(:all) do
+  #     logout(@intruder)
+  #     @intruder.destroy
+  #     login(@user)
+  #   end
+
+  #   it 'should reject non logged requests' do
+  #     post_json metrics_url, {} do |response|
+  #       response.status.should eq 403
+  #     end
+  #   end
+  # end
 end

@@ -7,26 +7,27 @@ module Carto
 
       ssl_required :create
 
-      before_filter :load_event_class, only: :create
+      before_filter :load_event, only: :create
 
       rescue_from Carto::LoadError,
+                  Carto::UnauthorizedError,
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def create
-        @event_class.new(params[:properties]).report!
+        @event.report!
 
         render json: Hash.new, status: :created
       end
 
       private
 
-      def load_event_class
+      def load_event
         event_name = params[:name]
 
         raise Carto::UnprocesableEntityError.new('name not provided') unless event_name
 
         modulized_name = "Carto::Tracking::Events::#{event_name.parameterize('_').camelize}"
-        @event_class = modulized_name.constantize
+        @event = modulized_name.constantize.new(params[:properties], current_viewer: current_viewer)
       rescue NameError
         raise Carto::LoadError.new("Event not found: #{event_name}")
       end

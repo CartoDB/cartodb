@@ -30,7 +30,7 @@ module.exports = {
       attribution: layerModel.get('attribution'),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token'),
+      auth_token: layerModel.get('auth_token') || extra.auth_token,
       no_cdn: layerModel.get('no_cdn'),
       loop: !(layerModel.get('loop') === false)
     };

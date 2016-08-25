@@ -57,7 +57,7 @@ module Carto
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
 
-        render_jsonp account_creator.validation_errors.full_messages, 410 && return unless account_creator.valid?
+        render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
         account_creator.enqueue_creation(self)
 

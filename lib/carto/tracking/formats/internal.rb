@@ -17,11 +17,25 @@ module Carto
         def fetch_record(symbol)
           symbol_string = symbol.to_s.downcase
           record_class_name = "Carto::#{symbol_string.camelize}".freeze
-          record_id = "#{symbol_string}_id".freeze
+          record_id_key = "#{symbol_string}_id".freeze
+          record_id = @hash[record_id_key]
 
-          record_class_name.constantize.find(@hash[record_id])
+          record_class_name.constantize.find(record_id)
         rescue
-          nil
+          record_id ? (raise Carto::LoadError.new("#{record_class_name} not found")) : nil
+        end
+
+        # Find anything like xxx_id and tries to fetch a record for it.
+        def concerned_records
+          concerned_records = []
+
+          @hash.keys.select { |key| key.ends_with?('_id') }.each do |fetchable_key|
+            record = fetch_record(fetchable_key.chomp('_id').to_sym)
+
+            concerned_records << record
+          end
+
+          concerned_records.compact
         end
 
         def to_hash

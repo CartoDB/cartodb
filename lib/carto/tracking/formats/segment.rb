@@ -21,11 +21,11 @@ module Carto
           properties.merge!(user_properties) if @user
           properties.merge!(visualization_properties) if @visualization
           properties.merge!(connection_properties) if @connection
+          properties.merge!(map_liking_properties) if @action
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
           properties[:mapviews] = @mapviews if @mapviews
-          properties[:action] = @action if @action
 
           properties
         end
@@ -67,11 +67,9 @@ module Carto
           properties = {
             data_from: @connection[:data_from],
             imported_from: @connection[:imported_from],
-            sync: @connection[:sync] || false
+            sync: @connection[:sync] || false,
+            file_type: @connection[:file_type]
           }
-
-          result = @connection[:result]
-          properties[:file_type] = result.extension if result
 
           properties
         end
@@ -80,7 +78,7 @@ module Carto
           {
             map_id: @visualization.id,
             map_name: @visualization.name,
-            mapviews: @views
+            mapviews: @mapviews
           }
         end
 

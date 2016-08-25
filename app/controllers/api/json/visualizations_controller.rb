@@ -305,9 +305,9 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        Carto::Tracking::Events::DislikedMap.new(user_id: current_viewer.id,
-                                                 visualization_id: vis.id,
-                                                 action: 'dislike').report
+        Carto::Tracking::Events::LikedMap.new(user_id: current_viewer.id,
+                                              visualization_id: vis.id,
+                                              action: 'remove').report
 
         render_jsonp(id: vis.id, likes: vis.likes.count, liked: false)
       rescue KeyError => exception

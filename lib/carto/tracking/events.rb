@@ -69,10 +69,6 @@ module Carto
       class LikedMap < Event
         include Carto::Tracking::Services::Segment
       end
-
-      class DislikedMap < Event
-        include Carto::Tracking::Services::Segment
-      end
     end
   end
 end

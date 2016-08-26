@@ -648,7 +648,7 @@
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
-            "desc": "????" // TODO: complete this
+            "desc": "Connect the points in your dataset using different methods"
           },
           "group-points": {
             "title": "Group points into polygons",
@@ -1431,6 +1431,7 @@
         "sampling": "Sampling",
         "sampling-desc": "Select a sample of the data",
         "sampling-rate": "% of data ",
+        "second-geom-required": "This analysis requires a second geometry column",
         "select-column": "Select a column",
         "setup-analysis": "Setup analysis",
         "show": "Show",

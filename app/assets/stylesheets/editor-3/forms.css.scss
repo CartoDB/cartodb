@@ -20,7 +20,6 @@
 .Editor-formInput {
   @include flex(1);
   position: relative;
-
 }
 .Editor-formInput:focus {
   outline: none;
@@ -28,7 +27,6 @@
 .Editor-formInner--noMargin {
   margin-top: 0;
 }
-
 .Editor-formInner--nested {
   position: relative;
 }
@@ -101,6 +99,9 @@
 }
 .Editor-checker {
   width: 100%;
+}
+.Editor-checker--slim .Editor-formInner {
+  min-height: 20px;
 }
 .Editor-checkerInput {
   width: 92px;

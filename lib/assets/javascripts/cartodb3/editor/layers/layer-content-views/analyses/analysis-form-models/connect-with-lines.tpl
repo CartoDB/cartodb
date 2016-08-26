@@ -13,7 +13,7 @@
   <div class="Editor-HeaderInfo">
     <div class="Editor-HeaderPad u-rSpace--m"></div>
     <div class="Editor-HeaderInfo-inner CDB-Text">
-      <div class="Editor-checker u-flex u-alignCenter" data-fields="order"></div>
+      <div class="Editor-checker Editor-checker--slim u-flex u-alignCenter" data-fields="order"></div>
 
       <% if (order) { %>
       <div class="Editor-formInner--nested">
@@ -37,7 +37,7 @@
     <div class="Editor-HeaderPad u-rSpace--m"></div>
     <div class="Editor-HeaderInfo-inner CDB-Text">
 
-      <div class="Editor-checker u-flex u-alignCenter" data-fields="group"></div>
+      <div class="Editor-checker Editor-checker--slim u-flex u-alignCenter" data-fields="group"></div>
 
       <% if (group) { %>
       <div class="Editor-formInner--nested">

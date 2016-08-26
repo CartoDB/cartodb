@@ -27,7 +27,7 @@ module Carto
         raise Carto::UnprocesableEntityError.new('name not provided') unless event_name
 
         modulized_name = "Carto::Tracking::Events::#{event_name.parameterize('_').camelize}"
-        @event = modulized_name.constantize.new(params[:properties], current_viewer: current_viewer)
+        @event = modulized_name.constantize.new(current_viewer.id, params[:properties])
       rescue NameError
         raise Carto::LoadError.new("Event not found: #{event_name}")
       end

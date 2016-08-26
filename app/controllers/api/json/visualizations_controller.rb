@@ -89,16 +89,17 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
         vis = set_visualization_prev_next(vis, prev_id, next_id)
 
+        current_viewer_id = current_viewer.id
         properties = {
-          user_id: current_user.id,
+          user_id: current_viewer_id,
           origin: origin,
           visualization_id: vis.id
         }
 
         if vis.derived?
-          Carto::Tracking::Events::CreatedMap.new(properties).report
+          Carto::Tracking::Events::CreatedMap.new(current_viewer_id, properties).report
         else
-          Carto::Tracking::Events::CreatedDataset.new(properties).report
+          Carto::Tracking::Events::CreatedDataset.new(current_viewer_id, properties).report
         end
 
         render_jsonp(vis)
@@ -176,20 +177,21 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         return head(404) unless vis
         return head(403) unless vis.is_owner?(current_user)
 
-        properties = { user_id: current_user.id, visualization_id: vis.id }
+        current_viewer_id = current_viewer.id
+        properties = { user_id: current_viewer_id, visualization_id: vis.id }
         if vis.derived?
-          Carto::Tracking::Events::DeletedMap.new(properties).report
+          Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
         else
-          Carto::Tracking::Events::DeletedDataset.new(properties).report
+          Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
         end
 
         unless vis.table.nil?
           vis.table.dependent_visualizations.each do |dependent_vis|
-            properties = { user_id: current_user.id, visualization_id: dependent_vis.id }
+            properties = { user_id: current_viewer_id, visualization_id: dependent_vis.id }
             if dependent_vis.derived?
-              Carto::Tracking::Events::DeletedMap.new(properties).report
+              Carto::Tracking::Events::DeletedMap.new(current_viewer_id, properties).report
             else
-              Carto::Tracking::Events::DeletedDataset.new(properties).report
+              Carto::Tracking::Events::DeletedDataset.new(current_viewer_id, properties).report
             end
           end
         end
@@ -267,17 +269,19 @@ class Api::Json::VisualizationsController < Api::ApplicationController
              .invalidate_cache
         end
 
-        if (current_viewer.id != vis.user.id)
+        current_viewer_id = current_viewer.id
+        if (current_viewer_id != vis.user.id)
           protocol = request.protocol.sub('://', '')
           vis_url = Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(vis, protocol, 600, 300)
           send_like_email(vis, current_viewer, vis_url)
         end
 
-        Carto::Tracking::Events::LikedMap.new(user_id: current_viewer.id,
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id,
+                                              user_id: current_viewer_id,
                                               visualization_id: vis.id,
                                               action: 'like').report
 
-        render_jsonp(id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer.id))
+        render_jsonp(id: vis.id, likes: vis.likes.count, liked: vis.liked_by?(current_viewer_id))
       rescue KeyError => exception
         render(text: exception.message, status: 403)
       rescue AlreadyLikedError
@@ -299,13 +303,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             vis.privacy != Visualization::Member::PRIVACY_PUBLIC && vis.privacy != Visualization::Member::PRIVACY_LINK
         end
 
+        current_viewer_id = current_viewer.id
         @stats_aggregator.timing('destroy') do
-          vis.remove_like_from(current_viewer.id)
+          vis.remove_like_from(current_viewer_id)
              .fetch
              .invalidate_cache
         end
 
-        Carto::Tracking::Events::LikedMap.new(user_id: current_viewer.id,
+        Carto::Tracking::Events::LikedMap.new(current_viewer_id,
+                                              user_id: current_viewer_id,
                                               visualization_id: vis.id,
                                               action: 'remove').report
 

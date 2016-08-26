@@ -688,7 +688,9 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def track_dashboard_visit
-    Carto::Tracking::Events::VisitedPrivatePage.new(user_id: current_user.id,
+    current_viewer_id = current_viewer.id
+    Carto::Tracking::Events::VisitedPrivatePage.new(current_viewer_id,
+                                                    user_id: current_viewer_id,
                                                     page: 'dashboard').report
   end
 end

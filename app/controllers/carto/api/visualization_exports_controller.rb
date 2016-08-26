@@ -48,7 +48,9 @@ module Carto
         Resque.enqueue(Resque::ExporterJobs, job_id: visualization_export.id, download_path: download_path)
 
         if current_viewer
-          Carto::Tracking::Events::ExportedMap.new(user_id: current_viewer.id,
+          current_viewer_id = current_viewer.id
+          Carto::Tracking::Events::ExportedMap.new(current_viewer_id,
+                                                   user_id: current_viewer_id,
                                                    visualization_id: @visualization.id).report
         end
 

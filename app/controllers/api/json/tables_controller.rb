@@ -39,8 +39,10 @@ class Api::Json::TablesController < Api::ApplicationController
 
           table_visualization = @table.table_visualization
           if table_visualization
-            Carto::Tracking::Events::CreatedDataset.new(visualization_id: table_visualization.id,
-                                                        user_id: current_user.id).report
+            current_viewer_id = current_viewer.id
+            Carto::Tracking::Events::CreatedDataset.new(current_viewer_id,
+                                                        visualization_id: table_visualization.id,
+                                                        user_id: current_viewer_id).report
           end
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
@@ -49,7 +51,9 @@ class Api::Json::TablesController < Api::ApplicationController
                         }, 400)
         end
       rescue CartoDB::QuotaExceeded
-        Carto::Tracking::Events::ExceededQuota.new(user_id: current_user.id).report
+        current_viewer_id = current_viewer.id
+        Carto::Tracking::Events::ExceededQuota.new(current_viewer_id,
+                                                   user_id: current_viewer_id).report
         render_jsonp({ errors: [TABLE_QUOTA_REACHED_TEXT]}, 400)
       end
 
@@ -123,7 +127,9 @@ class Api::Json::TablesController < Api::ApplicationController
         @table.destroy
       end
 
-      Carto::Tracking::Events::DeletedDataset.new(user_id: current_user.id,
+      current_viewer_id = current_viewer.id
+      Carto::Tracking::Events::DeletedDataset.new(current_viewer_id,
+                                                  user_id: current_viewer_id,
                                                   visualization_id: table_visualization.id).report
 
       head :no_content

@@ -7,7 +7,8 @@ module Carto
 
       ssl_required :create
 
-      before_filter :load_event, only: :create
+      before_filter :current_viewer_avaliable,
+                    :load_event, only: :create
 
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,
@@ -20,6 +21,10 @@ module Carto
       end
 
       private
+
+      def current_viewer_avaliable
+        raise Carto::UnauthorizedError.new unless @current_viewer
+      end
 
       def load_event
         event_name = params[:name]

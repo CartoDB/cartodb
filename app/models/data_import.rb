@@ -203,7 +203,8 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
-    Carto::Tracking::Events::ExceededQuota.new(user_id: current_user.id).report
+    current_viewer_id = current_viewer.id
+    Carto::Tracking::Events::ExceededQuota.new(current_viewer_id, user_id: current_viewer_id).report
 
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
@@ -898,8 +899,9 @@ class DataImport < Sequel::Model
     dataimport_logger.info(import_log.to_json)
     CartoDB::Importer2::MailNotifier.new(self, results, ::Resque).notify_if_needed
 
+    user_id = user.id
     properties = {
-      user_id: user.id,
+      user_id: user_id,
       connection: {
         imported_from: service_name,
         data_from: data_type,
@@ -914,13 +916,13 @@ class DataImport < Sequel::Model
         properties[:connection][:file_type] = result.extension
 
         if result.success?
-          Carto::Tracking::Events::CompletedConnection.new(properties).report
+          Carto::Tracking::Events::CompletedConnection.new(user_id, properties).report
         else
-          Carto::Tracking::Events::FailedConnection.new(properties).report
+          Carto::Tracking::Events::FailedConnection.new(user_id, properties).report
         end
       end
     elsif state == STATE_FAILURE
-      Carto::Tracking::Events::FailedConnection.new(properties).report
+      Carto::Tracking::Events::FailedConnection.new(user_id, properties).report
     end
   end
 
@@ -1037,13 +1039,16 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      Carto::Tracking::Events::CreatedDataset.new(user_id: current_user.id,
+      current_viewer_id = current_viewer.id
+      Carto::Tracking::Events::CreatedDataset.new(current_viewer_id,
+                                                  user_id: current_viewer_id,
                                                   visualization_id: vis.id,
                                                   origin: origin).report
     end
 
     if visualization_id
-      Carto::Tracking::Events::CreatedMap.new(user_id: current_user,
+      Carto::Tracking::Events::CreatedMap.new(current_viewer_id,
+                                              user_id: current_viewer_id,
                                               visualization_id: visualization_id,
                                               origin: 'import').report
     end

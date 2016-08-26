@@ -648,7 +648,7 @@
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
-            "desc": "Connect the points in your dataset using different methods"
+            "desc": "Create lines from point datasets using a variety of methods"
           },
           "group-points": {
             "title": "Group points into polygons",

@@ -14,7 +14,7 @@ module Carto
         # The id of said record should be provided with key: snake-case'd identifier + '_id'
         # Only Cart:: records allowed!
         #  Ex.: :super_duper_mdoel -> Carto::SuperDuperModel; { super_duper_model_id: xxx }
-        def fetch_record(symbol)
+        def fetch_record!(symbol)
           symbol_string = symbol.to_s.downcase
           record_class_name = "Carto::#{symbol_string.camelize}".freeze
           record_id_key = "#{symbol_string}_id".freeze
@@ -30,7 +30,7 @@ module Carto
           concerned_records = []
 
           @hash.keys.select { |key| key.ends_with?('_id') }.each do |fetchable_key|
-            record = fetch_record(fetchable_key.chomp('_id').to_sym)
+            record = fetch_record!(fetchable_key.chomp('_id').to_sym)
 
             concerned_records << record
           end
@@ -43,8 +43,8 @@ module Carto
         end
 
         def to_segment
-          user = fetch_record(:user)
-          visualization = fetch_record(:visualization)
+          user = fetch_record!(:user)
+          visualization = fetch_record!(:visualization)
 
           Carto::Tracking::Formats::Segment.new(user: user,
                                                 visualization: visualization,

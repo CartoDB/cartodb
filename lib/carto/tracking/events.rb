@@ -26,8 +26,8 @@ module Carto
         end
 
         def report!
-          authorize! if @current_viewer
           check_required_properties!
+          authorize! if @current_viewer
 
           report_to_methods = methods.select do |method_name|
             method_name.to_s.start_with?('report_to')
@@ -99,6 +99,7 @@ module Carto
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Segment
+
         include Carto::Tracking::Validators::Visualization::Writable
 
         required_properties [:user_id, :visualization_id]
@@ -106,6 +107,7 @@ module Carto
 
       class CompletedConnection < Event
         include Carto::Tracking::Services::Segment
+
         include Carto::Tracking::Validators::Visualization::Writable
 
         required_properties [:user_id, :visualization_id, :connection]

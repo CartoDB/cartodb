@@ -14,7 +14,7 @@ module Carto
           include Carto::Tracking::Validators::Visualization::Helpers
 
           def check_visualization_writable!
-            unless visualization.writable_by?(@current_viewer)
+            unless visualization.writable_by?(@reporter)
               raise Carto::UnauthorizedError.new
             end
           end
@@ -24,7 +24,7 @@ module Carto
           include Carto::Tracking::Validators::Visualization::Helpers
 
           def check_visualization_readable!
-            unless visualization.is_accesible_by_user?(@current_viewer)
+            unless visualization.is_accesible_by_user?(@reporter)
               raise Carto::UnauthorizedError.new
             end
           end

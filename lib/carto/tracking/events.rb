@@ -9,9 +9,9 @@ module Carto
   module Tracking
     module Events
       class Event
-        def initialize(properties, current_viewer: nil)
+        def initialize(reporter_id, properties)
           @format = Carto::Tracking::Formats::Internal.new(properties)
-          @current_viewer = current_viewer
+          @reporter = Carto::User.find(reporter_id)
         end
 
         def name
@@ -27,7 +27,7 @@ module Carto
 
         def report!
           check_required_properties!
-          authorize! if @current_viewer
+          authorize!
 
           report_to_methods = methods.select do |method_name|
             method_name.to_s.start_with?('report_to')

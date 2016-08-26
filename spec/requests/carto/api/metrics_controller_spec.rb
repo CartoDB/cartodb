@@ -9,16 +9,18 @@ describe Carto::Api::MetricsController do
 
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
+    @intruder = FactoryGirl.create(:carto_user)
     login(@user)
   end
 
   after(:all) do
     @user.destroy
+    @instruder.destroy
   end
 
   it 'should accept all existing events' do
     Carto::Tracking::Events::Event.descendants.each do |event_class|
-      event = event_class.new(user_id: @user.id)
+      event = event_class.new(@user.id)
 
       event_class.any_instance.stubs(:report!)
 
@@ -37,33 +39,20 @@ describe Carto::Api::MetricsController do
     end
   end
 
-  it 'should reject non logged requests' do
-    logout(@user)
+  describe 'validations' do
+    it 'should require properties' do
+      Carto::Tracking::Events::Event.descendants.each do |event_class|
+        event = event_class.new(@user.id, {})
 
-    post_json metrics_url, {} do |response|
-      response.status.should eq 403
+        puts "Testing #{event_class}"
+
+        unless event.required_properties.empty?
+          post_json metrics_url, name: event.name, properties: {} do |response|
+            response.status.should eq 422
+            response.body[:errors].should eq "#{event.name} is missing the following properties: #{event.required_properties.join(', ')}"
+          end
+        end
+      end
     end
-
-    login(@user)
   end
-
-  # describe 'security' do
-  #   before(:all) do
-  #     logout(@user)
-  #     @intruder = FactoryGirl.create(:carto_user)
-  #     login(@intruder)
-  #   end
-
-  #   after(:all) do
-  #     logout(@intruder)
-  #     @intruder.destroy
-  #     login(@user)
-  #   end
-
-  #   it 'should reject non logged requests' do
-  #     post_json metrics_url, {} do |response|
-  #       response.status.should eq 403
-  #     end
-  #   end
-  # end
 end

@@ -2,6 +2,8 @@
 
 require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'
+require_dependency 'carto/tracking/validators/visualization'
+require_dependency 'carto/tracking/validators/user'
 
 module Carto
   module Tracking
@@ -57,15 +59,13 @@ module Carto
           end
         end
 
-        # Security strategies for different classes should be implemented here
         def authorize!
-          @format.concerned_records.each do |record|
-            case record.class
-            when Carto::User
-              raise Carto::UnauthorizedError.new unless @current_viewer.id == record.id
-            when Carto::Visualization
-              raise Carto::UnauthorizedError.new unless record.has_read_permission?(@current_viewer)
-            end
+          check_methods = methods.select do |method_name|
+            method_name.to_s.start_with?('check_')
+          end
+
+          check_methods.each do |check_method|
+            send(check_method)
           end
         end
       end
@@ -73,11 +73,17 @@ module Carto
       class ExportedMap < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::Visualization::Readable
+        include Carto::Tracking::Validators::User
+
         required_properties [:user_id, :visualization_id]
       end
 
       class CreatedMap < Event
         include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties [:user_id, :visualization_id]
       end
@@ -85,17 +91,22 @@ module Carto
       class DeletedMap < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
         required_properties [:user_id, :visualization_id]
       end
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Validators::Visualization::Writable
 
         required_properties [:user_id, :visualization_id]
       end
 
       class CompletedConnection < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Validators::Visualization::Writable
 
         required_properties [:user_id, :visualization_id, :connection]
       end
@@ -103,11 +114,17 @@ module Carto
       class FailedConnection < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
         required_properties [:user_id, :visualization_id, :connection]
       end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties [:user_id, :visualization_id]
       end
@@ -121,11 +138,16 @@ module Carto
       class VisitedPrivatePage < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::User
+
         required_properties [:user_id, :page]
       end
 
       class CreatedDataset < Event
         include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties [:user_id, :visualization_id]
       end
@@ -133,11 +155,17 @@ module Carto
       class DeletedDataset < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
         required_properties [:user_id, :visualization_id]
       end
 
       class LikedMap < Event
         include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Readable
+        include Carto::Tracking::Validators::User
 
         required_properties [:user_id, :visualization_id, :action]
       end

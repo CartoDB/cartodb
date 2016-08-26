@@ -1533,7 +1533,29 @@
       }
     },
     "legend": {
-      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
+      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!",
+      "data-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can't be empty."
+        }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "CUSTOM HTML APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "CONTINUE"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        }
+      }
     },
     "style": {
       "types": {

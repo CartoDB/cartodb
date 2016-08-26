@@ -38,7 +38,7 @@ module Carto
           end
         end
 
-        def self.required_properties(required_properties)
+        def self.required_properties(*required_properties)
           @required_properties ||= []
           @required_properties += required_properties
         end
@@ -76,7 +76,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class CreatedMap < Event
@@ -85,7 +85,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class DeletedMap < Event
@@ -94,7 +94,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class PublishedMap < Event
@@ -102,7 +102,7 @@ module Carto
 
         include Carto::Tracking::Validators::Visualization::Writable
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class CompletedConnection < Event
@@ -110,7 +110,7 @@ module Carto
 
         include Carto::Tracking::Validators::Visualization::Writable
 
-        required_properties [:user_id, :visualization_id, :connection]
+        required_properties :user_id, :visualization_id, :connection
       end
 
       class FailedConnection < Event
@@ -119,7 +119,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id, :connection]
+        required_properties :user_id, :visualization_id, :connection
       end
 
       class ExceededQuota < Event
@@ -128,13 +128,13 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class ScoredTrendingMap < Event
         include Carto::Tracking::Services::Segment
 
-        required_properties [:user_id, :mapviews]
+        required_properties :user_id, :mapviews
       end
 
       class VisitedPrivatePage < Event
@@ -142,7 +142,7 @@ module Carto
 
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :page]
+        required_properties :user_id, :page
       end
 
       class CreatedDataset < Event
@@ -151,7 +151,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class DeletedDataset < Event
@@ -160,7 +160,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id]
+        required_properties :user_id, :visualization_id
       end
 
       class LikedMap < Event
@@ -169,7 +169,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
-        required_properties [:user_id, :visualization_id, :action]
+        required_properties :user_id, :visualization_id, :action
       end
     end
   end

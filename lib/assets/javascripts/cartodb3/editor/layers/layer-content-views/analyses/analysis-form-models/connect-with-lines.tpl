@@ -53,7 +53,7 @@
 
         <div class="CDB-Text Editor-formInner">
           <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.target-col') %></p>
-          <div class="Editor-formInput" data-editors="target_column"></div>
+          <div class="Editor-formInput" data-editors="target_source_column"></div>
         </div>
       </div>
       <% } %>

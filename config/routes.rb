@@ -494,6 +494,8 @@ CartoDB::Application.routes.draw do
         match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
       end
 
+      resource :metrics, only: [:create]
+
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }

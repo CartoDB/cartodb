@@ -1469,6 +1469,7 @@
         "value": "Value",
         "value-aggregation": "Value aggregation",
         "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
+        "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
         "walk": "Walk",
         "weight": "Weight",
         "weight-column": "Weight column",

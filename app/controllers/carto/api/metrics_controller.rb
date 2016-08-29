@@ -23,7 +23,7 @@ module Carto
       private
 
       def current_viewer_avaliable
-        raise Carto::UnauthorizedError.new unless @current_viewer
+        raise Carto::UnauthorizedError.new unless current_viewer
       end
 
       def load_event

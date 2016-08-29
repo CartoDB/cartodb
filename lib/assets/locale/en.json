@@ -1102,6 +1102,11 @@
     "button_add": "Add",
     "button_share": "SHARE",
     "unpublished-changes": "Unpublished changes",
+    "error-query": {
+      "body": "Errors found in your SQL query. %{action} before continuing.",
+      "label": "Fix them"
+    },
+
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",

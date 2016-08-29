@@ -10,21 +10,27 @@ describe Carto::Api::MetricsController do
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
+
     login(@user)
   end
 
   after(:all) do
+    logout(@user)
+
     @user.destroy
     @instruder.destroy
   end
 
   it 'should accept all existing events' do
+    user_id = @user.id
+    user_properties = { user_id: user_id, api_key: @user.api_key }
+
     Carto::Tracking::Events::Event.descendants.each do |event_class|
-      event = event_class.new(@user.id)
+      event = event_class.new(user_id, user_id: user_id)
 
       event_class.any_instance.stubs(:report!)
 
-      post_json metrics_url, name: event.name, properties: {} do |response|
+      post_json metrics_url, name: event.name, properties: user_properties do |response|
         response.status.should eq 201
       end
     end

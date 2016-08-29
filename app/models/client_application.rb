@@ -1,7 +1,7 @@
 # coding: utf-8
 require 'oauth'
 
-class DomainHackRequestProxy < OAuth::RequestProxy::RackRequest
+class DomainPatcherRequestProxy < OAuth::RequestProxy::RackRequest
   def uri
     super.sub('carto.com', 'cartodb.com')
   end
@@ -41,7 +41,7 @@ class ClientApplication < Sequel::Model
     value = OAuth::Signature.build(request, options, &block).verify
     if !value && !cartodb_com_hosted?
       # Validation failed, try to see if it has been signed for cartodb.com
-      cartodb_request = DomainHackRequestProxy.new(request, options)
+      cartodb_request = DomainPatcherRequestProxy.new(request, options)
       value = OAuth::Signature.build(cartodb_request, options, &block).verify
     end
     value

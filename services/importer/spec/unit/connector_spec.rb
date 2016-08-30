@@ -32,7 +32,7 @@ def expect_executed_command(cmd, expected = {})
   mode, sql, user = cmd
   mode.should eq expected[:mode] if expected.has_key?(:mode)
   user.should eq expected[:user] if expected.has_key?(:user)
-  expect_sql sql, expected[:sql]
+  expect_sql sql, expected[:sql] if expected.has_key?(:sql)
 end
 
 

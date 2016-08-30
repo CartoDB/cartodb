@@ -619,7 +619,105 @@ module Carto
         end
 
         describe ScoredTrendingMap do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
 
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        mapviews: 123)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        user_id: @user.id,
+                                        mapviews: 123)
+            end
+
+            it 'requires mapviews' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id)
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have access write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @intruder.id,
+                                        mapviews: 123)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id,
+                                        mapviews: 123)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @user.id,
+                                     mapviews: 123)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @intruder.id,
+                                     mapviews: 123)
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'matches current prod properites' do
+            current_prod_properties = [:creation_time,
+                                       :email,
+                                       :event_origin,
+                                       :map_id,
+                                       :map_name,
+                                       :mapviews,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :username]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      mapviews: 123)
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
         end
 
         describe VisitedPrivatePage do

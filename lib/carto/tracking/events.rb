@@ -22,7 +22,9 @@ module Carto
           report!
         rescue => exception
           CartoDB::Logger.error(message: 'Carto::Tracking: Couldn\'t report event',
-                                exception: exception)
+                                exception: exception,
+                                name: name,
+                                properties: @format.to_hash)
         end
 
         def report!

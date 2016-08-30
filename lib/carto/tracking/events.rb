@@ -109,19 +109,17 @@ module Carto
       class CompletedConnection < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :connection
+        required_properties :user_id, :connection
       end
 
       class FailedConnection < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :connection
+        required_properties :user_id, :connection
       end
 
       class ExceededQuota < Event

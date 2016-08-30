@@ -56,7 +56,7 @@ module CartoDB
       end
 
       def import_error_percent
-        if !imported_rows.nil? && !source_file_rows.nil?
+        if !imported_rows.nil? && !(source_file_rows.to_i == 0)
           return ((imported_rows - source_file_rows).abs.to_f/source_file_rows)*100
         else
           return nil

@@ -75,6 +75,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
+	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
@@ -247,8 +248,10 @@ WORKING_SPECS_9 = \
 SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/analysis_spec.rb \
 	spec/models/carto/analysis_node_spec.rb \
+	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/overlay_spec.rb \
+	spec/models/carto/user_migration_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
 	spec/requests/api/json/maps_controller_spec.rb \
@@ -256,8 +259,11 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/carto/api/user_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
+	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/lib/carto/strong_password_validator_spec.rb \
@@ -267,6 +273,7 @@ SPEC_HELPER_MIN_SPECS = \
 	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	spec/models/carto/mapcap_spec.rb \
 	spec/requests/carto/api/mapcaps_controller_spec.rb \
+	spec/requests/carto/api/states_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

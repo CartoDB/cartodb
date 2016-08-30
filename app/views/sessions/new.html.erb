@@ -9,7 +9,7 @@
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>">
         <div class="u-inner">
           <div class="Sessions-left">
             <div class="Sessions-logoContainer">
@@ -80,11 +80,15 @@
                   </div>
 
                 <% end %>
+                <div class="Sessions-field Sessions-oauthContainer">
+                  <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
+                    <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                  <% end %>
 
-              <% end %>
-
-              <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
-                <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                  <% if @github_config.present? %>
+                    <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
+                  <% end %>
+                </div>
               <% end %>
             </div>
           </div>

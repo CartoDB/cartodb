@@ -6,7 +6,7 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="CDB-Text Sessions">
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
       <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
@@ -14,7 +14,15 @@
           <div class="Sessions-leftInner">
             <div class="Sessions-logoContainer">
               <picture class="Navbar-brand">
-                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                <% if @organization.present? && @organization.avatar_url.present? %>
+                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
+                <% else %>
+                  <% if @organization.present? %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <% else %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% end %>
+                <% end %>
               </picture>
             </div>
 
@@ -40,7 +48,7 @@
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 
-              <div class="Sessions-fieldsGorup">
+              <div class="Sessions-fieldsGroup">
                 <div class="Sessions-field">
                   <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
                   <% if !@user.errors[:username].blank? %>
@@ -57,6 +65,9 @@
 
                 <% if @user.google_sign_in && @organization.auth_google_enabled %>
                   <%= f.hidden_field :google_sign_in %>
+                <% elsif @user.github_user_id && @organization.auth_github_enabled %>
+                <%= f.hidden_field :github_user_id %>
+                  <input type="hidden" name="github_access_token" value="<%= @github_access_token %>" />
                 <% else %>
                   <div class="Sessions-field">
                     <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
@@ -86,13 +97,18 @@
                     </button>
                   </p>
                 </div>
-              </div>
+                <% unless @user.google_sign_in || @user.github_user_id %>
+                  <div class="Sessions-field Sessions-oauthContainer">
+                    <% if @google_plus_config.present? %>
+                      <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                    <% end %>
 
-                <% unless @user.google_sign_in %>
-                  <% if @google_plus_config.present? %>
-                    <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
-                  <% end %>
+                    <% if @github_config.present? %>
+                      <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
+                    <% end %>
+                  </div>
                 <% end %>
+              </div>
               </div>
 
               <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>

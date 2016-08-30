@@ -96,7 +96,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def writable_by_user?(user)
-    !visualizations.select { |v| v.is_writable_by_user(user) }.empty?
+    visualizations.select { |v| v.writable_by?(user) }.any?
   end
 
   def contains_layer?(layer)
@@ -117,6 +117,10 @@ class Carto::Map < ActiveRecord::Base
 
   def visualization
     visualizations.first
+  end
+
+  def update_dataset_dependencies
+    data_layers.each(&:register_table_dependencies)
   end
 
   private

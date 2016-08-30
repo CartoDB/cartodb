@@ -433,10 +433,6 @@ module Carto
             @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
           end
 
-          it 'for private visualizations' do
-            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
-          end
-
           it 'for link visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_LINK
           end
@@ -458,6 +454,69 @@ module Carto
           it 'for organization private visualizations' do
             @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
             @visualization.stubs(:organization?).returns(true)
+          end
+
+          it 'for private visualizations' do
+            @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+          end
+
+          describe 'and include tokens' do
+            before(:all) do
+              @org = mock
+              @org.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+              @group = mock
+              @group.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+              @other_user = mock
+              @other_user.stubs(:get_auth_token).returns(SecureRandom.urlsafe_base64(nil, false))
+            end
+
+            before(:each) do
+              @visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+              @visualization.stubs(:organization?).returns(true)
+            end
+
+            it 'for owner user always' do
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              template_hash[:auth][:valid_tokens].should eq [@visualization.user.get_auth_token]
+            end
+
+            it 'for organization' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@org])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @org.get_auth_token
+            end
+
+            it 'for group' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@group])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @group.get_auth_token
+            end
+
+            it 'for other user' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 2
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @other_user.get_auth_token
+            end
+
+            it 'for multiple entities' do
+              @visualization.permission.stubs(:entities_with_read_permission).returns([@other_user, @group, @org])
+              template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              auth_tokens = template_hash[:auth][:valid_tokens]
+              auth_tokens.count.should eq 4
+              auth_tokens.should include @user.get_auth_token
+              auth_tokens.should include @other_user.get_auth_token
+              auth_tokens.should include @group.get_auth_token
+              auth_tokens.should include @org.get_auth_token
+            end
           end
         end
       end
@@ -535,7 +594,7 @@ module Carto
           end
 
           it 'should have the right definition' do
-            @analysis_hash.should eq @analysis.analysis_definition
+            @analysis_hash.should eq @analysis.analysis_definition_for_api
           end
         end
       end

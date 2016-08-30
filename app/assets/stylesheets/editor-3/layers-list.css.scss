@@ -15,9 +15,40 @@
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   background: #FFF;
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
 }
 .Editor-ListLayer-item.is-hidden {
   opacity: 0.64;
+}
+.Editor-ListLayer-item.is-animated {
+  position: relative;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background: $cWhite;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated:hover {
+  border: 1px solid $cSecondaryLine;
+  cursor: default;
+}
+.Editor-ListLayer-item.is-animated::before {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  bottom: -20px;
+  left: -25px;
+  border-top: 1px solid $cMainLine;
+  border-bottom: 1px solid $cMainLine;
+  background: $cThirdBackground;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0, 0, 0, 0.08) 6px, rgba(0, 0, 0, 0.08) 6px);
+  content: '';
+  z-index: -1;
+}
+// First layer?, no margin top
+.Editor-ListLayer-item.is-animated:first-child {
+  margin-top: 1px;
 }
 
 .Editor-ListLayer-item.has-error {
@@ -57,10 +88,18 @@
   left: 24px !important; // compensate for the draggable handle, !important to override inline style="left: 0 ...
   min-width: 290px;
 }
+.Editor-ListLayer .ui-sortable-helper,
+.Editor-newLayerContainer .Editor-ListLayer-item {
+  cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}
 .Editor-ListLayer-item.ui-draggable-dragging:hover {
   border: 1px solid rgba($cBlue, 0.48);
   box-shadow: 0 8px 16px rgba(#000, 0.16);
   cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
   opacity: 0.8;
   z-index: 1000;
 }
@@ -128,19 +167,18 @@
   margin-bottom: 8px;
   background: #FFF;
 }
-.Editor-ListAnalysis-item.has-error {
-  &::after {
-    display: block;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid $cWhite;
-    border-radius: 50px;
-    background-color: $cError;
-    content: ' ';
-  }
+
+.Editor-ListAnalysis-itemError {
+  display: block;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid $cWhite;
+  border-radius: 50px;
+  background-color: $cError;
+  content: ' ';
 }
 
 .Editor-ListAnalysis-item:last-child {
@@ -150,9 +188,19 @@
   display: block;
   margin-right: 0;
 }
+.Editor-ListAnalysis-item.ui-draggable .CDB-Shape, // override default cursor for shape
+.Editor-ListAnalysis-item.ui-draggable {
+   // scss-lint:disable VendorPrefix
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
 .Editor-ListAnalysis-item.ui-draggable-dragging {
+   // scss-lint:disable VendorPrefix
   width: 100%;
   cursor: move;
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
   z-index: 1000;
 }
 .Editor-ListAnalysis-inner {
@@ -190,7 +238,9 @@
   background: $cThirdBackground;
   &:hover {
     border: 1px solid $cSecondaryLine;
-    cursor: default;
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
   }
 }
 
@@ -251,4 +301,16 @@
 .Editor-dropArea.is-active {
   background: $cSecondaryBackground;
   opacity: 1;
+}
+
+.Editor-layerInfo {
+  position: relative;
+  margin-top: -10px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background: rgba($cMainBg, 0.88);
+  text-align: center;
+  z-index: -1;
 }

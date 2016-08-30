@@ -18,6 +18,7 @@ require_relative './user/db_service'
 require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -25,6 +26,7 @@ class User < Sequel::Model
   include Concerns::CartodbCentralSynchronizable
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   self.strict_param_setting = false
 
@@ -73,6 +75,7 @@ class User < Sequel::Model
     :naked => true # avoid adding json_class to result
   }
 
+  DEFAULT_MAX_LAYERS = 8
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -88,6 +91,10 @@ class User < Sequel::Model
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
+
+  DEFAULT_MAX_IMPORT_FILE_SIZE = 157286400
+  DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT = 500000
+  DEFAULT_MAX_CONCURRENT_IMPORT_COUNT = 3
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
@@ -200,11 +207,18 @@ class User < Sequel::Model
     self.account_type = "ORGANIZATION USER" if self.organization_user? && !self.organization_owner?
     if self.organization_user?
       if new? || column_changed?(:organization_id)
-        self.twitter_datasource_enabled = self.organization.twitter_datasource_enabled
-        self.google_maps_key = self.organization.google_maps_key
-        self.google_maps_private_key = self.organization.google_maps_private_key
+        self.twitter_datasource_enabled = organization.twitter_datasource_enabled
+        self.google_maps_key = organization.google_maps_key
+        self.google_maps_private_key = organization.google_maps_private_key
+
+        if !organization_owner?
+          self.max_import_file_size ||= organization.max_import_file_size
+          self.max_import_table_row_count ||= organization.max_import_table_row_count
+          self.max_concurrent_import_count ||= organization.max_concurrent_import_count
+          self.max_layers ||= organization.max_layers
+        end
       end
-      self.max_layers ||= 6
+      self.max_layers ||= DEFAULT_MAX_LAYERS
       self.private_tables_enabled ||= true
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
@@ -289,13 +303,13 @@ class User < Sequel::Model
     !has_shared_entities?
   end
 
+  def shared_entities
+    CartoDB::Permission.where(owner_id: id).all.select { |p| p.acl.present? }
+  end
+
   def has_shared_entities?
     # Right now, cannot delete users with entities shared with other users or the org.
-    has_shared_entities = false
-    CartoDB::Permission.where(owner_id: self.id).each { |permission|
-      has_shared_entities = has_shared_entities || !permission.acl.empty?
-    }
-    has_shared_entities
+    shared_entities.any?
   end
 
   def before_destroy
@@ -439,16 +453,25 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (google_sign_in && last_password_change_date.nil?)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
   end
 
   def should_display_old_password?
-    self.needs_password_confirmation?
+    needs_password_confirmation?
   end
 
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set
+  # (because of Google/Github sign in, for example)
   def needs_password_confirmation?
-    (google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?) && Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
+    (
+      (!oauth_signin? || last_password_change_date.present?) &&
+      Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
+    )
+  end
+
+  def oauth_signin?
+    google_sign_in || github_user_id.present?
   end
 
   def password_confirmation
@@ -898,23 +921,19 @@ class User < Sequel::Model
       'soft_obs_general_limit', soft_obs_general_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
-      'period_end_date', period_end_date
+      'period_end_date', period_end_date,
+      'geocoder_provider', geocoder_provider,
+      'isolines_provider', isolines_provider,
+      'routing_provider', routing_provider
   end
 
   def get_auth_tokens
     tokens = [get_auth_token]
     if has_organization?
       tokens << organization.get_auth_token
+      tokens += groups.map(&:get_auth_token)
     end
     tokens
-  end
-
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
   end
 
   # Should return the number of tweets imported by this user for the specified period of time, as an integer
@@ -1532,9 +1551,6 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
-    if mobile_sdk_enabled? && sync_data_with_cartodb_central?
-      cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
-    end
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
     raise e
@@ -1652,18 +1668,6 @@ class User < Sequel::Model
 
   def name_exists_in_organizations?
     !Organization.where(name: self.username).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
   def set_last_password_change_date

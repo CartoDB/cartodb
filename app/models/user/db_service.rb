@@ -20,7 +20,8 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.10.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.10.2'.freeze
+      ODBC_FDW_VERSION = '0.0.1'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -78,6 +79,7 @@ module CartoDB
 
         # Rebuild the geocoder api user config to reflect that is an organization user
         install_and_configure_geocoder_api_extension
+        install_odbc_fdw
       end
 
       # INFO: main setup for non-org users
@@ -91,6 +93,7 @@ module CartoDB
         create_geocoding_schema
         load_cartodb_functions
         install_and_configure_geocoder_api_extension
+        install_odbc_fdw
         # We reset the connections to this database to be sure the change in default search_path is effective
         reset_pooled_connections
 
@@ -346,14 +349,16 @@ module CartoDB
               revoke_all_on_database_from(conn, database_with_conflicts, username)
               revoke_all_memberships_on_database_to_role(conn, username)
               drop_owned_by_user(conn, username)
+
               conflict_database_conn = @user.in_database(
                 as: :cluster_admin,
                 'database' => database_with_conflicts
               )
               drop_owned_by_user(conflict_database_conn, username)
               ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema].each do |s|
-                drop_users_privileges_in_schema(s, [username])
+                drop_users_privileges_in_schema(s, [username], conn: conflict_database_conn)
               end
+              DBService.close_sequel_connection(conflict_database_conn)
               retry
             end
           else
@@ -460,6 +465,18 @@ module CartoDB
         end
       end
 
+      def install_odbc_fdw
+        @user.in_database(as: :superuser) do |db|
+          db.transaction do
+            db.run('CREATE EXTENSION IF NOT EXISTS odbc_fdw SCHEMA public')
+            db.run("ALTER EXTENSION odbc_fdw UPDATE TO '#{ODBC_FDW_VERSION}'")
+          end
+        end
+      rescue Sequel::DatabaseError
+        # For the time being we'll be resilient to the odbc_fdw not being available
+        # and just proceed without installing it.
+      end
+
       def setup_organization_owner
         setup_organization_role_permissions
         setup_owner_permissions
@@ -498,7 +515,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.17.0'
+          cdb_extension_target_version = '0.17.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -776,15 +793,14 @@ module CartoDB
         !database.fetch(query).first.nil?
       end
 
-      def drop_users_privileges_in_schema(schema, accounts)
-        @user.in_database(as: :superuser, statement_timeout: 600000) do |user_database|
-          return unless schema_exists?(schema, user_database)
+      def drop_users_privileges_in_schema(schema, accounts, conn: nil)
+        user_database = conn || @user.in_database(as: :superuser, statement_timeout: 600000)
+        return unless schema_exists?(schema, user_database)
 
-          user_database.transaction do
-            accounts
-              .select { |role| role_exists?(user_database, role) }
-              .each { |role| revoke_privileges(user_database, schema, "\"#{role}\"") }
-          end
+        user_database.transaction do
+          accounts
+            .select { |role| role_exists?(user_database, role) }
+            .each { |role| revoke_privileges(user_database, schema, "\"#{role}\"") }
         end
       end
 

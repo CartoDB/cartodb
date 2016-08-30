@@ -5,6 +5,7 @@
 @import "_mixins";
 @import "_helpers";
 @import "../variables/mixins";
+@import "_oauth_login_button";
 
 $sessions-text-color: rgba(white, 0.5);
 $sessions-link-color: rgba(white, 0.8);
@@ -79,7 +80,14 @@ $cWhite: #FFFFFF;
   @include justify-content(space-between, space-between);
 }
 
-.Sessions-title {
+.Sessions .Sessions-title {
+  color: $cNavyBlue;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 48px;
+}
+
+.Sessions-navy .Sessions-title {
   font-weight: 300;
   font-size: 32px;
   line-height: 48px;
@@ -90,7 +98,25 @@ $cWhite: #FFFFFF;
   display: block;
 }
 
-.Sessions-description {
+.Sessions .Sessions-description {
+  margin-bottom: 16px;
+  color: #979EA1;
+  font-size: 13px;
+  font-weight: 200;
+  line-height: 20px;
+  text-align: center;
+
+  a {
+    color: $cLocationBlue;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.Sessions-navy .Sessions-description {
   font-weight: 200;
   font-size: 13px;
   line-height: 20px;
@@ -99,10 +125,11 @@ $cWhite: #FFFFFF;
   color: $sessions-text-color;
 
   a {
-    color: $sessions-text-color;
+    color: $cWhite;
+    text-decoration: none;
 
     &:hover {
-      color: $sessions-link-color;
+      text-decoration: underline;
     }
   }
 }
@@ -263,7 +290,7 @@ $cWhite: #FFFFFF;
   background-color: #60c556;
   color: $cWhite;
   font-size: 12px;
-  margin: 2px 0 15px 0;
+  margin: 2px 0;
   border-radius: 4px;
   text-transform: uppercase;
 

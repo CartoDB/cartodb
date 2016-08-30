@@ -36,7 +36,7 @@
   position: relative;
   width: 100%;
 }
-.Dataset-viewTable .Table--relative {
+.Dataset-viewTable .Table-wrapper {
   top: 40px;
 }
 .Dataset-options,
@@ -89,4 +89,3 @@
 .is-dark .Dataset-tablePreview {
   color: $cWhite;
 }
-

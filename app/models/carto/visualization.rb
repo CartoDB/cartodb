@@ -3,9 +3,11 @@ require_relative '../visualization/stats'
 require_relative '../../helpers/embed_redis_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/api'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::AuthTokenGenerator
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -56,12 +58,15 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
+  belongs_to :state, class_name: Carto::State
+  after_save :save_state_if_needed
+
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end
 
   def ==(other_visualization)
-    self.id == other_visualization.id
+    id == other_visualization.id
   end
 
   def size
@@ -147,7 +152,7 @@ class Carto::Visualization < ActiveRecord::Base
     is_public? || is_link_privacy?
   end
 
-  def is_writable_by_user(user)
+  def writable_by?(user)
     (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 
@@ -271,14 +276,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def get_auth_tokens
-    tokens = get_named_map[:template][:auth][:valid_tokens]
-    raise CartoDB::InvalidMember if tokens.empty?
-
-    tokens
-  end
-
-  def needed_auth_tokens
-    (password_protected? || organization?) ? get_auth_tokens : []
+    [get_auth_token]
   end
 
   def mapviews
@@ -355,8 +353,9 @@ class Carto::Visualization < ActiveRecord::Base
     CartoDB::Varnish.new.purge(varnish_vizjson_key)
   end
 
-  def all_users_with_read_permission
-    permission.users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY]).push(user)
+  def allowed_auth_tokens
+    entities = [user] + permission.entities_with_read_permission
+    entities.map(&:get_auth_token)
   end
 
   def mapcapped?
@@ -371,7 +370,74 @@ class Carto::Visualization < ActiveRecord::Base
     analyses.any? || widgets.any? || mapcapped?
   end
 
+  def add_source_analyses
+    return unless analyses.empty?
+
+    carto_and_torque_layers.each_with_index do |layer, index|
+      analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+
+      if analysis.save
+        layer.options[:source] = analysis.natural_id
+        layer.options[:letter] = analysis.natural_id.first
+        layer.save
+      else
+        CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
+      end
+    end
+  end
+
+  def ids_json
+    layers_for_hash = layers.map do |layer|
+      { layer_id: layer.id, widgets: layer.widgets.map(&:id) }
+    end
+
+    {
+      visualization_id: id,
+      map_id: map.id,
+      layers: layers_for_hash
+    }
+  end
+
+  def populate_ids(ids_json)
+    self.id = ids_json[:visualization_id]
+    map.id = ids_json[:map_id]
+
+    map.layers.each_with_index do |layer, index|
+      stored_layer_ids = ids_json[:layers][index]
+      stored_layer_id = stored_layer_ids[:layer_id]
+
+      layer.id = stored_layer_id
+      layer.maps = [map]
+
+      layer.widgets.each_with_index do |widget, widget_index|
+        widget.id = stored_layer_ids[:widgets][widget_index]
+        widget.layer_id = stored_layer_id
+      end
+    end
+  end
+
+  def for_presentation
+    mapcapped? ? latest_mapcap.regenerate_visualization : self
+  end
+
+  def state
+    super ? super : build_state
+  end
+
   private
+
+  def build_state
+    self.state = Carto::State.new(user: user, visualization: self)
+  end
+
+  def save_state_if_needed
+    if state.changed?
+      state.visualization = self unless state.visualization
+      state.user = user unless state.user
+
+      update_attribute(:state_id, state.id) if state.save && !state_id
+    end
+  end
 
   def named_maps_api
     Carto::NamedMaps::Api.new(self)

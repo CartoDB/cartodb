@@ -28,6 +28,10 @@ describe Carto::Api::VisualizationsController do
       def vizjson_vx_version
         '0.1.0'
       end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'][1]['options']['attribution'].split(',').map(&:strip)
+      end
     end
   end
 
@@ -39,6 +43,12 @@ describe Carto::Api::VisualizationsController do
 
       def vizjson_vx_version
         '3.0.0'
+      end
+
+      def attributions_from_vizjson(visualization)
+        visualization['layers'].select { |l| l['type'] == 'CartoDB' }
+                               .map { |l| l['options']['attribution'] }
+                               .select(&:present?)
       end
     end
   end
@@ -275,6 +285,7 @@ describe Carto::Api::VisualizationsController do
 
       # This is only in the Carto::Visualization presenter (not in old member presenter)
       expected_visualization['uses_builder_features'] = false
+      expected_visualization['auth_tokens'] = nil # normalize_hash converts [] to nil
 
       response = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL)
       # INFO: old API won't support server side generated urls for visualizations. See #5250 and #5279
@@ -1122,6 +1133,11 @@ describe Carto::Api::VisualizationsController do
         response.body[:layers][index]['options']['named_map']
       end
 
+      def first_data_layer_from_response(response)
+        index = response.body[:layers].index { |l| l['type'] == 'CartoDB' }
+        response.body[:layers][index]
+      end
+
       let(:infowindow) do
         JSON.parse(FactoryGirl.build_stubbed(:carto_layer_with_infowindow).infowindow)
       end
@@ -1177,14 +1193,14 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               infowindow['template_name'].should eq "table/views/infowindow_light"
               response_infowindow['template_name'].should eq "infowindow_light"
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
               response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
@@ -1222,14 +1238,14 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               infowindow['template_name'].should eq "table/views/infowindow_light"
               response_infowindow['template_name'].should eq 'infowindow_light'
               response_infowindow['template'].should include(v3_infowindow_light_template_fragment)
               response_infowindow['template'].should_not include(v2_infowindow_light_template_fragment)
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq tooltip['template_name']
               response_tooltip['template'].should include(v3_tooltip_light_template_fragment)
               response_tooltip['template'].should_not include(v2_tooltip_light_template_fragment)
@@ -1272,12 +1288,12 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_definition = first_layer_definition_from_response(response)
-              response_infowindow = layer_definition['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               response_infowindow['template_name'].should eq ''
               response_infowindow['template'].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_definition['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq ''
               response_tooltip['template'].should eq custom_tooltip[:template]
             end
@@ -1312,12 +1328,12 @@ describe Carto::Api::VisualizationsController do
             get_json get_vizjson3_url(@user_1, @visualization), @headers do |response|
               response.status.should eq 200
 
-              layer_named_map = first_layer_named_map_from_response(response)
-              response_infowindow = layer_named_map['layers'][0]['infowindow']
+              layer = first_data_layer_from_response(response)
+              response_infowindow = layer['infowindow']
               response_infowindow['template_name'].should eq ''
               response_infowindow['template'].should eq custom_infowindow[:template]
 
-              response_tooltip = layer_named_map['layers'][0]['tooltip']
+              response_tooltip = layer['tooltip']
               response_tooltip['template_name'].should eq ''
               response_tooltip['template'].should eq custom_tooltip[:template]
             end

@@ -16,6 +16,7 @@ CartoDB::Application.routes.draw do
   get   '/signup'           => 'signup#signup',     as: :signup
   post  '/signup'           => 'signup#create',  as: :signup_organization_user
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
+  get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication_in_progress' => 'signup#create_http_authentication_in_progress', as: :signup_http_authentication_in_progress
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
@@ -53,6 +54,7 @@ CartoDB::Application.routes.draw do
         namespace :public, path: '/' do
           match 'embed', to: 'embeds#show', via: :get
           match 'embed_protected', to: 'embeds#show_protected', via: :post
+          match 'embed_protected', to: 'embeds#show', via: :get
         end
       end
 
@@ -64,6 +66,8 @@ CartoDB::Application.routes.draw do
         CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s
       }
     end
+
+    get '/github' => 'github#github', as: :github
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -321,9 +325,7 @@ CartoDB::Application.routes.draw do
     # 1b Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/bivisualizations/:id/embed_map'        => 'bi_visualizations#embed_map',       as: :bi_visualizations_embed_map,  constraints: { id: /[^\/]+/ }, defaults: { dont_rewrite: true }
 
-    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit] do
-      get 'api_keys', on: :member
-    end
+    resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
   end
 
   scope :module => 'carto/api', :format => :json do
@@ -495,11 +497,14 @@ CartoDB::Application.routes.draw do
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resource :state, only: [:update]
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
         get 'download' => 'visualization_exports#download', as: :download
       end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
     end
   end
 
@@ -597,6 +602,13 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+  end
+
+  scope module: 'carto' do
+    namespace :superadmin do
+      resources :user_migration_exports, only: [:show, :create]
+      resources :user_migration_imports, only: [:show, :create]
+    end
   end
 
   scope :module => 'superadmin', :format => :json do

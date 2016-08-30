@@ -306,12 +306,9 @@ shared_examples_for 'vizjson generator' do
         visualization = JSON.parse(last_response.body)
 
         # Attribution of the layergroup layer is right
-        layer_group_layer = visualization["layers"][1]
-        layer_group_layer["type"].should == 'layergroup'
+        layer_group_attributions = attributions_from_vizjson(visualization)
 
-        layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
-        layer_group_layer.size.should == 2
-
+        layer_group_attributions.size.should == 2
         layer_group_attributions.should include('attribution1')
         layer_group_attributions.should include('attribution2')
       end
@@ -351,11 +348,7 @@ shared_examples_for 'vizjson generator' do
 
         visualization = JSON.parse(last_response.body)
 
-        # Attribution of the layergroup layer is right
-        named_map_layer = visualization["layers"][1]
-        named_map_layer["type"].should == 'namedmap'
-
-        named_map_attributions = named_map_layer["options"]["attribution"].split(',').map(&:strip)
+        named_map_attributions = attributions_from_vizjson(visualization)
 
         named_map_attributions.size.should == 2
         named_map_attributions.should include('attribution1')
@@ -403,10 +396,8 @@ shared_examples_for 'vizjson generator' do
             @headers
         visualization = JSON.parse(last_response.body)
 
-        layer_group_layer = visualization['layers'][1]
-        layer_group_layer['type'].should eq 'layergroup'
-        layer_group_attributions = layer_group_layer["options"]["attribution"].split(',').map(&:strip)
-        layer_group_layer.size.should eq 2
+        layer_group_attributions = attributions_from_vizjson(visualization)
+        layer_group_attributions.size.should eq 2
 
         layer_group_attributions.should include(table_1_attribution)
         layer_group_attributions.should include(modified_table_2_attribution)

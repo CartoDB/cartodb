@@ -7,20 +7,26 @@
 
 .Editor-HeaderInfoEditor {
   @include display-flex();
-  @include align-items(baseline);
   height: 64px;
   margin-bottom: 21px;
+}
+.Editor-HeaderInfoEditorShape {
+  line-height: 44px;
 }
 
 .Editor-HeaderInfo {
   @include display-flex();
-  @include align-items(baseline);
   margin-bottom: 32px;
 
   &.is-block {
     display: block;
   }
 }
+
+.Editor-HeaderInfo--noMargin {
+  margin-bottom: 0;
+}
+
 .Editor-HeaderInfo-listItem {
   display: inline-block;
   margin-right: 8px;
@@ -54,12 +60,20 @@
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();
+  @include align-items(center);
 }
 .Editor-HeaderInfo-actionsItem {
   margin-left: 4px;
 }
 .Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
+}
+
+.Editor-HeaderPad {
+  width: $baseSize * 3;
+  min-width: $baseSize * 3;
+  height: $baseSize * 3;
+  box-sizing: border-box;
 }
 
 .Editor-HeaderNumeration {

@@ -3,11 +3,14 @@
 @import 'cdb-variables/sizes';
 
 .Tag {
+  display: inline-block;
+  height: 16px;
   padding: 0 4px;
   border-radius: $halfBaseSize / 2;
   background-color: $cThirdBackground;
   color: $cAltText;
-  line-height: 16px;
+  box-sizing: border-box;
+  line-height: 14px;
 
   // TODO backgrounds
   &.is-blue {
@@ -22,12 +25,43 @@
     color: $cAlert;
   }
 
+  &.is-orange-dark {
+    color: $cPassword;
+  }
+
   &.is-red {
     color: $cError;
   }
 }
 
+.Tag-fill {
+  background-color: $cThirdBackground;
+  color: $cWhite;
+}
+.Tag-fill--yellow {
+  background: #FFB927;
+}
+.Tag-fill--orange {
+  background: $cAlert;
+}
+.Tag-fill--red {
+  background: $cError;
+}
+.Tag-fill--blue {
+  background: $cBlue;
+}
+
+.Tag--big {
+  height: 24px;
+  padding: 0 8px;
+  line-height: 22px;
+}
+
 .Tag--outline {
   border: 1px solid;
   background-color: transparent;
+}
+
+.Tag--Builder {
+  color: $cMainText;
 }

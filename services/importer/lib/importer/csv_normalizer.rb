@@ -14,8 +14,8 @@ module CartoDB
       LINE_SIZE_FOR_CLEANING = 5000
       LINES_FOR_DETECTION   = 100       # How many lines to read?
       SAMPLE_READ_LIMIT     = 500000   # Read big enough sample bytes for the encoding sampling
-      COMMON_DELIMITERS     = [',', "\t", ' ', ';']
-      DELIMITER_WEIGHTS     = {','=>2, "\t"=>2, ' '=>1, ';'=>2}
+      COMMON_DELIMITERS     = [',', "\t", ' ', ';', '|'].freeze
+      DELIMITER_WEIGHTS     = { ',' => 2, "\t" => 2, ' ' => 1, ';' => 2, '|' => 2 }.freeze
       DEFAULT_DELIMITER     = ','
       DEFAULT_ENCODING      = 'UTF-8'
       DEFAULT_QUOTE         = '"'

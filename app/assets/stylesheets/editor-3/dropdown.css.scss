@@ -78,7 +78,8 @@
   border: 1px solid $cMainLine;
   border-radius: 4px;
   background: $cWhite;
-  box-shadow: 0  $baseSize  $baseSize * 2 0 rgba(0, 0, 0, 0.16);
+  white-space: normal;
+  box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
 }
 
 .Editor-boxModalHeader {

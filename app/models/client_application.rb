@@ -1,7 +1,14 @@
 # coding: utf-8
 require 'oauth'
 
+class DomainPatcherRequestProxy < OAuth::RequestProxy::RackRequest
+  def uri
+    super.sub('carto.com', 'cartodb.com')
+  end
+end
+
 class ClientApplication < Sequel::Model
+  extend CartoDB::ConfigUtils
 
   one_to_many :tokens, :class_name => :OauthToken
   one_to_many :access_tokens
@@ -31,16 +38,15 @@ class ClientApplication < Sequel::Model
   end
 
   def self.verify_request(request, options = {}, &block)
-    begin
-      signature = OAuth::Signature.build(request, options, &block)
-      # As we're always over SSL the extra Nonce security is not really needed so we gain performance and
-      # we avoid storing every nonce in redis as well (for node).
-      # return false unless OauthNonce.remember(signature.request.nonce, signature.request.timestamp)
-      value = signature.verify
-      value
-    rescue OAuth::Signature::UnknownSignatureMethod => e
-      false
+    value = OAuth::Signature.build(request, options, &block).verify
+    if !value && !cartodb_com_hosted?
+      # Validation failed, try to see if it has been signed for cartodb.com
+      cartodb_request = DomainPatcherRequestProxy.new(request, options)
+      value = OAuth::Signature.build(cartodb_request, options, &block).verify
     end
+    value
+  rescue OAuth::Signature::UnknownSignatureMethod
+    false
   end
 
   def oauth_server

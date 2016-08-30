@@ -7,13 +7,13 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   include MobileAppsHelper
   include AvatarHelper
 
-  ssl_required  :index, :show, :new, :create, :update, :destroy, :api_keys
+  ssl_required  :index, :show, :new, :create, :update, :destroy
   before_filter :invalidate_browser_cache
   before_filter :login_required
   before_filter :check_user_permissions
   before_filter :initialize_cartodb_central_client
-  before_filter :validate_id, only: [:show, :update, :destroy, :api_keys]
-  before_filter :load_mobile_app, only: [:show, :update, :api_keys]
+  before_filter :validate_id, only: [:show, :update, :destroy]
+  before_filter :load_mobile_app, only: [:show, :update]
   before_filter :setup_avatar_upload, only: [:new, :create, :show, :update]
 
   rescue_from Carto::LoadError, with: :render_404
@@ -51,7 +51,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     end
 
     attributes = @mobile_app.as_json.symbolize_keys.slice(:name, :description, :icon_url, :platform, :app_id, :app_type)
-    @cartodb_central_client.create_mobile_app(current_user.username, current_user.api_key, attributes)
+    @cartodb_central_client.create_mobile_app(current_user.username, attributes)
 
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been added succesfully!' }
 
@@ -71,10 +71,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def update
-    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url)
+    updated_attributes = params[:mobile_app].symbolize_keys.slice(:name, :description, :icon_url, :app_type)
     @mobile_app.name = updated_attributes[:name]
     @mobile_app.icon_url = updated_attributes[:icon_url]
     @mobile_app.description = updated_attributes[:description]
+    @mobile_app.app_type = updated_attributes[:app_type]
 
     unless @mobile_app.valid?
       @max_dev_users = Carto::MobileApp::MAX_DEV_USERS
@@ -107,12 +108,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
     redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
-  end
-
-  def api_keys
-    respond_to do |format|
-      format.html { render 'mobile_app_api_keys' }
-    end
   end
 
   private

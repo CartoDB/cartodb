@@ -7,8 +7,12 @@
 
 .Editor-formInner {
   @include display-flex();
+  @include align-items(baseline, baseline);
   min-height: $baseSize * 4;
   margin-top: $baseSize;
+}
+.Options-form .Editor-formInner {
+  margin-top: 0;
 }
 .Editor-formInner .CDB-Legend {
   padding-top: 9px;
@@ -16,10 +20,12 @@
 .Editor-formInput {
   @include flex(1);
   position: relative;
-  max-width: 158px;
 }
 .Editor-formInput:focus {
   outline: none;
+}
+.Editor-formInner--noMargin {
+  margin-top: 0;
 }
 .Editor-formInner--nested {
   position: relative;
@@ -49,6 +55,14 @@
   background: $cWhite;
   content: '';
   box-sizing: border-box;
+}
+
+
+.Editor-formInner .Editor-formSelect {
+  max-width: 158px;
+}
+.Editor-formSelect {
+  @include flex(1);
 }
 
 .Editor-boxModal .CDB-Legend {
@@ -83,29 +97,44 @@
   width: 100%;
   height: 100%;
 }
+.Editor-checker {
+  width: 100%;
+}
+.Editor-checker--slim .Editor-formInner {
+  min-height: 20px;
+}
+.Editor-checkerInput {
+  width: 92px;
+  margin-right: 12px;
+}
+.Editor-checkerInput .CDB-Checkbox-face {
+  width: 18px; // Forcing to be at least that width
+}
+.Editor-checkerLabel {
+  margin-left: 8px;
+}
+.Editor-checkerComponent {
+  width: 158px;
+}
 
 // TODO: fix this in CartoAsssets
 .CDB-OptionInput-container {
   height: 100%;
 }
-
 .CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
   color: #CCC;
 }
 .CDB-OptionInput-item--categories .InputColor {
   padding: 0;
 }
-
 .CDB-ColorBar.is-link {
   cursor: pointer;
 }
-
 .Form-InputFill.is-disabled {
   border-color: #EEE;
   background: #F9F9F9;
   cursor: default;
 }
-
 .RampItem-bar {
   width: 50px;
 }

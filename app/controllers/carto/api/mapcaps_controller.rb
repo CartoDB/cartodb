@@ -1,6 +1,8 @@
 # encoding: utf-8
 require_relative '../builder/builder_users_module'
 
+require_dependency 'carto/tracking/events'
+
 module Carto
   module Api
     class MapcapsController < ::Api::ApplicationController
@@ -14,7 +16,8 @@ module Carto
                     :owners_only
       before_filter :load_mapcap, only: [:show, :destroy]
 
-      after_filter :ensure_only_one_mapcap, only: :create
+      after_filter :ensure_only_one_mapcap,
+                   :track_published_map, only: :create
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError,
@@ -55,7 +58,7 @@ module Carto
       end
 
       def owners_only
-        raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
+        raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_user)
       end
 
       MAX_MAPCAPS_PER_MAP = 1
@@ -72,6 +75,10 @@ module Carto
         @mapcap = Carto::Mapcap.find(mapcap_id)
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new("Mapcap not found: #{mapcap_id}")
+      end
+
+      def track_published_map
+        Carto::Tracking::Events::PublishedMap.new(current_user, @visualization).report
       end
     end
   end

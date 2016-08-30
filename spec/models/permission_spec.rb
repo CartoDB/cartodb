@@ -42,6 +42,7 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
       vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:save_named_map)
       vis_entity_mock.stubs(:table).returns(vis_table_mock)
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
@@ -302,6 +303,7 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
       vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:save_named_map)
       vis_entity_mock.stubs(:table).returns(vis_table_mock)
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
@@ -505,7 +507,7 @@ describe CartoDB::Permission do
       permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
       permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
-      # Organization has more permissions than user. Should get overriden (user prevails)
+      # Organization has more permissions than user. Should get inherited (RW prevails)
       permission.acl = [
           {
               type: Permission::TYPE_USER,
@@ -526,30 +528,7 @@ describe CartoDB::Permission do
       ]
       permission.save
       permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
-
-      # User has revoked permissions, org has permissions. User revoked should prevail
-      permission.acl = [
-          {
-              type: Permission::TYPE_USER,
-              entity: {
-                  id: user2_mock.id,
-                  username: user2_mock.username
-              },
-              access: Permission::ACCESS_NONE
-          },
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id: org_mock.id,
-                  username: org_mock.name
-              },
-              access: Permission::ACCESS_READWRITE
-          }
-      ]
-      permission.save
-      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
-      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
       # Organization permission only
       permission.acl = [
@@ -802,6 +781,7 @@ describe CartoDB::Permission do
     vis_entity_mock.stubs(:related_tables).returns([])
     vis_entity_mock.stubs(:table?).returns(true)
     vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+    vis_entity_mock.stubs(:save_named_map)
     vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
     vis_entity_mock.stubs(:id).returns(viz_id)
     vis_entity_mock.stubs(:name).returns("foobar_visualization")

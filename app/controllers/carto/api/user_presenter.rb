@@ -37,6 +37,14 @@ module Carto
         poro
       end
 
+      def to_poro_without_id
+        presentation = to_poro
+
+        presentation.delete(:id)
+
+        presentation
+      end
+
       def to_public_poro
         return {} if @user.nil?
 
@@ -105,6 +113,9 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
           },
+          geocoder_provider: @user.geocoder_provider,
+          isolines_provider: @user.isolines_provider,
+          routing_provider: @user.routing_provider,
           obs_snapshot: {
             quota:       @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
             block_price: @user.organization_user? ? @user.organization.obs_snapshot_block_price : @user.obs_snapshot_block_price,

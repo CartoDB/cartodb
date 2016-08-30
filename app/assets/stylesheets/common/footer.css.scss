@@ -12,7 +12,7 @@
   display: block;
   position: relative;
   width: 100%;
-  padding: $baseSize * 5 0 0;
+  padding: $baseSize * 5 0;
   border-top: 1px solid $cSecondaryLine;
   background: $cThirdBackground;
 }
@@ -20,6 +20,7 @@
   background: white;
 }
 .Footer.Footer--public {
+  padding-bottom: 0;
   box-shadow: none;
   overflow: hidden;
   text-rendering: optimizeLegibility;

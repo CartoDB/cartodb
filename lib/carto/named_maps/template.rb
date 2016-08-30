@@ -140,11 +140,12 @@ module Carto
       end
 
       def common_options_for_carto_and_torque_layers(layer, index)
-        layer_options = layer.options
+        layer_options = layer.options.with_indifferent_access
+        tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
         options = {
           id: layer.id,
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
+          cartocss: tile_style.present? ? tile_style : EMPTY_CSS,
           cartocss_version: layer_options.fetch('style_version')
         }
 
@@ -201,7 +202,7 @@ module Carto
       end
 
       def analyses_definitions
-        @visualization.analyses.map(&:analysis_definition)
+        @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
       def stats_aggregator
@@ -224,14 +225,9 @@ module Carto
 
       def auth
         method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, @visualization.user.get_auth_tokens]
-                               elsif @visualization.organization?
-                                 auth_tokens = @visualization.all_users_with_read_permission
-                                                             .map(&:get_auth_tokens)
-                                                             .flatten
-                                                             .uniq
-
-                                 [AUTH_TYPE_SIGNED, auth_tokens]
+                                 [AUTH_TYPE_SIGNED, [@visualization.get_auth_token]]
+                               elsif @visualization.is_privacy_private?
+                                 [AUTH_TYPE_SIGNED, @visualization.allowed_auth_tokens]
                                else
                                  [AUTH_TYPE_OPEN, nil]
                                end

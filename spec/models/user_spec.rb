@@ -25,6 +25,10 @@ describe 'refactored behaviour' do
     def get_user_by_id(user_id)
       ::User.where(id: user_id).first
     end
+
+    def create_user
+      FactoryGirl.create(:valid_user)
+    end
   end
 
 end
@@ -288,7 +292,7 @@ describe User do
     it 'should set default settings properly unless overriden' do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.max_layers.should == 6
+        u.max_layers.should eq ::User::DEFAULT_MAX_LAYERS
         u.private_tables_enabled.should be_true
         u.sync_tables_enabled.should be_true
       end
@@ -1137,12 +1141,6 @@ describe User do
 
   it "should not regenerate the api_key after saving" do
     expect { @user.save }.to_not change { @user.api_key }
-  end
-
-  it "should not try to update mobile api_keys if the user has it disabled" do
-    @user.stubs(:mobile_sdk_enabled?).returns(false)
-    @user.stubs(:cartodb_central_client).never
-    @user.regenerate_api_key
   end
 
   it "should remove its metadata from redis after deletion" do
@@ -2101,11 +2099,22 @@ describe User do
 
       disk_quota = 1234567890
       user_timeout_secs = 666
+      max_import_file_size = 6666666666
+      max_import_table_row_count = 55555555
+      max_concurrent_import_count = 44
+      max_layers = 11
 
       # create an owner
       organization = create_org('org-user-creation-db-checks-organization', disk_quota * 10, 10)
       user1 = create_user email: 'user1@whatever.com', username: 'creation-db-checks-org-owner', password: 'user11'
       user1.organization = organization
+
+      user1.max_import_file_size = max_import_file_size
+      user1.max_import_table_row_count = max_import_table_row_count
+      user1.max_concurrent_import_count = max_concurrent_import_count
+
+      user1.max_layers = 11
+
       user1.save
       organization.owner_id = user1.id
       organization.save
@@ -2142,6 +2151,12 @@ describe User do
       CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
+
+      user.max_import_file_size.should eq max_import_file_size
+      user.max_import_table_row_count.should eq max_import_table_row_count
+      user.max_concurrent_import_count.should eq max_concurrent_import_count
+
+      user.max_layers.should eq max_layers
 
       # Just to be sure all following checks will not falsely report ok using wrong schema
       user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC

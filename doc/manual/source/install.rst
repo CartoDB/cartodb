@@ -422,13 +422,14 @@ Editor
 
   .. code-block:: bash
 
+    RAILS_ENV=development bundle exec rake db:create
     RAILS_ENV=development bundle exec rake db:migrate
 
 * Create an admin user
 
   .. code-block:: bash
 
-    RAILS_ENV=development bundle exec rake db:setup_user
+    RAILS_ENV=development bundle exec rake cartodb:db:setup_user
 
 * Start the redis-server that allows access to the SQL and Maps APIs:
 

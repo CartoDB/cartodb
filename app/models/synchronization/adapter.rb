@@ -27,12 +27,12 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
           cartodbfy(result.table_name)
+          copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
           run_index_statements(index_statements)
@@ -154,7 +154,9 @@ module CartoDB
         return nil unless the_geom_data
 
         if the_geom_data[:typname] != 'geometry'
-          user.in_database.rename_column(qualified_table_name, THE_GEOM, :the_geom_str)
+          user.in_database.execute %{
+              ALTER TABLE #{qualified_table_name} RENAME COLUMN "#{THE_GEOM}" TO "the_geom_str"
+          }
           return nil
         end
 

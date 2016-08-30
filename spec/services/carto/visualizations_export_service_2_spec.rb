@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: 2
+      version: '2.0.3'
     }
   end
 
@@ -28,6 +28,7 @@ describe Carto::VisualizationsExportService2 do
       attributions: 'the attributions',
       bbox: '0103000000010000000500000031118AC72D246AC1A83916DE775E51C131118AC72D246AC18A9C928550D5614101D5E410F03E7' +
         '0418A9C928550D5614101D5E410F03E7041A83916DE775E51C131118AC72D246AC1A83916DE775E51C1',
+      state: { json: { manolo: 'escobar' } },
       display_name: 'the display_name',
       map: {
         provider: 'leaflet',
@@ -152,7 +153,8 @@ describe Carto::VisualizationsExportService2 do
       ],
       analyses: [
         { analysis_definition: { id: 'a1', type: 'source' } }
-      ]
+      ],
+      user: { username: 'juanignaciosl' }
     }
   end
 
@@ -171,6 +173,8 @@ describe Carto::VisualizationsExportService2 do
     visualization.attributions.should eq visualization_export[:attributions]
     visualization.bbox.should eq visualization_export[:bbox]
     visualization.display_name.should eq visualization_export[:display_name]
+
+    verify_state_vs_export(visualization.state, visualization_export[:state])
 
     visualization.encrypted_password.should be_nil
     visualization.password_salt.should be_nil
@@ -202,6 +206,13 @@ describe Carto::VisualizationsExportService2 do
     map.view_bounds_ne.should eq map_export[:view_bounds_ne]
     map.scrollwheel.should eq map_export[:scrollwheel]
     map.legends.should eq map_export[:legends]
+  end
+
+  def verify_state_vs_export(state, state_export)
+    state_export_json = state_export[:json] if state_export
+    state_export_json ||= {}
+
+    state.json.should eq state_export_json
   end
 
   def verify_layers_vs_export(layers, layers_export, importing_user: nil)
@@ -337,6 +348,8 @@ describe Carto::VisualizationsExportService2 do
         visualization.user_id.should be_nil # Import build step is "user-agnostic"
         visualization.created_at.should be_nil # Not set until persistence
         visualization.updated_at.should be_nil # Not set until persistence
+
+        visualization.state.id.should be_nil
 
         map = visualization.map
         map.id.should be_nil # Not set until persistence
@@ -497,6 +510,41 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.2 (without Visualization.state)' do
+          export_2_0_2 = export
+          export_2_0_2[:visualization].delete(:state)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_2.to_json)
+
+          visualization_export = export_2_0_2[:visualization]
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
+
+        describe '2.0.1 (without username)' do
+          it 'when not renaming tables' do
+            export_2_0_1 = export
+            export_2_0_1[:visualization].delete(:user)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_1.to_json)
+
+            visualization_export = export_2_0_1[:visualization]
+            verify_visualization_vs_export(visualization, visualization_export)
+          end
+
+          it 'when renaming tables' do
+            export_2_0_1 = export
+            export_2_0_1.delete(:user)
+
+            service = Carto::VisualizationsExportService2.new
+            built_viz = service.build_visualization_from_json_export(export_2_0_1.to_json)
+            Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+            imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
+            imported_viz.layers[1].options[:user_name].should eq @user.username
+          end
+        end
+
         it '2.0.0 (without Widget.source_id)' do
           export_2_0_0 = export
           export_2_0_0[:visualization][:layers].each do |layer|
@@ -614,6 +662,7 @@ describe Carto::VisualizationsExportService2 do
         bypass_named_maps
         delete_user_data @org_user_with_dash_1
         delete_user_data @org_user_with_dash_2
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
       end
 
       let(:table_name) { 'a_shared_table' }
@@ -648,6 +697,9 @@ describe Carto::VisualizationsExportService2 do
                                                                                        map: map,
                                                                                        table: user_table,
                                                                                        data_layer: layer)
+
+        FactoryGirl.create(:source_analysis, visualization: @visualization, user: owner_user,
+                                             source_table: @table.name, query: query_1)
       end
 
       after(:each) do
@@ -672,6 +724,9 @@ describe Carto::VisualizationsExportService2 do
         imported_layer = imported_viz.layers[0]
 
         imported_layer[:options]['user_name'].should eq target_user.username
+
+        analysis_definition = imported_viz.analyses.first.analysis_definition
+        analysis_definition[:params][:query].should eq imported_layer[:options]['query']
 
         imported_layer[:options]['query']
       end
@@ -707,6 +762,120 @@ describe Carto::VisualizationsExportService2 do
         setup_visualization_with_layer_query(source_user, target_user)
         source_user.username.should include('-')
         check_username_replacement(source_user, target_user).should eq query
+      end
+
+      it 'does not replace owner name with new user name on import when new query fails' do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        source_user = @carto_org_user_1
+        target_user = @carto_org_user_2
+        setup_visualization_with_layer_query(source_user, target_user)
+        check_username_replacement(source_user, target_user).should eq query(source_user)
+      end
+    end
+
+    describe 'exporting + importing visualizations with renamed tables' do
+      include Carto::Factories::Visualizations
+      include CartoDB::Factories
+
+      before(:all) do
+        bypass_named_maps
+        @user = FactoryGirl.create(:carto_user)
+      end
+
+      before(:each) do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+      end
+
+      def default_query(table_name = @table.name)
+        if @user.present?
+          "SELECT * FROM #{@user.sql_safe_database_schema}.#{table_name}"
+        else
+          "SELECT * FROM #{table_name}"
+        end
+      end
+
+      def setup_visualization_with_layer_query(table_name, query = nil)
+        @table = create_table(name: table_name, user_id: @user.id)
+        user_table = Carto::UserTable.find(@table.id)
+
+        query ||= default_query(table_name)
+        layer_options = {
+          table_name: @table.name,
+          query: query,
+          user_name: @user.username,
+          query_history: [query]
+        }
+        layer = FactoryGirl.create(:carto_layer, options: layer_options)
+        layer.options['query'].should eq query
+        layer.options['user_name'].should eq @user.username
+        layer.options['table_name'].should eq @table.name
+        layer.options['query_history'].should eq [query]
+
+        map = FactoryGirl.create(:carto_map, layers: [layer], user: @user)
+        @map, @table, @table_visualization, @visualization = create_full_visualization(@user,
+                                                                                       map: map,
+                                                                                       table: user_table,
+                                                                                       data_layer: layer)
+        FactoryGirl.create(:source_analysis, visualization: @visualization, user: @user,
+                                             source_table: @table.name, query: query)
+        FactoryGirl.create(:analysis_with_source, visualization: @visualization, user: @user,
+                                                  source_table: @table.name, query: query)
+      end
+
+      after(:each) do
+        ::UserTable[@table.id].destroy
+        destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      end
+
+      let(:export_service) { Carto::VisualizationsExportService2.new }
+
+      def import_and_check_query(renamed_tables, expected_table_name, expected_query = nil)
+        exported = export_service.export_visualization_json_hash(@visualization.id, @user)
+
+        built_viz = export_service.build_visualization_from_hash_export(exported)
+        imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz,
+                                                                                     renamed_tables: renamed_tables)
+
+        expected_query ||= default_query(expected_table_name)
+        imported_layer_options = imported_viz.layers[0][:options]
+
+        imported_layer_options['query'].should eq expected_query
+        imported_layer_options['table_name'].should eq expected_table_name
+
+        source_analysis = imported_viz.analyses.find { |a| a.analysis_node.source? }.analysis_definition
+        check_analysis_defition(source_analysis, expected_table_name, expected_query)
+        nested_analysis = imported_viz.analyses.find { |a| !a.analysis_node.source? }.analysis_definition
+        check_analysis_defition(nested_analysis[:params][:source], expected_table_name, expected_query)
+      end
+
+      def check_analysis_defition(analysis_definition, expected_table_name, expected_query)
+        analysis_definition[:options][:table_name].should eq expected_table_name
+        analysis_definition[:params][:query].should eq expected_query
+      end
+
+      it 'replaces table name in default queries on import (with schema)' do
+        setup_visualization_with_layer_query('tabula')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa')
+      end
+
+      it 'replaces table name in more complex queries on import' do
+        setup_visualization_with_layer_query('tabula', 'SELECT COUNT(*) AS count FROM tabula WHERE tabula.yoyo=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT COUNT(*) AS count FROM rasa WHERE rasa.yoyo=2')
+      end
+
+      it 'does not replace table name as part of a longer identifier' do
+        setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM rasa WHERE tabulacol=2')
+      end
+
+      it 'does not replace table name when query fails' do
+        Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
+        renamed_tables = { 'tabula' => 'rasa' }
+        import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM tabula WHERE tabulacol=2')
       end
     end
   end

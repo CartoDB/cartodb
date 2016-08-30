@@ -1,12 +1,28 @@
 3.14.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
+ - `bundle exec rake carto:db:set_carto_attribution`
+ - Update basemaps configuration to use CARTO as a category instead of CartoDB
+
+### NOTICE
 This release introduces a new Resque queue: `user_dbs`. It is needed for operation on user databases, i.e: linking
 ghost tables, importing common data and automatic index creation.
+
+### NOTICE
+This release changes the way visualization tokens are stored, so am igration task has to be run for password
+protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_auth_tokens`
 
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.
+* Oauth integration with GitHub
+* Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
+* Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
+  * `sudo apt-get update`
+  * `sudo apt-get install gdal2.1-static-bin`
+  * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
+
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
@@ -16,6 +32,7 @@ ghost tables, importing common data and automatic index creation.
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
 * Forward compatibility for infowindows at Builder
+* Several auth_token related fixes
 
 3.13.0 (2016-XX-XX)
 -------------------

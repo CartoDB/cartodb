@@ -85,7 +85,8 @@
     margin-left: 10px;
   }
 }
-.Filters-group.is-hidden {
+.Filters-group.is-hidden,
+.Filters-addLayer.is-hidden {
   display: none;
 }
 .Filters-group.is-searching {
@@ -114,7 +115,7 @@
 }
 
 .Filters-searchLink {
-  @include display-flex();
+  display: block;
   color: #1181FB;
 }
 .Filters-searchLink:after {

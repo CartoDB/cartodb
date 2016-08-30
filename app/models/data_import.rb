@@ -203,8 +203,8 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
-    current_viewer_id = current_viewer.id
-    Carto::Tracking::Events::ExceededQuota.new(current_viewer_id, user_id: current_viewer_id).report
+    current_user_id = current_user.id
+    Carto::Tracking::Events::ExceededQuota.new(current_user_id, user_id: current_user_id).report
 
     CartoDB::notify_warning_exception(quota_exception)
     handle_failure(quota_exception)
@@ -1039,16 +1039,16 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      current_viewer_id = current_viewer.id
-      Carto::Tracking::Events::CreatedDataset.new(current_viewer_id,
-                                                  user_id: current_viewer_id,
+      current_user_id = current_user.id
+      Carto::Tracking::Events::CreatedDataset.new(current_user_id,
+                                                  user_id: current_user_id,
                                                   visualization_id: vis.id,
                                                   origin: origin).report
     end
 
     if visualization_id
-      Carto::Tracking::Events::CreatedMap.new(current_viewer_id,
-                                              user_id: current_viewer_id,
+      Carto::Tracking::Events::CreatedMap.new(current_user_id,
+                                              user_id: current_user_id,
                                               visualization_id: visualization_id,
                                               origin: 'import').report
     end

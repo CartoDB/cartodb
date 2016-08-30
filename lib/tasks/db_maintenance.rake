@@ -381,6 +381,29 @@ namespace :cartodb do
       user.db_service.set_user_privileges_at_db
     end
 
+    desc 'Set org role privileges in all organizations'
+    task :set_org_privileges_in_cartodb_schema, [:org_name] => :environment do |_t, args|
+      org = ::Organization.find(name: args[:org_name])
+      owner = org.owner
+      if owner
+        owner.db_service.setup_organization_role_permissions
+      else
+        puts 'Organization without owner'
+      end
+    end
+
+    desc 'Set org role privileges in all organizations'
+    task set_all_orgs_privileges_in_cartodb_schema: :environment do |_t, _args|
+      Organization.each do |org|
+        owner = org.owner
+        if owner
+          owner.db_service.setup_organization_role_permissions
+        else
+          puts "Organization without owner: #{org.name}"
+        end
+      end
+    end
+
     ##########################
     # SET TRIGGER CHECK QUOTA
     ##########################

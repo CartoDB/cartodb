@@ -1123,7 +1123,6 @@
       "body": "Errors found in your SQL query. %{action} before continuing.",
       "label": "Fix them"
     },
-    "no-geometry-data": "Unfortunately, widgets require geometry data in your dataset.",
     "settings": {
       "menu-tab-pane-labels": {
         "preview": "Preview",
@@ -1524,6 +1523,7 @@
       }
     },
     "data": {
+      "no-geometry-data": "Your dataset doesn't contain any geometry data.",
       "stats": {
         "add-widget": "Add as a widget",
         "edit": "EDIT",
@@ -1741,6 +1741,7 @@
       }
     },
     "widgets": {
+      "no-geometry-data": "Your dataset lacks of geometry data and it's not possible to add a widget.",
       "options": {
         "remove": "Delete...",
         "rename": "Rename",

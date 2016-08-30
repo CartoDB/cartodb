@@ -1609,6 +1609,21 @@
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
         }
+      },
+      "types": {
+        "none": "none",
+        "category": "category",
+        "gradient": "grandient",
+        "bubble": "bubble"
+      },
+      "legend-form": {
+        "type": {
+          "title": "Select Style",
+          "dynamic": {
+            "label": "dynamic",
+            "body": "Make your legend show the information you have on the map each time"
+          }
+        }
       }
     },
     "style": {

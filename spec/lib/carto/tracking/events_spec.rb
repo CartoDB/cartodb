@@ -309,11 +309,227 @@ module Carto
         end
 
         describe CompletedConnection do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
 
+          let(:connection) do
+            {
+              data_from: 'Manolo',
+              imported_from: 'Escobar',
+              sync: true,
+              file_type: '.manolo'
+            }
+          end
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        connection: connection)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        connection: connection,
+                                        user_id: @user.id)
+            end
+
+            it 'requires a connection' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id)
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have access write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @intruder.id,
+                                        connection: connection)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @intruder.id,
+                                        connection: connection)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @user.id,
+                                     connection: connection)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @intruder.id,
+                                     connection: connection)
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'matches current prod properites' do
+            current_prod_properties = [:data_from,
+                                       :imported_from,
+                                       :sync,
+                                       :file_type,
+                                       :username,
+                                       :email,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :event_origin,
+                                       :creation_time]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      connection: connection)
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
         end
 
         describe FailedConnection do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
 
+          let(:connection) do
+            {
+              data_from: 'Manolo',
+              imported_from: 'Escobar',
+              sync: true,
+              file_type: '.manolo'
+            }
+          end
+
+          describe '#properties validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'requires a user_id' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        connection: connection)
+            end
+
+            it 'requires a visualization_id' do
+              @event = @event_class.new(@user.id,
+                                        connection: connection,
+                                        user_id: @user.id)
+            end
+
+            it 'requires a connection' do
+              @event = @event_class.new(@user.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @user.id)
+            end
+          end
+
+          describe '#security validation' do
+            after(:each) do
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            after(:all) do
+              @event = nil
+            end
+
+            it 'must have access write access to visualization' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @intruder.id,
+                                        connection: connection)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+
+            it 'must be reported by user' do
+              @event = @event_class.new(@intruder.id,
+                                        visualization_id: @visualization.id,
+                                        user_id: @intruder.id,
+                                        connection: connection)
+
+              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+            end
+          end
+
+          it 'reports' do
+            event = @event_class.new(@user.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @user.id,
+                                     connection: connection)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'reports by user with access' do
+            event = @event_class.new(@intruder.id,
+                                     visualization_id: @visualization.id,
+                                     user_id: @intruder.id,
+                                     connection: connection)
+
+            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'matches current prod properites' do
+            current_prod_properties = [:data_from,
+                                       :imported_from,
+                                       :sync,
+                                       :file_type,
+                                       :username,
+                                       :email,
+                                       :plan,
+                                       :user_active_for,
+                                       :user_created_at,
+                                       :event_origin,
+                                       :creation_time]
+
+            format = @event_class.new(@user.id,
+                                      visualization_id: @visualization.id,
+                                      user_id: @user.id,
+                                      connection: connection)
+                                 .instance_eval { @format }
+
+            check_hash_has_keys(format.to_segment, current_prod_properties)
+          end
         end
 
         describe ExceededQuota do

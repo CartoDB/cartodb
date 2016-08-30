@@ -22,10 +22,10 @@ module Carto
           properties.merge!(visualization_properties) if @visualization
           properties.merge!(connection_properties) if @connection
           properties.merge!(map_liking_properties) if @action
+          properties.merge!(trending_map_properties) if @mapviews
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
-          properties[:mapviews] = @mapviews if @mapviews
 
           properties
         end

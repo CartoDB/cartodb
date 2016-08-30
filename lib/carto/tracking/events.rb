@@ -101,6 +101,7 @@ module Carto
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
       end
@@ -109,6 +110,7 @@ module Carto
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :connection
       end
@@ -134,7 +136,10 @@ module Carto
       class ScoredTrendingMap < Event
         include Carto::Tracking::Services::Segment
 
-        required_properties :user_id, :mapviews
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :mapviews
       end
 
       class VisitedPrivatePage < Event

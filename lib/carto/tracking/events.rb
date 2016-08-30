@@ -125,10 +125,9 @@ module Carto
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id
       end
 
       class ScoredTrendingMap < Event

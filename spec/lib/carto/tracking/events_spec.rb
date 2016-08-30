@@ -498,21 +498,11 @@ module Carto
             end
 
             it 'requires a user_id' do
-              @event = @event_class.new(@user.id,
-                                        visualization_id: @visualization.id,
-                                        connection: connection)
-            end
-
-            it 'requires a visualization_id' do
-              @event = @event_class.new(@user.id,
-                                        connection: connection,
-                                        user_id: @user.id)
+              @event = @event_class.new(@user.id, connection: connection)
             end
 
             it 'requires a connection' do
-              @event = @event_class.new(@user.id,
-                                        visualization_id: @visualization.id,
-                                        user_id: @user.id)
+              @event = @event_class.new(@user.id, user_id: @user.id)
             end
           end
 
@@ -525,18 +515,8 @@ module Carto
               @event = nil
             end
 
-            it 'must have write access to visualization' do
-              @event = @event_class.new(@intruder.id,
-                                        visualization_id: @visualization.id,
-                                        user_id: @intruder.id,
-                                        connection: connection)
-
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
-            end
-
             it 'must be reported by user' do
               @event = @event_class.new(@intruder.id,
-                                        visualization_id: @visualization.id,
                                         user_id: @user.id,
                                         connection: connection)
 
@@ -546,20 +526,8 @@ module Carto
 
           it 'reports' do
             event = @event_class.new(@user.id,
-                                     visualization_id: @visualization.id,
                                      user_id: @user.id,
                                      connection: connection)
-
-            expect { event.report! }.to_not raise_error
-          end
-
-          it 'reports by user with access' do
-            event = @event_class.new(@intruder.id,
-                                     visualization_id: @visualization.id,
-                                     user_id: @intruder.id,
-                                     connection: connection)
-
-            Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
             expect { event.report! }.to_not raise_error
           end
@@ -578,7 +546,6 @@ module Carto
                                        :creation_time]
 
             format = @event_class.new(@user.id,
-                                      visualization_id: @visualization.id,
                                       user_id: @user.id,
                                       connection: connection)
                                  .instance_eval { @format }

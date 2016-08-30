@@ -1,0 +1,25 @@
+# encoding: utf-8
+
+require_relative './providers/generic_odbc'
+require_relative './providers/mysql'
+require_relative './providers/postgresql'
+require_relative './providers/sqlserver'
+require_relative './providers/hive'
+require_relative './providers/pg_fdw'
+
+module CartoDB
+  module Importer2
+    class Connector
+      PROVIDERS = {
+        'odbc'      => GenericOdbcProvider, # Intended for internal development/tests
+        'postgres'  => PostgreSQLProvider,
+        'pg'        => PgFdwProvider,
+        'mysql'     => MySqlProvider,
+        'sqlserver' => SqlServerProvider,
+        'hive'      => HiveProvider
+      }
+
+      DEFAULT_PROVIDER = 'odbc' # this is to allow breaking existing syncs
+    end
+  end
+end

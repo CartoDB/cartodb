@@ -23,13 +23,13 @@ module CartoDB
     class Member
       include Virtus.model
 
-      MAX_RETRIES     = 10
+      MAX_RETRIES = 10
       MIN_INTERVAL_SECONDS = 15 * 60
 
       # Seconds required between manual sync now
       SYNC_NOW_TIMESPAN = 900
 
-      STATE_CREATED   = 'created'
+      STATE_CREATED = 'created'
       # Already at resque, waiting for slot
       STATE_QUEUED   = 'queued'
       # Actually syncing
@@ -61,7 +61,7 @@ module CartoDB
       attribute :content_guessing,        Boolean, default: false
       attribute :visualization_id,        String
 
-      def initialize(attributes={}, repository=Synchronization.repository)
+      def initialize(attributes = {}, repository = Synchronization.repository)
         super(attributes)
 
         @log = nil

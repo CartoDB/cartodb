@@ -296,3 +296,99 @@
   text-align: left;
 }
 
+
+/* REVAMP MODALS */
+
+.Modal-listActions {
+  margin-top: $baseSize * 4;
+}
+
+.Modal-listActionsitem,
+.Modal-icon {
+  margin-right: $baseSize * 2;
+}
+
+.Modal-listActionsitem:last-child {
+  margin-right: 0;
+}
+
+.Modal-icon {
+  margin-top: 6px;
+  line-height: 34px; /* align-items: baseline doesnt work correctly in ff */
+}
+
+.Modal-listTextItem {
+  margin-top: 32px;
+}
+
+.Modal-listTextHighlight {
+  display: inline-block;
+  padding: 4px 5px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+
+.Modal-listTextHighlight.is-code {
+  font: 500 12px 'Monaco', 'Monospace';
+}
+
+.Modal-listForm {
+  margin-left: 24px;
+}
+
+.Modal-listFormItem {
+  margin-right: 32px;
+}
+
+.Modal-listFormItem:last-child {
+  margin-right: 0;
+}
+
+.Modal-addItem {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+}
+
+.Modal {
+  @include display-flex();
+  @include flex-direction(column);
+  height: 100%;
+  background: $cThirdBackground;
+  overflow: hidden;
+}
+
+.Modal-header {
+  @include display-flex();
+  @include justify-content(center);
+  @include flex(0 0 auto);
+  padding: $baseSize * 3 0;
+  background: $cWhite;
+}
+.Modal-footer {
+  @include display-flex();
+  @include justify-content(center);
+  @include flex(0 0 auto);
+}
+.Modal-container {
+  @include display-flex();
+  @include justify-content(center);
+  @include flex(1 1 auto);
+  overflow: scroll;
+}
+.Modal-inner,
+.Modal-headerContainer,
+.Modal-footerContainer {
+  @include flex(0 0 auto);
+  width: 940px;
+}
+
+.Modal-footerContainer {
+  padding: 24px 0;
+  border-top: 1px solid $cSecondaryLine;
+}
+
+
+
+

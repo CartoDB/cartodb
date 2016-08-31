@@ -46,7 +46,9 @@ module Carto
         end
 
         def required_properties
-          self.class.instance_eval { @required_properties }
+          these_required_properties = self.class.instance_eval { @required_properties }
+
+          these_required_properties || self.class.superclass.required_properties
         end
 
         private
@@ -81,7 +83,7 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CreatedMap < Event
+      class MapEvent < Event
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
@@ -90,14 +92,8 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class DeletedMap < Event
-        include Carto::Tracking::Services::Segment
-
-        include Carto::Tracking::Validators::Visualization::Writable
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :visualization_id
-      end
+      class CreatedMap < MapEvent; end
+      class DeletedMap < MapEvent; end
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Segment
@@ -108,7 +104,7 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class CompletedConnection < Event
+      class ConnectionEvent < Event
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::User
@@ -116,13 +112,8 @@ module Carto
         required_properties :user_id, :connection
       end
 
-      class FailedConnection < Event
-        include Carto::Tracking::Services::Segment
-
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :connection
-      end
+      class CompletedConnection < ConnectionEvent; end
+      class FailedConnection < ConnectionEvent; end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
@@ -149,7 +140,7 @@ module Carto
         required_properties :user_id, :page
       end
 
-      class CreatedDataset < Event
+      class DatasetEvent < Event
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
@@ -158,14 +149,8 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class DeletedDataset < Event
-        include Carto::Tracking::Services::Segment
-
-        include Carto::Tracking::Validators::Visualization::Writable
-        include Carto::Tracking::Validators::User
-
-        required_properties :user_id, :visualization_id
-      end
+      class CreatedDataset < DatasetEvent; end
+      class DeletedDataset < DatasetEvent; end
 
       class LikedMap < Event
         include Carto::Tracking::Services::Segment
@@ -175,6 +160,19 @@ module Carto
 
         required_properties :user_id, :visualization_id, :action
       end
+
+      class AnalysisEvent < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
+
+      class CreatedAnalysis < AnalysisEvent; end
+      class ModifiedAnalysis < AnalysisEvent; end
+      class DeletedAnalysis < AnalysisEvent; end
     end
   end
 end

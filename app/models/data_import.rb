@@ -1052,16 +1052,6 @@ class DataImport < Sequel::Model
                                               visualization_id: visualization_id,
                                               origin: 'import').report
     end
-  rescue ActiveRecord::ActiveRecordError => exception
-    CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
-                            event: 'Created map',
-                            type: 'Invalid import result',
-                            exception: exception)
-  rescue => exception
-    CartoDB::Logger.warning(message: 'SegmentWrapper: could not report',
-                            event: 'Created dataset',
-                            type: 'Invalid import result',
-                            exception: exception)
   end
 
   def sync?

@@ -5,6 +5,7 @@ FactoryGirl.define do
     ignore do
       column_name 'pop_max'
     end
+
     order 1
     type 'formula'
     title 'The Title'

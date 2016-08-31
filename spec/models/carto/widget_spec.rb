@@ -2,9 +2,25 @@ require 'json'
 require_relative '../../spec_helper'
 
 describe Carto::Widget do
+  include Carto::Factories::Visualizations
+
+  before(:all) do
+    @user = FactoryGirl.create(:carto_user, viewer: false)
+    @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+    @data_layer = @visualization.data_layers.first
+    @source_analysis_definition = @visualization.analyses.first.analysis_definition[:id]
+  end
+
+  after(:all) do
+    destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    @user.destroy
+    @source_analysis_definition = nil
+  end
+
   describe 'Storage' do
     it 'can be stored and retrieved keeping the data' do
-      widget = FactoryGirl.create(:widget_with_layer)
+      widget = FactoryGirl.create(:widget, layer: @data_layer, source_id: @source_analysis_definition)
+
       loaded_widget = Carto::Widget.find(widget.id)
       loaded_widget.order.should == widget.order
       loaded_widget.type.should == widget.type
@@ -22,13 +38,11 @@ describe Carto::Widget do
 
     describe '#save' do
       before(:each) do
-        @map = FactoryGirl.create(:carto_map_with_layers)
-        @widget = FactoryGirl.create(:widget, layer: @map.data_layers.first)
+        @widget = FactoryGirl.create(:widget, layer: @data_layer, source_id: @source_analysis_definition)
       end
 
       after(:each) do
         @widget.destroy
-        @map.destroy
       end
 
       it 'triggers notify_map_change on related map(s)' do
@@ -44,9 +58,8 @@ describe Carto::Widget do
   end
 
   describe 'Format and validation' do
-    before(:each) do
-      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
-    end
+    before(:each) { @widget = FactoryGirl.create(:widget, layer: @data_layer, source_id: @source_analysis_definition) }
+    after(:each)  { @widget.destroy }
 
     it 'validates correct options format' do
       @widget.valid?.should be_true
@@ -62,68 +75,54 @@ describe Carto::Widget do
   end
 
   describe '#from_visualization_id' do
-    before(:each) do
-      @map = FactoryGirl.create(:carto_map_with_layers)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map)
-    end
-
-    after(:each) do
-      @visualization.destroy
-      @map.destroy
-    end
-
     it 'retrieves all visualization widgets' do
-      # Twice expectation: creation + destroy
-      Map.any_instance.expects(:update_related_named_maps).times(2).returns(true)
-      layer = @visualization.data_layers.first
-      widget = FactoryGirl.create(:widget, layer: layer)
-      widget2 = FactoryGirl.create(:widget_with_layer)
+      # Twice expectation: 2x(creation + destroy) + destroy_full_visualization
+      Map.any_instance.expects(:update_related_named_maps).times(5).returns(true)
+
+      widget = FactoryGirl.create(:widget, layer: @data_layer, source_id: @source_analysis_definition)
+
+      map2, table2, table_visualization2, visualization2 = create_full_visualization(@user)
+      widget2 = FactoryGirl.create(:widget,
+                                   layer: visualization2.data_layers.first,
+                                   source_id: visualization2.analyses.first.analysis_definition[:id])
 
       widgets = Carto::Widget.from_visualization_id(@visualization.id)
       widgets.length.should == 1
       widgets.should include(widget)
       widgets.should_not include(widget2)
 
-      widget2.destroy
       widget.destroy
+      widget2.destroy
+
+      destroy_full_visualization(map2, table2, table_visualization2, visualization2)
     end
   end
 
   context 'viewer users' do
-    before(:each) do
-      Map.any_instance.stubs(:update_related_named_maps)
-      @user = FactoryGirl.create(:carto_user)
-      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
-      @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
-      @layer = @visualization.data_layers.first
+    before(:all) do
+      @widget_to_destroy = FactoryGirl.create(:widget, layer: @data_layer, source_id: @source_analysis_definition)
+      @user.update_attributes(viewer: true)
+      @map.reload
     end
 
-    after(:each) do
-      @visualization.destroy
-      @map.destroy
-      @user.destroy
+    after(:all) do
+      @user.update_attributes(viewer: false)
+      @map.reload
+      @widget_to_destroy.destroy
+    end
+
+    before(:each) do
+      Map.any_instance.stubs(:update_related_named_maps)
     end
 
     it "can't create a new widget" do
-      user = @visualization.user
-      user.viewer = true
-      user.save
-      @visualization.reload
-      @layer.reload
-
-      widget = FactoryGirl.build(:widget, layer: @layer)
+      widget = FactoryGirl.build(:widget, layer: @map.data_layers.first, source_id: @source_analysis_definition)
       widget.save.should be_false
       widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
     end
 
     it "can't delete widgets" do
-      widget = FactoryGirl.create(:widget, layer: @layer)
-
-      user = @visualization.user
-      user.viewer = true
-      user.save
-      @visualization.reload
-      widget = Carto::Widget.find(widget.id)
+      widget = Carto::Widget.find(@widget_to_destroy.id)
 
       widget.destroy.should eq false
       Carto::Widget.exists?(widget.id).should eq true

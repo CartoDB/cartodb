@@ -175,6 +175,33 @@ module Carto
 
         required_properties :user_id, :visualization_id, :action
       end
+
+      class CreatedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
+
+      class ModifiedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
+
+      class DeletedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
     end
   end
 end

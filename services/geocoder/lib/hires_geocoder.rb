@@ -104,7 +104,7 @@ module CartoDB
     rescue => e
       @log.append_and_store "Error processing row with search text #{input_row['searchtext']}: #{e.message}"
       CartoDB.notify_debug("Hires geocoding process row error",
-                           error: e.backtrace.join('\n'), 
+                           error: e.backtrace.join("\n"),
                            searchtext: input_row["searchtext"],
                            backtrace: e.backtrace)
       @failed_processed_rows += 1
@@ -131,7 +131,7 @@ module CartoDB
     rescue NoMethodError => e
       if e.message == %Q(undefined method `[]' for nil:NilClass)
         CartoDB.notify_debug("Non-batched geocoder couldn't parse response",
-          error: e.backtrace.join('\n'), backtrace: e.backtrace, text: text, response_body: http_response.body)
+          error: e.backtrace.join("\n"), backtrace: e.backtrace, text: text, response_body: http_response.body)
         [nil, nil]
       else
         raise e

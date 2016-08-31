@@ -16,7 +16,11 @@ module CartoDB
     end
 
     # Generic/unmapped errors
-    class GenericImportError < StandardError; end
+    class GenericImportError < StandardError;
+      def initialize(message="Import Error")
+        super
+      end
+    end
     # Mapped errors
 
     class FileTooBigError < BaseImportError
@@ -84,7 +88,7 @@ module CartoDB
     class TiffToSqlConversionError              < StandardError; end
     class UnknownError                          < StandardError; end
     class UnknownSridError                      < StandardError; end
-    class UnsupportedFormatError                < StandardError; end
+    class UnsupportedFormatError                < GenericImportError; end
     class UploadError                           < StandardError; end
 
     class DownloadError                         < StandardError; end

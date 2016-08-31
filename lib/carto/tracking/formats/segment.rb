@@ -13,6 +13,7 @@ module Carto
           @quota_overage = hash[:quota_overage]
           @mapviews = hash[:mapviews]
           @action = hash[:action]
+          @analysis = hash[:analysis]
         end
 
         def to_hash
@@ -23,6 +24,7 @@ module Carto
           properties.merge!(connection_properties) if @connection
           properties.merge!(map_liking_properties) if @action
           properties.merge!(trending_map_properties) if @mapviews
+          properties.merge!(analysis_properties) if @analysis
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
@@ -64,14 +66,20 @@ module Carto
         end
 
         def connection_properties
-          properties = {
+          {
             data_from: @connection[:data_from],
             imported_from: @connection[:imported_from],
             sync: @connection[:sync] || false,
             file_type: @connection[:file_type]
           }
+        end
 
-          properties
+        def analysis_properties
+          {
+            analysis_id: @analysis[:id],
+            analysis_natural_id: @analysis[:natural_id],
+            analysis_type: @analysis[:type]
+          }
         end
 
         def trending_map_properties

@@ -1,5 +1,7 @@
 # What is CARTO?
 
+[![Join the chat at https://gitter.im/CartoDB/cartodb](https://badges.gitter.im/CartoDB/cartodb.svg)](https://gitter.im/CartoDB/cartodb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Code Climate](https://codeclimate.com/github/CartoDB/cartodb20.png)](https://codeclimate.com/github/CartoDB/cartodb20)
 [![Build Status](http://travis-ci.org/CartoDB/cartodb.png?branch=master)](http://travis-ci.org/CartoDB/cartodb)
 

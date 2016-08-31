@@ -1028,6 +1028,8 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
+    current_user_id = current_user.id if current_user
+
     results.select(&:success?).each do |result|
       condition, origin = if result.name
                             [{ data_import_id: import_id, name: result.name },
@@ -1039,14 +1041,15 @@ class DataImport < Sequel::Model
       user_table = ::UserTable.where(condition).first
       vis = Carto::Visualization.where(map_id: user_table.map.id).first
 
-      current_user_id = current_user.id
-      Carto::Tracking::Events::CreatedDataset.new(current_user_id,
-                                                  user_id: current_user_id,
-                                                  visualization_id: vis.id,
-                                                  origin: origin).report
+      if current_user_id
+        Carto::Tracking::Events::CreatedDataset.new(current_user_id,
+                                                    user_id: current_user_id,
+                                                    visualization_id: vis.id,
+                                                    origin: origin).report
+      end
     end
 
-    if visualization_id
+    if visualization_id && current_user_id
       Carto::Tracking::Events::CreatedMap.new(current_user_id,
                                               user_id: current_user_id,
                                               visualization_id: visualization_id,

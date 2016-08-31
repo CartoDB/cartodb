@@ -33,6 +33,16 @@ module CartoDB
       def update_support_tables(new_list)
         @support_tables = new_list
       end
+
+      def to_s
+        "<Result #{name}>"
+      end
+
+      def inspect
+        attrs = (ATTRIBUTES - ['log_trace']).map { |attr| "@#{attr}=#{instance_variable_get "@#{attr}"}" }.join(', ')
+        "<#{self.class} #{attrs}>"
+      end
+
     end
   end
 end

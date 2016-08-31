@@ -6,7 +6,7 @@ module Resque
       @queue = :tracker
 
       def self.perform(user_id, name, properties)
-        return unless key = Cartodb.config[:segment]['api_key']
+        return unless key = Cartodb.get_config(:segment, 'api_key')
 
         segment = Segment::Analytics.new(write_key: key)
         segment.track(user_id: user_id, event: name, properties: properties)

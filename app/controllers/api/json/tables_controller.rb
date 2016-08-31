@@ -42,7 +42,8 @@ class Api::Json::TablesController < Api::ApplicationController
             current_viewer_id = current_viewer.id
             Carto::Tracking::Events::CreatedDataset.new(current_viewer_id,
                                                         visualization_id: table_visualization.id,
-                                                        user_id: current_viewer_id).report
+                                                        user_id: current_viewer_id,
+                                                        origin: 'blank').report
           end
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages

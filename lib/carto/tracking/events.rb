@@ -22,7 +22,9 @@ module Carto
           report!
         rescue => exception
           CartoDB::Logger.error(message: 'Carto::Tracking: Couldn\'t report event',
-                                exception: exception)
+                                exception: exception,
+                                name: name,
+                                properties: @format.to_hash)
         end
 
         def report!
@@ -101,6 +103,7 @@ module Carto
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
       end
@@ -108,33 +111,34 @@ module Carto
       class CompletedConnection < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :connection
+        required_properties :user_id, :connection
       end
 
       class FailedConnection < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id, :connection
+        required_properties :user_id, :connection
       end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
 
-        include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :visualization_id
+        required_properties :user_id
       end
 
       class ScoredTrendingMap < Event
         include Carto::Tracking::Services::Segment
 
-        required_properties :user_id, :mapviews
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :mapviews
       end
 
       class VisitedPrivatePage < Event
@@ -170,6 +174,33 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :action
+      end
+
+      class CreatedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
+
+      class ModifiedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
+      end
+
+      class DeletedAnalysis < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :analysis
       end
     end
   end

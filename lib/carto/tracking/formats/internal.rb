@@ -12,7 +12,7 @@ module Carto
 
         # Symbol should be provided as a snake-case'd version the record's model class name.
         # The id of said record should be provided with key: snake-case'd identifier + '_id'
-        # Only Cart:: records allowed!
+        # Only Carto:: records allowed!
         #  Ex.: :super_duper_mdoel -> Carto::SuperDuperModel; { super_duper_model_id: xxx }
         def fetch_record!(symbol)
           symbol_string = symbol.to_s.downcase
@@ -23,19 +23,6 @@ module Carto
           record_class_name.constantize.find(record_id)
         rescue
           record_id ? (raise Carto::LoadError.new("#{record_class_name} not found")) : nil
-        end
-
-        # Find anything like xxx_id and tries to fetch a record for it.
-        def concerned_records
-          concerned_records = []
-
-          @hash.keys.select { |key| key.ends_with?('_id') }.each do |fetchable_key|
-            record = fetch_record!(fetchable_key.chomp('_id').to_sym)
-
-            concerned_records << record
-          end
-
-          concerned_records.compact
         end
 
         def to_hash

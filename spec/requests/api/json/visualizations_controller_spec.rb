@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'helpers/metrics_helper'
+
 require_relative '../../../spec_helper'
 require_relative 'visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/visualizations_controller'
@@ -12,6 +14,7 @@ describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include MetricsHelper
 
   before(:all) do
     @user = create_user(username: 'test')
@@ -26,6 +29,8 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     bypass_named_maps
+    bypass_metrics
+
     host! "#{@user.username}.localhost.lan"
   end
 
@@ -190,7 +195,6 @@ describe Api::Json::VisualizationsController do
 
     before(:each) do
       login(@user)
-      Resque.expects(:enqueue).with(any_parameters) # to account for metrics enqueue
     end
 
     it "when a map is liked should send an email to the owner" do

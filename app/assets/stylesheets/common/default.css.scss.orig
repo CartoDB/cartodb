@@ -54,7 +54,11 @@
         }
 
         ::-webkit-scrollbar-thumb:vertical {
+<<<<<<< 2843b2c71c6a471ad23a0c19d5c4965212bcc1b5
+            background-color: #545454; //background: url("lzr_b2_scroll_thumb_grip_vertical.png") #545454;
+=======
             background: url("../images/lzr_b2_scroll_thumb_grip_vertical.png") #545454;
+>>>>>>> updated help arrow, fixed scrollbar images reference
             background-repeat: no-repeat;
             background-position: center;
             border: 1px solid black;
@@ -62,7 +66,11 @@
         }
  
         ::-webkit-scrollbar-thumb:vertical:hover {
+<<<<<<< 2843b2c71c6a471ad23a0c19d5c4965212bcc1b5
+            background-color: #666; //background: url("lzr_b2_scroll_thumb_grip_vertical.png") #666 no-repeat center;
+=======
             background: url("../images/lzr_b2_scroll_thumb_grip_vertical.png") #666 no-repeat center;
+>>>>>>> updated help arrow, fixed scrollbar images reference
         }
 
         ::-webkit-scrollbar-track:vertical {
@@ -71,14 +79,22 @@
         }
 
         ::-webkit-scrollbar-thumb:horizontal {
+<<<<<<< 2843b2c71c6a471ad23a0c19d5c4965212bcc1b5
+            background-color: #545454; //background: url("lzr_b2_scroll_thumb_grip_horizontal.png") #545454;
+=======
             background: url("../images/lzr_b2_scroll_thumb_grip_horizontal.png") #545454;
+>>>>>>> updated help arrow, fixed scrollbar images reference
             background-repeat: no-repeat;
             background-position: center;
             border: 1px solid black;
         }
 
         ::-webkit-scrollbar-thumb:horizontal:hover {
+<<<<<<< 2843b2c71c6a471ad23a0c19d5c4965212bcc1b5
+            background-color: #666; //background: url("lzr_b2_scroll_thumb_grip_horizontal.png") #666 no-repeat center;
+=======
             background: url("../images/lzr_b2_scroll_thumb_grip_horizontal.png") #666 no-repeat center;
+>>>>>>> updated help arrow, fixed scrollbar images reference
         }
 
         ::-webkit-scrollbar-track:horizontal {

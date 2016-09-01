@@ -135,7 +135,7 @@ describe CartoDB::Log do
                          Log::END_OF_LOG_MARK
 
       # Check that new entries are added correctly
-      log.append text4
+      log.append(text4, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) +
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) +
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
@@ -146,8 +146,8 @@ describe CartoDB::Log do
                          (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
                          (Log::ENTRY_FORMAT % [ timestamp, text4 ]) +
                          Log::END_OF_LOG_MARK
-      log.append text5
-      log.append text6
+      log.append(text5, timestamp)
+      log.append(text6, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text2]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text5]) +
@@ -207,8 +207,8 @@ describe CartoDB::Log do
                                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
                                            Log::END_OF_LOG_MARK
       # Check that new entries are added correctly
-      log.append text5
-      log.append text6
+      log.append(text5, timestamp)
+      log.append(text6, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text2]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text5]) +

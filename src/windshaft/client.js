@@ -77,14 +77,18 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 
 WindshaftClient.prototype._generateEncodedURL = function (payload, params) {
   params = _.extend({
-    config: payload
+    config: JSON.stringify(payload)
   }, params);
 
   return this._getURL(params);
 };
 
 WindshaftClient.prototype._generateCompressedURL = function (payload, params, callback) {
-  LZMA.compress(payload, this.COMPRESSION_LEVEL, function (compressedPayload) {
+  var data = JSON.stringify({
+    config: JSON.stringify(payload)
+  });
+
+  LZMA.compress(data, this.COMPRESSION_LEVEL, function (compressedPayload) {
     params = _.extend({
       lzma: util.array2hex(compressedPayload)
     }, params);

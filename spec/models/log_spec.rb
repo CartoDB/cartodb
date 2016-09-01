@@ -42,8 +42,9 @@ describe CartoDB::Log do
       text5 = "5"
       text6 = "6"
 
+      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
+
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.stubs(:half_max_size).returns(max_entries_per_half)
 
       # Fixed half
       log.append(text1, timestamp)
@@ -66,8 +67,8 @@ describe CartoDB::Log do
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                             Log::HALF_OF_LOG_MARK +
-                            (Log::ENTRY_FORMAT % [ timestamp, text5 ]) + 
-                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) +
+                            (Log::ENTRY_FORMAT % [ timestamp, text5 ]) +
                             Log::END_OF_LOG_MARK
 
       log.append(text6, timestamp)
@@ -87,6 +88,8 @@ describe CartoDB::Log do
       text2 = "bbb"
       text3 = "3.4"
       text4 = "5 6 7 8"
+      text5 = "five"
+      text6 = "six"
 
       Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
 
@@ -131,6 +134,30 @@ describe CartoDB::Log do
                          (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
                          Log::END_OF_LOG_MARK
 
+      # Check that new entries are added correctly
+      log.append(text4, timestamp)
+      log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) +
+                                           (Log::ENTRY_FORMAT % [ timestamp, text2 ]) +
+                                           (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
+                                           (Log::ENTRY_FORMAT % [ timestamp, text4 ])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) +
+                         (Log::ENTRY_FORMAT % [ timestamp, text2 ]) +
+                         Log::HALF_OF_LOG_MARK +
+                         (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
+                         (Log::ENTRY_FORMAT % [ timestamp, text4 ]) +
+                         Log::END_OF_LOG_MARK
+      log.append(text5, timestamp)
+      log.append(text6, timestamp)
+      log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text2]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text5]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text6])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
+                         (Log::ENTRY_FORMAT % [timestamp, text2]) +
+                         Log::HALF_OF_LOG_MARK +
+                         (Log::ENTRY_FORMAT % [timestamp, text5]) +
+                         (Log::ENTRY_FORMAT % [timestamp, text6]) +
+                         Log::END_OF_LOG_MARK
 
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
       log.append(text1, timestamp)
@@ -144,7 +171,6 @@ describe CartoDB::Log do
 
       # This test checks that old logs with more lines than accepted get truncated correctly
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half*2)
       log.append(text1, timestamp)
       log.append(text2, timestamp)
       log.append('filll', timestamp)
@@ -155,7 +181,6 @@ describe CartoDB::Log do
       log.append(text4, timestamp)
       log.store
 
-      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
       log = Log.where(id: log.id).first
 
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
@@ -181,6 +206,20 @@ describe CartoDB::Log do
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ]) + 
                                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
                                            Log::END_OF_LOG_MARK
+      # Check that new entries are added correctly
+      log.append(text5, timestamp)
+      log.append(text6, timestamp)
+      log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text2]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text5]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text6])
+      log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text2]) +
+                                           Log::HALF_OF_LOG_MARK +
+                                           (Log::ENTRY_FORMAT % [timestamp, text5]) +
+                                           (Log::ENTRY_FORMAT % [timestamp, text6]) +
+                                           Log::END_OF_LOG_MARK
+
     end
 
     it 'checks zero case of a new log' do

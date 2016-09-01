@@ -61,7 +61,10 @@ module Carto
       end
 
       def track_dataset_visit
-        Carto::Tracking::Events::VisitedPrivateDataset.new(current_user).report
+        current_viewer_id = current_viewer.id
+        Carto::Tracking::Events::VisitedPrivatePage.new(current_viewer_id,
+                                                        user_id: current_viewer_id,
+                                                        page: 'dataset').report
       end
     end
   end

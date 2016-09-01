@@ -457,6 +457,7 @@
         "modal-desc": "Edit the attributtes of your dataset",
         "back-btn": "GO BACK",
         "save-btn": "Save",
+        "cancel-btn": "Cancel",
         "form": {
           "name": "Dataset Name",
           "name-placeholder": "Type your name here",

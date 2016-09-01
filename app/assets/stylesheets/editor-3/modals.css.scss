@@ -339,6 +339,10 @@
 .Modal-listFormItem {
   margin-right: 32px;
 }
+.Modal-listFormItem.is-disabled {
+  color: $cHintText;
+}
+
 
 .Modal-listFormItem:last-child {
   margin-right: 0;

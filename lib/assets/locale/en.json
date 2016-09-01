@@ -424,7 +424,8 @@
           "geometry-error": "We can't read data geometries",
           "unknown": "An error occurred"
         },
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "download": "Download"
       },
       "maps-metadata": {
         "modal-title": "Map metadata",

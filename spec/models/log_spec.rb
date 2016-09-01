@@ -67,8 +67,8 @@ describe CartoDB::Log do
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                             Log::HALF_OF_LOG_MARK +
-                            (Log::ENTRY_FORMAT % [ timestamp, text5 ]) + 
-                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
+                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) +
+                            (Log::ENTRY_FORMAT % [ timestamp, text5 ]) +
                             Log::END_OF_LOG_MARK
 
       log.append(text6, timestamp)

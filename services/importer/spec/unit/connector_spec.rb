@@ -35,6 +35,12 @@ def expect_executed_command(cmd, expected = {})
   expect_sql sql, expected[:sql] if expected.has_key?(:sql)
 end
 
+def expect_executed_commands(executed_commands, *expected_commands)
+  executed_commands.zip(expected_commands).each do |executed_command, expected_command|
+    expect_executed_command executed_command, expected_command
+  end
+end
+
 
 describe CartoDB::Importer2::Connector do
   before(:all) do
@@ -84,89 +90,83 @@ describe CartoDB::Importer2::Connector do
       connector.run
 
       connector.executed_commands.size.should eq 6
-
-      expect_executed_command(
-        connector.executed_commands[0],
-        mode: :superuser,
-        sql: [{
-          command: :create_server,
-          server_name: /\Aconnector_/,
-          fdw_name: 'odbc_fdw'
-        }]
-      )
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
-
-      expect_executed_command(
-        connector.executed_commands[1],
-        mode: :superuser,
-        sql: [{
-          command: :create_user_mapping,
-          server_name: server_name,
-          user_name: @user.database_username,
-          options: { 'odbc_uid' => "'theuser'", 'odbc_pwd' => "'thepassword'" }
-        }, {
-          command: :create_user_mapping,
-          server_name: server_name,
-          user_name: 'postgres',
-          options: { 'odbc_uid' => "'theuser'", 'odbc_pwd' => "'thepassword'" }
-        }]
-      )
-
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
+      user_name = @user.username
+      user_role = @user.database_username
 
-      expect_executed_command(
-        connector.executed_commands[2],
-        mode: :superuser,
-        sql: [{
-          command: :import_foreign_schema,
-          server_name: server_name,
-          schema_name: 'cdb_importer',
-          options: {
-            "odbc_option" => "'0'",
-            "odbc_prefetch" => "'0'",
-            "odbc_no_ssps" => "'0'",
-            "odbc_can_handle_exp_pwd" => "'0'",
-            "schema" => "'thedatabase'",
-            "table" => "'thetable'",
-            "encoding" => "'theencoding'",
-            "prefix" => "'#{server_name}_'"
-          }
+      expect_executed_commands(
+        connector.executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            server_name: /\Aconnector_/,
+            fdw_name: 'odbc_fdw'
+          }]
         }, {
-          command: :grant_select,
-          table_name: foreign_table_name,
-          user_name: @user.database_username
-        }]
-      )
-
-      expect_executed_command(
-        connector.executed_commands[3],
-        mode: :user,
-        user: 'user00000001',
-        sql: [{
-          command: :create_table_as_select,
-          table_name: /\A"cdb_importer"\.\"importer_/,
-          select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
-        }]
-      )
-
-      expect_executed_command(
-        connector.executed_commands[4],
-        mode: :superuser,
-        sql: [{
-          command: :drop_foreign_table_if_exists,
-          table_name: foreign_table_name,
-          cascade: /CASCADE/i
-        }]
-      )
-
-      expect_executed_command(
-        connector.executed_commands[5],
-        mode: :superuser,
-        sql: [{
-          command: :drop_server_if_exists,
-          server_name: server_name,
-          cascade: /CASCADE/i
-        }]
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => "'theuser'", 'odbc_pwd' => "'thepassword'" }
+          }, {
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => "'theuser'", 'odbc_pwd' => "'thepassword'" }
+          }]
+        }, {
+          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          mode: :superuser,
+          sql: [{
+            command: :import_foreign_schema,
+            server_name: server_name,
+            schema_name: 'cdb_importer',
+            options: {
+              "odbc_option" => "'0'",
+              "odbc_prefetch" => "'0'",
+              "odbc_no_ssps" => "'0'",
+              "odbc_can_handle_exp_pwd" => "'0'",
+              "schema" => "'thedatabase'",
+              "table" => "'thetable'",
+              "encoding" => "'theencoding'",
+              "prefix" => "'#{server_name}_'"
+            }
+          }, {
+            command: :grant_select,
+            table_name: foreign_table_name,
+            user_name: user_role
+          }]
+        }, {
+          # CREATE TABLE AS SELECT
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :create_table_as_select,
+            table_name: /\A"cdb_importer"\.\"importer_/,
+            select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+          }]
+        }, {
+          # DROP FOREIGN TABLE
+          mode: :superuser,
+          sql: [{
+            command: :drop_foreign_table_if_exists,
+            table_name: foreign_table_name,
+            cascade: /CASCADE/i
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name,
+            cascade: /CASCADE/i
+          }]
+        }
       )
     end
   end

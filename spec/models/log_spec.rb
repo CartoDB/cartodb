@@ -15,8 +15,8 @@ describe CartoDB::Log do
       timestamp = Time.now.utc
 
       log = Log.new({ type: type })
-      log.append(text1, timestamp)
-      log.append(text2, timestamp)
+      log.append(text1, false, timestamp)
+      log.append(text2, false, timestamp)
       # Only stores now upon explicit change
       log.store
       log_id = log.id
@@ -47,14 +47,14 @@ describe CartoDB::Log do
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
 
       # Fixed half
-      log.append(text1, timestamp)
-      log.append(text2, timestamp)
+      log.append(text1, false, timestamp)
+      log.append(text2, false, timestamp)
       # circular half
-      10.times do 
-        log.append('to be deleted', timestamp)
+      10.times do
+        log.append('to be deleted', false, timestamp)
       end
-      log.append(text3, timestamp)
-      log.append(text4, timestamp)
+      log.append(text3, false, timestamp)
+      log.append(text4, false, timestamp)
 
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
@@ -63,7 +63,7 @@ describe CartoDB::Log do
                             (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
                             Log::END_OF_LOG_MARK
 
-      log.append(text5, timestamp)
+      log.append(text5, false, timestamp)
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                             Log::HALF_OF_LOG_MARK +
@@ -71,7 +71,7 @@ describe CartoDB::Log do
                             (Log::ENTRY_FORMAT % [ timestamp, text5 ]) +
                             Log::END_OF_LOG_MARK
 
-      log.append(text6, timestamp)
+      log.append(text6, false, timestamp)
       log.to_s.should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 
                             (Log::ENTRY_FORMAT % [ timestamp, text2 ]) + 
                             Log::HALF_OF_LOG_MARK +
@@ -95,10 +95,10 @@ describe CartoDB::Log do
 
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
 
-      log.append(text1, timestamp)
-      log.append(text2, timestamp)
-      log.append(text3, timestamp)
-      log.append(text4, timestamp)
+      log.append(text1, false, timestamp)
+      log.append(text2, false, timestamp)
+      log.append(text3, false, timestamp)
+      log.append(text4, false, timestamp)
       log.store
 
       #reload
@@ -119,9 +119,9 @@ describe CartoDB::Log do
 
       # More tests
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.append(text1, timestamp)
-      log.append(text2, timestamp)
-      log.append(text3, timestamp)
+      log.append(text1, false, timestamp)
+      log.append(text2, false, timestamp)
+      log.append(text3, false, timestamp)
       log.store
       log = Log.where(id: log.id).first
 
@@ -135,7 +135,7 @@ describe CartoDB::Log do
                          Log::END_OF_LOG_MARK
 
       # Check that new entries are added correctly
-      log.append(text4, timestamp)
+      log.append(text4, false, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) +
                                            (Log::ENTRY_FORMAT % [ timestamp, text2 ]) +
                                            (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
@@ -146,8 +146,8 @@ describe CartoDB::Log do
                          (Log::ENTRY_FORMAT % [ timestamp, text3 ]) +
                          (Log::ENTRY_FORMAT % [ timestamp, text4 ]) +
                          Log::END_OF_LOG_MARK
-      log.append(text5, timestamp)
-      log.append(text6, timestamp)
+      log.append(text5, false, timestamp)
+      log.append(text6, false, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text2]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text5]) +
@@ -160,7 +160,7 @@ describe CartoDB::Log do
                          Log::END_OF_LOG_MARK
 
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.append(text1, timestamp)
+      log.append(text1, false, timestamp)
       log.store
       log = Log.where(id: log.id).first
 
@@ -171,14 +171,14 @@ describe CartoDB::Log do
 
       # This test checks that old logs with more lines than accepted get truncated correctly
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.append(text1, timestamp)
-      log.append(text2, timestamp)
-      log.append('filll', timestamp)
-      log.append('filll more', timestamp)
+      log.append(text1, false, timestamp)
+      log.append(text2, false, timestamp)
+      log.append('filll', false, timestamp)
+      log.append('filll more', false, timestamp)
       # This goes to the circular area
-      log.append('filll even more', timestamp)
-      log.append(text3, timestamp)
-      log.append(text4, timestamp)
+      log.append('filll even more', false, timestamp)
+      log.append(text3, false, timestamp)
+      log.append(text4, false, timestamp)
       log.store
 
       log = Log.where(id: log.id).first
@@ -207,8 +207,8 @@ describe CartoDB::Log do
                                            (Log::ENTRY_FORMAT % [ timestamp, text4 ]) + 
                                            Log::END_OF_LOG_MARK
       # Check that new entries are added correctly
-      log.append(text5, timestamp)
-      log.append(text6, timestamp)
+      log.append(text5, false, timestamp)
+      log.append(text6, false, timestamp)
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [timestamp, text1]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text2]) +
                                            (Log::ENTRY_FORMAT % [timestamp, text5]) +

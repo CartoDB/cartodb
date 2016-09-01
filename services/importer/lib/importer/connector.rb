@@ -163,7 +163,7 @@ module CartoDB
       end
 
       def qualified_foreign_table_name
-        %{"#{foreign_table_schema}".#{foreign_table_name}}
+        %{"#{foreign_table_schema}"."#{foreign_table_name}"}
       end
 
       def create_server_command

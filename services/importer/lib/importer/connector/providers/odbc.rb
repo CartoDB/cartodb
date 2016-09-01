@@ -93,7 +93,7 @@ module CartoDB
             options = table_params.merge(prefix: foreign_prefix)
             cmds << fdw_import_foreign_schema(server_name, remote_schema_name, foreign_table_schema, options)
           end
-          cmds << fdw_grant_select(foreign_table_name, foreign_table_schema, username)
+          cmds << fdw_grant_select(foreign_table_schema, foreign_table_name, username)
           cmds.join "\n"
         end
 

@@ -31,7 +31,13 @@ def match_sql_command(sql)
     }xi,
     create_table_as_select: %r{
       CREATE\s+TABLE\s+(?<table_name>[^\s]+)\s+AS\s+SELECT\s+(?<select>.+)
-    }
+    }xi,
+    drop_foreign_table_if_exists: %r{
+      DROP\s+FOREIGN\s+TABLE\s+IF\s+EXISTS\s+(?<table_name>[^\s]+)(?:\s+(?<cascade>CASCADE))?
+    }xi,
+    drop_server_if_exists: %r{
+      DROP\s+SERVER\s+IF\s+EXISTS\s+(?<server_name>[^\s]+)(?:\s+(?<cascade>CASCADE))?
+    }xi
   }
 
   result = nil

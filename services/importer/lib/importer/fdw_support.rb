@@ -54,10 +54,10 @@ module CartoDB
     private
 
     def qualified_table_name(schema_name, table_name)
-      name = ""
+      name = []
       name << %{"#{schema_name}"} if schema_name.present?
       name << %{"#{table_name}"}
-      name
+      name.join('.')
     end
 
     def quote_option_name(option)

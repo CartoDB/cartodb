@@ -42,8 +42,9 @@ describe CartoDB::Log do
       text5 = "5"
       text6 = "6"
 
+      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
+
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      log.stubs(:half_max_size).returns(max_entries_per_half)
 
       # Fixed half
       log.append(text1, timestamp)
@@ -170,7 +171,6 @@ describe CartoDB::Log do
 
       # This test checks that old logs with more lines than accepted get truncated correctly
       log = Log.new({ type: Log::TYPE_DATA_IMPORT })
-      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half*2)
       log.append(text1, timestamp)
       log.append(text2, timestamp)
       log.append('filll', timestamp)
@@ -181,7 +181,6 @@ describe CartoDB::Log do
       log.append(text4, timestamp)
       log.store
 
-      Log.any_instance.stubs(:half_max_size).returns(max_entries_per_half)
       log = Log.where(id: log.id).first
 
       log.send(:collect_entries).should eq (Log::ENTRY_FORMAT % [ timestamp, text1 ]) + 

@@ -55,9 +55,9 @@ describe('windshaft/client', function () {
       var params = this.ajaxParams.url.split('?')[1].split('&');
 
       expect(url).toEqual('https://rambo.example.com:443/api/v1');
-      expect(params[0]).toEqual('stat_tag=stat_tag');
-      expect(params[1]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
-      expect(params[2]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
+      expect(params[0]).toEqual('config=%7B%22some%22%3A%22json%20that%20must%20be%20encoded%22%7D');
+      expect(params[1]).toEqual('stat_tag=stat_tag');
+      expect(params[2]).toEqual('filters=%7B%22some%22%3A%22filters%20that%20will%20be%20applied%22%7D');
       expect(this.ajaxParams.method).toEqual('GET');
       expect(this.ajaxParams.dataType).toEqual('jsonp');
       expect(this.ajaxParams.jsonpCallback).toMatch('_cdbc_callbackName');
@@ -240,19 +240,28 @@ describe('windshaft/client', function () {
         expect(errorCallback).not.toHaveBeenCalled();
       });
 
-      it('should cancel previous requests when using POST requests', function () {
+      it('should cancel previous requests when using POST requests', function (done) {
+        // simulate a compression that generates something BIG
+        spyOn(LZMA, 'compress').and.callFake(function (data, level, callback) {
+          callback(new Array(2500).join('x'));
+        });
+
         this.client.instantiateMap({
           mapDefinition: { something: new Array(3000).join('x') }
         });
 
-        expect($.ajax.calls.argsFor(0)[0].method).toEqual('POST');
-        expect(this.fakeXHR.abort).not.toHaveBeenCalled();
+        _.defer(function () {
+          expect($.ajax.calls.argsFor(0)[0].method).toEqual('POST');
+          expect(this.fakeXHR.abort).not.toHaveBeenCalled();
 
-        this.client.instantiateMap({
-          mapDefinition: { something: new Array(3000).join('x') }
-        });
+          this.client.instantiateMap({
+            mapDefinition: { something: new Array(3000).join('x') }
+          });
 
-        expect(this.fakeXHR.abort).toHaveBeenCalled();
+          expect(this.fakeXHR.abort).toHaveBeenCalled();
+
+          done();
+        }.bind(this));
       });
     });
   });

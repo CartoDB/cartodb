@@ -7,15 +7,5 @@
     <div class="js-selector u-bSpace--xl">
       <p class="CDB-Text u-upperCase CDB-FontSize-small u-altTextColor u-bSpace--m js-highlight"><%- name %></p>
     </div>
-    <div class="u-flex">
-      <div class="u-rSpace--m">
-        <input class="CDB-Checkbox js-checkbox" type="checkbox">
-        <span class="u-iBlock CDB-Checkbox-face"></span>
-      </div>
-      <div style="padding-top: 2px;">
-        <h3 class="u-ellipsis CDB-Text CDB-Size-small u-upperCase u-bSpace--m"><%- _t('editor.legend.legend-form.type.dynamic.label') %></h3>
-        <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('editor.legend.legend-form.type.dynamic.body') %></p>
-      </div>
-    </div>
   </div>
 </div>

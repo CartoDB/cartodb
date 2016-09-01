@@ -1598,6 +1598,10 @@
           "empty": "Template can't be empty."
         }
       },
+      "menu-tab-pane-labels": {
+        "color": "color",
+        "size": "size"
+      },
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",

@@ -1,6 +1,8 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var util = require('cdb.core.util');
 var WindshaftClient = require('../../../src/windshaft/client');
+var LZMA = require('lzma');
 
 describe('windshaft/client', function () {
   it('should throw an error if required options are not passed to the constructor', function () {
@@ -129,77 +131,87 @@ describe('windshaft/client', function () {
       expect(errorCallback).not.toHaveBeenCalled();
     });
 
-    it('should use POST if forceCors is true', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(true);
-
-      this.client = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
-        userName: 'rambo',
-        endpoint: 'api/v1',
-        forceCors: true
+    describe('GET or POST', function () {
+      beforeEach(function () {
+        this.client = new WindshaftClient({
+          urlTemplate: 'https://{user}.carto.com:443',
+          userName: 'rambo',
+          endpoint: 'api/v1'
+        });
       });
 
-      this.client.instantiateMap({
-        mapDefinition: { some: 'json that must be encoded' },
-        params: {
-          a: 'b'
-        }
+      it('should use GET to URL with encoded config', function (done) {
+        this.client.instantiateMap({
+          mapDefinition: { something: new Array(1946).join('x') },
+          params: {
+            a: 'a sentence'
+          }
+        });
+
+        _.defer(function () {
+          var url = this.ajaxParams.url.split('?')[0];
+          var params = this.ajaxParams.url.split('?')[1].split('&');
+
+          expect(this.ajaxParams.url.length).toBeLessThan(2033);
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(this.ajaxParams.method).toEqual('GET');
+          expect(params[0]).toMatch('^config=');
+          expect(params[0]).not.toMatch('^lzma=');
+          expect(params[1]).toEqual('a=a%20sentence');
+
+          done();
+        }.bind(this));
       });
 
-      var url = this.ajaxParams.url.split('?')[0];
-      var params = this.ajaxParams.url.split('?')[1].split('&');
+      it('should use GET to URL with compressed config', function (done) {
+        this.client.instantiateMap({
+          mapDefinition: { something: new Array(1947).join('x') },
+          params: {
+            a: 'a sentence'
+          }
+        });
 
-      expect(url).toEqual('https://rambo.example.com:443/api/v1');
-      expect(params[0]).toEqual('a=b');
-      expect(this.ajaxParams.crossOrigin).toEqual(true);
-      expect(this.ajaxParams.method).toEqual('POST');
-      expect(this.ajaxParams.dataType).toEqual('json');
-      expect(this.ajaxParams.contentType).toEqual('application/json');
-    });
+        _.defer(function () {
+          var url = this.ajaxParams.url.split('?')[0];
+          var params = this.ajaxParams.url.split('?')[1].split('&');
 
-    it('should use POST if payload is too big to be sent as a URL param', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(true);
+          expect(this.ajaxParams.url.length).toBeLessThan(2033);
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(this.ajaxParams.method).toEqual('GET');
+          expect(params[0]).toMatch('^lzma=');
+          expect(params[0]).not.toMatch('^config=');
+          expect(params[1]).toEqual('a=a%20sentence');
 
-      this.client = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
-        userName: 'rambo',
-        endpoint: 'api/v1',
-        forceCors: false
+          done();
+        }.bind(this));
       });
 
-      this.client.instantiateMap({
-        mapDefinition: { something: new Array(3000).join('x') },
-        params: {
-          a: 'b'
-        }
+      it('should use POST when URL is too big', function (done) {
+        // simulate a compression that generates something BIG
+        spyOn(LZMA, 'compress').and.callFake(function (data, level, callback) {
+          callback(new Array(2500).join('x'));
+        });
+
+        this.client.instantiateMap({
+          mapDefinition: { something: new Array(2000).join('x') },
+          params: {
+            a: 'a sentence'
+          }
+        });
+
+        _.defer(function () {
+          var url = this.ajaxParams.url.split('?')[0];
+          var params = this.ajaxParams.url.split('?')[1].split('&');
+
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(this.ajaxParams.crossOrigin).toEqual(true);
+          expect(this.ajaxParams.method).toEqual('POST');
+          expect(this.ajaxParams.dataType).toEqual('json');
+          expect(this.ajaxParams.contentType).toEqual('application/json');
+          expect(params[0]).toEqual('a=a%20sentence');
+          done();
+        }.bind(this));
       });
-
-      var url = this.ajaxParams.url.split('?')[0];
-      var params = this.ajaxParams.url.split('?')[1].split('&');
-
-      expect(url).toEqual('https://rambo.example.com:443/api/v1');
-      expect(params[0]).toEqual('a=b');
-      expect(this.ajaxParams.crossOrigin).toEqual(true);
-      expect(this.ajaxParams.method).toEqual('POST');
-      expect(this.ajaxParams.dataType).toEqual('json');
-      expect(this.ajaxParams.contentType).toEqual('application/json');
-    });
-
-    it('should NOT use POST if forceCors is true but cors is not supported', function () {
-      spyOn(util, 'isCORSSupported').and.returnValue(false);
-
-      this.client = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
-        userName: 'rambo',
-        endpoint: 'api/v1',
-        forceCors: true
-      });
-
-      this.client.instantiateMap({
-        mapDefinition: { some: 'json that must be encoded' }
-      });
-
-      expect(this.ajaxParams.method).toEqual('GET');
     });
 
     describe('cancelling previous requests', function () {

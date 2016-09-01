@@ -23,13 +23,12 @@ var WindshaftClient = function (options) {
   this.userName = options.userName;
   this.endpoint = options.endpoint;
   this.statTag = options.statTag;
-  this.forceCors = options.forceCors || false;
 
   this.url = this.urlTemplate.replace('{user}', this.userName);
 };
 
-WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
-WindshaftClient.MAX_GET_SIZE = 2033;
+WindshaftClient.prototype.MAX_URL_LENGTH = 2033;
+WindshaftClient.prototype.COMPRESSION_LEVEL = 3;
 
 WindshaftClient.prototype.instantiateMap = function (options) {
   if (!options.mapDefinition) {
@@ -40,7 +39,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   var params = options.params || {};
   var successCallback = options.success;
   var errorCallback = options.error;
-  var payload = JSON.stringify(mapDefinition);
 
   var ajaxOptions = {
     success: function (data) {
@@ -62,70 +60,74 @@ WindshaftClient.prototype.instantiateMap = function (options) {
     }
   };
 
-  if (this._usePOST(payload, params)) {
-    this._post(payload, params, ajaxOptions);
+  var encodedURL = this._generateEncodedURL(mapDefinition, params);
+  if (!this._isURLTooLong(encodedURL)) {
+    this._get(encodedURL, ajaxOptions);
   } else {
-    this._get(payload, params, ajaxOptions);
+    this._generateCompressedURL(mapDefinition, params, function (compressedURL) {
+      if (!this._isURLTooLong(compressedURL)) {
+        this._get(compressedURL, ajaxOptions);
+      } else {
+        var url = this._getURL(params);
+        this._post(url, mapDefinition, ajaxOptions);
+      }
+    }.bind(this));
   }
 };
 
-WindshaftClient.prototype._usePOST = function (payload, params) {
-  if (util.isCORSSupported() && this.forceCors) {
-    return true;
-  }
-  return payload.length >= this.constructor.MAX_GET_SIZE;
+WindshaftClient.prototype._generateEncodedURL = function (payload, params) {
+  params = _.extend({
+    config: payload
+  }, params);
+
+  return this._getURL(params);
 };
 
-WindshaftClient.prototype._post = function (payload, params, options) {
+WindshaftClient.prototype._generateCompressedURL = function (payload, params, callback) {
+  LZMA.compress(payload, this.COMPRESSION_LEVEL, function (compressedPayload) {
+    params = _.extend({
+      lzma: util.array2hex(compressedPayload)
+    }, params);
+
+    callback(this._getURL(params));
+  }.bind(this));
+};
+
+WindshaftClient.prototype._isURLTooLong = function (url) {
+  return url.length >= this.MAX_URL_LENGTH;
+};
+
+WindshaftClient.prototype._post = function (url, payload, options) {
   this._abortPreviousRequest();
   this._previousRequest = $.ajax({
+    url: url,
     crossOrigin: true,
     method: 'POST',
     dataType: 'json',
     contentType: 'application/json',
-    url: this._getURL(params),
-    data: payload,
+    data: JSON.stringify(payload),
     success: options.success,
     error: options.error
   });
 };
 
-WindshaftClient.prototype._get = function (payload, params, options) {
-  var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function (dataParam) {
-    _.extend(params, dataParam);
-    this._abortPreviousRequest();
-    this._previousRequest = $.ajax({
-      url: this._getURL(params),
-      method: 'GET',
-      dataType: 'jsonp',
-      jsonpCallback: this._jsonpCallbackName(payload),
-      cache: true,
-      success: options.success,
-      error: options.error
-    });
-  }.bind(this));
+WindshaftClient.prototype._get = function (url, options) {
+  this._abortPreviousRequest();
+  this._previousRequest = $.ajax({
+    url: url,
+    method: 'GET',
+    dataType: 'jsonp',
+    jsonpCallback: this._jsonpCallbackName(url),
+    cache: true,
+    success: options.success,
+    error: options.error
+  });
 };
 
 WindshaftClient.prototype._abortPreviousRequest = function () {
   if (this._previousRequest) {
     this._previousRequest.abort();
   }
-};
-
-WindshaftClient.prototype._getCompressor = function (payload) {
-  if (payload.length < this.constructor.MAX_GET_SIZE) {
-    return function (data, level, callback) {
-      callback({ config: encodeURIComponent(data) });
-    };
-  }
-
-  return function (data, level, callback) {
-    data = JSON.stringify({ config: data });
-    LZMA.compress(data, level, function (encoded) {
-      callback({ lzma: encodeURIComponent(util.array2hex(encoded)) });
-    });
-  };
 };
 
 WindshaftClient.prototype._getURL = function (params) {
@@ -135,11 +137,10 @@ WindshaftClient.prototype._getURL = function (params) {
       _.each(value, function (one_value) {
         queryString.push(name + '[]=' + one_value);
       });
+    } else if (value instanceof Object) {
+      queryString.push(name + '=' + encodeURIComponent(JSON.stringify(value)));
     } else {
-      if (value instanceof Object) {
-        value = encodeURIComponent(JSON.stringify(value));
-      }
-      queryString.push(name + '=' + value);
+      queryString.push(name + '=' + encodeURIComponent(value));
     }
   });
 

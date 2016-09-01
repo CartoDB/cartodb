@@ -16,8 +16,8 @@ module CartoDB
     end
 
     # Generic/unmapped errors
-    class GenericImportError < StandardError;
-      def initialize(message="Import Error")
+    class GenericImportError < StandardError
+      def initialize(message = "Import Error")
         super
       end
     end

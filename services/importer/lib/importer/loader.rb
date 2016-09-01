@@ -314,7 +314,7 @@ module CartoDB
         end
 
         if ogr2ogr.kml_style_missing?
-          raise KmlWithoutStyleIdError.new
+          raise KmlWithoutStyleIdError.new 'StyleID missing in KML file'
         end
 
         # Could be OOM, could be wrong input

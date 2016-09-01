@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.1.22",
+  "version": "4.1.33",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -442,9 +442,9 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.9.2",
+                              "version": "1.10.0",
                               "from": "sshpk@>=1.7.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.9.2.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.0.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
@@ -485,6 +485,18 @@
                                   "version": "0.1.1",
                                   "from": "ecc-jsbn@>=0.1.1 <0.2.0",
                                   "resolved": "https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.1.tgz"
+                                },
+                                "bcrypt-pbkdf": {
+                                  "version": "1.0.0",
+                                  "from": "bcrypt-pbkdf@>=1.0.0 <2.0.0",
+                                  "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.0.tgz",
+                                  "dependencies": {
+                                    "tweetnacl": {
+                                      "version": "0.14.3",
+                                      "from": "tweetnacl@>=0.14.3 <0.15.0",
+                                      "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
+                                    }
+                                  }
                                 }
                               }
                             }

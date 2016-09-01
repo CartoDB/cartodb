@@ -152,8 +152,10 @@ module CartoDB
                                                  .map { |entry| ENTRY_REHYDRATED_FORMAT % [entry] }
         # Fill circular part
         if @circular_entries_half.length < half_max_size
-          @circular_index = @circular_entries_half.length - 1
+          @circular_index = @circular_entries_half.length
           @circular_entries_half = @circular_entries_half + Array.new(half_max_size - @circular_entries_half.length)
+        else
+          @circular_index = 0
         end
       end
     end

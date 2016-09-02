@@ -93,7 +93,7 @@ class Carto::Analysis < ActiveRecord::Base
   def rename_table_in_definition(definition, target, substitution)
     if definition.is_a?(Hash)
       definition.each do |key, value|
-        if value.is_a?(String) && RENAMABLE_ATTRIBUTES.include?(key.to_s) && value.include?(target)
+        if value.is_a?(String) && RENAMABLE_ATTRIBUTES.include?(key.to_s)
           value.gsub!(/\b#{target}\b/, substitution)
         else
           rename_table_in_definition(value, target, substitution)

@@ -103,7 +103,6 @@ module CartoDB
         end
 
         def connection_attributes
-
           Hash[@params.except(*NON_ATTRIBUTES).map { |k, v| [attribute_name(k, v), v] }]
         end
 

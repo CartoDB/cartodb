@@ -1223,7 +1223,10 @@ class Table
         end
       end
 
+
+
       begin
+        propagate_name_change_to_analyses
         propagate_namechange_to_table_vis
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
@@ -1350,6 +1353,21 @@ class Table
   end
 
   private
+
+  def propagate_name_change_to_analyses
+    affected_visualizations = @user_table.layers
+                                         .map(&:carto_layer)
+                                         .map(&:visualization)
+                                         .flatten
+                                         .uniq
+                                         .compact
+
+    affected_visualizations.each do |visualization|
+      visualization.analyses.each do |analysis|
+        new_analysis_definition = analysis.update_table_name!(@name_changed_from, name)
+      end
+    end
+  end
 
   def index_name(column, prefix)
     "#{prefix}#{name}_#{column}"

@@ -61,6 +61,12 @@ class Carto::Analysis < ActiveRecord::Base
     new(visualization_id: visualization_id, user_id: user_id, analysis_definition: analysis_definition)
   end
 
+  def update_table_name!(old_name, new_name)
+    rename_in_definition!(analysis_definition, old_name, new_name)
+
+    update_attributes(analysis_definition: analysis_definition)
+  end
+
   def analysis_definition_for_api
     filter_valid_properties(analysis_node)
   end
@@ -81,6 +87,36 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   private
+
+  RENAMABLE_TAGS = ['query', 'table_name'].freeze
+
+  def rename_in_definition!(hash, target, substitution)
+    hash.each do |key, value|
+      if value.is_a?(Hash)
+        rename_in_definition!(value, target, substitution)
+      elsif value.is_a?(Array)
+        rename_in_array!(value, target, substitution)
+      elsif RENAMABLE_TAGS.include?(key.to_s) && value.include?(target)
+        value.gsub!(target, substitution)
+      end
+    end
+
+    hash
+  end
+
+  def rename_in_array!(array, target, substitution)
+    array.each do |value|
+      if value.is_a?(Hash)
+        rename_in_definition!(value, target, substitution)
+      elsif value.is_a?(Array)
+        rename_in_array!(value, target, substitution)
+      elsif RENAMABLE_TAGS.include?(key.to_s) && value.include?(target)
+        value.gsub!(target, substitution)
+      end
+    end
+
+    array
+  end
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
   # This methods extract the needed ones.

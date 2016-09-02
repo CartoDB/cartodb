@@ -1359,7 +1359,7 @@ class Table
   def propagate_name_change_to_analyses
     related_visualizations.each do |visualization|
       visualization.analyses.each do |analysis|
-        analysis.update_table_name!(@name_changed_from, name)
+        analysis.update_table_name(@name_changed_from, name)
       end
     end
   end

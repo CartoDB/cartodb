@@ -187,10 +187,6 @@ class Layer < Sequel::Model
     map.user if map
   end
 
-  def carto_layer
-    Carto::Layer.find(id) if persisted?
-  end
-
   private
 
   def rename_in(target, anchor, substitution)

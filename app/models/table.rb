@@ -1353,7 +1353,11 @@ class Table
   private
 
   def related_visualizations
-    @user_table.layers.map(&:carto_layer).map(&:visualization).flatten.uniq.compact
+    carto_layers = @user_table.layers.map do |layer|
+      Carto::Layer.find(layer.id) if layer.persisted?
+    end
+
+    carto_layers.flatten.compact.uniq.map(&:visualization).flatten.compact.uniq
   end
 
   def propagate_name_change_to_analyses

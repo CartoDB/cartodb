@@ -51,7 +51,17 @@ def match_sql_command(sql)
         value = match[name]
         if value
           if name.in? ['options', 'columns']
-            value = Hash[value.split(',').map { |opt| opt.strip.split(/\s+/) }]
+            option_pair = /\A\s*
+                           (?:"(?<quoted_name>[^\"]+)"|(?<name>[^\s]+))
+                           \s+
+                           (?:'(?<quoted_value>[^\']+)'|(?<value>[^\s]+))
+                          /x
+            value = Hash[
+              value.split(',').map do |opt|
+                match = opt.match(option_pair)
+                [match[:name] || match[:quoted_name], match[:value] || match[:quoted_value]] if match
+              end
+            ]
           end
           result[name.to_sym] = value
         end

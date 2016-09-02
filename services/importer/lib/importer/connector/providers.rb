@@ -13,7 +13,6 @@ module CartoDB
       PROVIDERS = {
         'odbc'      => GenericOdbcProvider, # Intended for internal development/tests
         'postgres'  => PostgreSQLProvider,
-        'pg'        => PgFdwProvider,
         'mysql'     => MySqlProvider,
         'sqlserver' => SqlServerProvider,
         'hive'      => HiveProvider

@@ -1,16 +1,27 @@
 def match_sql_command(sql)
+  options_pattern = %q{
+    (?:\s+OPTIONS\s*\((?<options>
+      (?:
+        \s*
+        (?:\"(?<quoted_name>[^\"]+)\"|(?<name>[^\s]+))
+        \s+
+        (?:\'(?<quoted_value>[^\']*)\'|(?<value>[^\'].+))
+      )*
+      \s*
+    )\))?
+  }
   patterns = {
     create_server: %r{
       CREATE\s+SERVER\s+(?<server_name>[^\s]+)
       \s+
       FOREIGN\s+DATA\s+WRAPPER\s+(?<fdw_name>[^\s]+)
-      (?:\s+OPTIONS\s*\((?<options>[^\)]+)\))?
+      #{options_pattern}
     }xi,
     create_user_mapping: %r{
       CREATE\s+USER\s+MAPPING\s+FOR\s+\"?(?<user_name>[^\s\"]+)\"?
       \s+
       SERVER\s+(?<server_name>[^\s]+)
-      (?:\s+OPTIONS\s*\((?<options>[^\)]+)\))?
+      #{options_pattern}
     }xi,
     import_foreign_schema: %r{
       IMPORT\s+FOREIGN\s+SCHEMA\s+\"?(?<remote_schema_name>[^\s\"]+)\"?
@@ -18,13 +29,23 @@ def match_sql_command(sql)
         FROM\s+SERVER\s+(?<server_name>[^\s]+)
         \s+
         INTO\s+\"?(?<schema_name>[^\s\"]+)\"?
-        (?:\s+OPTIONS\s*\((?<options>[^\)]+)\))?
+        #{options_pattern}
+    }xi,
+    import_foreign_schema_limited: %r{
+      IMPORT\s+FOREIGN\s+SCHEMA\s+\"?(?<remote_schema_name>[^\s\"]+)\"?
+        \s+
+        LIMIT\s+TO\s+(?<limited_to>.+)
+        \s+
+        FROM\s+SERVER\s+(?<server_name>[^\s]+)
+        \s+
+        INTO\s+\"?(?<schema_name>[^\s\"]+)\"?
+        #{options_pattern}
     }xi,
     create_foreign_table: %r{
       CREATE\+FOREIGN\+TABLE\s+(?<table_name>.+)\s*\((?<columns>.+)\)
       \s+
       SERVER\s+(?<server_name>[^\s]+)
-      (?:\s+OPTIONS\s*\((?<options>[^\)]+)\))?
+      #{options_pattern}
     }xi,
     grant_select: %r{
       GRANT\s+SELECT\s+ON\s+(?<table_name>[^\s]+)\s+TO\s+\"?(?<user_name>[^\s\"]+)\"?
@@ -37,8 +58,17 @@ def match_sql_command(sql)
     }xi,
     drop_server_if_exists: %r{
       DROP\s+SERVER\s+IF\s+EXISTS\s+(?<server_name>[^\s]+)(?:\s+(?<cascade>CASCADE))?
+    }xi,
+    rename_foreign_table: %r{
+      ALTER\s+FOREIGN\s+TABLE\s+(?<table_name>.+)\s+RENAME\s+TO\s+(?<new_name>.+)
     }xi
   }
+  option_pair = %r{
+    \A\s*
+    (?:\"(?<quoted_name>[^\"]+)\"|(?<name>[^\s]+))
+    \s+
+    (?:\'(?<quoted_value>[^\']*)\'|(?<value>[^\'].+))
+  }x
 
   result = nil
   patterns.each do |command, regexp|
@@ -51,16 +81,11 @@ def match_sql_command(sql)
         value = match[name]
         if value
           if name.in? ['options', 'columns']
-            option_pair = /\A\s*
-                           (?:"(?<quoted_name>[^\"]+)"|(?<name>[^\s]+))
-                           \s+
-                           (?:'(?<quoted_value>[^\']+)'|(?<value>[^\s]+))
-                          /x
             value = Hash[
-              value.split(',').map do |opt|
+              value.split(',').map { |opt|
                 match = opt.match(option_pair)
                 [match[:name] || match[:quoted_name], match[:value] || match[:quoted_value]] if match
-              end
+              }.compact
             ]
           end
           result[name.to_sym] = value

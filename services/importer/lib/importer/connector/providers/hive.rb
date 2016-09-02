@@ -33,8 +33,8 @@ module CartoDB
         def optional_connection_attributes
           {
             port: { PORT: 10000 },
-            username: :UID,
-            password: :PWD,
+            username: { UID: nil },
+            password: { PWD: nil },
             authmech: { AuthMech: 0 }
           }
         end

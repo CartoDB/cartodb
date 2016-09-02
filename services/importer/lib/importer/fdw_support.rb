@@ -29,6 +29,16 @@ module CartoDB
        }
     end
 
+    def fdw_import_foreign_schema_limited(server_name, remote_schema_name, schema_name, limited_to, options)
+      %{
+        IMPORT FOREIGN SCHEMA "#{remote_schema_name}"
+          LIMIT TO #{limited_to}
+          FROM SERVER #{server_name}
+          INTO "#{schema_name}"
+          #{options_clause(options)};
+       }
+    end
+
     def fdw_grant_select(schema_name, table_name, user_name)
       %{
         GRANT SELECT ON #{qualified_table_name(schema_name, table_name)} TO "#{user_name}";
@@ -49,6 +59,13 @@ module CartoDB
 
     def fdw_drop_foreign_table(schema_name, table_name)
       %{DROP FOREIGN TABLE IF EXISTS #{qualified_table_name(schema_name, table_name)} CASCADE;}
+    end
+
+    def fdw_rename_foreign_table(schema, foreign_table_name, new_name)
+      %{
+        ALTER FOREIGN TABLE #{qualified_table_name(schema, foreign_table_name)}
+        RENAME TO #{qualified_table_name(nil, new_name)};
+      }
     end
 
     private

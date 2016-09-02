@@ -36,7 +36,7 @@ module CartoDB
         @provider_name ||= DEFAULT_PROVIDER
 
         raise InvalidParametersError.new("Provider not defined") if @provider_name.blank?
-        @provider = PROVIDERS[@provider_name].new(@params)
+        @provider = PROVIDERS[@provider_name].try :new, @params
         raise InvalidParametersError.new("Invalid provider: #{@provider_name}") if @provider.blank?
         @provider.validate!
 
@@ -61,9 +61,6 @@ module CartoDB
         @job.log "Copying Foreign Table"
         execute "CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{qualified_foreign_table_name};"
       rescue => error
-        puts ">"*80
-        puts "Connector Error #{error}"
-        puts ">"*80
         @job.log "Connector Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else

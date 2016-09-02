@@ -2,11 +2,9 @@
 
 require_relative './odbc'
 
-
 module CartoDB
   module Importer2
     class Connector
-
 
       # Generic ODBC provider passing through any ODBC connection attributes in the 'connection' parameter.
       # Either a 'driver' or a 'dns' parameter must be present in 'connection'.
@@ -41,7 +39,7 @@ module CartoDB
         private
 
         def connection_attributes
-          @params.fetch_ignoring_case 'connection'
+          Support.fetch_ignoring_case @params, 'connection'
         end
 
       end

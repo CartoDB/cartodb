@@ -25,6 +25,9 @@ module CartoDB
       #   * username: user name for athentication
       #   * password: password for athentication
       #
+      # This is not intended for production at the moment, this class is here to validate and test the
+      # Connector hierarchy design.
+      #
       # TODO: add support for sql_query parameter
       #
       class PgFdwProvider < Provider
@@ -37,11 +40,11 @@ module CartoDB
         OPTIONAL_PARAMETERS = %w(schema port password).freeze
 
         def optional_parameters
-          optional_connection_attributes.keys.map(&:to_s) + OPTIONAL_PARAMETERS
+          OPTIONAL_PARAMETERS
         end
 
         def required_parameters
-          required_connection_attributes.keys.map(&:to_s) + REQUIRED_PARAMETERS
+          REQUIRED_PARAMETERS
         end
 
         def table_name
@@ -60,26 +63,36 @@ module CartoDB
 
         def create_usermap_command(server_name, username)
           fdw_create_usermap server_name, username, user_params
-          fdw_create_usermap server_name, 'postgres', user_params
         end
 
-        def create_foreign_table_command(server_name, foreign_table_schema, foreign_table_name, foreign_prefix, username)
-          options = table_params.merge(prefix: foreign_prefix)
-          fdw_import_foreign_schema server_name, remote_schema_name, foreign_table_schema, options
-          fdw_grant_select foreign_table_schema, foreign_table_name, username
+        def create_foreign_table_command(server_name, schema, foreign_table_name, _foreign_prefix, username)
+          # TODO: this show some deficiencies in the design of this internal API:
+          # we shouldn't need to resort to @params here.
+          # The reason is the original API was oriented to odbc_fdw (which has the prefix options)
+          remote_table = @params['table']
+          options = table_params
+          cmds = []
+          cmds << fdw_import_foreign_schema_limited(server_name, remote_schema_name, schema, remote_table, options)
+          if remote_table != foreign_table_name
+            cmds << fdw_rename_foreign_table(schema, remote_table, foreign_table_name)
+          end
+          cmds << fdw_grant_select(schema, foreign_table_name, username)
+          cmds.join "\n"
         end
 
         private
 
         ATTRIBUTE_NAMES = {
-          'schema'   => 'schema_name',
-          'table'    => 'table_name',
+          # 'schema'   => 'schema_name',  # for CREATE FOREIGN TABLE, remote schema name if different from local
+          # 'table'    => 'table_name',   # for CREATE FOREIGN TABLE, remote taable name if different from local
           'server'   => 'host',
           'database' => 'dbname',
           'port'     => 'port',
           'username' => 'user',
           'password' => 'password'
         }
+
+        NON_ATTRIBUTES = %w(schema table provider)
 
         def attribute_name(parameter_name, value)
           attribute_name = ATTRIBUTE_NAMES[parameter_name.downcase] || parameter_name
@@ -90,11 +103,8 @@ module CartoDB
         end
 
         def connection_attributes
-          Hash[@params.map { |k, v| [attribute_name(k, v), v] }]
-        end
 
-        def non_connection_parameters
-          @params.select(&case_insensitive_in(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - ['columns']))
+          Hash[@params.except(*NON_ATTRIBUTES).map { |k, v| [attribute_name(k, v), v] }]
         end
 
         include Connector::Support
@@ -102,24 +112,16 @@ module CartoDB
         SERVER_OPTIONS  = %w(host hostaddr port dbname).freeze
         USERMAP_OPTIONS = %w(user password)
 
-        def connection_options(options)
-          # Prefix option names with "odbc_"
-          Hash[options.map { |option_name, option_value| ["odbc_#{option_name}", option_value] }]
-        end
-
         def server_params
-          params = connection_attributes.slice(*SERVER_OPTIONS)
-          connection_options params
+          connection_attributes.slice(*SERVER_OPTIONS)
         end
 
         def user_params
-          params = connection_attributes.slice(*USER_OPTIONS)
-          connection_options params
+          connection_attributes.slice(*USERMAP_OPTIONS)
         end
 
         def table_params
-          params = connection_attributes.except(*(SERVER_OPTIONS + USER_OPTIONS))
-          connection_options(params)
+          connection_attributes.except(*(SERVER_OPTIONS + USERMAP_OPTIONS))
         end
 
       end

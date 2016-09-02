@@ -1352,15 +1352,12 @@ class Table
 
   private
 
-  def propagate_name_change_to_analyses
-    affected_visualizations = @user_table.layers
-                                         .map(&:carto_layer)
-                                         .map(&:visualization)
-                                         .flatten
-                                         .uniq
-                                         .compact
+  def related_visualizations
+    @user_table.layers.map(&:carto_layer).map(&:visualization).flatten.uniq.compact
+  end
 
-    affected_visualizations.each do |visualization|
+  def propagate_name_change_to_analyses
+    related_visualizations.each do |visualization|
       visualization.analyses.each do |analysis|
         analysis.update_table_name!(@name_changed_from, name)
       end

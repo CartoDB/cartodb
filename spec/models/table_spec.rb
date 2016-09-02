@@ -147,8 +147,9 @@ describe Table do
 
     it 'propagates name changes to analyses' do
       table = create_table(name: 'bogus_name', user_id: @user.id)
+      carto_layer = Carto::Layer.find(table.layers.first.id)
 
-      analysis = Carto::Analysis.source_analysis_for_layer(table.layers.first.carto_layer, 0)
+      analysis = Carto::Analysis.source_analysis_for_layer(carto_layer, 0)
       analysis.save
 
       table.name.should eq 'bogus_name'

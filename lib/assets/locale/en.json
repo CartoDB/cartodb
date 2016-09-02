@@ -885,7 +885,7 @@
       "columns": {
         "change-type": {
           "confirm": "ok, change it",
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "desc": "Maps using this column will be affected and unconvertible data will be lost. Are you sure?",
           "error": "There was an error changing %{columnName} column: %{error}",
           "loading": "Changing %{columnName} column...",
@@ -898,8 +898,8 @@
           "success": "%{columnName} column added"
         },
         "destroy": {
-          "cancel": "cancel",
-          "confirm": "ok, delete it",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it",
           "desc": "Maps using this column will be affected, are you sure you want to delete it?",
           "error": "Error deleting %{columnName} column: %{error}",
           "loading": "Removing your column %{columnName}...",
@@ -907,7 +907,7 @@
           "title": "You are about to delete %{columnName} column "
         },
         "rename": {
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "confirm": "ok, rename it",
           "desc": "Maps using this column will be affected, are you sure you want to rename it?",
           "error": "Error renaming column %{columnName} to %{newName}: %{error}",
@@ -961,7 +961,7 @@
           "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
         },
         "destroy": {
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "confirm": "ok, delete",
           "desc": "Are you sure you want to delete it?",
           "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
@@ -1006,8 +1006,8 @@
     },
     "delete": {
       "option": "Delete dataset...",
-      "cancel": "cancel",
-      "confirm": "ok, delete it",
+      "cancel": "Cancel",
+      "confirm": "Ok, delete it",
       "desc": "Are you sure?",
       "error": "Error deleting %{tableName}",
       "loading": "Renaming your dataset %{tableName}...",
@@ -1032,7 +1032,7 @@
     },
     "rename": {
       "option": "Rename dataset",
-      "cancel": "cancel",
+      "cancel": "Cancel",
       "confirm": "ok, rename it",
       "desc": "If you are accessing this dataset via API, don't forget to use the new name in your API calls afterwards.",
       "error": "Error renaming %{tableName}: %{error}",
@@ -1117,8 +1117,8 @@
         "loading": "Duplicating your map %{name}..."
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
         "desc": "The deleted map cannot be recovered, be sure before proceeding.",
         "title": "You are about to delete map %{name}",
         "error": "Error deleting map %{name}: %{error}",
@@ -1187,13 +1187,16 @@
         "error": "Error moving the layer..."
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
         "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerMap}</span> will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
         "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
         "loading": "Removing layer…",
-        "success": "Layer deleted correctly."
+        "success": "Layer deleted correctly.",
+        "widgets": "one widget |||| %{smart_count} widgets",
+        "analyses": "one analysis |||| %{smart_count} analyses",
+        "layers": "one layer |||| %{smart_count} layers"
       },
       "layer": {
         "animated": "Animated",
@@ -1347,7 +1350,7 @@
           "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
           "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "no-credits-message": "No credits available",
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "confirm": "confirm"
         },
         "radius": "Distance",
@@ -1654,8 +1657,8 @@
         "edit": "Edit"
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
         "desc": "The widget cannot be recovered, be sure before proceeding.",
         "title": "You are about to delete the widget %{name}",
         "error": "Error deleting widget %{name}: %{error}",

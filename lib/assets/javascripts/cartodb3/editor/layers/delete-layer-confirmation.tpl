@@ -7,11 +7,17 @@
     </div>
     <div>
       <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m u-alertTextColor"><%- _t('editor.layers.delete.title', { layerName: layerName }) %></h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('editor.layers.delete.desc') %></p>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('editor.layers.delete.desc', { layerMap: layerMap }) %></p>
       <ul class="Modal-listText">
-        <li class="Modal-listTextItem">
-          <p class="CDB-Text CDB-Size-medium">Deleting this layer will affect to <span class="CDB-Text is-semibold">4 Widgets, 3 Analysis</span> and <span class="CDB-Text is-semibold">2 Layers</span></p>
-        </li>
+        <% if (widgetsNumber || analysisNumber || layersNumber) { %>
+          <li class="Modal-listTextItem">
+            <p class="CDB-Text CDB-Size-medium">Deleting this layer will affect to 
+              <span class="CDB-Text is-semibold"><%- widgetsNumber %> Widgets</span>,
+              <span class="CDB-Text is-semibold"><%- analysisNumber %> Analysis</span> and
+              <span class="CDB-Text is-semibold"><%- layersNumber %> Layers</span>
+            </p>
+          </li>
+        <% } %>
         <li class="Modal-listTextItem">
           <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#">export as .CARTO file</a></p>
         </li>

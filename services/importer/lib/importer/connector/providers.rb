@@ -18,7 +18,7 @@ module CartoDB
         'hive'      => HiveProvider
       }
 
-      DEFAULT_PROVIDER = 'odbc' # this is to allow breaking existing syncs
+      DEFAULT_PROVIDER = nil # No default provider
     end
   end
 end

@@ -1362,7 +1362,7 @@ class Table
 
     affected_visualizations.each do |visualization|
       visualization.analyses.each do |analysis|
-        new_analysis_definition = analysis.update_table_name!(@name_changed_from, name)
+        analysis.update_table_name!(@name_changed_from, name)
       end
     end
   end

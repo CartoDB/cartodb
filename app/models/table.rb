@@ -1223,8 +1223,6 @@ class Table
         end
       end
 
-
-
       begin
         propagate_name_change_to_analyses
         propagate_namechange_to_table_vis

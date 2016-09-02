@@ -47,6 +47,24 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
+
+        // FAKE METADATA FOR LEGENDS
+        data.metadata.legends = [
+          // Legends for the first layer
+          [
+            {
+              type: 'bubble',
+              bubbles: [
+                10,
+                30,
+                50
+              ],
+              avg: 20
+            }
+          ]
+        ];
+
+        // append fake legends as if the Maps API were returning this
         successCallback(data);
       }
     },

@@ -2,14 +2,11 @@ var _ = require('underscore');
 var $ = require('jquery');
 var util = require('cdb.core.util');
 var View = require('../core/view');
-var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var MapViewFactory = require('../geo/map-view-factory');
-var LegendModel = require('../geo/ui/legend-model');
-var Legend = require('../geo/ui/legend');
 var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
-
+var LegendsView = require('../geo/ui/new-legends/legends-view.js');
 /**
  * Visualization creation
  */
@@ -67,10 +64,11 @@ var Vis = View.extend({
     var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);
 
-    // Bindings
-    if (this.model.get('showLegends')) {
-      this.addLegends();
-    }
+    // if (this.model.get('showLegends')) {
+    // }
+
+    this._renderLegends();
+    // TODO: New layers -> new legends
 
     this._resetOverlays({});
 
@@ -86,6 +84,20 @@ var Vis = View.extend({
     }
   },
 
+  _renderLegends: function () {
+    // Get legends from all CartoDBLayer
+    // TODO: Move this
+    // TODO: What about torque layers?
+    var legends = _.chain(this.model.map.layers.getCartoDBLayers())
+      .map(function (layerModel) {
+        return [layerModel.legends.bubble];
+      })
+      .flatten()
+      .value();
+    var legendsView = new LegendsView(legends);
+    this.$el.append(legendsView.render().$el);
+  },
+
   _bindLayerViewToLoader: function (layerView) {
     layerView.bind('load', function () {
       this.model.untrackLoadingObject(layerView);
@@ -93,109 +105,6 @@ var Vis = View.extend({
     layerView.bind('loading', function () {
       this.model.trackLoadingObject(layerView);
     }, this);
-  },
-
-  addLegends: function (layers) {
-    this._addLegends(this.createLegendView(this.model.map.layers));
-  },
-
-  _addLegends: function (legends) {
-    if (this.legends) {
-      this.legends.remove();
-    }
-
-    this.legends = new StackedLegend({
-      legends: legends
-    });
-
-    this.mapView.addOverlay(this.legends);
-  },
-
-  createLegendView: function (layers) {
-    var legends = [];
-    for (var i = layers.length - 1; i >= 0; --i) {
-      var cid = layers.at(i).cid;
-      var layer = layers.at(i).attributes;
-      if (layer.visible) {
-        var layerView = this.mapView.getLayerViewByLayerCid(cid);
-        if (layerView) {
-          legends.push(this._createLayerLegendView(layer, layerView));
-        }
-      }
-    }
-    return _.flatten(legends);
-  },
-
-  _createLegendView: function (layer, layerView) {
-    if (layer.legend) {
-      layer.legend.data = layer.legend.items;
-      var legend = layer.legend;
-
-      if ((legend.items && legend.items.length) || legend.template) {
-        var legendAttrs = _.extend(layer.legend, {
-          visible: layer.visible
-        });
-        var legendModel = new LegendModel(legendAttrs);
-        var legendView = new Legend({ model: legendModel });
-        layerView.bind('change:visibility', function (layer, hidden) {
-          legendView[hidden ? 'hide' : 'show']();
-        });
-        layerView.legend = legendModel;
-        return legendView;
-      }
-    }
-    return null;
-  },
-
-  _createLayerLegendView: function (layer, layerView) {
-    var self = this;
-    var legends = [];
-    var sublayers;
-    if (layer.options && layer.options.layer_definition) {
-      sublayers = layer.options.layer_definition.layers;
-      _(sublayers).each(function (sub, i) {
-        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-      });
-    } else if (layer.options && layer.options.named_map && layer.options.named_map.layers) {
-      sublayers = layer.options.named_map.layers;
-      _(sublayers).each(function (sub, i) {
-        legends.push(self._createLegendView(sub, layerView.getSubLayer(i)));
-      });
-    } else {
-      legends.push(this._createLegendView(layer, layerView));
-    }
-    return _.compact(legends).reverse();
-  },
-
-  _setLayerOptions: function (options) {
-    var layers = [];
-
-    // flatten layers (except baselayer)
-    layers = _.map(this.getLayerViews().slice(1), function (layer) {
-      if (layer.getSubLayers) {
-        return layer.getSubLayers();
-      }
-      return layer;
-    });
-
-    layers = _.flatten(layers);
-
-    for (var i = 0; i < Math.min(options.sublayer_options.length, layers.length); ++i) {
-      var o = options.sublayer_options[i];
-      var subLayer = layers[i];
-      var legend = this.legends && this.legends.getLegendByIndex(i);
-
-      if (legend) {
-        legend[o.visible ? 'show' : 'hide']();
-      }
-
-      // HACK
-      if (subLayer.model && subLayer.model.get('type') === 'torque') {
-        if (o.visible === false) {
-          subLayer.model.set('visible', false);
-        }
-      }
-    }
   },
 
   _resetOverlays: function (options) {

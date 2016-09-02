@@ -112,6 +112,25 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
     if (layerModel.get('type') === 'torque') {
       layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     }
+
+    if (layerModel.get('type') === 'CartoDB') {
+      var legendsMetadata = windshaftMap.get('metadata').legends[layerIndex];
+      if (legendsMetadata) {
+        // BUBBLE LEGEND
+        var bubbleLegendMetadata = _.find(legendsMetadata, function (legendMetadata) {
+          return legendMetadata.type === 'bubble';
+        });
+        if (bubbleLegendMetadata) {
+          layerModel.legends.bubble.set({
+            bubbles: bubbleLegendMetadata.bubbles,
+            avg: bubbleLegendMetadata.avg
+          });
+        }
+
+        // TODO: Other types of layers
+      }
+    }
+
     layerModel.setOk();
   }, this);
 };

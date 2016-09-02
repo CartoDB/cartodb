@@ -3,7 +3,7 @@ var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
-
+var BubbleLegendModel = require('./legends/bubble-legend-model');
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
     type: 'CartoDB',
@@ -30,6 +30,10 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('tooltip');
 
     this.bind('change', this._onAttributeChanged, this);
+
+    this.legends = {
+      bubble: new BubbleLegendModel({ title: 'My Legend' })
+    };
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },

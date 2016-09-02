@@ -12,6 +12,22 @@
         padding: 0;
         margin: 0;
       }
+
+      .CDB-Legends {
+        position: absolute;
+        bottom: 20px;
+        background: #fabada;
+        padding: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .CDB-Legend {  }
+
+      .CDB-Legend-Title {
+        font-weight: bold;
+      }
+
     </style>
   </head>
   <body>
@@ -315,6 +331,14 @@
         };
         cartodb.createVis('map', vizjson, {})
         .done(function(vis, layers) {
+
+          var layer = vis.getLayer(1);
+
+          layer.legends.bubble.show();
+          layer.legends.bubble.on('ready', function () {
+            alert('ready!');
+          });
+
         })
         .error(function(err) {
           console.log(err);

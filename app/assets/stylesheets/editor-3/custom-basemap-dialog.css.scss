@@ -22,3 +22,12 @@
   margin: auto;
   z-index: 0;
 }
+
+.XYZPanel-error {
+  display: none;
+  right: -247px;
+  width: 220px;
+  &.is-visible {
+    display: block;
+  }
+}

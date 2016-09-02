@@ -88,7 +88,7 @@ class Carto::Analysis < ActiveRecord::Base
 
   private
 
-  RENAMABLE_TAGS = ['query', 'table_name'].freeze
+  RENAMABLE_ATTRIBUTES = ['query', 'table_name'].freeze
 
   def rename_in_definition!(hash, target, substitution)
     hash.each do |key, value|
@@ -96,7 +96,7 @@ class Carto::Analysis < ActiveRecord::Base
         rename_in_definition!(value, target, substitution)
       elsif value.is_a?(Array)
         rename_in_array!(value, target, substitution)
-      elsif RENAMABLE_TAGS.include?(key.to_s) && value.include?(target)
+      elsif RENAMABLE_ATTRIBUTES.include?(key.to_s) && value.include?(target)
         value.gsub!(target, substitution)
       end
     end
@@ -110,7 +110,7 @@ class Carto::Analysis < ActiveRecord::Base
         rename_in_definition!(value, target, substitution)
       elsif value.is_a?(Array)
         rename_in_array!(value, target, substitution)
-      elsif RENAMABLE_TAGS.include?(key.to_s) && value.include?(target)
+      elsif RENAMABLE_ATTRIBUTES.include?(key.to_s) && value.include?(target)
         value.gsub!(target, substitution)
       end
     end

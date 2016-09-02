@@ -1353,7 +1353,7 @@ class Table
   private
 
   def related_visualizations
-    carto_layers = @user_table.layers.map do |layer|
+    carto_layers = layers.map do |layer|
       Carto::Layer.find(layer.id) if layer.persisted?
     end
 

@@ -18,6 +18,14 @@ var CartoDBLayerGroup = Backbone.Model.extend({
     this._layersCollection = options.layersCollection;
   },
 
+  contains: function (layerModel) {
+    return this.getIndexOf(layerModel) >= 0;
+  },
+
+  each: function (iteratee, context) {
+    _.each(this.getLayers(), iteratee.bind(context || this));
+  },
+
   getLayers: function () {
     return this._layersCollection.getCartoDBLayers();
   },
@@ -131,8 +139,16 @@ var CartoDBLayerGroup = Backbone.Model.extend({
 
   onLayerVisibilityChanged: function (callback) {
     this._layersCollection.on('change:visible', function (layerModel) {
-      if (this.getLayers().indexOf(layerModel) >= 0) {
+      if (this.contains(layerModel)) {
         callback(layerModel);
+      }
+    }, this);
+  },
+
+  onLayerAdded: function (callback) {
+    this._layersCollection.on('add', function (layerModel) {
+      if (this.contains(layerModel)) {
+        callback(layerModel, this.getIndexOf(layerModel));
       }
     }, this);
   }

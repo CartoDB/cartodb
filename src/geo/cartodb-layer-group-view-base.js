@@ -18,7 +18,7 @@ CartoDBLayerGroupViewBase.prototype = {
 
     // Enable interaction for the layers that have interaction
     // (are visible AND have tooltips OR infowindows)
-    _.each(this.model.getLayers(), function (layer, layerIndex) {
+    this.model.each(function (layer, layerIndex) {
       if (layer.hasInteraction()) {
         this._enableInteraction(layerIndex);
       }

@@ -432,6 +432,7 @@
         "modal-desc": "Edit the attributtes of your map",
         "back-btn": "GO BACK",
         "save-btn": "Save",
+        "cancel-btn": "Cancel",
         "form": {
           "name": "Map Name",
           "name-placeholder": "Type your name here",

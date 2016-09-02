@@ -1357,7 +1357,7 @@ class Table
       Carto::Layer.find(layer.id) if layer.persisted?
     end
 
-    carto_layers.flatten.compact.uniq.map(&:visualization).flatten.compact.uniq
+    carto_layers.flatten.compact.uniq.map(&:visualization).uniq
   end
 
   def propagate_name_change_to_analyses

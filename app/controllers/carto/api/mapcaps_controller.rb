@@ -58,7 +58,7 @@ module Carto
       end
 
       def owners_only
-        raise Carto::UnauthorizedError.new unless @visualization.is_writable_by_user(current_user)
+        raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_user)
       end
 
       MAX_MAPCAPS_PER_MAP = 1
@@ -78,7 +78,10 @@ module Carto
       end
 
       def track_published_map
-        Carto::Tracking::Events::PublishedMap.new(current_user, @visualization).report
+        current_viewer_id = current_viewer.id
+        Carto::Tracking::Events::PublishedMap.new(current_viewer_id,
+                                                  user_id: current_viewer_id,
+                                                  visualization_id: @visualization.id).report
       end
     end
   end

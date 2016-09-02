@@ -16,8 +16,8 @@ module CartoDB
     ENTRY_FORMAT = "%s: %s#{ENTRY_POSTFIX}"
     ENTRY_REHYDRATED_FORMAT = "%s#{ENTRY_POSTFIX}"
 
-    HALF_OF_LOG_MARK = '===LOG HALF===\n'
-    END_OF_LOG_MARK = '===LOG END==='
+    HALF_OF_LOG_MARK = "===LOG HALF===\n".freeze
+    END_OF_LOG_MARK  = '===LOG END==='.freeze
 
     TYPE_DATA_IMPORT     = 'import'.freeze
     TYPE_SYNCHRONIZATION = 'sync'.freeze

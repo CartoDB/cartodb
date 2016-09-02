@@ -48,7 +48,7 @@
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 
-              <div class="Sessions-fieldsGorup">
+              <div class="Sessions-fieldsGroup">
                 <div class="Sessions-field">
                   <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
                   <% if !@user.errors[:username].blank? %>
@@ -97,8 +97,6 @@
                     </button>
                   </p>
                 </div>
-              </div>
-
                 <% unless @user.google_sign_in || @user.github_user_id %>
                   <div class="Sessions-field Sessions-oauthContainer">
                     <% if @google_plus_config.present? %>
@@ -110,6 +108,7 @@
                     <% end %>
                   </div>
                 <% end %>
+              </div>
               </div>
 
               <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>

@@ -24,7 +24,7 @@
           </li>
         <% } %>
         <li class="Modal-listTextItem">
-          <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#">export as .CARTO file</a></p>
+          <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#" data-event="exportLayerAction">export as .CARTO file</a></p>
         </li>
       </ul>
       <ul class="Modal-listActions u-flex u-alignCenter">

@@ -5,34 +5,36 @@ var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers')
 describe('geo/map/cartodb-layer', function () {
   sharedTestsForInteractiveLayers(CartoDBLayer);
 
+  beforeEach(function () {
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
+  });
+
   it('should be type CartoDB', function () {
-    var layer = new CartoDBLayer();
+    var layer = new CartoDBLayer({}, { vis: this.vis });
     expect(layer.get('type')).toEqual('CartoDB');
   });
 
   it('should expose infowindow and tooltip properties', function () {
-    var layer = new CartoDBLayer();
+    var layer = new CartoDBLayer({}, { vis: this.vis });
     expect(layer.infowindow).toBeDefined();
     expect(layer.tooltip).toBeDefined();
   });
 
-  describe('map reloading', function () {
-    var ATTRIBUTES = ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'];
+  describe('vis reloading', function () {
+    var ATTRIBUTES = ['sql', 'source', 'sql_wrap', 'cartocss'];
 
     _.each(ATTRIBUTES, function (attribute) {
-      it("should reload the map when '" + attribute + "' attribute changes", function () {
-        var map = jasmine.createSpyObj('map', ['reload']);
-        var layer = new CartoDBLayer({}, { map: map });
+      it("should reload the vis when '" + attribute + "' attribute changes", function () {
+        var layer = new CartoDBLayer({}, { vis: this.vis });
 
         layer.set(attribute, 'new_value');
 
-        expect(map.reload).toHaveBeenCalled();
+        expect(this.vis.reload).toHaveBeenCalled();
       });
     });
 
     it('should reload the map just once when multiple attributes change', function () {
-      var map = jasmine.createSpyObj('map', ['reload']);
-      var layer = new CartoDBLayer({}, { map: map });
+      var layer = new CartoDBLayer({}, { vis: this.vis });
 
       var newAttributes = {};
       _.each(ATTRIBUTES, function (attr, index) {
@@ -40,18 +42,17 @@ describe('geo/map/cartodb-layer', function () {
       });
       layer.set(newAttributes);
 
-      expect(map.reload).toHaveBeenCalled();
-      expect(map.reload.calls.count()).toEqual(1);
+      expect(this.vis.reload).toHaveBeenCalled();
+      expect(this.vis.reload.calls.count()).toEqual(1);
     });
 
     it('should NOT reload the map if cartocss has changed and layer has a dataProvider', function () {
-      var map = jasmine.createSpyObj('map', ['reload']);
-      var layer = new CartoDBLayer({}, { map: map });
+      var layer = new CartoDBLayer({}, { vis: this.vis });
       layer.setDataProvider('wadus');
 
       layer.set('cartocss', 'new_value');
 
-      expect(map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
     });
   });
 
@@ -70,7 +71,7 @@ describe('geo/map/cartodb-layer', function () {
             { name: 'c' }
           ]
         }
-      });
+      }, { vis: this.vis });
 
       expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id', 'a', 'b', 'c' ]);
     });
@@ -83,7 +84,7 @@ describe('geo/map/cartodb-layer', function () {
         tooltip: {
           fields: []
         }
-      });
+      }, { vis: this.vis });
 
       expect(this.layer.getInteractiveColumnNames()).toEqual([]);
     });

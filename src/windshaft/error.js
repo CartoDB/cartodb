@@ -10,11 +10,11 @@ var WindshaftError = function (error) {
 
   if (this.isLayerError(error.type)) {
     this.context = error.layer && error.layer.context;
-    this.layerId = error.layer.id;
+    this.layerId = error.layer && error.layer.id;
   }
   if (this.isAnalysisError(error.type)) {
     this.context = error.analysis && error.analysis.context;
-    this.analysisId = error.analysis.id;
+    this.analysisId = error.analysis && error.analysis.node_id;
   }
 };
 

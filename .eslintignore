@@ -28,7 +28,6 @@
 **/src/core/view.js
 **/src/geo/cartodb-layer-common.js
 **/src/geo/geocoder/nokia-geocoder.js
-**/src/geo/geocoder/yahoo-geocoder.js
 **/src/geo/geometry-view.js
 **/src/geo/geometry.js
 **/src/geo/gmaps/cartodb-default-options.js
@@ -51,11 +50,9 @@
 **/src/geo/leaflet/leaflet-tiled-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
 **/src/geo/map/gmaps-base-layer.js
-**/src/geo/map/plain-layer.js
 **/src/geo/map/tile-layer.js
 **/src/geo/map/torque-layer.js
 **/src/geo/map/wms-layer.js
-**/src/geo/map-view.js
 **/src/geo/map.js
 **/src/geo/ui/annotation.js
 **/src/geo/ui/header.js
@@ -108,10 +105,7 @@
 **/src/ui/common/table.js
 **/src/ui/common/tabpane.js
 **/src/vis/image/queue.js
-**/src/vis/overlays.js
 **/src/vis/vis/infowindow-template.js
-**/src/vis/vis/overlay.js
-**/src/vis/vis/overlays.js
 **/test/fail-tests-if-have-errors-in-src.js
 **/test/install-source-map-support.js
 **/test/spec/api/sql.spec.js
@@ -128,7 +122,6 @@
 **/test/spec/geo/cartodb-layer-common.spec.js
 **/test/spec/geo/geocoder/nokia-geocoder.spec.js
 **/test/spec/geo/geocoder/yahoo-geocoder.spec.js
-**/test/spec/geo/geometry.spec.js
 **/test/spec/geo/gmaps_cartodb_layer/hide.js
 **/test/spec/geo/gmaps_cartodb_layer/interaction.js
 **/test/spec/geo/gmaps_cartodb_layer/opacity.js
@@ -136,7 +129,6 @@
 **/test/spec/geo/map/gmaps-base-layer.spec.js
 **/test/spec/geo/map/tile-layer.spec.js
 **/test/spec/geo/map-view.spec.js
-**/test/spec/geo/map.spec.js
 **/test/spec/geo/ui/header.spec.js
 **/test/spec/geo/ui/infobox.spec.js
 **/test/spec/geo/ui/infowindow.spec.js
@@ -153,4 +145,4 @@
 **/test/spec/ui/common/notification.spec.js
 **/test/spec/ui/common/table.spec.js
 **/test/spec/ui/common/tabpane.spec.js
-**/test/spec/vis/overlay_spec.js
+**/test/unit/geo/geometry.spec.js

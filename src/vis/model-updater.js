@@ -1,5 +1,6 @@
 var _ = require('underscore');
 
+// TODO: Could be renamed to windshaft-integrations.js
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.
@@ -28,20 +29,76 @@ var ModelUpdater = function (deps) {
   this._analysisCollection = deps.analysisCollection;
 };
 
-ModelUpdater.prototype.updateModels = function (windhsaftMap, sourceLayerId, forceFetch) {
-  this._updateLayerGroupModel(windhsaftMap);
-  this._updateLayerModels(windhsaftMap);
-  this._updateDataviewModels(windhsaftMap, sourceLayerId, forceFetch);
-  this._updateAnalysisModels(windhsaftMap);
+ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
+  this._updateLayerGroupModel(windshaftMap);
+  this._updateLayerModels(windshaftMap);
+  this._updateDataviewModels(windshaftMap, sourceId, forceFetch);
+  this._updateAnalysisModels(windshaftMap);
 
   this._visModel.setOk();
 };
 
 ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
+  var urls = {
+    tiles: this._calculateTileURLTemplatesForCartoDBLayers(windshaftMap),
+    grids: this._calculateGridURLTemplatesForCartoDBLayers(windshaftMap),
+    attributes: this._calculateAttributesBaseURLsForCartoDBLayers(windshaftMap)
+  };
+
   this._layerGroupModel.set({
-    baseURL: windshaftMap.getBaseURL(),
-    urls: windshaftMap.getTiles('mapnik')
+    indexOfLayersInWindshaft: windshaftMap.getLayerIndexesByType('mapnik'),
+    urls: urls
   });
+};
+
+// TODO: Move to windshaftMap? (would need to know which layers are visible)
+ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+    urlTemplates.push(this._generatePNGTileURLTemplate(windshaftMap, subdomain));
+  }, this);
+
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, subdomain) {
+  return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.png';
+};
+
+// TODO: Move to windshaftMap?
+ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  // TODO: windshaftMap.getLayerIndexesByType('mapnik') -> give it a name
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  if (indexesOfMapnikLayers.length > 0) {
+    _.each(indexesOfMapnikLayers, function (index) {
+      var layerUrlTemplates = [];
+      _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
+        layerUrlTemplates.push(this._generateGridURLTemplate(windshaftMap, subdomain, index));
+      }, this);
+      urlTemplates.push(layerUrlTemplates);
+    }, this);
+  }
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._generateGridURLTemplate = function (windshaftMap, subdomain, index) {
+  return windshaftMap.getBaseURL(subdomain) + '/' + index + '/{z}/{x}/{y}.grid.json';
+};
+
+ModelUpdater.prototype._calculateAttributesBaseURLsForCartoDBLayers = function (windshaftMap) {
+  var urls = [];
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  if (indexesOfMapnikLayers.length > 0) {
+    _.each(indexesOfMapnikLayers, function (index) {
+      urls.push(this._generateAttributesBaseURL(windshaftMap, index));
+    }, this);
+  }
+  return urls;
+};
+
+ModelUpdater.prototype._generateAttributesBaseURL = function (windshaftMap, index) {
+  return windshaftMap.getBaseURL() + '/' + index + '/attributes';
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
@@ -49,22 +106,38 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
   _.each(this._layersCollection.select(function (layerModel) {
     return LAYER_TYPES.indexOf(layerModel.get('type')) >= 0;
   }), function (layerModel, layerIndex) {
+    // TODO: Don't use layerIndex here. Instead get indexes of mapnik and torque layers
+    // and match it with 'CartoDB' and 'torque' layer sin this._layersCollection
     layerModel.set('meta', windshaftMap.getLayerMetadata(layerIndex));
     if (layerModel.get('type') === 'torque') {
-      layerModel.set('urls', windshaftMap.getTiles('torque'));
+      layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
     }
     layerModel.setOk();
   }, this);
 };
 
-ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceLayerId, forceFetch) {
+// TODO: Move to windshaftMap?
+ModelUpdater.prototype._calculateTileURLTemplatesForTorqueLayers = function (windshaftMap) {
+  var urlTemplates = [];
+  var indexesOfTorqueLayers = windshaftMap.getLayerIndexesByType('torque');
+  if (indexesOfTorqueLayers.length > 0) {
+    urlTemplates.push(this._generateTorqueTileURLTemplate(windshaftMap, indexesOfTorqueLayers));
+  }
+  return urlTemplates;
+};
+
+ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, layerIndexes) {
+  return windshaftMap.getBaseURL() + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.json.torque';
+};
+
+ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {
   this._dataviewsCollection.each(function (dataviewModel) {
     var dataviewMetadata = windshaftMap.getDataviewMetadata(dataviewModel.get('id'));
     if (dataviewMetadata) {
       dataviewModel.set({
         url: dataviewMetadata.url[this._getProtocol()]
       }, {
-        sourceLayerId: sourceLayerId,
+        sourceId: sourceId,
         forceFetch: forceFetch
       });
     }
@@ -74,15 +147,27 @@ ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceLay
 ModelUpdater.prototype._updateAnalysisModels = function (windshaftMap) {
   this._analysisCollection.each(function (analysisNode) {
     var analysisMetadata = windshaftMap.getAnalysisNodeMetadata(analysisNode.get('id'));
+    var attrs;
     if (analysisMetadata) {
-      var attrs = {
+      attrs = {
         status: analysisMetadata.status,
         url: analysisMetadata.url[this._getProtocol()],
         query: analysisMetadata.query
       };
+
       attrs = _.omit(attrs, analysisNode.getParamNames());
-      analysisNode.set(attrs);
-      analysisNode.setOk();
+
+      if (analysisMetadata.error_message) {
+        attrs = _.extend(attrs, {
+          error: {
+            message: analysisMetadata.error_message
+          }
+        });
+        analysisNode.set(attrs);
+      } else {
+        analysisNode.set(attrs);
+        analysisNode.setOk();
+      }
     }
   }, this);
 };

@@ -56,7 +56,6 @@ var LeafletMapView = MapView.extend({
     this.map.geometries.bind('remove', this._removeGeometry, this);
 
     this._bindModel();
-    this._addLayers();
     this.setAttribution();
 
     this._leafletMap.on('layeradd', function(lyr) {
@@ -224,9 +223,8 @@ var LeafletMapView = MapView.extend({
     return this._leafletMap;
   },
 
-  _addLayerToMap: function(layerView, layerModel, opts) {
-    LeafletMapView.addLayerToMap(layerView, this._leafletMap);
-
+  _addLayerToMap: function (layerView, layerModel, opts) {
+    this._leafletMap.addLayer(layerView.leafletLayer);
     this._reorderLayerViews();
 
     if (!opts.silent) {
@@ -313,15 +311,6 @@ var LeafletMapView = MapView.extend({
   }
 
 }, {
-  addLayerToMap: function(layerView, map, pos) {
-    map.addLayer(layerView.leafletLayer);
-    if(pos !== undefined) {
-      if (layerView.setZIndex) {
-        layerView.setZIndex(pos);
-      }
-    }
-  },
-
   /**
    * create the view for the geometry model
    */

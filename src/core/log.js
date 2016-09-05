@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
-var cdb = require('cdb'); // cdb.DEBUG
-var errors = require('cdb.errors');
-var config = require('cdb.config');
+var cdb = require('../cdb'); // cdb.DEBUG, cdb.VERSION
+var errors = require('../cdb.errors');
+var config = require('../cdb.config');
 
 // TODO: Is this fake console/IE7 still necessary?
 var _console;

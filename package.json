@@ -67,6 +67,7 @@
     "gulp-iconfont-css": "0.0.9",
     "gulp-install": "0.2.0",
     "gulp-sketch": "0.0.7",
+    "jasmine": "2.4.1",
     "jshint-stylish": "~0.1.3",
     "jstify": "0.12.0",
     "load-grunt-tasks": "~0.6.0",
@@ -154,5 +155,13 @@
       "/themes",
       "/vendor"
     ]
+  },
+  "config": {
+    "root": "."
+  },
+  "scripts": {
+    "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json",
+    "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json --",
+    "test-watch": "watch 'npm test' $npm_package_config_root"
   }
 }

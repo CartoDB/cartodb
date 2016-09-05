@@ -6,7 +6,7 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
-var LayersFactory = require('../vis/layers');
+var LayersFactory = require('../vis/layers-factory');
 
 var Map = Model.extend({
   defaults: {
@@ -23,19 +23,13 @@ var Map = Model.extend({
     vector: false
   },
 
-  RELOAD_DEBOUNCE_TIME: 10,
-
   initialize: function (attrs, options) {
     options = options || {};
-    this.layers = options.layersCollection || new Layers();
-    // Update attributions after layers instantiation
-    this._updateAttributions();
-    this.geometries = new Backbone.Collection();
-
-    this._windshaftMap = options.windshaftMap;
-    this._dataviewsCollection = options.dataviewsCollection;
-
     attrs = attrs || {};
+
+    this.layers = options.layersCollection || new Layers();
+    this.geometries = new Backbone.Collection();
+    this._vis = options.vis;
 
     var center = attrs.center || this.defaults.center;
     if (typeof center === 'string') {
@@ -60,24 +54,44 @@ var Map = Model.extend({
       });
     }
 
-    // This method is declared here so that we can spyOn _.debounce
-    // in the tests that depend on this to work
-    this.reload = _.debounce(function (options) {
-      options = options || {};
-      options = _.pick(options, 'sourceLayerId', 'forceFetch', 'success', 'error');
-      this._windshaftMap.createInstance(options);
-    }.bind(this), this.RELOAD_DEBOUNCE_TIME);
+    this.layers.bind('reset', this._updateAttributions, this);
+    this.layers.bind('add', this._updateAttributions, this);
+    this.layers.bind('remove', this._updateAttributions, this);
+    this.layers.bind('change:attribution', this._updateAttributions, this);
+    this.layers.bind('reset', this._onLayersResetted, this);
+
+    this._updateAttributions();
+  },
+
+  _onLayersResetted: function () {
+    if (this.layers.size() >= 1) {
+      this._adjustZoomtoLayer(this.layers.first());
+    }
+  },
+
+  _updateAttributions: function () {
+    var defaultCartoDBAttribution = this.defaults.attribution[0];
+    var attributions = _.chain(this.layers.models)
+      .map(function (layer) { return sanitize.html(layer.get('attribution')); })
+      .reject(function (attribution) { return attribution === defaultCartoDBAttribution; })
+      .compact()
+      .uniq()
+      .value();
+
+    attributions.push(defaultCartoDBAttribution);
+
+    this.set('attribution', attributions);
   },
 
   // PUBLIC API METHODS
 
   createCartoDBLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql', 'cartocss']);
+    this._checkProperties(attrs, ['sql|source', 'cartocss']);
     return this._addNewLayerModel('cartodb', attrs, options);
   },
 
   createTorqueLayer: function (attrs, options) {
-    this._checkProperties(attrs, ['sql', 'cartocss']);
+    this._checkProperties(attrs, ['sql|source', 'cartocss']);
     return this._addNewLayerModel('torque', attrs, options);
   },
 
@@ -116,7 +130,8 @@ var Map = Model.extend({
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
     var layerModel = LayersFactory.create(type, attrs, {
-      map: this
+      map: this,
+      vis: this._vis
     });
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {
@@ -132,72 +147,6 @@ var Map = Model.extend({
   },
 
   // INTERNAL CartoDB.js METHODS
-
-  _initBinds: function () {
-    this.layers.bind('reset', function () {
-      if (this.layers.size() >= 1) {
-        this._adjustZoomtoLayer(this.layers.models[0]);
-      }
-    }, this);
-
-    // TODO: When the order of the layers change, the instance of the map needs
-    // to be re-recreated
-    this.layers.bind('reset', this._onLayersResetted, this);
-    this.layers.bind('add', this._onLayerAdded, this);
-    this.layers.bind('remove', this._onLayerRemoved, this);
-    this.layers.bind('change:attribution', this._updateAttributions, this);
-
-    if (this._dataviewsCollection) {
-      // When new dataviews are defined, a new instance of the map needs to be created
-      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
-    }
-  },
-
-  instantiateMap: function (options) {
-    this._initBinds();
-    this.reload(_.pick(options, ['success', 'error']));
-  },
-
-  _onLayersResetted: function () {
-    this.reload();
-    this._updateAttributions();
-  },
-
-  _onLayerAdded: function (layerModel) {
-    this.reload({
-      sourceLayerId: layerModel.get('id')
-    });
-    this._updateAttributions();
-  },
-
-  _onLayerRemoved: function (layerModel) {
-    this.reload({
-      sourceLayerId: layerModel.get('id')
-    });
-    this._updateAttributions();
-  },
-
-  _onDataviewAdded: function (layerModel) {
-    this.reload();
-  },
-
-  _updateAttributions: function () {
-    var defaultCartoDBAttribution = this.defaults.attribution[0];
-    var attributions = _.chain(this.layers.models)
-      .map(function (layer) { return sanitize.html(layer.get('attribution')); })
-      .reject(function (attribution) { return attribution === defaultCartoDBAttribution; })
-      .compact()
-      .uniq()
-      .value();
-
-    attributions.push(defaultCartoDBAttribution);
-
-    this.set('attribution', attributions);
-  },
-
-  getWindshaftMap: function () {
-    return this._windshaftMap;
-  },
 
   setView: function (latlng, zoom) {
     this.set({

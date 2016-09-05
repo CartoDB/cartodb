@@ -100,7 +100,11 @@ $buttonColor: #636D72;
 .CDB-Search {
   position: absolute;
   bottom: 16px;
-  left: 84px;
+  left: 16px;
+
+  &.has-zoom {
+    left: 84px;
+  }
 }
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);

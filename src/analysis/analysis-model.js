@@ -17,12 +17,12 @@ module.exports = Model.extend({
       throw new Error('chamshaftReference is required');
     }
 
-    if (!opts.map) {
-      throw new Error('map is required');
+    if (!opts.vis) {
+      throw new Error('vis is required');
     }
 
     this._camshaftReference = opts.camshaftReference;
-    this._map = opts.map;
+    this._vis = opts.vis;
     this._initBinds();
   },
 
@@ -32,7 +32,15 @@ module.exports = Model.extend({
       if (this.get('apiKey')) {
         url += '?api_key=' + this.get('apiKey');
       } else if (this.get('authToken')) {
-        url += '?auth_token=' + this.get('authToken');
+        var authToken = this.get('authToken');
+        if (authToken instanceof Array) {
+          var tokens = _.map(authToken, function (token) {
+            return 'auth_token[]=' + token;
+          });
+          url += '?' + tokens.join('&');
+        } else {
+          url += '?auth_token=' + authToken;
+        }
       }
       return url;
     }
@@ -53,18 +61,18 @@ module.exports = Model.extend({
     this.bind('change:type', function () {
       this.unbind(null, null, this);
       this._initBinds();
-      this._reloadMap();
+      this._reloadVis();
     }, this);
 
     _.each(this.getParamNames(), function (paramName) {
-      this.bind('change:' + paramName, this._reloadMap, this);
+      this.bind('change:' + paramName, this._reloadVis, this);
     }, this);
   },
 
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
     opts.error = this._onMapReloadError.bind(this);
-    this._map.reload(opts);
+    this._vis.reload(opts);
   },
 
   _onMapReloadError: function () {
@@ -73,6 +81,7 @@ module.exports = Model.extend({
 
   remove: function () {
     this.trigger('destroy', this);
+    this.stopListening();
   },
 
   findAnalysisById: function (analysisId) {
@@ -95,7 +104,20 @@ module.exports = Model.extend({
   },
 
   isDone: function () {
-    return [STATUS.READY, STATUS.FAILED].indexOf(this.get('status')) >= 0;
+    return this._anyStatus(STATUS.READY, STATUS.FAILED);
+  },
+
+  isFailed: function () {
+    return this._anyStatus(STATUS.FAILED);
+  },
+
+  isLoading: function () {
+    return this._anyStatus(STATUS.PENDING, STATUS.WAITING, STATUS.RUNNING);
+  },
+
+  _anyStatus: function () {
+    var list = Array.prototype.slice.call(arguments, 0);
+    return list.indexOf(this.get('status')) !== -1;
   },
 
   toJSON: function () {

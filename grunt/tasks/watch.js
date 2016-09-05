@@ -3,7 +3,7 @@
  *
  */
 module.exports = {
-  task: function() {
+  task: function () {
     return {
       scss: {
         files: ['themes/scss/**/*.scss'],
@@ -22,6 +22,6 @@ module.exports = {
           '<%= config.dist %>/themes/css/cartodb.css'
         ]
       }
-    }
+    };
   }
-}
+};

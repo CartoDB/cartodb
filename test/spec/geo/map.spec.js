@@ -8,12 +8,12 @@ var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 
 var Map = require('../../../src/geo/map');
 
-describe('core/geo/map', function() {
+describe('core/geo/map', function () {
   var map;
 
-  beforeEach(function() {
+  beforeEach(function () {
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     map = new Map();
-    map.instantiateMap();
   });
 
   describe('.initialize', function () {
@@ -57,32 +57,32 @@ describe('core/geo/map', function() {
     });
   });
 
-  it("should raise only one change event on setBounds", function() {
+  it('should raise only one change event on setBounds', function () {
     var c = 0;
-    map.bind('change:view_bounds_ne', function() {
+    map.bind('change:view_bounds_ne', function () {
       c++;
     });
-    map.setBounds([[1,2],[1,2]]);
+    map.setBounds([[1, 2], [1, 2]]);
     expect(c).toEqual(1);
   });
 
-  it("should not change center or zoom when the bounds are not ok", function() {
+  it('should not change center or zoom when the bounds are not ok', function () {
     var c = 0;
-    map.bind('change:center', function() {
+    map.bind('change:center', function () {
       c++;
     });
-    map.setBounds([[1,2],[1,2]]);
+    map.setBounds([[1, 2], [1, 2]]);
     expect(c).toEqual(0);
   });
 
-  it("should not change bounds when map size is 0", function() {
+  it('should not change bounds when map size is 0', function () {
     map.set('zoom', 10);
-    var bounds = [[43.100982876188546, 35.419921875], [60.23981116999893, 69.345703125]]
+    var bounds = [[43.100982876188546, 35.419921875], [60.23981116999893, 69.345703125]];
     map.fitBounds(bounds, {x: 0, y: 0});
     expect(map.get('zoom')).toEqual(10);
   });
 
-  it("should adjust zoom to layer", function() {
+  it('should adjust zoom to layer', function () {
     expect(map.get('maxZoom')).toEqual(map.defaults.maxZoom);
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
 
@@ -92,14 +92,14 @@ describe('core/geo/map', function() {
     expect(map.get('maxZoom')).toEqual(25);
     expect(map.get('minZoom')).toEqual(5);
 
-    var layer = new PlainLayer({ minZoom: "7", maxZoom: "31" });
+    layer = new PlainLayer({ minZoom: '7', maxZoom: '31' });
     map.layers.reset(layer);
 
     expect(map.get('maxZoom')).toEqual(31);
     expect(map.get('minZoom')).toEqual(7);
   });
 
-  it("shouldn't set a NaN zoom", function() {
+  it("shouldn't set a NaN zoom", function () {
     var layer = new PlainLayer({ minZoom: NaN, maxZoom: NaN });
     map.layers.reset(layer);
 
@@ -107,156 +107,75 @@ describe('core/geo/map', function() {
     expect(map.get('minZoom')).toEqual(map.defaults.minZoom);
   });
 
-  it('should update the attributions of the map when layers are reset/added/removed', function() {
+  it('should update the attributions of the map when layers are reset/added/removed', function () {
     map = new Map();
-    map.instantiateMap();
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>"
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer1 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer2 = new CartoDBLayer({ attribution: 'attribution1' });
-    var layer3 = new CartoDBLayer({ attribution: 'wadus' });
-    var layer4 = new CartoDBLayer({ attribution: '' });
+    var layer1 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer2 = new CartoDBLayer({ attribution: 'attribution1' }, { vis: this.vis });
+    var layer3 = new CartoDBLayer({ attribution: 'wadus' }, { vis: this.vis });
+    var layer4 = new CartoDBLayer({ attribution: '' }, { vis: this.vis });
 
     map.layers.reset([ layer1, layer2, layer3, layer4 ]);
 
     // Attributions have been updated removing duplicated and empty attributions
     expect(map.get('attribution')).toEqual([
-      "attribution1",
-      "wadus",
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      'attribution1',
+      'wadus',
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
-    var layer = new CartoDBLayer({ attribution: 'attribution2' });
+    var layer = new CartoDBLayer({ attribution: 'attribution2' }, { vis: this.vis });
 
     map.layers.add(layer);
 
     // The attribution of the new layer has been appended before the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
-      "attribution1",
-      "wadus",
-      "attribution2",
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      'attribution1',
+      'wadus',
+      'attribution2',
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
     layer.set('attribution', 'new attribution');
 
     // The attribution of the layer has been updated in the map
     expect(map.get('attribution')).toEqual([
-      "attribution1",
-      "wadus",
-      "new attribution",
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      'attribution1',
+      'wadus',
+      'new attribution',
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
     map.layers.remove(layer);
 
     expect(map.get('attribution')).toEqual([
-      "attribution1",
-      "wadus",
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      'attribution1',
+      'wadus',
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
 
     // Addind a layer with the default attribution
-    var layer = new CartoDBLayer();
+    layer = new CartoDBLayer({}, { vis: this.vis });
 
     map.layers.add(layer, { at: 0 });
 
     // Default CartoDB only appears once and it's the last one
     expect(map.get('attribution')).toEqual([
-      "attribution1",
-      "wadus",
-      "CARTO <a href=\"https://carto.com/attributions\" target=\"_blank\">attribution</a>",
+      'attribution1',
+      'wadus',
+      '© <a href="https://carto.com/attributions" target="_blank">CARTO</a>'
     ]);
-  });
-
-  describe('bindings to collection of layers', function () {
-    it('should reload the map when layers are resetted', function () {
-      spyOn(map, 'reload');
-
-      map.layers.reset([{ id: 'layer1' }]);
-
-      expect(map.reload).toHaveBeenCalled();
-    });
-
-    it('should reload the map when a new layer is added', function () {
-      spyOn(map, 'reload');
-
-      map.layers.add({ id: 'layer1' });
-
-      expect(map.reload).toHaveBeenCalledWith({
-        sourceLayerId: 'layer1'
-      });
-    });
-
-    it('should reload the map when a layer is removed', function () {
-      var layer = map.layers.add({ id: 'layer1' });
-
-      spyOn(map, 'reload');
-
-      map.layers.remove(layer);
-
-      expect(map.reload).toHaveBeenCalledWith({
-        sourceLayerId: 'layer1'
-      });
-    });
-  });
-
-  describe('reload', function () {
-    it('should be debounced', function (done) {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      var map = new Map({}, {
-        windshaftMap: windshaftMap
-      });
-
-      // Reload the map 1000 times in a row
-      for (var i = 0; i < 1000; i++) {
-        map.reload();
-      }
-
-      setTimeout(function () {
-        expect(windshaftMap.createInstance).toHaveBeenCalled();
-
-        // windshaftMap.createInstance is debounced and has only been called once
-        expect(windshaftMap.createInstance.calls.count()).toEqual(1);
-        done();
-      }, 25);
-    });
-
-    it('should forward options', function (done) {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
-      var map = new Map({}, {
-        windshaftMap: windshaftMap
-      });
-
-      map.reload({
-        a: 1,
-        b: 2,
-        sourceLayerId: 'sourceLayerId',
-        forceFetch: 'forceFetch',
-        success: 'success'
-      });
-
-      setTimeout(function () {
-        expect(windshaftMap.createInstance).toHaveBeenCalledWith({
-          sourceLayerId: 'sourceLayerId',
-          forceFetch: 'forceFetch',
-          success: 'success'
-        });
-
-        done();
-      }, 25);
-    });
   });
 
   describe('API methods', function () {
     beforeEach(function () {
-      var windshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance']);
       this.map = new Map({}, {
-        windshaftMap: windshaftMap
+        vis: {}
       });
     });
 
@@ -264,24 +183,47 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createCartoDBLayer',
         expectedLayerModelClass: CartoDBLayer,
+        expectedLayerModelType: 'CartoDB',
         testAttributes: {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // CartoDB layer that points to a source (instead of having sql)
+        createMethod: 'createCartoDBLayer',
+        expectedLayerModelClass: CartoDBLayer,
+        expectedLayerModelType: 'CartoDB',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTorqueLayer',
         expectedLayerModelClass: TorqueLayer,
+        expectedLayerModelType: 'torque',
         testAttributes: {
           sql: 'something',
           cartocss: 'else'
         },
-        expectedErrorMessage: 'The following attributes are missing: sql,cartocss'
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
+      },
+      { // Torque layer that points to a source (instead of having sql)
+        createMethod: 'createTorqueLayer',
+        expectedLayerModelClass: TorqueLayer,
+        expectedLayerModelType: 'torque',
+        testAttributes: {
+          source: 'a0',
+          cartocss: 'else'
+        },
+        expectedErrorMessage: 'The following attributes are missing: sql|source,cartocss'
       },
       {
         createMethod: 'createTileLayer',
         expectedLayerModelClass: TileLayer,
+        expectedLayerModelType: 'Tiled',
         testAttributes: {
           urlTemplate: 'http://example.com'
         },
@@ -290,6 +232,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createWMSLayer',
         expectedLayerModelClass: WMSLayer,
+        expectedLayerModelType: 'WMS',
         testAttributes: {
           urlTemplate: 'http://example.com'
         },
@@ -298,6 +241,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createGMapsBaseLayer',
         expectedLayerModelClass: GMapsBaseLayer,
+        expectedLayerModelType: 'GMapsBase',
         testAttributes: {
           base_type: 'http://example.com'
         },
@@ -306,6 +250,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createPlainLayer',
         expectedLayerModelClass: PlainLayer,
+        expectedLayerModelType: 'Plain',
         testAttributes: {
           color: '#FABADA'
         },
@@ -314,6 +259,7 @@ describe('core/geo/map', function() {
       {
         createMethod: 'createPlainLayer',
         expectedLayerModelClass: PlainLayer,
+        expectedLayerModelType: 'Plain',
         testAttributes: {
           image: 'http://example.com/image.png'
         },
@@ -332,6 +278,16 @@ describe('core/geo/map', function() {
         it('should return a layer of the corresponding type', function () {
           var layer = this.map[testCase.createMethod](testCase.testAttributes);
           expect(layer instanceof testCase.expectedLayerModelClass).toBeTruthy();
+        });
+
+        it('should be visible', function () {
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          expect(layer.get('visible')).toBeTruthy();
+        });
+
+        it('should set the right type', function () {
+          var layer = this.map[testCase.createMethod](testCase.testAttributes);
+          expect(layer.get('type')).toEqual(testCase.expectedLayerModelType);
         });
 
         it('should add the layer model to the collection of layers', function () {
@@ -390,7 +346,7 @@ describe('core/geo/map', function() {
 
   describe('.getLayerById', function () {
     beforeEach(function () {
-      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' });
+      var layer1 = new CartoDBLayer({ id: 'xyz-123', attribution: 'attribution1' }, { vis: this.vis });
 
       map.layers.reset(layer1);
     });

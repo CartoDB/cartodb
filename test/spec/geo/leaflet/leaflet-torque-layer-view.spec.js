@@ -7,12 +7,13 @@ var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var SharedTestsForTorqueLayer = require('../shared-tests-for-torque-layer');
 
-describe('geo/leaflet/leaflet-torque-layer', function () {
+describe('geo/leaflet/leaflet-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css({
       'height': '200px',
       'width': '200px'
     });
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.map = new Map();
     this.mapView = new LeafletMapView({
       el: container,
@@ -23,14 +24,14 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
 
     spyOn(L.TorqueLayer.prototype, 'initialize').and.callThrough();
 
-    var model = new TorqueLayer({
+    this.model = new TorqueLayer({
       type: 'torque',
       sql: 'select * from table',
       cartocss: '#test {}',
       dynamic_cdn: 'dynamic-cdn-value'
-    });
-    this.map.addLayer(model);
-    this.view = this.mapView._layerViews[model.cid];
+    }, { vis: this.vis });
+    this.map.addLayer(this.model);
+    this.view = this.mapView._layerViews[this.model.cid];
   });
 
   SharedTestsForTorqueLayer.call(this);
@@ -39,7 +40,9 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
     expect(this.view instanceof L.TorqueLayer).toEqual(true);
 
     this.view.check = 'testing';
-    var newLayer = this.view.model.clone();
+    var newLayer = new TorqueLayer(this.view.model.attributes, {
+      vis: this.vis
+    });
     newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
     this.map.layers.reset([newLayer]);
 
@@ -55,5 +58,14 @@ describe('geo/leaflet/leaflet-torque-layer', function () {
     expect(attrs.cartocss).toEqual(jasmine.any(String));
     expect(attrs.dynamic_cdn).toEqual('dynamic-cdn-value');
     expect(attrs.instanciateCallback).toEqual(jasmine.any(Function));
+  });
+
+  it("should update providers's templateURL when urls change", function () {
+    this.model.set('tileURLTemplates', [
+      'http://pepe.carto.com/{z}/{x}/{y}.torque',
+      'http://juan.carto.com/{z}/{x}/{y}.torque'
+    ]);
+
+    expect(this.view.provider.templateUrl).toEqual('http://pepe.carto.com/{z}/{x}/{y}.torque');
   });
 });

@@ -3,6 +3,11 @@ var MapBase = require('./map-base');
 
 var DEFAULT_CARTOCSS_VERSION = '2.1.0';
 
+var LAYER_TYPES = [
+  'CartoDB',
+  'torque'
+];
+
 var AnonymousMap = MapBase.extend({
   toJSON: function () {
     return {
@@ -13,23 +18,22 @@ var AnonymousMap = MapBase.extend({
   },
 
   _calculateLayersSection: function () {
-    return _.chain(this._getLayers())
+    return _.chain(this._getCartoDBAndTorqueLayers())
       .map(this._calculateLayerJSON, this)
       .compact()
       .value();
   },
 
   _calculateLayerJSON: function (layerModel) {
-    if (layerModel.isVisible()) {
-      return {
-        id: layerModel.get('id'),
-        type: layerModel.get('type').toLowerCase(),
-        options: this._calculateLayerOptions(layerModel)
-      };
-    }
+    return {
+      id: layerModel.get('id'),
+      type: layerModel.get('type').toLowerCase(),
+      options: this._calculateLayerOptions(layerModel)
+    };
   },
 
   _calculateLayerOptions: function (layerModel) {
+    // TODO: Only send "interactivity" and "attributes" options for "CartoDB" layers
     var options = {
       cartocss: layerModel.get('cartocss'),
       cartocss_version: layerModel.get('cartocss_version') || DEFAULT_CARTOCSS_VERSION,
@@ -66,7 +70,7 @@ var AnonymousMap = MapBase.extend({
 
   _calculateAnalysesSection: function () {
     var analyses = [];
-    var sourceIdsFromLayers = _.chain(this._getLayers())
+    var sourceIdsFromLayers = _.chain(this._getCartoDBAndTorqueLayers())
       .map(function (layerModel) {
         return layerModel.get('source');
       })
@@ -87,9 +91,17 @@ var AnonymousMap = MapBase.extend({
         if (!this._isAnalysisPartOfOtherAnalyses(sourceAnalysis)) {
           analyses.push(sourceAnalysis.toJSON());
         }
-      } else {
-        if (this._getLayerById(sourceId)) {
-          analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
+      } else { // sourceId might be the ID of a layer
+        var layerModel = this._getLayerById(sourceId);
+        if (layerModel) {
+          if (layerModel.get('sql')) {
+            analyses.push(this._getSourceAnalysisForLayer(this._getLayerById(sourceId)));
+          } else {
+            // layerModel has a source, so the analysis will be included
+            // in the payload when we get to that sourceId in this loop
+          }
+        } else {
+          throw new Error("sourceId '" + sourceId + "' doesn't exist");
         }
       }
     }, this);
@@ -98,7 +110,7 @@ var AnonymousMap = MapBase.extend({
   },
 
   _getLayerById: function (layerId) {
-    return _.find(this._getLayers(), function (layerModel) {
+    return _.find(this._getCartoDBAndTorqueLayers(), function (layerModel) {
       return layerModel.id === layerId;
     });
   },
@@ -125,6 +137,12 @@ var AnonymousMap = MapBase.extend({
   _isAnyDataviewLinkedTo: function (layerModel) {
     return this._dataviewsCollection.any(function (dataviewModel) {
       return dataviewModel.layer === layerModel;
+    });
+  },
+
+  _getCartoDBAndTorqueLayers: function () {
+    return this._layersCollection.select(function (layer) {
+      return LAYER_TYPES.indexOf(layer.get('type')) >= 0;
     });
   }
 });

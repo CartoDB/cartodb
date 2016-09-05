@@ -6,12 +6,14 @@ var NamedMap = require('../../../src/windshaft/named-map');
 describe('windshaft/named-map', function () {
   beforeEach(function () {
     this.analysisCollection = new Backbone.Collection();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer2 = new CartoDBLayer({
@@ -20,6 +22,7 @@ describe('windshaft/named-map', function () {
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer3 = new CartoDBLayer({
@@ -28,6 +31,7 @@ describe('windshaft/named-map', function () {
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
 
@@ -53,13 +57,13 @@ describe('windshaft/named-map', function () {
 
   describe('.toJSON', function () {
     it('should generate the payload to instantiate the map', function () {
-      expect(this.map.toJSON()).toEqual({ layer0: 1, layer1: 1, layer2: 1, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
+      expect(this.map.toJSON()).toEqual({ styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
     });
 
     it('should mark hidden layers as hidden', function () {
       this.cartoDBLayer1.set('visible', false, { silent: true });
       this.cartoDBLayer3.set('visible', false, { silent: true });
-      expect(this.map.toJSON()).toEqual({ layer0: 0, layer1: 1, layer2: 0, styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
+      expect(this.map.toJSON()).toEqual({ styles: { 0: 'cartoCSS1', 1: 'cartoCSS2', 2: 'cartoCSS3' } });
     });
 
     it('should send styles using the right indexes', function () {

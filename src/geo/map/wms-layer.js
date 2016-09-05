@@ -5,6 +5,8 @@ var LayerModelBase = require('./layer-model-base');
  */
 var WMSLayer = LayerModelBase.extend({
   defaults: {
+    type: 'WMS',
+    visible: true,
     service: 'WMS',
     request: 'GetMap',
     version: '1.1.1',

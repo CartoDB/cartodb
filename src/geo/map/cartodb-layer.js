@@ -1,24 +1,24 @@
 var _ = require('underscore');
-var config = require('cdb.config');
+var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
-    attribution: config.get('cartodb_attributions'),
     type: 'CartoDB',
+    attribution: config.get('cartodb_attributions'),
     visible: true
   },
 
-  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'sql_wrap', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'sql_wrap', 'cartocss'],
 
   initialize: function (attrs, options) {
     attrs = attrs || {};
-    LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
+    if (!options.vis) throw new Error('vis is required');
 
-    this._map = options.map;
+    this._vis = options.vis;
     if (attrs && attrs.cartocss) {
       this.set('initialStyle', attrs.cartocss);
     }
@@ -30,10 +30,12 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('tooltip');
 
     this.bind('change', this._onAttributeChanged, this);
+
+    LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {
-    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss' && this._dataProvider) {
           return false;
@@ -42,14 +44,14 @@ var CartoDBLayer = LayerModelBase.extend({
       }
     }, this);
 
-    if (reloadMap) {
-      this._reloadMap();
+    if (reloadVis) {
+      this._reloadVis();
     }
   },
 
-  _reloadMap: function () {
-    this._map.reload({
-      sourceLayerId: this.get('id')
+  _reloadVis: function () {
+    this._vis.reload({
+      sourceId: this.get('id')
     });
   },
 

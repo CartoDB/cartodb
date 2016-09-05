@@ -25,7 +25,14 @@ module.exports = Model.extend({
     if (this.get('apiKey')) {
       params.push('api_key=' + this.get('apiKey'));
     } else if (this.get('authToken')) {
-      params.push('auth_token=' + this.get('authToken'));
+      var authToken = this.get('authToken');
+      if (authToken instanceof Array) {
+        _.each(authToken, function (token) {
+          params.push('auth_token[]=' + token);
+        });
+      } else {
+        params.push('auth_token=' + authToken);
+      }
     }
     return this.get('url') + '?' + params.join('&');
   },
@@ -48,9 +55,10 @@ module.exports = Model.extend({
     attrs = attrs || {};
     opts = opts || {};
 
-    if (!opts.map) {
-      throw new Error('map is required');
-    }
+    if (!opts.map) throw new Error('map is required');
+    if (!opts.vis) throw new Error('vis is required');
+    if (!opts.analysisCollection) throw new Error('analysisCollection is required');
+    if (!attrs.source) throw new Error('source is a required attr');
 
     if (!attrs.id) {
       this.set('id', this.defaults.type + '-' + this.cid);
@@ -58,6 +66,8 @@ module.exports = Model.extend({
 
     this.layer = opts.layer;
     this._map = opts.map;
+    this._vis = opts.vis;
+    this._analysisCollection = opts.analysisCollection;
 
     this.sync = BackboneCancelSync.bind(this);
 
@@ -68,6 +78,7 @@ module.exports = Model.extend({
     }
 
     this._initBinds();
+    this._setupAnalysisStatusEvents();
   },
 
   _getLayerDataProvider: function () {
@@ -76,6 +87,9 @@ module.exports = Model.extend({
 
   _initBinds: function () {
     this.listenTo(this.layer, 'change:visible', this._onLayerVisibilityChanged);
+    this.listenTo(this.layer, 'change:source', this._setupAnalysisStatusEvents);
+    this.on('change:source', this._setupAnalysisStatusEvents, this);
+
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider) {
       this.listenToOnce(layerDataProvider, 'dataChanged', this._onChangeBinds, this);
@@ -87,9 +101,40 @@ module.exports = Model.extend({
         });
       });
     }
+
     if (this.filter) {
       this.listenTo(this.filter, 'change', this._onFilterChanged);
     }
+  },
+
+  _setupAnalysisStatusEvents: function () {
+    this._removeExistingAnalysisBindings();
+    this._analysis = this._analysisCollection.get(this.getSourceId());
+    if (this._analysis) {
+      this._analysis.on('change:status', this._onAnalysisStatusChange, this);
+    }
+  },
+
+  _removeExistingAnalysisBindings: function () {
+    if (!this._analysis) return;
+    this._analysis.off('change:status', this._onAnalysisStatusChange, this);
+  },
+
+  _onAnalysisStatusChange: function (analysis, status) {
+    if (analysis.isLoading()) {
+      this._triggerLoading();
+    } else if (analysis.isFailed()) {
+      this._triggerError(analysis.get('error'));
+    }
+    // loaded will be triggered through the default behavior, so not necessary to react on that status here
+  },
+
+  _triggerLoading: function () {
+    this.trigger('loading', this);
+  },
+
+  _triggerError: function (error) {
+    this.trigger('error', this, error);
   },
 
   /**
@@ -100,26 +145,26 @@ module.exports = Model.extend({
     if (layerDataProvider && layerDataProvider.canApplyFilterTo(this)) {
       layerDataProvider.applyFilter(this, filter);
     } else {
-      this._reloadMap();
+      this._reloadVis();
     }
   },
 
   /**
    * @protected
    */
-  _reloadMap: function (opts) {
+  _reloadVis: function (opts) {
     opts = opts || {};
-    this._map.reload(
+    this._vis.reload(
       _.extend(
         opts, {
-          sourceLayerId: this.layer.get('id')
+          sourceId: this.getSourceId()
         }
       )
     );
   },
 
-  _reloadMapAndForceFetch: function () {
-    this._reloadMap({
+  _reloadVisAndForceFetch: function () {
+    this._reloadVis({
       forceFetch: true
     });
   },
@@ -142,7 +187,7 @@ module.exports = Model.extend({
       if (this.get('sync_on_data_change')) {
         this._newDataAvailable = true;
       }
-      if ((opts && opts.forceFetch) || this._shouldFetchOnURLChange(opts && opts.sourceLayerId)) {
+      if (this._shouldFetchOnURLChange(opts && _.pick(opts, ['forceFetch', 'sourceId']))) {
         this.fetch();
       }
     }, this);
@@ -165,9 +210,23 @@ module.exports = Model.extend({
     }
   },
 
-  _shouldFetchOnURLChange: function (sourceLayerId) {
-    var urlChangeTriggeredBySameLayer = sourceLayerId && sourceLayerId === this.layer.get('id');
-    return this.get('sync_on_data_change') && this.get('enabled') && (!sourceLayerId || urlChangeTriggeredBySameLayer);
+  _shouldFetchOnURLChange: function (options) {
+    options = options || {};
+    var sourceId = options.sourceId;
+    var forceFetch = options.forceFetch;
+
+    if (forceFetch) {
+      return true;
+    }
+
+    return this.get('sync_on_data_change') &&
+      this.get('enabled') &&
+        (!sourceId || sourceId && this._sourceAffectsMyOwnSource(sourceId));
+  },
+
+  _sourceAffectsMyOwnSource: function (sourceId) {
+    var sourceAnalysis = this._analysisCollection.get(this.getSourceId());
+    return sourceAnalysis && sourceAnalysis.findAnalysisById(sourceId);
   },
 
   _shouldFetchOnBoundingBoxChange: function () {
@@ -197,7 +256,7 @@ module.exports = Model.extend({
     if (layerDataProvider && layerDataProvider.canProvideDataFor(this)) {
       this.set(this.parse(layerDataProvider.getDataFor(this)));
     } else {
-      this.trigger('loading', this);
+      this._triggerLoading();
 
       if (opts.success) {
         var successCallback = opts && opts.success;
@@ -210,7 +269,7 @@ module.exports = Model.extend({
         }.bind(this),
         error: function (mdl, err) {
           if (!err || (err && err.statusText !== 'abort')) {
-            this.trigger('error', mdl, err);
+            this._triggerError(err);
           }
         }.bind(this)
       }));
@@ -226,17 +285,37 @@ module.exports = Model.extend({
   },
 
   getSourceId: function () {
-    return this.get('source').id;
+    // Dataview is pointing to a layer that has a source, so its
+    // source is actually the the layers's source
+    if (this.hasLayerAsSource() && this.layer.has('source')) {
+      return this.layer.get('source');
+    }
+
+    // Dataview is pointing to a layer with `sql` or an analysis
+    // node directly, so just return the id that has been set by
+    // dataviews-factory.js
+    return this._ownSourceId();
+  },
+
+  _ownSourceId: function () {
+    return this.has('source') && this.get('source').id;
+  },
+
+  hasLayerAsSource: function () {
+    return this._ownSourceId() === this.layer.id;
   },
 
   remove: function () {
+    this._removeExistingAnalysisBindings();
+
     if (this.filter) {
       var isFilterEmpty = this.filter.isEmpty();
       this.filter.remove();
       if (!isFilterEmpty) {
-        this._reloadMap();
+        this._reloadVis();
       }
     }
+
     this.trigger('destroy', this);
     this.stopListening();
   }

@@ -1,19 +1,65 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
+var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
+
+var fakeCamshaftReference = {
+  getSourceNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'source': [],
+      'trade-area': ['source'],
+      'estimated-population': ['source'],
+      'point-in-polygon': ['points_source', 'polygons_source'],
+      'union': ['source']
+    };
+    if (!map[analysisType]) {
+      throw new Error('analysis type ' + analysisType + ' not supported');
+    }
+    return map[analysisType];
+  },
+
+  getParamNamesForAnalysisType: function (analysisType) {
+    var map = {
+      'source': ['query'],
+      'trade-area': ['kind', 'time'],
+      'estimated-population': ['columnName'],
+      'point-in-polygon': [],
+      'union': ['join_on']
+    };
+    if (!map[analysisType]) {
+      throw new Error('analysis type ' + analysisType + ' not supported');
+    }
+    return map[analysisType];
+  }
+};
 
 describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = function () {};
-    this.map.reload = function () {};
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
 
-    this.model = new DataviewModelBase(null, {
+    this.analysisCollection = new Backbone.Collection();
+    this.a0 = this.analysisCollection.add({id: 'a0'});
+    this.layer = new Backbone.Model();
+    this.layer.getDataProvider = jasmine.createSpy('getDataProvider');
+
+    this.model = new DataviewModelBase({
+      source: {id: 'a0'}
+    }, {
+      layer: this.layer,
       map: this.map,
-      layer: jasmine.createSpyObj('layer', ['get', 'getDataProvider'])
+      vis: this.vis,
+      analysisCollection: this.analysisCollection
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
+
+    this.analysisFactory = new AnalysisFactory({
+      analysisCollection: this.analysisCollection,
+      camshaftReference: fakeCamshaftReference,
+      vis: this.vis
+    });
 
     // Disable debounce
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
@@ -124,19 +170,7 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).not.toHaveBeenCalled();
     });
 
-    it('should fetch if url changes and event was initiated by the same layer', function () {
-      this.model.layer.get.and.returnValue('layerID');
-      spyOn(this.model, 'fetch');
-
-      this.model.set('url', 'http://somethingelese.com', {
-        sourceLayerId: 'layerID'
-      });
-
-      expect(this.model.fetch).toHaveBeenCalled();
-    });
-
-    it('should fetch if url changes and sourceLayerId is not defined', function () {
-      this.model.layer.get.and.returnValue('layerID');
+    it('should fetch if url changes and sourceId is not defined', function () {
       spyOn(this.model, 'fetch');
 
       this.model.set('url', 'http://somethingelese.com');
@@ -144,15 +178,62 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.model.fetch).toHaveBeenCalled();
     });
 
-    it('should not fetch if url changes and event was initiated by a different layer', function () {
-      this.model.layer.get.and.returnValue('layerID');
-      spyOn(this.model, 'fetch');
+    describe('when change:url has a sourceId option', function () {
+      beforeEach(function () {
+        this.analysisCollection.reset([]);
+        this.analysisFactory.analyse({
+          id: 'a2',
+          type: 'estimated-population',
+          params: {
+            columnName: 'estimated_people',
+            source: {
+              id: 'a1',
+              type: 'trade-area',
+              params: {
+                kind: 'walk',
+                time: 300,
+                source: {
+                  id: 'a0',
+                  type: 'source',
+                  params: {
+                    query: 'select * from subway_stops'
+                  }
+                }
+              }
+            }
+          }
+        });
 
-      this.model.set('url', 'http://somethingelese.com', {
-        sourceLayerId: 'differentLayerId'
+        this.model.set('source', {
+          id: 'a1'
+        }, { silent: true });
+
+        spyOn(this.model, 'fetch');
       });
 
-      expect(this.model.fetch).not.toHaveBeenCalled();
+      it("should fetch if sourceId matches the dataview's source", function () {
+        this.model.set('url', 'http://somethingelese.com', {
+          sourceId: 'a1'
+        });
+
+        expect(this.model.fetch).toHaveBeenCalled();
+      });
+
+      it("should fetch if sourceId is a node that affects the dataview's source", function () {
+        this.model.set('url', 'http://somethingelese.com', {
+          sourceId: 'a0'
+        });
+
+        expect(this.model.fetch).toHaveBeenCalled();
+      });
+
+      it("should NOT fetch if sourceId is a node that doesn't affect the dataview's source", function () {
+        this.model.set('url', 'http://somethingelese.com', {
+          sourceId: 'a2'
+        });
+
+        expect(this.model.fetch).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -269,7 +350,6 @@ describe('dataviews/dataview-model-base', function () {
 
   describe('bindings to the filter', function () {
     beforeEach(function () {
-      spyOn(this.map, 'reload');
       this.layer = new Backbone.Model({
         id: 'layerId'
       });
@@ -278,17 +358,20 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should reload the map by default when the filter changes', function () {
       var filter = new Backbone.Model();
-      new DataviewModelBase(null, { // eslint-disable-line
-        map: this.map,
-        windshaftMap: this.windshaftMap,
+      new DataviewModelBase({ // eslint-disable-line
+        source: { id: 'a0' }
+      }, {
         layer: this.layer,
-        filter: filter
+        map: this.map,
+        vis: this.vis,
+        filter: filter,
+        analysisCollection: this.analysisCollection
       });
 
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).toHaveBeenCalledWith({ sourceLayerId: 'layerId' });
+      expect(this.vis.reload).toHaveBeenCalledWith({ sourceId: 'a0' });
     });
   });
 
@@ -297,9 +380,13 @@ describe('dataviews/dataview-model-base', function () {
       this.removeSpy = jasmine.createSpy('remove');
       this.model.once('destroy', this.removeSpy);
       spyOn(this.model, 'stopListening');
-      spyOn(this.model, '_reloadMap');
+      spyOn(this.model, '_reloadVis');
+      spyOn(this.model.layer, 'off').and.callThrough();
+      spyOn(this.a0, 'off').and.callThrough();
+
       this.model.filter = jasmine.createSpyObj('filter', ['remove', 'isEmpty']);
       this.model.filter.isEmpty.and.returnValue(false);
+
       this.model.remove();
     });
 
@@ -312,11 +399,12 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should reload the map if there is a filter and it is not empty', function () {
-      expect(this.model._reloadMap).toHaveBeenCalled();
+      expect(this.model._reloadVis).toHaveBeenCalled();
     });
 
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
+      expect(this.a0.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);
     });
   });
 
@@ -359,11 +447,13 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should get data from a data provider if data provider can provide data for the dataview', function () {
       var dataview = new DataviewModelBase({ // eslint-disable-line
-        column: 'columnName'
+        column: 'columnName',
+        source: { id: 'a0' }
       }, {
+        layer: this.layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: this.layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       this.geoJSONDataProvider.canProvideDataFor.and.returnValue(true);
@@ -375,11 +465,13 @@ describe('dataviews/dataview-model-base', function () {
 
     it("should NOT get data from a data provider if data provider CAN'T provide data for the dataview", function () {
       var dataview = new DataviewModelBase({ // eslint-disable-line
-        column: 'columnName'
+        column: 'columnName',
+        source: { id: 'a0' }
       }, {
+        layer: this.layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: this.layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       this.geoJSONDataProvider.canProvideDataFor.and.returnValue(false);
@@ -390,10 +482,13 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should be bound to changes on the map bounds', function () {
-      var dataview = new DataviewModelBase(null, {
+      var dataview = new DataviewModelBase({
+        source: { id: 'a0' }
+      }, {
+        layer: this.layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: this.layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       // Bindings are done
@@ -409,16 +504,16 @@ describe('dataviews/dataview-model-base', function () {
     });
 
     it('should apply the filter to the data provider when the filter changes and data provider can apply filters to the dataview', function () {
-      spyOn(this.map, 'reload');
-
       var filter = new Backbone.Model();
       var dataview = new DataviewModelBase({ // eslint-disable-line
-        column: 'columnName'
+        column: 'columnName',
+        source: { id: 'a0' }
       }, {
-        map: this.map,
-        windshaftMap: this.windshaftMap,
         layer: this.layer,
-        filter: filter
+        map: this.map,
+        vis: this.vis,
+        filter: filter,
+        analysisCollection: this.analysisCollection
       });
 
       this.geoJSONDataProvider.canApplyFilterTo.and.returnValue(true);
@@ -426,21 +521,21 @@ describe('dataviews/dataview-model-base', function () {
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).not.toHaveBeenCalled();
+      expect(this.vis.reload).not.toHaveBeenCalled();
       expect(this.geoJSONDataProvider.applyFilter).toHaveBeenCalledWith(dataview, filter);
     });
 
     it("should NOT apply the filter to the data provider when the filter changes and data provider CAN'T apply filters to the dataview", function () {
-      spyOn(this.map, 'reload');
-
       var filter = new Backbone.Model();
       var dataview = new DataviewModelBase({ // eslint-disable-line
-        column: 'columnName'
+        column: 'columnName',
+        source: { id: 'a0' }
       }, {
-        map: this.map,
-        windshaftMap: this.windshaftMap,
         layer: this.layer,
-        filter: filter
+        map: this.map,
+        vis: this.vis,
+        filter: filter,
+        analysisCollection: this.analysisCollection
       });
 
       this.geoJSONDataProvider.canApplyFilterTo.and.returnValue(false);
@@ -448,7 +543,7 @@ describe('dataviews/dataview-model-base', function () {
       // Filter changes
       filter.trigger('change', filter);
 
-      expect(this.map.reload).toHaveBeenCalled();
+      expect(this.vis.reload).toHaveBeenCalled();
       expect(this.geoJSONDataProvider.applyFilter).not.toHaveBeenCalled();
     });
   });
@@ -466,12 +561,34 @@ describe('dataviews/dataview-model-base', function () {
           id: 'THE_SOURCE_ID'
         }
       }, { // eslint-disable-line
+        layer: layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       expect(dataview.getSourceId()).toEqual('THE_SOURCE_ID');
+    });
+
+    it("should return the id of the layer's source", function () {
+      var layer = new Backbone.Model({
+        id: 'layerId',
+        source: 'a1'
+      });
+      layer.getDataProvider = jasmine.createSpy('getDataProvider').and.returnValue(undefined);
+
+      var dataview = new DataviewModelBase({
+        source: {
+          id: layer.id
+        }
+      }, { // eslint-disable-line
+        layer: layer,
+        map: this.map,
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
+      });
+
+      expect(dataview.getSourceId()).toEqual('a1');
     });
   });
 
@@ -488,9 +605,10 @@ describe('dataviews/dataview-model-base', function () {
           id: 'SOURCE_ID'
         }
       }, { // eslint-disable-line
+        layer: layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       expect(dataview.hasSameSourceAsLayer()).toBe(true);
@@ -508,12 +626,60 @@ describe('dataviews/dataview-model-base', function () {
           id: 'DIFFERENT_SOURCE_ID'
         }
       }, { // eslint-disable-line
+        layer: layer,
         map: this.map,
-        windshaftMap: this.windshaftMap,
-        layer: layer
+        vis: this.vis,
+        analysisCollection: this.analysisCollection
       });
 
       expect(dataview.hasSameSourceAsLayer()).toBe(false);
     });
   });
+
+  describe('when analysis changes status', function () {
+    beforeEach(function () {
+      this.a0.isLoading = jasmine.createSpy('a0.isLoading');
+      this.a0.isFailed = jasmine.createSpy('a0.isFailed');
+      this.model.on({
+        loading: this.loadingSpy = jasmine.createSpy('loading'),
+        error: this.errorSpy = jasmine.createSpy('failed')
+      });
+    });
+
+    sharedTestsForAnalysisEvents();
+
+    describe('when changed source', function () {
+      beforeEach(function () {
+        this.model.set('source', {id: 'a0'});
+      });
+
+      sharedTestsForAnalysisEvents();
+    });
+  });
 });
+
+function sharedTestsForAnalysisEvents () {
+  describe('should trigger the event according to state', function () {
+    it('should trigger loading event', function () {
+      this.loadingSpy.calls.reset();
+      this.errorSpy.calls.reset();
+      this.a0.isLoading.and.returnValue(true);
+
+      this.a0.set('status', 'whatever');
+      expect(this.loadingSpy).toHaveBeenCalled();
+      expect(this.errorSpy).not.toHaveBeenCalled();
+
+      this.loadingSpy.calls.reset();
+      this.errorSpy.calls.reset();
+      this.a0.isLoading.and.returnValue(false);
+      this.a0.isFailed.and.returnValue(true);
+
+      this.a0.set({
+        status: 'failed',
+        error: this.err = {}
+      });
+      expect(this.loadingSpy).not.toHaveBeenCalled();
+      expect(this.errorSpy).toHaveBeenCalledWith(this.model, this.err);
+    });
+  });
+}

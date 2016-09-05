@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
+var Layers = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var Template = require('../../../../src/core/template');
 var LayerSelector = require('../../../../src/geo/ui/layer-selector');
@@ -11,21 +12,17 @@ describe('geo/ui/layer-selector', function () {
   var layerSelector, layer1, layer2;
 
   beforeEach(function() {
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance', 'reload']);
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { vis: this.vis });
+    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { vis: this.vis });
 
-    var map2 = new Map(null, {
-      windshaftMap: windshaftMap
+    var map = new Map({}, {
+      layersCollection: new Layers([layer1, layer2])
     });
-
-    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { map: map2 });
-    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { map: map2 });
-
-    map2.layers.reset([layer1, layer2]);
 
     var mapView2 = new LeafletMapView({
       el: $("<div>"),
-      map: map2,
+      map: map,
       layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model({ type: 'layergroup' })
     });

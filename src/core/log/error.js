@@ -1,6 +1,6 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
-var config = require('cdb.config');
+var config = require('../../cdb.config');
 
 var ErrorModel = Backbone.Model.extend({
   url: function() {

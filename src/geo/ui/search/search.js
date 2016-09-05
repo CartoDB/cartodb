@@ -224,6 +224,10 @@ var Search = View.extend({
     this._unbindEvents();
     this._destroySearchPin();
     View.prototype.clean.call(this);
+  },
+
+  updatePosition: function (hasZoom) {
+    this.$el.toggleClass('has-zoom', hasZoom);
   }
 
 });

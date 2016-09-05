@@ -234,6 +234,81 @@ describe('vis/vis', function () {
     expect(this.vis.get('loading')).toEqual(false);
   });
 
+  describe('bindings to collection of layers', function () {
+    beforeEach(function () {
+      spyOn(this.vis, 'reload').and.callFake(function (options) {
+        options && options.success && options.success();
+      });
+
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      this.vis.instantiateMap();
+
+      this.vis.reload.calls.reset();
+    });
+
+    it('should reload the map when layers are resetted', function () {
+      this.vis.map.layers.reset([{ id: 'layer1' }]);
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map when a new layer is added', function () {
+      this.vis.map.layers.add({ id: 'layer1' });
+
+      expect(this.vis.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
+      });
+    });
+
+    it('should reload the map when a layer is removed', function () {
+      var layer = this.vis.map.layers.add({ id: 'layer1' }, { silent: true });
+      this.vis.map.layers.remove(layer);
+
+      expect(this.vis.reload).toHaveBeenCalledWith({
+        sourceId: 'layer1'
+      });
+    });
+  });
+
+  describe('.reload', function () {
+    beforeEach(function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+
+      spyOn(this.vis._windshaftMap, 'createInstance');
+    });
+
+    describe("when vis hasn't been instantiated yet", function () {
+      it('should NOT instantiate map', function () {
+        this.vis.reload({});
+
+        expect(this.vis._windshaftMap.createInstance).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when vis has been instantiated once', function () {
+      beforeEach(function () {
+        this.vis.instantiateMap();
+        this.vis._windshaftMap.createInstance.calls.reset();
+      });
+
+      it('should instantiate map and forward options', function () {
+        this.vis.reload({
+          a: 1,
+          b: 2,
+          sourceId: 'sourceId',
+          forceFetch: 'forceFetch',
+          success: 'success'
+        });
+
+        expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
+          sourceId: 'sourceId',
+          forceFetch: 'forceFetch',
+          success: 'success'
+        });
+      });
+    });
+  });
+
   describe('.load', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});
@@ -249,17 +324,6 @@ describe('vis/vis', function () {
 
     it('should load the layers', function () {
       expect(this.vis.map.layers.size()).toEqual(3);
-    });
-
-    it('should use given maxZoom and minZoom', function () {
-      var vizjson = fakeVizJSON();
-      vizjson.maxZoom = 10;
-      vizjson.minZoom = 5;
-
-      this.vis.load(new VizJSON(vizjson));
-
-      expect(this.vis.map.get('maxZoom')).toEqual(10);
-      expect(this.vis.map.get('minZoom')).toEqual(5);
     });
 
     it('should use the given provider', function () {
@@ -448,6 +512,54 @@ describe('vis/vis', function () {
 
       // Analysis graph has been created correctly
       expect(a1.get('source')).toEqual(a0);
+    });
+
+    it('should use datasource attrs to initialize torque layers properly', function () {
+      var vizjson = fakeVizJSON();
+      vizjson.datasource = {
+        maps_api_template: 'MAPS_API_TEMPLATE',
+        user_name: 'USER_NAME1',
+        stat_tag: 'STAT_TAG'
+      };
+      vizjson.layers = [{
+        'id': '3e25bab9-77d5-43c3-aedd-fb4c904a7f6d',
+        'type': 'torque',
+        'options': {
+          'attribution': 'ATTRIBUTION',
+          'visible': true,
+          'table_name': 'TABLE_NAME',
+          'user_name': 'USER_NAME2'
+        },
+        'cartocss': 'CARTOCSS',
+        'cartocss_version': '2.1.1',
+        'sql': 'SQL',
+        'source': 'SOURCE'
+      }];
+
+      this.vis.load(new VizJSON(vizjson));
+
+      expect(this.vis.getLayer(0).attributes).toEqual({
+        'id': '3e25bab9-77d5-43c3-aedd-fb4c904a7f6d',
+        'type': 'torque',
+        'cartocss': 'CARTOCSS',
+        'cartocss_version': '2.1.1',
+        'sql': 'SQL',
+        'source': 'SOURCE',
+        'user_name': 'USER_NAME2',
+        'maps_api_template': 'MAPS_API_TEMPLATE',
+        'stat_tag': 'STAT_TAG',
+        'attribution': 'ATTRIBUTION',
+        'visible': true,
+        'table_name': 'TABLE_NAME',
+        'isRunning': false,
+        'renderRange': {
+          'start': undefined,
+          'end': undefined
+        },
+        'steps': 0,
+        'step': 0,
+        'time': undefined
+      });
     });
 
     describe('polling', function () {

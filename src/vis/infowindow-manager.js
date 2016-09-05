@@ -1,4 +1,6 @@
-var Overlay = require('./vis/overlay');
+var _ = require('underscore');
+var InfowindowView = require('../geo/ui/infowindow-view');
+var InfowindowModel = require('../geo/ui/infowindow-model');
 
 /**
  * Manages the infowindows for a map. It listens to changes on the collection
@@ -7,6 +9,8 @@ var Overlay = require('./vis/overlay');
  */
 var InfowindowManager = function (vis, options) {
   options = options || {};
+  if (!vis) throw new Error('vis is required');
+
   this._vis = vis;
   this._showEmptyFields = options.showEmptyFields;
 };
@@ -43,8 +47,15 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
 };
 
 InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerModel) {
-  this._infowindowView = Overlay.create('infowindow', this._vis, layerModel.infowindow.toJSON());
-  this._infowindowModel = this._infowindowView.model;
+  var infowindowAttrs = _.pick(layerModel.infowindow.toJSON(), [
+    'template', 'fields', 'template_name', 'template_type'
+  ]);
+  this._infowindowModel = new InfowindowModel(infowindowAttrs);
+  this._infowindowView = new InfowindowView({
+    model: this._infowindowModel,
+    mapView: this._mapView
+  });
+
   this._mapView.addInfowindow(this._infowindowView);
 };
 
@@ -107,22 +118,18 @@ InfowindowManager.prototype._fetchAttributes = function (layerView, layerModel, 
 
 InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerModel) {
   layerModel.infowindow.bind('change', function () {
-    if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) && this._infowindowModel.get('visibility') === true) {
-      this._updateInfowindowModel(layerModel.infowindow);
-    }
+    this._updateInfowindowModel(layerModel.infowindow);
   }, this);
 
   layerModel.infowindow.fields.bind('reset', function () {
     if (layerModel.infowindow.hasFields()) {
-      if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
-        this._updateInfowindowModel(layerModel.infowindow);
-        if (this._infowindowModel.get('visibility')) {
-          this._reloadMapAndFetchAttributes(layerView, layerModel);
-          return;
-        }
+      this._updateInfowindowModel(layerModel.infowindow);
+      if (this._infowindowModel.get('visibility')) {
+        this._reloadVisAndFetchAttributes(layerView, layerModel);
+        return;
       }
 
-      this._reloadMap();
+      this._reloadVis();
     } else {
       if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
         this._infowindowModel.set('visibility', false);
@@ -131,13 +138,13 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
   }, this);
 };
 
-InfowindowManager.prototype._reloadMap = function (options) {
+InfowindowManager.prototype._reloadVis = function (options) {
   options = options || {};
-  this._map.reload(options);
+  this._vis.reload(options);
 };
 
-InfowindowManager.prototype._reloadMapAndFetchAttributes = function (layerView, layerModel) {
-  this._reloadMap({
+InfowindowManager.prototype._reloadVisAndFetchAttributes = function (layerView, layerModel) {
+  this._reloadVis({
     success: function () {
       this._fetchAttributes(layerView, layerModel);
     }.bind(this)

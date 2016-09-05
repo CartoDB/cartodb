@@ -13,7 +13,7 @@ var createFakeAnalysis = function (attrs) {
   return fakeAnalysis;
 };
 
-var createFakeDataview = function (attrs, windshaftMap, layer) {
+var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollection) {
   if (!attrs.id) { throw new Error('id is required'); }
   attrs = _.defaults(attrs, {
     column: 'column1',
@@ -24,21 +24,25 @@ var createFakeDataview = function (attrs, windshaftMap, layer) {
   });
 
   return new HistogramDataviewModel(attrs, {
-    map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+    map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+    vis: this.vis,
     windshaftMap: windshaftMap,
-    layer: layer
+    layer: layer,
+    analysisCollection: new Backbone.Collection()
   });
 };
 
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
     this.analysisCollection = new Backbone.Collection();
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',
       cartocss: 'cartoCSS1',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer2 = new CartoDBLayer({
@@ -47,6 +51,7 @@ describe('windshaft/anonymous-map', function () {
       cartocss: 'cartoCSS2',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
     this.cartoDBLayer3 = new CartoDBLayer({
@@ -55,6 +60,7 @@ describe('windshaft/anonymous-map', function () {
       cartocss: 'cartoCSS3',
       cartocss_version: '2.0'
     }, {
+      vis: this.vis,
       analysisCollection: this.analysisCollection
     });
 
@@ -110,28 +116,6 @@ describe('windshaft/anonymous-map', function () {
               'cartocss_version': '2.0',
               'interactivity': [],
               'sql': 'sql3'
-            }
-          }
-        ],
-        'dataviews': {},
-        'analyses': []
-      });
-    });
-
-    it('should not include hidden layers', function () {
-      this.cartoDBLayer1.set('visible', false, { silent: true });
-      this.cartoDBLayer3.set('visible', false, { silent: true });
-
-      expect(this.map.toJSON()).toEqual({
-        'layers': [
-          {
-            'id': 'layer2',
-            'type': 'cartodb',
-            'options': {
-              'sql': 'sql2',
-              'cartocss': 'cartoCSS2',
-              'cartocss_version': '2.0',
-              'interactivity': []
             }
           }
         ],
@@ -209,6 +193,8 @@ describe('windshaft/anonymous-map', function () {
         id: 'torqueId',
         sql: 'sql',
         cartocss: 'cartocss'
+      }, {
+        vis: this.vis
       }));
 
       expect(this.map.toJSON()).toEqual({
@@ -243,9 +229,11 @@ describe('windshaft/anonymous-map', function () {
           id: 'a0'
         }
       }, {
-        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+        vis: this.vis,
         windshaftMap: this.map,
-        layer: this.cartoDBLayer1
+        layer: this.cartoDBLayer1,
+        analysisCollection: new Backbone.Collection()
       });
 
       var dataview2 = new HistogramDataviewModel({
@@ -256,9 +244,11 @@ describe('windshaft/anonymous-map', function () {
           id: 'a1'
         }
       }, {
-        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']),
+        map: jasmine.createSpyObj('map', ['getViewBounds', 'bind']),
+        vis: this.vis,
         windshaftMap: this.map,
-        layer: this.cartoDBLayer2
+        layer: this.cartoDBLayer2,
+        analysisCollection: new Backbone.Collection()
       });
 
       this.cartoDBLayer2.set('visible', false, { silent: true });
@@ -324,7 +314,7 @@ describe('windshaft/anonymous-map', function () {
         this.analysisFactory = new AnalysisFactory({
           analysisCollection: this.analysisCollection,
           camshaftReference: fakeCamshaftReference,
-          map: jasmine.createSpyObj('map', ['reload'])
+          vis: this.vis
         });
       });
 
@@ -340,13 +330,12 @@ describe('windshaft/anonymous-map', function () {
         expect(this.map.toJSON().analyses).toEqual([ analysis ]);
       });
 
-      it('should include a source analysis for dataviews whose source is a layer', function () {
+      it('should include a source analysis for dataviews whose source is a layer that has sql', function () {
+        // Create a dataview whose source is the layer
         var dataview = createFakeDataview({
           id: 'dataviewId1',
-          source: {
-            id: this.cartoDBLayer1.id
-          }
-        }, this.map, this.cartoDBLayer1);
+          source: { id: this.cartoDBLayer1.id }
+        }, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         this.dataviewsCollection.add(dataview);
 
@@ -358,6 +347,30 @@ describe('windshaft/anonymous-map', function () {
               query: this.cartoDBLayer1.get('sql')
             }
           }
+        ]);
+      });
+
+      it('should include a source analysis for dataviews whose source is a layer that has a source', function () {
+        var analysis = { id: 'c1' };
+        this.analysisCollection.add(analysis);
+
+        // CartoDB layer points to an analysis and has no sql
+        this.cartoDBLayer1.update({
+          source: 'c1',
+          sql: undefined,
+          cartocss: '#trade_area { ... }'
+        }, { silent: true });
+
+        // Create a dataview whose source is the layer
+        var dataview = createFakeDataview({
+          id: 'dataviewId1',
+          source: { id: this.cartoDBLayer1.id }
+        }, this.map, this.cartoDBLayer1, this.analysisCollection);
+
+        this.dataviewsCollection.add(dataview);
+
+        expect(this.map.toJSON().analyses).toEqual([
+          analysis
         ]);
       });
 
@@ -473,7 +486,7 @@ describe('windshaft/anonymous-map', function () {
           source: {
             id: 'a0'
           }
-        }, this.map, this.cartoDBLayer1);
+        }, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         // This dataview also has a0 as it's source
         var dataview2 = createFakeDataview({
@@ -481,7 +494,7 @@ describe('windshaft/anonymous-map', function () {
           source: {
             id: 'a0'
           }
-        }, this.map, this.cartoDBLayer1);
+        }, this.map, this.cartoDBLayer1, this.analysisCollection);
 
         this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 

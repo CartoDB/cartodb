@@ -1,19 +1,13 @@
 var _ = require('underscore');
-var log = require('cdb.log');
-
+var log = require('../../cdb.log');
 // TODO: can't use these requires since they in turn depends on this file (i.e. cyclic dependency), how to break?
 // var TorqueLayer = require('./torque-layer');
 // var CartoDBNamedMapLayer = require('./cartodb-named-map-layer');
-var cdb = require('cdb'); // cdb.geo.TorqueLayer, cdb.geo.CartoDBNamedMapLayer
+var cdb = require('../../cdb'); // cdb.geo.TorqueLayer, cdb.geo.CartoDBNamedMapLayer
 var Model = require('../../core/model');
 
 // Map layer, could be tiled or whatever
 var MapLayer = Model.extend({
-
-  defaults: {
-    visible: true,
-    type: 'Tiled'
-  },
 
   initialize: function () {
     this.bind('change:type', function () {

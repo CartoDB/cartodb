@@ -19,11 +19,12 @@ describe('src/analysis/analysis-factory.js', function () {
         return map[analysisType];
       }
     };
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
       camshaftReference: this.fakeCamshaftReference,
       analysisCollection: this.analysisCollection,
-      map: jasmine.createSpyObj('map', ['reload'])
+      vis: this.vis
     });
   });
 
@@ -48,7 +49,7 @@ describe('src/analysis/analysis-factory.js', function () {
         authToken: 'THE_AUTH_TOKEN',
         camshaftReference: this.fakeCamshaftReference,
         analysisCollection: this.analysisCollection,
-        map: jasmine.createSpyObj('map', ['reload'])
+        vis: this.vis
       });
 
       var analysisModel = this.analysisFactory.analyse({

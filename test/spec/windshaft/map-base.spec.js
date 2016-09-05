@@ -24,7 +24,7 @@ describe('windshaft/map-base', function () {
     // Disable ajax for these tests
     spyOn($, 'ajax').and.callFake(function () {});
 
-    this.windshaftMapInstance = {
+    this.windshaftResponse = {
       layergroupid: 'layergroupid',
       metadata: {
         layers: [
@@ -54,10 +54,11 @@ describe('windshaft/map-base', function () {
       userName: 'rambo'
     });
 
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.cartoDBLayerGroup = new Model();
-    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' });
-    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' });
-    this.torqueLayer = new TorqueLayer();
+    this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
+    this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
+    this.torqueLayer = new TorqueLayer({}, { vis: this.vis });
 
     this.windshaftMap = new WindshaftMap({
       statTag: 'stat_tag'
@@ -79,8 +80,6 @@ describe('windshaft/map-base', function () {
       this.map = new Map({
         view_bounds_sw: [],
         view_bounds_ne: []
-      }, {
-        windshaftMap: this.windshaftMap
       });
 
       this.filter = new CategoryFilter({
@@ -89,12 +88,15 @@ describe('windshaft/map-base', function () {
 
       this.dataview = new HistogramDataviewModel({
         id: 'dataviewId',
-        type: 'list'
+        type: 'list',
+        source: { id: 'a0' }
       }, {
         map: this.map,
+        vis: this.vis,
         windshaftMap: this.windshaftMap,
         layer: this.cartoDBLayer1,
-        filter: this.filter
+        filter: this.filter,
+        analysisCollection: this.analysisCollection
       });
 
       this.dataviewsCollection.add(this.dataview);
@@ -153,12 +155,14 @@ describe('windshaft/map-base', function () {
 
         describe('when max number of subsecuent identical requests (with identical responses) have been performed', function () {
           beforeEach(function () {
-            for (var i = 0; i < 3; i++) {
-              this.windshaftMap.createInstance(this.options);
-            }
             spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
               options[result]({ a: 'b' });
             });
+            for (var i = 0; i < 3; i++) {
+              this.windshaftMap.createInstance(this.options);
+            }
+
+            this.client.instantiateMap.calls.reset();
           });
 
           it('should make a request if payload has changed', function () {
@@ -186,10 +190,35 @@ describe('windshaft/map-base', function () {
       });
     });
 
+    describe('when an exception is thrown/catched', function () {
+      beforeEach(function () {
+        spyOn(this.windshaftMap, 'toJSON').and.callFake(function () {
+          throw new Error('something went wrong!');
+        });
+
+        this.successCallback = jasmine.createSpy('success');
+        this.errorCallback = jasmine.createSpy('error');
+        this.windshaftMap.createInstance({
+          success: this.successCallback,
+          error: this.errorCallback
+        });
+      });
+
+      it('should set an error', function () {
+        expect(this.modelUpdater.setErrors).toHaveBeenCalled();
+        expect(this.modelUpdater.setErrors.calls.argsFor(0)[0][0].message).toEqual('something went wrong!');
+      });
+
+      it('should invoke the error callback', function () {
+        expect(this.successCallback).not.toHaveBeenCalled();
+        expect(this.errorCallback).toHaveBeenCalled();
+      });
+    });
+
     describe('when request succeeds', function () {
       beforeEach(function () {
         spyOn(this.client, 'instantiateMap').and.callFake(function (options) {
-          options.success(this.windshaftMapInstance);
+          options.success(this.windshaftResponse);
         }.bind(this));
       });
 
@@ -198,7 +227,7 @@ describe('windshaft/map-base', function () {
         spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -238,7 +267,7 @@ describe('windshaft/map-base', function () {
         spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
@@ -251,7 +280,7 @@ describe('windshaft/map-base', function () {
 
         // Recreate the instance again
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
         args = this.client.instantiateMap.calls.mostRecent().args[0];
 
@@ -284,7 +313,7 @@ describe('windshaft/map-base', function () {
         });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -310,7 +339,7 @@ describe('windshaft/map-base', function () {
         });
 
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
@@ -323,20 +352,20 @@ describe('windshaft/map-base', function () {
       it('should set the attributes of the new instance', function () {
         this.layersCollection.reset([ this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId'
+          sourceId: 'sourceId'
         });
 
         expect(this.windshaftMap.get('layergroupid')).toEqual('layergroupid');
-        expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftMapInstance.metadata);
+        expect(this.windshaftMap.get('metadata')).toEqual(this.windshaftResponse.metadata);
       });
 
       it('should use the modelUpdater to update internal models', function () {
         this.windshaftMap.createInstance({
-          sourceLayerId: 'sourceLayerId',
+          sourceId: 'sourceId',
           forceFetch: 'forceFetch'
         });
 
-        expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceLayerId', 'forceFetch');
+        expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceId', 'forceFetch');
       });
     });
 
@@ -550,431 +579,6 @@ describe('windshaft/map-base', function () {
       });
 
       expect(windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
-    });
-  });
-
-  describe('#getTiles', function () {
-    it('should return the URLs for tiles and grids by default or when requesting "mapnik" layers', function () {
-      var windshaftMap = new WindshaftMap({
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      // No type specified
-      expect(windshaftMap.getTiles()).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ]
-        ]
-      });
-
-      // Request tiles for "mapnik" layers specifically
-      expect(windshaftMap.getTiles('mapnik')).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ]
-        ]
-      });
-    });
-
-    it('should only include grids for "mapnik" layers', function () {
-      var windshaftMap = new WindshaftMap({
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'http',
-              'meta': {}
-            },
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'mapnik',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      // Request tiles for "mapnik" layers specifically
-      expect(windshaftMap.getTiles('mapnik')).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1,2/{z}/{x}/{y}.png' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json' ],
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/2/{z}/{x}/{y}.grid.json' ]
-        ]
-      });
-    });
-
-    it('should return the URLs for "torque" layers and no grids', function () {
-      var windshaftMap = new WindshaftMap({
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      // Request tiles for "torque" layers specifically
-      expect(windshaftMap.getTiles('torque')).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.json.torque' ],
-        grids: []
-      });
-    });
-
-    it('should handle layer indexes correctly when a layer type is specified', function () {
-      var windshaftMap = new WindshaftMap({
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            },
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      // Request tiles for "mapnik" layers specifically (#0 and #2)
-      expect(windshaftMap.getTiles('mapnik')).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0,2/{z}/{x}/{y}.png' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/2/{z}/{x}/{y}.grid.json' ]
-        ]
-      });
-
-      // Request tiles for "torque" layers specifically (#1 and #3)
-      expect(windshaftMap.getTiles('torque')).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/1,3/{z}/{x}/{y}.json.torque' ],
-        grids: []
-      });
-    });
-
-    it('should include the API key in the URLs', function () {
-      var windshaftMap = new WindshaftMap({
-        'apiKey': 'API_KEY',
-        'authToken': 'AUTH_TOKEN',
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(windshaftMap.getTiles()).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?api_key=API_KEY' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json?api_key=API_KEY' ]
-        ]
-      });
-    });
-
-    it('should include the AUTH token in the URLs', function () {
-      var windshaftMap = new WindshaftMap({
-        'authToken': 'AUTH_TOKEN',
-        'layergroupid': '0123456789',
-        'metadata': {
-          'layers': [
-            {
-              'type': 'mapnik',
-              'meta': {}
-            },
-            {
-              'type': 'torque',
-              'meta': {}
-            }
-          ]
-        }
-      }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
-      });
-
-      expect(windshaftMap.getTiles()).toEqual({
-        tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.png?auth_token=AUTH_TOKEN' ],
-        grids: [
-          [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json?auth_token=AUTH_TOKEN' ]
-        ]
-      });
-    });
-
-    describe('when NOT using a CDN', function () {
-      it('should return the URLS for tiles and grids for https', function () {
-        var windshaftMap = new WindshaftMap({
-          'layergroupid': '0123456789',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {}
-              },
-              {
-                'type': 'mapnik',
-                'meta': {}
-              }
-            ]
-          }
-        }, {
-          client: new WindshaftClient({
-            urlTemplate: 'https://{user}.example.com:443',
-            userName: 'rambo',
-            endpoint: 'v2'
-          }),
-          modelUpdater: this.modelUpdater,
-          dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
-        });
-        expect(windshaftMap.getTiles()).toEqual({
-          tiles: [ 'https://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
-          grids: [
-            [ 'https://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
-            [ 'https://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json' ]
-          ]
-        });
-      });
-
-      it('should return the URLS for tiles and grids for http', function () {
-        var windshaftMap = new WindshaftMap({
-          'layergroupid': '0123456789',
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {}
-              },
-              {
-                'type': 'mapnik',
-                'meta': {}
-              }
-            ]
-          }
-        }, {
-          client: new WindshaftClient({
-            urlTemplate: 'http://{user}.example.com:443',
-            userName: 'rambo',
-            endpoint: 'v2'
-          }),
-          modelUpdater: this.modelUpdater,
-          dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
-        });
-        expect(windshaftMap.getTiles()).toEqual({
-          'tiles': [
-            'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://rambo.example.com:443/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png'
-          ],
-          'grids': [
-            [
-              'http://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json'
-            ], [
-              'http://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://rambo.example.com:443/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json'
-            ]
-          ]
-        });
-      });
-    });
-
-    describe('when using a CDN', function () {
-      it('should return the URLS for tiles and grids for https', function () {
-        var windshaftMap = new WindshaftMap({
-          'layergroupid': '0123456789',
-          'cdn_url': {
-            http: 'cdn.http.example.com',
-            https: 'cdn.https.example.com'
-          },
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {}
-              },
-              {
-                'type': 'mapnik',
-                'meta': {}
-              }
-            ]
-          }
-        }, {
-          client: new WindshaftClient({
-            urlTemplate: 'https://{user}.example.com:443',
-            userName: 'rambo',
-            endpoint: 'v2'
-          }),
-          modelUpdater: this.modelUpdater,
-          dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
-        });
-        expect(windshaftMap.getTiles()).toEqual({
-          'tiles': [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png' ],
-          'grids': [
-            [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json' ],
-            [ 'https://cdn.https.example.com/rambo/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json' ]
-          ]
-        });
-      });
-
-      it('should return the URLS for tiles and grids for http', function () {
-        var windshaftMap = new WindshaftMap({
-          'layergroupid': '0123456789',
-          'cdn_url': {
-            http: 'cdn.http.example.com',
-            https: 'cdn.https.example.com'
-          },
-          'metadata': {
-            'layers': [
-              {
-                'type': 'mapnik',
-                'meta': {}
-              },
-              {
-                'type': 'mapnik',
-                'meta': {}
-              }
-            ]
-          }
-        }, {
-          client: new WindshaftClient({
-            urlTemplate: 'http://{user}.example.com:443',
-            userName: 'rambo',
-            endpoint: 'v2'
-          }),
-          modelUpdater: this.modelUpdater,
-          dataviewsCollection: this.dataviewsCollection,
-          layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
-        });
-        expect(windshaftMap.getTiles()).toEqual({
-          'tiles': [
-            'http://0.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://1.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://2.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png',
-            'http://3.cdn.http.example.com/rambo/api/v1/map/0123456789/0,1/{z}/{x}/{y}.png'
-          ],
-          'grids': [
-            [
-              'http://0.cdn.http.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://1.cdn.http.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://2.cdn.http.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json',
-              'http://3.cdn.http.example.com/rambo/api/v1/map/0123456789/0/{z}/{x}/{y}.grid.json'
-            ], [
-              'http://0.cdn.http.example.com/rambo/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://1.cdn.http.example.com/rambo/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://2.cdn.http.example.com/rambo/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json',
-              'http://3.cdn.http.example.com/rambo/api/v1/map/0123456789/1/{z}/{x}/{y}.grid.json'
-            ]
-          ]
-        });
-      });
     });
   });
 
@@ -1195,6 +799,23 @@ describe('windshaft/map-base', function () {
           'https': 'https://example2.com'
         }
       });
+    });
+  });
+
+  describe('.getSupportedSubdomains', function () {
+    it('should return supported subdomains if urlTemplate uses http', function () {
+      this.windshaftMap.set({
+        urlTemplate: 'http://{username}.carto.com'
+      });
+
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['0', '1', '2', '3']);
+    });
+
+    it('should return no subdomains if urlTemplate uses https', function () {
+      this.windshaftMap.set({
+        urlTemplate: 'https://{username}.carto.com'
+      });
+      expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['']);
     });
   });
 });

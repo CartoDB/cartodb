@@ -129,11 +129,18 @@ WindshaftClient.prototype._getCompressor = function (payload) {
 };
 
 WindshaftClient.prototype._getURL = function (params) {
-  var queryString = _.map(params, function (value, name) {
-    if (value instanceof Object) {
-      value = encodeURIComponent(JSON.stringify(value));
+  var queryString = [];
+  _.each(params, function (value, name) {
+    if (value instanceof Array) {
+      _.each(value, function (one_value) {
+        queryString.push(name + '[]=' + one_value);
+      });
+    } else {
+      if (value instanceof Object) {
+        value = encodeURIComponent(JSON.stringify(value));
+      }
+      queryString.push(name + '=' + value);
     }
-    return [ name + '=' + value ];
   });
 
   return [this.url, this.endpoint].join('/') + (queryString ? '?' + queryString.join('&') : '');

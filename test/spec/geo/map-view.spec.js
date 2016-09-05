@@ -5,20 +5,15 @@ var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var Infowindow = require('../../../src/geo/ui/infowindow-view');
-var CartoDBLayerGroupBase = require('../../../src/geo/cartodb-layer-group-base');
+var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
-var LayerGroupModel = CartoDBLayerGroupBase;
+var LayerGroupModel = CartoDBLayerGroup;
 
 describe('core/geo/map-view', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
-
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var windshaftMap = jasmine.createSpyObj('windshaftMap', ['bind', 'createInstance']);
-
-    this.map = new Map(null, {
-      windshaftMap: windshaftMap
-    });
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.map = new Map();
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({
@@ -26,13 +21,50 @@ describe('core/geo/map-view', function () {
       map: this.map,
       layerViewFactory: this.layerViewFactory,
       layerGroupModel: new LayerGroupModel(null, {
-        windshaftMap: windshaftMap,
         layersCollection: this.map.layers
       })
     });
 
     spyOn(this.mapView, 'getNativeMap');
     spyOn(this.mapView, '_addLayerToMap');
+  });
+
+  describe('.render', function () {
+    it('should add layer views to the map', function () {
+      this.layerViewFactory.createLayerView.and.callFake(function () {
+        return jasmine.createSpyObj('layerView', ['something']);
+      });
+      var tileLayer = new TileLayer();
+      var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+
+      this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
+
+      this.mapView = new MapView({
+        el: this.container,
+        map: this.map,
+        layerViewFactory: this.layerViewFactory,
+        layerGroupModel: new LayerGroupModel(null, {
+          windshaftMap: this.windshaftMap,
+          layersCollection: this.map.layers
+        })
+      });
+      spyOn(this.mapView, 'getNativeMap');
+      spyOn(this.mapView, '_addLayerToMap');
+
+      this.mapView.render();
+
+      expect(this.mapView._addLayerToMap.calls.count()).toEqual(2);
+      expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toBeDefined();
+      expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid)).toBeDefined();
+      expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).toBeDefined();
+
+      // Both CartoDBLayer layers share the same layer view
+      expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid)).toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer2.cid));
+
+      // Tile Layer has a different layer view
+      expect(this.mapView.getLayerViewByLayerCid(tileLayer.cid)).not.toEqual(this.mapView.getLayerViewByLayerCid(cartoDBLayer1.cid));
+    });
   });
 
   it('should be able to add an infowindow', function () {
@@ -57,8 +89,8 @@ describe('core/geo/map-view', function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
         var tileLayer = new TileLayer();
-        var cartoDBLayer1 = new CartoDBLayer();
-        var cartoDBLayer2 = new CartoDBLayer();
+        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
         expect(this.mapView._addLayerToMap.calls.count()).toEqual(2);
@@ -80,7 +112,7 @@ describe('core/geo/map-view', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
-        var layer1 = new CartoDBLayer();
+        var layer1 = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.addLayer(layer1);
 
@@ -95,8 +127,8 @@ describe('core/geo/map-view', function () {
           return jasmine.createSpyObj('layerView', ['something']);
         });
         var tileLayer = new TileLayer();
-        var cartoDBLayer1 = new CartoDBLayer();
-        var cartoDBLayer2 = new CartoDBLayer();
+        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.addLayer(tileLayer);
         expect(this.mapView._addLayerToMap).toHaveBeenCalled();
@@ -146,8 +178,8 @@ describe('core/geo/map-view', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['remove']);
         });
-        var cartoDBLayer1 = new CartoDBLayer();
-        var cartoDBLayer2 = new CartoDBLayer();
+        var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+        var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.layers.reset([cartoDBLayer1, cartoDBLayer2]);
 
@@ -176,7 +208,7 @@ describe('core/geo/map-view', function () {
         this.layerViewFactory.createLayerView.and.callFake(function () {
           return jasmine.createSpyObj('layerView', ['remove']);
         });
-        var cartoDBLayer = new CartoDBLayer();
+        var cartoDBLayer = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.layers.reset([cartoDBLayer]);
 

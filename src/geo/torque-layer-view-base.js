@@ -18,12 +18,6 @@ module.exports = {
       resolution: 1,
       // TODO: manage time columns
       countby: 'count(cartodb_id)',
-      sql_api_domain: layerModel.get('sql_api_domain'),
-      sql_api_protocol: layerModel.get('sql_api_protocol'),
-      sql_api_port: layerModel.get('sql_api_port'),
-      tiler_protocol: layerModel.get('tiler_protocol'),
-      tiler_domain: layerModel.get('tiler_domain'),
-      tiler_port: layerModel.get('tiler_port'),
       maps_api_template: layerModel.get('maps_api_template'),
       stat_tag: layerModel.get('stat_tag'),
       animationDuration: layerModel.get('torque-duration'),
@@ -36,7 +30,7 @@ module.exports = {
       attribution: layerModel.get('attribution'),
       cartocss: layerModel.get('cartocss') || layerModel.get('tile_style'),
       named_map: layerModel.get('named_map'),
-      auth_token: layerModel.get('auth_token'),
+      auth_token: layerModel.get('auth_token') || extra.auth_token,
       no_cdn: layerModel.get('no_cdn'),
       loop: !(layerModel.get('loop') === false)
     };

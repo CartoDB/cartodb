@@ -8,12 +8,11 @@ var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
-var CartoDBLayerGroupNamedMap = require('../geo/cartodb-layer-group-named-map');
-var CartoDBLayerGroupAnonymousMap = require('../geo/cartodb-layer-group-anonymous-map');
+var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
 var ModelUpdater = require('./model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
-var Layers = require('./vis/layers');
+var LayersFactory = require('./layers-factory');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -36,6 +35,7 @@ var VisModel = Backbone.Model.extend({
     this._dataviewsCollection = new Backbone.Collection();
 
     this.overlaysCollection = new Backbone.Collection();
+    this._instantiateMapWasCalled = false;
   },
 
   done: function (callback) {
@@ -91,23 +91,21 @@ var VisModel = Backbone.Model.extend({
     // Create the WindhaftClient
     var endpoint;
     var WindshaftMapClass;
-    var CartoDBLayerGroupClass;
 
     var datasource = vizjson.datasource;
     var isNamedMap = !!datasource.template_name;
 
     if (isNamedMap) {
       endpoint = [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/');
-      CartoDBLayerGroupClass = CartoDBLayerGroupNamedMap;
       WindshaftMapClass = WindshaftNamedMap;
     } else {
       endpoint = WindshaftConfig.MAPS_API_BASE_URL;
-      CartoDBLayerGroupClass = CartoDBLayerGroupAnonymousMap;
       WindshaftMapClass = WindshaftAnonymousMap;
     }
 
-    this.layerGroupModel = new CartoDBLayerGroupClass({
-      apiKey: this.get('apiKey')
+    this.layerGroupModel = new CartoDBLayerGroup({
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
     }, {
       layersCollection: this._layersCollection
     });
@@ -143,11 +141,9 @@ var VisModel = Backbone.Model.extend({
     // Create the Map
     var allowDragging = util.isMobileDevice() || vizjson.hasZoomOverlay() || vizjson.scrollwheel;
 
-    var mapConfig = {
+    this.map = new Map({
       title: vizjson.title,
       description: vizjson.description,
-      maxZoom: vizjson.maxZoom,
-      minZoom: vizjson.minZoom,
       bounds: vizjson.bounds,
       center: vizjson.center,
       zoom: vizjson.zoom,
@@ -155,12 +151,9 @@ var VisModel = Backbone.Model.extend({
       drag: allowDragging,
       provider: vizjson.map_provider,
       vector: vizjson.vector
-    };
-
-    this.map = new Map(mapConfig, {
-      layersCollection: this._layersCollection,
-      windshaftMap: this._windshaftMap,
-      dataviewsCollection: this._dataviewsCollection
+    }, {
+      vis: this,
+      layersCollection: this._layersCollection
     });
 
     // Reset the collection of overlays
@@ -171,8 +164,10 @@ var VisModel = Backbone.Model.extend({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     }, {
+      map: this.map,
+      vis: this,
       dataviewsCollection: this._dataviewsCollection,
-      map: this.map
+      analysisCollection: this._analysisCollection
     });
 
     // Create the public Analysis Factory
@@ -180,14 +175,14 @@ var VisModel = Backbone.Model.extend({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken'),
       analysisCollection: this._analysisCollection,
-      map: this.map
+      vis: this
     });
 
     this._windshaftMap.bind('instanceRequested', this._onMapInstanceRequested, this);
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
-    var layerModels = this._newLayerModels(vizjson, this.map);
+    var layerModels = this._newLayerModels(vizjson);
     this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate
@@ -226,7 +221,7 @@ var VisModel = Backbone.Model.extend({
     if (analysisModel.isDone()) {
       this.untrackLoadingObject(analysisModel);
       if (this._isAnalysisSourceOfLayerOrDataview(analysisModel)) {
-        this.map.reload();
+        this.reload();
       }
     }
   },
@@ -261,12 +256,59 @@ var VisModel = Backbone.Model.extend({
 
   /**
    * Force a map instantiation.
-   * Only expected to be called if {skipMapInstantiation} flag is set to true when vis is created.
+   * Only expected to be called once if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function (options) {
     options = options || {};
-    this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
-    this.map.instantiateMap(options);
+    if (!this._instantiateMapWasCalled) {
+      this._instantiateMapWasCalled = true;
+      var successCallback = options.success;
+      options.success = function () {
+        this._initBindsAfterFirstMapInstantiation();
+        successCallback && successCallback();
+      }.bind(this);
+      this.reload(options);
+    }
+  },
+
+  reload: function (options) {
+    options = options || {};
+    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
+    if (this._instantiateMapWasCalled) {
+      this._windshaftMap.createInstance(options);
+    }
+  },
+
+  _initBindsAfterFirstMapInstantiation: function () {
+    this._layersCollection.bind('reset', this._onLayersResetted, this);
+    this._layersCollection.bind('add', this._onLayerAdded, this);
+    this._layersCollection.bind('remove', this._onLayerRemoved, this);
+
+    if (this._dataviewsCollection) {
+      // When new dataviews are defined, a new instance of the map needs to be created
+      this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
+      this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
+    }
+  },
+
+  _onLayersResetted: function () {
+    this.reload();
+  },
+
+  _onLayerAdded: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+  },
+
+  _onLayerRemoved: function (layerModel) {
+    this.reload({
+      sourceId: layerModel.get('id')
+    });
+  },
+
+  _onDataviewAdded: function (layerModel) {
+    this.reload();
   },
 
   invalidateSize: function () {
@@ -278,29 +320,50 @@ var VisModel = Backbone.Model.extend({
     this.map.reCenter();
   },
 
-  _newLayerModels: function (vizjson, map) {
-    var layerModels = [];
+  _newLayerModels: function (vizjson) {
     var layersOptions = {
       https: this.get('https'),
-      map: map
+      vis: this
     };
-    _.each(vizjson.layers, function (layerData) {
-      if (layerData.type === 'layergroup' || layerData.type === 'namedmap') {
-        var layersData;
-        if (layerData.type === 'layergroup') {
-          layersData = layerData.options.layer_definition.layers;
-        } else {
-          layersData = layerData.options.named_map.layers;
-        }
-        _.each(layersData, function (layerData) {
-          layerModels.push(Layers.create('CartoDB', layerData, layersOptions));
+    // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
+    // will be merged and released. Leaving this here for backwards compatibility
+    // and to make sure everything still works fine during the release and next
+    // few moments (e.g: some viz.json files might be cached, etc.).
+    var layersData = this._flattenLayers(vizjson.layers);
+    return _.map(layersData, function (layerData) {
+      // Torque layers need some extra attributes that are present
+      // in the datasource entry of the viz.json
+      if (layerData.type === 'torque') {
+        layerData = _.extend(layerData, {
+          'user_name': vizjson.datasource.user_name,
+          'maps_api_template': vizjson.datasource.maps_api_template,
+          'stat_tag': vizjson.datasource.stat_tag
         });
-      } else {
-        layerModels.push(Layers.create(layerData.type, layerData, layersOptions));
       }
+      return LayersFactory.create(layerData.type, layerData, layersOptions);
     });
+  },
 
-    return layerModels;
+  _flattenLayers: function (vizjsonLayers) {
+    return _.chain(vizjsonLayers)
+      .map(function (vizjsonLayer) {
+        if (vizjsonLayer.type === 'layergroup') {
+          return vizjsonLayer.options.layer_definition.layers;
+        }
+
+        if (vizjsonLayer.type === 'namedmap') {
+          // Layers inside of a "namedmap" layer don't have a type, so we need to
+          // add manually add it here, so that the factory knows what model should be created.
+          return _.map(vizjsonLayer.options.named_map.layers, function (layer) {
+            layer.type = 'CartoDB';
+            return layer;
+          });
+        }
+
+        return vizjsonLayer;
+      })
+      .flatten()
+      .value();
   }
 });
 

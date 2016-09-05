@@ -27,6 +27,11 @@ RequestTracker.prototype.reset = function () {
   this._numberOfRequests = 0;
 };
 
+RequestTracker.prototype.canRequestBePerformed = function (request) {
+  return !this.maxNumberOfRequestsReached() ||
+    (this.maxNumberOfRequestsReached() && !this.lastRequestEquals(request));
+};
+
 RequestTracker.prototype.maxNumberOfRequestsReached = function () {
   return this._numberOfRequests === this._maxNumberOfRequests;
 };

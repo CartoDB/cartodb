@@ -4,15 +4,17 @@ var wax = require('wax.cartodb.js');
 var config = require('cdb.config');
 var Profiler = require('cdb.core.Profiler');
 var LeafletLayerView = require('./leaflet-layer-view');
-var CartoDBLayerCommon = require('../cartodb-layer-common');
+var CartoDBLayerGroupViewBase = require('../cartodb-layer-group-view-base');
 var _ = require('underscore');
 var Backbone = require('backbone');
+
+var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
 var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   includes: [
     Backbone.Events,
     LeafletLayerView.prototype,
-    CartoDBLayerCommon.prototype
+    CartoDBLayerGroupViewBase.prototype
   ],
 
   interactionClass: wax.leaf.interaction,
@@ -95,12 +97,9 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     this.fire = this.trigger;
 
-    // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this._onTileJSONChange, this);
-
     this.addProfiling();
 
-    CartoDBLayerCommon.call(this);
+    CartoDBLayerGroupViewBase.call(this, layerModel);
     L.TileLayer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
@@ -147,17 +146,14 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
   // overwrite getTileUrl in order to
   // support different tiles subdomains in tilejson way
   getTileUrl: function (tilePoint) {
-    var EMPTY_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    this._adjustTilePoint(tilePoint);
-
-    var tiles = [EMPTY_GIF];
-    if (this.tilejson) {
-      tiles = this.tilejson.tiles;
+    if (!this.model.hasTileURLTemplates()) {
+      return EMPTY_GIF;
     }
 
-    var index = (tilePoint.x + tilePoint.y) % tiles.length;
-
-    return L.Util.template(tiles[index], L.Util.extend({
+    this._adjustTilePoint(tilePoint);
+    var tilesURLTemplates = this.model.getTileURLTemplates();
+    var index = (tilePoint.x + tilePoint.y) % tilesURLTemplates.length;
+    return L.Util.template(tilesURLTemplates[index], L.Util.extend({
       z: this._getZoomForUrl(),
       x: tilePoint.x,
       y: tilePoint.y
@@ -202,22 +198,14 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
     }
   },
 
-  /**
-   * On tileJSON change,
-   * it generates a new url for tiles and refresh leaflet layer
-   * do not collide with leaflet _update
-   */
-  _onTileJSONChange: function () {
-    var tilejson = this.model.get('urls');
-    if (tilejson) {
-      this.tilejson = tilejson;
-      this.setUrl(this.tilejson.tiles[0]);
+  _reload: function () {
+    if (this.model.hasTileURLTemplates()) {
+      this.setUrl(this.model.getTileURLTemplates()[0]);
       // manage interaction
       this._reloadInteraction();
-      // TODO: Is this necessary?
       this.ok && this.ok();
     } else {
-      this.error && this.error('URLs have not been fetched yet');
+      this.setUrl(EMPTY_GIF);
     }
   },
 

@@ -19,7 +19,7 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD: ['visible', 'sql', 'source', 'cartocss'],
+  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'cartocss'],
 
   TORQUE_LAYER_CARTOCSS_PROPS: [
     '-torque-frame-count',
@@ -32,15 +32,17 @@ var TorqueLayer = LayerModelBase.extend({
   LAYER_NAME_IN_CARTO_CSS: 'Map',
 
   initialize: function (attrs, options) {
-    LayerModelBase.prototype.initialize.apply(this, arguments);
     options = options || {};
+    if (!options.vis) throw new Error('vis is required');
 
-    this._map = options.map;
+    this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
+
+    LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {
-    var reloadMap = _.any(this.ATTRIBUTES_THAT_TRIGGER_MAP_RELOAD, function (attr) {
+    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
           return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
@@ -49,8 +51,8 @@ var TorqueLayer = LayerModelBase.extend({
       }
     }, this);
 
-    if (reloadMap) {
-      this._reloadMap();
+    if (reloadVis) {
+      this._reloadVis();
     }
   },
 
@@ -79,9 +81,9 @@ var TorqueLayer = LayerModelBase.extend({
     return properties;
   },
 
-  _reloadMap: function () {
-    this._map.reload({
-      sourceLayerId: this.get('id')
+  _reloadVis: function () {
+    this._vis.reload({
+      sourceId: this.get('id')
     });
   },
 
@@ -154,6 +156,10 @@ var TorqueLayer = LayerModelBase.extend({
     var end = this.get('end');
     var step = (steps * (1000*timestamp - start)) / (end - start);
     return step;
+  },
+
+  getTileURLTemplates: function () {
+    return this.get('tileURLTemplates');
   }
 });
 

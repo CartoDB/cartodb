@@ -6,9 +6,9 @@ describe('src/analysis/analysis-poller', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.map = jasmine.createSpyObj('map', ['something']);
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
     this.reference = jasmine.createSpyObj('reference', ['getParamNamesForAnalysisType']);
-    this.analysisModel1 = new AnalysisModel({ id: 'a1' }, { map: this.map, camshaftReference: this.reference });
+    this.analysisModel1 = new AnalysisModel({ id: 'a1' }, { vis: this.vis, camshaftReference: this.reference });
     this.analysisPoller = new AnalysisPoller();
   });
 

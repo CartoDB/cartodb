@@ -1,18 +1,12 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var log = require('cdb.log');
 var util = require('cdb.core.util');
 var View = require('../core/view');
 var StackedLegend = require('../geo/ui/legend/stacked-legend');
 var MapViewFactory = require('../geo/map-view-factory');
 var LegendModel = require('../geo/ui/legend-model');
 var Legend = require('../geo/ui/legend');
-var InfowindowModel = require('../geo/ui/infowindow-model');
-var Infowindow = require('../geo/ui/infowindow-view');
-var Template = require('../core/template');
-var Layers = require('./vis/layers');
-var Overlay = require('./vis/overlay');
-var INFOWINDOW_TEMPLATE = require('./vis/infowindow-template');
+var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 
@@ -21,18 +15,9 @@ var TooltipManager = require('./tooltip-manager');
  */
 var Vis = View.extend({
   initialize: function () {
-    this.model.bind('change:loading', function () {
-      if (this.loader) {
-        if (this.model.get('loading')) {
-          this.loader.show();
-        } else {
-          this.loader.hide();
-        }
-      }
-    }, this);
-
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
+    this.model.on('change:loading', this._toggleLoader, this);
     this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
 
     this.overlays = [];
@@ -41,11 +26,7 @@ var Vis = View.extend({
   },
 
   render: function () {
-    // TODO: Get this from this.model
-    var options = {};
-
     // Create the MapView
-
     var div = $('<div>').css({
       position: 'relative',
       width: '100%',
@@ -73,24 +54,25 @@ var Vis = View.extend({
     var mapViewFactory = new MapViewFactory();
 
     this.mapView = mapViewFactory.createMapView(this.model.map.get('provider'), this.model.map, div_hack, this.model.layerGroupModel);
+    // Bind events before the view is rendered and layer views are added to the map
+    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
+    this.mapView.render();
 
     // Infowindows && Tooltips
-    var infowindowManager = new InfowindowManager(this, {
+    var infowindowManager = new InfowindowManager(this.model, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
     });
     infowindowManager.manage(this.mapView, this.model.map);
 
-    var tooltipManager = new TooltipManager(this);
+    var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);
-
-    this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
 
     // Bindings
     if (this.model.get('showLegends')) {
       this.addLegends();
     }
 
-    this._resetOverlays(options);
+    this._resetOverlays({});
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -272,6 +254,10 @@ var Vis = View.extend({
         overlay.show();
       }
 
+      if (type === 'search') {
+        overlay.updatePosition(this._hasZoomOverlay());
+      }
+
       if (type === 'header') {
         var m = overlay.model;
 
@@ -291,6 +277,11 @@ var Vis = View.extend({
         overlay.render();
       }
     }, this);
+  },
+
+  _hasZoomOverlay: function () {
+    var overlays = this.model.overlaysCollection.pluck('type');
+    return overlays.indexOf('zoom') > -1;
   },
 
   _setupSublayers: function (layers, options) {
@@ -323,16 +314,12 @@ var Vis = View.extend({
   },
 
   addOverlay: function (overlay) {
-    overlay.map = this.model.map;
-
-    var v = Overlay.create(overlay.type, this, overlay);
+    var v = OverlaysFactory.create(overlay.type, overlay, {
+      visView: this,
+      map: this.model.map
+    });
 
     if (v) {
-      // Save tiles loader view for later
-      if (overlay.type === 'loader') {
-        this.loader = v;
-      }
-
       this.mapView.addOverlay(v);
 
       this.overlays.push(v);
@@ -348,19 +335,6 @@ var Vis = View.extend({
       }, this);
     }
     return v;
-  },
-
-  createLayer: function (layerData) {
-    var layerModel = Layers.create(layerData.type || layerData.kind, this, layerData);
-    return this.mapView.createLayer(layerModel);
-  },
-
-  throwError: function (msg, lyr) {
-    log.error(msg);
-    var self = this;
-    _.defer(function () {
-      self.trigger('error', msg, lyr);
-    });
   },
 
   // returns an array of layers
@@ -387,6 +361,21 @@ var Vis = View.extend({
     });
   },
 
+  _toggleLoader: function () {
+    var loaderOverlay = this._getLoaderOverlay();
+    if (loaderOverlay) {
+      if (this.model.get('loading')) {
+        loaderOverlay.show();
+      } else {
+        loaderOverlay.hide();
+      }
+    }
+  },
+
+  _getLoaderOverlay: function () {
+    return this.getOverlay('loader');
+  },
+
   _onResize: function () {
     $(window).unbind('resize', this._onResize);
 
@@ -396,104 +385,6 @@ var Vis = View.extend({
     setTimeout(function () {
       self.model.centerMapToOrigin();
     }, 150);
-  }
-}, {
-  /**
-   * adds an infowindow to the map controlled by layer events.
-   * it enables interaction and overrides the layer interacivity
-   * ``fields`` array of column names
-   * ``map`` native map object, leaflet of gmaps
-   * ``layer`` cartodb layer (or sublayer)
-   */
-  addInfowindow: function (map, layer, fields, opts) {
-    var options = _.defaults(opts || {}, {
-      infowindowTemplate: INFOWINDOW_TEMPLATE.light,
-      templateType: 'mustache',
-      triggerEvent: 'featureClick',
-      templateName: 'light',
-      extraFields: [],
-      cursorInteraction: true
-    });
-
-    if (!map) throw new Error('map is not valid');
-    if (!layer) throw new Error('layer is not valid');
-    if (!fields && fields.length === undefined) throw new Error('fields should be a list of strings');
-
-    var f = [];
-    fields = fields.concat(options.extraFields);
-    for (var i = 0; i < fields.length; ++i) {
-      f.push({ name: fields, order: i });
-    }
-
-    var infowindowModel = new InfowindowModel({
-      fields: f,
-      template_name: options.templateName
-    });
-
-    var infowindow = new Infowindow({
-      model: infowindowModel,
-      mapView: map.viz.mapView,
-      template: new Template({
-        template: options.infowindowTemplate,
-        type: options.templateType
-      }).asFunction()
-    });
-
-    map.viz.mapView.addInfowindow(infowindow);
-
-    layer.bind(options.triggerEvent, function (e, latlng, pos, data, layer) {
-      var render_fields = [];
-      for (var f = 0; f < fields.length; ++f) {
-        var field = fields[f];
-        var d = data[field];
-        if (d) {
-          render_fields.push({
-            title: field,
-            value: d,
-            index: 0
-          });
-        }
-      }
-
-      infowindow.model.set({
-        content: {
-          fields: render_fields,
-          data: data
-        }
-      });
-
-      infowindow
-        .setLatLng(latlng)
-        .showInfowindow();
-      infowindow.adjustPan();
-    }, infowindow);
-
-    // remove the callback on clean
-    infowindow.bind('clean', function () {
-      layer.unbind(options.triggerEvent, null, infowindow);
-    });
-
-    if (options.cursorInteraction) {
-      Vis.addCursorInteraction(map, layer);
-    }
-
-    return infowindow;
-  },
-
-  addCursorInteraction: function (map, layer) {
-    var mapView = map.viz.mapView;
-    layer.bind('mouseover', function () {
-      mapView.setCursor('pointer');
-    });
-
-    layer.bind('mouseout', function (m, layer) {
-      mapView.setCursor('auto');
-    });
-  },
-
-  removeCursorInteraction: function (map, layer) {
-    var mapView = map.viz.mapView;
-    layer.unbind(null, null, mapView);
   }
 });
 

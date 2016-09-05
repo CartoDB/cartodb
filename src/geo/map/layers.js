@@ -1,14 +1,11 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var LayerModelBase = require('./layer-model-base');
 
 var TILED_LAYER_TYPE = 'Tiled';
 var CARTODB_LAYER_TYPE = 'CartoDB';
 var TORQUE_LAYER_TYPE = 'torque';
 
 var Layers = Backbone.Collection.extend({
-
-  model: LayerModelBase,
 
   initialize: function () {
     this.comparator = function (m) {
@@ -51,6 +48,24 @@ var Layers = Backbone.Collection.extend({
     }
 
     this.sort();
+  },
+
+  getCartoDBLayers: function () {
+    return this._getLayersByType(CARTODB_LAYER_TYPE);
+  },
+
+  getTiledLayers: function () {
+    return this._getLayersByType(TILED_LAYER_TYPE);
+  },
+
+  getTorqueLayers: function () {
+    return this._getLayersByType(TORQUE_LAYER_TYPE);
+  },
+
+  _getLayersByType: function (layerType) {
+    return this.select(function (layerModel) {
+      return layerModel.get('type') === layerType;
+    });
   }
 });
 

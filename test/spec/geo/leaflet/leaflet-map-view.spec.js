@@ -10,6 +10,7 @@ var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
+var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
@@ -28,19 +29,17 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'width': '200px'
     });
 
-    // Map needs a WindshaftMap so we're setting up a fake one
-    var fakeWindshaftMap = jasmine.createSpyObj('windshaftMap', ['createInstance', 'bind']);
+    map = new Map(null);
 
-    map = new Map(null, {
-      windshaftMap: fakeWindshaftMap
-    });
-    map.instantiateMap();
+    this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new Backbone.Collection() });
+    spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
+    spyOn(this.layerGroupModel, 'getTileURLTemplates').and.returnValue([ 'http://documentation.cartodb.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.png' ]);
 
     mapView = new LeafletMapView({
       el: container,
       map: map,
       layerViewFactory: new LeafletLayerViewFactory(),
-      layerGroupModel: new Backbone.Model({ type: 'layergroup' })
+      layerGroupModel: this.layerGroupModel
     });
 
     var layerURL = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png';
@@ -51,6 +50,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:keyboard', spy.keyboardChanged);
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
+
+    this.vis = jasmine.createSpyObj('vis', ['reload']);
   });
 
   it('should change bounds when center is set', function () {
@@ -148,8 +149,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
   });
 
   it('should remove all layers when map view is cleaned', function () {
-    var cartoDBLayer1 = new CartoDBLayer();
-    var cartoDBLayer2 = new CartoDBLayer();
+    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
     var tileLayer = new TileLayer({ urlTemplate: 'test' });
 
     map.addLayer(cartoDBLayer1);
@@ -381,17 +382,17 @@ describe('geo/leaflet/leaflet-map-view', function () {
         map: map,
         map_object: leafletMap,
         layerViewFactory: new LeafletLayerViewFactory(),
-        layerGroupModel: new Backbone.Model({ type: 'layergroup' })
+        layerGroupModel: this.layerGroupModel
       });
 
       // Add a CartoDB layer with some custom attribution
       layer = new CartoDBLayer({
         attribution: 'custom attribution'
-      });
+      }, { vis: this.vis });
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();
-      expect(attributions).toEqual('Leaflet | Stamen, CARTO attribution, custom attribution');
+      expect(attributions).toEqual('Leaflet | Stamen, © CARTO, custom attribution');
     });
 
     it('should not render attributions when the Leaflet map has attributionControl disabled', function () {
@@ -411,13 +412,13 @@ describe('geo/leaflet/leaflet-map-view', function () {
         map: map,
         map_object: leafletMap,
         layerViewFactory: new LeafletLayerViewFactory(),
-        layerGroupModel: new Backbone.Model({ type: 'layergroup' })
+        layerGroupModel: this.layerGroupModel
       });
 
       // Add a CartoDB layer with some custom attribution
       layer = new CartoDBLayer({
         attribution: 'custom attribution'
-      });
+      }, { vis: this.vis });
       map.addLayer(layer);
 
       var attributions = mapView.$el.find('.leaflet-control-attribution').text();

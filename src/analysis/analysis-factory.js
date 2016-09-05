@@ -7,15 +7,15 @@ var AnalysisFactory = function (opts) {
   if (!opts.analysisCollection) {
     throw new Error('analysisCollection option is required');
   }
-  if (!opts.map) {
-    throw new Error('map option is required');
+  if (!opts.vis) {
+    throw new Error('vis option is required');
   }
 
   this._camshaftReference = opts.camshaftReference || camshaftReference;
   this._analysisCollection = opts.analysisCollection;
   this._apiKey = opts.apiKey;
   this._authToken = opts.authToken;
-  this._map = opts.map;
+  this._vis = opts.vis;
 };
 
 /**
@@ -26,7 +26,7 @@ var AnalysisFactory = function (opts) {
  */
 AnalysisFactory.prototype.analyse = function (analysisDefinition) {
   analysisDefinition = _.clone(analysisDefinition);
-  var analysis = this._getAnalysisFromIndex(analysisDefinition.id);
+  var analysis = this._analysisCollection.get(analysisDefinition.id);
   var analysisAttrs = this._getAnalysisAttributesFromAnalysisDefinition(analysisDefinition);
 
   if (analysis) {
@@ -40,7 +40,7 @@ AnalysisFactory.prototype.analyse = function (analysisDefinition) {
     }
     analysis = new Analysis(analysisAttrs, {
       camshaftReference: this._camshaftReference,
-      map: this._map
+      vis: this._vis
     });
     this._addAnalysisToCollection(analysis);
     analysis.bind('destroy', this._onAnalysisRemoved, this);
@@ -64,12 +64,8 @@ AnalysisFactory.prototype._onAnalysisRemoved = function (analysis) {
   analysis.unbind('destroy', this._onAnalysisRemoved);
 };
 
-AnalysisFactory.prototype.findNodeById = function (analysisId) {
-  return this._getAnalysisFromIndex(analysisId);
-};
-
-AnalysisFactory.prototype._getAnalysisFromIndex = function (analysisId) {
-  return this._analysisCollection.findWhere({ id: analysisId });
+AnalysisFactory.prototype.findNodeById = function (id) {
+  return this._analysisCollection.get(id);
 };
 
 AnalysisFactory.prototype._addAnalysisToCollection = function (analysis) {

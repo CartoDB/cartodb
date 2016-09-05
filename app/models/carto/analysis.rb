@@ -91,17 +91,18 @@ class Carto::Analysis < ActiveRecord::Base
   RENAMABLE_ATTRIBUTES = ['query', 'table_name'].freeze
 
   def rename_table_in_definition(definition, target, substitution)
-    if definition.is_a?(Hash)
-      definition.each do |key, value|
-        if value.is_a?(String) && RENAMABLE_ATTRIBUTES.include?(key.to_s)
-          value.gsub!(/\b#{target}\b/, substitution)
-        else
-          rename_table_in_definition(value, target, substitution)
-        end
-      end
-    elsif definition.is_a?(Array)
-      definition.each do |value|
+    return unless definition.is_a?(Hash)
+
+    definition.each do |key, value|
+      case value
+      when String
+        value.gsub!(/\b#{target}\b/, substitution) if RENAMABLE_ATTRIBUTES.include?(key.to_s)
+      when Hash
         rename_table_in_definition(value, target, substitution)
+      when Array
+        value.each do |element|
+          rename_table_in_definition({ "#{key}": element }, target, substitution)
+        end
       end
     end
   end

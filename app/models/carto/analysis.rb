@@ -101,6 +101,8 @@ class Carto::Analysis < ActiveRecord::Base
         rename_table_in_definition(value, target, substitution)
       when Array
         value.each do |element|
+          # Split up the problem, always deal with Hashes.
+          # See https://github.com/CartoDB/cartodb/pull/9651/files
           rename_table_in_definition({ "#{key}": element }, target, substitution)
         end
       end

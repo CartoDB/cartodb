@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var CategoryLegendView = require('./category-legend-view');
 var BubbleLegendView = require('./bubble-legend-view');
 
 var LegendsView = Backbone.View.extend({
@@ -24,6 +25,9 @@ var LegendsView = Backbone.View.extend({
     // TODO: Factory?
     if (legendModel.get('type') === 'bubble') {
       return new BubbleLegendView({ model: legendModel });
+    }
+    if (legendModel.get('type') === 'category') {
+      return new CategoryLegendView({ model: legendModel });
     }
 
     alert('legend type "' + legendModel.get('type') + '" is not supported yet');

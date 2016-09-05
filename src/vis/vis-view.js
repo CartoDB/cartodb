@@ -88,9 +88,13 @@ var Vis = View.extend({
     // Get legends from all CartoDBLayer
     // TODO: Move this
     // TODO: What about torque layers?
+    // TODO: Legends must be grouped by layer
     var legends = _.chain(this.model.map.layers.getCartoDBLayers())
       .map(function (layerModel) {
-        return [layerModel.legends.bubble];
+        return [
+          layerModel.legends.category,
+          layerModel.legends.bubble
+        ];
       })
       .flatten()
       .value();

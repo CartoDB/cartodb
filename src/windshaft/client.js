@@ -47,10 +47,9 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
-
         // FAKE METADATA FOR LEGENDS
         data.metadata.legends = [
-          // Legends for the first layer
+          // Available legends for the first layer
           [
             {
               type: 'bubble',
@@ -60,6 +59,14 @@ WindshaftClient.prototype.instantiateMap = function (options) {
                 50
               ],
               avg: 20
+            },
+            {
+              type: 'category',
+              categories: [
+                { name: 'Category1', color: '#FFFFAA' },
+                { name: 'Category2', color: '#FABADA' },
+                { name: 'Category3', color: '#CACACA' }
+              ]
             }
           ]
         ];

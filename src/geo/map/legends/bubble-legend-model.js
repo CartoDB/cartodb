@@ -1,21 +1,9 @@
-var Backbone = require('backbone');
+var LegendModelBase = require('./legend-model-base');
 
-var BubbleLegendModel = Backbone.Model.extend({
+var BubbleLegendModel = LegendModelBase.extend({
   defaults: {
     visible: false,
     type: 'bubble'
-  },
-
-  show: function () {
-    this.set('visible', true);
-  },
-
-  hide: function () {
-    this.set('visible', false);
-  },
-
-  isVisible: function () {
-    return this.get('visible');
   }
 });
 

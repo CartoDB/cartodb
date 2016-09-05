@@ -127,7 +127,18 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
           });
         }
 
-        // TODO: Other types of layers
+        // CATEGORY LEGEND
+
+        var categoryLegendMetadata = _.find(legendsMetadata, function (legendMetadata) {
+          return legendMetadata.type === 'category';
+        });
+        if (categoryLegendMetadata) {
+          layerModel.legends.category.set({
+            categories: categoryLegendMetadata.categories
+          });
+        }
+
+        // TODO: Other types of legends
       }
     }
 

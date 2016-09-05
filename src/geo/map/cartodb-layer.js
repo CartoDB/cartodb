@@ -3,7 +3,9 @@ var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
+var CategoryLegendModel = require('./legends/category-legend-model');
 var BubbleLegendModel = require('./legends/bubble-legend-model');
+
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
     type: 'CartoDB',
@@ -31,8 +33,11 @@ var CartoDBLayer = LayerModelBase.extend({
 
     this.bind('change', this._onAttributeChanged, this);
 
+    // This is part of the public API. eg: layer.legends.category.show()
+    // TODO: This needs to be initialized using the data from the viz.json
     this.legends = {
-      bubble: new BubbleLegendModel({ title: 'My Legend' })
+      category: new CategoryLegendModel({ title: 'Categories (title)', visible: true }),
+      bubble: new BubbleLegendModel({ title: 'Bubbles (title)', visible: true })
     };
 
     LayerModelBase.prototype.initialize.apply(this, arguments);

@@ -1,5 +1,3 @@
-var _ = require('underscore');
-
 function CartoDBLayerGroupViewBase (layerGroupModel) {
   this.visible = true;
   this.interactionEnabled = [];

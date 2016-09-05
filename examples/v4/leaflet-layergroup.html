@@ -13,6 +13,13 @@
         margin: 0;
       }
 
+      /* Layer selector */
+      input[type="checkbox"] {
+        -moz-appearance: checkbox;
+        -webkit-appearance: checkbox;
+        appearance: checkbox;
+      }
+
       .CDB-Legends {
         position: absolute;
         bottom: 20px;
@@ -22,10 +29,17 @@
         z-index: 1000;
       }
 
-      .CDB-Legend {  }
+      .CDB-Legend {
+        width: 100%;
+      }
 
       .CDB-Legend-Title {
         font-weight: bold;
+      }
+
+      .CDB-LayerLegends-Title {
+        font-weight: bold;
+        font-size: 1.2em;
       }
 
     </style>

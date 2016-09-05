@@ -28,11 +28,9 @@
           <li class="Modal-listFormItem
             <% if (isGeoreferenced === false && format.geomRequired === true) { %>
               is-disabled
-            <% } else { %>
-              js-option
             <% } %>"
           >
-            <input  class="CDB-Radio" type="radio" name="format" value="<%- format.label || format.format %>"
+            <input  class="CDB-Radio js-option" type="radio" name="format" data-format="<%- format.format %>"
               <% if (isGeoreferenced === false && format.geomRequired === true) { %>
                 disabled
               <% } %>

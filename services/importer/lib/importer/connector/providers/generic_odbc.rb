@@ -13,10 +13,6 @@ module CartoDB
       #
       class GenericOdbcProvider < OdbcProvider
 
-        def required_parameters
-          %w(connection).freeze + super
-        end
-
         def initialize(params)
           super
           @connection = Support.fetch_ignoring_case(@params, 'connection')
@@ -26,8 +22,10 @@ module CartoDB
           end
         end
 
-        def errors
-          errors = super
+        private
+
+        def connection_errors
+          errors = []
           if @connection.blank?
             errors << "Missing 'connection' parameters"
           else
@@ -35,8 +33,6 @@ module CartoDB
           end
           errors
         end
-
-        private
 
         def connection_attributes
           Support.fetch_ignoring_case @params, 'connection'

@@ -41,7 +41,7 @@ module CartoDB
         end
 
         def non_connection_parameters
-          super.reverse_merge('schema' => Support.fetch_ignoring_case(@params, 'database'))
+          super.reverse_merge('schema' => Support.fetch_ignoring_case(@connection, 'database'))
         end
 
       end

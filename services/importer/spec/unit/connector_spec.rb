@@ -71,10 +71,12 @@ describe CartoDB::Importer2::Connector do
     it 'Executes expected odbc_fdw SQL commands' do
       parameters = {
         provider: 'mysql',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json
@@ -178,10 +180,12 @@ describe CartoDB::Importer2::Connector do
     it 'Fails when parameters are not valid' do
       parameters = {
         provider: 'mysql',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding',
         invalid_parameter: 'xyz'
@@ -199,10 +203,12 @@ describe CartoDB::Importer2::Connector do
     it 'Fails gracefully when copy errs' do
       parameters = {
         provider: 'mysql',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json
@@ -299,10 +305,12 @@ describe CartoDB::Importer2::Connector do
     it 'Executes expected odbc_fdw SQL commands' do
       parameters = {
         provider: 'postgres',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json
@@ -407,10 +415,12 @@ describe CartoDB::Importer2::Connector do
     it 'Executes expected odbc_fdw SQL commands' do
       parameters = {
         provider: 'sqlserver',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json
@@ -513,9 +523,11 @@ describe CartoDB::Importer2::Connector do
     it 'Executes expected odbc_fdw SQL commands' do
       parameters = {
         provider: 'hive',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json
@@ -619,10 +631,12 @@ describe CartoDB::Importer2::Connector do
     it 'Fails' do
       parameters = {
         provider: 'not_a_provider',
-        server:   'theserver',
-        username: 'theuser',
-        password: 'thepassword',
-        database: 'thedatabase',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
         table:    'thetable',
         encoding: 'theencoding'
       }.to_json

@@ -31,17 +31,22 @@ module CartoDB
           super
           @columns = Support.fetch_ignoring_case(@params, 'columns')
           @columns = @columns.split(',').map(&:strip) if @columns
+          @connection = Support.fetch_ignoring_case(@params, 'connection') || {}
         end
 
-        REQUIRED_OPTIONS = %w(table).freeze
+        def errors
+          super + connection_errors
+        end
+
+        REQUIRED_OPTIONS = %w(table connection).freeze
         OPTIONAL_OPTIONS = %w(schema sql_query sql_count encoding columns).freeze
 
         def optional_parameters
-          optional_connection_attributes.keys.map(&:to_s) + OPTIONAL_OPTIONS
+          OPTIONAL_OPTIONS
         end
 
         def required_parameters
-          required_connection_attributes.keys.map(&:to_s) + REQUIRED_OPTIONS
+          REQUIRED_OPTIONS
         end
 
         # Required connection attributes: { name: :internal_name }
@@ -99,16 +104,34 @@ module CartoDB
 
         private
 
+        def connection_errors
+          errors = []
+          optional_attributes = optional_connection_attributes.keys.map(&:to_s)
+          required_attributes = required_connection_attributes.keys.map(&:to_s)
+          accepted_attributes = optional_attributes + required_attributes
+          if @connection.blank? && required_attributes.present?
+            errors << "Missing 'connection' parameters"
+          else
+            invalid_params = @connection.keys - accepted_attributes
+            missing_parameters = required_attributes - @connection.keys
+            if missing_parameters.present?
+              errors << "Missing required connection parameters #{missing_parameters * ','}"
+            end
+            errors << "Invalid connectin parameters: #{invalid_params * ', '}" if invalid_params.present?
+          end
+          errors
+        end
+
         def attribute_name_map
           optionals = Hash[optional_connection_attributes.map { |k, v| [k.to_s, v.keys.first.to_s] }]
-          stringified_required_attrs = Hash[required_connection_attributes.map { |k,v| [k.to_s, v.to_s] }]
+          stringified_required_attrs = Hash[required_connection_attributes.map { |k, v| [k.to_s, v.to_s] }]
           stringified_required_attrs.merge optionals
         end
 
         def connection_attributes
           # Extract the connection attributes from the @params
           attribute_names = required_connection_attributes.keys + optional_connection_attributes.keys
-          attributes = @params.select(&case_insensitive_in(attribute_names.map(&:to_s)))
+          attributes = @connection.select(&case_insensitive_in(attribute_names.map(&:to_s)))
 
           # Apply non-nil default values
           non_nil_defaults = optional_connection_attributes.reject { |_k, v| v.values.first.nil? }
@@ -124,7 +147,7 @@ module CartoDB
         end
 
         def non_connection_parameters
-          @params.select(&case_insensitive_in(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - ['columns']))
+          @params.select(&case_insensitive_in(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - ['columns', 'connection']))
         end
 
         SERVER_OPTIONS = %w(dsn driver host server address port database).freeze

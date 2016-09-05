@@ -420,6 +420,10 @@ class Carto::Visualization < ActiveRecord::Base
     mapcapped? ? latest_mapcap.regenerate_visualization : self
   end
 
+  def non_mapcapped
+    mapcapped? ? latest_mapcap.visualization : self
+  end
+
   def state
     super ? super : build_state
   end

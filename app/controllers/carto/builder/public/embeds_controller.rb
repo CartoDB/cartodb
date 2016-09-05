@@ -34,6 +34,8 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
           render_404 unless @visualization
+
+          @visualization_for_presentation = @visualization.for_presentation
         end
 
         def load_auth_tokens
@@ -45,11 +47,11 @@ module Carto
         end
 
         def load_vizjson
-          @vizjson = generate_named_map_vizjson3(@visualization.for_presentation, params)
+          @vizjson = generate_named_map_vizjson3(@visualization_for_presentation, params)
         end
 
         def load_state
-          @state = @visualization.for_presentation.state.json
+          @state = @visualization_for_presentation.state.json
         end
 
         def ensure_viewable

@@ -40,9 +40,9 @@ end
 def expect_executed_command(cmd, expected = {})
   if expected
     mode, sql, user = cmd
-    mode.should eq expected[:mode] if expected.has_key?(:mode)
-    user.should eq expected[:user] if expected.has_key?(:user)
-    expect_sql sql, expected[:sql] if expected.has_key?(:sql)
+    mode.should eq expected[:mode] if expected.key?(:mode)
+    user.should eq expected[:user] if expected.key?(:user)
+    expect_sql sql, expected[:sql] if expected.key?(:sql)
   end
 end
 
@@ -203,8 +203,6 @@ describe CartoDB::Importer2::Connector do
 
       connector.executed_commands.size.should eq 6
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
-      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
-      user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(

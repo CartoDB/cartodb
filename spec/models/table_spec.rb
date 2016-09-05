@@ -145,6 +145,27 @@ describe Table do
       table.table_visualization.name  .should == table.name
     end
 
+    it 'propagates name changes to analyses' do
+      table = create_table(name: 'bogus_name', user_id: @user.id)
+      carto_layer = Carto::Layer.find(table.layers.first.id)
+
+      analysis = Carto::Analysis.source_analysis_for_layer(carto_layer, 0)
+      analysis.save
+
+      table.name.should eq 'bogus_name'
+
+      table.name = 'new_name'
+      table.save
+
+      analysis.reload
+
+      analysis.analysis_definition[:options][:table_name].should eq 'new_name'
+      analysis.analysis_definition[:params][:query].should include('new_name')
+
+      analysis.destroy
+      table.destroy
+    end
+
     it 'receives a name change if table visualization name changed' do
       Table.any_instance.stubs(:update_cdb_tablemetadata)
 

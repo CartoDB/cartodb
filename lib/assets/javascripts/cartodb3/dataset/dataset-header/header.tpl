@@ -7,7 +7,7 @@
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
     <% if (isCustomQueryApplied) { %>
-      <span class="CDB-Tag CDB-Tag--opaque CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
+      <span class="Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
     <% } %>
     <button class="CDB-Shape u-lSpace js-options">
       <div class="CDB-Shape-threePoints is-blue is-small">

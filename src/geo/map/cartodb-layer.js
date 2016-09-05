@@ -31,16 +31,47 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
+    this.legends = {
+      category: new CategoryLegendModel(),
+      bubble: new BubbleLegendModel()
+    };
+    this._initLegends(attrs.legends);
+    this.unset('legends');
+
     this.bind('change', this._onAttributeChanged, this);
 
-    // This is part of the public API. eg: layer.legends.category.show()
-    // TODO: This needs to be initialized using the data from the viz.json
-    this.legends = {
-      category: new CategoryLegendModel({ title: 'Categories (title)', visible: true }),
-      bubble: new BubbleLegendModel({ title: 'Bubbles (title)', visible: true })
-    };
-
     LayerModelBase.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * [_initLegends description]
+   * @param  {array} legendsData eg:
+   *   [
+   *     { type: 'bubble', title: 'Barrios Legend' },
+   *     { type: 'category', title: 'Categories Legend' }
+   *   ]
+   * @return {[type]}             [description]
+   */
+  _initLegends: function (legendsData) {
+    legendsData = legendsData || {};
+
+    // category legend
+    var categoryLegend = _.find(legendsData, { type: 'category' });
+    if (categoryLegend) {
+      this.legends.category.set({
+        title: categoryLegend.title,
+        visible: true
+      });
+    }
+
+    // bubble legend
+    var bubbleLegend = _.find(legendsData, { type: 'bubble' });
+    if (bubbleLegend) {
+      this.legends.bubble.set({
+        title: bubbleLegend.title,
+        visible: true
+      });
+    }
   },
 
   getLegends: function () {

@@ -38,10 +38,12 @@ class FailingTestConnector < TestConnector
 end
 
 def expect_executed_command(cmd, expected = {})
-  mode, sql, user = cmd
-  mode.should eq expected[:mode] if expected.has_key?(:mode)
-  user.should eq expected[:user] if expected.has_key?(:user)
-  expect_sql sql, expected[:sql] if expected.has_key?(:sql)
+  if expected
+    mode, sql, user = cmd
+    mode.should eq expected[:mode] if expected.has_key?(:mode)
+    user.should eq expected[:user] if expected.has_key?(:user)
+    expect_sql sql, expected[:sql] if expected.has_key?(:sql)
+  end
 end
 
 def expect_executed_commands(executed_commands, *expected_commands)

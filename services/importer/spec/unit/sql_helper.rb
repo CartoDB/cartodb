@@ -3,9 +3,9 @@ def match_sql_command(sql)
     (?:\s+OPTIONS\s*\((?<options>
       (?:
         \s*
-        (?:\"(?<quoted_name>[^\"]+)\"|(?<name>[^\s]+))
+        (?:\"(?:[^\"]+)\"|(?:[^\s]+))
         \s+
-        (?:\'(?<quoted_value>[^\']*)\'|(?<value>[^\'].+))
+        (?:\'(?:[^\']*)\'|(?:[^\'].+))
       )*
       \s*
     )\))?
@@ -94,12 +94,12 @@ def match_sql_command(sql)
       break
     end
   end
+
   result
 end
 
 def match_sql(sql)
-  # assume no quoted semicolons....
-  sql.split(';').map { |command| match_sql_command(command) }.compact
+  sql.scan(/(?:'[^']*'|[^;])+/).map { |command| match_sql_command(command) }.compact
 end
 
 def expect_sql(sql, expectactions = [])

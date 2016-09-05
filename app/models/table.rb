@@ -468,7 +468,7 @@ class Table
   def optimize
     owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_direct_conn|
       user_direct_conn.run(%Q{
-        VACUUM FULL #{qualified_table_name}
+        VACUUM ANALYZE #{qualified_table_name}
         })
     end
   rescue => e

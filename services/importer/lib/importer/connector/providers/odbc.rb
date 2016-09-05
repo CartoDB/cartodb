@@ -155,7 +155,17 @@ module CartoDB
 
         def connection_options(options)
           # Prefix option names with "odbc_"
-          Hash[options.map { |option_name, option_value| ["odbc_#{option_name}", option_value] }]
+          # Quote values that contain semicolons (the ODBC connection string pair separator)
+          Hash[options.map { |option_name, option_value| ["odbc_#{option_name}", quoted_value(option_value)] }]
+        end
+
+        def quoted_value(value)
+          value = value.to_s
+          if value.to_s.include?(';') && !value.to_s.include?('}')
+            "{#{value}}"
+          else
+            value
+          end
         end
 
         def case_insensitive_in(options)

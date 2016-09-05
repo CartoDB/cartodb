@@ -1240,7 +1240,7 @@
       "delete": {
         "confirm": "Ok, delete it",
         "cancel": "Cancel",
-        "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerMap}</span> will be affected, are you sure you want to delete it?",
+        "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerVisName}</span> will be affected, are you sure you want to delete it?",
         "title": "You are about to delete layer %{layerName}",
         "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
         "loading": "Removing layer…",

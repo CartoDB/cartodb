@@ -7,7 +7,7 @@
     </div>
     <div>
       <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m u-alertTextColor"><%- _t('editor.layers.delete.title', { layerName: layerName }) %></h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('editor.layers.delete.desc', { layerMap: layerMap }) %></p>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('editor.layers.delete.desc', { layerVisName: layerVisName }) %></p>
       <ul class="Modal-listText">
         <% if (dependentNodes.length > 0) { %>
           <li class="Modal-listTextItem">
@@ -24,7 +24,7 @@
           </li>
         <% } %>
         <li class="Modal-listTextItem">
-          <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#" data-event="exportLayerAction">export as .CARTO file</a></p>
+          <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#" data-event="exportMapAction">export as .CARTO file</a></p>
         </li>
       </ul>
       <ul class="Modal-listActions u-flex u-alignCenter">

@@ -68,7 +68,6 @@ var Vis = View.extend({
     // }
 
     this._renderLegends();
-    // TODO: New layers -> new legends
 
     this._resetOverlays({});
 
@@ -85,20 +84,9 @@ var Vis = View.extend({
   },
 
   _renderLegends: function () {
-    // Get legends from all CartoDBLayer
-    // TODO: Move this
-    // TODO: What about torque layers?
-    // TODO: Legends must be grouped by layer
-    var legends = _.chain(this.model.map.layers.getCartoDBLayers())
-      .map(function (layerModel) {
-        return [
-          layerModel.legends.category,
-          layerModel.legends.bubble
-        ];
-      })
-      .flatten()
-      .value();
-    var legendsView = new LegendsView(legends);
+    var legendsView = new LegendsView({
+      layerModels: this.model.map.layers.getCartoDBLayers()
+    });
     this.$el.append(legendsView.render().$el);
   },
 

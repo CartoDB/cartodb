@@ -43,6 +43,14 @@ var CartoDBLayer = LayerModelBase.extend({
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
+  getLegends: function () {
+    // TODO: Add missing legends: custom, ramp
+    return [
+      this.legends.category,
+      this.legends.bubble
+    ];
+  },
+
   _onAttributeChanged: function () {
     var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {

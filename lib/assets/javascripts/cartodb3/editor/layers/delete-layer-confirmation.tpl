@@ -9,14 +9,14 @@
       <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m u-alertTextColor"><%- _t('editor.layers.delete.title', { layerName: layerName }) %></h2>
       <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('editor.layers.delete.desc', { layerVisName: layerVisName }) %></p>
       <ul class="Modal-listText">
-        <% if (dependentNodes.length > 0) { %>
+        <% if (affectedItemsMessages.length > 0) { %>
           <li class="Modal-listTextItem">
             <p class="CDB-Text CDB-Size-medium">Deleting this layer will affect to
-              <% for (var i = 0; i < dependentNodes.length; i++) { %>
-                  <span class="CDB-Text is-semibold"><%- dependentNodes[i] %></span>
-                  <% if (i < (dependentNodes.length - 2)) { %>
+              <% for (var i = 0; i < affectedItemsMessages.length; i++) { %>
+                  <span class="CDB-Text is-semibold"><%- affectedItemsMessages[i] %></span>
+                  <% if (i < (affectedItemsMessages.length - 2)) { %>
                     ,
-                  <% } else if (i == (dependentNodes.length - 2)) { %>
+                  <% } else if (i == (affectedItemsMessages.length - 2)) { %>
                     and
                   <% } %>
               <% } %>

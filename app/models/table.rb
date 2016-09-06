@@ -300,7 +300,6 @@ class Table
   # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
   # Consider deletion.
   def import_cleanup
-
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -317,11 +316,11 @@ class Table
       end
 
       # Remove primary key
-      owner.in_database(:as => :superuser) do |user_database|
+      owner.in_database(as: :superuser) do |user_database|
         existing_pk = user_database[%Q{
           SELECT c.conname AS pk_name
           FROM pg_class r, pg_constraint c, pg_namespace n
-          WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
+          WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{name}'
           AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
         }].first
       end
@@ -355,13 +354,19 @@ class Table
         end
         unless already_had_cartodb_id
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-            cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
+            user_database.run(%Q{
+              UPDATE #{qualified_table_name}
+              SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)
+            })
+
+            cartodb_id_sequence_name = user_database[%Q{
+              SELECT pg_get_serial_sequence('#{owner.database_schema}.#{name}', 'cartodb_id')
+            }].first[:pg_get_serial_sequence]
             max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
             # only reset the sequence on real imports.
 
             if max_cartodb_id
-              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id + 1}")
             end
           end
         end

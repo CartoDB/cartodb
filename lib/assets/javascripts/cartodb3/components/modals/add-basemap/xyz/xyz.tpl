@@ -1,10 +1,10 @@
 <div class="ImportPanel">
   <div class="ImportPanel-header">
-    <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">Insert your XYZ URL</h3>
+    <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m"><%- _t('components.modals.add-basemap.xyz.insert') %></h3>
   </div>
   <div class="Form-row CDB-Text CDB-Size-medium">
     <div class="Form-rowLabel">
-      <label class="Form-label">Enter a URL</label>
+      <label class="Form-label"><%- _t('components.modals.add-basemap.xyz.enter') %></label>
     </div>
     <div class="Form-rowData Form-rowData--longer">
       <input type="text" class="Form-input Form-input--longerMorePadding has-icon XYZPanel-input js-url" value="" placeholder="E.g. https://{s}.carto.com/foobar/{z}/{x}/{y}.png">

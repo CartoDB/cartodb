@@ -446,8 +446,15 @@
         "saving": "Saving layer…",
         "fetching": "Fetching layers…",
         "get-layers": "Get layers",
-        "xyz":{
+        "xyz": {
+          "insert": "Insert your XYZ URL",
+          "enter": "Enter a URL",
           "not-valid": "It does not look like a valid XYZ URL"
+        },
+        "mapbox": {
+          "insert": "Insert your Mapbox URL",
+          "enter": "Enter your map ID/URL",
+          "enter-token": "Enter your access token"
         }
       },
       "export-data": {

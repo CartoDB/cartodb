@@ -107,6 +107,33 @@ module CartoDB
           cmds.join "\n"
         end
 
+        def features_information
+          {
+            "list_tables": true,
+            "list_databases": false,
+            "sql_queries": true
+          }
+        end
+
+        def parameters_information
+          info = super
+          required_connection_attributes.keys.each do |name|
+            # TODO: description = load template for parameter name of @provider.name
+            info[name.to_s] = {
+              required: true,
+              connection: true
+            }
+          end
+          optional_connection_attributes.keys.each do |name|
+            # TODO: description = load template for parameter name of @provider.name
+            info[name.to_s] = {
+              required: false,
+              connection: true
+            }
+          end
+          info
+        end
+
         private
 
         def attribute_name_map

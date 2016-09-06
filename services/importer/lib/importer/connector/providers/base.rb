@@ -69,6 +69,41 @@ module CartoDB
           required_parameters + optional_parameters
         end
 
+        def self.information
+          # For convenience we'll use instance methods to provide the information
+          # en each class. Otherwise all the information needed by such methods
+          # would have to be defined in class methods too.
+          test_provider = new({})
+          {
+            features: test_provider.features_information,
+            parameters: test_provider.parameters_information
+          }
+        end
+
+        def features_information
+          must_be_defined_in_derived_class
+        end
+
+        def parameters_information
+          # TODO: add templates with parameter descriptions
+          info = {}
+          required_parameters.each do |name|
+            # TODO: description = load template for parameter name of @provider.name
+            info[name.to_s] = {
+              required: true,
+              connection: false
+            }
+          end
+          optional_parameters.each do |name|
+            # TODO: description = load template for parameter name of @provider.name
+            info[name.to_s] = {
+              required: false,
+              connection: false
+            }
+          end
+          info
+        end
+
         private
 
         include FdwSupport

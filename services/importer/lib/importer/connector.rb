@@ -118,6 +118,13 @@ module CartoDB
         # but we have no meaningful data to return here.
       end
 
+      # Information about this connector features and parameters
+      def self.information(provider_name)
+        provider = PROVIDERS[provider_name]
+        raise InvalidParametersError.new("Invalid provider: #{provider_name}") if provider.blank?
+        provider.information
+      end
+
       private
 
       MAX_PG_IDENTIFIER_LEN = 60

@@ -80,6 +80,14 @@ module CartoDB
           cmds.join "\n"
         end
 
+        def features_information
+          {
+            "list_tables": true,
+            "list_databases": false,
+            "sql_queries": false
+          }
+        end
+
         private
 
         ATTRIBUTE_NAMES = {

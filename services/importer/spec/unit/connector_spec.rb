@@ -361,6 +361,30 @@ describe CartoDB::Importer2::Connector do
         }
       )
     end
+
+    it 'Should provide connector metadata' do
+      CartoDB::Importer2::Connector.information('mysql').should eq(
+        features: {
+          'list_tables': true,
+          'list_databases': false,
+          'sql_queries': true
+        },
+        parameters: {
+          'table'      => { required: true,  connection: false },
+          'connection' => { required: true,  connection: false },
+          'schema'     => { required: false, connection: false },
+          'sql_query'  => { required: false, connection: false },
+          'sql_count'  => { required: false, connection: false },
+          'encoding'   => { required: false, connection: false },
+          'columns'    => { required: false, connection: false },
+          'username'   => { required: true,  connection: true },
+          'password'   => { required: true,  connection: true },
+          'server'     => { required: true,  connection: true },
+          'port'       => { required: false, connection: true },
+          'database'   => { required: false, connection: true }
+        }
+      )
+    end
   end
 
   describe 'postgresql' do
@@ -468,6 +492,30 @@ describe CartoDB::Importer2::Connector do
             server_name: server_name,
             cascade: /CASCADE/i
           }]
+        }
+      )
+    end
+
+    it 'Should provide connector metadata' do
+      CartoDB::Importer2::Connector.information('postgres').should eq(
+        features: {
+          'list_tables': true,
+          'list_databases': false,
+          'sql_queries': true
+        },
+        parameters: {
+          'table'      => { required: true,  connection: false },
+          'connection' => { required: true,  connection: false },
+          'schema'     => { required: false, connection: false },
+          'sql_query'  => { required: false, connection: false },
+          'sql_count'  => { required: false, connection: false },
+          'encoding'   => { required: false, connection: false },
+          'columns'    => { required: false, connection: false },
+          'server'     => { required: true,  connection: true },
+          'port'       => { required: false, connection: true },
+          'database'   => { required: true, connection: true },
+          'username'   => { required: true,  connection: true },
+          'password'   => { required: false,  connection: true }
         }
       )
     end
@@ -579,6 +627,30 @@ describe CartoDB::Importer2::Connector do
         }
       )
     end
+
+    it 'Should provide connector metadata' do
+      CartoDB::Importer2::Connector.information('sqlserver').should eq(
+        features: {
+          'list_tables': true,
+          'list_databases': false,
+          'sql_queries': true
+        },
+        parameters: {
+          'table'      => { required: true,  connection: false },
+          'connection' => { required: true,  connection: false },
+          'schema'     => { required: false, connection: false },
+          'sql_query'  => { required: false, connection: false },
+          'sql_count'  => { required: false, connection: false },
+          'encoding'   => { required: false, connection: false },
+          'columns'    => { required: false, connection: false },
+          'username'   => { required: true,  connection: true },
+          'password'   => { required: true,  connection: true },
+          'server'     => { required: true,  connection: true },
+          'port'       => { required: false, connection: true },
+          'database'   => { required: true, connection: true }
+        }
+      )
+    end
   end
 
   describe 'hive' do
@@ -687,6 +759,30 @@ describe CartoDB::Importer2::Connector do
         }
       )
     end
+
+    it 'Should provide connector metadata' do
+      CartoDB::Importer2::Connector.information('hive').should eq(
+        features: {
+          'list_tables': true,
+          'list_databases': false,
+          'sql_queries': true
+        },
+        parameters: {
+          'table'      => { required: true,  connection: false },
+          'connection' => { required: true,  connection: false },
+          'schema'     => { required: false, connection: false },
+          'sql_query'  => { required: false, connection: false },
+          'sql_count'  => { required: false, connection: false },
+          'encoding'   => { required: false, connection: false },
+          'columns'    => { required: false, connection: false },
+          'username'   => { required: false, connection: true },
+          'password'   => { required: false, connection: true },
+          'server'     => { required: true,  connection: true },
+          'port'       => { required: false, connection: true },
+          'authmech'   => { required: false, connection: true}
+        }
+      )
+    end
   end
 
   describe 'invalid_provider' do
@@ -709,6 +805,12 @@ describe CartoDB::Importer2::Connector do
       }
       expect {
         TestConnector.new(parameters, options)
+      }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
+    end
+
+    it 'Should not provide metadata' do
+      expect {
+        CartoDB::Importer2::Connector.information('not_a_provider')
       }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
     end
   end
@@ -1155,6 +1257,25 @@ describe CartoDB::Importer2::Connector do
             server_name: server_name,
             cascade: /CASCADE/i
           }]
+        }
+      )
+    end
+
+    it 'Should provide connector metadata' do
+      CartoDB::Importer2::Connector.information('pg').should eq(
+        features: {
+          'list_tables': true,
+          'list_databases': false,
+          'sql_queries': false
+        },
+        parameters: {
+          'table'      => { required: true,  connection: false },
+          'schema'     => { required: false, connection: false },
+          'username'   => { required: true,  connection: false },
+          'password'   => { required: false, connection: false },
+          'server'     => { required: true,  connection: false },
+          'port'       => { required: false, connection: false },
+          'database'   => { required: true,  connection: false }
         }
       )
     end

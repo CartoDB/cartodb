@@ -22,6 +22,7 @@ module CartoDB
         # If required or optional arrays of parameter names are passed,
         # then #errors, #valid? use them to check valid parameters
         def initialize(params, required: [], optional: [])
+          params ||= {}
           if params.respond_to?(:parameters)
             params = params.parameters
           else

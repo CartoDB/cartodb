@@ -34,11 +34,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          if @visualization
-            @visualization_for_presentation = @visualization.for_presentation
-          else
-            render_404
-          end
+          render_404 unless @visualization
         end
 
         def load_auth_tokens
@@ -50,11 +46,11 @@ module Carto
         end
 
         def load_vizjson
-          @vizjson = generate_named_map_vizjson3(@visualization_for_presentation, params)
+          @vizjson = generate_named_map_vizjson3(visualization_for_presentation, params)
         end
 
         def load_state
-          @state = @visualization_for_presentation.state.json
+          @state = visualization_for_presentation.state.json
         end
 
         def ensure_viewable
@@ -63,6 +59,10 @@ module Carto
           elsif !@visualization.is_viewable_by_user?(current_viewer)
             return(render 'admin/visualizations/embed_map_error', status: 403)
           end
+        end
+
+        def visualization_for_presentation
+          @visualization_for_presentation ||= @visualization.for_presentation
         end
       end
     end

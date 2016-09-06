@@ -316,18 +316,16 @@ class Table
       end
 
       # Remove primary key
-      owner.in_database(as: :superuser) do |user_database|
+      owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
         existing_pk = user_database[%Q{
           SELECT c.conname AS pk_name
           FROM pg_class r, pg_constraint c, pg_namespace n
           WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{name}'
           AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
         }].first
-      end
 
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
 
-      owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
         user_database.run(%Q{
           ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
         }) unless existing_pk.nil?

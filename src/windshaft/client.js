@@ -12,6 +12,9 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
   }
 };
 
+var MAX_URL_LENGTH = 2033;
+var COMPRESSION_LEVEL = 3;
+
 /**
  * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
@@ -26,9 +29,6 @@ var WindshaftClient = function (options) {
 
   this.url = this.urlTemplate.replace('{user}', this.userName);
 };
-
-WindshaftClient.prototype.MAX_URL_LENGTH = 2033;
-WindshaftClient.prototype.COMPRESSION_LEVEL = 3;
 
 WindshaftClient.prototype.instantiateMap = function (options) {
   if (!options.mapDefinition) {
@@ -61,11 +61,11 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   };
 
   var encodedURL = this._generateEncodedURL(mapDefinition, params);
-  if (!this._isURLTooLong(encodedURL)) {
+  if (this._isURLValid(encodedURL)) {
     this._get(encodedURL, ajaxOptions);
   } else {
     this._generateCompressedURL(mapDefinition, params, function (compressedURL) {
-      if (!this._isURLTooLong(compressedURL)) {
+      if (this._isURLValid(compressedURL)) {
         this._get(compressedURL, ajaxOptions);
       } else {
         var url = this._getURL(params);
@@ -88,7 +88,7 @@ WindshaftClient.prototype._generateCompressedURL = function (payload, params, ca
     config: JSON.stringify(payload)
   });
 
-  LZMA.compress(data, this.COMPRESSION_LEVEL, function (compressedPayload) {
+  LZMA.compress(data, COMPRESSION_LEVEL, function (compressedPayload) {
     params = _.extend({
       lzma: util.array2hex(compressedPayload)
     }, params);
@@ -97,8 +97,8 @@ WindshaftClient.prototype._generateCompressedURL = function (payload, params, ca
   }.bind(this));
 };
 
-WindshaftClient.prototype._isURLTooLong = function (url) {
-  return url.length >= this.MAX_URL_LENGTH;
+WindshaftClient.prototype._isURLValid = function (url) {
+  return url.length < MAX_URL_LENGTH;
 };
 
 WindshaftClient.prototype._post = function (url, payload, options) {

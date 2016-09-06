@@ -173,6 +173,33 @@ module Carto
       class CreatedAnalysis < AnalysisEvent; end
       class ModifiedAnalysis < AnalysisEvent; end
       class DeletedAnalysis < AnalysisEvent; end
+
+      class ApliedSQL < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class ApliedCartoCSS < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
+
+      class ModifiedStyleForm < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id
+      end
     end
   end
 end

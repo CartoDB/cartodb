@@ -105,3 +105,23 @@
   margin-right: 0;
   border-radius: 3px $baseSize - 2 $baseSize - 2 3px;
 }
+
+.ColorBarWrapper--withInvertLink {
+  @include flex(1);
+}
+.ColorBar-invertLink {
+  @include flex(0 0 27px);
+  display: none;
+  position: relative;
+  top: 12px;
+  height: 13px;
+  background-image: image-url('layout/colorpicker/invert.png');
+  background-repeat: no-repeat;
+}
+.is-inverted .ColorBar-invertLink {
+  background-image: image-url('layout/colorpicker/invert_inverted.png');
+}
+.is-selected .ColorBar-invertLink {
+  display: block;
+}
+

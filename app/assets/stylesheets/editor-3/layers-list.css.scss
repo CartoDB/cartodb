@@ -225,7 +225,7 @@
 }
 
 .Editor-ListAnalysis-layer {
-  padding-right: 12px;
+  padding-right: $baseSize;
   border: 1px solid $cSecondaryLine;
   border-radius: $halfBaseSize;
   &:hover {

@@ -1623,11 +1623,11 @@
       },
       "legend-form": {
         "type": {
-          "title": "Select Style",
-          "dynamic": {
-            "label": "dynamic",
-            "body": "Make your legend show the information you have on the map each time"
-          }
+          "title": "Select Style"
+        },
+        "properties": {
+          "title": "Creating your legend",
+          "subtitle": "Add items"
         }
       }
     },

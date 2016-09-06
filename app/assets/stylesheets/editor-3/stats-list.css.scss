@@ -16,6 +16,9 @@
 .StatsList-arrow {
   @include transform(rotate(90deg));
 }
+.StatsList-tag {
+  margin-top: 1px;
+}
 
 .StatsList-style.is-hidden {
   display: none;

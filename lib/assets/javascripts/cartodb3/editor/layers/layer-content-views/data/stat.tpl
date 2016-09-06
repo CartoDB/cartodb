@@ -15,7 +15,7 @@
     </div>
     <div class="u-flex u-alignCenter u-bSpace">
       <h2 class="js-title u-ellipsis CDB-Text CDB-Size-large u-rSpace--m"><%- column %></h2>
-      <div class="Tag Tag--outline Tag-outline--grey CDB-Text CDB-Size-small u-upperCase"><%- type %></div>
+      <div class="StagList-tag Tag Tag--outline Tag-outline--grey CDB-Text CDB-Size-small u-upperCase"><%- type %></div>
     </div>
     <div class="js-stat"></div>
   </div>

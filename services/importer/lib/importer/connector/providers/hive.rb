@@ -40,7 +40,7 @@ module CartoDB
         end
 
         def non_connection_parameters
-          super.reverse_merge('schema' => '')
+          super.reverse_merge(schema: '')
         end
 
       end

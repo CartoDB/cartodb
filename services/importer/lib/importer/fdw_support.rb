@@ -78,7 +78,8 @@ module CartoDB
     end
 
     def quote_option_name(option)
-      if option && option.downcase != option
+      option = option.to_s
+      if option && option.to_s.downcase != option.to_s
         %{"#{option}"}
       else
         option

@@ -3,8 +3,8 @@
 require_relative './exceptions'
 require_relative './fdw_support'
 require_relative './connector/errors'
-require_relative './connector/support'
 require_relative './connector/providers'
+require_relative './connector/parameters'
 
 module CartoDB
   module Importer2
@@ -125,8 +125,8 @@ module CartoDB
 
       # Parse @json_params and extract @params
       def extract_params
-        @params = JSON.load(@json_params)
-        @provider_name = Support.fetch_ignoring_case(@params, 'provider')
+        @params = Parameters.new(JSON.load(@json_params))
+        @provider_name = @params[:provider]
       end
 
       def connector_name

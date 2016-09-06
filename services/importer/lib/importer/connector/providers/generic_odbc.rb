@@ -15,17 +15,14 @@ module CartoDB
 
         def initialize(params)
           super
-          @connection = Support.fetch_ignoring_case(@params, 'connection')
           if @connection
-            @dsn        = Support.fetch_ignoring_case(@connection, 'dsn')
-            @driver     = Support.fetch_ignoring_case(@connection, 'driver')
+            @dsn        = @connection[:dsn]
+            @driver     = @connection[:driver]
           end
         end
 
-        private
-
-        def connection_errors
-          errors = []
+        def errors
+          errors = super
           if @connection.blank?
             errors << "Missing 'connection' parameters"
           else
@@ -34,10 +31,11 @@ module CartoDB
           errors
         end
 
-        def connection_attributes
-          Support.fetch_ignoring_case @params, 'connection'
-        end
+        private
 
+        def connection_attributes
+          @connection
+        end
       end
 
     end

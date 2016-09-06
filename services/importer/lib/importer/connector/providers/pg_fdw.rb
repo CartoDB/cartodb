@@ -48,29 +48,29 @@ module CartoDB
         end
 
         def table_name
-          Support.fetch_ignoring_case(@params, 'table')
+          @params[:table]
         end
 
         def remote_schema_name
-          schema = Support.fetch_ignoring_case(@params, 'schema')
+          schema = @params[:schema]
           schema = 'public' if schema.blank?
           schema
         end
 
         def create_server_command(server_name)
-          fdw_create_server 'postgres_fdw', server_name, server_params
+          fdw_create_server 'postgres_fdw', server_name, server_options
         end
 
         def create_usermap_command(server_name, username)
-          fdw_create_usermap server_name, username, user_params
+          fdw_create_usermap server_name, username, user_options
         end
 
         def create_foreign_table_command(server_name, schema, foreign_table_name, _foreign_prefix, username)
           # TODO: this show some deficiencies in the design of this internal API:
           # we shouldn't need to resort to @params here.
           # The reason is the original API was oriented to odbc_fdw (which has the prefix options)
-          remote_table = @params['table']
-          options = table_params
+          remote_table = table_name
+          options = table_options
           cmds = []
           cmds << fdw_import_foreign_schema_limited(server_name, remote_schema_name, schema, remote_table, options)
           if remote_table != foreign_table_name
@@ -95,7 +95,7 @@ module CartoDB
         NON_ATTRIBUTES = %w(schema table provider)
 
         def attribute_name(parameter_name, value)
-          attribute_name = ATTRIBUTE_NAMES[parameter_name.downcase] || parameter_name
+          attribute_name = ATTRIBUTE_NAMES[parameter_name.to_s.downcase] || parameter_name.to_s
           if attribute_name == 'host' && IpChecker.is_ip?(value)
             attribute_name = 'hostaddr'
           end
@@ -103,24 +103,22 @@ module CartoDB
         end
 
         def connection_attributes
-          Hash[@params.except(*NON_ATTRIBUTES).map { |k, v| [attribute_name(k, v), v] }]
+          @params.except(*NON_ATTRIBUTES).map { |k, v| [attribute_name(k, v), v] }
         end
-
-        include Connector::Support
 
         SERVER_OPTIONS  = %w(host hostaddr port dbname).freeze
         USERMAP_OPTIONS = %w(user password)
 
-        def server_params
-          connection_attributes.slice(*SERVER_OPTIONS)
+        def server_options
+          connection_attributes.slice(*SERVER_OPTIONS).parameters
         end
 
-        def user_params
-          connection_attributes.slice(*USERMAP_OPTIONS)
+        def user_options
+          connection_attributes.slice(*USERMAP_OPTIONS).parameters
         end
 
-        def table_params
-          connection_attributes.except(*(SERVER_OPTIONS + USERMAP_OPTIONS))
+        def table_options
+          connection_attributes.except(*(SERVER_OPTIONS + USERMAP_OPTIONS)).parameters
         end
 
       end

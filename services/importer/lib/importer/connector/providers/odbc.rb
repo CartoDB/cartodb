@@ -30,17 +30,21 @@ module CartoDB
 
         def initialize(params)
           super
-          @columns = Support.fetch_ignoring_case(@params, 'columns')
+          @columns = @params[:columns]
           @columns = @columns.split(',').map(&:strip) if @columns
-          @connection = Support.fetch_ignoring_case(@params, 'connection') || {}
+          @connection = Parameters.new(
+            @params[:connection],
+            required: required_connection_attributes.keys,
+            optional: optional_connection_attributes.keys
+          )
         end
 
         def errors
-          super + connection_errors
+          super + @connection.errors(parameters_term: 'connection parameters')
         end
 
-        REQUIRED_OPTIONS = %w(table connection).freeze
-        OPTIONAL_OPTIONS = %w(schema sql_query sql_count encoding columns).freeze
+        REQUIRED_OPTIONS = %I(table connection).freeze
+        OPTIONAL_OPTIONS = %I(schema sql_query sql_count encoding columns).freeze
 
         def optional_parameters
           OPTIONAL_OPTIONS
@@ -74,29 +78,29 @@ module CartoDB
         end
 
         def table_name
-          Support.fetch_ignoring_case(@params, 'table')
+          @params[:table]
         end
 
         def remote_schema_name
-          schema = Support.fetch_ignoring_case(@params, 'schema')
+          schema = @params[:schema]
           schema = 'public' if schema.blank?
           schema
         end
 
         def create_server_command(server_name)
-          fdw_create_server 'odbc_fdw', server_name, server_params
+          fdw_create_server 'odbc_fdw', server_name, server_options
         end
 
         def create_usermap_command(server_name, username)
-          fdw_create_usermap server_name, username, user_params
+          fdw_create_usermap server_name, username, user_options
         end
 
         def create_foreign_table_command(server_name, foreign_table_schema, foreign_table_name, foreign_prefix, username)
           cmds = []
           if @columns.present?
-            cmds << fdw_create_foreign_table(server_name, foreign_table_schema, foreign_table_name, @columns, table_params)
+            cmds << fdw_create_foreign_table(server_name, foreign_table_schema, foreign_table_name, @columns, table_options)
           else
-            options = table_params.merge(prefix: foreign_prefix)
+            options = table_options.merge(prefix: foreign_prefix)
             cmds << fdw_import_foreign_schema(server_name, remote_schema_name, foreign_table_schema, options)
           end
           cmds << fdw_grant_select(foreign_table_schema, foreign_table_name, username)
@@ -104,24 +108,6 @@ module CartoDB
         end
 
         private
-
-        def connection_errors
-          errors = []
-          optional_attributes = optional_connection_attributes.keys.map(&:to_s)
-          required_attributes = required_connection_attributes.keys.map(&:to_s)
-          accepted_attributes = optional_attributes + required_attributes
-          if @connection.blank? && required_attributes.present?
-            errors << "Missing 'connection' parameters"
-          else
-            invalid_params = @connection.keys - accepted_attributes
-            missing_parameters = required_attributes - @connection.keys
-            if missing_parameters.present?
-              errors << "Missing required connection parameters #{missing_parameters * ','}"
-            end
-            errors << "Invalid connectin parameters: #{invalid_params * ', '}" if invalid_params.present?
-          end
-          errors
-        end
 
         def attribute_name_map
           optionals = Hash[optional_connection_attributes.map { |k, v| [k.to_s, v.keys.first.to_s] }]
@@ -132,32 +118,32 @@ module CartoDB
         def connection_attributes
           # Extract the connection attributes from the @params
           attribute_names = required_connection_attributes.keys + optional_connection_attributes.keys
-          attributes = @connection.select(&case_insensitive_in(attribute_names.map(&:to_s)))
+          attributes = @connection.slice(*attribute_names)
 
           # Apply non-nil default values
           non_nil_defaults = optional_connection_attributes.reject { |_k, v| v.values.first.nil? }
-          attributes = attributes.reverse_merge Hash[non_nil_defaults.map { |k, v| [k.to_s, v.values.first] }]
+          attributes.reverse_merge! Hash[non_nil_defaults.map { |k, v| [k.to_s, v.values.first] }]
 
           # Map attribute names to internal (driver) attributes
-          attributes = Hash[attributes.map { |k, v| [attribute_name_map[k.downcase] || k, v] }]
+          attributes = attributes.map { |k, v| [attribute_name_map[k.to_s.downcase] || k, v] }
 
           # Set fixed attribute values
-          attributes = attributes.merge(fixed_connection_attributes.stringify_keys)
+          attributes.merge! fixed_connection_attributes
 
           attributes
         end
 
         def non_connection_parameters
-          @params.select(&case_insensitive_in(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - ['columns', 'connection']))
+          @params.slice(*(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - %I(columns connection)))
         end
 
         SERVER_OPTIONS = %w(dsn driver host server address port database).freeze
         USER_OPTIONS   = %w(uid pwd user username password).freeze
 
-        def connection_options(options)
+        def connection_options(parameters)
           # Prefix option names with "odbc_"
           # Quote values that contain semicolons (the ODBC connection string pair separator)
-          Hash[options.map { |option_name, option_value| ["odbc_#{option_name}", quoted_value(option_value)] }]
+          parameters.map { |option_name, option_value| ["odbc_#{option_name}", quoted_value(option_value)] }
         end
 
         def quoted_value(value)
@@ -169,23 +155,17 @@ module CartoDB
           end
         end
 
-        def case_insensitive_in(options)
-          ->(k, _v) { k.downcase.in? options.map(&:downcase) }
+        def server_options
+          connection_options(connection_attributes.slice(*SERVER_OPTIONS)).parameters
         end
 
-        def server_params
-          params = connection_attributes.select(&case_insensitive_in(SERVER_OPTIONS))
-          connection_options params
+        def user_options
+          connection_options(connection_attributes.slice(*USER_OPTIONS)).parameters
         end
 
-        def user_params
-          params = connection_attributes.select(&case_insensitive_in(USER_OPTIONS))
-          connection_options params
-        end
-
-        def table_params
-          params = connection_attributes.reject(&case_insensitive_in(SERVER_OPTIONS + USER_OPTIONS))
-          connection_options(params).merge(non_connection_parameters)
+        def table_options
+          params = connection_options connection_attributes.except(*(SERVER_OPTIONS + USER_OPTIONS))
+          params.merge(non_connection_parameters).parameters
         end
 
       end

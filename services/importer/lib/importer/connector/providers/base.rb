@@ -7,16 +7,12 @@ module CartoDB
   module Importer2
     class Connector
       class Provider
+        def initialize(params = {})
+          @params = Parameters.new(params, required: required_parameters+[:provider], optional: optional_parameters)
+        end
 
         def errors
-          errors = []
-          invalid_params = @params.keys - accepted_parameters - ['provider']
-          missing_parameters = required_parameters - @params.keys
-          if missing_parameters.present?
-            errors << "Missing required parameters #{missing_parameters * ','}"
-          end
-          errors << "Invalid parameters: #{invalid_params * ', '}" if invalid_params.present?
-          errors
+          @params.errors
         end
 
         def valid?
@@ -73,13 +69,8 @@ module CartoDB
           required_parameters + optional_parameters
         end
 
-        def initialize(params = {})
-          @params = params
-        end
-
         private
 
-        include CartoDB::Importer2::Connector::Support
         include FdwSupport
 
         def must_be_defined_in_derived_class

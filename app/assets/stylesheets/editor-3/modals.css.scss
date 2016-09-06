@@ -35,9 +35,6 @@
 .Modal-analysisContainer {
   margin-bottom: 48px;
 }
-.Modal-analysisContainer:last-child {
-  margin-bottom: 120px;
-}
 
 .Modal-actions {
   @include display-flex();
@@ -78,7 +75,6 @@
 .ModalBlockList {
   @include display-flex();
   @include flex-wrap(wrap);
-  padding: 0 4px;
   box-sizing: border-box;
 }
 
@@ -379,6 +375,7 @@
   @include display-flex();
   @include justify-content(center);
   @include flex(1 1 auto);
+  padding: 32px 0;
   overflow: scroll;
 }
 .Modal-inner,

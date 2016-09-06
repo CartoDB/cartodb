@@ -3,7 +3,7 @@
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
-require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 require 'factories/organizations_contexts'
@@ -724,8 +724,8 @@ describe User do
     before do
       delete_user_data @user
       @mock_redis = MockRedis.new
-      @usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
+      @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
       @user.stubs(:last_billing_cycle).returns(Date.today)
       @user.period_end_date = (DateTime.current + 1) << 1
       @user.save.reload
@@ -1141,12 +1141,6 @@ describe User do
 
   it "should not regenerate the api_key after saving" do
     expect { @user.save }.to_not change { @user.api_key }
-  end
-
-  it "should not try to update mobile api_keys if the user has it disabled" do
-    @user.stubs(:mobile_sdk_enabled?).returns(false)
-    @user.stubs(:cartodb_central_client).never
-    @user.regenerate_api_key
   end
 
   it "should remove its metadata from redis after deletion" do

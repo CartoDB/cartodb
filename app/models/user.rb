@@ -453,16 +453,25 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    (self.class.password_digest(old_password, self.salt) == self.crypted_password) || (google_sign_in && last_password_change_date.nil?)
+    (self.class.password_digest(old_password, salt) == crypted_password) ||
+      (oauth_signin? && last_password_change_date.nil?)
   end
 
   def should_display_old_password?
-    self.needs_password_confirmation?
+    needs_password_confirmation?
   end
 
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
+  # Some operations, such as user deletion, won't ask for password confirmation if password is not set
+  # (because of Google/Github sign in, for example)
   def needs_password_confirmation?
-    (google_sign_in.nil? || !google_sign_in || !last_password_change_date.nil?) && Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
+    (
+      (!oauth_signin? || last_password_change_date.present?) &&
+      Carto::UserCreation.http_authentication.find_by_user_id(id).nil?
+    )
+  end
+
+  def oauth_signin?
+    google_sign_in || github_user_id.present?
   end
 
   def password_confirmation
@@ -1542,9 +1551,6 @@ class User < Sequel::Model
   def regenerate_api_key
     invalidate_varnish_cache
     update api_key: ::User.make_token
-    if mobile_sdk_enabled? && sync_data_with_cartodb_central?
-      cartodb_central_client.update_all_mobile_apps_api_key(username, api_key)
-    end
   rescue CartoDB::CentralCommunicationFailure => e
     CartoDB::Logger.error(message: 'Error updating api key for mobile_apps in Central', exception: e, user: self.inspect)
     raise e

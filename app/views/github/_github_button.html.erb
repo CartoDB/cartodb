@@ -1,0 +1,9 @@
+<% if @button_color %>
+  <style type="text/css">
+    .Sessions-githubButton {
+      background-color: <%= @button_color %>;
+    }
+  </style>
+<% end %>
+
+<a class="Sessions-oauthButton Sessions-githubButton" href="<%= @github_config.github_url(self) %>"></a>

@@ -1,7 +1,7 @@
 <div class="Share-permissionInfo">
   <div class="Share-permissionIcon">
     <% if (avatar) { %>
-        <img src="<%- avatar %>" class="UserAvatar-img UserAvatar-img--medium" />
+      <div class="Share-user Share-user--huge" style="background-image: url(<%- avatar %>)"></div>
     <% } else { %>
         <i class="CDB-IconFont CDB-IconFont-people"></i>
     <% } %>

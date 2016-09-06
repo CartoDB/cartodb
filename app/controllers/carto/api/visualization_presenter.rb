@@ -64,7 +64,8 @@ module Carto
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
-          uses_builder_features: @visualization.uses_builder_features?
+          uses_builder_features: @visualization.uses_builder_features?,
+          auth_tokens: auth_tokens
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
         poro
@@ -113,6 +114,16 @@ module Carto
       end
 
       private
+
+      def auth_tokens
+        if @visualization.password_protected? && @visualization.user.id == @current_viewer.id
+          @visualization.get_auth_tokens
+        elsif @visualization.is_privacy_private?
+          @current_viewer.get_auth_tokens
+        else
+          []
+        end
+      end
 
       def related_tables
         related = @visualization.table ?

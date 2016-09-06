@@ -60,25 +60,6 @@ describe Carto::Builder::DatasetsController do
       response.location.should end_with public_table_map_path(id: @other_visualization.id)
     end
 
-    describe 'viewer users' do
-      after(:each) do
-        if @user.viewer
-          @user.viewer = false
-          @user.save
-        end
-      end
-
-      it 'redirected to public view for their datasets at the builder' do
-        @user.viewer = true
-        @user.save
-
-        get builder_dataset_url(id: @visualization.id)
-
-        response.status.should eq 302
-        response.location.should end_with public_table_map_path(id: @visualization.id)
-      end
-    end
-
     it 'returns visualization' do
       get builder_dataset_url(id: @visualization.id)
 

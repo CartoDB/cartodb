@@ -9,7 +9,8 @@ module Carto
         ssl_required :show, :show_protected
 
         before_filter :load_visualization, only: [:show, :show_protected]
-        before_filter :load_vizjson, only: [:show, :show_protected]
+        before_filter :load_vizjson,
+                      :load_state, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
         before_filter :load_auth_tokens, only: [:show, :show_protected]
 
@@ -38,19 +39,17 @@ module Carto
         def load_auth_tokens
           @auth_tokens = if @visualization.password_protected?
                            @visualization.get_auth_tokens
-                         elsif @visualization.organization?
+                         elsif @visualization.is_privacy_private?
                            current_viewer ? current_viewer.get_auth_tokens : []
                          end
         end
 
         def load_vizjson
-          visualization_for_vizjson = if @visualization.mapcapped?
-                                        @visualization.latest_mapcap.regenerate_visualization
-                                      else
-                                        @visualization
-                                      end
+          @vizjson = generate_named_map_vizjson3(@visualization.for_presentation, params)
+        end
 
-          @vizjson = generate_named_map_vizjson3(visualization_for_vizjson, params)
+        def load_state
+          @state = @visualization.for_presentation.state.json
         end
 
         def ensure_viewable

@@ -15,6 +15,10 @@ var LegendModelBase = Backbone.Model.extend({
 
   isVisible: function () {
     return this.get('visible');
+  },
+
+  isAvailable: function () {
+    throw new Error('subclasses of LegendModelBase must implement isAvailable');
   }
 });
 

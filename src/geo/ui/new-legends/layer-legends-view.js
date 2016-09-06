@@ -9,19 +9,21 @@ var LayerLegendsView = Backbone.View.extend({
   className: 'CDB-LayerLegends',
 
   events: {
-    'click .js-toggle-layer': '_toggleLayer'
+    'click .js-toggle-layer': '_onToggleLayerCheckboxClicked'
   },
 
   initialize: function () {
-    // TODO: When the visibility of a layer changes -> update the checkbox
+    this._legendViews = [];
+
+    // TODO: We want to do this binding after view has been rendered
+    this.model.on('change:visible', this._onLayerVisibilityChanged, this);
   },
 
   render: function () {
-    // TODO: If !this.model.isVisible() -> Display layer legends as "disabled"
     this.$el.html(
       template({
         layerName: this.model.getName(),
-        isLayerVisible: this.model.isVisible()
+        isLayerVisible: this._isLayerVisible()
       })
     );
 
@@ -30,7 +32,7 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _renderLegends: function () {
-    _.each(this.model.getLegends(), this._renderLegend, this);
+    _.each(this._getLegendModels(), this._renderLegend, this);
   },
 
   _renderLegend: function (legendModel) {
@@ -39,23 +41,67 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _createLegendView: function (legendModel) {
-    if (legendModel.get('type') === 'bubble') {
-      return new BubbleLegendView({ model: legendModel });
-    }
-    if (legendModel.get('type') === 'category') {
-      return new CategoryLegendView({ model: legendModel });
+    var LegendViewClass = this._getViewConstructorForLegend(legendModel.get('type'));
+    if (LegendViewClass) {
+      var view = new LegendViewClass({
+        model: legendModel
+      });
+      this._legendViews.push(view);
+      return view;
     }
 
     throw new Error("Unsupported legend type: '" + legendModel.get('type') + "'");
   },
 
-  _toggleLayer: function (event) {
+  _getViewConstructorForLegend: function (legendType) {
+    if (legendType === 'bubble') {
+      return BubbleLegendView;
+    }
+    if (legendType === 'category') {
+      return CategoryLegendView;
+    }
+  },
+
+  _onToggleLayerCheckboxClicked: function (event) {
     var isLayerEnabled = event.target.checked;
     if (isLayerEnabled) {
       this.model.show();
     } else {
       this.model.hide();
     }
+  },
+
+  _onLayerVisibilityChanged: function () {
+    var toggleLayerCheckbox = this.$('.js-toggle-layer');
+    if (this._isLayerVisible()) {
+      toggleLayerCheckbox.prop('checked', true);
+      this._enable();
+    } else {
+      toggleLayerCheckbox.prop('checked', false);
+      this._disable();
+    }
+  },
+
+  _enable: function () {
+    this.$el.removeClass('is-disabled');
+    _.invoke(this._getLegendViews(), 'enable');
+  },
+
+  _disable: function () {
+    this.$el.addClass('is-disabled');
+    _.invoke(this._getLegendViews(), 'disable');
+  },
+
+  _getLegendViews: function () {
+    return this._legendViews || [];
+  },
+
+  _getLegendModels: function () {
+    return this.model.getLegends();
+  },
+
+  _isLayerVisible: function () {
+    return this.model.isVisible();
   }
 });
 

@@ -12,6 +12,8 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
   }
 };
 
+var i = 0;
+
 /**
  * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
@@ -47,29 +49,48 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
-        // FAKE METADATA FOR LEGENDS
-        data.metadata.legends = [
-          // Available legends for the first layer
-          [
-            {
-              type: 'bubble',
-              bubbles: [
-                10,
-                30,
-                50
-              ],
-              avg: 20
-            },
-            {
-              type: 'category',
-              categories: [
-                { name: 'Category1', color: '#FFFFAA' },
-                { name: 'Category2', color: '#FABADA' },
-                { name: 'Category3', color: '#CACACA' }
-              ]
-            }
-          ]
-        ];
+        if (i === 0) {
+          // FAKE METADATA FOR LEGENDS
+          data.metadata.legends = [
+            // Available legends for the first layer
+            [
+              {
+                type: 'bubble',
+                bubbles: [
+                  10,
+                  30,
+                  50
+                ],
+                avg: 20
+              },
+              {
+                type: 'category',
+                categories: [
+                  { name: 'Category1', color: '#FFFFAA' },
+                  { name: 'Category2', color: '#FABADA' },
+                  { name: 'Category3', color: '#CACACA' }
+                ]
+              }
+            ]
+          ];
+
+          i += 1;
+        } else {
+
+          // FAKE METADATA FOR LEGENDS
+          data.metadata.legends = [
+            // Available legends for the first layer
+            [
+              {
+                type: 'category',
+                categories: [
+                  { name: 'Category1', color: '#FFFFAA' },
+                  { name: 'Category3', color: '#CACACA' }
+                ]
+              }
+            ]
+          ];
+        }
 
         // append fake legends as if the Maps API were returning this
         successCallback(data);

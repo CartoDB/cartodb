@@ -7,7 +7,7 @@
     <% } %>
   </ul>
 <% } else { %>
-  <p>Loading...</p>
+  <p>No bubbles</p>
 <% }%>
 
 <% if (avg) { %>

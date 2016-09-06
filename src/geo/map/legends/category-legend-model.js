@@ -4,6 +4,10 @@ var CategoryLegendModel = LegendModelBase.extend({
   defaults: {
     visible: false,
     type: 'category'
+  },
+
+  isAvailable: function () {
+    return !!this.get('categories');
   }
 });
 

@@ -4,6 +4,10 @@ var BubbleLegendModel = LegendModelBase.extend({
   defaults: {
     visible: false,
     type: 'bubble'
+  },
+
+  isAvailable: function () {
+    return !!this.get('bubbles');
   }
 });
 

@@ -102,48 +102,56 @@ ModelUpdater.prototype._generateAttributesBaseURL = function (windshaftMap, inde
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
-  var LAYER_TYPES = [ 'CartoDB', 'torque' ];
-  _.each(this._layersCollection.select(function (layerModel) {
-    return LAYER_TYPES.indexOf(layerModel.get('type')) >= 0;
-  }), function (layerModel, layerIndex) {
-    // TODO: Don't use layerIndex here. Instead get indexes of mapnik and torque layers
-    // and match it with 'CartoDB' and 'torque' layer sin this._layersCollection
-    layerModel.set('meta', windshaftMap.getLayerMetadata(layerIndex));
-    if (layerModel.get('type') === 'torque') {
-      layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
-    }
 
-    if (layerModel.get('type') === 'CartoDB') {
-      var legendsMetadata = windshaftMap.get('metadata').legends[layerIndex];
-      if (legendsMetadata) {
-        // BUBBLE LEGEND
-        var bubbleLegendMetadata = _.find(legendsMetadata, function (legendMetadata) {
-          return legendMetadata.type === 'bubble';
-        });
-        if (bubbleLegendMetadata) {
-          layerModel.legends.bubble.set({
-            bubbles: bubbleLegendMetadata.bubbles,
-            avg: bubbleLegendMetadata.avg
-          });
-        }
+  // CartoDB / mapnik layers
+  var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
+  _.each(this._layersCollection.getCartoDBLayers(), function (layerModel, localLayerIndex) {
+    // TODO: Improve this so that we don't need `getLayerIndexesByType`
+    // Give me the metadata of the Nth mapnik layer
+    // Update the layer model
 
-        // CATEGORY LEGEND
+    // Give me the data for legend of the Nth mapnik layer
+    // Update the legend models
 
-        var categoryLegendMetadata = _.find(legendsMetadata, function (legendMetadata) {
-          return legendMetadata.type === 'category';
-        });
-        if (categoryLegendMetadata) {
-          layerModel.legends.category.set({
-            categories: categoryLegendMetadata.categories
-          });
-        }
-
-        // TODO: Other types of legends
-      }
-    }
+    var windshaftMapLayerIndex = indexesOfMapnikLayers[localLayerIndex];
+    layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
+    this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);
 
     layerModel.setOk();
   }, this);
+
+  // Torque / torque layers
+  var indexesOfTorqueLayers = windshaftMap.getLayerIndexesByType('torque');
+  _.each(this._layersCollection.getTorqueLayers(), function (layerModel, localLayerIndex) {
+    var windshaftMapLayerIndex = indexesOfTorqueLayers[localLayerIndex];
+    layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
+    layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
+
+    layerModel.setOk();
+  }, this);
+};
+
+ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
+  var bubbleLegendModel = layerModel.legends.bubble;
+  var bubbleLegendMetadata = windshaftMap.getBubbleLegendMetadata(remoteLayerIndex);
+  if (bubbleLegendMetadata) {
+    bubbleLegendModel.set({
+      bubbles: bubbleLegendMetadata.bubbles,
+      avg: bubbleLegendMetadata.avg
+    });
+  } else {
+    bubbleLegendModel.set({ bubbles: undefined, avg: undefined }, { unset: true });
+  }
+
+  var categoryLegendModel = layerModel.legends.category;
+  var categoryLegendMetadata = windshaftMap.getCategoryLegendMetadata(remoteLayerIndex);
+  if (categoryLegendMetadata) {
+    categoryLegendModel.set({
+      categories: categoryLegendMetadata.categories
+    });
+  } else {
+    categoryLegendModel.set({ categories: undefined }, { unset: true });
+  }
 };
 
 // TODO: Move to windshaftMap?

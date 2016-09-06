@@ -7,5 +7,5 @@
     <% } %>
   </ul>
 <% } else { %>
-  <p>Loading...</p>
+  <p>No categories</p>
 <% }%>

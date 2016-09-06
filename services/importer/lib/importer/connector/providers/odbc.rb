@@ -11,9 +11,10 @@ module CartoDB
       # Requirements:
       #   * odbc_fdw extension must be installed in the user database
       #
-      # Common parameters:
-      # These paramters correspond to options of odbc_fdw which are not connection attributes (odbc_ options);
-      # Each driver will define additional parameters to define the connection attributes.
+      # Parameters: except for connection, these parameters correspond to options of odbc_fdw which are not connection
+      # attributes (odbc_ prefixed options).
+      #   * connection: connection attributes; the content is defined by derived classes and will be used
+      #     to generate the odbc_ options of odbc_fdw.
       #   * schema: schema name of the remote schema
       #   * table: name of the remote table to import (if no sql_query is given)
       #     and/or local name of the imported result table

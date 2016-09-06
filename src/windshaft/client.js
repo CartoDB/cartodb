@@ -20,11 +20,11 @@ var COMPRESSION_LEVEL = 3;
  * @param {object} options Options to set up the client
  */
 var WindshaftClient = function (options) {
-  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint']);
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoints']);
 
   this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
-  this.endpoint = options.endpoint;
+  this.endpoints = options.endpoints;
   this.statTag = options.statTag;
 
   this.url = this.urlTemplate.replace('{user}', this.userName);
@@ -68,7 +68,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (this._isURLValid(compressedURL)) {
         this._get(compressedURL, ajaxOptions);
       } else {
-        var url = this._getURL(params);
+        var url = this._getURL(params, 'post');
         this._post(url, mapDefinition, ajaxOptions);
       }
     }.bind(this));
@@ -134,7 +134,14 @@ WindshaftClient.prototype._abortPreviousRequest = function () {
   }
 };
 
-WindshaftClient.prototype._getURL = function (params) {
+WindshaftClient.prototype._getURL = function (params, method) {
+  method = method || 'get';
+  var queryString = this._convertParamsToQueryString(params);
+  var endpoint = this.endpoints[method];
+  return [this.url, endpoint].join('/') + queryString;
+};
+
+WindshaftClient.prototype._convertParamsToQueryString = function (params) {
   var queryString = [];
   _.each(params, function (value, name) {
     if (value instanceof Array) {
@@ -147,8 +154,7 @@ WindshaftClient.prototype._getURL = function (params) {
       queryString.push(name + '=' + encodeURIComponent(value));
     }
   });
-
-  return [this.url, this.endpoint].join('/') + (queryString ? '?' + queryString.join('&') : '');
+  return queryString.length > 0 ? '?' + queryString.join('&') : '';
 };
 
 WindshaftClient.prototype._jsonpCallbackName = function (payload) {

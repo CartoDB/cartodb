@@ -7,8 +7,8 @@ var LZMA = require('lzma');
 describe('windshaft/client', function () {
   it('should throw an error if required options are not passed to the constructor', function () {
     expect(function () {
-      new WindshaftClient({}, ['urlTemplate', 'userName', 'endpoint']); // eslint-disable-line
-    }).toThrowError('WindshaftClient could not be initialized. The following options are missing: urlTemplate, userName, endpoint');
+      new WindshaftClient({}); // eslint-disable-line
+    }).toThrowError('WindshaftClient could not be initialized. The following options are missing: urlTemplate, userName, endpoints');
   });
 
   describe('#instantiateMap', function () {
@@ -24,7 +24,10 @@ describe('windshaft/client', function () {
       this.client = new WindshaftClient({
         urlTemplate: 'https://{user}.example.com:443',
         userName: 'rambo',
-        endpoint: 'api/v1'
+        endpoints: {
+          get: 'api/v1',
+          post: 'api/v1'
+        }
       });
     });
 
@@ -136,13 +139,16 @@ describe('windshaft/client', function () {
         this.client = new WindshaftClient({
           urlTemplate: 'https://{user}.carto.com:443',
           userName: 'rambo',
-          endpoint: 'api/v1'
+          endpoints: {
+            get: 'api/v1/get-endpoint',
+            post: 'api/v1/post-endpoint'
+          }
         });
       });
 
       it('should use GET to URL with encoded config', function (done) {
         this.client.instantiateMap({
-          mapDefinition: { something: new Array(1946).join('x') },
+          mapDefinition: { something: new Array(1933).join('x') },
           params: {
             a: 'a sentence'
           }
@@ -153,7 +159,7 @@ describe('windshaft/client', function () {
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
           expect(this.ajaxParams.url.length).toBeLessThan(2033);
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1/get-endpoint');
           expect(this.ajaxParams.method).toEqual('GET');
           expect(params[0]).toMatch('^config=');
           expect(params[0]).not.toMatch('^lzma=');
@@ -165,7 +171,7 @@ describe('windshaft/client', function () {
 
       it('should use GET to URL with compressed config', function (done) {
         this.client.instantiateMap({
-          mapDefinition: { something: new Array(1947).join('x') },
+          mapDefinition: { something: new Array(1934).join('x') },
           params: {
             a: 'a sentence'
           }
@@ -176,7 +182,7 @@ describe('windshaft/client', function () {
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
           expect(this.ajaxParams.url.length).toBeLessThan(2033);
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1/get-endpoint');
           expect(this.ajaxParams.method).toEqual('GET');
           expect(params[0]).toMatch('^lzma=');
           expect(params[0]).not.toMatch('^config=');
@@ -203,7 +209,7 @@ describe('windshaft/client', function () {
           var url = this.ajaxParams.url.split('?')[0];
           var params = this.ajaxParams.url.split('?')[1].split('&');
 
-          expect(url).toEqual('https://rambo.carto.com:443/api/v1');
+          expect(url).toEqual('https://rambo.carto.com:443/api/v1/post-endpoint');
           expect(this.ajaxParams.crossOrigin).toEqual(true);
           expect(this.ajaxParams.method).toEqual('POST');
           expect(this.ajaxParams.dataType).toEqual('json');

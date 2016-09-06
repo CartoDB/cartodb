@@ -10,6 +10,9 @@ var LegendsView = Backbone.View.extend({
     if (!deps.layerModels) throw new Error('layerModels is required');
 
     // TODO: When layers are re-ordered -> Re-order legends
+    // TODO: Reverse layers
+    // TODO: What if new layers are added?
+    // TODO: When a layer is removed -> remove it's legends (clean)
     this._layerModels = deps.layerModels;
   },
 

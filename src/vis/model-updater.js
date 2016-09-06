@@ -132,6 +132,8 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
 };
 
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
+  // TODO: Trigger an event for each legend model so that clients know when legend has changed
+  // and so that they can check if the model is available?
   var bubbleLegendModel = layerModel.legends.bubble;
   var bubbleLegendMetadata = windshaftMap.getBubbleLegendMetadata(remoteLayerIndex);
   if (bubbleLegendMetadata) {

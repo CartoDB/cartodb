@@ -454,7 +454,9 @@
         "mapbox": {
           "insert": "Insert your Mapbox URL",
           "enter": "Enter your map ID/URL",
-          "enter-token": "Enter your access token"
+          "enter-token": "Enter your access token",
+          "username": "E.g. username.ab12cd3",
+          "username": "E.g. pk.bfg32ewdsadeyJ1Ijoi…"
         }
       },
       "export-data": {

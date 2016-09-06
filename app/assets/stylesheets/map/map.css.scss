@@ -531,11 +531,13 @@ div.map {
     z-index: 10001;
     background-color: $DarkGrey2;
     border:1px solid Black;
+    cursor: default;
     div.cartodb-legend {
       display:none;
       @include position(false, 0, 0, false);
       position:relative;
       margin: 0;
+      cursor: default;
       ul li {
         color: $Amber1;
       }

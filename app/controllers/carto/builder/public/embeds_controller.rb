@@ -33,9 +33,12 @@ module Carto
 
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
-          render_404 unless @visualization
 
-          @visualization_for_presentation = @visualization.for_presentation
+          if @visualization
+            @visualization_for_presentation = @visualization.for_presentation
+          else
+            render_404
+          end
         end
 
         def load_auth_tokens

@@ -354,8 +354,7 @@ describe('vis/vis', function () {
           datasource: {
             user_name: 'wadus',
             maps_api_template: 'https://{user}.example.com:443',
-            stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-            force_cors: true // This is sometimes set in the editor
+            stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01'
           }
         };
       });
@@ -481,8 +480,7 @@ describe('vis/vis', function () {
         datasource: {
           user_name: 'wadus',
           maps_api_template: 'https://{user}.example.com:443',
-          stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01',
-          force_cors: true // This is sometimes set in the editor
+          stat_tag: 'ece6faac-7271-11e5-a85f-04013fc66a01'
         },
         analyses: [
           {
@@ -920,7 +918,7 @@ describe('vis/vis', function () {
           },
           'last_updated': '1970-01-01T00:00:00.000Z'
         });
-        expect($.ajax.calls.argsFor(0)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+        expect($.ajax.calls.argsFor(0)[0].url).toMatch(/api\/v1\/map\?config/);
         expect($.ajax.calls.argsFor(1)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/e65b1ae05854aea96266808ec0686b91f3ee0a81');
         expect($.ajax.calls.argsFor(2)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map/9d7bf465e45113123bf9949c2a4f0395:0/analysis/node/b75b1ae05854aea96266808ec0686b91f3ee0a81');
 
@@ -937,7 +935,7 @@ describe('vis/vis', function () {
 
         // Map has been reloaded because a2 is the source of a layer
         expect($.ajax.calls.count()).toEqual(4);
-        expect($.ajax.calls.argsFor(3)[0].url).toEqual('http://cdb.localhost.lan:8181/api/v1/map?stat_tag=70af2a72-0709-11e6-a834-080027880ca6');
+        expect($.ajax.calls.argsFor(3)[0].url).toMatch(/api\/v1\/map\?config/);
       });
     });
   });

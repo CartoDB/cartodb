@@ -15,28 +15,15 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
   // to use the former one, so we have to add an alias.
   _on: CartoDBd3Layer.prototype.on,
 
-  initialize: function (layerModel, leafletMap) {
-    LeafletLayerView.call(this, layerModel, this, leafletMap);
+  initialize: function (layerGroupModel, leafletMap) {
+    LeafletLayerView.call(this, layerGroupModel, this, leafletMap);
     CartoDBd3Layer.prototype.initialize.call(this);
 
     // Bind changes to the urls of the model
-    layerModel.bind('change:urls', this._onURLsChanged, this);
+    layerGroupModel.bind('change:urls', this._onURLsChanged, this);
 
-    layerModel.layers.bind('change:cartocss', function (child, style) {
-      var index = child.get('order') - 1;
-      this.setCartoCSS(index, style);
-    }, this);
-
-    layerModel.layers.bind('change:meta', function (child, meta) {
-      var index = layerModel.layers.indexOf(child);
-      this.options.styles[index] = meta.cartocss;
-    }, this);
-
-    layerModel.layers.each(function (layer) {
-      this._onLayerAdded(layer, layerModel.layers);
-    }, this);
-
-    layerModel.layers.bind('add', this._onLayerAdded, this);
+    layerGroupModel.each(this._onLayerAdded, this);
+    layerGroupModel.onLayerAdded(this._onLayerAdded.bind(this));
 
     this._on('featureClick', function (event, latlng, pos, data, layerIndex) {
       this.trigger('featureClick', event, latlng, pos, data, layerIndex);
@@ -55,9 +42,18 @@ var LeafletCartoDBVectorLayerGroupView = CartoDBd3Layer.extend({
     }.bind(this));
   },
 
-  _onLayerAdded: function (layerModel, layersCollection) {
-    var layerIndex = layersCollection.indexOf(layerModel);
+  _onLayerAdded: function (layerModel, layerIndex) {
+    // Set the dataProvider
     layerModel.setDataProvider(new GeoJSONDataProvider(this, layerIndex));
+
+    layerModel.bind('change:cartocss', function (layerModel, style) {
+      var index = layerModel.get('order') - 1;
+      this.setCartoCSS(index, style);
+    }, this);
+
+    layerModel.bind('change:meta', function (layerModel, meta) {
+      this.options.styles[layerIndex] = meta.cartocss;
+    }, this);
   },
 
   _onURLsChanged: function () {

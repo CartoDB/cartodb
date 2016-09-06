@@ -201,7 +201,7 @@ module CartoDB
       rescue => exception
         CartoDB::Logger.error(exception: exception, sync_id: id)
         log.append_and_store exception.message, truncate = false
-        log.append exception.backtrace.join('\n'), truncate = false
+        log.append exception.backtrace.join("\n"), truncate = false
 
         if importer.nil?
           if exception.is_a?(NotFoundDownloadError)

@@ -7,7 +7,7 @@
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
     <% if (isCustomQueryApplied) { %>
-      <span class="CDB-Tag CDB-Tag--opaque CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
+      <span class="Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
     <% } %>
     <button class="CDB-Shape u-lSpace js-options">
       <div class="CDB-Shape-threePoints is-blue is-small">
@@ -20,7 +20,7 @@
   <div class="u-bSpace--xl u-flex u-alignCenter">
     <div class="js-privacyDropdown u-rSpace--m">
       <<%- privacyDOMElement %> class="u-actionTextColor <% if (isOwner) { %>js-privacy<% } %>">
-        <i class="Tag Tag--big Tag--outline <%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
+        <i class="Tag Tag--big Tag-fill Tag-fill--<%- cssClass %> CDB-Text CDB-Size-small u-upperCase"><%- privacy %></i>
       </<%- privacyDOMElement %>>
     </div>
     <% if (isOwner && isInsideOrg) { %>

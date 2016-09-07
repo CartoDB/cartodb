@@ -52,6 +52,7 @@ module CartoDB
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
         qualified_table_name = %{"#{@job.schema}"."#{table_name}"}
+        foreign_table_name = @provider.foreign_table_name(foreign_prefix)
         @job.log "Creating Server"
         execute_as_superuser create_server_command
         @job.log "Creating Usermap"
@@ -59,7 +60,9 @@ module CartoDB
         @job.log "Creating Foreign Table"
         execute_as_superuser create_foreign_table_command
         @job.log "Copying Foreign Table"
-        execute "CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{qualified_foreign_table_name};"
+        execute %{
+          CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{qualified_foreign_table_name(foreign_table_name)};
+        }
       rescue => error
         @job.log "Connector Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
@@ -69,7 +72,7 @@ module CartoDB
         @results.push result_for(@job.schema, table_name)
       ensure
         @log.append_and_store "Connector cleanup"
-        execute_as_superuser drop_foreign_table_command
+        execute_as_superuser drop_foreign_table_command(foreign_table_name) if foreign_table_name
         execute_as_superuser drop_usermap_command
         execute_as_superuser drop_server_command
         @log.append_and_store "Connector cleaned-up"
@@ -149,7 +152,7 @@ module CartoDB
       end
 
       def server_name
-        "connector_#{connector_name.downcase}_#{@unique_suffix}"
+        "#{connector_name.downcase}_#{@unique_suffix}"
       end
 
       def foreign_prefix
@@ -160,11 +163,6 @@ module CartoDB
         Carto::DB::Sanitize.sanitize_identifier @provider.table_name
       end
 
-      def foreign_table_name
-        max_len = MAX_PG_IDENTIFIER_LEN - foreign_prefix.size
-        "#{foreign_prefix}#{result_table_name[0...max_len]}"
-      end
-
       def foreign_table_schema
         # since connectors' foreign table names are unique (because
         # server names are unique and not reused)
@@ -172,7 +170,7 @@ module CartoDB
         CartoDB::Connector::Importer::ORIGIN_SCHEMA
       end
 
-      def qualified_foreign_table_name
+      def qualified_foreign_table_name(foreign_table_name)
         %{"#{foreign_table_schema}"."#{foreign_table_name}"}
       end
 
@@ -188,7 +186,7 @@ module CartoDB
       end
 
       def create_foreign_table_command
-        @provider.create_foreign_table_command server_name, foreign_table_schema, foreign_table_name,
+        @provider.create_foreign_table_command server_name, foreign_table_schema,
                                                foreign_prefix,
                                                @user.database_username
       end
@@ -204,7 +202,7 @@ module CartoDB
         ].join("\n")
       end
 
-      def drop_foreign_table_command
+      def drop_foreign_table_command(foreign_table_name)
         @provider.drop_foreign_table_command foreign_table_schema, foreign_table_name
       end
 

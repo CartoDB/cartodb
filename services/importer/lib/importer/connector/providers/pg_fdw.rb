@@ -51,6 +51,10 @@ module CartoDB
           @params[:table]
         end
 
+        def foreign_table_name(prefix)
+          fdw_adjusted_table_name("#{prefix}#{table_name}")
+        end
+
         def remote_schema_name
           schema = @params[:schema]
           schema = 'public' if schema.blank?
@@ -65,18 +69,16 @@ module CartoDB
           fdw_create_usermap server_name, username, user_options
         end
 
-        def create_foreign_table_command(server_name, schema, foreign_table_name, _foreign_prefix, username)
-          # TODO: this show some deficiencies in the design of this internal API:
-          # we shouldn't need to resort to @params here.
-          # The reason is the original API was oriented to odbc_fdw (which has the prefix options)
+        def create_foreign_table_command(server_name, schema, foreign_prefix, username)
           remote_table = table_name
+          foreign_table = foreign_table_name(foreign_prefix)
           options = table_options
           cmds = []
           cmds << fdw_import_foreign_schema_limited(server_name, remote_schema_name, schema, remote_table, options)
-          if remote_table != foreign_table_name
-            cmds << fdw_rename_foreign_table(schema, remote_table, foreign_table_name)
+          if remote_table != foreign_table
+            cmds << fdw_rename_foreign_table(schema, remote_table, foreign_table)
           end
-          cmds << fdw_grant_select(schema, foreign_table_name, username)
+          cmds << fdw_grant_select(schema, foreign_table_name(foreign_prefix), username)
           cmds.join "\n"
         end
 

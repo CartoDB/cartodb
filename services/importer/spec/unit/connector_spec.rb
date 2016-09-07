@@ -108,7 +108,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -225,7 +225,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -310,7 +310,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -446,7 +446,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Apostgres_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'PostgreSQL Unicode',
@@ -481,6 +481,7 @@ describe CartoDB::Importer2::Connector do
               "odbc_BoolAsChar" => '0',
               "odbc_ByteaAsLongVarBinary" => '1',
               "odbc_MaxVarcharSize" => '256',
+              "schema" => 'public',
               "table" => 'thetable',
               "encoding" => 'theencoding',
               "prefix" => "#{server_name}_"
@@ -577,7 +578,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
-      foreign_table_name = %{"cdb_importer"."#{server_name}_thetabl"}
+      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
@@ -590,11 +591,11 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Asqlserver_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'FreeTDS',
-              'odbc_Address' => 'theserver',
+              'odbc_Server' => 'theserver',
               'odbc_Port' => '1433',
               'odbc_Database' => 'thedatabase'
             }
@@ -623,6 +624,7 @@ describe CartoDB::Importer2::Connector do
             schema_name: 'cdb_importer',
             options: {
               "odbc_AppicationIntent" => 'ReadOnly',
+              "schema" => 'dbo',
               "table" => 'thetable',
               "encoding" => 'theencoding',
               "prefix" => "#{server_name}_"
@@ -731,7 +733,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Ahive_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'Hortonworks Hive ODBC Driver (64-bit)',
@@ -909,7 +911,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Aodbc_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_driver' => 'thedriver',
@@ -1030,7 +1032,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Aodbc_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_driver' => 'thedriver',
@@ -1154,7 +1156,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Apg_/,
             fdw_name: 'postgres_fdw',
             options: {
               'host' => 'theserver',
@@ -1285,7 +1287,7 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aconnector_/,
+            server_name: /\Apg_/,
             fdw_name: 'postgres_fdw',
             options: {
               'host' => 'theserver',

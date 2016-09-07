@@ -81,6 +81,10 @@ module CartoDB
           @params[:table]
         end
 
+        def foreign_table_name(prefix)
+          fdw_adjusted_table_name("#{prefix}#{table_name}")
+        end
+
         def remote_schema_name
           schema = @params[:schema]
           schema = 'public' if schema.blank?
@@ -95,18 +99,17 @@ module CartoDB
           fdw_create_usermap server_name, username, user_options
         end
 
-        def create_foreign_table_command(server_name, foreign_table_schema, foreign_table_name, foreign_prefix,
-                                         username)
+        def create_foreign_table_command(server_name, foreign_table_schema, foreign_prefix, username)
           cmds = []
           if @columns.present?
             cmds << fdw_create_foreign_table(
-              server_name, foreign_table_schema, foreign_table_name, @columns, table_options
+              server_name, foreign_table_schema, foreign_table_name(foreign_prefix), @columns, table_options
             )
           else
             options = table_options.merge(prefix: foreign_prefix)
             cmds << fdw_import_foreign_schema(server_name, remote_schema_name, foreign_table_schema, options)
           end
-          cmds << fdw_grant_select(foreign_table_schema, foreign_table_name, username)
+          cmds << fdw_grant_select(foreign_table_schema, foreign_table_name(foreign_prefix), username)
           cmds.join "\n"
         end
 

@@ -72,8 +72,14 @@ module CartoDB
       }
     end
 
+    # This performs the same truncation PG does on too long table names
+    def fdw_adjusted_table_name(name)
+      name[0...PG_MAX_TABLE_NAME_LENGTH]
+    end
+
     private
 
+    PG_MAX_TABLE_NAME_LENGTH = 63
     def qualified_table_name(schema_name, table_name)
       name = []
       name << %{"#{schema_name}"} if schema_name.present?

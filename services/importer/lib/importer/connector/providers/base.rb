@@ -8,7 +8,7 @@ module CartoDB
     class Connector
       class Provider
         def initialize(params = {})
-          @params = Parameters.new(params, required: required_parameters+[:provider], optional: optional_parameters)
+          @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
         end
 
         def errors

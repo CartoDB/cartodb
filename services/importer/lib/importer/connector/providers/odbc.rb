@@ -95,10 +95,13 @@ module CartoDB
           fdw_create_usermap server_name, username, user_options
         end
 
-        def create_foreign_table_command(server_name, foreign_table_schema, foreign_table_name, foreign_prefix, username)
+        def create_foreign_table_command(server_name, foreign_table_schema, foreign_table_name, foreign_prefix,
+                                         username)
           cmds = []
           if @columns.present?
-            cmds << fdw_create_foreign_table(server_name, foreign_table_schema, foreign_table_name, @columns, table_options)
+            cmds << fdw_create_foreign_table(
+              server_name, foreign_table_schema, foreign_table_name, @columns, table_options
+            )
           else
             options = table_options.merge(prefix: foreign_prefix)
             cmds << fdw_import_foreign_schema(server_name, remote_schema_name, foreign_table_schema, options)

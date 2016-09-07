@@ -23,11 +23,11 @@ module CartoDB
         # then #errors, #valid? use them to check valid parameters
         def initialize(params, required: [], optional: [])
           params ||= {}
-          if params.respond_to?(:parameters)
-            params = params.parameters
-          else
-            params = Hash[params]
-          end
+          params = if params.respond_to?(:parameters)
+                     params.parameters
+                   else
+                     Hash[params]
+                   end
           @params = params.symbolize_keys
           @required_parameters = normalized_array(required || [])
           @optional_parameters = normalized_array(optional || [])
@@ -153,7 +153,7 @@ module CartoDB
 
         # returns [actual_name, value]
         def fetch(name)
-          @params.find { |internal_name, _value| internal_name.to_s.casecmp(name.to_s) == 0 }
+          @params.find { |internal_name, _value| internal_name.to_s.casecmp(name.to_s).zero? }
         end
       end
     end

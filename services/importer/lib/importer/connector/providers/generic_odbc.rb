@@ -25,8 +25,8 @@ module CartoDB
           errors = super
           if @connection.blank?
             errors << "Missing 'connection' parameters"
-          else
-            errors << "Must define either 'dsn' or 'driver' in 'connection'" if @dns.blank? && @driver.blank?
+          elsif @dns.blank? && @driver.blank?
+            errors << "Must define either 'dsn' or 'driver' in 'connection'"
           end
           errors
         end

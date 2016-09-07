@@ -175,8 +175,6 @@ module Carto
       class DeletedAnalysis < AnalysisEvent; end
 
       class AppliedSql < Event
-        include Carto::Tracking::Services::Segment
-
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
@@ -184,8 +182,6 @@ module Carto
       end
 
       class AppliedCartocss < Event
-        include Carto::Tracking::Services::Segment
-
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
@@ -193,8 +189,6 @@ module Carto
       end
 
       class ModifiedStyleForm < Event
-        include Carto::Tracking::Services::Segment
-
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 

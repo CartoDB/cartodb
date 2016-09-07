@@ -20,11 +20,11 @@
                     and
                   <% } %>
               <% } %>
-            </p>
+              .</p>
           </li>
         <% } %>
         <li class="Modal-listTextItem">
-          <p class="CDB-Text CDB-Size-medium">Before deleting your map, you can <a href="#" data-event="exportMapAction">export as .CARTO file</a></p>
+          <p class="CDB-Text CDB-Size-medium"><%= _t('editor.layers.delete.link-to-export') %></p>
         </li>
       </ul>
       <ul class="Modal-listActions u-flex u-alignCenter">

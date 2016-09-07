@@ -3,10 +3,9 @@
 module Carto
   module CartoCSS
     class Default
-      GEOMETRY_TYPE_GEOMETRY = 'geometry'.freeze
-      GEOMETRY_TYPE_MULTIPOLYGON = 'multipolygon'.freeze
       GEOMETRY_TYPE_POINT = 'point'.freeze
-      GEOMETRY_TYPE_MULTILINESTRING = 'multilinestring'.freeze
+      GEOMETRY_TYPE_LINE = 'line'.freeze
+      GEOMETRY_TYPE_POLYGON = 'polygon'.freeze
 
       EMTPY_CARTOCSS = '#empty{}'.freeze
 

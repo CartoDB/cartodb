@@ -36,7 +36,10 @@ describe('windshaft/named-map', function () {
     });
 
     this.client = new WindshaftClient({
-      endpoint: 'v1',
+      endpoints: {
+        get: 'v1',
+        post: 'v1'
+      },
       urlTemplate: 'http://{user}.wadus.com',
       userName: 'rambo'
     });

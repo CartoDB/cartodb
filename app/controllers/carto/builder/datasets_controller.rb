@@ -14,7 +14,8 @@ module Carto
       before_filter :redirect_to_editor_if_forced, only: :show
       before_filter :load_canonical_visualization, only: :show
       before_filter :authorized_only
-      before_filter :load_user_table, only: :show
+      before_filter :load_user_table,
+                    :load_auth_tokens, only: :show
       before_filter :editable_visualizations_only, only: :show
 
       after_filter :update_user_last_activity, only: :show
@@ -50,6 +51,10 @@ module Carto
       def load_user_table
         @user_table = @canonical_visualization.user_table
         render_404 unless @user_table
+      end
+
+      def load_auth_tokens
+        @auth_tokens = current_viewer.get_auth_tokens
       end
 
       def editable_visualizations_only

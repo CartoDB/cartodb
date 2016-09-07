@@ -1,5 +1,3 @@
-var _ = require('underscore');
-
 function CartoDBLayerGroupViewBase (layerGroupModel) {
   this.visible = true;
   this.interactionEnabled = [];
@@ -18,7 +16,7 @@ CartoDBLayerGroupViewBase.prototype = {
 
     // Enable interaction for the layers that have interaction
     // (are visible AND have tooltips OR infowindows)
-    _.each(this.model.getLayers(), function (layer, layerIndex) {
+    this.model.each(function (layer, layerIndex) {
       if (layer.hasInteraction()) {
         this._enableInteraction(layerIndex);
       }

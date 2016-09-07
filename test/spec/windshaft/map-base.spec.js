@@ -49,8 +49,11 @@ describe('windshaft/map-base', function () {
     this.analysisCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
     this.client = new WindshaftClient({
-      endpoint: 'v1',
-      urlTemplate: 'http://{user}.wadus.com',
+      endpoints: {
+        get: 'v1',
+        post: 'v1'
+      },
+      urlTemplate: 'http://{user}.example.com',
       userName: 'rambo'
     });
 
@@ -520,21 +523,16 @@ describe('windshaft/map-base', function () {
 
   describe('#getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
-      var windshaftClient = new WindshaftClient({
-        urlTemplate: 'https://{user}.example.com:443',
-        userName: 'rambo',
-        endpoint: 'v2'
-      });
       var windshaftMap = new WindshaftMap({
         layergroupid: '0123456789'
       }, {
-        client: windshaftClient,
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
         analysisCollection: this.analysisCollection
       });
-      expect(windshaftMap.getBaseURL()).toEqual('https://rambo.example.com:443/api/v1/map/0123456789');
+      expect(windshaftMap.getBaseURL()).toEqual('http://rambo.example.com/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for http when CDN info is present', function () {
@@ -545,11 +543,7 @@ describe('windshaft/map-base', function () {
           https: 'cdn.https.example.com'
         }
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'http://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
@@ -560,6 +554,15 @@ describe('windshaft/map-base', function () {
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
+      this.client = new WindshaftClient({
+        endpoints: {
+          get: 'v1',
+          post: 'v1'
+        },
+        urlTemplate: 'https://{user}.example.com',
+        userName: 'rambo'
+      });
+
       var windshaftMap = new WindshaftMap({
         layergroupid: '0123456789',
         cdn_url: {
@@ -567,11 +570,7 @@ describe('windshaft/map-base', function () {
           https: 'cdn.https.example.com'
         }
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
@@ -599,11 +598,7 @@ describe('windshaft/map-base', function () {
           ]
         }
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'http://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
@@ -636,11 +631,7 @@ describe('windshaft/map-base', function () {
           ]
         }
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
@@ -681,11 +672,7 @@ describe('windshaft/map-base', function () {
           }
         }
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
@@ -773,11 +760,7 @@ describe('windshaft/map-base', function () {
         },
         'last_updated': '2016-04-15T20:14:14.653Z'
       }, {
-        client: new WindshaftClient({
-          urlTemplate: 'https://{user}.example.com:443',
-          userName: 'rambo',
-          endpoint: 'v2'
-        }),
+        client: this.client,
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,

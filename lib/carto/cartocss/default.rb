@@ -1,5 +1,8 @@
 # encoding utf-8
 
+require_dependency 'cartocss/cartography'
+require_dependency 'cartocss/style'
+
 module Carto
   module CartoCSS
     class Default
@@ -7,25 +10,22 @@ module Carto
       GEOMETRY_TYPE_LINE = 'line'.freeze
       GEOMETRY_TYPE_POLYGON = 'polygon'.freeze
 
-      EMTPY_CARTOCSS = '#empty{}'.freeze
-
-      CARTOGRAPHY_FILE_PATH =
-        "#{Rails.root}/lib/assets/javascripts/cartodb3/data/default-cartography.json".freeze
-
       def initialize(geometry_type)
         @geometry_type = geometry_type
       end
 
-      def default_carto_css
-        EMTPY_CARTOCSS
+      def cartocss
+        Carto::CartoCSS:Style.new(definition).to_cartocss
       end
 
       private
 
-      def cartography_json
-        cartography_file = File.read(CARTOGRAPHY_FILE_PATH)
+      def definition
+        @definition ||= cartography[@geometry_type]
+      end
 
-        JSON.parse(cartography_file).with_indifferent_access
+      def cartography
+        @cartography ||= Carto::CartoCSS::Cartography.new
       end
     end
   end

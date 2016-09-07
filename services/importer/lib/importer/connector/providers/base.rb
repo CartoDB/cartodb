@@ -114,7 +114,7 @@ module CartoDB
         include FdwSupport
 
         def must_be_defined_in_derived_class
-          raise "Method #{caller_locations(1, 1)[0].label} must be defined in derived class"
+          raise NotImplementedError, "Method #{caller_locations(1, 1)[0].label} must be defined in derived class"
         end
 
       end

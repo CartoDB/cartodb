@@ -1628,7 +1628,8 @@
         "properties": {
           "title": "Creating your legend",
           "subtitle": "Add items"
-        }
+        },
+        "add": "Add item"
       }
     },
     "style": {

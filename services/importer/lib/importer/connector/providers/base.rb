@@ -29,6 +29,11 @@ module CartoDB
           must_be_defined_in_derived_class
         end
 
+        # Name of the foreign table that create_foreign_table_command creates
+        def foreign_table_name(_foreign_prefix)
+          must_be_defined_in_derived_class
+        end
+
         # SQL code to create the FDW server
         def create_server_command(_server_name)
           must_be_defined_in_derived_class
@@ -40,7 +45,7 @@ module CartoDB
         end
 
         # SQL code to create the foreign table used for importing
-        def create_foreign_table_command(_server_name, _schema_name, _table_name, _foreign_prefix, _username)
+        def create_foreign_table_command(_server_name, _schema_name, _foreign_prefix, _username)
           must_be_defined_in_derived_class
         end
 

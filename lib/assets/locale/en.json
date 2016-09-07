@@ -1102,7 +1102,8 @@
       "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
       "label": "Sync my data",
       "error": "There was an error setting the interval",
-      "confirm": "Save settings"
+      "confirm": "Save",
+      "cancel": "Cancel"
     },
     "unlock": {
       "cancel": "back to dashboard",

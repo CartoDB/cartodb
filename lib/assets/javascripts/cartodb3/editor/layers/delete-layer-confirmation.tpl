@@ -11,7 +11,8 @@
       <ul class="Modal-listText">
         <% if (affectedItemsMessages.length > 0) { %>
           <li class="Modal-listTextItem">
-            <p class="CDB-Text CDB-Size-medium">Deleting this layer will affect to
+            <p class="CDB-Text CDB-Size-medium">
+              <%= _t('editor.layers.delete.affected-items') %>
               <% for (var i = 0; i < affectedItemsMessages.length; i++) { %>
                   <span class="CDB-Text is-semibold"><%- affectedItemsMessages[i] %></span>
                   <% if (i < (affectedItemsMessages.length - 2)) { %>

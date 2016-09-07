@@ -299,7 +299,7 @@ defaults: &defaults
     # google_plus:
       # client_id: ''
       # cookie_policy: 'single_host_origin'
-      #cookie_policy: 'https://cartodb-staging.com'
+      # cookie_policy: 'https://cartodb-staging.com'
     github:
       client_id:            ''
       client_secret:        ''

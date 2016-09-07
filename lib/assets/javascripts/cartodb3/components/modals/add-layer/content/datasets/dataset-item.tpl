@@ -16,7 +16,7 @@
     <h3 class="CDB-Text CDB-Size-large u-bSpace u-ellipsis">
       <%- title %>
       <% if (showPermissionIndicator) { %>
-        <span class="StatsList-tag CDB-Text CDB-Size-small u-upperCase">
+        <span class="Tag Tag--outline Tag-outline--grey CDB-Text CDB-Size-small u-upperCase">
           <%- _t('components.modals.add-layer.datasets.item.read') %>
         </span>
       <% } %>
@@ -59,7 +59,7 @@
       <% if (tagsCount > 0) { %>
         <div class="DefaultTags CDB-Text CDB-Size-small">
           <% for (var i = 0, l = Math.min(maxTagsToShow, tags.length); i < l; ++i) { %>
-            <button class="CDB-Tag CDB-Text CDB-Size-small u-upperCase DefaultTags-item js-tag-link" value="<%- tags[i] %>"><%- tags[i] %></button><% if (i !== (l-1)) { %><% } %>
+            <button class="CDB-Text CDB-Size-small u-upperCase DefaultTags-item js-tag-link u-actionTextColor" value="<%- tags[i] %>"><%- tags[i] %></button><% if (i !== (l-1)) { %><% } %>
           <% } %>
           <% if (tagsCount > maxTagsToShow) { %>
             <%- _t('components.modals.add-layer.datasets.item.tags-more', { tagsCount: tagsCount - maxTagsToShow }) %>

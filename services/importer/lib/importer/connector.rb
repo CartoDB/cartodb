@@ -119,11 +119,16 @@ module CartoDB
         # but we have no meaningful data to return here.
       end
 
-      # Information about this connector features and parameters
+      # Information about a connector features and parameters
       def self.information(provider_name)
         provider = PROVIDERS[provider_name]
         raise InvalidParametersError.new("Invalid provider: #{provider_name}") if provider.blank?
         provider.information
+      end
+
+      # List of available provider names
+      def self.providers
+        PROVIDERS.keys
       end
 
       private

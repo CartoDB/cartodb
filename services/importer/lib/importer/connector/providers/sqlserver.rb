@@ -36,6 +36,10 @@ module CartoDB
           }
         end
 
+        def non_connection_parameters
+          # Default remote schema
+          super.reverse_merge(schema: 'dbo')
+        end
       end
     end
   end

@@ -41,9 +41,9 @@ module CartoDB
         end
 
         def non_connection_parameters
+          # database acts like schema name in MySQL
           super.reverse_merge(schema: @connection[:database])
         end
-
       end
     end
   end

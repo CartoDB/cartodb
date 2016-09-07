@@ -25,7 +25,7 @@ module CartoDB
           {
             username: :UID,
             password: :PWD,
-            server:   :Address,
+            server:   :Server,
             database: :Database
           }
         end

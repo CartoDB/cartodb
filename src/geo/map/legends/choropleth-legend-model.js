@@ -1,16 +1,16 @@
 var LegendModelBase = require('./legend-model-base');
 
-var CategoryLegendModel = LegendModelBase.extend({
+var ChoroplethLegendModel = LegendModelBase.extend({
   defaults: {
     visible: false,
-    type: 'category',
+    type: 'choropleth',
     prefix: '',
     sufix: ''
   },
 
   isAvailable: function () {
-    return !!this.get('categories');
+    return !!this.get('colors');
   }
 });
 
-module.exports = CategoryLegendModel;
+module.exports = ChoroplethLegendModel;

@@ -6,7 +6,8 @@ var BubbleLegendView = LegendViewBase.extend({
     return template({
       title: this.model.get('title'),
       bubbles: this.model.get('bubbles'),
-      avg: this.model.get('avg')
+      avg: this.model.get('avg'),
+      fillColor: this.model.get('fillColor')
     });
   }
 });

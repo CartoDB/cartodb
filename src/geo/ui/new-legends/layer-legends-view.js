@@ -2,6 +2,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var CategoryLegendView = require('./category-legend-view');
 var BubbleLegendView = require('./bubble-legend-view');
+var ChoroplethLegendView = require('./choropleth-legend-view');
+var CustomLegendView = require('./custom-legend-view');
 var template = require('./layer-legends-template.tpl');
 
 var LayerLegendsView = Backbone.View.extend({
@@ -60,6 +62,12 @@ var LayerLegendsView = Backbone.View.extend({
     if (legendType === 'category') {
       return CategoryLegendView;
     }
+    if (legendType === 'choropleth') {
+      return ChoroplethLegendView;
+    }
+    if (legendType === 'custom') {
+      return CustomLegendView;
+    }
   },
 
   _onToggleLayerCheckboxClicked: function (event) {
@@ -97,7 +105,12 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _getLegendModels: function () {
-    return this.model.getLegends();
+    return [
+      this.model.legends.custom,
+      this.model.legends.choropleth,
+      this.model.legends.category,
+      this.model.legends.bubble
+    ];
   },
 
   _isLayerVisible: function () {

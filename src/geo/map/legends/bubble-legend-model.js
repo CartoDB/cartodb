@@ -3,7 +3,8 @@ var LegendModelBase = require('./legend-model-base');
 var BubbleLegendModel = LegendModelBase.extend({
   defaults: {
     visible: false,
-    type: 'bubble'
+    type: 'bubble',
+    fillColor: '#FABADA'
   },
 
   isAvailable: function () {

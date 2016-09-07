@@ -70,6 +70,14 @@ WindshaftClient.prototype.instantiateMap = function (options) {
                   { name: 'Category2', color: '#FABADA' },
                   { name: 'Category3', color: '#CACACA' }
                 ]
+              },
+              {
+                type: 'choropleth',
+                colors: [
+                  '#FABADA',
+                  '#CACACA',
+                  '#CDCDCD'
+                ]
               }
             ]
           ];

@@ -154,6 +154,16 @@ ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIn
   } else {
     categoryLegendModel.set({ categories: undefined }, { unset: true });
   }
+
+  var choroplethLegendModel = layerModel.legends.choropleth;
+  var choroplethLegendMetadata = windshaftMap.getChoroplethLegendMetadata(remoteLayerIndex);
+  if (choroplethLegendMetadata) {
+    choroplethLegendModel.set({
+      colors: choroplethLegendMetadata.colors
+    });
+  } else {
+    choroplethLegendModel.set({ colors: undefined }, { unset: true });
+  }
 };
 
 // TODO: Move to windshaftMap?

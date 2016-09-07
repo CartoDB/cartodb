@@ -5,6 +5,8 @@ var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
 var CategoryLegendModel = require('./legends/category-legend-model');
 var BubbleLegendModel = require('./legends/bubble-legend-model');
+var ChoroplethLegendModel = require('./legends/choropleth-legend-model');
+var CustomLegendModel = require('./legends/custom-legend-model');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -33,7 +35,9 @@ var CartoDBLayer = LayerModelBase.extend({
 
     this.legends = {
       category: new CategoryLegendModel(),
-      bubble: new BubbleLegendModel()
+      bubble: new BubbleLegendModel(),
+      choropleth: new ChoroplethLegendModel(),
+      custom: new CustomLegendModel()
     };
     this._initLegends(attrs.legends);
     this.unset('legends');
@@ -60,6 +64,8 @@ var CartoDBLayer = LayerModelBase.extend({
     if (categoryLegend) {
       this.legends.category.set({
         title: categoryLegend.title,
+        prefix: categoryLegend.prefix,
+        sufix: categoryLegend.sufix,
         visible: true
       });
     }
@@ -69,17 +75,31 @@ var CartoDBLayer = LayerModelBase.extend({
     if (bubbleLegend) {
       this.legends.bubble.set({
         title: bubbleLegend.title,
+        fillColor: bubbleLegend.fill_color,
         visible: true
       });
     }
-  },
 
-  getLegends: function () {
-    // TODO: Add missing legends: custom, ramp
-    return [
-      this.legends.category,
-      this.legends.bubble
-    ];
+    // choropleth legend
+    var choroplethLegend = _.find(legendsData, { type: 'choropleth' });
+    if (choroplethLegend) {
+      this.legends.choropleth.set({
+        title: choroplethLegend.title,
+        prefix: choroplethLegend.prefix,
+        sufix: choroplethLegend.sufix,
+        visible: true
+      });
+    }
+
+    // custom legend
+    var customLegend = _.find(legendsData, { type: 'custom' });
+    if (customLegend) {
+      this.legends.custom.set({
+        title: customLegend.title,
+        items: customLegend.items,
+        visible: true
+      });
+    }
   },
 
   _onAttributeChanged: function () {

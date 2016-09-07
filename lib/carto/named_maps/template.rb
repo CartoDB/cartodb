@@ -224,10 +224,12 @@ module Carto
       end
 
       def auth
-        method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, [@visualization.get_auth_token]]
-                               elsif @visualization.is_privacy_private?
-                                 [AUTH_TYPE_SIGNED, @visualization.allowed_auth_tokens]
+        visualization_for_auth = @visualization.non_mapcapped
+
+        method, valid_tokens = if visualization_for_auth.password_protected?
+                                 [AUTH_TYPE_SIGNED, [visualization_for_auth.get_auth_token]]
+                               elsif visualization_for_auth.is_privacy_private?
+                                 [AUTH_TYPE_SIGNED, visualization_for_auth.allowed_auth_tokens]
                                else
                                  [AUTH_TYPE_OPEN, nil]
                                end

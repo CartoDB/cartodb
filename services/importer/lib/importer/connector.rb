@@ -70,6 +70,7 @@ module CartoDB
       ensure
         @log.append_and_store "Connector cleanup"
         execute_as_superuser drop_foreign_table_command
+        execute_as_superuser drop_usermap_command
         execute_as_superuser drop_server_command
         @log.append_and_store "Connector cleaned-up"
       end
@@ -189,6 +190,13 @@ module CartoDB
 
       def drop_server_command
         @provider.drop_server_command server_name
+      end
+
+      def drop_usermap_command
+        [
+          @provider.drop_usermap_command(server_name, 'postgres'),
+          @provider.drop_usermap_command(server_name, @user.database_username)
+        ].join("\n")
       end
 
       def drop_foreign_table_command

@@ -54,11 +54,15 @@ module CartoDB
     end
 
     def fdw_drop_server(server_name)
-      "DROP SERVER IF EXISTS #{server_name} CASCADE;"
+      "DROP SERVER IF EXISTS #{server_name};"
+    end
+
+    def fdw_drop_usermap(server_name, user_name)
+      %{DROP USER MAPPING IF EXISTS FOR "#{user_name}" SERVER #{server_name};}
     end
 
     def fdw_drop_foreign_table(schema_name, table_name)
-      %{DROP FOREIGN TABLE IF EXISTS #{qualified_table_name(schema_name, table_name)} CASCADE;}
+      %{DROP FOREIGN TABLE IF EXISTS #{qualified_table_name(schema_name, table_name)};}
     end
 
     def fdw_rename_foreign_table(schema, foreign_table_name, new_name)

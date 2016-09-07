@@ -59,6 +59,9 @@ def match_sql_command(sql)
     drop_server_if_exists: %r{
       DROP\s+SERVER\s+IF\s+EXISTS\s+(?<server_name>[^\s]+)(?:\s+(?<cascade>CASCADE))?
     }xi,
+    drop_usermapping_if_exists: %r{
+      DROP\s+USER\s+MAPPING\s+IF\s+EXISTS\s+FOR\s+\"?(?<user_name>[^\s\"]+)\"?\s+SERVER\s+(?<server_name>[^\s]+)
+    }xi,
     rename_foreign_table: %r{
       ALTER\s+FOREIGN\s+TABLE\s+(?<table_name>.+)\s+RENAME\s+TO\s+(?<new_name>.+)
     }xi
@@ -105,10 +108,15 @@ end
 def expect_sql(sql, expectactions = [])
   match_sql(sql).zip(expectactions).each do |parsed_sql, sql_expectactions|
     sql_expectactions.each do |key, expected_value|
-      if expected_value.is_a?(Regexp)
-        parsed_sql[key].should match expected_value
+      if expected_value.nil?
+        parsed_sql[key].should be_nil, "#{key.inspect} wasn't expected in SQL"
       else
-        parsed_sql[key].should eq expected_value
+        parsed_sql[key].should_not be_nil, "#{key.inspect} was expected in SQL"
+        if expected_value.is_a?(Regexp)
+          parsed_sql[key].should match expected_value
+        else
+          parsed_sql[key].should eq expected_value
+        end
       end
     end
   end

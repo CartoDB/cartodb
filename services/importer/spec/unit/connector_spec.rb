@@ -52,6 +52,9 @@ def expect_executed_commands(executed_commands, *expected_commands)
   end
 end
 
+# Multiple hashes are passed to `expect_executed_commands`
+# and omiting the braces of the last one is would be inconvenient, so:
+# rubocop:disable Style/BracesAroundHashParameters
 describe CartoDB::Importer2::Connector do
   before(:all) do
     @user = create_user
@@ -92,7 +95,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -164,16 +167,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -201,7 +214,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       user_role = @user.database_username
 
@@ -285,7 +298,7 @@ describe CartoDB::Importer2::Connector do
       connector.success?.should be false
 
       # CHECK Server, foreign table, etc was cleaned up properly
-      connector.executed_commands.size.should eq 5
+      connector.executed_commands.size.should eq 6
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_role = @user.database_username
@@ -347,16 +360,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -410,7 +433,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -481,16 +504,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -513,9 +546,9 @@ describe CartoDB::Importer2::Connector do
           'columns'    => { required: false, connection: false },
           'server'     => { required: true,  connection: true },
           'port'       => { required: false, connection: true },
-          'database'   => { required: true, connection: true },
+          'database'   => { required: true,  connection: true },
           'username'   => { required: true,  connection: true },
-          'password'   => { required: false,  connection: true }
+          'password'   => { required: false, connection: true }
         }
       )
     end
@@ -542,7 +575,7 @@ describe CartoDB::Importer2::Connector do
       connector = TestConnector.new(parameters, options)
       connector.run
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetabl"}
       user_name = @user.username
@@ -613,16 +646,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -675,7 +718,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -745,16 +788,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -779,7 +832,7 @@ describe CartoDB::Importer2::Connector do
           'password'   => { required: false, connection: true },
           'server'     => { required: true,  connection: true },
           'port'       => { required: false, connection: true },
-          'authmech'   => { required: false, connection: true}
+          'authmech'   => { required: false, connection: true }
         }
       )
     end
@@ -843,7 +896,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -912,16 +965,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -954,7 +1017,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -1023,16 +1086,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -1067,7 +1140,7 @@ describe CartoDB::Importer2::Connector do
 
       connector.success?.should be true
 
-      connector.executed_commands.size.should eq 6
+      connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
@@ -1134,16 +1207,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -1189,7 +1272,7 @@ describe CartoDB::Importer2::Connector do
       connector.success?.should be false
 
       # CHECK Server, foreign table, etc was cleaned up properly
-      connector.executed_commands.size.should eq 5
+      connector.executed_commands.size.should eq 6
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
@@ -1246,16 +1329,26 @@ describe CartoDB::Importer2::Connector do
           mode: :superuser,
           sql: [{
             command: :drop_foreign_table_if_exists,
-            table_name: foreign_table_name,
-            cascade: /CASCADE/i
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
           }]
         }, {
           # DROP SERVER
           mode: :superuser,
           sql: [{
             command: :drop_server_if_exists,
-            server_name: server_name,
-            cascade: /CASCADE/i
+            server_name: server_name
           }]
         }
       )
@@ -1284,3 +1377,5 @@ describe CartoDB::Importer2::Connector do
   # TODO: check Runner compatibility
 
 end
+
+# rubocop:enable Style/BracesAroundHashParameters

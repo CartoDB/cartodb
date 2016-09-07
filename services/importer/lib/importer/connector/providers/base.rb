@@ -44,9 +44,14 @@ module CartoDB
           must_be_defined_in_derived_class
         end
 
-        # SQL code to drop the FDW server (and user mapping)
+        # SQL code to drop the FDW server
         def drop_server_command(server_name)
           fdw_drop_server server_name
+        end
+
+        # SQL code to drop the user mapping
+        def drop_usermap_command(server_name, user)
+          fdw_drop_usermap server_name, user
         end
 
         # SQL code to drop the foreign table

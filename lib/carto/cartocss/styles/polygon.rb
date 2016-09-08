@@ -19,9 +19,9 @@ module Carto::CartoCSS::Styles
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
-      "\tpolygon-fill: #{color};\n"\
-      "\tpolygon-opacity: #{opacity};\n"\
-      "\tpolygon-gamma: 0.5;\n"
+      "  polygon-fill: #{color};\n"\
+      "  polygon-opacity: #{opacity};\n"\
+      "  polygon-gamma: 0.5;\n"
     end
 
     def parse_stroke(stroke)
@@ -29,10 +29,10 @@ module Carto::CartoCSS::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      "\tline-width: #{width};\n"\
-      "\tline-color: #{color};\n"\
-      "\tline-opacity: #{opacity};\n"\
-      "\tline-comp-op: soft-light;\n"
+      "  line-width: #{width};\n"\
+      "  line-color: #{color};\n"\
+      "  line-opacity: #{opacity};\n"\
+      "  line-comp-op: soft-light;\n"
     end
   end
 end

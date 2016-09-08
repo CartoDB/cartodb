@@ -20,9 +20,9 @@ module Carto::CartoCSS::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      "\tline-width: #{width};\n"\
-      "\tline-color: #{color};\n"\
-      "\tline-opacity: #{opacity};\n"
+      "  line-width: #{width};\n"\
+      "  line-color: #{color};\n"\
+      "  line-opacity: #{opacity};\n"
     end
   end
 end

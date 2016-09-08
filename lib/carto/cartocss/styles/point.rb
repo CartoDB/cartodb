@@ -20,9 +20,9 @@ module Carto::CartoCSS::Styles
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
-      "\tmarker-width: #{width};\n"\
-      "\tmarker-fill: #{color};\n"\
-      "\tmarker-fill-opacity: #{opacity};\n"
+      "  marker-width: #{width};\n"\
+      "  marker-fill: #{color};\n"\
+      "  marker-fill-opacity: #{opacity};\n"
     end
 
     def parse_stroke(stroke)
@@ -30,12 +30,12 @@ module Carto::CartoCSS::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      "\tmarker-line-width: #{width};\n"\
-      "\tmarker-line-color: #{color};\n"\
-      "\tmarker-line-opacity: #{opacity};\n"\
-      "\tmarker-placement: point;\n"\
-      "\tmarker-type: ellipse;\n"\
-      "\tmarker-allow-overlap: true;\n"
+      "  marker-line-width: #{width};\n"\
+      "  marker-line-color: #{color};\n"\
+      "  marker-line-opacity: #{opacity};\n"\
+      "  marker-placement: point;\n"\
+      "  marker-type: ellipse;\n"\
+      "  marker-allow-overlap: true;\n"
     end
   end
 end

@@ -27,7 +27,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
 
   def create
     @stats_aggregator.timing('visualizations.create') do
-
+      byebug
       begin
         vis_data = payload
 

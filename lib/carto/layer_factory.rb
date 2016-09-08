@@ -1,8 +1,11 @@
 # encoding: utf-8
 
-module ModelFactories
-  class LayerFactory
+require_dependency 'carto/cartocss/styles/point'
+require_dependency 'carto/cartocss/styles/line'
+require_dependency 'carto/cartocss/styles/polygon'
 
+module Carto
+  class LayerFactory
     def self.get_new(options)
       ::Layer.new(options)
     end
@@ -22,8 +25,14 @@ module ModelFactories
       data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
-      data_layer.options['tile_style'] =
-        "##{table_name} #{Cartodb.config[:layer_opts]['default_tile_styles'][the_geom_column_type]}"
+      data_layer.options['tile_style'] = case the_geom_column_type.to_s
+                                         when 'point'
+                                           Carto::CartoCSS::Styles::Point.new.to_cartocss
+                                         when 'line'
+                                           Carto::CartoCSS::Styles::Line.new.to_cartocss
+                                         when 'polygon'
+                                           Carto::CartoCSS::Styles::Polygon.new.to_cartocss
+                                         end
       data_layer.infowindow ||= {}
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}

@@ -1,4 +1,6 @@
-<p class="CDB-Legend-Title"><%= title %></p>
+<% if (title) { %>
+  <p class="CDB-Legend-Title"><%= title %></p>
+<% } %>
 
 <% if (items && items.length > 0) { %>
   <ul>

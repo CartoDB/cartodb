@@ -1,4 +1,7 @@
-<p class="CDB-Legend-Title"><%= title %></p>
+<% if (title) { %>
+  <p class="CDB-Legend-Title"><%= title %></p>
+<% } %>
+
 <p>PREFIX: <%= prefix %></p>
 <p>SUFIX: <%= sufix %></p>
 <% if (categories && categories.length > 0) { %>

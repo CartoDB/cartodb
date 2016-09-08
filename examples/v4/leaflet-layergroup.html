@@ -277,7 +277,7 @@
                 "table_name":"\"\"."
               },
               "legends": [
-                { type: 'bubble', title: 'Barrios Legend', fill_color: '#FABADA' },
+                { type: 'bubble', title: 'Bubble Legend', fill_color: '#FABADA' },
                 { type: 'category', title: 'Categories Legend', prefix: 'prefix', sufix: 'sufix' },
                 { type: 'choropleth', title: 'Choropleth Legend', prefix: 'prefix', sufix: 'sufix' },
                 {
@@ -285,6 +285,11 @@
                     { type: 'color', name: 'Item 1', color: '#CACACA;'},
                     { type: 'color', name: 'Item 2', color: '#FABADA;'}
                   ]
+                },
+                {
+                  type: 'html',
+                  title: 'HTML Legend',
+                  html: '<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>'
                 }
               ]
 

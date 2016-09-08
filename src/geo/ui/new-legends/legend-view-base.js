@@ -20,6 +20,7 @@ var LegendViewBase = Backbone.View.extend({
     return this;
   },
 
+  // TODO: Rename to getHTML
   _getCompiledTemplate: function () {
     throw new Error('Subclasses of LegendViewBase must implement _getCompiledTemplate');
   },

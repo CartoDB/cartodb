@@ -7,6 +7,7 @@ var CategoryLegendModel = require('./legends/category-legend-model');
 var BubbleLegendModel = require('./legends/bubble-legend-model');
 var ChoroplethLegendModel = require('./legends/choropleth-legend-model');
 var CustomLegendModel = require('./legends/custom-legend-model');
+var HTMLLegendModel = require('./legends/html-legend-model');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -33,11 +34,13 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
+    // TODO: Initialise and inject this?
     this.legends = {
       category: new CategoryLegendModel(),
       bubble: new BubbleLegendModel(),
       choropleth: new ChoroplethLegendModel(),
-      custom: new CustomLegendModel()
+      custom: new CustomLegendModel(),
+      html: new HTMLLegendModel()
     };
     this._initLegends(attrs.legends);
     this.unset('legends');
@@ -97,6 +100,16 @@ var CartoDBLayer = LayerModelBase.extend({
       this.legends.custom.set({
         title: customLegend.title,
         items: customLegend.items,
+        visible: true
+      });
+    }
+
+    // html legend
+    var htmlLegend = _.find(legendsData, { type: 'html' });
+    if (htmlLegend) {
+      this.legends.html.set({
+        title: htmlLegend.title,
+        html: htmlLegend.html,
         visible: true
       });
     }

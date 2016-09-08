@@ -1,4 +1,7 @@
-<p class="CDB-Legend-Title"><%= title %></p>
+<% if (title) { %>
+  <p class="CDB-Legend-Title"><%= title %></p>
+<% } %>
+
 <p>FILL COLOR: <%= fillColor %></p>
 <% if (bubbles && bubbles.length > 0) { %>
   <ul>

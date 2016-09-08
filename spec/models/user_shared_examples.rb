@@ -191,17 +191,17 @@ shared_examples_for "user models" do
     end
 
     it 'calculates the remaining quota for a non-org user correctly' do
-      usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, DateTime.current)
 
       @user1.remaining_here_isolines_quota.should == 400
     end
 
     it 'takes into account here isoline requests performed by the org users' do
-      usage_metrics_1 = CartoDB::HereIsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
-      usage_metrics_2 = CartoDB::HereIsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).
+      usage_metrics_1 = CartoDB::IsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
+      usage_metrics_2 = CartoDB::IsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).
         with(@organization.owner.username, @organization.name).
         returns(usage_metrics_1)
       usage_metrics_1.incr(:here_isolines, :isolines_generated, 100, DateTime.current)
@@ -231,8 +231,8 @@ shared_examples_for "user models" do
     end
 
     it 'calculates the used here isolines quota in the current billing cycle' do
-      usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 10, DateTime.current)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, (DateTime.current - 2))
 
@@ -240,9 +240,9 @@ shared_examples_for "user models" do
     end
 
     it 'calculates the used here isolines quota for an organization' do
-      usage_metrics_1 = CartoDB::HereIsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
-      usage_metrics_2 = CartoDB::HereIsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).
+      usage_metrics_1 = CartoDB::IsolinesUsageMetrics.new(@org_user_1.username, @organization.name, @mock_redis)
+      usage_metrics_2 = CartoDB::IsolinesUsageMetrics.new(@org_user_2.username, @organization.name, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).
         with(@organization.owner.username, @organization.name).
         returns(usage_metrics_1)
       usage_metrics_1.incr(:here_isolines, :isolines_generated, 100, DateTime.current)
@@ -252,8 +252,8 @@ shared_examples_for "user models" do
     end
 
     it 'calculates the used here isolines quota in the current billing cycle including empty requests' do
-      usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
+      usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user1.username, nil, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(usage_metrics)
       usage_metrics.incr(:here_isolines, :isolines_generated, 10, DateTime.current)
       usage_metrics.incr(:here_isolines, :isolines_generated, 100, (DateTime.current - 2))
       usage_metrics.incr(:here_isolines, :empty_responses, 10, (DateTime.current - 2))

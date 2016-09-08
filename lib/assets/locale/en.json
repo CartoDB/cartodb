@@ -447,8 +447,20 @@
         "saving": "Saving layer…",
         "fetching": "Fetching layers…",
         "get-layers": "Get layers",
-        "xyz":{
-          "not-valid": "It does not look like a valid XYZ URL"
+        "xyz": {
+          "insert": "Insert your XYZ URL",
+          "enter": "Enter a URL",
+          "not-valid": "It does not look like a valid XYZ URL",
+          "eg": "E.g."
+        },
+        "mapbox": {
+          "insert": "Insert your Mapbox URL",
+          "enter": "Enter your map ID/URL",
+          "enter-token": "Enter your access token",
+          "username": "E.g. username.ab12cd3",
+          "access-token": "E.g. pk.bfg32ewdsadeyJ1Ijoi…",
+          "error": "Error retrieving your basemap. Please, check your access token.",
+          "invalid": "This URL is not valid."
         }
       },
       "export-data": {
@@ -1057,7 +1069,7 @@
       "confirm": "Ok, delete it",
       "desc": "Are you sure?",
       "error": "Error deleting %{tableName}",
-      "loading": "Renaming your dataset %{tableName}...",
+      "loading": "Deleting your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
     },
     "metadata": {

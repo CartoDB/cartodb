@@ -7,7 +7,6 @@
 
 .Editor-formInner {
   @include display-flex();
-  //@include align-items(baseline, baseline);
   @include align-items(center);
   min-height: $baseSize * 4;
   margin-top: $baseSize;
@@ -25,7 +24,7 @@
 }
 .Editor-formInner--noMargin {
   margin-top: 0;
-  padding-top: 8px;
+  padding-top: $baseSize;
 }
 .Editor-formInner--nested {
   position: relative;

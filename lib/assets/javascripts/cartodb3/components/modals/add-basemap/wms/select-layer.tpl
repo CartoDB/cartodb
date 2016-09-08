@@ -2,39 +2,41 @@
   <div class="Filters WMSSSelectLayer-Filter is-relative">
     <div class="Filters-inner">
       <div class="Filters-row">
-        <ul class="Filters-group">
-          <li class="Filters-typeItem Filters-typeItem--searchEnabler">
-            <a href="#/search" class="Filters-searchLink js-search-link">
-              <i class="Filters-searchLinkIcon CDB-IconFont CDB-IconFont-lens"></i>Search
-            </a>
-          </li>
-          <li class="Filters-typeItem Filters-typeItem--searchField">
-            <form class="Filters-searchForm js-search-form" action="#">
-              <input class="Filters-searchInput js-search-input" type="text" value="<%- searchQuery %>" placeholder="<%- layersFound.length %> LAYER(s) found, <%- layersAvailableCount %> LAYER(s) available" />
-              <button type="button" class="Filters-cleanSearch js-clean-search">
-                <i class="CDB-IconFont CDB-IconFont-close"></i>
-              </button>
-            </form>
-          </li>
-        </ul>
+        <div class="Filters-group">
+          <div class="Filters-typeItem Filters-typeItem--searchEnabler">
+            <button class="Filters-searchLink CDB-Text is-semibold u-upperCase CDB-Size-medium js-search-link">
+              <i class="Filters-searchLinkIcon CDB-IconFont CDB-IconFont-lens"></i><%- _t('components.modals.add-layer.navigation.search') %>
+            </button>
+          </div>
+        </div>
+
+        <div class="Filters-typeItem Filters-typeItem--searchField">
+          <form class="Filters-searchForm js-search-form" action="#">
+            <!-- <%- layersFound.length %> LAYER(s) found, <%- layersAvailableCount %> LAYER(s) available -->
+            <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- searchQuery %>" placeholder="<%- _t('components.modals.add-basemap.wms.placeholder', { layersFoundCount: layersFound.length, layersFoundCountPluralize: _t('components.modals.add-basemap.wms.tables-pluralize', { smart_count: layersFound.length }), layersAvailableCount: layersAvailableCount, layersAvailableCountPluralize: _t('components.modals.add-basemap.wms.tables-pluralize', { smart_count: layersAvailableCount }) }) %>" />
+            <button type="button" class="Filters-cleanSearch js-clean-search u-actionTextColor">
+              <i class="CDB-IconFont CDB-IconFont-close"></i>
+            </button>
+          </form>
+        </div>
+
         <span class="Filters-separator"></span>
       </div>
     </div>
   </div>
+
   <ul class="List js-layers"></ul>
 
   <% if (searchQuery && layersFound.length == 0) { %>
-  <div class="IntermediateInfo">
-    <div class="LayoutIcon">
-      <i class="CDB-IconFont CDB-IconFont-defaultUser"></i>
+    <div class="IntermediateInfo">
+      <div class="LayoutIcon">
+        <i class="CDB-IconFont CDB-IconFont-defaultUser"></i>
+      </div>
+      <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace u-secondaryTextColor u-tSpace-xl"><%- _t('components.modals.add-basemap.wms.oh-no') %></h4>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-basemap.wms.unfortunately') %></p>
     </div>
-    <h4 class="IntermediateInfo-title">Oh! No results</h4>
-    <p class="DefaultParagraph DefaultParagraph--short">
-      Unfortunately we couldn't found any layer that matched your search term
-    </p>
-  </div>
+  <% } %>
 </div>
-<% } %>
 
 <button class="NavButton Dialog-backBtn js-back">
   <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>

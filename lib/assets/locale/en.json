@@ -463,7 +463,11 @@
           "insert": "Insert your WMS/WMTS URL",
           "list": "A list of available layers will be shown below.",
           "invalid": "The URL is either invalid or contains unsupported projections",
-          "see-docs": "see docs"
+          "see-docs": "see docs",
+          "oh-no": "Oh! No results",
+          "unfortunately": "Unfortunately we couldn't found any layer that matched your search term",
+          "tables-pluralize": "table |||| tables",
+          "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
         }
       },
       "export-data": {

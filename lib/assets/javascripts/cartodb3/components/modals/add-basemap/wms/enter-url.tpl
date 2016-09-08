@@ -1,7 +1,7 @@
 <div class="ImportPanel">
   <div class="ImportPanel-header">
     <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m"><%- _t('components.modals.add-basemap.wms.insert') %></h3>
-    <p class="ImportPanel-headerDescription"><%- _t('components.modals.add-basemap.wms.list') %></p>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor u-bSpace--xl ImportPanel-headerDescription"><%- _t('components.modals.add-basemap.wms.list') %></p>
   </div>
   <div class="Form-row CDB-Text CDB-Size-medium">
     <div class="Form-rowLabel">
@@ -12,7 +12,7 @@
       <i class="CDB-IconFont CDB-IconFont-dribbble Form-inputIcon js-idle"></i>
       <div class="Form-inputError js-error <%- (layersFetched && layers.length === 0) ? 'is-visible' : '' %>">
         <% if (layersFetched && layers.length === 0) { %>
-          <%- _t('components.modals.add-basemap.wms.list') %> <a target="_blank" href="https://carto.com/docs/carto-editor/maps/#including-an-external-basemap">(<%- _t('components.modals.add-basemap.wms.see-docs') %>)</a>
+          <%- _t('components.modals.add-basemap.wms.invalid') %> <a target="_blank" href="https://carto.com/docs/carto-editor/maps/#including-an-external-basemap">(<%- _t('components.modals.add-basemap.wms.see-docs') %>)</a>
         <% } %>
       </div>
     </div>

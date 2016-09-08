@@ -6,7 +6,7 @@ var MapViewFactory = require('../geo/map-view-factory');
 var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
-var LegendsView = require('../geo/ui/new-legends/legends-view.js');
+var LegendsView = require('../geo/ui/legends/legends-view.js');
 /**
  * Visualization creation
  */

@@ -9,63 +9,61 @@
         </g>
       </svg>
     </div>
+
     <div>
-      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
-        <%- _t('components.modals.export-data.title') %>
-     </h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor">
-        <%- _t('components.modals.export-data.desc') %>.
-      </p>
+      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m"><%- _t('components.modals.export-data.title') %></h2>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.export-data.desc') %>.</p>
       <% if (!isGeoreferenced) { %>
-        <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl">
-          <%- _t('components.modals.export-data.no-geometry') %>
-        </p>
+        <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl"><%- _t('components.modals.export-data.no-geometry') %></p>
       <% } %>
+
       <div class="Modal-listTextItem u-flex u-alignCenter">
         <h3 class="CDB-Text CDB-Size-small is-semibold u-upperCase">Select format</h3>
-        <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-small">
-          <% _.each(formats, function (format) { %>
-          <li class="Modal-listFormItem
-            <% if (isGeoreferenced === false && format.geomRequired === true) { %>
-              is-disabled
-            <% } %>"
-          >
-            <input  class="CDB-Radio js-option" type="radio" name="format" data-format="<%- format.format %>"
+
+        <form class="js-form" method="POST" action="<%- url %>">
+          <input type="hidden" class="js-filename" name="filename" />
+          <input type="hidden" class="js-q" name="q" />
+          <input type="hidden" class="js-apiKey" name="api_key" />
+          <input type="hidden" class="js-skipfields" name="skipfields" disabled="disabled" value="" />
+          <input type="hidden" class="js-dp" name="dp" value="4" disabled="disabled" />
+
+          <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-small">
+            <% _.each(formats, function (format) { %>
+            <li class="Modal-listFormItem
               <% if (isGeoreferenced === false && format.geomRequired === true) { %>
-                disabled
-              <% } %>
+                is-disabled
+              <% } %>"
             >
-            <span class="u-iBlock CDB-Radio-face"></span>
-            <label class="u-iBlock u-lSpace u-upperCase"><%- format.label || format.format %></label>
-          </li>
-          <% }); %>
-        </ul>
+              <input class="CDB-Radio js-format" type="radio" name="format" data-format="<%- format.format %>"
+                <% if (isGeoreferenced === false && format.geomRequired === true) { %>
+                  disabled
+                <% } %>
+
+                <% if (format.format === 'csv') { %>
+                  checked
+                <% } %>
+              >
+              <span class="u-iBlock CDB-Radio-face"></span>
+              <label class="u-iBlock u-lSpace u-upperCase"><%- format.label || format.format %></label>
+            </li>
+            <% }); %>
+          </ul>
+        </form>
+
       </div>
+
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">
-            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-               <%- _t('components.modals.export-data.cancel') %>
-            </span>
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.export-data.cancel') %></span>
           </button>
         </li>
         <li class="Modal-listActionsitem">
-          <button class="CDB-Button CDB-Button--primary CDB-Button--big">
-            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-               <%- _t('components.modals.export-data.download') %>
-            </span>
+          <button class="CDB-Button CDB-Button--primary CDB-Button--big js-confirm">
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.export-data.download') %></span>
           </button>
         </li>
       </ul>
     </div>
   </div>
 </div>
-
-<form class="js-form" method="POST" action="<%- url %>">
-  <input type="hidden" class="js-filename" name="filename" />
-  <input type="hidden" class="js-q" name="q" />
-  <input type="hidden" class="js-format" name="format" />
-  <input type="hidden" class="js-apiKey" name="api_key" />
-  <input type="hidden" class="js-skipfields" name="skipfields" disabled="disabled" value="" />
-  <input type="hidden" class="js-dp" name="dp" value="4" disabled="disabled" />
-</form>

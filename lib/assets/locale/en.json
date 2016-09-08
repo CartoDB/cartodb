@@ -456,10 +456,14 @@
           "insert": "Insert your Mapbox URL",
           "enter": "Enter your map ID/URL",
           "enter-token": "Enter your access token",
-          "username": "E.g. username.ab12cd3",
-          "access-token": "E.g. pk.bfg32ewdsadeyJ1Ijoi…",
           "error": "Error retrieving your basemap. Please, check your access token.",
           "invalid": "This URL is not valid."
+        },
+        "wms": {
+          "insert": "Insert your WMS/WMTS URL",
+          "list": "A list of available layers will be shown below.",
+          "invalid": "The URL is either invalid or contains unsupported projections",
+          "see-docs": "see docs"
         }
       },
       "export-data": {

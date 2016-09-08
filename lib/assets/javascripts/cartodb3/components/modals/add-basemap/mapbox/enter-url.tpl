@@ -7,7 +7,7 @@
       <label class="Form-label"><%- _t('components.modals.add-basemap.mapbox.enter') %></label>
     </div>
     <div class="Form-rowData Form-rowData--longer">
-      <input type="text" class="Form-input Form-input--longer js-url" value="<%- url %>" placeholder="<%- _t('components.modals.add-basemap.mapbox.username') %>">
+      <input type="text" class="Form-input Form-input--longer js-url" value="<%- url %>" placeholder="<%- _t('components.modals.add-basemap.xyz.eg') %> username.ab12cd3">
     </div>
   </div>
   <div class="Form-row CDB-Text CDB-Size-medium">
@@ -15,7 +15,7 @@
       <label class="Form-label Form-label--multipleLines"><%- _t('components.modals.add-basemap.mapbox.enter-token') %></label>
     </div>
     <div class="Form-rowData Form-rowData--longer">
-      <input type="text" class="Form-input Form-input--longer js-access-token" value="<%- accessToken %>" placeholder="<%- _t('components.modals.add-basemap.mapbox.access-token') %>">
+      <input type="text" class="Form-input Form-input--longer js-access-token" value="<%- accessToken %>" placeholder="<%- _t('components.modals.add-basemap.xyz.eg') %> pk.bfg32ewdsadeyJ1Ijoi…">
       <div class="Form-inputError js-error <%- lastErrorMsg ? 'is-visible' : '' %>"><%- lastErrorMsg %></div>
     </div>
   </div>

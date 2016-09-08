@@ -35,6 +35,11 @@
   }
 }
 
+// To show fill component on the left
+.LegendItem .Editor-FormDialog {
+  left: 0;
+}
+
 .LegendItem .Editor-fieldset {
   @include display-flex();
   @include justify-content(space-between);

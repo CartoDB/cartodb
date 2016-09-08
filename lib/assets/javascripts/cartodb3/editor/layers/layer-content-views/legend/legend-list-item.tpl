@@ -8,5 +8,5 @@
   </div>
   <div data-editor class="u-grow">
   </div>
-  <button class="LegendItem-deteleButton" type="button" data-action="remove">&times;</button>
+  <button class="LegendItem-deteleButton" type="button" data-action="remove">&times;</button> <!-- TOFIX -->
 </div>

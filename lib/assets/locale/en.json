@@ -1641,7 +1641,12 @@
           "title": "Creating your legend",
           "subtitle": "Add items"
         },
-        "add": "Add item"
+        "add": "Add item",
+        "title": "Title",
+        "fill": "Fill",
+        "by-size": "Size",
+        "by-color": "Color",
+        "untitled": "\"Untitled\""
       }
     },
     "style": {

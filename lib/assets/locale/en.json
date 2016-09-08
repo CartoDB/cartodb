@@ -1065,7 +1065,7 @@
       "confirm": "ok, delete it",
       "desc": "Are you sure?",
       "error": "Error deleting %{tableName}",
-      "loading": "Renaming your dataset %{tableName}...",
+      "loading": "Deleting your dataset %{tableName}...",
       "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
     },
     "metadata": {

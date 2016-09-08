@@ -311,7 +311,6 @@
         @include size(323px, 40px);
         display:none;
         padding: 0;
-        margin: 0 0 0 30px;
 
         .apply {
           @include position(0px, 7px, false, false);
@@ -346,7 +345,7 @@
 
         }
 
-        .scroll { width: 355x; max-height: 156px; overflow: hidden; outline:none; }
+        .scroll { width: 355px; max-height: 156px; overflow: hidden; outline:none; }
 
       } // data
 

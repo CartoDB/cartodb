@@ -7,23 +7,35 @@ var LegendsView = Backbone.View.extend({
   className: 'CDB-Legends',
 
   initialize: function (deps) {
-    if (!deps.layerModels) throw new Error('layerModels is required');
+    if (!deps.layersCollection) throw new Error('layersCollection is required');
 
-    // TODO: When layers are re-ordered -> Re-order legends
-    // TODO: Reverse layers
-    // TODO: What if new layers are added?
-    // TODO: When a layer is removed -> remove it's legends (clean)
-    this._layerModels = deps.layerModels;
+    this._layersCollection = deps.layersCollection;
+    this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
   },
 
   render: function () {
-    _.each(this._layerModels, this._renderLayerLegends, this);
+    var layerModelsWithLegends = this._getLayerModelsWithLegends();
+    _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
     return this;
+  },
+
+  _getLayerModelsWithLegends: function () {
+    return this._layersCollection.select(this._hasLegends);
+  },
+
+  _hasLegends: function (layerModel) {
+    return layerModel.legends;
   },
 
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({ model: layerModel });
     this.$el.append(layerLegendsView.render().$el);
+  },
+
+  _onLayerAddedOrRemoved: function (layerModel) {
+    if (this._hasLegends(layerModel)) {
+      this.render();
+    }
   }
 });
 

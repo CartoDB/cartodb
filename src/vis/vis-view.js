@@ -85,7 +85,7 @@ var Vis = View.extend({
 
   _renderLegends: function () {
     var legendsView = new LegendsView({
-      layerModels: this.model.map.layers.getCartoDBLayers()
+      layersCollection: this.model.map.layers
     });
     this.$el.append(legendsView.render().$el);
   },

@@ -59,17 +59,37 @@ module Carto
       end
     end
 
-    class LineOrPolygon < Style
+    class Line < Style
       def initialize(definition)
         super('line', definition)
+      end
+
+      def parse_fill(_fill)
+        ''
+      end
+
+      def parse_stroke(stroke)
+        width = stroke[:size][:fixed]
+        color = stroke[:color][:fixed]
+        opacity = stroke[:color][:opacity]
+
+        "line-width: #{width};\n"\
+        "line-color: #{color};\n"\
+        "line-opacity: #{opacity};\n"
+      end
+    end
+
+    class Polygon < Style
+      def initialize(definition)
+        super('polygon', definition)
       end
 
       def parse_fill(fill)
         color = fill[:color][:fixed]
         opacity = fill[:color][:opacity]
 
-        "marker-fill: #{color};\n"\
-        "marker-fill-opacity: #{opacity};\n"
+        "polygon-fill: #{color};\n"\
+        "polygon-fill-opacity: #{opacity};\n"
       end
 
       def parse_stroke(stroke)

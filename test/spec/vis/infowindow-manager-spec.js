@@ -3,12 +3,36 @@ var Backbone = require('backbone');
 var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var InfowindowManager = require('../../../src/vis/infowindow-manager');
+
+var createCartoDBLayer = function (vis, infowindowAttrs) {
+  infowindowAttrs = infowindowAttrs || {
+    fields: [{
+      'name': 'name',
+      'title': true,
+      'position': 1
+    }]
+  };
+  return new CartoDBLayer({
+    infowindow: infowindowAttrs
+  }, { vis: vis });
+};
 
 describe('src/vis/infowindow-manager.js', function () {
   beforeEach(function () {
     this.map = new Map({}, {});
+
+    var cartoDBLayerGroup = new CartoDBLayerGroup({}, {
+      layersCollection: this.map.layers
+    });
+
     this.layerView = new Backbone.Model();
+    this.layerView.model = cartoDBLayerGroup;
+    spyOn(cartoDBLayerGroup, 'fetchAttributes').and.callFake(function (layerIndex, featureId, callback) {
+      callback({ name: 'juan' });
+    });
+
     var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     layerViewFactory.createLayerView.and.returnValue(this.layerView);
 
@@ -17,6 +41,8 @@ describe('src/vis/infowindow-manager.js', function () {
       layerViewFactory: layerViewFactory,
       layerGroupModel: new Backbone.Model()
     });
+
+    spyOn(this.mapView, 'addInfowindow');
     this.mapView.getNativeMap = function () {};
     this.mapView._addLayerToMap = function () {};
     this.mapView.latLonToPixel = function () { return { x: 0, y: 0 }; };
@@ -28,17 +54,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should add a new infowindow view to the map view when new layers were previously reset', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }]
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     this.map.layers.reset([ layer ]);
 
@@ -49,17 +65,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should add a new infowindow view to the map view when new layers are reset', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }]
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -69,17 +75,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should add a new infowindow view to the map view when new layers are added', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }]
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -89,27 +85,8 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should NOT add a new infowindow view to the map view when new layers share the same layerView', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer1 = new CartoDBLayer({
-      infowindow: {
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }]
-      }
-    }, { vis: this.vis });
-
-    var layer2 = new CartoDBLayer({
-      infowindow: {
-        fields: [{
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }]
-      }
-    }, { vis: this.vis });
+    var layer1 = createCartoDBLayer(this.vis);
+    var layer2 = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -120,33 +97,27 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should correctly bind the featureClick event to the corresponding layerView', function () {
-    spyOn(this.mapView, 'addInfowindow');
+    var layer1 = createCartoDBLayer(this.vis, {
+      template: 'template1',
+      template_type: 'underscore',
+      fields: [{
+        'name': 'name',
+        'title': true,
+        'position': 1
+      }],
+      alternative_names: 'alternative_names1'
+    });
 
-    var layer1 = new CartoDBLayer({
-      infowindow: {
-        template: 'template1',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names1'
-      }
-    }, { vis: this.vis });
-
-    var layer2 = new CartoDBLayer({
-      infowindow: {
-        template: 'template2',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names2'
-      }
-    }, { vis: this.vis });
+    var layer2 = createCartoDBLayer(this.vis, {
+      template: 'template2',
+      template_type: 'underscore',
+      fields: [{
+        'name': 'description',
+        'title': true,
+        'position': 1
+      }],
+      alternative_names: 'alternative_names2'
+    });
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -154,25 +125,6 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer1, layer2 ]);
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
     var infowindowModel = infowindowView.model;
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
-        callback({ name: 'juan' });
-      }),
-      getLayerAt: function (index) {
-        if (index === 0) {
-          return layer1;
-        }
-        return layer2;
-      },
-
-      getIndexOf: function (layerModel) {
-        if (layerModel === layer1) {
-          return 0;
-        }
-        return 1;
-      }
-    };
     spyOn(infowindowView, 'adjustPan');
 
     // Simulate the featureClick event for layer #0
@@ -254,33 +206,8 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should bind the featureClick event to the corresponding layerView only once', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer1 = new CartoDBLayer({
-      infowindow: {
-        template: 'template1',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names1'
-      }
-    }, { vis: this.vis });
-
-    var layer2 = new CartoDBLayer({
-      infowindow: {
-        template: 'template2',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'description',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names2'
-      }
-    }, { vis: this.vis });
+    var layer1 = createCartoDBLayer(this.vis);
+    var layer2 = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -296,20 +223,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should set loading content while loading', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer1 = new CartoDBLayer({
-      infowindow: {
-        template: 'template1',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names1'
-      }
-    }, { vis: this.vis });
+    var layer1 = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -317,53 +231,26 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer1 ]);
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
     var infowindowModel = infowindowView.model;
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes'),
-      getLayerAt: function (index) {
-        return layer1;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
     spyOn(infowindowView, 'adjustPan');
+
+    // Fetch attributes does NOT suceed inmediatily
+    this.layerView.model.fetchAttributes.and.callFake(function () {});
 
     // Simulate the featureClick event for layer #0
     this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
 
     // InfowindowModel has been updated
-    expect(infowindowModel.attributes).toEqual({
-      'template': 'template1',
-      'alternative_names': 'alternative_names1',
-      'template_type': 'underscore',
-      'offset': [
-        28,
-        0
-      ],
-      'maxHeight': 180,
-      'autoPan': true,
-      'content': {
-        'fields': [
-          {
-            'type': 'loading',
-            'title': 'loading',
-            'value': '…'
-          }
-        ]
-      },
-      'latlng': [
-        100,
-        200
-      ],
-      'visibility': true
-    });
+    expect(infowindowModel.get('content').fields).toEqual([
+      {
+        'type': 'loading',
+        'title': 'loading',
+        'value': '…'
+      }
+    ]);
+    expect(infowindowView.model.get('visibility')).toBe(true);
   });
 
   it('should set error content if no attributes are returned', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
     var layer1 = new CartoDBLayer({
       infowindow: {
         template: 'template1',
@@ -383,54 +270,26 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer1 ]);
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
     var infowindowModel = infowindowView.model;
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.callFake(function (layerIndex, cartoDBId, callback) {
-        callback();
-      }),
-
-      getLayerAt: function (index) {
-        return layer1;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
     spyOn(infowindowView, 'adjustPan');
+
+    this.layerView.model.fetchAttributes.and.callFake(function (layerIndex, featureId, callback) {
+      callback();
+    });
 
     // Simulate the featureClick event for layer #0
     this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
 
     // InfowindowModel has been updated
-    expect(infowindowModel.attributes).toEqual({
-      'template': 'template1',
-      'template_type': 'underscore',
-      'offset': [
-        28,
-        0
-      ],
-      'maxHeight': 180,
-      'autoPan': true,
-      'content': {
-        'fields': [
-          {
-            'title': null,
-            'alternative_name': null,
-            'value': 'There has been an error...',
-            'index': null,
-            'type': 'error'
-          }
-        ],
-        'data': {}
-      },
-      'alternative_names': 'alternative_names1',
-      'latlng': [
-        100,
-        200
-      ],
-      'visibility': true
-    });
+    expect(infowindowModel.get('content').fields).toEqual([
+      {
+        'title': null,
+        'alternative_name': null,
+        'value': 'There has been an error...',
+        'index': null,
+        'type': 'error'
+      }
+    ]);
+    expect(infowindowView.model.get('visibility')).toBe(true);
   });
 
   it('should set a filter on the tooltipView if the layer has tooltip too', function () {
@@ -438,8 +297,6 @@ describe('src/vis/infowindow-manager.js', function () {
     var tooltipView = jasmine.createSpyObj('tooltipView', ['setFilter', 'hide']);
     tooltipView.setFilter.and.returnValue(tooltipView);
     this.layerView.tooltipView = tooltipView;
-
-    spyOn(this.mapView, 'addInfowindow');
 
     var layer = new CartoDBLayer({
       infowindow: {
@@ -459,17 +316,6 @@ describe('src/vis/infowindow-manager.js', function () {
 
     this.map.layers.reset([ layer ]);
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes'),
-      getLayerAt: function (index) {
-        return layer;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
     spyOn(infowindowView, 'adjustPan');
 
     // Simulate the featureClick event
@@ -488,37 +334,13 @@ describe('src/vis/infowindow-manager.js', function () {
     tooltipView.setFilter.and.returnValue(tooltipView);
     this.layerView.tooltipView = tooltipView;
 
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        template: 'template',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names'
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes'),
-      getLayerAt: function (index) {
-        return layer;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
     spyOn(infowindowView, 'adjustPan');
 
     // Simulate the featureClick event
@@ -532,34 +354,12 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should reload the map when the infowindow template gets new fields', function () {
-    var layer = new CartoDBLayer({
-      infowindow: {
-        template: 'template',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names'
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
 
     this.map.layers.reset([ layer ]);
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ description: 'THE DESCRIPTION' }),
-      getLayerAt: function (index) {
-        return layer;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
 
     layer.infowindow.update({
       fields: [
@@ -575,20 +375,7 @@ describe('src/vis/infowindow-manager.js', function () {
   });
 
   it('should reload the map and fetch attributes when the infowindow template is active (visible) and it gets fields', function () {
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer = new CartoDBLayer({
-      infowindow: {
-        template: 'template',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names'
-      }
-    }, { vis: this.vis });
+    var layer = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -597,17 +384,6 @@ describe('src/vis/infowindow-manager.js', function () {
 
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
     spyOn(infowindowView, 'adjustPan');
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ description: 'THE DESCRIPTION' }),
-      getLayerAt: function (index) {
-        return layer;
-      },
-
-      getIndexOf: function (layerModel) {
-        return 0;
-      }
-    };
 
     infowindowManager._infowindowModel.setInfowindowTemplate(layer.infowindow);
     infowindowManager._infowindowModel.set('visibility', true);
@@ -633,33 +409,8 @@ describe('src/vis/infowindow-manager.js', function () {
     tooltipView.setFilter.and.returnValue(tooltipView);
     this.layerView.tooltipView = tooltipView;
 
-    spyOn(this.mapView, 'addInfowindow');
-
-    var layer1 = new CartoDBLayer({
-      infowindow: {
-        template: 'template',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names'
-      }
-    }, { vis: this.vis });
-
-    var layer2 = new CartoDBLayer({
-      infowindow: {
-        template: 'template',
-        template_type: 'underscore',
-        fields: [{
-          'name': 'name',
-          'title': true,
-          'position': 1
-        }],
-        alternative_names: 'alternative_names'
-      }
-    }, { vis: this.vis });
+    var layer1 = createCartoDBLayer(this.vis);
+    var layer2 = createCartoDBLayer(this.vis);
 
     var infowindowManager = new InfowindowManager(this.vis);
     infowindowManager.manage(this.mapView, this.map);
@@ -667,17 +418,6 @@ describe('src/vis/infowindow-manager.js', function () {
     this.map.layers.reset([ layer1, layer2 ]);
 
     var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
-
-    this.layerView.model = {
-      fetchAttributes: jasmine.createSpy('fetchAttributes').and.returnValue({ description: 'THE DESCRIPTION' }),
-      getLayerAt: function (index) {
-        return index === 0 ? layer1 : layer2;
-      },
-
-      getIndexOf: function (layerModel) {
-        return layerModel === layer1 ? 0 : 1;
-      }
-    };
 
     spyOn(infowindowView, 'adjustPan');
     // Simulate the featureClick event for layer #0
@@ -702,5 +442,33 @@ describe('src/vis/infowindow-manager.js', function () {
     // Infowindow has been closed and map has NOT been reloaded
     expect(infowindowView.model.get('visibility')).toBe(false);
     expect(this.vis.reload).not.toHaveBeenCalledWith({});
+  });
+
+  it('should hide the infowindow if the layer is hidden', function () {
+    var layer1 = createCartoDBLayer(this.vis);
+    var layer2 = createCartoDBLayer(this.vis);
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1, layer2 ]);
+
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+    spyOn(infowindowView, 'adjustPan');
+
+    // Simulate the featureClick event for layer #0
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    expect(infowindowView.model.get('visibility')).toBe(true);
+
+    // hide layer2 -> nothing happens
+    layer2.hide();
+
+    expect(infowindowView.model.get('visibility')).toBe(true);
+
+    // hide layer1 -> infowindow is hidden
+    layer1.hide();
+
+    expect(infowindowView.model.get('visibility')).toBe(false);
   });
 });

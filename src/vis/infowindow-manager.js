@@ -87,7 +87,7 @@ InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
 
     var clearFilter = function (infowindowModel) {
       if (!infowindowModel.get('visibility')) {
-        layerView.tooltipView.setFilter(null);
+        layerView.tooltipView && layerView.tooltipView.setFilter(null);
       }
     };
 
@@ -131,11 +131,22 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
 
       this._reloadVis();
     } else {
-      if (this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow)) {
+      if (this._isLayerInfowindowActiveAndVisible(layerModel)) {
         this._infowindowModel.set('visibility', false);
       }
     }
   }, this);
+
+  layerModel.bind('change:visible', function () {
+    if (this._isLayerInfowindowActiveAndVisible(layerModel)) {
+      this._infowindowModel.set('visibility', false);
+    }
+  }, this);
+};
+
+InfowindowManager.prototype._isLayerInfowindowActiveAndVisible = function (layerModel) {
+  return this._infowindowModel.hasInfowindowTemplate(layerModel.infowindow) &&
+    this._infowindowModel.get('visibility');
 };
 
 InfowindowManager.prototype._reloadVis = function (options) {

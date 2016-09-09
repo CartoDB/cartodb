@@ -199,22 +199,32 @@ describe('vis/vis-view', function () {
       this.visModel.load(new VizJSON(this.mapConfig));
     });
 
-    it('should NOT display legend if showLegends is false', function () {
-      this.visModel.set('showLegends', false);
-
-      this.visView.render();
-
-      expect(this.visView.$('.cartodb-legend').length).toEqual(0);
-    });
-
-    it('should only display legends for visible layers if showLegends is true', function () {
+    it('should show legends if showLegends is true', function () {
       this.visModel.set('showLegends', true);
 
       this.visView.render();
 
-      expect(this.visView.$('.cartodb-legend').length).toEqual(1);
-      expect(this.visView.$el.html()).toContain('visible legend item');
-      expect(this.visView.$el.html()).not.toContain('invisible legend item');
+      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('');
+    });
+
+    it('should hide legends if showLegends is false', function () {
+      this.visModel.set('showLegends', false);
+
+      this.visView.render();
+
+      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('none');
+    });
+
+    it('should show/hide legends when showLegends changes', function () {
+      this.visView.render();
+
+      this.visModel.set('showLegends', false);
+
+      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('none');
+
+      this.visModel.set('showLegends', true);
+
+      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('block');
     });
   });
 

@@ -22,7 +22,7 @@ var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
     https: false,
-    showLegends: false,
+    showLegends: true,
     showEmptyInfowindowFields: false,
     state: STATE_INIT
   },

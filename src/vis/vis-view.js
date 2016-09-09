@@ -19,6 +19,7 @@ var Vis = View.extend({
 
     this.overlays = [];
 
+    this.model.on('change:showLegends', this._onShowLegendsChanged, this);
     _.bindAll(this, '_onResize');
   },
 
@@ -46,7 +47,7 @@ var Vis = View.extend({
 
     div.append(div_hack);
 
-    this.$el.append(div);
+    this.$el.html(div);
 
     var mapViewFactory = new MapViewFactory();
 
@@ -63,9 +64,6 @@ var Vis = View.extend({
 
     var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);
-
-    // if (this.model.get('showLegends')) {
-    // }
 
     this._renderLegends();
 
@@ -84,10 +82,21 @@ var Vis = View.extend({
   },
 
   _renderLegends: function () {
-    var legendsView = new LegendsView({
+    this._legendsView = new LegendsView({
       layersCollection: this.model.map.layers
     });
-    this.$el.append(legendsView.render().$el);
+    if (!this.model.get('showLegends')) {
+      this._legendsView.hide();
+    }
+    this.$el.append(this._legendsView.render().$el);
+  },
+
+  _onShowLegendsChanged: function () {
+    if (this.model.get('showLegends') === true) {
+      this._legendsView.show();
+    } else {
+      this._legendsView.hide();
+    }
   },
 
   _bindLayerViewToLoader: function (layerView) {

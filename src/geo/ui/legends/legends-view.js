@@ -50,6 +50,14 @@ var LegendsView = Backbone.View.extend({
 
   _clear: function () {
     this.$el.html('');
+  },
+
+  show: function () {
+    this.$el.show();
+  },
+
+  hide: function () {
+    this.$el.hide();
   }
 });
 

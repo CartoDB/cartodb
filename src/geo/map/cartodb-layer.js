@@ -3,11 +3,7 @@ var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
-var CategoryLegendModel = require('./legends/category-legend-model');
-var BubbleLegendModel = require('./legends/bubble-legend-model');
-var ChoroplethLegendModel = require('./legends/choropleth-legend-model');
-var CustomLegendModel = require('./legends/custom-legend-model');
-var HTMLLegendModel = require('./legends/html-legend-model');
+var Legends = require('./legends/legends');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -34,85 +30,12 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
-    // TODO: Initialise and inject this?
-    this.legends = {
-      category: new CategoryLegendModel(),
-      bubble: new BubbleLegendModel(),
-      choropleth: new ChoroplethLegendModel(),
-      custom: new CustomLegendModel(),
-      html: new HTMLLegendModel()
-    };
-    this._initLegends(attrs.legends);
+    this.legends = new Legends(attrs.legends);
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
-  },
-
-  /**
-   * [_initLegends description]
-   * @param  {array} legendsData eg:
-   *   [
-   *     { type: 'bubble', title: 'Barrios Legend' },
-   *     { type: 'category', title: 'Categories Legend' }
-   *   ]
-   * @return {[type]}             [description]
-   */
-  _initLegends: function (legendsData) {
-    legendsData = legendsData || {};
-
-    // category legend
-    var categoryLegend = _.find(legendsData, { type: 'category' });
-    if (categoryLegend) {
-      this.legends.category.set({
-        title: categoryLegend.title,
-        prefix: categoryLegend.prefix,
-        sufix: categoryLegend.sufix,
-        visible: true
-      });
-    }
-
-    // bubble legend
-    var bubbleLegend = _.find(legendsData, { type: 'bubble' });
-    if (bubbleLegend) {
-      this.legends.bubble.set({
-        title: bubbleLegend.title,
-        fillColor: bubbleLegend.fill_color,
-        visible: true
-      });
-    }
-
-    // choropleth legend
-    var choroplethLegend = _.find(legendsData, { type: 'choropleth' });
-    if (choroplethLegend) {
-      this.legends.choropleth.set({
-        title: choroplethLegend.title,
-        prefix: choroplethLegend.prefix,
-        sufix: choroplethLegend.sufix,
-        visible: true
-      });
-    }
-
-    // custom legend
-    var customLegend = _.find(legendsData, { type: 'custom' });
-    if (customLegend) {
-      this.legends.custom.set({
-        title: customLegend.title,
-        items: customLegend.items,
-        visible: true
-      });
-    }
-
-    // html legend
-    var htmlLegend = _.find(legendsData, { type: 'html' });
-    if (htmlLegend) {
-      this.legends.html.set({
-        title: htmlLegend.title,
-        html: htmlLegend.html,
-        visible: true
-      });
-    }
   },
 
   _onAttributeChanged: function () {

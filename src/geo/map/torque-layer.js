@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
+var Legends = require('./legends/legends');
 
 /**
  * Model for a Torque Layer
@@ -37,6 +38,9 @@ var TorqueLayer = LayerModelBase.extend({
 
     this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
+
+    this.legends = new Legends(attrs.legends);
+    this.unset('legends');
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },

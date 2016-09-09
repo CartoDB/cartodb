@@ -1,5 +1,7 @@
 var _ = require('underscore');
+// var View = require('../../../core/view');
 var Backbone = require('backbone');
+
 var LayerLegendsView = require('./layer-legends-view');
 
 var LegendsView = Backbone.View.extend({
@@ -8,14 +10,20 @@ var LegendsView = Backbone.View.extend({
 
   initialize: function (deps) {
     if (!deps.layersCollection) throw new Error('layersCollection is required');
-
     this._layersCollection = deps.layersCollection;
+
+    this._isRendered = false;
+    this._initBinds();
+  },
+
+  _initBinds: function () {
     this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
   },
 
   render: function () {
     var layerModelsWithLegends = this._getLayerModelsWithLegends();
     _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
+    this._isRendered = true;
     return this;
   },
 
@@ -33,9 +41,15 @@ var LegendsView = Backbone.View.extend({
   },
 
   _onLayerAddedOrRemoved: function (layerModel) {
-    if (this._hasLegends(layerModel)) {
+    // If view has already been rendered and a layer is added / removed
+    if (this._isRendered && this._hasLegends(layerModel)) {
+      this._clear();
       this.render();
     }
+  },
+
+  _clear: function () {
+    this.$el.html('');
   }
 });
 

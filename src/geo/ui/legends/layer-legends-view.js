@@ -1,12 +1,7 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var CategoryLegendView = require('./category-legend-view');
-var BubbleLegendView = require('./bubble-legend-view');
-var ChoroplethLegendView = require('./choropleth-legend-view');
-var CustomLegendView = require('./custom-legend-view');
-var HTMLLegendView = require('./html-legend-view');
 var template = require('./layer-legends-template.tpl');
-
+var LegendViewFactory = require('./legend-view-factory');
 var LayerLegendsView = Backbone.View.extend({
 
   className: 'CDB-LayerLegends',
@@ -39,39 +34,9 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _renderLegend: function (legendModel) {
-    var legendView = this._createLegendView(legendModel);
+    var legendView = LegendViewFactory.createLegendView(legendModel);
+    this._legendViews.push(legendView);
     this.$el.append(legendView.render().$el);
-  },
-
-  _createLegendView: function (legendModel) {
-    var LegendViewClass = this._getViewConstructorForLegend(legendModel.get('type'));
-    if (LegendViewClass) {
-      var view = new LegendViewClass({
-        model: legendModel
-      });
-      this._legendViews.push(view);
-      return view;
-    }
-
-    throw new Error("Unsupported legend type: '" + legendModel.get('type') + "'");
-  },
-
-  _getViewConstructorForLegend: function (legendType) {
-    if (legendType === 'bubble') {
-      return BubbleLegendView;
-    }
-    if (legendType === 'category') {
-      return CategoryLegendView;
-    }
-    if (legendType === 'choropleth') {
-      return ChoroplethLegendView;
-    }
-    if (legendType === 'custom') {
-      return CustomLegendView;
-    }
-    if (legendType === 'html') {
-      return HTMLLegendView;
-    }
   },
 
   _onToggleLayerCheckboxClicked: function (event) {

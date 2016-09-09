@@ -505,7 +505,7 @@ class Table
   end
 
   def create_default_map_and_layers
-    base_layer = Carto::LayerFactory.get_default_base_layer(owner)
+    base_layer = ::ModelFactories::LayerFactory.get_default_base_layer(owner)
 
     map = ::ModelFactories::MapFactory.get_map(base_layer, user_id, id)
     @user_table.map_id = map.id

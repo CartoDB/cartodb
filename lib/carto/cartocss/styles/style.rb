@@ -52,10 +52,12 @@ module Carto
 
         private
 
+        # NOTE: This method should be overwritten by child classes if needed
         def parse_fill(_)
           []
         end
 
+        # NOTE: This method should be overwritten by child classes if needed
         def parse_stroke(_)
           []
         end

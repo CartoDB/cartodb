@@ -188,11 +188,12 @@ module CartoDB
       def calculate_raster_overviews(raster_size)
         bigger_size = raster_size.max
 
-        if bigger_size > MAX_REDUCTED_SIZE
-          max_power = (Math::log(bigger_size.to_f / MAX_REDUCTED_SIZE, 2)).ceil
-        else
-          max_power = 0
-        end
+        max_power =
+          if bigger_size > MAX_REDUCTED_SIZE
+            Math::log(bigger_size.to_f / MAX_REDUCTED_SIZE, 2).ceil
+          else
+            0
+          end
 
         range = (1..max_power + 1)
 

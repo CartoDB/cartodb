@@ -1,8 +1,9 @@
 # encoding: utf-8
 
+require_relative '../../lib/carto/cartocss/styles/style'
+
 module ModelFactories
   class LayerFactory
-
     def self.get_new(options)
       ::Layer.new(options)
     end
@@ -22,8 +23,7 @@ module ModelFactories
       data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
-      data_layer.options['tile_style'] =
-        "##{table_name} #{Cartodb.config[:layer_opts]['default_tile_styles'][the_geom_column_type]}"
+      data_layer.options['tile_style'] = tile_style(user, the_geom_column_type)
       data_layer.infowindow ||= {}
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}
@@ -46,5 +46,14 @@ module ModelFactories
       )
     end
 
+    def self.tile_style(user, geometry_type)
+      style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
+
+      if user.builder_enabled? && style_class
+        style_class.new.to_cartocss
+      else
+        "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
+      end
+    end
   end
 end

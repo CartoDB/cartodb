@@ -1,7 +1,7 @@
 # encoding utf-8
 
-require_dependency 'carto/cartocss/styles/style'
-require_dependency 'carto/cartocss/cartography'
+require_relative './style.rb'
+require_relative '../cartography.rb'
 
 module Carto::CartoCSS::Styles
   class Point < Style

@@ -277,6 +277,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/metrics_controller_spec.rb \
 	spec/lib/carto/tracking/events_spec.rb \
 	spec/lib/carto/cartocss/cartography_spec.rb \
+	spec/lib/carto/cartocss/styles/point_spec.rb \
+	spec/lib/carto/cartocss/styles/polygon_spec.rb \
+	spec/lib/carto/cartocss/styles/line_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

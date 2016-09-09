@@ -1,6 +1,9 @@
 # encoding: utf-8
 
 require_relative '../../lib/carto/cartocss/styles/style'
+require_relative '../../lib/carto/cartocss/styles/point'
+require_relative '../../lib/carto/cartocss/styles/line'
+require_relative '../../lib/carto/cartocss/styles/polygon'
 
 module ModelFactories
   class LayerFactory

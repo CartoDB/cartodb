@@ -34,6 +34,14 @@ module Carto
           "}"
         end
 
+        def self.accepted_geometry_types
+          return @accepted_geometry_types if @accepted_geometry_types
+
+          descendant_accepted_types = descendants.map(&:accepted_geometry_types)
+
+          @accepted_geometry_types = descendant_accepted_types.flatten
+        end
+
         private
 
         def parse_fill(_)

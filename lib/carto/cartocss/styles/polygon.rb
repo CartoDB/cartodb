@@ -9,6 +9,10 @@ module Carto::CartoCSS::Styles
       super(definition)
     end
 
+    def self.accepted_geometry_types
+      ['polygon', 'multipolygon']
+    end
+
     private
 
     def default_definition

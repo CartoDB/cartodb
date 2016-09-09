@@ -11,8 +11,8 @@ module Carto
         end
 
         def to_cartocss_array
-          return '' unless @definition
-          return @cartocss if @cartocss
+          return [] unless @definition
+          return @cartocss_array if @cartocss_array
 
           @cartocss_array = @definition.map do |key, value|
             case key.to_s
@@ -53,11 +53,11 @@ module Carto
         private
 
         def parse_fill(_)
-          ''
+          []
         end
 
         def parse_stroke(_)
-          ''
+          []
         end
       end
     end

@@ -26,7 +26,7 @@ module Carto::CartoCSS::Styles
 
       "  marker-width: #{width};\n"\
       "  marker-fill: #{color};\n"\
-      "  marker-fill-opacity: #{opacity};\n"
+      "  marker-fill-opacity: #{opacity};"
     end
 
     def parse_stroke(stroke)
@@ -39,7 +39,7 @@ module Carto::CartoCSS::Styles
       "  marker-line-opacity: #{opacity};\n"\
       "  marker-placement: point;\n"\
       "  marker-type: ellipse;\n"\
-      "  marker-allow-overlap: true;\n"
+      "  marker-allow-overlap: true;"
     end
   end
 end

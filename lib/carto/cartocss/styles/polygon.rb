@@ -25,7 +25,7 @@ module Carto::CartoCSS::Styles
 
       "  polygon-fill: #{color};\n"\
       "  polygon-opacity: #{opacity};\n"\
-      "  polygon-gamma: 0.5;\n"
+      "  polygon-gamma: 0.5;"
     end
 
     def parse_stroke(stroke)
@@ -36,7 +36,7 @@ module Carto::CartoCSS::Styles
       "  line-width: #{width};\n"\
       "  line-color: #{color};\n"\
       "  line-opacity: #{opacity};\n"\
-      "  line-comp-op: soft-light;\n"
+      "  line-comp-op: soft-light;"
     end
   end
 end

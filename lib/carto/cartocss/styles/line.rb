@@ -26,7 +26,7 @@ module Carto::CartoCSS::Styles
 
       "  line-width: #{width};\n"\
       "  line-color: #{color};\n"\
-      "  line-opacity: #{opacity};\n"
+      "  line-opacity: #{opacity};"
     end
   end
 end

@@ -1631,7 +1631,8 @@
         "none": "none",
         "category": "category",
         "gradient": "grandient",
-        "bubble": "bubble"
+        "bubble": "bubble",
+        "custom": "custom"
       },
       "legend-form": {
         "type": {

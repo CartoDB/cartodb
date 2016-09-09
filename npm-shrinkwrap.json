@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "3.23.59",
+  "version": "3.23.60",
   "dependencies": {
     "autoprefixer-core": {
       "version": "5.2.1",

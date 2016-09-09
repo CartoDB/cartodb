@@ -42,6 +42,12 @@ module Carto
           @accepted_geometry_types = descendant_accepted_types.flatten
         end
 
+        def self.style_for_geometry_type(geometry_type)
+          descendants.each do |descendant|
+            return descendant if descendant.accepted_geometry_types.include?(geometry_type)
+          end
+        end
+
         private
 
         def parse_fill(_)

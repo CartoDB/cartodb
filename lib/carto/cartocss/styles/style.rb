@@ -25,7 +25,7 @@ module Carto
             end
           end
 
-          @cartocss.join
+          @cartocss.join("\n")
         end
 
         def self.accepted_geometry_types

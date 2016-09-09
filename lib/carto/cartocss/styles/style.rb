@@ -44,7 +44,7 @@ module Carto
 
         def self.style_for_geometry_type(geometry_type)
           accepted_descendants = descendants.select do |descendant|
-            descendant.accepted_geometry_types.include?(geometry_type)
+            descendant.accepted_geometry_types.include?(geometry_type.downcase)
           end
 
           accepted_descendants.first

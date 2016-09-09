@@ -27,6 +27,9 @@ module ModelFactories
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
       data_layer.options['tile_style'] = tile_style(user, the_geom_column_type)
+      if user.builder_enabled?
+        data_layer.options['style_properties'] = style_properties(user, the_geom_column_type)
+      end
       data_layer.infowindow ||= {}
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}
@@ -47,6 +50,15 @@ module ModelFactories
           'name' => "#{base_layer.options['name']} Labels"
         )
       )
+    end
+
+    def self.style_properties(user, geometry_type)
+      {
+        "type" => 'simple',
+        "properties" => {
+
+        }
+      }
     end
 
     def self.tile_style(user, geometry_type)

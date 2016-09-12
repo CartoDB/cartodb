@@ -49,6 +49,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
+        // TODO: Remove this once we're getting something from the Maps API
         if (i === 0) {
           // FAKE METADATA FOR LEGENDS
           data.metadata.legends = [

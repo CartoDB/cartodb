@@ -1,18 +1,31 @@
 <% if (title) { %>
-  <p class="CDB-Legend-Title"><%= title %></p>
+  <h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl"><%= title %></h2>
 <% } %>
 
-<p>FILL COLOR: <%= fillColor %></p>
-<% if (bubbles && bubbles.length > 0) { %>
-  <ul>
-    <% for(var bubble in bubbles) { %>
-      <li>Bubble height: <%= bubbles[bubble] %></li>
-    <% } %>
-  </ul>
-<% } else { %>
-  <p>No bubbles</p>
-<% }%>
+<!-- <p>FILL COLOR: <%= fillColor %></p>-->
+<div class="Bubble-container">
+  <% if (bubbles && bubbles.length > 0) { %>
+
+    <ul class="Bubble-numbers">
+      <% for(var i = 0, l = bubbles.length; i<l; i++) { %>
+        <li class="Bubble-numbersItem CDB-Text CDB-Size-small is-semibold"><%- bubbles[i] %></li>
+      <% } %>
+    </ul>
+
+    <ul class="Bubble-list">
+      <% for(var i = 0, l = bubbles.length; i<l; i++) { %>
+        <li class="js-bubbleItem Bubble-item Bubble-item—-<%- i+1 %>">
+          <span class="Bubble-itemCircle" style="background-color: <%= fillColor %>; height: <%- bubbles[i] %>px; width: <%- bubbles[i] %>px"></span>
+        </li>
+      <% } %>
+    </ul>
+  <% } else { %>
+    <p>No bubbles</p>
+  <% }%>
+</div>
 
 <% if (avg) { %>
   <p>AVG: <%= avg %></p>
 <% } %>
+
+

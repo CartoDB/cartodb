@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 
 var LegendViewBase = Backbone.View.extend({
 
-  className: 'CDB-Legend',
+  className: 'CDB-Legend-item',
 
   initialize: function (deps) {
     this.model.on('change', this.render, this);

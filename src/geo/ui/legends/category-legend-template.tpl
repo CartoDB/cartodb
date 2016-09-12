@@ -1,5 +1,5 @@
 <% if (title) { %>
-  <p class="CDB-Legend-Title"><%= title %></p>
+  <h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl"><%= title %></h2>
 <% } %>
 
 <p>PREFIX: <%= prefix %></p>

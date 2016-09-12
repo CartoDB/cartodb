@@ -214,3 +214,90 @@ $buttonColor: #636D72;
   height: auto;
   z-index: 10;
 }
+
+/* Legends */
+
+.CDB-Legends {
+  width: 240px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.24);
+  border-radius: 4px;
+  padding: 24px;
+  box-sizing: border-box;
+  position: absolute;
+  right: 24px; 
+  bottom: 24px;
+}
+.CDB-Legend-item {
+  margin-bottom: 32px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.Bubble-list {
+  @include display-flex();
+  @include justify-content(center);
+  margin-left: 60px;
+  position: relative;
+
+}
+.Bubble-item {
+  position: absolute;
+  bottom: 0;
+  cursor: pointer;
+}
+.Bubble-container {
+  @include display-flex();
+}
+.Bubble-itemCircle {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  background: #F8AB17;
+  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+}
+.Bubble-item:before {
+  content: "";
+  width: 68px;
+  height: 1px;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.12);
+  right: 50%;
+  top: 5px;
+  z-index: -1;
+}
+.Bubble-item.is-filter:before {
+  display: none;
+}
+
+.Bubble-item.is-filter .Bubble-itemCircle {
+  background: #F9F9F9 !important;
+  &:before {
+    display: none; 
+  }
+}
+.Bubble-numbersItem {
+  margin-top: 6px;
+  &:first-child {
+    margin-top: 0;
+  }
+}
+.Bubble-numbers {
+  width: 60px;
+}
+
+$opacity-list: 0.95 0.9 0.85 0.8 0.75 0.7 0.65;
+$index-items: 7 6 5 4 3 2 1;
+@each $current-opacity in $opacity-list {
+  $i: index($opacity-list, $current-opacity);
+  .Bubble-item—-#{$i} {
+    opacity: $current-opacity;
+    z-index: nth($index-items, $i);
+  }
+}
+
+
+

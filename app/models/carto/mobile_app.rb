@@ -4,8 +4,7 @@ class Carto::MobileApp
   extend ActiveModel::Naming
 
   APP_PLATFORMS = %w(android ios xamarin-android xamarin-ios windows-phone).freeze
-  APP_TYPES = %w(dev open private).freeze
-  MAX_DEV_USERS = 5
+  APP_TYPES = %w(open private).freeze
 
   validates :name,          presence: true
   validates :icon_url,      presence: true

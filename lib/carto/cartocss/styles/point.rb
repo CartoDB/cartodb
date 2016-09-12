@@ -16,7 +16,7 @@ module Carto::CartoCSS::Styles
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.instance.to_hash[:simple][:point]
+      Carto::CartoCSS::Cartography.instance.load_from_file[:simple][:point]
     end
 
     def parse_fill(fill)

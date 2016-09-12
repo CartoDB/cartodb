@@ -67,6 +67,7 @@ class ApplicationController < ActionController::Base
   end
 
   def http_header_authentication
+    puts "header-auth : subdomain is - #{CartoDB.extract_subdomain(request)} -"
     authenticate(:http_header_authentication, scope: CartoDB.extract_subdomain(request))
     if current_user
       validate_session(current_user)

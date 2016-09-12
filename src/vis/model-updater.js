@@ -102,17 +102,9 @@ ModelUpdater.prototype._generateAttributesBaseURL = function (windshaftMap, inde
 };
 
 ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
-
   // CartoDB / mapnik layers
   var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
   _.each(this._layersCollection.getCartoDBLayers(), function (layerModel, localLayerIndex) {
-    // TODO: Improve this so that we don't need `getLayerIndexesByType`
-    // Give me the metadata of the Nth mapnik layer
-    // Update the layer model
-
-    // Give me the data for legend of the Nth mapnik layer
-    // Update the legend models
-
     var windshaftMapLayerIndex = indexesOfMapnikLayers[localLayerIndex];
     layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
     this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);
@@ -126,6 +118,7 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
     var windshaftMapLayerIndex = indexesOfTorqueLayers[localLayerIndex];
     layerModel.set('meta', windshaftMap.getLayerMetadata(windshaftMapLayerIndex));
     layerModel.set('tileURLTemplates', this._calculateTileURLTemplatesForTorqueLayers(windshaftMap));
+    this._updateLegendModels(layerModel, windshaftMapLayerIndex, windshaftMap);
 
     layerModel.setOk();
   }, this);

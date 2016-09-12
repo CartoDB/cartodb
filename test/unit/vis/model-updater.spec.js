@@ -5,23 +5,35 @@ var Backbone = require('backbone');
 var ModelUpdater = require('../../../src/vis/model-updater');
 var WindshaftError = require('../../../src/windshaft/error');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
+var WindshaftMap = require('../../../src/windshaft/map-base.js');
+
+var MyWindshaftMap = WindshaftMap.extend({
+});
 
 describe('src/vis/model-updater', function () {
   beforeEach(function () {
     this.fakeVis = jasmine.createSpyObj('vis', ['reload']);
 
-    // TODO: Use the real things
-    this.windshaftMap = new Backbone.Model({
+    this.windshaftMap = new MyWindshaftMap({
       urlTemplate: 'http://{user}.carto.com:80',
       userName: 'documentation'
+    }, {
+      client: {},
+      layersCollection: {},
+      dataviewsCollection: {},
+      analysisCollection: {},
+      modelUpdater: {}
     });
-    this.windshaftMap.getBaseURL = jasmine.createSpy('getBaseURL').and.callFake(function (subdomain) {
+
+    spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {
       return 'http://' + (subdomain ? subdomain + '.' : '') + 'documentation.carto.com';
     });
-    this.windshaftMap.getLayerMetadata = jasmine.createSpy('getLayerMetadata').and.returnValue('metadata');
-    this.windshaftMap.getTiles = jasmine.createSpy('getTiles').and.returnValue('tileJSON');
-    this.windshaftMap.getLayerIndexesByType = jasmine.createSpy('getLayerIndexesByType').and.returnValue([0]);
-    this.windshaftMap.getSupportedSubdomains = jasmine.createSpy('getSupportedSubdomains').and.returnValue(['']);
+    spyOn(this.windshaftMap, 'getLayerMetadata').and.returnValue('metadata');
+    spyOn(this.windshaftMap, 'getLayerIndexesByType').and.returnValue([0]);
+    spyOn(this.windshaftMap, 'getSupportedSubdomains').and.returnValue(['']);
+    spyOn(this.windshaftMap, 'getBubbleLegendMetadata').and.returnValue({});
+    spyOn(this.windshaftMap, 'getCategoryLegendMetadata').and.returnValue(['']);
+    spyOn(this.windshaftMap, 'getChoroplethLegendMetadata').and.returnValue(['']);
 
     this.visModel = new Backbone.Model();
     this.visModel.setOk = jasmine.createSpy('setOk');
@@ -51,6 +63,12 @@ describe('src/vis/model-updater', function () {
       this.windshaftMap.getBaseURL.and.callFake(function (subdomain) {
         return 'http://' + (subdomain ? subdomain + '.' : '') + 'documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0';
       });
+    });
+
+    it('should set vis state to ok', function () {
+      this.modelUpdater.updateModels(this.windshaftMap);
+
+      expect(this.visModel.setOk).toHaveBeenCalled();
     });
 
     describe('layerGroupModel', function () {
@@ -179,189 +197,243 @@ describe('src/vis/model-updater', function () {
       });
     });
 
-    it('should update metatada of CartoDB and torque layer models', function () {
-      var layer0 = new Backbone.Model({ type: 'Tiled' });
-      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-      var layer2 = new TorqueLayer({}, { vis: this.visModel });
-      this.layersCollection.reset([ layer0, layer1, layer2 ]);
+    describe('layer models', function () {
+      it('should mark CartoDB and torque layer models as ok', function () {
+        var layer0 = new Backbone.Model({ type: 'Tiled' });
+        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+        spyOn(layer1, 'setOk');
+        var layer2 = new TorqueLayer({}, { vis: this.visModel });
+        spyOn(layer2, 'setOk');
+        this.layersCollection.reset([ layer0, layer1, layer2 ]);
 
-      this.windshaftMap.getLayerMetadata.and.callFake(function (index) {
-        if (index === 0) {
-          return 'metadataLayer0';
-        }
-        if (index === 1) {
-          return 'metadataLayer1';
-        }
+        this.modelUpdater.updateModels(this.windshaftMap);
+
+        expect(layer1.setOk).toHaveBeenCalled();
+        expect(layer2.setOk).toHaveBeenCalled();
       });
 
-      this.modelUpdater.updateModels(this.windshaftMap);
+      it('should set tileURLTemplates attribute of torque layer models', function () {
+        var layer0 = new Backbone.Model({ type: 'Tiled' });
+        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer2 = new TorqueLayer({}, { vis: this.visModel });
+        this.layersCollection.reset([ layer0, layer1, layer2 ]);
 
-      expect(layer1.get('meta')).toEqual('metadataLayer0');
-      expect(layer2.get('meta')).toEqual('metadataLayer1');
-    });
+        this.modelUpdater.updateModels(this.windshaftMap);
 
-    it('should mark CartoDB and torque layer models as ok', function () {
-      var layer0 = new Backbone.Model({ type: 'Tiled' });
-      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-      spyOn(layer1, 'setOk');
-      var layer2 = new TorqueLayer({}, { vis: this.visModel });
-      spyOn(layer2, 'setOk');
-      this.layersCollection.reset([ layer0, layer1, layer2 ]);
-
-      this.modelUpdater.updateModels(this.windshaftMap);
-
-      expect(layer1.setOk).toHaveBeenCalled();
-      expect(layer2.setOk).toHaveBeenCalled();
-    });
-
-    it('should set tileURLTemplates attribute of torque layer models', function () {
-      var layer0 = new Backbone.Model({ type: 'Tiled' });
-      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-      var layer2 = new TorqueLayer({}, { vis: this.visModel });
-      this.layersCollection.reset([ layer0, layer1, layer2 ]);
-
-      this.modelUpdater.updateModels(this.windshaftMap);
-
-      expect(layer2.get('tileURLTemplates')).toEqual([
-        'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.json.torque'
-      ]);
-    });
-
-    it('should update dataview models', function () {
-      var dataview1 = new Backbone.Model({ id: 'a1' });
-      var dataview2 = new Backbone.Model({ id: 'a2' });
-      this.dataviewsCollection.reset([ dataview1, dataview2 ]);
-
-      this.windshaftMap.getDataviewMetadata = function (dataviewId) {
-        if (dataviewId === 'a1') {
-          return {
-            url: {
-              http: 'http://example1.com',
-              https: 'https://example1.com'
-            }
-          };
-        }
-        if (dataviewId === 'a2') {
-          return {
-            url: {
-              http: 'http://example2.com',
-              https: 'https://example2.com'
-            }
-          };
-        }
-      };
-
-      spyOn(dataview1, 'set').and.callThrough();
-
-      this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
-
-      expect(dataview1.set).toHaveBeenCalledWith({
-        url: 'http://example1.com'
-      }, {
-        sourceId: 'sourceId',
-        forceFetch: 'forceFetch'
+        expect(layer2.get('tileURLTemplates')).toEqual([
+          'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.json.torque'
+        ]);
       });
 
-      expect(dataview1.get('url')).toEqual('http://example1.com');
-      expect(dataview2.get('url')).toEqual('http://example2.com');
+      fit('should update legend models of CartoDB and torque layer models', function () {
+        var layer0 = new Backbone.Model({ type: 'Tiled' });
+        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+        var layer3 = new TorqueLayer({}, { vis: this.visModel });
+        this.layersCollection.reset([ layer0, layer1, layer2, layer3 ]);
+
+        this.windshaftMap.getLayerIndexesByType.and.callFake(function (layerType) {
+          if (layerType === 'mapnik') {
+            return [0, 1];
+          }
+          if (layerType === 'torque') {
+            return [2];
+          }
+        });
+
+        this.windshaftMap.getBubbleLegendMetadata.and.callFake(function (layerIndex) {
+          if (layerIndex === 0) {
+            return {
+              bubbles: 'bubbles_layer_0',
+              avg: 'avg_layer_0'
+            };
+          }
+          if (layerIndex === 2) {
+            return {
+              bubbles: 'bubbles_layer_2',
+              avg: 'avg_layer_2'
+            };
+          }
+        });
+
+        this.windshaftMap.getCategoryLegendMetadata.and.callFake(function (layerIndex) {
+          if (layerIndex === 0) {
+            return {
+              categories: 'categories_layer_0'
+            };
+          }
+          if (layerIndex === 2) {
+            return {
+              categories: 'categories_layer_2'
+            };
+          }
+        });
+
+        this.windshaftMap.getChoroplethLegendMetadata.and.callFake(function (layerIndex) {
+          if (layerIndex === 0) {
+            return {
+              colors: 'colors_layer_0'
+            };
+          }
+          if (layerIndex === 2) {
+            return {
+              colors: 'colors_layer_2'
+            };
+          }
+        });
+
+        this.modelUpdater.updateModels(this.windshaftMap);
+
+        expect(layer1.legends.bubble.get('bubbles')).toEqual('bubbles_layer_0');
+        expect(layer1.legends.bubble.get('avg')).toEqual('avg_layer_0');
+        expect(layer1.legends.category.get('categories')).toEqual('categories_layer_0');
+        expect(layer1.legends.choropleth.get('colors')).toEqual('colors_layer_0');
+
+        expect(layer2.legends.bubble.get('bubbles')).toBeUndefined();
+        expect(layer2.legends.bubble.get('avg')).toBeUndefined();
+        expect(layer2.legends.category.get('categories')).toBeUndefined();
+        expect(layer2.legends.choropleth.get('colors')).toBeUndefined();
+
+        expect(layer3.legends.bubble.get('bubbles')).toEqual('bubbles_layer_2');
+        expect(layer3.legends.bubble.get('avg')).toEqual('avg_layer_2');
+        expect(layer3.legends.category.get('categories')).toEqual('categories_layer_2');
+        expect(layer3.legends.choropleth.get('colors')).toEqual('colors_layer_2');
+      });
     });
 
-    it('should update analysis models and "mark" them as ok', function () {
-      var getParamNames = function () { return []; };
-      var analysis1 = new Backbone.Model({ id: 'a1' });
-      analysis1.setOk = jasmine.createSpy('setOk');
-      var analysis2 = new Backbone.Model({ id: 'a2' });
-      analysis2.setOk = jasmine.createSpy('setOk');
-      this.analysisCollection.reset([ analysis1, analysis2 ]);
-      analysis1.getParamNames = analysis2.getParamNames = getParamNames;
+    describe('dataview models', function () {
+      it('should update dataview models', function () {
+        var dataview1 = new Backbone.Model({ id: 'a1' });
+        var dataview2 = new Backbone.Model({ id: 'a2' });
+        this.dataviewsCollection.reset([ dataview1, dataview2 ]);
 
-      this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-        if (analysisId === 'a1') {
-          return {
-            status: 'status_a1',
-            query: 'query_a1',
-            url: {
-              http: 'url_a1'
-            }
-          };
-        }
-        if (analysisId === 'a2') {
-          return {
-            status: 'status_a2',
-            query: 'query_a2',
-            url: {
-              http: 'url_a2'
-            }
-          };
-        }
-      };
+        this.windshaftMap.getDataviewMetadata = function (dataviewId) {
+          if (dataviewId === 'a1') {
+            return {
+              url: {
+                http: 'http://example1.com',
+                https: 'https://example1.com'
+              }
+            };
+          }
+          if (dataviewId === 'a2') {
+            return {
+              url: {
+                http: 'http://example2.com',
+                https: 'https://example2.com'
+              }
+            };
+          }
+        };
 
-      this.modelUpdater.updateModels(this.windshaftMap);
+        spyOn(dataview1, 'set').and.callThrough();
 
-      expect(analysis1.get('status')).toEqual('status_a1');
-      expect(analysis1.get('query')).toEqual('query_a1');
-      expect(analysis1.get('url')).toEqual('url_a1');
-      expect(analysis1.setOk).toHaveBeenCalled();
-      expect(analysis2.get('status')).toEqual('status_a2');
-      expect(analysis2.get('query')).toEqual('query_a2');
-      expect(analysis2.get('url')).toEqual('url_a2');
-      expect(analysis2.setOk).toHaveBeenCalled();
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(dataview1.set).toHaveBeenCalledWith({
+          url: 'http://example1.com'
+        }, {
+          sourceId: 'sourceId',
+          forceFetch: 'forceFetch'
+        });
+
+        expect(dataview1.get('url')).toEqual('http://example1.com');
+        expect(dataview2.get('url')).toEqual('http://example2.com');
+      });
     });
 
-    it('should update analysis models and "mark" them as failed', function () {
-      var getParamNames = function () { return []; };
-      var analysis1 = new Backbone.Model({ id: 'a1' });
-      this.analysisCollection.reset([ analysis1 ]);
-      analysis1.getParamNames = getParamNames;
+    describe('analysis models', function () {
+      it('should update analysis models and "mark" them as ok', function () {
+        var getParamNames = function () { return []; };
+        var analysis1 = new Backbone.Model({ id: 'a1' });
+        analysis1.setOk = jasmine.createSpy('setOk');
+        var analysis2 = new Backbone.Model({ id: 'a2' });
+        analysis2.setOk = jasmine.createSpy('setOk');
+        this.analysisCollection.reset([ analysis1, analysis2 ]);
+        analysis1.getParamNames = analysis2.getParamNames = getParamNames;
 
-      this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-        if (analysisId === 'a1') {
-          return {
-            error_message: 'wadus',
-            status: 'failed',
-            query: 'query_a1',
-            url: {
-              http: 'url_a1'
-            }
-          };
-        }
-      };
+        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
+          if (analysisId === 'a1') {
+            return {
+              status: 'status_a1',
+              query: 'query_a1',
+              url: {
+                http: 'url_a1'
+              }
+            };
+          }
+          if (analysisId === 'a2') {
+            return {
+              status: 'status_a2',
+              query: 'query_a2',
+              url: {
+                http: 'url_a2'
+              }
+            };
+          }
+        };
 
-      this.modelUpdater.updateModels(this.windshaftMap);
+        this.modelUpdater.updateModels(this.windshaftMap);
 
-      expect(analysis1.get('status')).toEqual('failed');
-      expect(analysis1.get('error')).toEqual({message: 'wadus'});
-    });
+        expect(analysis1.get('status')).toEqual('status_a1');
+        expect(analysis1.get('query')).toEqual('query_a1');
+        expect(analysis1.get('url')).toEqual('url_a1');
+        expect(analysis1.setOk).toHaveBeenCalled();
+        expect(analysis2.get('status')).toEqual('status_a2');
+        expect(analysis2.get('query')).toEqual('query_a2');
+        expect(analysis2.get('url')).toEqual('url_a2');
+        expect(analysis2.setOk).toHaveBeenCalled();
+      });
 
-    it('should not update attributes that are original params (eg: query)', function () {
-      var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
-      analysis1.getParamNames = function () { return ['query']; };
-      analysis1.setOk = jasmine.createSpy('setOk');
-      this.analysisCollection.reset([ analysis1 ]);
+      it('should update analysis models and "mark" them as failed', function () {
+        var getParamNames = function () { return []; };
+        var analysis1 = new Backbone.Model({ id: 'a1' });
+        this.analysisCollection.reset([ analysis1 ]);
+        analysis1.getParamNames = getParamNames;
 
-      this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
-        if (analysisId === 'a1') {
-          return {
-            status: 'new_status',
-            query: 'new_query',
-            url: {
-              http: 'new_url'
-            }
-          };
-        }
-      };
+        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
+          if (analysisId === 'a1') {
+            return {
+              error_message: 'wadus',
+              status: 'failed',
+              query: 'query_a1',
+              url: {
+                http: 'url_a1'
+              }
+            };
+          }
+        };
 
-      this.modelUpdater.updateModels(this.windshaftMap);
+        this.modelUpdater.updateModels(this.windshaftMap);
 
-      expect(analysis1.get('status')).toEqual('new_status');
-      expect(analysis1.get('query')).toEqual('original_query');
-      expect(analysis1.get('url')).toEqual('new_url');
-    });
+        expect(analysis1.get('status')).toEqual('failed');
+        expect(analysis1.get('error')).toEqual({message: 'wadus'});
+      });
 
-    it('should set vis state to ok', function () {
-      this.modelUpdater.updateModels(this.windshaftMap);
+      it('should not update attributes that are original params (eg: query)', function () {
+        var analysis1 = new Backbone.Model({ id: 'a1', query: 'original_query' });
+        analysis1.getParamNames = function () { return ['query']; };
+        analysis1.setOk = jasmine.createSpy('setOk');
+        this.analysisCollection.reset([ analysis1 ]);
 
-      expect(this.visModel.setOk).toHaveBeenCalled();
+        this.windshaftMap.getAnalysisNodeMetadata = function (analysisId) {
+          if (analysisId === 'a1') {
+            return {
+              status: 'new_status',
+              query: 'new_query',
+              url: {
+                http: 'new_url'
+              }
+            };
+          }
+        };
+
+        this.modelUpdater.updateModels(this.windshaftMap);
+
+        expect(analysis1.get('status')).toEqual('new_status');
+        expect(analysis1.get('query')).toEqual('original_query');
+        expect(analysis1.get('url')).toEqual('new_url');
+      });
     });
   });
 

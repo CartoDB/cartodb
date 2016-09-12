@@ -3,8 +3,6 @@
 module Carto
   module CartoCSS
     class Presenter
-      CARTOCSS_PROPERTY_INDENTATION = '  '.freeze
-
       def initialize(class_name: 'layer', cartocss_array: [])
         @class_name = class_name
         @cartocss_array = cartocss_array
@@ -27,7 +25,7 @@ module Carto
       end
 
       def format_cartocss_property(cartocss_property)
-        "#{CARTOCSS_PROPERTY_INDENTATION}#{cartocss_property}"
+        "  #{cartocss_property}"
       end
     end
   end

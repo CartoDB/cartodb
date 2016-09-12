@@ -12,7 +12,6 @@
 
         <div class="Filters-typeItem Filters-typeItem--searchField">
           <form class="Filters-searchForm js-search-form" action="#">
-            <!-- <%- layersFound.length %> LAYER(s) found, <%- layersAvailableCount %> LAYER(s) available -->
             <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- searchQuery %>" placeholder="<%- _t('components.modals.add-basemap.wms.placeholder', { layersFoundCount: layersFound.length, layersFoundCountPluralize: _t('components.modals.add-basemap.wms.tables-pluralize', { smart_count: layersFound.length }), layersAvailableCount: layersAvailableCount, layersAvailableCountPluralize: _t('components.modals.add-basemap.wms.tables-pluralize', { smart_count: layersAvailableCount }) }) %>" />
             <button type="button" class="Filters-cleanSearch js-clean-search u-actionTextColor">
               <i class="CDB-IconFont CDB-IconFont-close"></i>

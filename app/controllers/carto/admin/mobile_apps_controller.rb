@@ -74,7 +74,6 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     @mobile_app.name = updated_attributes[:name]
     @mobile_app.icon_url = updated_attributes[:icon_url]
     @mobile_app.description = updated_attributes[:description]
-    @mobile_app.app_type = updated_attributes[:app_type]
 
     unless @mobile_app.valid?
       flash.now[:error] = @mobile_app.errors.full_messages.join(', ')

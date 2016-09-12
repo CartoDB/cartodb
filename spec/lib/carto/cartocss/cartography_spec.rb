@@ -74,9 +74,10 @@ module Carto
 
       it 'handles inexesitent file paths' do
         cartography = Carto::CartoCSS::Cartography.instance
-                                                  .load_from_file(file_path: '/fake/path.json')
 
-        cartography.should eq Hash.new
+        expect { cartography.load_from_file(file_path: '/fake/path.json') }.to raise_error do
+          'Carto::CartoCSS::Cartography: Couldn\'t read from file'
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
 .List {
   @include display-flex();
@@ -40,11 +40,11 @@
   @include justify-content(space-between, justify);
   @include align-items(center);
   box-sizing: content-box; // to make sure size is consistent w/ borders
-  margin-left: $sMargin-element;
+  width: 100%;
   margin-right: $sMargin-element;
+  margin-left: $sMargin-element;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
-  width: 100%;
   border-bottom: 1px solid $cStructure-mainLine;
 }
 .List-rowItem.List-rowItem--compact {

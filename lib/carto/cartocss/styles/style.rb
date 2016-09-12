@@ -43,6 +43,8 @@ module Carto
         end
 
         def self.style_for_geometry_type(geometry_type)
+          return unless geometry_type
+
           accepted_descendants = descendants.select do |descendant|
             descendant.accepted_geometry_types.include?(geometry_type.downcase)
           end

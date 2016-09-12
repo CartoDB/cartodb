@@ -16,7 +16,7 @@ module Carto::CartoCSS::Styles
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.new.to_hash[:simple][:polygon]
+      Carto::CartoCSS::Cartography.instance.to_hash[:simple][:polygon]
     end
 
     def parse_fill(fill)

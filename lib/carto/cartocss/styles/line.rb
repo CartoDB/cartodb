@@ -16,7 +16,7 @@ module Carto::CartoCSS::Styles
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.new.to_hash[:simple][:line]
+      Carto::CartoCSS::Cartography.instance.to_hash[:simple][:line]
     end
 
     def parse_stroke(stroke)

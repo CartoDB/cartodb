@@ -13,7 +13,6 @@ var LayerLegendsView = Backbone.View.extend({
   initialize: function () {
     this._legendViews = [];
 
-    // TODO: We want to do this binding after view has been rendered
     this.model.on('change:visible', this._onLayerVisibilityChanged, this);
   },
 

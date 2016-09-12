@@ -274,6 +274,7 @@ $buttonColor: #636D72;
 
 .Bubble-item.is-filter .Bubble-itemCircle {
   background: #FFF !important;
+  opacity: 1 !important;
   &::before {
     display: none;
   }

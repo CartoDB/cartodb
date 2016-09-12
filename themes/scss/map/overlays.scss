@@ -50,7 +50,7 @@ $buttonColor: #636D72;
     border-bottom-left-radius: 4px;
   }
 }
-.CDB-Zoom-action--out:before {
+.CDB-Zoom-action--out::before {
   position: absolute;
   left: 50%;
   width: 11px;
@@ -60,7 +60,7 @@ $buttonColor: #636D72;
   content: '';
 }
 .CDB-Zoom-action--in {
-  &:before {
+  &::before {
     position: absolute;
     left: 50%;
     width: 11px;
@@ -69,7 +69,7 @@ $buttonColor: #636D72;
     background: $buttonColor;
     content: '';
   }
-  &:after {
+  &::after {
     position: absolute;
     top: 11px;
     width: 1px;
@@ -161,7 +161,7 @@ $buttonColor: #636D72;
   cursor: pointer;
   z-index: 10;
 
-  &:before {
+  &::before {
     display: block;
     position: absolute;
     top: 0;
@@ -172,7 +172,7 @@ $buttonColor: #636D72;
     border-left: 48px solid transparent;
     content: '';
   }
-  &:after {
+  &::after {
     display: block;
     position: absolute;
     top: -22px;
@@ -218,15 +218,15 @@ $buttonColor: #636D72;
 /* Legends */
 
 .CDB-Legends {
-  width: 240px;
-  background: #FFFFFF;
-  box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.24);
-  border-radius: 4px;
-  padding: 24px;
-  box-sizing: border-box;
   position: absolute;
-  right: 24px; 
+  right: 24px;
   bottom: 24px;
+  width: 240px;
+  padding: 24px;
+  border-radius: 4px;
+  background: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  box-sizing: border-box;
 }
 .CDB-Legend-item {
   margin-bottom: 32px;
@@ -238,9 +238,8 @@ $buttonColor: #636D72;
 .Bubble-list {
   @include display-flex();
   @include justify-content(center);
-  margin-left: 60px;
   position: relative;
-
+  margin-left: 60px;
 }
 .Bubble-item {
   position: absolute;
@@ -251,32 +250,32 @@ $buttonColor: #636D72;
   @include display-flex();
 }
 .Bubble-itemCircle {
+  display: block;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   background: #F8AB17;
   box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
   z-index: 2;
-  display: block;
   pointer-events: none;
 }
-.Bubble-item:before {
-  content: "";
+.Bubble-item::before {
+  position: absolute;
+  top: 5px;
+  right: 50%;
   width: 68px;
   height: 1px;
-  position: absolute;
   background: rgba(0, 0, 0, 0.12);
-  right: 50%;
-  top: 5px;
+  content: '';
   z-index: -1;
 }
-.Bubble-item.is-filter:before {
+.Bubble-item.is-filter::before {
   display: none;
 }
 
 .Bubble-item.is-filter .Bubble-itemCircle {
-  background: #F9F9F9 !important;
-  &:before {
-    display: none; 
+  background: #FFF !important;
+  &::before {
+    display: none;
   }
 }
 .Bubble-numbersItem {

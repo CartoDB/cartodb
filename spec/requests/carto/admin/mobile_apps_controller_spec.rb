@@ -119,7 +119,7 @@ describe Carto::Admin::MobileAppsController do
 
     it 'validates app before sending to Central' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
-      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'dev', platform: 'android').once
+      Cartodb::Central.any_instance.stubs(:get_mobile_app).returns(id: TEST_UUID, monthly_users: 0, app_type: 'open', platform: 'android').once
       Cartodb::Central.any_instance.stubs(:update_mobile_app).returns(mobile_app: {}).never
       login(@user)
       put mobile_app_path(id: TEST_UUID), mobile_app: update_app.merge(name: '')

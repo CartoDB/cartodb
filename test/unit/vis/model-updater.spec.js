@@ -225,7 +225,7 @@ describe('src/vis/model-updater', function () {
         ]);
       });
 
-      fit('should update legend models of CartoDB and torque layer models', function () {
+      it('should update legend models of CartoDB and torque layer models', function () {
         var layer0 = new Backbone.Model({ type: 'Tiled' });
         var layer1 = new CartoDBLayer({}, { vis: this.visModel });
         var layer2 = new CartoDBLayer({}, { vis: this.visModel });

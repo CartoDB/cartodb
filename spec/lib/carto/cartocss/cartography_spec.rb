@@ -65,8 +65,18 @@ module Carto
         end
 
         it 'has stayed the same' do
-          Carto::CartoCSS::Cartography.new.to_hash.should eq production_default_cartography
+          cartography = Carto::CartoCSS::Cartography.instance
+                                                    .load_from_file
+
+          cartography.should eq production_default_cartography
         end
+      end
+
+      it 'handles inexesitent file paths' do
+        cartography = Carto::CartoCSS::Cartography.instance
+                                                  .load_from_file(file_path: '/fake/path.json')
+
+        cartography.should eq Hash.new
       end
     end
   end

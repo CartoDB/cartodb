@@ -16,7 +16,7 @@
           "fixed": 1
         },
         "color": {
-          "fixed": "#fff",
+          "fixed": "#FFF",
           "opacity": 1
         }
       }
@@ -38,7 +38,7 @@
     "polygon": {
       "fill": {
         "color": {
-          "fixed": "#374c70",
+          "fixed": "#374C70",
           "opacity": 0.9
         }
       },
@@ -47,7 +47,7 @@
           "fixed": 1
         },
         "color": {
-          "fixed": "#fff",
+          "fixed": "#FFF",
           "opacity": 0.5
         }
       }

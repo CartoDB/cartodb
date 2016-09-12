@@ -7,17 +7,15 @@
 
 .Editor-formInner {
   @include display-flex();
-  @include align-items(baseline, baseline);
+  @include align-items(center);
   min-height: $baseSize * 4;
   margin-top: $baseSize;
 }
 .Options-form .Editor-formInner {
   margin-top: 0;
 }
-.Editor-formInner .CDB-Legend {
-  padding-top: 9px;
-}
-.Editor-formInput {
+.Editor-formInput,
+.Editor-formLabel {
   @include flex(1);
   position: relative;
 }
@@ -26,6 +24,7 @@
 }
 .Editor-formInner--noMargin {
   margin-top: 0;
+  padding-top: $baseSize;
 }
 .Editor-formInner--nested {
   position: relative;
@@ -46,7 +45,7 @@
 }
 .Editor-formInner--nested .CDB-Legend::before {
   position: absolute;
-  top: 14px;
+  top: 5px;
   left: 6px;
   width: 5px;
   height: 5px;
@@ -107,11 +106,10 @@
   width: 92px;
   margin-right: 12px;
 }
+/* move to CartoAssets */
 .Editor-checkerInput .CDB-Checkbox-face {
-  width: 18px; // Forcing to be at least that width
-}
-.Editor-checkerLabel {
-  margin-left: 8px;
+  width: 16px; // Forcing to be at least that width
+  max-width: 16px;
 }
 .Editor-checkerComponent {
   width: 158px;

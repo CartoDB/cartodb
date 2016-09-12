@@ -14,7 +14,7 @@ module Carto
           return [] unless @definition
           return @cartocss_array if @cartocss_array
 
-          @cartocss_array = @definition.map do |key, value|
+          nested_cartocss_array = @definition.map do |key, value|
             case key.to_s
             when 'fill'
               parse_fill(value)
@@ -27,7 +27,7 @@ module Carto
             end
           end
 
-          @cartocss_array.flatten
+          @cartocss_array = nested_cartocss_array.flatten
         end
 
         def to_cartocss

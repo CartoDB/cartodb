@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    Rails::Sequel.connection.run(%Q{
+    Rails::Sequel.connection.run(%{
         ALTER TABLE visualizations
           DROP CONSTRAINT visualizations_state_id_fkey;
 
@@ -12,7 +12,7 @@ Sequel.migration do
   end
 
   down do
-    Rails::Sequel.connection.run(%Q{
+    Rails::Sequel.connection.run(%{
         ALTER TABLE visualizations
           DROP CONSTRAINT visualizations_state_id_fkey;
 

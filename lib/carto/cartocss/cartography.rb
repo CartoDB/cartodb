@@ -21,7 +21,9 @@ module Carto
 
         @cartographies[file_path] = JSON.parse(cartography_file).with_indifferent_access
       rescue Errno::ENOENT
-        return {}
+        raise message = 'Carto::CartoCSS::Cartography: Couldn\'t read from file'
+
+        CartoDB::Logger.error(message: message, file_path: file_path)
       end
     end
   end

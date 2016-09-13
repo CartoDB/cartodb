@@ -15,6 +15,7 @@ module CartoDB
       OVERLAY_TABLENAME             = 'o_%s_%s'
       RASTER_COLUMN_NAME            = 'the_raster_webmercator'
       GDALWARP_COMMON_OPTIONS       = '-co "COMPRESS=LZW" -co "BIGTIFF=IF_SAFER"'
+      MAX_REDUCTED_SIZE             = 256
 
       def initialize(table_name, filepath, pg_options, db)
         self.filepath             = filepath
@@ -187,12 +188,16 @@ module CartoDB
       def calculate_raster_overviews(raster_size)
         bigger_size = raster_size.max
 
-        max_power = (Math::log(bigger_size / 256, 2)).ceil.to_i
+        max_power =
+          if bigger_size > MAX_REDUCTED_SIZE
+            Math::log(bigger_size.to_f / MAX_REDUCTED_SIZE, 2).ceil
+          else
+            0
+          end
 
-        range = Range.new(1, max_power + 1)
+        range = (1..max_power + 1)
 
-        overviews = range.map{ |x| 2 ** x }
-                         .select { |x| x <= 1000 }
+        overviews = range.map { |x| 2**x }.select { |x| x <= 1000 }
 
         self.additional_tables = overviews
 
@@ -279,4 +284,3 @@ module CartoDB
     end
   end
 end
-

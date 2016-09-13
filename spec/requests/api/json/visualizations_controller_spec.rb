@@ -154,6 +154,25 @@ describe Api::Json::VisualizationsController do
           v.map.user.should eq @org_user_2
         end
       end
+
+      it 'rewrites queries for other user datasets' do
+        table1 = create_table(user_id: @org_user_1.id)
+        layer = table1.map.data_layers.first
+        layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+        layer.save
+        share_table_with_user(table1, @org_user_2)
+        payload = {
+          type: 'derived',
+          tables: ["#{@org_user_1.username}.#{table1.name}"]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          v.map.data_layers.first.options['query'].should eq "SELECT * FROM #{@org_user_1.username}.#{table1.name} LIMIT 1"
+        end
+      end
     end
   end
 

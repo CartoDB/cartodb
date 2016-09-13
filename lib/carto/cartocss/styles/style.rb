@@ -6,6 +6,9 @@ module Carto
   module CartoCSS
     module Styles
       class Style
+        CARTOGRAPHY_DEFINITION_LOCATION =
+          "#{Rails.root}/lib/assets/javascripts/cartodb3/data/default-cartography.json".freeze
+
         def initialize(definition)
           @definition = definition
         end

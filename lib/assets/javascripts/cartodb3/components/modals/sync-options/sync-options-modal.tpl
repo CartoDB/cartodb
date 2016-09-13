@@ -1,5 +1,5 @@
 <div class="u-flex u-justifyCenter">
-  <div class="Modal-inner u-flex u-justifyCenter">
+  <div class="Modal-inner Modal-inner--grid u-flex u-justifyCenter">
     <div class="Modal-icon">
       <svg width="24px" height="20px" viewBox="0 8 24 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="Icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(0.000000, 8.000000)">

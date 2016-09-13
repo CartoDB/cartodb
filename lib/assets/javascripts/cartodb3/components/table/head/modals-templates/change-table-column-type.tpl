@@ -1,5 +1,5 @@
 <div class="u-flex u-justifyCenter">
-  <div class="Modal-inner u-flex u-justifyCenter">
+  <div class="Modal-inner Modal-inner--grid u-flex u-justifyCenter">
     <div class="Modal-icon">
       <svg width="25px" height="25px" viewBox="-1 4 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Outline_Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-1.000000, 4.000000)">
@@ -10,7 +10,7 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m u-alertTextColor">
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m">
         <%- _t('components.table.columns.change-type.title', { columnName: columnName, newType: newType }) %>
       </h2>
       <p class="CDB-Text CDB-Size-medium u-altTextColor">

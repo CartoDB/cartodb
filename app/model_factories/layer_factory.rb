@@ -33,7 +33,7 @@ module ModelFactories
       data_layer.tooltip['fields'] = []
 
       if user.force_builder?
-        data_layer.options['style_properties'] = style_properties(user, the_geom_column_type)
+        data_layer.options['style_properties'] = style_properties(user, geometry_type)
       end
 
       data_layer
@@ -56,10 +56,8 @@ module ModelFactories
 
     def self.style_properties(user, geometry_type)
       {
-        "type" => 'simple',
-        "properties" => {
-
-        }
+        type: 'simple',
+        properties: Hash.new
       }
     end
 

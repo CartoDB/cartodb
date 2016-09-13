@@ -64,7 +64,8 @@ module Carto
       end
 
       it 'has stayed the same' do
-        cartography = Carto::Definition.instance.load_from_file
+        cartography_file_path = Styles::Style::CARTOGRAPHY_DEFINITION_LOCATION
+        cartography = Carto::Definition.instance.load_from_file(cartography_file_path)
 
         cartography.should eq production_default_cartography
       end

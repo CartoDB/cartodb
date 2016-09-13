@@ -10,13 +10,13 @@ module Carto::CartoCSS::Styles
     end
 
     def self.accepted_geometry_types
-      ['point', 'multipoint']
+      ['point', 'multipoint', 'st_point']
     end
 
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.new.to_hash[:simple][:point]
+      Carto::CartoCSS::Cartography.instance.load_from_file[:simple][:point]
     end
 
     def parse_fill(fill)
@@ -24,9 +24,9 @@ module Carto::CartoCSS::Styles
       color = fill[:color][:fixed]
       opacity = fill[:color][:opacity]
 
-      "  marker-width: #{width};\n"\
-      "  marker-fill: #{color};\n"\
-      "  marker-fill-opacity: #{opacity};\n"
+      ["marker-width: #{width};",
+       "marker-fill: #{color};",
+       "marker-fill-opacity: #{opacity};"]
     end
 
     def parse_stroke(stroke)
@@ -34,12 +34,12 @@ module Carto::CartoCSS::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      "  marker-line-width: #{width};\n"\
-      "  marker-line-color: #{color};\n"\
-      "  marker-line-opacity: #{opacity};\n"\
-      "  marker-placement: point;\n"\
-      "  marker-type: ellipse;\n"\
-      "  marker-allow-overlap: true;\n"
+      ["marker-line-width: #{width};",
+       "marker-line-color: #{color};",
+       "marker-line-opacity: #{opacity};",
+       "marker-placement: point;",
+       "marker-type: ellipse;",
+       "marker-allow-overlap: true;"]
     end
   end
 end

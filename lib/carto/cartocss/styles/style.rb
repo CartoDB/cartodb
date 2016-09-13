@@ -1,22 +1,20 @@
 # encoding utf-8
 
+require_relative '../presenter'
+
 module Carto
   module CartoCSS
     module Styles
       class Style
-        EMTPY_CARTOCSS = '#empty{}'.freeze
-
         def initialize(definition)
           @definition = definition
         end
 
-        def to_cartocss
-          return EMTPY_CARTOCSS unless @definition
-          return @cartocss if @cartocss
+        def to_cartocss_array
+          return [] unless @definition
+          return @cartocss_array if @cartocss_array
 
-          @cartocss = ''
-
-          @cartocss = @definition.map do |key, value|
+          nested_cartocss_array = @definition.map do |key, value|
             case key.to_s
             when 'fill'
               parse_fill(value)
@@ -29,9 +27,11 @@ module Carto
             end
           end
 
-          "#layer {\n"\
-          "#{@cartocss.join}"\
-          "}"
+          @cartocss_array = nested_cartocss_array.flatten
+        end
+
+        def to_cartocss
+          Carto::CartoCSS::Presenter.new(cartocss_array: to_cartocss_array).to_s
         end
 
         def self.accepted_geometry_types
@@ -43,6 +43,8 @@ module Carto
         end
 
         def self.style_for_geometry_type(geometry_type)
+          return unless geometry_type
+
           accepted_descendants = descendants.select do |descendant|
             descendant.accepted_geometry_types.include?(geometry_type.downcase)
           end
@@ -52,12 +54,14 @@ module Carto
 
         private
 
+        # NOTE: This method should be overwritten by child classes if needed
         def parse_fill(_)
-          ''
+          []
         end
 
+        # NOTE: This method should be overwritten by child classes if needed
         def parse_stroke(_)
-          ''
+          []
         end
       end
     end

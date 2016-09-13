@@ -10,13 +10,13 @@ module Carto::CartoCSS::Styles
     end
 
     def self.accepted_geometry_types
-      ['line', 'multiline', 'linestring', 'multilinestring']
+      ['line', 'multiline', 'linestring', 'multilinestring', 'st_multipoint', 'st_linestring', 'st_multilinestring']
     end
 
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.new.to_hash[:simple][:line]
+      Carto::CartoCSS::Cartography.instance.load_from_file[:simple][:line]
     end
 
     def parse_stroke(stroke)
@@ -24,9 +24,9 @@ module Carto::CartoCSS::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      "  line-width: #{width};\n"\
-      "  line-color: #{color};\n"\
-      "  line-opacity: #{opacity};\n"
+      ["line-width: #{width};",
+       "line-color: #{color};",
+       "line-opacity: #{opacity};"]
     end
   end
 end

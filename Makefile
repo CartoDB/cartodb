@@ -280,6 +280,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/cartocss/styles/point_spec.rb \
 	spec/lib/carto/cartocss/styles/polygon_spec.rb \
 	spec/lib/carto/cartocss/styles/line_spec.rb \
+	spec/lib/carto/cartocss/presenter_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

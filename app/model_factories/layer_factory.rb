@@ -22,18 +22,20 @@ module ModelFactories
       ::Layer.new(options)
     end
 
-    def self.get_default_data_layer(table_name, user, the_geom_column_type = 'geometry')
+    def self.get_default_data_layer(table_name, user, geometry_type)
       data_layer = ::Layer.new(Cartodb.config[:layer_opts]['data'])
       data_layer.options['table_name'] = table_name
       data_layer.options['user_name'] = user.username
-      data_layer.options['tile_style'] = tile_style(user, the_geom_column_type)
-      if user.builder_enabled?
-        data_layer.options['style_properties'] = style_properties(user, the_geom_column_type)
-      end
+      data_layer.options['tile_style'] = tile_style(user, geometry_type)
       data_layer.infowindow ||= {}
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
+
+      if user.force_builder?
+        data_layer.options['style_properties'] = style_properties(user, the_geom_column_type)
+      end
+
       data_layer
     end
 
@@ -64,7 +66,7 @@ module ModelFactories
     def self.tile_style(user, geometry_type)
       style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
 
-      if user.builder_enabled? && style_class
+      if user.force_builder? && style_class
         style_class.new.to_cartocss
       else
         "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"

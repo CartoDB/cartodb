@@ -99,9 +99,9 @@ module Carto
         'port'     => 'port',
         'username' => 'user',
         'password' => 'password'
-      }
+      }.freeze
 
-      NON_ATTRIBUTES = %w(schema table provider)
+      NON_ATTRIBUTES = %w(schema table provider).freeze
 
       def attribute_name(parameter_name, value)
         attribute_name = ATTRIBUTE_NAMES[parameter_name.to_s.downcase] || parameter_name.to_s
@@ -116,7 +116,7 @@ module Carto
       end
 
       SERVER_OPTIONS  = %w(host hostaddr port dbname).freeze
-      USERMAP_OPTIONS = %w(user password)
+      USERMAP_OPTIONS = %w(user password).freeze
 
       def server_options
         connection_attributes.slice(*SERVER_OPTIONS).parameters

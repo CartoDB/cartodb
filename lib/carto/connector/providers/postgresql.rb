@@ -16,7 +16,7 @@ module Carto
 
       private
 
-      DEFAULT_SCHEMA = 'public'
+      DEFAULT_SCHEMA = 'public'.freeze
 
       def fixed_connection_attributes
         {

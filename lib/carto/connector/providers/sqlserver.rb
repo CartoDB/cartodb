@@ -13,7 +13,7 @@ module Carto
 
       private
 
-      DEFAULT_SCHEMA = 'dbo'
+      DEFAULT_SCHEMA = 'dbo'.freeze
 
       def fixed_connection_attributes
         {

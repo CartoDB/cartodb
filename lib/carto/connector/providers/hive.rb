@@ -19,7 +19,7 @@ module Carto
 
       private
 
-      DEFAULT_SCHEMA = 'default' # '' would also be OK
+      DEFAULT_SCHEMA = 'default'.freeze # '' would also be OK
 
       def fixed_connection_attributes
         {
@@ -44,7 +44,7 @@ module Carto
       end
 
       def non_connection_parameters
-        super.reverse_merge(schema: @connection[:database] ||  DEFAULT_SCHEMA)
+        super.reverse_merge(schema: @connection[:database] || DEFAULT_SCHEMA)
       end
 
     end

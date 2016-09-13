@@ -69,12 +69,9 @@ module CartoDB
         geometry_type = user_table.service.geometry_types.first
         return unless geometry_type
 
-        style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
-        if style_class
-          new_layer.options[:tile_style] = style_class.new.to_cartocss
-        else
-          CartoDB::Logger.error(message: 'Unknown geometry type resetting styles', geometry_type: geometry_type)
-        end
+        tile_style = ModelFactories::LayerFactory.tile_style(user, geometry_type)
+        new_layer.options[:tile_style] = tile_style
+
         new_layer
       end
     end

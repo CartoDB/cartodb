@@ -1,7 +1,7 @@
 # encoding utf-8
 
 require_relative './style.rb'
-require_relative '../cartography.rb'
+require_relative '../../definition.rb'
 
 module Carto::CartoCSS::Styles
   class Polygon < Style
@@ -16,7 +16,7 @@ module Carto::CartoCSS::Styles
     private
 
     def default_definition
-      Carto::CartoCSS::Cartography.instance.load_from_file[:simple][:polygon]
+      Carto::Definition.instance.load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)[:simple][:polygon]
     end
 
     def parse_fill(fill)

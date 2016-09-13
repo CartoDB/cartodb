@@ -33,8 +33,8 @@ module CartoDB
         end
       end
 
-      def copy_data_layers(origin_map, destination_map, reset_styles)
-        data_layer_copies_from(origin_map, reset_styles).map do |layer|
+      def copy_data_layers(origin_map, destination_map, user)
+        data_layer_copies_from(origin_map, user).map do |layer|
           link(destination_map, layer)
         end
       end
@@ -43,10 +43,10 @@ module CartoDB
 
       attr_reader :map
 
-      def data_layer_copies_from(map, reset_styles)
+      def data_layer_copies_from(map, user)
         map.carto_and_torque_layers.map do |layer|
           new_layer = layer.copy
-          reset_layer_styles(layer, new_layer) if reset_styles
+          user.force_builder? ? reset_layer_styles(layer, new_layer) : new_layer
         end
       end
 

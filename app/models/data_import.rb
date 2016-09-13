@@ -23,7 +23,7 @@ require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
-require_relative '../../services/importer/lib/importer/connector'
+require_relative '../../services/importer/lib/importer/connector_runner'
 require_relative '../../services/importer/lib/importer/exceptions'
 
 require_dependency 'carto/tracking/events'
@@ -677,18 +677,18 @@ class DataImport < Sequel::Model
     [importer, runner, datasource_provider, manual_fields]
   end
 
-  # Create an Importer using a Connector to fetch the data.
+  # Create an Importer using a ConnectorRunner to fetch the data.
   # This methods returns an array with two elements:
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::Connector.check_availability!(current_user)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
 
     database_options = pg_options
 
     self.host = database_options[:host]
 
-    connector = CartoDB::Importer2::Connector.new(
+    connector = CartoDB::Importer2::ConnectorRunner.new(
       service_item_id,
       user: current_user,
       pg: database_options,

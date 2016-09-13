@@ -1,7 +1,6 @@
 # encoding: utf-8
+require 'carto/connector'
 require_relative '../../../../spec/spec_helper'
-require_relative '../../lib/importer/connector'
-require_relative '../../lib/importer/job'
 
 require_relative '../doubles/importer_stats'
 require_relative '../doubles/loader'
@@ -14,7 +13,7 @@ require_relative '../doubles/table_row_count_limit'
 
 require_relative 'sql_helper'
 
-class TestConnector < CartoDB::Importer2::Connector
+class TestConnector < Carto::Connector
   def execute_as_superuser(command)
     @executed_commands ||= []
     @executed_commands << [:superuser, command, @user.username]
@@ -55,12 +54,11 @@ end
 # Multiple hashes are passed to `expect_executed_commands`
 # and omiting the braces of the last one is would be inconvenient, so:
 # rubocop:disable Style/BracesAroundHashParameters
-describe CartoDB::Importer2::Connector do
+
+describe Carto::Connector do
   before(:all) do
     @user = create_user
     @user.save
-    @pg_options = @user.db_service.db_configuration_for
-
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
   end
 
@@ -73,7 +71,7 @@ describe CartoDB::Importer2::Connector do
   end
 
   describe 'mysql' do
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'mysql',
         connection: {
@@ -84,16 +82,13 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -159,7 +154,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -203,16 +198,13 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -264,15 +256,18 @@ describe CartoDB::Importer2::Connector do
         table:    'thetable',
         encoding: 'theencoding',
         invalid_parameter: 'xyz'
-      }.to_json
+      }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
+      connector = TestConnector.new(parameters, options)
       expect {
-        TestConnector.new(parameters, options)
-      }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error(Carto::Connector::InvalidParametersError)
+
+      # When parameters are not valid nothing should be executed in the database
+      connector.executed_commands.should be_nil
     end
 
     it 'Fails gracefully when copy errs' do
@@ -286,18 +281,17 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
       connector = FailingTestConnector.new(parameters, options)
-      connector.run
+      expect {
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error('SQL EXECUTION ERROR')
 
-      connector.success?.should be false
-
-      # CHECK Server, foreign table, etc was cleaned up properly
+      # When something fails during table copy the foreign table, user mappings and server should be cleaned up
       connector.executed_commands.size.should eq 6
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
@@ -386,7 +380,7 @@ describe CartoDB::Importer2::Connector do
     end
 
     it 'Should provide connector metadata' do
-      CartoDB::Importer2::Connector.information('mysql').should eq(
+      Carto::Connector.information('mysql').should eq(
         features: {
           'list_tables': true,
           'list_databases': false,
@@ -411,7 +405,7 @@ describe CartoDB::Importer2::Connector do
   end
 
   describe 'postgresql' do
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'postgres',
         connection: {
@@ -422,16 +416,14 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -497,7 +489,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -531,7 +523,7 @@ describe CartoDB::Importer2::Connector do
     end
 
     it 'Should provide connector metadata' do
-      CartoDB::Importer2::Connector.information('postgres').should eq(
+      Carto::Connector.information('postgres').should eq(
         features: {
           'list_tables': true,
           'list_databases': false,
@@ -556,7 +548,7 @@ describe CartoDB::Importer2::Connector do
   end
 
   describe 'sqlserver' do
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'sqlserver',
         connection: {
@@ -567,14 +559,14 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -582,7 +574,6 @@ describe CartoDB::Importer2::Connector do
       user_name = @user.username
       user_role = @user.database_username
 
-      connector.success?.should be true
 
       expect_executed_commands(
         connector.executed_commands,
@@ -640,7 +631,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -674,7 +665,7 @@ describe CartoDB::Importer2::Connector do
     end
 
     it 'Should provide connector metadata' do
-      CartoDB::Importer2::Connector.information('sqlserver').should eq(
+      Carto::Connector.information('sqlserver').should eq(
         features: {
           'list_tables': true,
           'list_databases': false,
@@ -699,7 +690,7 @@ describe CartoDB::Importer2::Connector do
   end
 
   describe 'hive' do
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'hive',
         connection: {
@@ -709,16 +700,14 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -736,7 +725,7 @@ describe CartoDB::Importer2::Connector do
             server_name: /\Ahive_/,
             fdw_name: 'odbc_fdw',
             options: {
-              'odbc_Driver' => 'Hortonworks Hive ODBC Driver (64-bit)',
+              'odbc_Driver' => 'Hortonworks Hive ODBC Driver 64-bit',
               'odbc_HOST' => 'theserver',
               'odbc_PORT' => '10000'
             }
@@ -765,8 +754,8 @@ describe CartoDB::Importer2::Connector do
             schema_name: 'cdb_importer',
             options: {
               "odbc_AuthMech" => '0',
-              "odbc_schema" => '',
-              "schema" => '',
+              "odbc_Schema" => 'default',
+              "schema" => 'default',
               "table" => 'thetable',
               "encoding" => 'theencoding',
               "prefix" => "#{server_name}_"
@@ -782,7 +771,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -816,7 +805,7 @@ describe CartoDB::Importer2::Connector do
     end
 
     it 'Should provide connector metadata' do
-      CartoDB::Importer2::Connector.information('hive').should eq(
+      Carto::Connector.information('hive').should eq(
         features: {
           'list_tables': true,
           'list_databases': false,
@@ -834,6 +823,7 @@ describe CartoDB::Importer2::Connector do
           'password'   => { required: false, connection: true },
           'server'     => { required: true,  connection: true },
           'port'       => { required: false, connection: true },
+          'database'   => { required: false, connection: true },
           'authmech'   => { required: false, connection: true }
         }
       )
@@ -852,7 +842,7 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
@@ -860,18 +850,18 @@ describe CartoDB::Importer2::Connector do
       }
       expect {
         TestConnector.new(parameters, options)
-      }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
+      }.to raise_error(Carto::Connector::InvalidParametersError)
     end
 
     it 'Should not provide metadata' do
       expect {
-        CartoDB::Importer2::Connector.information('not_a_provider')
-      }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
+        Carto::Connector.information('not_a_provider')
+      }.to raise_error(Carto::Connector::InvalidParametersError)
     end
   end
 
   describe 'generic odbc provider' do
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'odbc',
         connection: {
@@ -887,16 +877,14 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -959,7 +947,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -1008,16 +996,14 @@ describe CartoDB::Importer2::Connector do
         },
         table:    'thetable',
         encoding: 'theencoding'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -1080,7 +1066,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -1116,14 +1102,14 @@ describe CartoDB::Importer2::Connector do
 
   describe 'Non odbc provider' do
     before(:each) do
-      CartoDB::Importer2::Connector::PROVIDERS['pg'] = CartoDB::Importer2::Connector::PgFdwProvider
+      Carto::Connector::PROVIDERS['pg'] = Carto::Connector::PgFdwProvider
     end
 
     after(:each) do
-      CartoDB::Importer2::Connector::PROVIDERS['pg'] = nil
+      Carto::Connector::PROVIDERS['pg'] = nil
     end
 
-    it 'Executes expected odbc_fdw SQL commands' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'pg',
         server:   'theserver',
@@ -1131,16 +1117,14 @@ describe CartoDB::Importer2::Connector do
         password: 'thepassword',
         database: 'thedatabase',
         table:    'thetable'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
-      connector.run
-
-      connector.success?.should be true
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
       connector.executed_commands.size.should eq 7
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
@@ -1201,7 +1185,7 @@ describe CartoDB::Importer2::Connector do
           user: user_name,
           sql: [{
             command: :create_table_as_select,
-            table_name: /\A"cdb_importer"\.\"importer_/,
+            table_name: %{"xyz"."abc"},
             select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
           }]
         }, {
@@ -1243,15 +1227,19 @@ describe CartoDB::Importer2::Connector do
         database: 'thedatabase',
         table:    'thetable',
         invalid_param: 'xyz'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
+      connector = TestConnector.new(parameters, options)
       expect {
-        TestConnector.new(parameters, options)
-      }.to raise_error(CartoDB::Importer2::Connector::InvalidParametersError)
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error(Carto::Connector::InvalidParametersError)
+
+      # When parameters are not valid nothing should be executed in the database
+      connector.executed_commands.should be_nil
     end
 
     it 'Fails gracefully when copy errs' do
@@ -1262,18 +1250,18 @@ describe CartoDB::Importer2::Connector do
         password: 'thepassword',
         database: 'thedatabase',
         table:    'thetable'
-      }.to_json
+      }
       options = {
         pg:   @pg_options,
         log:  @fake_log,
         user: @user
       }
       connector = FailingTestConnector.new(parameters, options)
-      connector.run
+      expect {
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error('SQL EXECUTION ERROR')
 
-      connector.success?.should be false
-
-      # CHECK Server, foreign table, etc was cleaned up properly
+      # When something fails during table copy the foreign table, user mappings and server should be cleaned up
       connector.executed_commands.size.should eq 6
       server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
@@ -1357,7 +1345,7 @@ describe CartoDB::Importer2::Connector do
     end
 
     it 'Should provide connector metadata' do
-      CartoDB::Importer2::Connector.information('pg').should eq(
+      Carto::Connector.information('pg').should eq(
         features: {
           'list_tables': true,
           'list_databases': false,
@@ -1375,9 +1363,6 @@ describe CartoDB::Importer2::Connector do
       )
     end
   end
-
-  # TODO: check Runner compatibility
-
 end
 
 # rubocop:enable Style/BracesAroundHashParameters

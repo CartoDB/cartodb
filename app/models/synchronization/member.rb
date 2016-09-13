@@ -274,8 +274,8 @@ module CartoDB
       end
 
       def get_connector
-        CartoDB::Importer2::Connector.check_availability!(user)
-        CartoDB::Importer2::Connector.new(
+        CartoDB::Importer2::ConnectorRunner.check_availability!(user)
+        CartoDB::Importer2::ConnectorRunner.new(
           service_item_id,
           user: user,
           pg: pg_options,

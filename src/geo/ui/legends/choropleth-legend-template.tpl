@@ -1,7 +1,3 @@
-<% if (title) { %>
-  <h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl"><%= title %></h2>
-<% } %>
-
 <p>PREFIX: <%= prefix %></p>
 <p>SUFIX: <%= sufix %></p>
 <% if (colors && colors.length > 0) { %>

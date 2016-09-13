@@ -1,7 +1,3 @@
-<% if (title) { %>
-  <h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl"><%= title %></h2>
-<% } %>
-
 <!-- <p>FILL COLOR: <%= fillColor %></p>-->
 <div class="Bubble-container">
   <% if (bubbles && bubbles.length > 0) { %>

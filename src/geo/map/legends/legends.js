@@ -9,28 +9,34 @@ var LEGENDS_METADATA = [
   {
     type: 'bubble',
     modelClass: BubbleLegendModel,
-    attrNames: [ 'fillColor' ]
+    attrs: [ { 'fillColor': 'fill_color' } ]
   },
   {
     type: 'category',
     modelClass: CategoryLegendModel,
-    attrNames: [ 'prefix', 'sufix' ]
+    attrs: [ 'prefix', 'sufix' ]
   },
   {
     type: 'choropleth',
     modelClass: ChoroplethLegendModel,
-    attrNames: [ 'prefix', 'sufix' ]
+    attrs: [ 'prefix', 'sufix' ]
   },
   {
     type: 'custom',
     modelClass: CustomLegendModel,
-    attrNames: [ 'items' ]
+    attrs: [ 'items' ]
   },
   {
     type: 'html',
     modelClass: HTMLLegendModel,
-    attrNames: [ 'html' ]
+    attrs: [ 'html' ]
   }
+];
+
+var SHARED_ATTRS = [
+  'title',
+  { 'preHTMLSnippet': 'pre_html_snippet' },
+  { 'postHTMLSnippet': 'post_html_snippet' }
 ];
 
 var Legends = function (legendsData) {
@@ -39,15 +45,21 @@ var Legends = function (legendsData) {
   _.each(LEGENDS_METADATA, function (legendMetadata) {
     var type = legendMetadata.type;
     var ModelClass = legendMetadata.modelClass;
-    var attrNames = legendMetadata.attrNames;
-
+    var attrs = SHARED_ATTRS.concat(legendMetadata.attrs);
     var data = _.find(legendsData, { type: type });
 
-    var modelAttrs = _.extend(
-      { visible: true },
-      _.pick(data, attrNames),
-      _.pick(data, 'title')
-    );
+    var modelAttrs = { visible: true };
+    _.each(attrs, function (attr) {
+      var attrNameInData = attr;
+      var attrNameForModel = attr;
+      if (_.isObject(attr)) {
+        attrNameForModel = Object.keys(attr)[0];
+        attrNameInData = attr[attrNameForModel];
+      }
+
+      modelAttrs[attrNameForModel] = data && data[attrNameInData];
+    });
+
     this[type] = new ModelClass(modelAttrs);
   }, this);
 };

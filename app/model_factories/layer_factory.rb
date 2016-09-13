@@ -52,7 +52,7 @@ module ModelFactories
     def self.tile_style(user, geometry_type)
       style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
 
-      if user.builder_enabled? && style_class
+      if user.force_builder? && style_class
         style_class.new.to_cartocss
       else
         "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"

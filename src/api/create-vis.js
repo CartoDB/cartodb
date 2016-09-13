@@ -32,12 +32,19 @@ var createVis = function (el, vizjson, options) {
   // TODO: We can check if all required options are present here! eg: if viz.json has some analyses
   // apiKey or authToken will be required (otherwise we know requests to Windshaft will fail)...
 
+  var showLegends = true;
+  if (_.isBoolean(options.legends)) {
+    showLegends = options.legends;
+  } else if (_.isBoolean(vizjson.legends)) {
+    showLegends = vizjson.legends;
+  }
+
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: options.authToken,
-    showLegends: options.legends === true || vizjson.legends === true,
+    showLegends: showLegends,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });

@@ -10,7 +10,7 @@ module Carto::CartoCSS::Styles
     end
 
     def self.accepted_geometry_types
-      ['point', 'multipoint']
+      ['point', 'multipoint', 'st_point']
     end
 
     private

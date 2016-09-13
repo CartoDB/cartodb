@@ -10,7 +10,7 @@ module Carto::CartoCSS::Styles
     end
 
     def self.accepted_geometry_types
-      ['line', 'multiline', 'linestring', 'multilinestring']
+      ['line', 'multiline', 'linestring', 'multilinestring', 'st_multipoint', 'st_linestring', 'st_multilinestring']
     end
 
     private

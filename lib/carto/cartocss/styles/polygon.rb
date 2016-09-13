@@ -10,7 +10,7 @@ module Carto::CartoCSS::Styles
     end
 
     def self.accepted_geometry_types
-      ['polygon', 'multipolygon']
+      ['polygon', 'multipolygon', 'st_polygon', 'st_multipolygon']
     end
 
     private

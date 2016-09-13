@@ -13,6 +13,10 @@ module Carto
       end
     end
 
+    def qualify_query(query, table_name, username)
+      query.gsub(/(?<!\.)("?#{table_name}"?)/, username + '.\\1')
+    end
+
     private
 
     def test_query(user, query)

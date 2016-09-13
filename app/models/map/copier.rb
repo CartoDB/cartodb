@@ -64,10 +64,10 @@ module CartoDB
 
       def reset_layer_styles(old_layer, new_layer)
         user_table = old_layer.user_tables.first
-        return unless user_table
+        return new_layer unless user_table
 
         geometry_type = user_table.service.geometry_types.first
-        return unless geometry_type
+        return new_layer unless geometry_type
 
         style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
         if style_class

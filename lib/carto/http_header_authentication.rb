@@ -12,9 +12,12 @@ module Carto
     end
 
     def get_user(request)
+      puts "header-auth : getting user" 
       header = identity(request)
       return nil if header.nil? || header.empty?
 
+      puts "header-auth : valid header"
+      
       ::User.where("#{field(request)} = ?", header).first
     end
 

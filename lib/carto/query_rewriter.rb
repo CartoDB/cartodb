@@ -13,23 +13,6 @@ module Carto
       end
     end
 
-    def fix_analysis_node_queries(node, old_username, new_user, renamed_tables)
-      options = node.options
-
-      if options && options.has_key?(:table_name)
-        old_table_name = options[:table_name]
-        options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
-      end
-
-      params = node.params
-      if params && old_username
-        query = params[:query]
-        params[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
-      end
-
-      node.children.each { |child| fix_analysis_node_queries(child, old_username, new_user, renamed_tables) }
-    end
-
     private
 
     def test_query(user, query)

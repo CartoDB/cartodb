@@ -19,7 +19,7 @@ module Carto
 
         visualization.layers.each { |layer| fix_layer_user_information(layer, old_username, user, renamed_tables) }
         visualization.analyses.each do |analysis|
-          fix_analysis_node_queries(analysis.analysis_node, old_username, user, renamed_tables)
+          analysis.analysis_node.fix_analysis_node_queries(old_username, user, renamed_tables)
         end
 
         permission = Carto::Permission.new(owner: user, owner_username: user.username)

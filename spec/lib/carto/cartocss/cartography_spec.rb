@@ -4,7 +4,7 @@ require 'spec_helper_min'
 
 module Carto
   module CartoCSS
-    describe Cartography do
+    describe 'Default cartography' do
       describe '#default' do
         let(:production_default_cartography) do
           {
@@ -65,8 +65,7 @@ module Carto
         end
 
         it 'has stayed the same' do
-          cartography = Carto::CartoCSS::Cartography.instance
-                                                    .load_from_file
+          cartography = Carto::Definition.instance.load_from_file
 
           cartography.should eq production_default_cartography
         end

@@ -85,7 +85,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
 
           i += 1;
         } else {
-
           // FAKE METADATA FOR LEGENDS
           data.metadata.legends = [
             // Available legends for the first layer

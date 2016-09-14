@@ -4,6 +4,7 @@ require_relative '../../lib/carto/styles/style'
 require_relative '../../lib/carto/styles/point'
 require_relative '../../lib/carto/styles/line'
 require_relative '../../lib/carto/styles/polygon'
+require_relative '../../lib/carto/form'
 
 module ModelFactories
   class LayerFactory
@@ -54,10 +55,10 @@ module ModelFactories
       )
     end
 
-    def self.style_properties(user, geometry_type)
+    def self.style_properties(geometry_type)
       {
         type: 'simple',
-        properties: Hash.new
+        properties: Carto::Form.new(geometry_type).to_hash
       }
     end
 

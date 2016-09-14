@@ -25,8 +25,8 @@
 
 .XYZPanel-error {
   display: none;
-  right: -247px;
-  width: 220px;
+  right: -32%;
+  max-width: 115px;
   &.is-visible {
     display: block;
   }

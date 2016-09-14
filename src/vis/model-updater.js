@@ -127,34 +127,22 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var bubbleLegendModel = layerModel.legends.bubble;
   var bubbleLegendMetadata = windshaftMap.getBubbleLegendMetadata(remoteLayerIndex);
-  if (bubbleLegendMetadata) {
-    bubbleLegendModel.set({
-      bubbles: bubbleLegendMetadata.bubbles,
-      avg: bubbleLegendMetadata.avg
-    });
-  } else {
-    bubbleLegendModel.set({ bubbles: undefined, avg: undefined }, { unset: true });
-  }
+  bubbleLegendModel.set({
+    bubbles: bubbleLegendMetadata && bubbleLegendMetadata.bubbles,
+    avg: bubbleLegendMetadata && bubbleLegendMetadata.avg
+  });
 
   var categoryLegendModel = layerModel.legends.category;
   var categoryLegendMetadata = windshaftMap.getCategoryLegendMetadata(remoteLayerIndex);
-  if (categoryLegendMetadata) {
-    categoryLegendModel.set({
-      categories: categoryLegendMetadata.categories
-    });
-  } else {
-    categoryLegendModel.set({ categories: undefined }, { unset: true });
-  }
+  categoryLegendModel.set({
+    categories: categoryLegendMetadata && categoryLegendMetadata.categories
+  });
 
   var choroplethLegendModel = layerModel.legends.choropleth;
   var choroplethLegendMetadata = windshaftMap.getChoroplethLegendMetadata(remoteLayerIndex);
-  if (choroplethLegendMetadata) {
-    choroplethLegendModel.set({
-      colors: choroplethLegendMetadata.colors
-    });
-  } else {
-    choroplethLegendModel.set({ colors: undefined }, { unset: true });
-  }
+  choroplethLegendModel.set({
+    colors: choroplethLegendMetadata && choroplethLegendMetadata.colors
+  });
 };
 
 ModelUpdater.prototype._calculateTileURLTemplatesForTorqueLayers = function (windshaftMap) {

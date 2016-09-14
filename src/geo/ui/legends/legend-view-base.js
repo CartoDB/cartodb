@@ -49,7 +49,7 @@ var LegendViewBase = Backbone.View.extend({
   },
 
   _showOrHide: function () {
-    if (this.model.isVisible() && this.model.isAvailable()) {
+    if (this.model.isVisible()) {
       this.$el.show();
     } else {
       this.$el.hide();

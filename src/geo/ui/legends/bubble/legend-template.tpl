@@ -15,13 +15,9 @@
         </li>
       <% } %>
     </ul>
-  <% } else { %>
-    <p>No bubbles</p>
-  <% }%>
+  <% } %>
 </div>
 
 <% if (avg) { %>
   <p>AVG: <%= avg %></p>
 <% } %>
-
-

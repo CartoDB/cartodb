@@ -1,15 +1,10 @@
-var LegendModelBase = require('./legend-model-base');
+var DynamicLegendModelBase = require('./dynamic-legend-model-base');
 
-var CategoryLegendModel = LegendModelBase.extend({
-  defaults: {
-    visible: false,
-    type: 'category',
-    prefix: '',
-    sufix: ''
-  },
+var CategoryLegendModel = DynamicLegendModelBase.extend({
+  TYPE: 'category',
 
-  isAvailable: function () {
-    return !!this.get('categories');
+  hasData: function () {
+    return this.get('categories') && this.get('categories').length > 0;
   }
 });
 

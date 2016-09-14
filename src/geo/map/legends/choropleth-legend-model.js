@@ -1,15 +1,18 @@
-var LegendModelBase = require('./legend-model-base');
+var _ = require('underscore');
+var DynamicLegendModelBase = require('./dynamic-legend-model-base');
 
-var ChoroplethLegendModel = LegendModelBase.extend({
-  defaults: {
-    visible: false,
-    type: 'choropleth',
-    prefix: '',
-    sufix: ''
+var ChoroplethLegendModel = DynamicLegendModelBase.extend({
+  TYPE: 'choropleth',
+
+  defaults: function () {
+    return _.extend({
+      prefix: '',
+      sufix: ''
+    }, DynamicLegendModelBase.prototype.defaults.apply(this));
   },
 
-  isAvailable: function () {
-    return !!this.get('colors');
+  hasData: function () {
+    return this.get('colors') && this.get('colors').length > 0;
   }
 });
 

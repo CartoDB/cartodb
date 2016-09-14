@@ -1,8 +1,14 @@
 var Backbone = require('backbone');
 
 var LegendModelBase = Backbone.Model.extend({
-  defaults: {
-    visible: false
+
+  defaults: function () {
+    var type = this.constructor.prototype.TYPE;
+    if (!type) throw new Error('Subclasses of LegendModelBase must have a TYPE');
+    return {
+      visible: false,
+      type: type
+    };
   },
 
   show: function () {
@@ -15,10 +21,6 @@ var LegendModelBase = Backbone.Model.extend({
 
   isVisible: function () {
     return this.get('visible');
-  },
-
-  isAvailable: function () {
-    throw new Error('subclasses of LegendModelBase must implement isAvailable');
   }
 });
 

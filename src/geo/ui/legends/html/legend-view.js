@@ -1,4 +1,4 @@
-var LegendViewBase = require('./legend-view-base');
+var LegendViewBase = require('../base/legend-view-base');
 
 var HTMLLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {

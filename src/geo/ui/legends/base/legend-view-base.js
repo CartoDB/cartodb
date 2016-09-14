@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var sanitize = require('../../../core/sanitize');
+var sanitize = require('../../../../core/sanitize');
 var legendTitleTemplate = require('./legend-title.tpl');
 
 var LegendViewBase = Backbone.View.extend({
@@ -12,11 +12,19 @@ var LegendViewBase = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this._generateHTML());
-    this._showOrHide();
+    if (this.model.isVisible()) {
+      this.$el.show();
+    } else {
+      this.$el.hide();
+    }
     return this;
   },
 
   _generateHTML: function () {
+    return this._getLegendHTML();
+  },
+
+  _getLegendHTML: function () {
     var html = [];
 
     // Legend title
@@ -44,16 +52,10 @@ var LegendViewBase = Backbone.View.extend({
     throw new Error('Subclasses of LegendViewBase must implement _getCompiledTemplate');
   },
 
+  _afterRender: function () { },
+
   _sanitize: function (html) {
     return sanitize.html(html);
-  },
-
-  _showOrHide: function () {
-    if (this.model.isVisible()) {
-      this.$el.show();
-    } else {
-      this.$el.hide();
-    }
   },
 
   enable: function () {

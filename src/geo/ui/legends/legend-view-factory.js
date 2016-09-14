@@ -1,8 +1,8 @@
-var BubbleLegendView = require('./bubble-legend-view');
-var CategoryLegendView = require('./category-legend-view');
-var ChoroplethLegendView = require('./choropleth-legend-view');
-var CustomLegendView = require('./custom-legend-view');
-var HTMLLegendView = require('./html-legend-view');
+var BubbleLegendView = require('./bubble/legend-view');
+var CategoryLegendView = require('./categories/legend-view');
+var ChoroplethLegendView = require('./choropleth/legend-view');
+var CustomLegendView = require('./custom/legend-view');
+var HTMLLegendView = require('./html/legend-view');
 
 var LEGEND_VIEW_CONSTRUCTORS = {
   bubble: BubbleLegendView,
@@ -12,13 +12,21 @@ var LEGEND_VIEW_CONSTRUCTORS = {
   html: HTMLLegendView
 };
 
+var PLACEHOLDER_TEMPLATES = {
+  bubble: require('./bubble/placeholder-template.tpl'),
+  category: require('./categories/placeholder-template.tpl'),
+  choropleth: require('./choropleth/placeholder-template.tpl')
+};
+
 module.exports = {
   createLegendView: function (legendModel) {
     var legendType = legendModel.get('type');
     var LegendViewClass = LEGEND_VIEW_CONSTRUCTORS[legendType];
+    var placeholderTemplate = PLACEHOLDER_TEMPLATES[legendType];
     if (LegendViewClass) {
       return new LegendViewClass({
-        model: legendModel
+        model: legendModel,
+        placeholderTemplate: placeholderTemplate
       });
     }
 

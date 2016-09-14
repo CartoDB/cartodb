@@ -1,5 +1,5 @@
-var LegendViewBase = require('./legend-view-base');
-var template = require('./custom-legend-template.tpl');
+var LegendViewBase = require('../base/legend-view-base');
+var template = require('./legend-template.tpl');
 
 var CustomLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {

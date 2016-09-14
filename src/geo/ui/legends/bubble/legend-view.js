@@ -1,8 +1,8 @@
 var $ = require('jquery');
-var LegendViewBase = require('./legend-view-base');
-var template = require('./bubble-legend-template.tpl');
+var DynamicLegendViewBase = require('../base/dynamic-legend-view-base');
+var template = require('./legend-template.tpl');
 
-var BubbleLegendView = LegendViewBase.extend({
+var BubbleLegendView = DynamicLegendViewBase.extend({
 
   events: {
     'mouseover .js-bubbleItem': '_onBubbleHover',

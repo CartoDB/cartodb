@@ -6,6 +6,4 @@
       <li><%= colors[i] %></li>
     <% } %>
   </ul>
-<% } else { %>
-  <p>No color ramp</p>
 <% }%>

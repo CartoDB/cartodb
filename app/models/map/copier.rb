@@ -51,9 +51,7 @@ module CartoDB
       end
 
       def layer_copies_from(map)
-        map.layers.map { |layer|
-          layer.copy
-        }
+        map.layers.map(&:copy)
       end
 
       def link(map, layer)
@@ -69,7 +67,7 @@ module CartoDB
         geometry_type = user_table.service.geometry_types.first
         return new_layer unless geometry_type
 
-        tile_style = ModelFactories::LayerFactory.tile_style(user, geometry_type)
+        tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type)
         new_layer.options[:tile_style] = tile_style
 
         new_layer

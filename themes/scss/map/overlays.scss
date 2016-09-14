@@ -229,10 +229,15 @@ $buttonColor: #636D72;
   box-sizing: border-box;
 }
 .CDB-Legend-item {
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   &:last-child {
     margin-bottom: 0;
   }
+}
+
+.CDB-Legend-item.is-disabled {
+  @include css3-prefix(filter, grayscale(100%));
+  opacity: 0.4;
 }
 
 .Bubble-list {

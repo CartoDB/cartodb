@@ -1,6 +1,6 @@
 # encoding utf-8
 
-require_relative './cartocss_presenter'
+require_relative './presenters/cartocss'
 
 module Carto
   module Styles
@@ -67,5 +67,4 @@ module Carto
       end
     end
   end
-
 end

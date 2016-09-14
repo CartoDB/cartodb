@@ -1,7 +1,10 @@
 <% if (items && items.length > 0) { %>
   <ul>
     <% for(var i in items) { %>
-      <li><%= items[i].name %>: <%= items[i].color %></li>
+      <li class="Legend-categoryListItem u-flex u-justifySpace u-alignCenter">
+        <p class="CDB-Text CDB-Size-small u-upperCase"><%= items[i].name %></p>
+        <span class="Legend-categoryCircle" style="background: <%= items[i].color %>"></span>
+      </li>
     <% } %>
   </ul>
 <% } else { %>

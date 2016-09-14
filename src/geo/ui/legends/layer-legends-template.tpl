@@ -1,8 +1,16 @@
-<label class="CDB-LayerLegends-Title">
+<h2 class="CDB-Text CDB-Size-medium is-semibold u-bSpace--xl u-flex u-alignCenter">
   <% if (isLayerVisible) { %> 
-    <input type="checkbox" class="js-toggle-layer" checked>
+    <div class="u-iBlock u-rSpace--m">
+      <input class="CDB-Checkbox js-toggle-layer" type="checkbox" checked>
+      <span class="u-iBlock CDB-Checkbox-face"></span>
+    </div>
   <% } else { %>
-    <input type="checkbox" class="js-toggle-layer">
+    <div class="u-iBlock u-rSpace--m">
+      <input class="CDB-Checkbox js-toggle-layer" type="checkbox">
+      <span class="u-iBlock CDB-Checkbox-face"></span>
+    </div>
   <% } %>
-  <%= layerName %>
-</label>
+  <span>
+    <%= layerName %>
+  </span>
+</h2>

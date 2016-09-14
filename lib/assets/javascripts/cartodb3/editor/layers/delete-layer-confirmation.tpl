@@ -18,7 +18,7 @@
                   <% if (i < (affectedItemsMessages.length - 2)) { %>
                     ,
                   <% } else if (i == (affectedItemsMessages.length - 2)) { %>
-                    and
+                    <%= _t('editor.layers.delete.and') %>
                   <% } %>
               <% } %>
               .</p>

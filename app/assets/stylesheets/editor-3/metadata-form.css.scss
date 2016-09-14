@@ -15,8 +15,11 @@
   text-align: right;
   box-sizing: border-box;
 }
+.Metadata-label--auto {
+  width: auto;
+}
 .Metadata-label--big {
-  width: 180px;
+  width: 168px;
 }
 
 .Metadata-textarea {

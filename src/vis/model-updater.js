@@ -127,21 +127,26 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var bubbleLegendModel = layerModel.legends.bubble;
   var bubbleLegendMetadata = windshaftMap.getBubbleLegendMetadata(remoteLayerIndex);
+
+  // TODO: state 'success'
   bubbleLegendModel.set({
     bubbles: bubbleLegendMetadata && bubbleLegendMetadata.bubbles,
-    avg: bubbleLegendMetadata && bubbleLegendMetadata.avg
+    avg: bubbleLegendMetadata && bubbleLegendMetadata.avg,
+    state: 'success'
   });
 
   var categoryLegendModel = layerModel.legends.category;
   var categoryLegendMetadata = windshaftMap.getCategoryLegendMetadata(remoteLayerIndex);
   categoryLegendModel.set({
-    categories: categoryLegendMetadata && categoryLegendMetadata.categories
+    categories: categoryLegendMetadata && categoryLegendMetadata.categories,
+    state: 'success'
   });
 
   var choroplethLegendModel = layerModel.legends.choropleth;
   var choroplethLegendMetadata = windshaftMap.getChoroplethLegendMetadata(remoteLayerIndex);
   choroplethLegendModel.set({
-    colors: choroplethLegendMetadata && choroplethLegendMetadata.colors
+    colors: choroplethLegendMetadata && choroplethLegendMetadata.colors,
+    state: 'success'
   });
 };
 
@@ -211,6 +216,7 @@ ModelUpdater.prototype._getProtocol = function () {
 
 ModelUpdater.prototype.setErrors = function (errors) {
   _.each(errors, this._setError, this);
+  // TODO: Set legend errors too
 };
 
 ModelUpdater.prototype._setError = function (error) {

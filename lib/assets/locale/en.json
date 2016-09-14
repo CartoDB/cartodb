@@ -1630,7 +1630,7 @@
       "types": {
         "none": "none",
         "category": "category",
-        "gradient": "grandient",
+        "gradient": "gradient",
         "bubble": "bubble",
         "custom": "custom"
       },

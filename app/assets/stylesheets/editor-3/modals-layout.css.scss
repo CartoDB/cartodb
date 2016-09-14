@@ -68,3 +68,7 @@
 .Modal-footerContainer {
   border-top: 1px solid $cSecondaryLine;
 }
+
+.Modal-basemapContainer {
+  @include flex-direction(column);
+}

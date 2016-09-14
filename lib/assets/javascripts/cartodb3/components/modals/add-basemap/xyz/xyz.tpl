@@ -1,7 +1,7 @@
-<div>
+<div class="u-flex u-alignCenter Modal-basemapContainer">
   <h3 class="CDB-Text CDB-Size-large u-mainTextColor Modal-titleBasemap"><%- _t('components.modals.add-basemap.xyz.insert') %></h3>
   <div class="CDB-Text u-flex u-alignCenter js-name-field">
-    <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.add-basemap.xyz.enter') %></label>
+    <label class="Metadata-label Metadata-label--big  CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.add-basemap.xyz.enter') %></label>
     <div class="Form-rowData Form-rowData--longer">
       <input type="text" class="has-icon CDB-InputText CDB-Text js-url" value="" placeholder="E.g. https://{s}.carto.com/foobar/{z}/{x}/{y}.png">
       <i class="Spinner XYZPanel-inputIcon XYZPanel-inputIcon--loader Spinner--formIcon Form-inputIcon js-validating" style="display: none;"></i>

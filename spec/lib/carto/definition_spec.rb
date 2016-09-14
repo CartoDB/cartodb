@@ -3,25 +3,23 @@
 require 'spec_helper_min'
 
 module Carto
-  module CartoCSS
-    describe Definition do
-      before (:all) { @definition = Carto::Definition.instance }
-      after  (:all) { @definition = nil }
+  describe Definition do
+    before (:all) { @definition = Carto::Definition.instance }
+    after  (:all) { @definition = nil }
 
-      it 'handles inexesitent file paths' do
-        expect { @definition.load_from_file('/fake/path.json') }.to raise_error do
-          'Carto::Definition: Couldn\'t read from file'
-        end
+    it 'handles inexesitent file paths' do
+      expect { @definition.load_from_file('/fake/path.json') }.to raise_error do
+        'Carto::Definition: Couldn\'t read from file'
       end
+    end
 
-      it 'doesn\'t read the same file twice' do
-        file_path = 'lib/assets/javascripts/cartodb3/data/default-cartography.json'
+    it 'doesn\'t read the same file twice' do
+      file_path = 'lib/assets/javascripts/cartodb3/data/default-cartography.json'
 
-        File.expects(:read).with(file_path).returns('{}').at_most(1)
+      File.expects(:read).with(file_path).returns('{}').at_most(1)
 
-        2.times do
-          @definition.load_from_file(file_path)
-        end
+      2.times do
+        @definition.load_from_file(file_path)
       end
     end
   end

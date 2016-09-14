@@ -282,6 +282,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/polygon_spec.rb \
 	spec/lib/carto/styles/line_spec.rb \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
+	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
 	$(NULL)
 

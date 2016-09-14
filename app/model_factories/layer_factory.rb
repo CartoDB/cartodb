@@ -62,13 +62,17 @@ module ModelFactories
     end
 
     def self.tile_style(user, geometry_type)
+      user.force_builder? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
+    end
+
+    def self.builder_tile_style(geometry_type)
       style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
 
-      if user.force_builder? && style_class
-        style_class.new.to_cartocss
-      else
-        "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
-      end
+      style_class ? style_class.new.to_cartocss : legacy_tile_style(geometry_type)
+    end
+
+    def self.legacy_tile_style(geometry_type)
+      "#layer #{Cartodb.config[:layer_opts]['default_tile_styles'][geometry_type]}"
     end
   end
 end

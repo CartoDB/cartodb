@@ -216,12 +216,12 @@ module Carto
     def fix_layer_user_information(old_username, new_user, renamed_tables)
       new_username = new_user.username
 
-      if options.has_key?(:user_name)
+      if options.key?(:user_name)
         old_username ||= options[:user_name]
         options[:user_name] = new_username
       end
 
-      if options.has_key?(:table_name)
+      if options.key?(:table_name)
         old_table_name = options[:table_name]
         options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
       end

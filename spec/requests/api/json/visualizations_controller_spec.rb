@@ -191,6 +191,41 @@ describe Api::Json::VisualizationsController do
         end
       end
 
+      it 'doen\'t add style properites for editor users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(false)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+          layer = v.map.data_layers.first
+          layer.options['style_properties'].should be_nil
+        end
+      end
+
+      it 'adds style properites for builder users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(true)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+          layer = v.map.data_layers.first
+          layer.options['style_properties'].should_not be_nil
+        end
+      end
+
       it 'rewrites queries for other user datasets' do
         table1 = create_table(user_id: @org_user_1.id)
         layer = table1.map.data_layers.first

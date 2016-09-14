@@ -4,6 +4,7 @@ require_relative '../../lib/carto/styles/style'
 require_relative '../../lib/carto/styles/point'
 require_relative '../../lib/carto/styles/line'
 require_relative '../../lib/carto/styles/polygon'
+require_relative '../../lib/carto/form'
 
 module ModelFactories
   class LayerFactory
@@ -31,6 +32,11 @@ module ModelFactories
       data_layer.infowindow['fields'] = []
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
+
+      if user.force_builder?
+        data_layer.options['style_properties'] = style_properties(user, geometry_type)
+      end
+
       data_layer
     end
 
@@ -47,6 +53,13 @@ module ModelFactories
           'name' => "#{base_layer.options['name']} Labels"
         )
       )
+    end
+
+    def self.style_properties(geometry_type)
+      {
+        type: 'simple',
+        properties: Carto::Form.new(geometry_type).to_hash
+      }
     end
 
     def self.tile_style(user, geometry_type)

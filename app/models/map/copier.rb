@@ -46,6 +46,8 @@ module CartoDB
       def data_layer_copies_from(map, user)
         map.carto_and_torque_layers.map do |layer|
           new_layer = layer.copy
+          new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
+
           user.force_builder? ? reset_layer_styles(layer, new_layer) : new_layer
         end
       end

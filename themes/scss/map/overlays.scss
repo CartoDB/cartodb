@@ -301,3 +301,11 @@ $index-items: 7 6 5 4 3 2 1;
 
 
 
+.Legend-choropleth {
+  position: relative;
+  height: $baseSize;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: $halfBaseSize;
+}
+

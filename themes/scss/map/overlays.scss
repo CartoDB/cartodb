@@ -301,3 +301,58 @@ $index-items: 7 6 5 4 3 2 1;
 
 
 
+.Legend-choropleth {
+  position: relative;
+  height: $baseSize;
+  box-sizing: border-box;
+  border-radius: $halfBaseSize;
+}
+.Legend-choropleth::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: $halfBaseSize;
+  content: '';
+}
+.Legend-choroplethAverage {
+  position: absolute;
+  top: -22px;
+}
+.Legend-choroplethAverage::after {
+  display: block;
+  position: absolute;
+  bottom: -16px;
+  width: 1px;
+  height: 14px;
+  margin-left: 8px;
+  border-left: 1px dotted rgba(#000, 0.4);
+  content: '';
+}
+
+.Legend-categoryListItem {
+  margin-bottom: 6px;
+}
+.Legend-categoryListItem:last-child {
+  margin-bottom: 0;
+}
+.Legend-categoryCircle {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.Legend-categoryCircle::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+  content: '';
+}
+
+

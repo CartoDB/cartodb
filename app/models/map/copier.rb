@@ -68,7 +68,7 @@ module CartoDB
         return new_layer unless geometry_type
 
         tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type)
-        new_layer.options[:tile_style] = tile_style
+        new_layer.options['tile_style'] = tile_style
 
         new_layer
       end

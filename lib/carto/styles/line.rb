@@ -1,9 +1,9 @@
 # encoding utf-8
 
 require_relative './style.rb'
-require_relative '../../definition.rb'
+require_relative '../definition.rb'
 
-module Carto::CartoCSS::Styles
+module Carto::Styles
   class Line < Style
     def initialize(definition: default_definition)
       super(definition)

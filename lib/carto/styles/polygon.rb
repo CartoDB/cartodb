@@ -3,7 +3,7 @@
 require_relative './style.rb'
 require_relative '../../definition.rb'
 
-module Carto::CartoCSS::Styles
+module Carto::Styles
   class Polygon < Style
     def initialize(definition: default_definition)
       super(definition)

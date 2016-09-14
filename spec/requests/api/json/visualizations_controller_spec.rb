@@ -185,7 +185,7 @@ describe Api::Json::VisualizationsController do
           type: 'derived',
           tables: ["#{@org_user_1.username}.#{table1.name}"]
         }
-        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
           vid = response.body[:id]

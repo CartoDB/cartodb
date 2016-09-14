@@ -450,7 +450,7 @@
         "xyz": {
           "insert": "Insert your XYZ URL",
           "enter": "Enter a URL",
-          "not-valid": "It does not look like a valid XYZ URL",
+          "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g."
         },
         "mapbox": {

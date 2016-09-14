@@ -21,13 +21,13 @@ describe('geo/ui/legends/layer-legends-view', function () {
   });
 
   var getLegendTitles = function (layerLegendsView) {
-    var titleElements = layerLegendsView.$('.CDB-Legend-Title').get();
+    var titleElements = layerLegendsView.$('.CDB-Text').get();
     return titleElements.map(function (element) { return element.textContent.trim(); });
   };
 
   it('should render all legends', function () {
     // Legends of all types have been rendered
-    expect(this.layerLegendsView.$('.CDB-Legend').length).toEqual(5);
+    expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
 
     // Only 2 of them have titles
     expect(getLegendTitles(this.layerLegendsView)).toEqual([ 'Category Legend', 'Bubble Legend' ]);

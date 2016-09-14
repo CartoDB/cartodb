@@ -14,29 +14,3 @@
     </div>
   </div>
 </div>
-
-<div class="Modal-footer">
-  <div class="Modal-footerContainer u-flex u-justifyEnd">
-    <%/* ok class == let parent dialog view handle the click event */%>
-    <button class="CDB-Button CDB-Button--primary is-disabled js-ok ok">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-basemap.add-btn') %></span>
-    </button>
-  </div>
-</div>
-<!--
-<div class="Dialog-footer Dialog-footer--expanded CreateDialog-footer">
-  <div>
-    <div class="CreateDialog-footerShadow"></div>
-    <div class="CreateDialog-footerLine"></div>
-    <div class="CreateDialog-footerInner ">
-      <div class="CreateDialog-footerInfo"></div>
-      <div class="CreateDialog-footerActions">
-        <%/* ok class == let parent dialog view handle the click event */%>
-        <button class="CDB-Button CDB-Button--primary is-disabled js-ok ok">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-basemap.add-btn') %></span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>-->
-

@@ -1,9 +1,9 @@
 # encoding: utf-8
 
-require_relative '../../lib/carto/cartocss/styles/style'
-require_relative '../../lib/carto/cartocss/styles/point'
-require_relative '../../lib/carto/cartocss/styles/line'
-require_relative '../../lib/carto/cartocss/styles/polygon'
+require_relative '../../lib/carto/styles/style'
+require_relative '../../lib/carto/styles/point'
+require_relative '../../lib/carto/styles/line'
+require_relative '../../lib/carto/styles/polygon'
 
 module ModelFactories
   class LayerFactory
@@ -54,7 +54,7 @@ module ModelFactories
     end
 
     def self.builder_tile_style(geometry_type)
-      style_class = Carto::CartoCSS::Styles::Style.style_for_geometry_type(geometry_type)
+      style_class = Carto::Styles::Style.style_for_geometry_type(geometry_type)
 
       style_class ? style_class.new.to_cartocss : legacy_tile_style(geometry_type)
     end

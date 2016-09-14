@@ -39,9 +39,7 @@ module Carto
     end
 
     def style_definition
-      return @style_definition if @style_definition
-
-      @style_definition = style.default_definition
+      @style_definition ||= style.default_definition
     end
 
     def style_class

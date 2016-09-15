@@ -1616,7 +1616,7 @@
         "size": "size"
       },
       "messages": {
-        "custom-html-applied": {
+        "migrated-legend": {
           "title": "CUSTOM HTML APPLIED",
           "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
           "accept": "CONTINUE"

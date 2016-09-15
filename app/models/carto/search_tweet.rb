@@ -20,9 +20,9 @@ module Carto
         .where('search_tweets.state' => ::SearchTweet::STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
         .group("date_trunc('day', search_tweets.created_at)")
-        .select("date_trunc('day', search_tweets.created_at), SUM(search_tweets.retrieved_items)")
+        .select("date_trunc('day', search_tweets.created_at) as date, SUM(search_tweets.retrieved_items) as count")
         .all
-        .map { |t| { t.date_trunc => t.sum } }
+        .map { |t| { Date.parse(t.date) => t.count.to_i } }
         .reduce({}, &:merge)
     end
   end

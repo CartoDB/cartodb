@@ -160,7 +160,7 @@ describe Carto::Superadmin::OrganizationsController do
     end
 
     it 'returns Twitter imports' do
-      st = SearchTweet.create(
+      st1 = SearchTweet.create(
         user_id: @org_user_owner.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
         data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
@@ -168,12 +168,21 @@ describe Carto::Superadmin::OrganizationsController do
         retrieved_items: 42,
         state: ::SearchTweet::STATE_COMPLETE
       )
+      st2 = SearchTweet.create(
+        user_id: @org_user_1.id,
+        table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        service_item_id: '555',
+        retrieved_items: 628,
+        state: ::SearchTweet::STATE_COMPLETE
+      )
       get_json(usage_superadmin_organization_url(@organization.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]
-        formatted_date = st.created_at.to_date.to_s.to_sym
-        tweets[formatted_date].should eq st.retrieved_items
+        formatted_date = st1.created_at.to_date.to_s.to_sym
+        tweets[formatted_date].should eq st1.retrieved_items + st2.retrieved_items
       end
-      st.destroy
+      st1.destroy
+      st2.destroy
     end
 
     it 'does not return data outside the date range' do
@@ -181,7 +190,6 @@ describe Carto::Superadmin::OrganizationsController do
       $users_metadata.ZADD(key, 23, "20160915")
       get_json(usage_superadmin_organization_url(@organization.id), { from: '2016-09-16' }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        puts mapviews
         mapviews.should_not include :"2016-09-15"
       end
     end

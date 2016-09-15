@@ -13,8 +13,8 @@ module Carto
       before_filter :load_user
 
       def usage
-        date_to = (params[:to] ? params[:to].to_date : Date.today)
-        date_from = (params[:from] ? params[:from].to_date : Date.today)
+        date_to = params[:to] ? params[:to].to_date : Date.today
+        date_from = params[:from] ? params[:from].to_date : @user.last_billing_cycle
 
         usage = get_usage(@user, nil, date_from, date_to)
 

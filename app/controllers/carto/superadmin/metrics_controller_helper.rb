@@ -20,7 +20,14 @@ module Carto::Superadmin
 
     private
 
-    def get_usage(user, org, date_from, date_to, only_services, totals)
+    def get_usage(user, org)
+      only_services = params[:services] || []
+      raise ArgumentError.new('services must be an array') unless only_services.is_a?(Array)
+      only_services = only_services.map(&:to_sym)
+      date_to = params[:to] ? Date.parse(params[:to]) : Date.today
+      date_from = params[:from] ? Date.parse(params[:from]) : last_billing_cycle
+      totals = params[:totals].present? && params[:totals] == 'true'
+
       usage = {}
       USAGE_METRICS_RETRIEVERS.each do |retriever|
         services = retriever.services

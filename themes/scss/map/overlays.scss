@@ -309,6 +309,7 @@ $index-items: 7 6 5 4 3 2 1;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
+  margin-bottom: 28px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }
@@ -324,15 +325,15 @@ $index-items: 7 6 5 4 3 2 1;
 }
 .Legend-choroplethAverage {
   position: absolute;
-  top: -22px;
+  bottom: -20px;
 }
 .Legend-choroplethAverage::after {
   display: block;
   position: absolute;
-  bottom: -16px;
+  top: -14px;
   width: 1px;
-  height: 14px;
-  margin-left: 8px;
+  height: 12px;
+  margin-left: 50%;
   border-left: 1px dotted rgba(#000, 0.4);
   content: '';
 }

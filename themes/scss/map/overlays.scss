@@ -401,4 +401,18 @@ $index-items: 7 6 5 4 3 2 1;
   content: '';
 }
 
+.Legend-placeholder {
+  position: relative;
+  margin: 0 -24px;
+}
+.Legend-loading {
+  display: none;
+}
+.CDB-Legend-item.is-loading .Legend-loading {
+  display: block;
+}
+.Legend-placeholderInner {
+  padding: 12px 24px 0;
+}
+
 

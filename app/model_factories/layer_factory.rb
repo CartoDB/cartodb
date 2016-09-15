@@ -34,7 +34,7 @@ module ModelFactories
       data_layer.tooltip['fields'] = []
 
       if user.force_builder?
-        data_layer.options['style_properties'] = style_properties(user, geometry_type)
+        data_layer.options['style_properties'] = style_properties(geometry_type)
       end
 
       data_layer

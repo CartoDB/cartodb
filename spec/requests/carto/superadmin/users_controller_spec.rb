@@ -9,7 +9,8 @@ describe Carto::Superadmin::UsersController do
     {
       'HTTP_AUTHORIZATION' => ActionController::HttpAuthentication::Basic.encode_credentials(
         credentials['username'],
-        credentials['password']),
+        credentials['password']
+      ),
       'HTTP_ACCEPT' => "application/json"
     }
   end

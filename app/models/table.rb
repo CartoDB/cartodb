@@ -512,7 +512,9 @@ class Table
 
     map.add_layer(base_layer)
 
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    geometry_type = the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
+
     map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?

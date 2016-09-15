@@ -228,6 +228,12 @@ $buttonColor: #636D72;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
 }
+.CDB-LayerLegends {
+  margin-bottom: 32px;
+}
+.CDB-LayerLegends:last-child {
+  margin-bottom: 0px;
+}
 .CDB-Legend-item {
   margin-bottom: 16px;
   &:last-child {

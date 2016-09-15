@@ -219,8 +219,8 @@ $buttonColor: #636D72;
 
 .CDB-Legends {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
+  top: 24px;
+  left: 24px;
   width: 240px;
   padding: 24px;
   border-radius: 4px;
@@ -250,7 +250,7 @@ $buttonColor: #636D72;
   @include display-flex();
   @include justify-content(center);
   position: relative;
-  margin-left: 60px;
+  margin-right: 24px;
 }
 .Bubble-item {
   position: absolute;
@@ -273,9 +273,9 @@ $buttonColor: #636D72;
   position: absolute;
   top: 5px;
   right: 50%;
-  width: 68px;
+  width: 164px;
   height: 1px;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.08);
   content: '';
   z-index: -1;
 }
@@ -284,20 +284,54 @@ $buttonColor: #636D72;
 }
 
 .Bubble-item.is-filter .Bubble-itemCircle {
-  background: #FFF !important;
+  background: #F9F9F9 !important;
   opacity: 1 !important;
   &::before {
     display: none;
   }
 }
 .Bubble-numbersItem {
+  position: relative;
   margin-top: 6px;
+  padding-right: $baseSize * 2;
+  background: #FFF;
+  z-index: 10;
   &:first-child {
     margin-top: 0;
   }
 }
-.Bubble-numbers {
-  width: 60px;
+.Bubble-inner {
+  @include display-flex();
+  position: relative;
+}
+.Bubble-average {
+  display: block;
+  position: absolute;
+  left: -88px;
+  width: 50px;
+}
+.Bubble-average::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -36px;
+  width: 39px;
+  height: 1px;
+  border-top: 1px dotted rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
+}
+.Bubble-average::before {
+  display: block;
+  position: absolute;
+  top: calc(50% - 1px);
+  right: -36px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
 }
 
 $opacity-list: 0.95 0.9 0.85 0.8 0.75 0.7 0.65;

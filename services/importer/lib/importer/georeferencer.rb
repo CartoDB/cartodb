@@ -338,7 +338,7 @@ module CartoDB
           AS geometrytype
         }].first.fetch(:geometrytype) == 'MULTIPOINT'
 
-        job.log 'found MULTIPOING geometry' if is_multipoint
+        job.log 'found MULTIPOINT geometry' if is_multipoint
 
         is_multipoint
       rescue

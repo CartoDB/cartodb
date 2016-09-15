@@ -43,7 +43,8 @@ describe Carto::Superadmin::OrganizationsController do
         usage_metrics.incr(@service, :failed_responses, 30, date - 1)
         usage_metrics.incr(@service, :total_requests, 40, date)
 
-        get_json(usage_superadmin_user_url(@organization.id), {}, superadmin_headers) do |response|
+        get_json(usage_superadmin_organization_url(@organization.id), {}, superadmin_headers) do |response|
+          puts response.body
           success = response.body[@service][:success_responses]
           success[date.to_s.to_sym].should eq 10
           success[(date - 2).to_s.to_sym].should eq 100

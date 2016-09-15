@@ -1624,9 +1624,9 @@
       },
       "messages": {
         "migrated-legend": {
-          "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
-          "accept": "CONTINUE"
+          "title": "IMPORTED LEGEND",
+          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
+          "accept": "Delete imported legend"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",

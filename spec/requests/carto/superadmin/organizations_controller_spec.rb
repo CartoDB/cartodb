@@ -153,7 +153,7 @@ describe Carto::Superadmin::OrganizationsController do
     it 'returns mapviews' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@org_user_owner.username, 'mapviews')
       $users_metadata.ZADD(key, 23, "20160915")
-      get_json(usage_superadmin_user_url(@organization.id), { from: '2016-09-14' }, superadmin_headers) do |response|
+      get_json(usage_superadmin_organization_url(@organization.id), { from: '2016-09-14' }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
         mapviews[:"2016-09-15"].should eq 23
       end

@@ -9,13 +9,6 @@ module Carto
 
     def initialize(geometry_type)
       @geometry_type = geometry_type
-
-      unless style_class
-        message = "Carto::Forms: No form for geometry type"
-        CartoDB::Logger.error(message: message, geometry_type: geometry_type)
-
-        raise "#{message}: '#{geometry_type}'"
-      end
     end
 
     def to_hash
@@ -43,7 +36,11 @@ module Carto
     end
 
     def style_class
-      @style_class ||= Carto::Styles::Style.style_for_geometry_type(@geometry_type)
+      return @style_class if @style_class
+
+      proposed_style_class = Carto::Styles::Style.style_for_geometry_type(@geometry_type)
+
+      @style_class = proposed_style_class || Carto::Styles::Point
     end
 
     def style

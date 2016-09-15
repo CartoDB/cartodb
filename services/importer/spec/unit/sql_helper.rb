@@ -64,6 +64,9 @@ def match_sql_command(sql)
     }xi,
     rename_foreign_table: %r{
       ALTER\s+FOREIGN\s+TABLE\s+(?<table_name>.+)\s+RENAME\s+TO\s+(?<new_name>.+)
+    }xi,
+    select_all: %r{
+      SELECT\s+\*\s+FROM\s+(?<from>.+)
     }xi
   }
   option_pair = %r{

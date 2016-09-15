@@ -17,11 +17,15 @@ class TestConnector < Carto::Connector
   def execute_as_superuser(command)
     @executed_commands ||= []
     @executed_commands << [:superuser, command, @user.username]
+    nil
   end
 
   def execute(command)
     @executed_commands ||= []
     @executed_commands << [:user, command, @user.username]
+    if command =~ /\A\s*SELECT\s+\*\s+FROM\s+ODBCTablesList/
+      [{ schema: 'abc', name: 'xyz' }]
+    end
   end
 
   attr_reader :executed_commands
@@ -43,7 +47,7 @@ class TestCountConnector < TestConnector
   end
 
   def execute(command)
-    if command =~ /SELECT\s+count\(\*\)\s+AS\s+num_rows/mi
+    if command =~ /\A\s*SELECT\s+count\(\*\)\s+AS\s+num_rows/mi
       [{ 'num_rows' => @test_count }]
     else
       super
@@ -634,6 +638,91 @@ describe Carto::Connector do
           }
         )
       end
+    end
+
+    it 'Executes expected odbc_fdw SQL commands to list tables' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        }
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      connector = TestConnector.new(parameters, options)
+      tables = connector.list_tables
+      tables.should eq [{ schema: 'abc', name: 'xyz' }]
+
+      connector.executed_commands.size.should eq 5
+
+      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      user_name = @user.username
+      user_role = @user.database_username
+
+      expect_executed_commands(
+        connector.executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            server_name: /\Amysql_/,
+            fdw_name: 'odbc_fdw',
+            options: {
+              'odbc_Driver' => 'MySQL',
+              'odbc_server' => 'theserver',
+              'odbc_database' => 'thedatabase',
+              'odbc_port' => '3306'
+            }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }, {
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # FETCH TABLES LIST
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :select_all,
+            from: /ODBCTablesList\('#{Regexp.escape server_name}'\)/
+          }]
+        }, {
+          # DROP USERMAP
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }, {
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name
+          }]
+        }
+      )
     end
 
     it 'Should provide connector metadata' do

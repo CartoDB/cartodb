@@ -30,30 +30,31 @@ module Carto
       log "Connector Copy table  #{schema_name}.#{table_name}"
       validate!
       # TODO: logging with CartoDB::Logger
-      begin
-        qualified_table_name = %{"#{schema_name}"."#{table_name}"}
-        foreign_table_name = @provider.foreign_table_name(foreign_prefix)
-        log "Creating Server"
-        execute_as_superuser create_server_command
-        log "Creating Usermap"
-        execute_as_superuser create_usermap_command
-        log "Creating Foreign Table"
-        execute_as_superuser create_foreign_table_command
-        log "Copying Foreign Table"
-        max_rows = limits[:max_rows]
-        execute copy_foreign_table_command(
-          qualified_table_name, qualified_foreign_table_name(foreign_table_name), max_rows
-        )
-        check_copied_table_size(qualified_table_name, max_rows)
-      rescue => error
-        log "Connector Error #{error}"
-        raise error
-      ensure
-        log "Connector cleanup"
-        execute_as_superuser drop_foreign_table_command(foreign_table_name) if foreign_table_name
-        execute_as_superuser drop_usermap_command
-        execute_as_superuser drop_server_command
-        log "Connector cleaned-up"
+      with_server do
+        begin
+          qualified_table_name = %{"#{schema_name}"."#{table_name}"}
+          foreign_table_name = @provider.foreign_table_name(foreign_prefix)
+          log "Creating Foreign Table"
+          execute_as_superuser create_foreign_table_command
+          log "Copying Foreign Table"
+          max_rows = limits[:max_rows]
+          execute copy_foreign_table_command(
+            qualified_table_name, qualified_foreign_table_name(foreign_table_name), max_rows
+          )
+          check_copied_table_size(qualified_table_name, max_rows)
+        ensure
+          execute_as_superuser drop_foreign_table_command(foreign_table_name) if foreign_table_name
+        end
+      end
+    end
+
+    def list_tables
+      # TODO: validate! only: [:connection] # we need to implement partial connector validation
+      with_server do
+        tables = execute %{
+          SELECT * FROM ODBCTablesList('#{server_name}');
+        }
+        tables.to_a
       end
     end
 
@@ -156,6 +157,26 @@ module Carto
 
     private
 
+    # Execute code that requires a FDW server/user mapping
+    # The server name is given by the method `#server_name`
+    def with_server
+      # Currently we create temporary server and user mapings when we need them,
+      # and drop them after use.
+      log "Creating Server"
+      execute_as_superuser create_server_command
+      log "Creating Usermap"
+      execute_as_superuser create_usermap_command
+      yield
+    rescue => error
+      log "Connector Error #{error}"
+      raise error
+    ensure
+      log "Connector cleanup"
+      execute_as_superuser drop_usermap_command
+      execute_as_superuser drop_server_command
+      log "Connector cleaned-up"
+    end
+
     def validate!
       @provider.validate!
     end
@@ -231,11 +252,21 @@ module Carto
     end
 
     def execute_as_superuser(command)
-      @user.in_database(as: :superuser).execute command
+      # TODO: instead of selectict here fetch/execute, let the caller choose the method
+      if command =~ /\A\s*SELECT/mi
+        @user.in_database(as: :superuser).fetch command
+      else
+        @user.in_database(as: :superuser).execute command
+      end
     end
 
     def execute(command)
-      @user.in_database.execute command
+      # TODO: instead of selectict here fetch/execute, let the caller choose the method
+      if command =~ /\A\s*SELECT/mi
+        @user.in_database.fetch command
+      else
+        @user.in_database.execute command
+      end
     end
 
     def check_copied_table_size(table_name, max_rows)

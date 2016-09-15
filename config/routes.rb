@@ -615,6 +615,12 @@ CartoDB::Application.routes.draw do
           get '/usage' => 'users#usage'
         end
       end
+
+      resources :organizations, only: [] do
+        member do
+          get '/usage' => 'organizations#usage'
+        end
+      end
     end
   end
 

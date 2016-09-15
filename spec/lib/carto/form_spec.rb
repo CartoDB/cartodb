@@ -149,7 +149,7 @@ module Carto
     it 'return point form if inexisting type is specified' do
       form = Carto::Form.new('geometry')
 
-      form.to_hash.should eq Carto::Form.new('point').to_hash
+      form.to_hash.should eq point_form
     end
 
     it 'returns a correct line form' do

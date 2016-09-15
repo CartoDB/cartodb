@@ -13,9 +13,7 @@ module Carto::Metrics
     end
 
     def get_range(user, org, service, metric, date_from, date_to)
-      user = user
-      org = org
-      usage_metrics = @cls.new(user.username, org ? org.name : nil)
+      usage_metrics = @cls.new(user.try(:username), org.try(:name))
 
       result = {}
       date_from.upto(date_to).each do |date|

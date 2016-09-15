@@ -17,6 +17,13 @@
     "november": "November",
     "december": "December"
   },
+  "operators": {
+    "count": "COUNT",
+    "sum": "SUM",
+    "avg": "AVG",
+    "min": "MIN",
+    "max": "MAX"
+  },
   "builder-onboarding": {
     "title": "Welcome to the Builder,",
     "description": "Let us show you all the new and exciting things that you can do with CARTO.",
@@ -100,7 +107,7 @@
       "quads": "Classification of the geometry from the analysis",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
-"rowid": "The original row id of the geometry (cartodb_id)."
+      "rowid": "The original row id of the geometry (cartodb_id)."
     },
     "kmeans": {
       "title": "Calculating point clusters",
@@ -1864,13 +1871,6 @@
           "description": "Define how your widget interacts with the data",
           "yes": "Yes",
           "no": "No"
-        },
-        "aggregation-options": {
-          "count": "COUNT",
-          "sum": "SUM",
-          "avg": "AVG",
-          "min": "MIN",
-          "max": "MAX"
         }
       }
     }

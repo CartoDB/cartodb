@@ -10,13 +10,13 @@ module Carto
       respond_to :json
 
       ssl_required :usage
-      before_filter :load_user
+      before_filter :load_organization
 
       rescue_from ArgumentError, with: :render_date_format_error
 
       def usage
         date_to = params[:to] ? Date.parse(params[:to]) : Date.today
-        date_from = params[:from] ? Date.parse(params[:from]) : @user.last_billing_cycle
+        date_from = params[:from] ? Date.parse(params[:from]) : @organization.owner.last_billing_cycle
 
         usage = get_usage(nil, @organization, date_from, date_to)
 
@@ -30,7 +30,7 @@ module Carto
       end
 
       def load_organization
-        @organization = Carto::User.where(id: params[:id]).first
+        @organization = Carto::Organization.where(id: params[:id]).first
         render json: { error: 'Organization not found' }, status: 404 unless @organization
       end
     end

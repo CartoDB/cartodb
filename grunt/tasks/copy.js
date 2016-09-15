@@ -3,8 +3,8 @@ module.exports = {
     return {
       fonts: {
         expand: true,
-        cwd: 'themes/fonts',
-        src: [ '**/*.{eot,ttf,woff}' ],
+        cwd: 'node_modules/cartoassets/src/fonts/',
+        src: [ '**/*.{eot,ttf,woff,svg}' ],
         dest: '<%= config.dist %>/themes/fonts'
       }
     };

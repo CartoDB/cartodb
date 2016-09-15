@@ -17,17 +17,17 @@ module Carto
     # so that a public provider may not be available for all users, and non-public providers may be available to
     # some users (e.g. 'odbc' provider for tests)
     PROVIDERS = {
-      'odbc'      => {
+      'odbc' => {
         name: 'ODBC',
         class: GenericOdbcProvider,
         public: false # Intended for internal development/tests
       },
-      'postgres'  => {
+      'postgres' => {
         name: 'PostgreSQL',
         class: PostgreSQLProvider,
         public: true
       },
-      'mysql'     => {
+      'mysql' => {
         name: 'MySQL',
         class: MySqlProvider,
         public: true
@@ -37,7 +37,7 @@ module Carto
         class: SqlServerProvider,
         public: true
       },
-      'hive'      => {
+      'hive' => {
         name: 'Hive',
         class: HiveProvider,
         public: true

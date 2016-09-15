@@ -936,7 +936,7 @@ describe Carto::Connector do
         parameters: {
           'connection' => {
             'username' => { required: true  },
-            'password' => { required: true },
+            'password' => { required: true  },
             'server'   => { required: true  },
             'port'     => { required: false },
             'database' => { required: true  }

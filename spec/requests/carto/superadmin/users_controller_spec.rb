@@ -164,7 +164,7 @@ describe Carto::Superadmin::UsersController do
       end
     end
 
-    it 'returns for Twitter imports' do
+    it 'returns Twitter imports' do
       st = SearchTweet.create(
         user_id: @user.id,
         table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',

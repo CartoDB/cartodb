@@ -38,29 +38,40 @@ describe Carto::Superadmin::UsersController do
     end
 
     shared_examples_for 'dataservices usage metrics' do
-      it 'returns usage metrics' do
-        date = Date.today
+      before(:each) do
+        @date = Date.today
         usage_metrics = @class.new(@user.username, nil, MockRedis.new)
         @class.stubs(:new).returns(usage_metrics)
-        usage_metrics.incr(@service, :success_responses, 10, date)
-        usage_metrics.incr(@service, :success_responses, 100, date - 2)
-        usage_metrics.incr(@service, :empty_responses, 20, date - 2)
-        usage_metrics.incr(@service, :failed_responses, 30, date - 1)
-        usage_metrics.incr(@service, :total_requests, 40, date)
+        usage_metrics.incr(@service, :success_responses, 10, @date)
+        usage_metrics.incr(@service, :success_responses, 100, @date - 2)
+        usage_metrics.incr(@service, :empty_responses, 20, @date - 2)
+        usage_metrics.incr(@service, :failed_responses, 30, @date - 1)
+        usage_metrics.incr(@service, :total_requests, 40, @date)
+      end
 
+      it 'returns usage metrics' do
         get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
           success = response.body[@service][:success_responses]
-          success[date.to_s.to_sym].should eq 10
-          success[(date - 2).to_s.to_sym].should eq 100
+          success[@date.to_s.to_sym].should eq 10
+          success[(@date - 2).to_s.to_sym].should eq 100
 
           empty = response.body[@service][:empty_responses]
-          empty[(date - 2).to_s.to_sym].should eq 20
+          empty[(@date - 2).to_s.to_sym].should eq 20
 
           error = response.body[@service][:failed_responses]
-          error[(date - 1).to_s.to_sym].should eq 30
+          error[(@date - 1).to_s.to_sym].should eq 30
 
           total = response.body[@service][:total_requests]
-          total[date.to_s.to_sym].should eq 40
+          total[@date.to_s.to_sym].should eq 40
+        end
+      end
+
+      it 'returns totals' do
+        get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5, totals: true }, superadmin_headers) do |response|
+          response.body[@service][:success_responses].should eq 110
+          response.body[@service][:empty_responses].should eq 20
+          response.body[@service][:failed_responses].should eq 30
+          response.body[@service][:total_requests].should eq 40
         end
       end
     end
@@ -187,8 +198,19 @@ describe Carto::Superadmin::UsersController do
       $users_metadata.ZADD(key, 23, "20160915")
       get_json(usage_superadmin_user_url(@user.id), { from: '2016-09-16' }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        puts mapviews
         mapviews.should_not include :"2016-09-15"
+      end
+    end
+
+    it 'returns only requested services' do
+      get_json(usage_superadmin_user_url(@user.id), { services: ['mapviews'] }, superadmin_headers) do |response|
+        response.body.keys.should eq [:mapviews]
+      end
+    end
+
+    it 'returns an error for invalid services array format' do
+      get_json(usage_superadmin_user_url(@user.id), { services: 'wadus' }, superadmin_headers) do |response|
+        response.status.should eq 422
       end
     end
 

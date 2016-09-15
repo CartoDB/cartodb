@@ -48,7 +48,7 @@ describe Carto::Superadmin::UsersController do
         usage_metrics.incr(@service, :failed_responses, 30, date - 1)
         usage_metrics.incr(@service, :total_requests, 40, date)
 
-        get_json(usage_superadmin_user_url(@user.id), {}, superadmin_headers) do |response|
+        get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
           success = response.body[@service][:success_responses]
           success[date.to_s.to_sym].should eq 10
           success[(date - 2).to_s.to_sym].should eq 100
@@ -158,7 +158,7 @@ describe Carto::Superadmin::UsersController do
     it 'returns mapviews' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
       $users_metadata.ZADD(key, 23, "20160915")
-      get_json(usage_superadmin_user_url(@user.id), {}, superadmin_headers) do |response|
+      get_json(usage_superadmin_user_url(@user.id), { from: "2016-09-14" }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
         mapviews[:"2016-09-15"].should eq 23
       end
@@ -173,7 +173,7 @@ describe Carto::Superadmin::UsersController do
         retrieved_items: 42,
         state: ::SearchTweet::STATE_COMPLETE
       )
-      get_json(usage_superadmin_user_url(@user.id), {}, superadmin_headers) do |response|
+      get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]
         formatted_date = st.created_at.to_date.to_s.to_sym
         tweets[formatted_date].should eq st.retrieved_items

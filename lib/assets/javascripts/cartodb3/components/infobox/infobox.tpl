@@ -17,8 +17,8 @@
     <% } %>
     <% if (hasButtons) { %>
       <ul class="Infobox-buttons">
-        <li class="Infobox-button js-secondary"></li>
-        <li class="Infobox-button Infobox-button--right js-primary"></li>
+        <li class="Infobox-button js-leftAction"></li>
+        <li class="Infobox-button Infobox-button--right js-rightAction"></li>
       </ul>
     <% } %>
   </div>

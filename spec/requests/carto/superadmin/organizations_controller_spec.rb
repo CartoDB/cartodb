@@ -180,6 +180,7 @@ describe Carto::Superadmin::OrganizationsController do
         tweets = response.body[:twitter_imports][:retrieved_items]
         formatted_date = st1.created_at.to_date.to_s.to_sym
         tweets[formatted_date].should eq st1.retrieved_items + st2.retrieved_items
+        tweets[(Date.today - 5).to_s.to_sym].should eq 0
       end
       st1.destroy
       st2.destroy

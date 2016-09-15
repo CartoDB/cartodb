@@ -14,7 +14,11 @@ module Carto::Metrics
                      else
                        _org.users.joins(:search_tweets).reorder(nil)
                      end
-      Carto::SearchTweet.twitter_imports_count_by_date(tweets_query, date_from, date_to)
+      result = Carto::SearchTweet.twitter_imports_count_by_date(tweets_query, date_from, date_to)
+      date_from.upto(date_to) do |date|
+        result[date] = 0 unless result[date]
+      end
+      result
     end
   end
 end

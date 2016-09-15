@@ -13,7 +13,7 @@ module Carto
 
     validates :definition, carto_json_symbolizer: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }
-    validates :prehtml, :posthtml, presence: true
+    validates :prehtml, :posthtml, :definition, presence: true
 
     validate :validate_definition_schema
 
@@ -22,7 +22,7 @@ module Carto
     def validate_definition_schema
       definition_errors = Carto::LegendDefinitionValidator.errors(type, definition)
 
-      errors.add(:definition, definition_errors) if definition_errors.any?
+      errors.add(:definition, definition_errors.join(', ')) if definition_errors.any?
     end
   end
 end

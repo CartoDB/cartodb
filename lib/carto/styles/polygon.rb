@@ -13,11 +13,11 @@ module Carto::Styles
       ['polygon', 'multipolygon', 'st_polygon', 'st_multipolygon']
     end
 
-    private
-
     def default_definition
       Carto::Definition.instance.load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)[:simple][:polygon]
     end
+
+    private
 
     def parse_fill(fill)
       color = fill[:color][:fixed]

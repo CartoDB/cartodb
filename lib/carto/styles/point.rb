@@ -13,11 +13,11 @@ module Carto::Styles
       ['point', 'multipoint', 'st_point']
     end
 
-    private
-
     def default_definition
       Carto::Definition.instance.load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)[:simple][:point]
     end
+
+    private
 
     def parse_fill(fill)
       width = fill[:size][:fixed]

@@ -72,6 +72,9 @@ module CartoDB
         tile_style = ModelFactories::LayerFactory.builder_tile_style(geometry_type)
         new_layer.options['tile_style'] = tile_style
 
+        style_properties = ModelFactories::LayerFactory.style_properties(geometry_type)
+        new_layer.options['style_properties'] = style_properties
+
         new_layer
       end
     end

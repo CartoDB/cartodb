@@ -4,8 +4,10 @@ require 'spec_helper_min'
 
 module Carto
   describe Form do
-    it 'handles inexistent geometry types' do
-      expect { Carto::Form.new('patata') }.to raise_error('Carto::Forms: No form for geometry type: \'patata\'')
+    it 'return point form if inexisting type is specified' do
+      form = Carto::Form.new('patata')
+
+      form.to_hash.should eq Carto::Form.new('st_point').to_hash
     end
   end
 end

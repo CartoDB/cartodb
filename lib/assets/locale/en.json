@@ -1652,8 +1652,8 @@
         "add": "Add item",
         "title": "Title",
         "fill": "Fill",
-        "by-size": "\"Size\"",
-        "by-color": "\"Color\"",
+        "by-size": "By Size",
+        "by-color": "By Color",
         "untitled": "\"Untitled\""
       }
     },

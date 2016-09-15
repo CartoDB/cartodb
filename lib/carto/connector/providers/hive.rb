@@ -38,8 +38,7 @@ module Carto
           database: { Schema: DEFAULT_SCHEMA },
           port: { PORT: 10000 },
           username: { UID: nil },
-          password: { PWD: nil },
-          authmech: { AuthMech: 0 }
+          password: { PWD: nil }
         }
       end
 

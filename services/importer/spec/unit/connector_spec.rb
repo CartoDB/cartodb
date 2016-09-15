@@ -36,6 +36,21 @@ class FailingTestConnector < TestConnector
   end
 end
 
+class TestCountConnector < TestConnector
+  def initialize(count, *args)
+    @test_count = count
+    super *args
+  end
+
+  def execute(command)
+    if command =~ /SELECT\s+count\(\*\)\s+AS\s+num_rows/mi
+      [{ 'num_rows' => @test_count }]
+    else
+      super
+    end
+  end
+end
+
 def expect_executed_command(cmd, expected = {})
   if expected
     mode, sql, user = cmd
@@ -379,26 +394,270 @@ describe Carto::Connector do
       )
     end
 
+    it 'Limits the number of rows copied from a table' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        table:    'thetable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      config = { 'mysql' => { 'available' => true, 'max_rows' => 10 } }
+      Cartodb.with_config connectors: config do
+        connector = TestCountConnector.new(5, parameters, options)
+        result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
+        result.should be_empty
+
+        connector.executed_commands.size.should eq 7
+        server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+        foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
+        user_name = @user.username
+        user_role = @user.database_username
+
+        expect_executed_commands(
+          connector.executed_commands,
+          {
+            # CREATE SERVER
+            mode: :superuser,
+            sql: [{
+              command: :create_server,
+              server_name: /\Amysql_/,
+              fdw_name: 'odbc_fdw',
+              options: {
+                'odbc_Driver' => 'MySQL',
+                'odbc_server' => 'theserver',
+                'odbc_database' => 'thedatabase',
+                'odbc_port' => '3306'
+              }
+            }]
+          }, {
+            # CREATE USER MAPPING
+            mode: :superuser,
+            sql: [{
+              command: :create_user_mapping,
+              server_name: server_name,
+              user_name: user_role,
+              options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+            }, {
+              command: :create_user_mapping,
+              server_name: server_name,
+              user_name: 'postgres',
+              options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+            }]
+          }, {
+            # IMPORT FOREIGH SCHEMA; GRANT SELECT
+            mode: :superuser,
+            sql: [{
+              command: :import_foreign_schema,
+              server_name: server_name,
+              schema_name: 'cdb_importer',
+              options: {
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0',
+                "schema" => 'thedatabase',
+                "table" => 'thetable',
+                "encoding" => 'theencoding',
+                "prefix" => "#{server_name}_"
+              }
+            }, {
+              command: :grant_select,
+              table_name: foreign_table_name,
+              user_name: user_role
+            }]
+          }, {
+            # CREATE TABLE AS SELECT
+            mode: :user,
+            user: user_name,
+            sql: [{
+              command: :create_table_as_select,
+              table_name: %{"xyz"."abc"},
+              select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/,
+              limit: '10'
+            }]
+          }, {
+            # DROP FOREIGN TABLE
+            mode: :superuser,
+            sql: [{
+              command: :drop_foreign_table_if_exists,
+              table_name: foreign_table_name
+            }]
+          }, {
+            # DROP USERMAP
+            mode: :superuser,
+            sql: [{
+              command: :drop_usermapping_if_exists,
+              server_name: server_name,
+              user_name: 'postgres'
+            }, {
+              command: :drop_usermapping_if_exists,
+              server_name: server_name,
+              user_name: user_role
+            }]
+          }, {
+            # DROP SERVER
+            mode: :superuser,
+            sql: [{
+              command: :drop_server_if_exists,
+              server_name: server_name
+            }]
+          }
+        )
+      end
+    end
+
+    it 'Limits the number of rows and warns if limit is reached' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        table:    'thetable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      config = { 'mysql' => { 'available' => true, 'max_rows' => 10 } }
+      Cartodb.with_config connectors: config do
+        connector = TestCountConnector.new(10, parameters, options)
+        result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
+        result[:max_rows_per_connection].should eq 10
+
+        connector.executed_commands.size.should eq 7
+        server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+        foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
+        user_name = @user.username
+        user_role = @user.database_username
+
+        expect_executed_commands(
+          connector.executed_commands,
+          {
+            # CREATE SERVER
+            mode: :superuser,
+            sql: [{
+              command: :create_server,
+              server_name: /\Amysql_/,
+              fdw_name: 'odbc_fdw',
+              options: {
+                'odbc_Driver' => 'MySQL',
+                'odbc_server' => 'theserver',
+                'odbc_database' => 'thedatabase',
+                'odbc_port' => '3306'
+              }
+            }]
+          }, {
+            # CREATE USER MAPPING
+            mode: :superuser,
+            sql: [{
+              command: :create_user_mapping,
+              server_name: server_name,
+              user_name: user_role,
+              options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+            }, {
+              command: :create_user_mapping,
+              server_name: server_name,
+              user_name: 'postgres',
+              options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+            }]
+          }, {
+            # IMPORT FOREIGH SCHEMA; GRANT SELECT
+            mode: :superuser,
+            sql: [{
+              command: :import_foreign_schema,
+              server_name: server_name,
+              schema_name: 'cdb_importer',
+              options: {
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0',
+                "schema" => 'thedatabase',
+                "table" => 'thetable',
+                "encoding" => 'theencoding',
+                "prefix" => "#{server_name}_"
+              }
+            }, {
+              command: :grant_select,
+              table_name: foreign_table_name,
+              user_name: user_role
+            }]
+          }, {
+            # CREATE TABLE AS SELECT
+            mode: :user,
+            user: user_name,
+            sql: [{
+              command: :create_table_as_select,
+              table_name: %{"xyz"."abc"},
+              select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/,
+              limit: '10'
+            }]
+          }, {
+            # DROP FOREIGN TABLE
+            mode: :superuser,
+            sql: [{
+              command: :drop_foreign_table_if_exists,
+              table_name: foreign_table_name
+            }]
+          }, {
+            # DROP USERMAP
+            mode: :superuser,
+            sql: [{
+              command: :drop_usermapping_if_exists,
+              server_name: server_name,
+              user_name: 'postgres'
+            }, {
+              command: :drop_usermapping_if_exists,
+              server_name: server_name,
+              user_name: user_role
+            }]
+          }, {
+            # DROP SERVER
+            mode: :superuser,
+            sql: [{
+              command: :drop_server_if_exists,
+              server_name: server_name
+            }]
+          }
+        )
+      end
+    end
+
     it 'Should provide connector metadata' do
       Carto::Connector.information('mysql').should eq(
         features: {
-          'list_tables': true,
+          'list_tables':    true,
           'list_databases': false,
-          'sql_queries': true
+          'sql_queries':    true,
+          'preview_table':  false
         },
         parameters: {
-          'table'      => { required: true,  connection: false },
-          'connection' => { required: true,  connection: false },
-          'schema'     => { required: false, connection: false },
-          'sql_query'  => { required: false, connection: false },
-          'sql_count'  => { required: false, connection: false },
-          'encoding'   => { required: false, connection: false },
-          'columns'    => { required: false, connection: false },
-          'username'   => { required: true,  connection: true },
-          'password'   => { required: true,  connection: true },
-          'server'     => { required: true,  connection: true },
-          'port'       => { required: false, connection: true },
-          'database'   => { required: false, connection: true }
+          'connection' => {
+            'username' => { required: true  },
+            'password' => { required: true  },
+            'server'   => { required: true  },
+            'port'     => { required: false },
+            'database' => { required: false }
+          },
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'sql_query'  => { required: false },
+          'sql_count'  => { required: false },
+          'encoding'   => { required: false },
+          'columns'    => { required: false }
         }
       )
     end
@@ -525,23 +784,25 @@ describe Carto::Connector do
     it 'Should provide connector metadata' do
       Carto::Connector.information('postgres').should eq(
         features: {
-          'list_tables': true,
+          'list_tables':    true,
           'list_databases': false,
-          'sql_queries': true
+          'sql_queries':    true,
+          'preview_table':  false
         },
         parameters: {
-          'table'      => { required: true,  connection: false },
-          'connection' => { required: true,  connection: false },
-          'schema'     => { required: false, connection: false },
-          'sql_query'  => { required: false, connection: false },
-          'sql_count'  => { required: false, connection: false },
-          'encoding'   => { required: false, connection: false },
-          'columns'    => { required: false, connection: false },
-          'server'     => { required: true,  connection: true },
-          'port'       => { required: false, connection: true },
-          'database'   => { required: true,  connection: true },
-          'username'   => { required: true,  connection: true },
-          'password'   => { required: false, connection: true }
+          'connection' => {
+            'username' => { required: true  },
+            'password' => { required: false },
+            'server'   => { required: true  },
+            'port'     => { required: false },
+            'database' => { required: true  }
+          },
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'sql_query'  => { required: false },
+          'sql_count'  => { required: false },
+          'encoding'   => { required: false },
+          'columns'    => { required: false }
         }
       )
     end
@@ -610,7 +871,7 @@ describe Carto::Connector do
           mode: :superuser,
           sql: [{
             command: :import_foreign_schema,
-            remote_schema_name: 'public',
+            remote_schema_name: 'dbo',
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
@@ -667,23 +928,25 @@ describe Carto::Connector do
     it 'Should provide connector metadata' do
       Carto::Connector.information('sqlserver').should eq(
         features: {
-          'list_tables': true,
+          'list_tables':    true,
           'list_databases': false,
-          'sql_queries': true
+          'sql_queries':    true,
+          'preview_table':  false
         },
         parameters: {
-          'table'      => { required: true,  connection: false },
-          'connection' => { required: true,  connection: false },
-          'schema'     => { required: false, connection: false },
-          'sql_query'  => { required: false, connection: false },
-          'sql_count'  => { required: false, connection: false },
-          'encoding'   => { required: false, connection: false },
-          'columns'    => { required: false, connection: false },
-          'username'   => { required: true,  connection: true },
-          'password'   => { required: true,  connection: true },
-          'server'     => { required: true,  connection: true },
-          'port'       => { required: false, connection: true },
-          'database'   => { required: true, connection: true }
+          'connection' => {
+            'username' => { required: true  },
+            'password' => { required: true },
+            'server'   => { required: true  },
+            'port'     => { required: false },
+            'database' => { required: true  }
+          },
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'sql_query'  => { required: false },
+          'sql_count'  => { required: false },
+          'encoding'   => { required: false },
+          'columns'    => { required: false }
         }
       )
     end
@@ -749,11 +1012,10 @@ describe Carto::Connector do
           mode: :superuser,
           sql: [{
             command: :import_foreign_schema,
-            remote_schema_name: 'public',
+            remote_schema_name: 'default',
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_AuthMech" => '0',
               "odbc_Schema" => 'default',
               "schema" => 'default',
               "table" => 'thetable',
@@ -807,24 +1069,25 @@ describe Carto::Connector do
     it 'Should provide connector metadata' do
       Carto::Connector.information('hive').should eq(
         features: {
-          'list_tables': true,
+          'list_tables':    true,
           'list_databases': false,
-          'sql_queries': true
+          'sql_queries':    true,
+          'preview_table':  false
         },
         parameters: {
-          'table'      => { required: true,  connection: false },
-          'connection' => { required: true,  connection: false },
-          'schema'     => { required: false, connection: false },
-          'sql_query'  => { required: false, connection: false },
-          'sql_count'  => { required: false, connection: false },
-          'encoding'   => { required: false, connection: false },
-          'columns'    => { required: false, connection: false },
-          'username'   => { required: false, connection: true },
-          'password'   => { required: false, connection: true },
-          'server'     => { required: true,  connection: true },
-          'port'       => { required: false, connection: true },
-          'database'   => { required: false, connection: true },
-          'authmech'   => { required: false, connection: true }
+          'connection' => {
+            'username' => { required: false },
+            'password' => { required: false },
+            'server'   => { required: true  },
+            'port'     => { required: false },
+            'database' => { required: false }
+          },
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'sql_query'  => { required: false },
+          'sql_count'  => { required: false },
+          'encoding'   => { required: false },
+          'columns'    => { required: false }
         }
       )
     end
@@ -1102,7 +1365,11 @@ describe Carto::Connector do
 
   describe 'Non odbc provider' do
     before(:each) do
-      Carto::Connector::PROVIDERS['pg'] = Carto::Connector::PgFdwProvider
+      Carto::Connector::PROVIDERS['pg'] = {
+        class: Carto::Connector::PgFdwProvider,
+        name:  'PostgreSQL FDW',
+        public: true
+      }
     end
 
     after(:each) do
@@ -1347,18 +1614,19 @@ describe Carto::Connector do
     it 'Should provide connector metadata' do
       Carto::Connector.information('pg').should eq(
         features: {
-          'list_tables': true,
+          'list_tables':    true,
           'list_databases': false,
-          'sql_queries': false
+          'sql_queries':    false,
+          'preview_table':  false
         },
         parameters: {
-          'table'      => { required: true,  connection: false },
-          'schema'     => { required: false, connection: false },
-          'username'   => { required: true,  connection: false },
-          'password'   => { required: false, connection: false },
-          'server'     => { required: true,  connection: false },
-          'port'       => { required: false, connection: false },
-          'database'   => { required: true,  connection: false }
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'username'   => { required: true  },
+          'password'   => { required: false },
+          'server'     => { required: true  },
+          'port'       => { required: false },
+          'database'   => { required: true  }
         }
       )
     end

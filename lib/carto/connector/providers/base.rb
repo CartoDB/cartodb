@@ -95,20 +95,17 @@ module Carto
 
       def parameters_information
         # TODO: add templates with parameter descriptions
-        # TODO: remove :connection attribute; group connection parameters inside :connection entry
         info = {}
         required_parameters.each do |name|
           # TODO: description = load template for parameter name of @provider.name
           info[name.to_s] = {
-            required: true,
-            connection: false
+            required: true
           }
         end
         optional_parameters.each do |name|
           # TODO: description = load template for parameter name of @provider.name
           info[name.to_s] = {
-            required: false,
-            connection: false
+            required: false
           }
         end
         info

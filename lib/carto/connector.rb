@@ -22,10 +22,8 @@ module Carto
       @name ||= DEFAULT_PROVIDER
 
       raise InvalidParametersError.new("Provider not defined") if @name.blank?
-      @provider = PROVIDERS[@name].try :new, @params
+      @provider = Connector.provider_class(@name).try :new, @params
       raise InvalidParametersError.new("Invalid provider: #{@name}") if @provider.blank?
-
-      # @schema = @user.database_schema
     end
 
     def copy_table(schema_name:, table_name:)
@@ -42,9 +40,11 @@ module Carto
         log "Creating Foreign Table"
         execute_as_superuser create_foreign_table_command
         log "Copying Foreign Table"
-        execute %{
-          CREATE TABLE #{qualified_table_name} AS SELECT * FROM #{qualified_foreign_table_name(foreign_table_name)};
-        }
+        max_rows = limits[:max_rows]
+        execute copy_foreign_table_command(
+          qualified_table_name, qualified_foreign_table_name(foreign_table_name), max_rows
+        )
+        check_copied_table_size(qualified_table_name, max_rows)
       rescue => error
         log "Connector Error #{error}"
         raise error
@@ -66,22 +66,92 @@ module Carto
       @provider.table_name
     end
 
+    # General availabillity check
     def self.check_availability!(user)
       unless user.has_feature_flag?('carto-connectors')
         raise ConnectorsDisabledError.new(user: user.username)
       end
     end
 
-    # Information about a connector features and parameters
-    def self.information(provider_name)
-      provider = PROVIDERS[provider_name]
+    # Check availability for a user and provider
+    def check_availability!
+      Connector.check_availability!(@user)
+      if !available?
+        raise ConnectorsDisabledError.new(user: @user.username, connector: @name)
+      end
+    end
+
+    # Limits for the user/provider
+    def limits
+      Connector.limits provider: @name, user: @user
+    end
+
+    # Availability for the user/provider
+    def available?
+      limits[:available]
+    end
+
+    def self.limits(provider:, user:)
+      # Load general application defaults
+      available = Cartodb.get_config(:connectors, provider, 'available') || false
+      max_rows  = Cartodb.get_config(:connectors, provider, 'max_rows')
+
+      # TODO: now we should override these values with organization defaults (for org users),
+      #       then with existing user specific limits
+
+      { available: available, max_rows: max_rows }
+    end
+
+    # Information about a connector's features and parameters.
+    #
+    # Example:
+    # {
+    #   'mysql' => {
+    #     features: {
+    #                 "sql_queries":    true,
+    #                 "list_databases": false,
+    #                 "list_tables":    true,
+    #                 "preview_table":  false
+    #     },
+    #     parameters: {
+    #       connection: {
+    #         server: { required: true, description: "..." },
+    #         ...
+    #       },
+    #       table: { required: true, description: "..." },
+    #       ...
+    #     }
+    #   }, ...
+    # }
+    def self.information(provider_name, user = nil)
+      provider = provider_class(provider_name)
       raise InvalidParametersError.new("Invalid provider: #{provider_name}") if provider.blank?
       provider.information
     end
 
-    # List of available provider names
-    def self.providers
-      PROVIDERS.keys
+    # Available providers information.
+    #
+    # Example:
+    # {
+    #   'mysql' => { name: 'MySQL', description: '...', available: true },
+    #   ...
+    # }
+    def self.providers(user = nil)
+      providers_info = {}
+      providers_id.each do |id|
+        next unless provider_public?(id)
+        # TODO: load description template for provider id
+        description = nil
+        if user
+          available = Connector.limits(user: user, provider: name)[:available]
+        end
+        providers_info[id] = {
+          name:        provider_name(id),
+          description: description,
+          available:   available
+        }
+      end
+      providers
     end
 
     private
@@ -151,12 +221,35 @@ module Carto
       @provider.drop_foreign_table_command foreign_table_schema, foreign_table_name
     end
 
+    def copy_foreign_table_command(local_table_name, foreign_table_name, max_rows)
+      limit = (max_rows && max_rows > 0) ? " LIMIT #{max_rows}" : ''
+      %{
+        CREATE TABLE #{local_table_name}
+          AS SELECT * FROM #{foreign_table_name}
+            #{limit};
+      }
+    end
+
     def execute_as_superuser(command)
       @user.in_database(as: :superuser).execute command
     end
 
     def execute(command)
       @user.in_database.execute command
+    end
+
+    def check_copied_table_size(table_name, max_rows)
+      warnings = {}
+      if max_rows && max_rows > 0
+        num_rows = execute(%{
+          SELECT count(*) as num_rows FROM #{table_name};
+        }).first['num_rows']
+        if num_rows == max_rows
+          # The maximum number of rows per connection was reached
+          warnings[:max_rows_per_connection] = max_rows
+        end
+      end
+      warnings
     end
   end
 end

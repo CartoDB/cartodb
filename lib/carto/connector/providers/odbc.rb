@@ -85,7 +85,7 @@ module Carto
       end
 
       def remote_schema_name
-        schema = @params[:schema]
+        schema = table_options[:schema]
         schema = 'public' if schema.blank?
         schema
       end
@@ -114,28 +114,29 @@ module Carto
 
       def features_information
         {
-          "list_tables": true,
+          "sql_queries":    true,
           "list_databases": false,
-          "sql_queries": true
+          "list_tables":    true,
+          "preview_table":  false
         }
       end
 
       def parameters_information
         info = super
+        connection = {}
         required_connection_attributes.keys.each do |name|
           # TODO: description = load template for parameter name of @provider.name
-          info[name.to_s] = {
-            required: true,
-            connection: true
+          connection[name.to_s] = {
+            required: true
           }
         end
         optional_connection_attributes.keys.each do |name|
           # TODO: description = load template for parameter name of @provider.name
-          info[name.to_s] = {
-            required: false,
-            connection: true
+          connection[name.to_s] = {
+            required: false
           }
         end
+        info['connection'] = connection
         info
       end
 

@@ -83,9 +83,10 @@ module Carto
 
       def features_information
         {
-          "list_tables": true,
+          "sql_queries":    false,
           "list_databases": false,
-          "sql_queries": false
+          "list_tables":    true,
+          "preview_table":  false
         }
       end
 

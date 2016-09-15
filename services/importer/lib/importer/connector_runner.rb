@@ -17,7 +17,7 @@ module CartoDB
     #
     class ConnectorRunner
 
-      attr_reader :results, :log, :job
+      attr_reader :results, :log, :job, :warnings
       attr_accessor :stats
 
       def initialize(connector_source, options = {})
@@ -34,6 +34,8 @@ module CartoDB
         @results = []
         @tracker = nil
         @stats = {}
+        @warnings = {}
+        @connector.check_availability!
       end
 
       def run(tracker = nil)
@@ -42,7 +44,8 @@ module CartoDB
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
         @job.log "Copy connected table"
-        @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
+        warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
+        @warnings.merge! warnings if warnings.present?
       rescue => error
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
@@ -69,11 +72,7 @@ module CartoDB
         []
       end
 
-      def warnings
-        # This method is needed to make the interface of ConnectorRunner compatible with Runner
-        []
-      end
-
+      # General availability of connectors for a user
       def self.check_availability!(user)
         Carto::Connector.check_availability! user
       end

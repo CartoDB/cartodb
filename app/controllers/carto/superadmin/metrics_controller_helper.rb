@@ -20,13 +20,16 @@ module Carto::Superadmin
 
     private
 
-    def get_usage(user, org, date_from, date_to)
+    def get_usage(user, org, date_from, date_to, only_services, totals)
       usage = {}
       USAGE_METRICS_RETRIEVERS.each do |retriever|
-        retriever.services.each do |service|
+        services = retriever.services
+        services &= only_services if only_services.present?
+        services.each do |service|
           usage[service] = {}
           retriever.metrics.each do |metric|
-            usage[service][metric] = retriever.get_range(user, org, service, metric, date_from, date_to)
+            range = retriever.get_range(user, org, service, metric, date_from, date_to)
+            usage[service][metric] = totals ? range.values.sum : range
           end
         end
       end

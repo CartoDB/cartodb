@@ -12,9 +12,11 @@ module Carto
       ssl_required :usage
       before_filter :load_user
 
+      rescue_from ArgumentError, with: :render_date_format_error
+
       def usage
-        date_to = params[:to] ? params[:to].to_date : Date.today
-        date_from = params[:from] ? params[:from].to_date : @user.last_billing_cycle
+        date_to = params[:to] ? Date.parse(params[:to]) : Date.today
+        date_from = params[:from] ? Date.parse(params[:from]) : @user.last_billing_cycle
 
         usage = get_usage(@user, nil, date_from, date_to)
 
@@ -22,6 +24,10 @@ module Carto
       end
 
       private
+
+      def render_date_format_error
+        render(json: { error: 'Invalid date format' }, status: 422)
+      end
 
       def load_user
         @user = Carto::User.where(id: params[:id]).first

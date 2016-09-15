@@ -179,5 +179,27 @@ describe Carto::Superadmin::UsersController do
       end
       st.destroy
     end
+
+    it 'does not return data outside the date range' do
+      key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
+      $users_metadata.ZADD(key, 23, "20160915")
+      get_json(usage_superadmin_user_url(@user.id), { from: '2016-09-16' }, superadmin_headers) do |response|
+        mapviews = response.body[:mapviews][:total_views]
+        puts mapviews
+        mapviews.should_not include :"2016-09-15"
+      end
+    end
+
+    it 'returns an error for invalid date format' do
+      get_json(usage_superadmin_user_url(@user.id), { from: 'wadus' }, superadmin_headers) do |response|
+        response.status.should eq 422
+      end
+    end
+
+    it 'returns an error for unknown user' do
+      get_json(usage_superadmin_user_url(UUIDTools::UUID.random_create.to_s), {}, superadmin_headers) do |response|
+        response.status.should eq 404
+      end
+    end
   end
 end

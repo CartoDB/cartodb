@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": ["categories"],
+  "properties": {
+    "categories": {
+      "type": "array",
+      "items": [
+        {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": ["color", "title"],
+              "properties": {
+                "color": { "type": "string" },
+                "title": { "type": "string" }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["color", "icon"],
+              "properties": {
+                "color": { "type": "string" },
+                "icon": { "type": "string" }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

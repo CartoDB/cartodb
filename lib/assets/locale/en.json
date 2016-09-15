@@ -467,6 +467,9 @@
           "access-token": "E.g. pk.bfg32ewdsadeyJ1Ijoi…",
           "error": "Error retrieving your basemap. Please, check your access token.",
           "invalid": "This URL is not valid."
+        },
+        "tilejson": {
+          "insert": "Insert your TileJSON URL",
         }
       },
       "export-data": {

@@ -611,15 +611,11 @@ CartoDB::Application.routes.draw do
       resources :user_migration_exports, only: [:show, :create]
       resources :user_migration_imports, only: [:show, :create]
       resources :users, only: [] do
-        member do
-          get '/usage' => 'users#usage'
-        end
+        get '/usage' => 'users#usage', on: :member
       end
 
       resources :organizations, only: [] do
-        member do
-          get '/usage' => 'organizations#usage'
-        end
+        get '/usage' => 'organizations#usage', on: :member
       end
     end
   end

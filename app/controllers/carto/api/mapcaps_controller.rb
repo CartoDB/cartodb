@@ -26,13 +26,13 @@ module Carto
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
       def index
-        render_jsonp(@visualization.mapcaps.map { |mapcap| Carto::Api::MapcapPresenter.new(mapcap).to_poro }, 201)
+        render_jsonp(@visualization.mapcaps.map { |mapcap| Carto::Api::MapcapPresenter.new(mapcap).to_poro })
       end
 
       def create
         @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
 
-        render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro, 201)
+        render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro, :created)
       end
 
       def show
@@ -42,7 +42,7 @@ module Carto
       def destroy
         @mapcap.destroy
 
-        render_jsonp({}, 204)
+        render_jsonp({}, :no_content)
       end
 
       private

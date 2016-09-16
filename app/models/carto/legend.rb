@@ -33,7 +33,7 @@ module Carto
     end
 
     def validate_definition_schema
-      return unless type && definiton
+      return unless type && definition
 
       definition_errors = Carto::LegendDefinitionValidator.errors(type, definition)
 

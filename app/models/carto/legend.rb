@@ -17,6 +17,10 @@ module Carto
 
     validate :validate_definition_schema
 
+    def to_hash
+      Carto::Api::LegendPresenter(self).to_hash
+    end
+
     private
 
     def validate_definition_schema

@@ -5,6 +5,7 @@ Sequel.migration do
 
       Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
 
       String :title
       String :prehtml, null: false

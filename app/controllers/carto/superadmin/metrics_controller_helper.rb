@@ -20,7 +20,7 @@ module Carto::Superadmin
 
     private
 
-    def get_usage(user, org)
+    def get_usage(user, org, last_billing_cycle)
       only_services = params[:services] || []
       raise ArgumentError.new('services must be an array') unless only_services.is_a?(Array)
       only_services = only_services.map(&:to_sym)

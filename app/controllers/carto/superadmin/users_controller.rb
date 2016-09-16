@@ -15,16 +15,12 @@ module Carto
       rescue_from ArgumentError, with: :render_format_error
 
       def usage
-        usage = get_usage(@user, nil)
+        usage = get_usage(@user, nil, @user.last_billing_cycle)
 
         respond_with(usage)
       end
 
       private
-
-      def last_billing_cycle
-        @user.last_billing_cycle
-      end
 
       def render_format_error(exception)
         render(json: { error: exception.message }, status: 422)

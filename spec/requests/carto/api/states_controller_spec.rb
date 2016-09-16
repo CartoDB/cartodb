@@ -32,7 +32,6 @@ describe Carto::Api::StatesController do
     @intruder = FactoryGirl.create(:carto_user)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
-    @state = Carto::State.create(visualization_id: @visualization.id, user_id: @user.id)
   end
 
   before(:each) { bypass_named_maps }
@@ -47,7 +46,7 @@ describe Carto::Api::StatesController do
   end
 
   def state_should_be_correct(response)
-    response.body.should eq @state.json
+    response.body[:json].should eq @visualization.reload.state.json
   end
 
   describe '#update' do
@@ -60,7 +59,7 @@ describe Carto::Api::StatesController do
     end
 
     it 'update a state' do
-      put update_state_url, json: state do |response|
+      put_json update_state_url, json: state do |response|
         response.status.should eq 200
 
         state_should_be_correct(response)
@@ -68,10 +67,11 @@ describe Carto::Api::StatesController do
     end
 
     it 'returns 403 if user does not own the visualization' do
-      put update_state_url(user: @intruder), {} do |response|
+      put_json update_state_url(user: @intruder), {} do |response|
         response.status.should eq 403
 
-        response.body.should be_empty
+        response.body[:errors].should_not be_nil
+        response.body[:errors].should_not be_empty
       end
     end
   end

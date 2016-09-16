@@ -11,7 +11,7 @@
               "type": "object",
               "required": ["color", "title"],
               "properties": {
-                "color": { "type": "string" },
+                "color": { "type": "string", "pattern": "^#(?:[0-9a-f]{3}){1,2}$" },
                 "title": { "type": "string" }
               }
             },
@@ -19,7 +19,7 @@
               "type": "object",
               "required": ["color", "icon"],
               "properties": {
-                "color": { "type": "string" },
+                "color": { "type": "string", "pattern": "^#(?:[0-9a-f]{3}){1,2}$" },
                 "icon": { "type": "string" }
               }
             }

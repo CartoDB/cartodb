@@ -8,11 +8,11 @@ module Carto::Metrics
       [:twitter_imports]
     end
 
-    def get_range(user, _org, _service, _metric, date_from, date_to)
+    def get_range(user, org, _service, _metric, date_from, date_to)
       tweets_query = if user
                        user.search_tweets
                      else
-                       _org.users.joins(:search_tweets).reorder(nil)
+                       org.users.joins(:search_tweets).reorder(nil)
                      end
       result = Carto::SearchTweet.twitter_imports_count_by_date(tweets_query, date_from, date_to)
       date_from.upto(date_to) do |date|

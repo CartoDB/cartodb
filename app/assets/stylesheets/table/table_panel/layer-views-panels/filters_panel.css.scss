@@ -135,6 +135,7 @@
       position:relative;
       text-align: left;
       width: 360px;
+      height: 40px;
       margin: 0 0 40px 0;
 
       & > a.add {
@@ -150,7 +151,7 @@
         top: 0;
         padding: 15px 6px 6px 6px;
         width: 100%;
-        height: 70px;
+        height: 40px;
 
         .remove {
           margin: 0 0 0 7px;

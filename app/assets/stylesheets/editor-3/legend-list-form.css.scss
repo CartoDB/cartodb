@@ -20,18 +20,18 @@
   opacity: 0;
 
   .LegendItem:hover & {
-    opacity: 1;
+    @include opacity(1);
   }
 }
 
 .LegendItem-listFieldsOrder {
+  @include opacity(0);
   position: absolute;
   top: 16px;
   left: -19px;
-  opacity: 0;
 
   .LegendItem:hover & {
-    opacity: 1;
+    @include opacity(1);
   }
 }
 
@@ -46,10 +46,14 @@
 }
 
 .LegendItem .Editor-fieldset .Editor-formInner:nth-child(1) {
-  @include flex(1);
+  @include flex(0 100px);
   margin-right: 4px;
 }
 
 .LegendItem .Editor-fieldset .Editor-formInner:nth-child(2) {
   @include flex(2);
+}
+
+.LegendItems-container {
+  margin-top: -$baseSize;
 }

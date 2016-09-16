@@ -1,4 +1,4 @@
-<div class="u-grow">
+<div class="u-grow  LegendItems-container">
   <div data-items class="u-bSpace--xl">
 
   </div>

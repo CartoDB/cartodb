@@ -541,5 +541,30 @@ describe('src/vis/model-updater', function () {
         }
       });
     });
+
+    it('should "mark" legend models as erroroneus', function () {
+      var layer1 = new CartoDBLayer({}, { vis: this.visModel });
+      var layer2 = new CartoDBLayer({}, { vis: this.visModel });
+
+      expect(layer1.legends.bubble.isError()).toBeFalsy();
+      expect(layer1.legends.category.isError()).toBeFalsy();
+      expect(layer1.legends.choropleth.isError()).toBeFalsy();
+
+      expect(layer2.legends.bubble.isError()).toBeFalsy();
+      expect(layer2.legends.category.isError()).toBeFalsy();
+      expect(layer2.legends.choropleth.isError()).toBeFalsy();
+
+      this.layersCollection.reset([ layer1, layer2 ]);
+
+      this.modelUpdater.setErrors();
+
+      expect(layer1.legends.bubble.isError()).toBeTruthy();
+      expect(layer1.legends.category.isError()).toBeTruthy();
+      expect(layer1.legends.choropleth.isError()).toBeTruthy();
+
+      expect(layer2.legends.bubble.isError()).toBeTruthy();
+      expect(layer2.legends.category.isError()).toBeTruthy();
+      expect(layer2.legends.choropleth.isError()).toBeTruthy();
+    });
   });
 });

@@ -127,8 +127,6 @@ ModelUpdater.prototype._updateLayerModels = function (windshaftMap) {
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var bubbleLegendModel = layerModel.legends.bubble;
   var bubbleLegendMetadata = windshaftMap.getBubbleLegendMetadata(remoteLayerIndex);
-
-  // TODO: state 'success'
   bubbleLegendModel.set({
     bubbles: bubbleLegendMetadata && bubbleLegendMetadata.bubbles,
     avg: bubbleLegendMetadata && bubbleLegendMetadata.avg,
@@ -216,7 +214,7 @@ ModelUpdater.prototype._getProtocol = function () {
 
 ModelUpdater.prototype.setErrors = function (errors) {
   _.each(errors, this._setError, this);
-  // TODO: Set legend errors too
+  this._setLegendErrors();
 };
 
 ModelUpdater.prototype._setError = function (error) {
@@ -231,4 +229,24 @@ ModelUpdater.prototype._setError = function (error) {
   }
 };
 
+ModelUpdater.prototype._setLegendErrors = function () {
+  var legendModels = this._layersCollection.chain()
+    .map(this._getLayerLegends)
+    .compact()
+    .flatten()
+    .value();
+
+  _.each(legendModels, function (legendModel) {
+    // TODO: Abstract this
+    legendModel.set('state', 'error');
+  });
+};
+
+ModelUpdater.prototype._getLayerLegends = function (layerModel) {
+  return layerModel.legends && [
+    layerModel.legends.bubble,
+    layerModel.legends.category,
+    layerModel.legends.choropleth
+  ];
+};
 module.exports = ModelUpdater;

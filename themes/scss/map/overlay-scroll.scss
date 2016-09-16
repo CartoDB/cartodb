@@ -1,0 +1,18 @@
+.ps-scrollbar-y-rail {
+  width: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.ps-scrollbar-y {
+  width: 2px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
+.ps-scrollbar-x-rail {
+  height: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.ps-scrollbar-x {
+  height: 3px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}

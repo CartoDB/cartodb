@@ -1,6 +1,6 @@
 var _ = require('underscore');
-// var View = require('../../../core/view');
 var Backbone = require('backbone');
+var Ps = require('perfect-scrollbar');
 
 var LayerLegendsView = require('./layer-legends-view');
 
@@ -24,7 +24,19 @@ var LegendsView = Backbone.View.extend({
     var layerModelsWithLegends = this._getLayerModelsWithLegends();
     _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
     this._isRendered = true;
+    this._renderScroll();
+
     return this;
+  },
+
+  _renderScroll: function () {
+    Ps.initialize(this.el, {
+      wheelSpeed: 1,
+      wheelPropagation: false,
+      swipePropagation: true,
+      stopPropagationOnClick: false,
+      minScrollbarLength: 20
+    });
   },
 
   _getLayerModelsWithLegends: function () {

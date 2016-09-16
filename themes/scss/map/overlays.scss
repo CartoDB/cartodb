@@ -223,16 +223,17 @@ $buttonColor: #636D72;
   left: 24px;
   width: 240px;
   padding: 24px;
+  max-height: 300px; /* TODO: Adjust this */
   border-radius: 4px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
 }
 .CDB-LayerLegends {
-  margin-bottom: 32px;
+  margin-top: 32px;
 }
-.CDB-LayerLegends:last-child {
-  margin-bottom: 0px;
+.CDB-LayerLegends:first-child {
+  margin-top: 0px;
 }
 .CDB-Legend-item {
   margin-bottom: 16px;

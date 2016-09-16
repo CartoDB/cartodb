@@ -77,7 +77,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
     domain_bases_list.find do |domain|
       valid_ldap_entry = ldap_connection.bind_as(
         base: domain,
-        filter: search_filter,
+        filter: search_filter(username),
         password: password
       )
     end
@@ -121,7 +121,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   private
 
-  def search_filter
+  def search_filter(username)
     user_id_filter = "(#{user_id_field}=#{username})"
     if additional_search_filter.present?
       "(&#{user_id_filter}#{additional_search_filter})"

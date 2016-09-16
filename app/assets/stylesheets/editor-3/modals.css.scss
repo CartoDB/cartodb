@@ -15,10 +15,6 @@
   @include align-items(baseline); /* todo when create new layout */
 }
 
-.Modal-header {
-  padding-bottom: 0;
-}
-
 .Modal-body {
   padding-top: 24px;
 }
@@ -34,9 +30,6 @@
 
 .Modal-analysisContainer {
   margin-bottom: 48px;
-}
-.Modal-analysisContainer:last-child {
-  margin-bottom: 120px;
 }
 
 .Modal-actions {
@@ -78,7 +71,6 @@
 .ModalBlockList {
   @include display-flex();
   @include flex-wrap(wrap);
-  padding: 0 4px;
   box-sizing: border-box;
 }
 
@@ -188,41 +180,6 @@
   border-radius: 2px;
 }
 
-.Editor-navButtons {
-  @include display-flex();
-  @include justify-content(center);
-  margin: $baseSize * 4 0;
-}
-.Editor-navButtonsItem {
-  margin-right: $baseSize;
-}
-.Editor-navButtonsItem:last-child {
-  margin-right: 0;
-}
-
-.Editor-navButtonsItemLink {
-  @include align-items(center);
-  min-width: 136px;
-  padding: 10px;
-  border: 1px solid $cSecondaryLine;
-  border-radius: $halfBaseSize;
-  color: $cSecondaryText;
-  text-align: left;
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-.Editor-navButtonsItemLink:hover {
-  border: 1px solid rgba($cHoverLine, 0.4);
-}
-
-.Editor-navButtonsItem.is-selected .Editor-navButtonsItemLink {
-  border: 1px solid $cBlue;
-  background: $cWhite;
-  color: $cMainBg;
-  box-shadow: 1px 0 0 $cBlue, -1px 0 0 $cBlue, 0 1px 0 $cBlue, 0 -1px 0 $cBlue;
-}
-
 .Modal-containerList {
   width: 528px;
   margin: 0 auto;
@@ -295,4 +252,3 @@
 .Upgrade-body {
   text-align: left;
 }
-

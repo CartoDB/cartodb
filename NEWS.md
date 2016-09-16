@@ -23,7 +23,6 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
   * `sudo apt-get install gdal2.1-static-bin`
   * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
 
-
 ### Bug Fixes
 * Incorrect error message when password validation failed
 * Fix visualization not found error when exporting maps created from datasets
@@ -33,6 +32,7 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 * Prefer city guessing over country guessing when possible for file imports
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
+* New builder default geometry styles are now properly initialized at the backend upon dataset import.
 
 3.13.0 (2016-XX-XX)
 -------------------

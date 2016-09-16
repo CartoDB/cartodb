@@ -7,21 +7,25 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_layer
+      before_filter :load_layer,
+                    :owners_only,
+                    :ensure_under_max_legends
       before_filter :load_legend, only: [:show, :update, :destroy]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
-        raise Carto::LoadError.new("#{exception.record} not found")
+        raise Carto::LoadError.new("#{exception.record.class.name.demodulize} not found")
       end
 
       rescue_from ActiveRecord::RecordInvalid do |exception|
-        raise Carto::UnprocesableEntityError.new(exception.record.errors.join(', '))
+        raise Carto::UnprocesableEntityError.new(exception.record.errors.full_messages.join(', '))
       end
 
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,
                   Carto::UnprocesableEntityError,
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
+
+      MAX_LEGENDS_PER_LAYER = 2
 
       def index
         render_jsonp(@layer.legends.map(&:to_hash), :ok)
@@ -56,6 +60,12 @@ module Carto
 
         unless @layer.data_layer?
           raise Carto::UnprocesableEntityError.new("'#{@layer.kind}' layers can't have legends")
+        end
+      end
+
+      def owners_only
+        unless Carto::Visualization.find(params[:visualization_id]).writable_by?(current_viewer)
+          raise Carto::UnauthorizedError.new
         end
       end
 

@@ -246,14 +246,6 @@ describe('windshaft/map-base', function () {
         expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
       });
 
-      it('should trigger the `instanceRequested` event', function () {
-        var instanceRequestedCallback = jasmine.createSpy('instanceRequestedCallback');
-        this.windshaftMap.bind('instanceRequested', instanceRequestedCallback);
-        this.windshaftMap.createInstance();
-
-        expect(instanceRequestedCallback).toHaveBeenCalled();
-      });
-
       it('should trigger the `instanceCreated` event', function () {
         var instanceCreatedCallback = jasmine.createSpy('instanceCreatedCallback');
         this.windshaftMap.bind('instanceCreated', instanceCreatedCallback);

@@ -178,7 +178,6 @@ var VisModel = Backbone.Model.extend({
       vis: this
     });
 
-    this._windshaftMap.bind('instanceRequested', this._onMapInstanceRequested, this);
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
@@ -199,10 +198,6 @@ var VisModel = Backbone.Model.extend({
     _.defer(function () {
       this.trigger('load', this);
     }.bind(this));
-  },
-
-  _onMapInstanceRequested: function () {
-    this.trigger('reload');
   },
 
   _onMapInstanceCreated: function () {
@@ -276,6 +271,7 @@ var VisModel = Backbone.Model.extend({
     options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
     if (this._instantiateMapWasCalled) {
       this._windshaftMap.createInstance(options);
+      this.trigger('reload');
     }
   },
 

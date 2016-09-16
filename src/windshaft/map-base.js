@@ -84,9 +84,6 @@ var WindshaftMap = Backbone.Model.extend({
     var payload = request.payload;
     var params = request.params;
     var options = request.options;
-
-    this.trigger('instanceRequested');
-
     this.client.instantiateMap({
       mapDefinition: payload,
       params: params,

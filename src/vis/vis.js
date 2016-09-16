@@ -271,6 +271,26 @@ var VisModel = Backbone.Model.extend({
     options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
     if (this._instantiateMapWasCalled) {
       this._windshaftMap.createInstance(options);
+
+      // TODO: This code is duplicated in model-updater.js
+      // We shouldn't know show much about legends here
+      // TODO: Test this
+      var legendModels = this._layersCollection.chain()
+        .map(function (layerModel) {
+          return layerModel.legends && [
+            layerModel.legends.bubble,
+            layerModel.legends.category,
+            layerModel.legends.choropleth
+          ];
+        })
+        .compact()
+        .flatten()
+        .value();
+
+      _.each(legendModels, function (legendModel) {
+        // TODO: Abstract this
+        legendModel.set('state', 'loading');
+      });
       this.trigger('reload');
     }
   },

@@ -230,6 +230,7 @@ ModelUpdater.prototype._setError = function (error) {
 };
 
 ModelUpdater.prototype._setLegendErrors = function () {
+  // TODO: Improve this
   var legendModels = this._layersCollection.chain()
     .map(this._getLayerLegends)
     .compact()

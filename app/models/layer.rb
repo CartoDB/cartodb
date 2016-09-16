@@ -189,7 +189,7 @@ class Layer < Sequel::Model
   end
 
   def qualify_for_organization(owner_username)
-    options['query'] = qualify_query(query, options['table_name'], owner_username)
+    options['query'] = qualify_query(query, options['table_name'], owner_username) if query
   end
 
   private

@@ -22,3 +22,11 @@
   margin: auto;
   z-index: 0;
 }
+
+.XYZPanel-error {
+  display: none;
+  right: -32%;
+  &.is-visible {
+    display: inline-block;
+  }
+}

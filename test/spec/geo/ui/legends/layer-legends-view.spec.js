@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var LayerLegendsView = require('../../../../../src/geo/ui/legends/layer-legends-view');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 
@@ -18,19 +19,17 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
     this.layerLegendsView.render();
     this.toggleLayerCheck = this.layerLegendsView.$('.js-toggle-layer');
+
+    $('body').append(this.layerLegendsView.$el);
   });
 
-  var getLegendTitles = function (layerLegendsView) {
-    var titleElements = layerLegendsView.$('.CDB-Text').get();
-    return titleElements.map(function (element) { return element.textContent.trim(); });
-  };
+  afterAll(function () {
+    this.layerLegendsView.$el.remove();
+  });
 
   it('should render all legends', function () {
     // Legends of all types have been rendered
     expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
-
-    // Only 2 of them have titles
-    expect(getLegendTitles(this.layerLegendsView)).toEqual([ 'Category Legend', 'Bubble Legend' ]);
   });
 
   it('should hide/show the layer if check next to title is clicked', function () {

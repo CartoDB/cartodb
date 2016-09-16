@@ -23,7 +23,7 @@ describe('geo/ui/legends/legends-view', function () {
   });
 
   var getLayerLegendTitles = function (legendsView) {
-    var titleElements = legendsView.$('.CDB-LayerLegends-Title').get();
+    var titleElements = legendsView.$('.CDB-LayerLegends > .CDB-Text').get();
     return titleElements.map(function (element) { return element.textContent.trim(); });
   };
 

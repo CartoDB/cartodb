@@ -13,11 +13,13 @@ module Carto
       before_filter :load_legend, only: [:show, :update, :destroy]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
-        raise Carto::LoadError.new("#{exception.record.class.name.demodulize} not found")
+        error = Carto::LoadError.new("#{exception.record.class.name.demodulize} not found")
+        rescue_from_carto_error(error)
       end
 
       rescue_from ActiveRecord::RecordInvalid do |exception|
-        raise Carto::UnprocesableEntityError.new(exception.record.errors.full_messages.join(', '))
+        error = Carto::UnprocesableEntityError.new(exception.record.errors.full_messages.join(', '))
+        rescue_from_carto_error(error)
       end
 
       rescue_from Carto::LoadError,

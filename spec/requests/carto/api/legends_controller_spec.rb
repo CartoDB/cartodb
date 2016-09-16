@@ -177,6 +177,63 @@ module Carto
           end
         end
       end
+
+      describe '#show' do
+        before (:all) { @legend = Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
+        after  (:all) { @legend.destroy }
+
+        def show_lengend_url(user: @user, visualization: @visualization, layer: @layer)
+          legends_url(user_domain: user.subdomain,
+                      visualization_id: visualization.id,
+                      layer_id: layer.id,
+                      api_key: user.api_key)
+        end
+
+        it 'should show a legend' do
+          get show_lengend_url, {} do |response|
+            response.status.should eq 200
+
+            legend_is_correct(response.body)
+          end
+        end
+
+        it 'should not show a legend to others' do
+          get_jsonp show_lengend_url(user: @intruder), {} do |response|
+            byebug
+            response.status.should eq 403
+
+            response.body.should be_empty
+          end
+        end
+      end
+
+      describe '#index' do
+        before (:all) { @legends = 5.times { Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) } }
+        after  (:all) { @legends.map(&:destroy) }
+
+        def index_lengend_url(user: @user, visualization: @visualization, layer: @layer)
+          legends_url(user_domain: user.subdomain,
+                      visualization_id: visualization.id,
+                      layer_id: layer.id,
+                      api_key: user.api_key)
+        end
+
+        it 'indexes legends' do
+          get index_lengend_url, {} do |response|
+            response.status.should eq 200
+
+            legend_is_correct(response.body)
+          end
+        end
+
+        it 'should not show a legend to others' do
+          get index_lengend_url(user: @intruder), {} do |response|
+            response.status.should eq 403
+
+            response.body.should be_empty
+          end
+        end
+      end
     end
   end
 end

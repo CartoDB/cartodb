@@ -1182,6 +1182,7 @@ module CartoDB
 
                   try:
                     cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    cache_key = cache_key.replace('+', '\\\\+').replace('/', '\\\\\/')
                     # We want to say \b here, but the Varnish telnet interface expects \\b, we have to escape that on Python to \\\\b and double that for SQL
                     client.fetch('#{purge_command} obj.http.Surrogate-Key ~ "\\\\\\\\b%s\\\\\\\\b"' % cache_key)
                     break
@@ -1230,6 +1231,7 @@ module CartoDB
                   try:
                     client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
                     cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    cache_key = cache_key.replace('+', '\\\\+').replace('/', '\\\\\/')
                     client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204

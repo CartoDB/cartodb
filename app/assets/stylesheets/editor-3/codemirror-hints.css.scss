@@ -1,0 +1,62 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.CodeMirror-hints {
+  display: block;
+  position: absolute;
+  top: -10px;
+  width: 200px;
+  max-width: 240px;
+  height: auto;
+  max-height: 120px;
+  padding: 0;
+  border: 1px solid $cMainLine;
+  border-radius: 3px;
+  overflow-y: auto;
+  background: $cSecondaryBackground;
+  z-index: 1000;
+}
+
+.CodeMirror-hint {
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: $baseSize;
+  color: $cMainText;
+
+  span {
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &.has-letter {
+      width: 85%;
+    }
+
+    &.has-letter::after {
+      transform: translateY(-50%);
+      width: 20px;
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      background: $cThirdBackground;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: bold;
+      color: $cMainText;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 19px;
+      content: attr(data-type);
+      z-index: 1;
+    }
+  }
+}
+
+.CodeMirror-hint-active {
+  background: $cBlue;
+  color: $cWhite;
+  text-decoration: none;
+}

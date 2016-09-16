@@ -69,6 +69,12 @@ module Carto
         end
       end
 
+      def ensure_under_max_legends
+        unless @layer.legends.count < MAX_LEGENDS_PER_LAYER
+          raise Carto::UnprocesableEntityError.new('Maximum number of legends per layer reached')
+        end
+      end
+
       def load_legend
         @legend = Carto::Legend.find(params[:id])
       end

@@ -5,16 +5,14 @@
 .CodeMirror-hints {
   display: block;
   position: absolute;
-  top: -10px;
   width: 200px;
   max-width: 240px;
   height: auto;
-  max-height: 120px;
-  padding: 0;
-  border: 1px solid $cMainLine;
+  max-height: 128px;
   border-radius: 3px;
   overflow-y: auto;
-  background: $cSecondaryBackground;
+  background: #243840;
+  box-shadow: 0 2px 2px #1D2F35;
   z-index: 1000;
 }
 
@@ -23,40 +21,39 @@
   position: relative;
   margin: 0;
   padding: $baseSize;
-  color: $cMainText;
+  color: $cHintText;
 
   span {
     display: block;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+  }
 
-    &.has-letter {
-      width: 85%;
-    }
+  .has-letter {
+    width: 85%;
+  }
 
-    &.has-letter::after {
-      transform: translateY(-50%);
-      width: 20px;
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      background: $cThirdBackground;
-      border-radius: 2px;
-      font-size: 11px;
-      font-weight: bold;
-      color: $cMainText;
-      text-transform: uppercase;
-      text-align: center;
-      line-height: 19px;
-      content: attr(data-type);
-      z-index: 1;
-    }
+  .has-letter::after {
+    @include transform(translateY(-50%));
+    position: absolute;
+    top: 50%;
+    right: 2 * $baseSize;
+    color: $cHintText;
+    font-size: $sFontSize-medium - 1;
+    font-weight: bold;
+    text-transform: uppercase;
+    content: attr(data-type);
+    z-index: 1;
   }
 }
 
 .CodeMirror-hint-active {
-  background: $cBlue;
-  color: $cWhite;
+  background: $cHighlightYellow;
+  color: $cMainText;
   text-decoration: none;
+
+  .has-letter::after {
+    color: $cMainText;
+  }
 }

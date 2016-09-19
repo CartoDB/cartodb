@@ -326,7 +326,7 @@ class Table
 
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
 
-        user_database.run(%Q{
+        user_database.run(%{
           ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
         }) unless existing_pk.nil?
       end
@@ -335,7 +335,7 @@ class Table
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
           end
         end
       end
@@ -345,22 +345,22 @@ class Table
         begin
           already_had_cartodb_id = false
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
           end
         rescue
           already_had_cartodb_id = true
         end
         unless already_had_cartodb_id
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-            user_database.run(%Q{
+            user_database.run(%{
               UPDATE #{qualified_table_name}
               SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)
             })
 
-            cartodb_id_sequence_name = user_database[%Q{
+            cartodb_id_sequence_name = user_database[%{
               SELECT pg_get_serial_sequence('#{owner.database_schema}.#{name}', 'cartodb_id')
             }].first[:pg_get_serial_sequence]
-            max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
+            max_cartodb_id = user_database[%{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
             # only reset the sequence on real imports.
 
             if max_cartodb_id
@@ -369,7 +369,7 @@ class Table
           end
         end
         owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
-          user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+          user_database.run(%{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
         end
       end
   end

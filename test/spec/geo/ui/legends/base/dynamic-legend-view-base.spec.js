@@ -115,6 +115,5 @@ describe('geo/ui/legends/dynamic-legend-view-base.js', function () {
       expect(html[2]).toEqual('<h1>It Works!</h1>');
       expect(html[3]).toEqual('<p>after</p>');
     });
-
   });
 });

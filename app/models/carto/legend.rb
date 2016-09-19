@@ -15,10 +15,10 @@ module Carto
     serialize :definition, ::Carto::CartoJsonSerializer
 
     validates :definition, carto_json_symbolizer: true
-    validates :pre_html, :post_html, :type, presence: true
+    validates :pre_html, :post_html, :type, :layer_id, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 
-    validate :validate_definition_schema
+    validate :validate_definition_schema, :on_data_layer
 
     before_validation :ensure_definition
 
@@ -38,6 +38,12 @@ module Carto
       definition_errors = Carto::LegendDefinitionValidator.errors(type, definition)
 
       errors.add(:definition, definition_errors.join(', ')) if definition_errors.any?
+    end
+
+    def on_data_layer
+      unless layer.data_layer?
+        errors.add(:layer_id, "'#{layer.kind}' layers can't have legends")
+      end
     end
   end
 end

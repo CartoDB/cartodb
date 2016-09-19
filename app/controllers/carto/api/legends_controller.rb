@@ -57,10 +57,6 @@ module Carto
 
       def load_layer
         @layer = Carto::Layer.find(params[:layer_id])
-
-        unless @layer.data_layer?
-          raise Carto::UnprocesableEntityError.new("'#{@layer.kind}' layers can't have legends")
-        end
       end
 
       def owners_only

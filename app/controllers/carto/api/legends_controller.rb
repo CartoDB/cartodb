@@ -27,8 +27,6 @@ module Carto
                   Carto::UnprocesableEntityError,
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
-      MAX_LEGENDS_PER_LAYER = 2
-
       def index
         render_jsonp(@layer.legends.map(&:to_hash), :ok)
       end
@@ -70,6 +68,8 @@ module Carto
           raise Carto::UnauthorizedError.new
         end
       end
+
+      MAX_LEGENDS_PER_LAYER = 2
 
       def ensure_under_max_legends
         unless @layer.legends.count < MAX_LEGENDS_PER_LAYER

@@ -114,6 +114,16 @@ module Carto
           end
         end
 
+        it 'should reject non data layers' do
+          base_layer = @visualization.layers.first
+
+          post_json create_lengend_url(layer: base_layer), html_legend_payload do |response|
+            response.status.should eq 422
+
+            response.body[:errors].should include("'#{base_layer.kind}' layers can't have legends")
+          end
+        end
+
         it 'should reject more that Carto::Api::LegendController::MAX_LEGENDS_PER_LAYER legends per layer' do
           Carto::Api::LegendsController::MAX_LEGENDS_PER_LAYER.times do
             post_json create_lengend_url, html_legend_payload do |response|

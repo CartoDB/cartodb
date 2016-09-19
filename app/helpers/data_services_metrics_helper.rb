@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
-require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/routing_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 
@@ -65,7 +66,7 @@ module DataServicesMetricsHelper
 
   def get_here_isolines_data(user, from, to)
     orgname = user.organization.nil? ? nil : user.organization.name
-    usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(user.username, orgname)
+    usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
     here_isolines_key = :here_isolines
     countable_requests = 0
     from.upto(to).each do |date|

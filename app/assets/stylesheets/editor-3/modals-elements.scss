@@ -1,0 +1,62 @@
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Modal-listActions {
+  margin-top: $baseSize * 4;
+}
+
+.Modal-listActionsitem,
+.Modal-icon {
+  margin-right: $baseSize * 2;
+}
+
+.Modal-listActionsitem:last-child {
+  margin-right: 0;
+}
+
+.Modal-icon {
+  margin-top: 6px;
+  line-height: 34px; /* align-items: baseline doesnt work correctly in ff */
+}
+
+.Modal-listTextItem {
+  margin-top: 32px;
+}
+
+.Modal-listTextHighlight {
+  display: inline-block;
+  padding: 4px 5px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+
+.Modal-listTextHighlight.is-code {
+  font: 500 12px 'Monaco', 'Monospace';
+}
+
+.Modal-listForm {
+  margin-left: 24px;
+}
+
+.Modal-listFormItem {
+  margin-right: 32px;
+}
+.Modal-listFormItem.is-disabled {
+  color: $cHintText;
+}
+
+
+.Modal-listFormItem:last-child {
+  margin-right: 0;
+}
+
+.Modal-addItem {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+}
+
+.Modal-titleBasemap {
+  margin: $baseSize * 3 0;
+}

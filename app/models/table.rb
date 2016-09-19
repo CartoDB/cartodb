@@ -468,7 +468,7 @@ class Table
   def optimize
     owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_direct_conn|
       user_direct_conn.run(%Q{
-        VACUUM FULL #{qualified_table_name}
+        VACUUM ANALYZE #{qualified_table_name}
         })
     end
   rescue => e
@@ -512,7 +512,9 @@ class Table
 
     map.add_layer(base_layer)
 
-    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, the_geom_type)
+    geometry_type = the_geom_type || 'geometry'
+    data_layer = ::ModelFactories::LayerFactory.get_default_data_layer(name, owner, geometry_type)
+
     map.add_layer(data_layer)
 
     if base_layer.supports_labels_layer?
@@ -1224,6 +1226,7 @@ class Table
       end
 
       begin
+        propagate_name_change_to_analyses
         propagate_namechange_to_table_vis
         if @user_table.layers.blank?
           exception_to_raise = CartoDB::TableError.new("Attempt to rename table without layers #{qualified_table_name}")
@@ -1350,6 +1353,22 @@ class Table
   end
 
   private
+
+  def related_visualizations
+    carto_layers = layers.map do |layer|
+      Carto::Layer.find(layer.id) if layer.persisted?
+    end
+
+    carto_layers.flatten.compact.uniq.map(&:visualization).compact.uniq
+  end
+
+  def propagate_name_change_to_analyses
+    related_visualizations.each do |visualization|
+      visualization.analyses.each do |analysis|
+        analysis.update_table_name(@name_changed_from, name)
+      end
+    end
+  end
 
   def index_name(column, prefix)
     "#{prefix}#{name}_#{column}"

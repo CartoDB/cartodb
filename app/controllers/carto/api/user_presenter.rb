@@ -37,6 +37,14 @@ module Carto
         poro
       end
 
+      def to_poro_without_id
+        presentation = to_poro
+
+        presentation.delete(:id)
+
+        presentation
+      end
+
       def to_public_poro
         return {} if @user.nil?
 

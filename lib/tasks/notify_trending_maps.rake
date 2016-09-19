@@ -23,7 +23,12 @@ namespace :cartodb do
                                                                                           300)
         unless simulation
           trending_maps_lib.notify_trending_map(visualization_id, views, preview_image)
-          Carto::Tracking::Events::ScoredTrendingMap.new(visualization.fetch.user, visualization, views).report
+
+          user_id = visualization.fetch.user.id
+          Carto::Tracking::Events::ScoredTrendingMap.new(user_id,
+                                                         user_id: user_id,
+                                                         visualization_id: visualization.id,
+                                                         mapviews: views).report
         end
       end
 

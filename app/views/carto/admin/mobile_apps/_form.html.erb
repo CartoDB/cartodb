@@ -89,36 +89,17 @@
     </div>
     <%- app_types = @mobile_app.data(current_user, fetch_app_types: true)[:app_types] %>
     <%- if @mobile_app.persisted? %>
-      <%- if @mobile_app.app_type === 'dev' %>
-        <%- app_types.each do |type, values| %>
-          <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
-          <%- is_checked = values[:selected] === true ? 'checked' : '' %>
-
-          <div class="FormAccount-rowData in-block u-vspace-s">
-            <div class="RadioButton">
-              <input class="CDB-Radio js-changeMobileAppType" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_checked %> <%= is_disabled %> required>
-              <span class="CDB-Radio-face"></span>
-              <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-lSpace--xl <%= is_disabled == 'disabled' ? 'u-altTextColor' : 'u-secondaryTextColor' %>"><%= type.capitalize %></label>
-            </div>
-            <div class="FormAccount-rowInfo u-lspace-28">
-              <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
-            </div>
-          </div>
-        <% end %>
-      <% else %>
-        <%- app_type = app_types[@mobile_app.app_type.to_sym] %>
-        <div class="FormAccount-rowData in-block u-vspace-s">
-          <div class="RadioButton">
-            <input class="CDB-Radio" type="radio" checked required disabled>
-            <span class="CDB-Radio-face"></span>
-            <label class="Ru-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-secondaryTextColor u-lSpace--xl"><%= @mobile_app.app_type.capitalize %></label>
-          </div>
-          <div class="FormAccount-rowInfo u-lspace-28">
-            <p class="FormAccount-rowInfoText"><%= app_type[:text].html_safe %></p>
-          </div>
+      <%- app_type = app_types[@mobile_app.app_type.to_sym] %>
+      <div class="FormAccount-rowData in-block u-vspace-s">
+        <div class="RadioButton">
+          <input class="CDB-Radio" type="radio" checked required>
+          <span class="CDB-Radio-face"></span>
+          <label class="Ru-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-secondaryTextColor u-lSpace--xl"><%= @mobile_app.app_type.capitalize %></label>
         </div>
-      <% end %>
-
+        <div class="FormAccount-rowInfo u-lspace-28">
+          <p class="FormAccount-rowInfoText"><%= app_type[:text].html_safe %></p>
+        </div>
+      </div>
     <% else %>
 
       <%- app_types.each do |type, values| %>
@@ -173,7 +154,7 @@
         <div class="ProgressBar">
           <span class="ProgressBar-bar <%= progress_bar_range(progress_bar_width) %>" style="width: <%= progress_bar_width %>%"></span>
         </div>
-        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><%- if @mobile_app.app_type == "dev" %>/<%= progress_bar_max_users %><% end %> monthly users</div>
+        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %> monthly users</div>
       </div>
     </div>
 

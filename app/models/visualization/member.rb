@@ -648,7 +648,7 @@ module CartoDB
 
       def save_named_map
         return if type == TYPE_REMOTE
-        return true if mapcapped?
+        return true if named_map_updates_disabled?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do
@@ -696,6 +696,10 @@ module CartoDB
 
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty, :attributions_changed
+
+      def named_map_updates_disabled?
+        mapcapped? && !privacy_changed
+      end
 
       def embed_redis_cache
         @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
@@ -809,7 +813,9 @@ module CartoDB
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update unless mapcapped?
+        return if named_map_updates_disabled?
+
+        Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
       end
 
       def propagate_privacy_and_name_to(table)

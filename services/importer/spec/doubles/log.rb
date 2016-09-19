@@ -14,6 +14,10 @@ module CartoDB
           @log << message.to_s
         end
 
+        def append_and_store(content, truncate = nil, timestamp = nil)
+          append(content, truncate, timestamp)
+        end
+
         def to_s
           @log
         end

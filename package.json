@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.1.13",
+  "version": "4.2.0",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "jasmine": "^2.4.1",
+    "jasmine": "2.5.0",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",

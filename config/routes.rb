@@ -494,6 +494,8 @@ CartoDB::Application.routes.draw do
         match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
       end
 
+      resource :metrics, only: [:create]
+
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
@@ -608,6 +610,13 @@ CartoDB::Application.routes.draw do
     namespace :superadmin do
       resources :user_migration_exports, only: [:show, :create]
       resources :user_migration_imports, only: [:show, :create]
+      resources :users, only: [] do
+        get '/usage' => 'users#usage', on: :member
+      end
+
+      resources :organizations, only: [] do
+        get '/usage' => 'organizations#usage', on: :member
+      end
     end
   end
 

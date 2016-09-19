@@ -540,6 +540,8 @@ describe Carto::VisualizationsExportService2 do
             service = Carto::VisualizationsExportService2.new
             built_viz = service.build_visualization_from_json_export(export_2_0_1.to_json)
             Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+            Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
+            Carto::Layer.any_instance.stubs(:test_query).returns(true)
             imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
             imported_viz.layers[1].options[:user_name].should eq @user.username
           end
@@ -663,6 +665,8 @@ describe Carto::VisualizationsExportService2 do
         delete_user_data @org_user_with_dash_1
         delete_user_data @org_user_with_dash_2
         Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
+        Carto::Layer.any_instance.stubs(:test_query).returns(true)
       end
 
       let(:table_name) { 'a_shared_table' }
@@ -766,6 +770,8 @@ describe Carto::VisualizationsExportService2 do
 
       it 'does not replace owner name with new user name on import when new query fails' do
         Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(false)
+        Carto::Layer.any_instance.stubs(:test_query).returns(false)
         source_user = @carto_org_user_1
         target_user = @carto_org_user_2
         setup_visualization_with_layer_query(source_user, target_user)
@@ -784,6 +790,8 @@ describe Carto::VisualizationsExportService2 do
 
       before(:each) do
         Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(true)
+        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(true)
+        Carto::Layer.any_instance.stubs(:test_query).returns(true)
       end
 
       def default_query(table_name = @table.name)
@@ -873,6 +881,8 @@ describe Carto::VisualizationsExportService2 do
 
       it 'does not replace table name when query fails' do
         Carto::VisualizationsExportPersistenceService.any_instance.stubs(:test_query).returns(false)
+        Carto::AnalysisNode.any_instance.stubs(:test_query).returns(false)
+        Carto::Layer.any_instance.stubs(:test_query).returns(false)
         setup_visualization_with_layer_query('tabula', 'SELECT * FROM tabula WHERE tabulacol=2')
         renamed_tables = { 'tabula' => 'rasa' }
         import_and_check_query(renamed_tables, 'rasa', 'SELECT * FROM tabula WHERE tabulacol=2')

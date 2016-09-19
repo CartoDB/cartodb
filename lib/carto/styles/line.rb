@@ -13,11 +13,11 @@ module Carto::Styles
       ['line', 'multiline', 'linestring', 'multilinestring', 'st_multipoint', 'st_linestring', 'st_multilinestring']
     end
 
-    private
-
     def default_definition
       Carto::Definition.instance.load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)[:simple][:line]
     end
+
+    private
 
     def parse_stroke(stroke)
       width = stroke[:size][:fixed]

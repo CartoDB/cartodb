@@ -17,6 +17,13 @@
     "november": "November",
     "december": "December"
   },
+  "operators": {
+    "count": "COUNT",
+    "sum": "SUM",
+    "avg": "AVG",
+    "min": "MIN",
+    "max": "MAX"
+  },
   "builder-onboarding": {
     "title": "Welcome to the Builder,",
     "description": "Let us show you all the new and exciting things that you can do with CARTO.",
@@ -100,7 +107,7 @@
       "quads": "Classification of the geometry from the analysis",
       "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
       "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
-"rowid": "The original row id of the geometry (cartodb_id)."
+      "rowid": "The original row id of the geometry (cartodb_id)."
     },
     "kmeans": {
       "title": "Calculating point clusters",
@@ -442,6 +449,7 @@
         "adding-basemap": "Adding new basemap…",
         "add-basemap-error": "Could not add basemap",
         "add-btn": "Add basemap",
+        "cancel-btn": "Cancel",
         "validating": "Validating…",
         "saving": "Saving layer…",
         "fetching": "Fetching layers…",
@@ -449,8 +457,9 @@
         "xyz": {
           "insert": "Insert your XYZ URL",
           "enter": "Enter a URL",
-          "not-valid": "It does not look like a valid XYZ URL",
-          "eg": "E.g."
+          "not-valid": "Insert a valid XYZ URL",
+          "eg": "E.g.",
+          "tms": "TMS"
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
@@ -475,13 +484,15 @@
           "geometry-error": "We can't read data geometries",
           "unknown": "An error occurred"
         },
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "download": "Download"
       },
       "maps-metadata": {
         "modal-title": "Map metadata",
         "modal-desc": "Edit the attributtes of your map",
         "back-btn": "GO BACK",
         "save-btn": "Save",
+        "cancel-btn": "Cancel",
         "form": {
           "name": "Map Name",
           "name-placeholder": "Type your name here",
@@ -497,7 +508,7 @@
         },
         "error": {
           "title": "We couldn't save your data",
-          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
         },
         "loading": "Saving your data...",
         "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
@@ -507,6 +518,7 @@
         "modal-desc": "Edit the attributtes of your dataset",
         "back-btn": "GO BACK",
         "save-btn": "Save",
+        "cancel-btn": "Cancel",
         "form": {
           "name": "Dataset Name",
           "name-placeholder": "Type your name here",
@@ -940,7 +952,7 @@
       "columns": {
         "change-type": {
           "confirm": "ok, change it",
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "desc": "Maps using this column will be affected and unconvertible data will be lost. Are you sure?",
           "error": "There was an error changing %{columnName} column: %{error}",
           "loading": "Changing %{columnName} column...",
@@ -953,8 +965,8 @@
           "success": "%{columnName} column added"
         },
         "destroy": {
-          "cancel": "cancel",
-          "confirm": "ok, delete it",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it",
           "desc": "Maps using this column will be affected, are you sure you want to delete it?",
           "error": "Error deleting %{columnName} column: %{error}",
           "loading": "Removing your column %{columnName}...",
@@ -962,7 +974,7 @@
           "title": "You are about to delete %{columnName} column "
         },
         "rename": {
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "confirm": "ok, rename it",
           "desc": "Maps using this column will be affected, are you sure you want to rename it?",
           "error": "Error renaming column %{columnName} to %{newName}: %{error}",
@@ -1016,7 +1028,7 @@
           "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
         },
         "destroy": {
-          "cancel": "cancel",
+          "cancel": "Cancel",
           "confirm": "ok, delete",
           "desc": "Are you sure you want to delete it?",
           "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
@@ -1061,8 +1073,8 @@
     },
     "delete": {
       "option": "Delete dataset...",
-      "cancel": "cancel",
-      "confirm": "ok, delete it",
+      "cancel": "Cancel",
+      "confirm": "Ok, delete it",
       "desc": "Are you sure?",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
@@ -1087,7 +1099,7 @@
     },
     "rename": {
       "option": "Rename dataset",
-      "cancel": "cancel",
+      "cancel": "Cancel",
       "confirm": "ok, rename it",
       "desc": "If you are accessing this dataset via API, don't forget to use the new name in your API calls afterwards.",
       "error": "Error renaming %{tableName}: %{error}",
@@ -1110,7 +1122,8 @@
       "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
       "label": "Sync my data",
       "error": "There was an error setting the interval",
-      "confirm": "Save settings"
+      "confirm": "Save",
+      "cancel": "Cancel"
     },
     "unlock": {
       "cancel": "back to dashboard",
@@ -1176,8 +1189,8 @@
         "loading": "Duplicating your map %{name}..."
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
         "desc": "The deleted map cannot be recovered, be sure before proceeding.",
         "title": "You are about to delete map %{name}",
         "error": "Error deleting map %{name}: %{error}",
@@ -1246,13 +1259,19 @@
         "error": "Error moving the layer..."
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
-        "desc": "Maps will be affected, are you sure you want to delete it?",
-        "title": "You are about to delete layer %{layerName}",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
+        "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerVisName}</span> will be affected, are you sure you want to delete it?",
+        "title": "You are about to delete the layer %{layerName}",
         "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
         "loading": "Removing layer…",
-        "success": "Layer deleted correctly."
+        "success": "Layer deleted correctly.",
+        "widgets": "one widget |||| %{smart_count} widgets",
+        "analyses": "one analysis |||| %{smart_count} analyses",
+        "layers": "one layer |||| %{smart_count} layers",
+        "affected-items": "Deleting this layer will affect to",
+        "and": "and",
+        "link-to-export": "Before deleting your map, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
       },
       "layer": {
         "animated": "Animated",
@@ -1439,6 +1458,16 @@
         "polygons_source": "Polygon source",
         "postal-code": "Postal Code",
         "postal-code-help": "In which column are your postal codes stored?",
+        "quota": {
+          "title": "confirm your analysis",
+          "loading": "Obtaining your quotas...",
+          "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "no-credits-message": "No credits available",
+          "cancel": "Cancel",
+          "confirm": "confirm"
+        },
         "public_transport": "Public transport",
         "radius": "Distance",
         "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
@@ -1763,8 +1792,8 @@
         "edit": "Edit"
       },
       "delete": {
-        "confirm": "ok, delete it",
-        "cancel": "cancel",
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
         "desc": "The widget cannot be recovered, be sure before proceeding.",
         "title": "You are about to delete the widget %{name}",
         "error": "Error deleting widget %{name}: %{error}",
@@ -1817,13 +1846,6 @@
           "description": "Define how your widget interacts with the data",
           "yes": "Yes",
           "no": "No"
-        },
-        "aggregation-options": {
-          "count": "COUNT",
-          "sum": "SUM",
-          "avg": "AVG",
-          "min": "MIN",
-          "max": "MAX"
         }
       }
     }

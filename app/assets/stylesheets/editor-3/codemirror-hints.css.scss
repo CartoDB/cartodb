@@ -9,10 +9,11 @@
   max-width: 240px;
   height: auto;
   max-height: 128px;
-  border-radius: 3px;
+  border: 1px solid #354148;
+  border-radius: 2px;
+  background: #27333A;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
   overflow-y: auto;
-  background: #243840;
-  box-shadow: 0 2px 2px #1D2F35;
   z-index: 1000;
 }
 

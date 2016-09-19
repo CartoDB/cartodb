@@ -8,9 +8,9 @@ module Carto
       ssl_required :index, :show, :create, :update, :destroy
 
       before_filter :load_layer,
-                    :owners_only,
-                    :ensure_under_max_legends
-      before_filter :load_legend, only: [:show, :update, :destroy]
+                    :owners_only
+      before_filter :load_legend,
+                    :ensure_under_max_legends, only: [:show, :update, :destroy]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
         error = Carto::LoadError.new("#{exception.record.class.name.demodulize} not found")
@@ -52,7 +52,7 @@ module Carto
       def destroy
         @legend.destroy!
 
-        render_jsonp(@legend.to_hash, :destroyed)
+        render_jsonp({}, :no_data)
       end
 
       private
@@ -72,7 +72,7 @@ module Carto
       end
 
       def ensure_under_max_legends
-        unless @layer.legends.count < MAX_LEGENDS_PER_LAYER
+        unless @layer.legends.count <= MAX_LEGENDS_PER_LAYER
           raise Carto::UnprocesableEntityError.new('Maximum number of legends per layer reached')
         end
       end
@@ -82,7 +82,7 @@ module Carto
       end
 
       def legend_params
-        params.slice(:title, :prehtml, :posthtml, :type, :definition)
+        params.slice(:title, :pre_html, :post_html, :type, :definition)
       end
     end
   end

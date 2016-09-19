@@ -1629,7 +1629,55 @@
       }
     },
     "legend": {
-      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
+      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!",
+      "data-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can't be empty."
+        }
+      },
+      "menu-tab-pane-labels": {
+        "color": "color",
+        "size": "size"
+      },
+      "messages": {
+        "migrated-legend": {
+          "title": "IMPORTED LEGEND",
+          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
+          "accept": "Delete imported legend"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        }
+      },
+      "types": {
+        "none": "none",
+        "category": "category",
+        "gradient": "gradient",
+        "bubble": "bubble",
+        "custom": "custom"
+      },
+      "legend-form": {
+        "type": {
+          "title": "Select Style"
+        },
+        "properties": {
+          "title": "Creating your legend",
+          "subtitle": "Add items"
+        },
+        "add": "Add item",
+        "title": "Title",
+        "fill": "Fill",
+        "by-size": "By Size",
+        "by-color": "By Color",
+        "untitled": "\"Untitled\""
+      }
     },
     "style": {
       "types": {

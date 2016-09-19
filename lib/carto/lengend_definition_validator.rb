@@ -8,9 +8,9 @@ module Carto
   class LegendDefinitionValidator
     VALIDATION_FORMAT_LOCATIONS_MAP = {
       bubble:     'lib/formats/legends/bubble.json',
-      category:   'lib/formats/legends/category_or_custom.json',
+      category:   'lib/formats/legends/category.json',
       choropleth: 'lib/formats/legends/choropleth.json',
-      custom:     'lib/formats/legends/category_or_custom.json',
+      custom:     'lib/formats/legends/custom.json',
       html:       'lib/formats/legends/html.json'
     }.with_indifferent_access.freeze
 

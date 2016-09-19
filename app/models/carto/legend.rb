@@ -15,7 +15,7 @@ module Carto
     serialize :definition, ::Carto::CartoJsonSerializer
 
     validates :definition, carto_json_symbolizer: true
-    validates :prehtml, :posthtml, :type, presence: true
+    validates :pre_html, :post_html, :type, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 
     validate :validate_definition_schema

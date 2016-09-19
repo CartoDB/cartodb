@@ -27,12 +27,7 @@ module Carto
           posthtml: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "category",
-          definition: {
-            categories: [
-              { color: '#fff', title: 'Manolo Escobar' },
-              { color: '#000', icon: 'super.png' }
-            ]
-          }
+          definition: {}
         }
       end
 
@@ -42,7 +37,12 @@ module Carto
           posthtml: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "custom",
-          definition: category_legend_payload[:definition]
+          definition: {
+            categories: [
+              { color: '#fff', title: 'Manolo Escobar' },
+              { color: '#000', icon: 'super.png' }
+            ]
+          }
         }
       end
 
@@ -190,7 +190,7 @@ module Carto
         end
 
         it 'should show a legend' do
-          get show_lengend_url, {} do |response|
+          get_json show_lengend_url, {} do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
@@ -198,8 +198,7 @@ module Carto
         end
 
         it 'should not show a legend to others' do
-          get_jsonp show_lengend_url(user: @intruder), {} do |response|
-            byebug
+          get_json show_lengend_url(user: @intruder), {} do |response|
             response.status.should eq 403
 
             response.body.should be_empty
@@ -219,7 +218,7 @@ module Carto
         end
 
         it 'indexes legends' do
-          get index_lengend_url, {} do |response|
+          get_json index_lengend_url, {} do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
@@ -227,7 +226,7 @@ module Carto
         end
 
         it 'should not show a legend to others' do
-          get index_lengend_url(user: @intruder), {} do |response|
+          get_json index_lengend_url(user: @intruder), {} do |response|
             response.status.should eq 403
 
             response.body.should be_empty

@@ -290,6 +290,37 @@ module Carto
           end
         end
       end
+
+      describe '#delete' do
+        before (:each) { @legend = Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
+        after  (:each) { @legend.destroy }
+
+        def delete_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
+          legend_url(user_domain: user.subdomain,
+                     visualization_id: visualization.id,
+                     layer_id: layer.id,
+                     id: legend.id,
+                     api_key: user.api_key)
+        end
+
+        it 'should delete a legend' do
+          delete_json delete_lengend_url, {} do |response|
+            response.status.should eq 204
+
+            response.body.should be_empty
+          end
+
+          Carto::Legend.exists?(@legend.id).should be_false
+        end
+
+        it 'should not delete another user\'s legend' do
+          delete_json delete_lengend_url(user: @intruder), {} do |response|
+            response.status.should eq 403
+          end
+
+          Carto::Legend.exists?(@legend.id).should be_true
+        end
+      end
     end
   end
 end

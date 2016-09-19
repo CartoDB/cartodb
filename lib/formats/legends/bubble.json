@@ -1,8 +1,9 @@
 {
   "type": "object",
-  "required": ["fill_color"],
+  "required": ["color"],
+  "additionalProperties": false,
   "properties": {
-    "fill_color": {
+    "color": {
       "type": "string",
       "pattern": "^#(?:[0-9a-f]{3}){1,2}$"
     }

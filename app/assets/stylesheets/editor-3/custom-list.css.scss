@@ -73,6 +73,8 @@
   min-height: 16px;
 }
 .Editor-panel .CustomList-list--visible .ps-scrollbar-y,
-.Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail {
+.Editor-panel .CustomList-list--visible .ps-scrollbar-y-rail,
+.Table-columnMenu .CustomList-list--visible .ps-scrollbar-y,
+.Table-columnMenu .CustomList-list--visible .ps-scrollbar-y-rail {
   width: 4px !important;
 }

@@ -61,6 +61,11 @@ class Carto::Analysis < ActiveRecord::Base
     new(visualization_id: visualization_id, user_id: user_id, analysis_definition: analysis_definition)
   end
 
+  def update_table_name(old_name, new_name)
+    analysis_node.fix_analysis_node_queries(user.username, user, old_name => new_name)
+    save
+  end
+
   def analysis_definition_for_api
     filter_valid_properties(analysis_node)
   end

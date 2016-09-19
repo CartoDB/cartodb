@@ -4,12 +4,13 @@ require_relative 'layer/presenter'
 require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'
 require_dependency 'carto/table_utils'
+require_dependency 'carto/query_rewriter'
 require_relative 'carto/layer'
 
 class Layer < Sequel::Model
   include Carto::TableUtils
-
   include Carto::LayerTableDependencies
+  include Carto::QueryRewriter
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
@@ -185,6 +186,10 @@ class Layer < Sequel::Model
 
   def user
     map.user if map
+  end
+
+  def qualify_for_organization(owner_username)
+    options['query'] = qualify_query(query, options['table_name'], owner_username) if query
   end
 
   private

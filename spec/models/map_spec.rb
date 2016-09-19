@@ -189,8 +189,8 @@ describe Map do
       table.optimize
 
       table.map.recalculate_bounds!
-      table.map.view_bounds_ne.should == "[40.428198, -3.699732]"
-      table.map.view_bounds_sw.should == "[40.415113, -3.70957]"
+      table.map.view_bounds_ne.should == "[40.4283, -3.69968]"
+      table.map.view_bounds_sw.should == "[40.415, -3.70962]"
     end
 
     it "recenters map using bounds" do

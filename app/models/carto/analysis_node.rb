@@ -1,6 +1,9 @@
 # encoding: UTF-8
+require_dependency 'carto/query_rewriter'
 
 class Carto::AnalysisNode
+  include Carto::QueryRewriter
+
   def initialize(definition)
     @definition = definition
   end
@@ -53,6 +56,20 @@ class Carto::AnalysisNode
   def source_descendants
     return [self] if source?
     children.map(&:source_descendants).flatten
+  end
+
+  def fix_analysis_node_queries(old_username, new_user, renamed_tables)
+    if options && options.key?(:table_name)
+      old_table_name = options[:table_name]
+      options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+    end
+
+    if params && old_username
+      query = params[:query]
+      params[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
+
+    children.each { |child| child.fix_analysis_node_queries(old_username, new_user, renamed_tables) }
   end
 
   private

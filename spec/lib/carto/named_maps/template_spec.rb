@@ -421,6 +421,28 @@ module Carto
       end
 
       describe '#auth' do
+        describe 'when mapcaps exist' do
+          before(:all) do
+            @mapcap = Carto::Mapcap.create(visualization_id: @visualization.id)
+            @regenerated_visualization = @visualization.latest_mapcap.regenerate_visualization
+          end
+
+          after(:all) do
+            @mapcap.destroy
+            @regenerated_visualization = nil
+          end
+
+          it 'should use non-mapcapped visualization for auth' do
+            @visualization.stubs(:password_protected?).returns(true)
+            @visualization.stubs(:non_mapcapped).returns(@visualization) # return stubbed object
+
+            @regenerated_visualization.password_protected?.should be_false
+
+            template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+            template_hash[:auth][:method].should eq Carto::NamedMaps::Template::AUTH_TYPE_SIGNED
+          end
+        end
+
         describe 'should be open' do
           after(:each) do
             @visualization.save

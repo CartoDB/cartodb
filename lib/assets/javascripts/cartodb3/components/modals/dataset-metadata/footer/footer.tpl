@@ -1,11 +1,15 @@
-<div class="CreateDialog-footerShadow"></div>
-<div class="CreateDialog-footerLine"></div>
-<div class="CreateDialog-footerInner">
-  <div class="js-footer-info CreateDialog-footerInfo">
-  </div>
-  <div class="CreateDialog-footerActions js-footerActions u-justifyEnd">
-    <button class="js-save CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase CDB-Button CDB-Button--primary <%- canFinish ? '' : 'is-disabled' %>">
+<li class="Modal-listActionsitem">
+  <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-close">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
+      <%- _t('components.modals.dataset-metadata.cancel-btn') %>
+    </span>
+  </button>
+</li>
+<li class="Modal-listActionsitem">
+  <button class="CDB-Button CDB-Button--primary CDB-Button--big js-save <%- canFinish ? '' : 'is-disabled' %>">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase ">
       <%- _t('components.modals.dataset-metadata.save-btn') %>
-    </button>
-  </div>
-</div>
+    </span>
+  </button>
+</li>
+

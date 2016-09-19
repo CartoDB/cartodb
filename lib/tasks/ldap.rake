@@ -118,8 +118,9 @@ namespace :cartodb do
     connection_password = ENV['CONNECTION_PASSWORD']
 
     # Optional: for testing auth/searches
-    user_id_field = ENV['USER_ID_FIELD']
-    domain_bases  = ENV['DOMAIN_BASES']
+    user_id_field            = ENV['USER_ID_FIELD']
+    domain_bases             = ENV['DOMAIN_BASES']
+    additional_search_filter = ENV['ADDITIONAL_SEARCH_FILTER']
 
     # Optional: for testing searches
     username_field     = ENV['USERNAME_FIELD']
@@ -128,19 +129,20 @@ namespace :cartodb do
     group_object_class = ENV['GROUP_OBJECT_CLASS']
 
     Carto::Ldap::Configuration.new(
-      organization:         organization,
-      host:                 host,
-      port:                 port,
-      encryption:           encryption,
-      ssl_version:          ssl_version,
-      connection_user:      connection_user,
-      connection_password:  connection_password,
-      user_id_field:        user_id_field,
-      username_field:       username_field,
-      email_field:          email_field,
-      domain_bases:         domain_bases,
-      user_object_class:    user_object_class,
-      group_object_class:   group_object_class
+      organization:             organization,
+      host:                     host,
+      port:                     port,
+      encryption:               encryption,
+      ssl_version:              ssl_version,
+      connection_user:          connection_user,
+      connection_password:      connection_password,
+      user_id_field:            user_id_field,
+      username_field:           username_field,
+      additional_search_filter: additional_search_filter,
+      email_field:              email_field,
+      domain_bases:             domain_bases,
+      user_object_class:        user_object_class,
+      group_object_class:       group_object_class
     )
   end
 

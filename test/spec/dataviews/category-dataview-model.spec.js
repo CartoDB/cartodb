@@ -1,5 +1,6 @@
 var Backbone = require('backbone');
 var _ = require('underscore');
+var VisModel = require('../../../src/vis/vis.js');
 var CategoryDataviewModel = require('../../../src/dataviews/category-dataview-model.js');
 var WindshaftFiltersCategory = require('../../../src/windshaft/filters/category');
 
@@ -7,7 +8,8 @@ describe('dataviews/category-dataview-model', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = jasmine.createSpy();
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
 
     this.layer = new Backbone.Model();

@@ -30,7 +30,9 @@ var CartoDBLayer = LayerModelBase.extend({
     this.unset('infowindow');
     this.unset('tooltip');
 
-    this.legends = new Legends(attrs.legends);
+    this.legends = new Legends(attrs.legends, {
+      visModel: this._vis
+    });
     this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);

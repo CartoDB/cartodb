@@ -1,3 +1,4 @@
+var VisModel = require('../../../../src/vis/vis');
 var Layers = require('../../../../src/geo/map/layers');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
@@ -8,7 +9,7 @@ describe('geo/map/layers', function () {
   var layers;
 
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     layers = new Layers();
   });
 

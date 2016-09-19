@@ -39,7 +39,9 @@ var TorqueLayer = LayerModelBase.extend({
     this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
 
-    this.legends = new Legends(attrs.legends);
+    this.legends = new Legends(attrs.legends, {
+      visModel: this._vis
+    });
     this.unset('legends');
 
     LayerModelBase.prototype.initialize.apply(this, arguments);

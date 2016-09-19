@@ -1,10 +1,13 @@
 var $ = require('jquery');
+var Backbone = require('backbone');
 var LayerLegendsView = require('../../../../../src/geo/ui/legends/layer-legends-view');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
 
 describe('geo/ui/legends/layer-legends-view', function () {
   beforeEach(function () {
-    var vis = jasmine.createSpyObj('vis', ['reload']);
+    var vis = new Backbone.Model();
+    vis.reload = jasmine.createSpy('reload');
+
     this.cartoDBLayer = new CartoDBLayer({
       layer_name: 'CartoDB Layer #1',
       legends: [
@@ -23,7 +26,7 @@ describe('geo/ui/legends/layer-legends-view', function () {
     $('body').append(this.layerLegendsView.$el);
   });
 
-  afterAll(function () {
+  afterEach(function () {
     this.layerLegendsView.$el.remove();
   });
 

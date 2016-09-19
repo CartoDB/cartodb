@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -12,7 +13,7 @@ describe('core/geo/map', function () {
   var map;
 
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     map = new Map();
   });
 

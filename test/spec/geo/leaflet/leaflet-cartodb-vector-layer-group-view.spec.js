@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var VisModel = require('../../../../src/vis/vis');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/data-provider');
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
@@ -11,7 +12,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
     this.layerGroupModel.layers = new Backbone.Collection([]);
     this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://carto.com/{z}/{x}/{y}.png' ]; };
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
   });
 
   it('should register a new GeoJSONDataProvider on each CartoDBLayer on the layergroup', function () {

@@ -5,6 +5,7 @@ var L = require('leaflet');
 global.L = L;
 
 var Map = require('../../../../src/geo/map');
+var VisModel = require('../../../../src/vis/vis');
 var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
@@ -51,7 +52,7 @@ describe('geo/leaflet/leaflet-map-view', function () {
     map.bind('change:center', spy.centerChanged);
     map.bind('change', spy.changed);
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
   });
 
   it('should change bounds when center is set', function () {

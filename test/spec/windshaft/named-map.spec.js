@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var WindshaftClient = require('../../../src/windshaft/client');
 var NamedMap = require('../../../src/windshaft/named-map');
@@ -6,7 +7,7 @@ var NamedMap = require('../../../src/windshaft/named-map');
 describe('windshaft/named-map', function () {
   beforeEach(function () {
     this.analysisCollection = new Backbone.Collection();
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',

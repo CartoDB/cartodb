@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
+var VisModel = require('../../../../src/vis/vis');
 var Layers = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var Template = require('../../../../src/core/template');
@@ -12,7 +13,7 @@ describe('geo/ui/layer-selector', function () {
   var layerSelector, layer1, layer2;
 
   beforeEach(function() {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { vis: this.vis });
     layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { vis: this.vis });
 

@@ -5,33 +5,31 @@ var ChoroplethLegendModel = require('./choropleth-legend-model');
 var CustomLegendModel = require('./custom-legend-model');
 var HTMLLegendModel = require('./html-legend-model');
 
-var LEGENDS_METADATA = [
-  {
-    type: 'bubble',
+var LEGENDS_METADATA = {
+  bubble: {
     modelClass: BubbleLegendModel,
-    attrs: [ { 'fillColor': 'fill_color' } ]
+    attrs: [ { 'fillColor': 'fill_color' } ],
+    dynamic: true
   },
-  {
-    type: 'category',
+  category: {
     modelClass: CategoryLegendModel,
-    attrs: [ 'prefix', 'sufix' ]
+    attrs: [ 'prefix', 'sufix' ],
+    dynamic: true
   },
-  {
-    type: 'choropleth',
+  choropleth: {
     modelClass: ChoroplethLegendModel,
-    attrs: [ 'prefix', 'sufix' ]
+    attrs: [ 'prefix', 'sufix' ],
+    dynamic: true
   },
-  {
-    type: 'custom',
+  custom: {
     modelClass: CustomLegendModel,
     attrs: [ 'items' ]
   },
-  {
-    type: 'html',
+  html: {
     modelClass: HTMLLegendModel,
     attrs: [ 'html' ]
   }
-];
+};
 
 var SHARED_ATTRS = [
   'title',
@@ -39,29 +37,58 @@ var SHARED_ATTRS = [
   { 'postHTMLSnippet': 'post_html_snippet' }
 ];
 
-var Legends = function (legendsData) {
-  legendsData = legendsData || {};
+var Legends = function (legendsData, deps) {
+  if (!deps.visModel) throw new Error('visModel is required');
 
-  _.each(LEGENDS_METADATA, function (legendMetadata) {
-    var type = legendMetadata.type;
-    var ModelClass = legendMetadata.modelClass;
-    var attrs = SHARED_ATTRS.concat(legendMetadata.attrs);
-    var data = _.find(legendsData, { type: type });
+  this._legendsData = legendsData || [];
+  this._visModel = deps.visModel;
 
-    var modelAttrs = { visible: true };
-    _.each(attrs, function (attr) {
-      var attrNameInData = attr;
-      var attrNameForModel = attr;
-      if (_.isObject(attr)) {
-        attrNameForModel = Object.keys(attr)[0];
-        attrNameInData = attr[attrNameForModel];
-      }
-
-      modelAttrs[attrNameForModel] = data && data[attrNameInData];
-    });
-
-    this[type] = new ModelClass(modelAttrs);
+  _.each(LEGENDS_METADATA, function (legendMetadata, legendType) {
+    this[legendType] = this._createLegendModel(legendType, legendMetadata);
   }, this);
+
+  this._visModel.on('reload', this._onVisReloading, this);
+};
+
+Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
+  var ModelClass = legendMetadata.modelClass;
+  var attrs = SHARED_ATTRS.concat(legendMetadata.attrs);
+  var data = this._findDataForLegend(legendType);
+
+  var modelAttrs = { visible: true };
+  _.each(attrs, function (attr) {
+    var attrNameInData = attr;
+    var attrNameForModel = attr;
+    if (_.isObject(attr)) {
+      attrNameForModel = Object.keys(attr)[0];
+      attrNameInData = attr[attrNameForModel];
+    }
+
+    modelAttrs[attrNameForModel] = data && data[attrNameInData];
+  });
+
+  return new ModelClass(modelAttrs);
+};
+
+Legends.prototype._findDataForLegend = function (legendType) {
+  return _.find(this._legendsData, { type: legendType });
+};
+
+Legends.prototype._onVisReloading = function () {
+  _.each(this._getModelsForDynamicLegends(), function (legendModel) {
+    legendModel.set('state', 'loading');
+  });
+};
+
+Legends.prototype._getModelsForDynamicLegends = function () {
+  return _.chain(LEGENDS_METADATA)
+    .map(function (legendMetadata, legendType) {
+      if (legendMetadata.dynamic === true) {
+        return this[legendType];
+      }
+    }.bind(this))
+    .compact()
+    .value();
 };
 
 module.exports = Legends;

@@ -21,7 +21,7 @@ var LegendsView = Backbone.View.extend({
   },
 
   render: function () {
-    var layerModelsWithLegends = this._getLayerModelsWithLegends();
+    var layerModelsWithLegends = this._layersCollection.getLayersWithLegends();
     _.each(layerModelsWithLegends.reverse(), this._renderLayerLegends, this);
     this._isRendered = true;
     this._renderScroll();
@@ -39,14 +39,6 @@ var LegendsView = Backbone.View.extend({
     });
   },
 
-  _getLayerModelsWithLegends: function () {
-    return this._layersCollection.select(this._hasLegends);
-  },
-
-  _hasLegends: function (layerModel) {
-    return layerModel.legends;
-  },
-
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({ model: layerModel });
     this.$el.append(layerLegendsView.render().$el);
@@ -58,6 +50,10 @@ var LegendsView = Backbone.View.extend({
       this._clear();
       this.render();
     }
+  },
+
+  _hasLegends: function (layerModel) {
+    return !!layerModel.legends;
   },
 
   _clear: function () {

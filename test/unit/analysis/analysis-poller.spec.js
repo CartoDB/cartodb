@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var AnalysisModel = require('../../../src/analysis/analysis-model');
 var AnalysisPoller = require('../../../src/analysis/analysis-poller');
 
@@ -6,7 +7,7 @@ describe('src/analysis/analysis-poller', function () {
   beforeEach(function () {
     jasmine.clock().install();
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
     this.reference = jasmine.createSpyObj('reference', ['getParamNamesForAnalysisType']);
     this.analysisModel1 = new AnalysisModel({ id: 'a1' }, { vis: this.vis, camshaftReference: this.reference });
     this.analysisPoller = new AnalysisPoller();

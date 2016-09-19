@@ -19,7 +19,7 @@ describe('src/analysis/analysis-factory.js', function () {
         return map[analysisType];
       }
     };
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
     this.analysisCollection = new Backbone.Collection();
     this.analysisFactory = new AnalysisFactory({
       camshaftReference: this.fakeCamshaftReference,

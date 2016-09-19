@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
+var VisModel = require('../../../src/vis/vis');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -54,7 +55,7 @@ describe('windshaft/map-base', function () {
       userName: 'rambo'
     });
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     this.cartoDBLayerGroup = new Model();
     this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
     this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });

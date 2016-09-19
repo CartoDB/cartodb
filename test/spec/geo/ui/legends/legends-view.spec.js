@@ -1,3 +1,4 @@
+var Backbone = require('backbone');
 var LegendsView = require('../../../../../src/geo/ui/legends/legends-view');
 var TileLayer = require('../../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../../src/geo/map/cartodb-layer');
@@ -6,11 +7,12 @@ var LayersCollection = require('../../../../../src/geo/map/layers');
 
 describe('geo/ui/legends/legends-view', function () {
   beforeEach(function () {
-    var vis = jasmine.createSpyObj('vis', ['reload']);
+    var vis = new Backbone.Model();
+    vis.reload = jasmine.createSpy('reload');
     this.tileLayer = new TileLayer();
-    this.cartoDBLayer1 = new CartoDBLayer({ layer_name: 'CartoDB Layer #1' }, { vis: vis });
-    this.cartoDBLayer2 = new CartoDBLayer({ layer_name: 'CartoDB Layer #2' }, { vis: vis });
-    this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3' }, { vis: vis });
+    this.cartoDBLayer1 = new CartoDBLayer({ layer_name: 'CartoDB Layer #1', legends: [] }, { vis: vis });
+    this.cartoDBLayer2 = new CartoDBLayer({ layer_name: 'CartoDB Layer #2', legends: [] }, { vis: vis });
+    this.torqueLayer = new TorqueLayer({ layer_name: 'Torque Layer #3', legends: [] }, { vis: vis });
 
     this.layersCollection = new LayersCollection([]);
     this.layersCollection.reset([ this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);

@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var VisModel = require('../../../src/vis/vis.js');
 var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
@@ -37,7 +38,8 @@ describe('dataviews/dataview-model-base', function () {
   beforeEach(function () {
     this.map = new Backbone.Model();
     this.map.getViewBounds = function () {};
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
     spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
 
     this.analysisCollection = new Backbone.Collection();

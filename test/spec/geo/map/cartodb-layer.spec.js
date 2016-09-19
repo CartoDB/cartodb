@@ -1,13 +1,15 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
 describe('geo/map/cartodb-layer', function () {
-  sharedTestsForInteractiveLayers(CartoDBLayer);
-
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
   });
+
+  sharedTestsForInteractiveLayers(CartoDBLayer);
 
   it('should be type CartoDB', function () {
     var layer = new CartoDBLayer({}, { vis: this.vis });

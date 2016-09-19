@@ -18,7 +18,7 @@ module Carto
     validates :pre_html, :post_html, :type, :layer_id, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 
-    validate :validate_definition_schema, :on_data_layer
+    validate :on_data_layer, :validate_definition_schema
 
     before_validation :ensure_definition
 

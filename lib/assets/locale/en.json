@@ -470,7 +470,6 @@
         },
         "wms": {
           "insert": "Insert your WMS/WMTS URL",
-          "list": "A list of available layers will be shown below.",
           "invalid": "The URL is either invalid or contains unsupported projections",
           "see-docs": "see docs",
           "oh-no": "Oh! No results",

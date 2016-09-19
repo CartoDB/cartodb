@@ -44,13 +44,13 @@ module Carto
       def update
         @legend.update_attributes!(legend_params)
 
-        render_jsonp(@legend.to_hash, :updated)
+        render_jsonp(@legend.to_hash, :ok)
       end
 
       def destroy
-        @legend.destroy!
+        @legend.destroy
 
-        render_jsonp({}, :no_data)
+        render_jsonp({}, :no_content)
       end
 
       private

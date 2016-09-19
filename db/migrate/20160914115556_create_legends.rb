@@ -8,8 +8,8 @@ Sequel.migration do
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
 
       String :title
-      String :prehtml, null: false
-      String :posthtml, null: false
+      String :pre_html, null: false
+      String :post_html, null: false
       String :type
       String :definition, null: false, type: 'json'
     end

@@ -284,6 +284,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/requests/carto/api/legends_controller_spec.rb \
+	spec/lib/carto/lengend_definition_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

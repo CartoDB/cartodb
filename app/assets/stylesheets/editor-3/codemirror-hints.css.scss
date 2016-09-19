@@ -5,7 +5,7 @@
 .CodeMirror-hints {
   display: block;
   position: absolute;
-  width: 200px;
+  width: 220px;
   max-width: 240px;
   height: auto;
   max-height: 128px;
@@ -15,6 +15,7 @@
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
   overflow-y: auto;
   z-index: 1000;
+
 }
 
 .CodeMirror-hint {
@@ -22,7 +23,8 @@
   position: relative;
   margin: 0;
   padding: $baseSize;
-  color: $cHintText;
+  color: $cAltText;
+  font: 10px 'Monaco', 'Monospace';
 
   span {
     display: block;
@@ -32,7 +34,7 @@
   }
 
   .has-letter {
-    width: 85%;
+    width: 60%;
   }
 
   .has-letter::after {
@@ -40,21 +42,19 @@
     position: absolute;
     top: 50%;
     right: 2 * $baseSize;
-    color: $cHintText;
+    color: #768085;
     font-size: $sFontSize-medium - 1;
-    font-weight: bold;
-    text-transform: uppercase;
     content: attr(data-type);
     z-index: 1;
   }
 }
 
 .CodeMirror-hint-active {
-  background: $cHighlightYellow;
-  color: $cMainText;
+  background: rgba($cWhite, 0.08);
+  color: $cWhite;
   text-decoration: none;
 
   .has-letter::after {
-    color: $cMainText;
+    color: $cAlert;
   }
 }

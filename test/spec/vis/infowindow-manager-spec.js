@@ -2,6 +2,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var MapView = require('../../../src/geo/map-view');
 var Map = require('../../../src/geo/map');
+var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 var InfowindowManager = require('../../../src/vis/infowindow-manager');
@@ -48,9 +49,8 @@ describe('src/vis/infowindow-manager.js', function () {
     this.mapView.latLonToPixel = function () { return { x: 0, y: 0 }; };
     this.mapView.getSize = function () { return { x: 1000, y: 1000 }; };
 
-    this.vis = {
-      reload: jasmine.createSpy('reload')
-    };
+    this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
   });
 
   it('should add a new infowindow view to the map view when new layers were previously reset', function () {

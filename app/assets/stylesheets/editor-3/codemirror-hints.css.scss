@@ -14,7 +14,7 @@
   background: #27333A;
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 10;
 
 }
 
@@ -41,11 +41,11 @@
     @include transform(translateY(-50%));
     position: absolute;
     top: 50%;
-    right: 2 * $baseSize;
+    right: $baseSize;
     color: #768085;
-    font-size: $sFontSize-medium - 1;
+    font-family: 'Monaco', 'Monospace';
+    letter-spacing: -0.5;
     content: attr(data-type);
-    z-index: 1;
   }
 }
 

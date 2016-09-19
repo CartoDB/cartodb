@@ -3,9 +3,8 @@
 @import 'cdb-variables/colors';
 
 .Metadata-form {
-  max-width: 760px;
-  margin: $baseSize * 6 auto;
-  padding-right: 140px;
+  width: 637px;
+  margin-left: -140px;
   box-sizing: border-box;
 }
 
@@ -13,10 +12,14 @@
   @include flex(0 0 auto);
   width: 140px;
   padding: $baseSize $baseSize * 2;
-  color: $cAltText;
-  line-height: 16px;
   text-align: right;
   box-sizing: border-box;
+}
+.Metadata-label--auto {
+  width: auto;
+}
+.Metadata-label--big {
+  width: 168px;
 }
 
 .Metadata-textarea {

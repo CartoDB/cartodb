@@ -1,7 +1,7 @@
 <div class="u-flex u-alignCenter Modal-basemapContainer">
-  <h3 class="CDB-Text CDB-Size-large u-mainTextColor Modal-titleBasemap"><%- _t('components.modals.add-basemap.xyz.insert') %></h3>
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor Modal-titleBasemap"><%- _t('components.modals.add-basemap.wms.insert') %></h3>
   <div class="CDB-Text u-flex u-alignCenter js-name-field">
-    <label class="Metadata-label Metadata-label--auto  CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.add-basemap.mapbox.enter') %></label>
+    <label class="Metadata-label Metadata-label--auto  CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.add-basemap.xyz.enter') %></label>
     <div class="Form-rowData Form-rowData--longer">
       <input type="text" class="has-icon CDB-InputText CDB-Text js-url" value="" placeholder="<%- _t('components.modals.add-basemap.xyz.eg') %> http://openlayers.org/en/v3.5.0/examples/data/ogcsample.xml">
       <i class="CDB-IconFont CDB-IconFont-dribbble Form-inputIcon js-idle"></i>

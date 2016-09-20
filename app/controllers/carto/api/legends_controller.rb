@@ -32,29 +32,29 @@ module Carto
 
       def index
         legend_presentations = @layer.legends.map do |legend|
-          Carto::LegendPresenter.new(legend).to_hash
+          LegendPresenter.new(legend).to_hash
         end
 
         render_jsonp(legend_presentations, :ok)
       end
 
       def show
-        legend_presentation = Carto::LegendPresenter.new(@legend).to_hash
+        legend_presentation = LegendPresenter.new(@legend).to_hash
         render_jsonp(legend_presentation, :ok)
       end
 
       def create
         legend_params_with_layer_id = legend_params.merge(layer_id: @layer.id)
-        legend = Carto::Legend.create!(legend_params_with_layer_id)
+        legend = Legend.create!(legend_params_with_layer_id)
 
-        legend_presentation = Carto::LegendPresenter.new(legend).to_hash
+        legend_presentation = LegendPresenter.new(legend).to_hash
         render_jsonp(legend_presentation, :created)
       end
 
       def update
         @legend.update_attributes!(legend_params)
 
-        legend_presentation = Carto::LegendPresenter.new(@legend).to_hash
+        legend_presentation = LegendPresenter.new(@legend).to_hash
         render_jsonp(legend_presentation, :ok)
       end
 
@@ -79,7 +79,7 @@ module Carto
       end
 
       def load_legend
-        @legend = Carto::Legend.find(params[:id])
+        @legend = Legend.find(params[:id])
       end
 
       def legend_params

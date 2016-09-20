@@ -271,7 +271,7 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
-    path = Rails.root.join("public#{data_source}").to_s
+    path = uploaded_file_path(data_source)
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''

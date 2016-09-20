@@ -1711,6 +1711,7 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
+          "placeholder-text": "There's no geometry in your data that could be styled.",
           "desc": "Change the visualization"
         },
         "unanimatable": {

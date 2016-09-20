@@ -1,6 +1,15 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
+var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
+var TORQUE_LAYER_CARTOCSS_PROPS = [
+  '-torque-frame-count',
+  '-torque-time-attribute',
+  '-torque-aggregation-function',
+  '-torque-data-aggregation',
+  '-torque-resolution'
+];
+var LAYER_NAME_IN_CARTO_CSS = 'Map';
 
 /**
  * Model for a Torque Layer
@@ -19,18 +28,6 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'cartocss'],
-
-  TORQUE_LAYER_CARTOCSS_PROPS: [
-    '-torque-frame-count',
-    '-torque-time-attribute',
-    '-torque-aggregation-function',
-    '-torque-data-aggregation',
-    '-torque-resolution'
-  ],
-
-  LAYER_NAME_IN_CARTO_CSS: 'Map',
-
   initialize: function (attrs, options) {
     options = options || {};
     if (!options.vis) throw new Error('vis is required');
@@ -42,10 +39,12 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
-          return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
+          var hasTorquePropsChanged = this._torqueCartoCSSPropsChanged();
+          var usesTurboCarto = this._hasTurboCarto();
+          return this.previous('cartocss') && (hasTorquePropsChanged || usesTurboCarto);
         }
         return true;
       }
@@ -54,6 +53,20 @@ var TorqueLayer = LayerModelBase.extend({
     if (reloadVis) {
       this._reloadVis();
     }
+  },
+
+  _hasTurboCarto: function () {
+    var currentCartoCSS = this.get('cartocss');
+    var shader = new carto.RendererJS().render(currentCartoCSS);
+    var layer = shader.findLayer({ name: '#layer' });
+    var layerShader = layer.getStyle({ property: 1 }, { zoom: 10 });
+
+    var markerFill = layerShader['marker-fill'];
+    if (markerFill && markerFill.name === 'ramp') {
+      return true;
+    }
+
+    return false;
   },
 
   _torqueCartoCSSPropsChanged: function () {
@@ -69,9 +82,9 @@ var TorqueLayer = LayerModelBase.extend({
 
   _getTorqueLayerCartoCSSProperties: function (renderer, cartoCSS) {
     var shader = renderer.render(cartoCSS);
-    var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
+    var layer = shader.findLayer({ name: LAYER_NAME_IN_CARTO_CSS });
     var properties = {};
-    _.each(this.TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
+    _.each(TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
       var value = layer && layer.eval(property);
       if (value) {
         properties[property] = value;

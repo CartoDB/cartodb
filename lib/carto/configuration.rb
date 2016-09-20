@@ -11,6 +11,10 @@ module Carto::Configuration
     log_files_root.join('log', 'users_modifications')
   end
 
+  def resque_metrics_path
+    "#{log_files_root}/log/resque_metrics.log")
+  end
+
   private
 
   def config_files_root

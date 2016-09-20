@@ -1,9 +1,11 @@
+require 'carto/configuration'
+
 module CartoDB
   module ResqueMetrics
     def self.logger
-      @metric_logger ||= ::Logger.new("#{Rails.root}/log/resque_metrics.log")
+      @metric_logger ||= ::Logger.new(Carto::Configuration.new.resque_metrics_path)
     end
-end
+  end
 end
 
 Resque::Metrics.on_job_complete do |job_class, queue, time|

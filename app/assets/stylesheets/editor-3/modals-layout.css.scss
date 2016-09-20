@@ -31,6 +31,9 @@
   @include justify-content(center);
   @include flex(0 0 auto);
 }
+.Modal-footer.is-disabled {
+  display: none;
+}
 .Modal-navigation {
   position: fixed;
   width: 100%;

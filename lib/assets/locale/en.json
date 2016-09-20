@@ -478,7 +478,8 @@
           "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
         },
         "tilejson": {
-          "insert": "Insert your TileJSON URL"
+          "insert": "Insert your TileJSON URL",
+          "invalid": "Invalid URL, please make sure it is correct"
         }
       },
       "export-data": {

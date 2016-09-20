@@ -22,10 +22,6 @@ module Carto
 
     before_validation :ensure_definition
 
-    def to_hash
-      Carto::Api::LegendPresenter.new(self).to_hash
-    end
-
     private
 
     def ensure_definition

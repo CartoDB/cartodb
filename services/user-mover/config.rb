@@ -6,8 +6,9 @@ module CartoDB
     class Config
       def self.load_config
         root = File.expand_path(File.dirname(__FILE__))
-        config = YAML.load(File.read(File.join(root, '../../config/app_config.yml')))
-        database = Carto::Conf.new.db_config
+        carto_config = Carto::Conf.new
+        config = carto_config.app_config
+        database = carto_config.db_config
         rails_env = ENV['RAILS_ENV'] || Rails.env || 'production'
         @config = {
           rails_env: rails_env,

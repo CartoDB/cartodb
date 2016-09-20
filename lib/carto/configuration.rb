@@ -1,6 +1,10 @@
 module Carto::Configuration
   def db_config
-    YAML.load(File.read(db_config_file))
+    @@db_config ||= YAML.load(File.read(db_config_file))
+  end
+
+  def app_config
+    @@app_config = YAML.load_file(app_config_file)
   end
 
   private
@@ -19,6 +23,10 @@ module Carto::Configuration
     else
       File.join(config_files_root, 'config/database.yml')
     end
+  end
+
+  def app_config_file
+    "#{config_files_root}/config/app_config.yml"
   end
 end
 

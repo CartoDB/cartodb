@@ -1,26 +1,27 @@
 var _ = require('underscore');
-var Backbone = require('backbone');
 var VisModel = require('../../../../src/vis/vis');
+var LayersCollection = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
+var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var GeoJSONDataProvider = require('../../../../src/geo/data-providers/geojson/data-provider');
 var LeafletCartoDBVectorLayerGroupView = require('../../../../src/geo/leaflet/leaflet-cartodb-vector-layer-group-view');
 
 describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function () {
   beforeEach(function () {
     this.leafletMap;
-    this.layerGroupModel = new Backbone.Model({ type: 'layergroup' });
-    this.layerGroupModel.layers = new Backbone.Collection([]);
+    this.layersCollection = new LayersCollection();
+    this.layerGroupModel = new CartoDBLayerGroup({}, {
+      layersCollection: this.layersCollection
+    });
     this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://carto.com/{z}/{x}/{y}.png' ]; };
 
     this.vis = new VisModel();
   });
 
   it('should register a new GeoJSONDataProvider on each CartoDBLayer on the layergroup', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
-    this.layerGroupModel.layers = new Backbone.Collection([
-      cartoDBLayer1, cartoDBLayer2
-    ]);
+    var cartoDBLayer1 = new CartoDBLayer({ id: 'layer1' }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ id: 'layer2' }, { vis: this.vis });
+    this.layersCollection.reset([ cartoDBLayer1, cartoDBLayer2 ]);
 
     expect(cartoDBLayer1.getDataProvider()).toBeUndefined();
     expect(cartoDBLayer2.getDataProvider()).toBeUndefined();
@@ -34,24 +35,22 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
   it('should register a new GeoJSONDataProvider on new CartoDBLayers added to the layergroup after the layer view has been initialized', function () {
     new LeafletCartoDBVectorLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
 
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
+    var cartoDBLayer1 = new CartoDBLayer({ id: 'layer1' }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ id: 'layer2' }, { vis: this.vis });
 
     expect(cartoDBLayer1.getDataProvider()).toBeUndefined();
     expect(cartoDBLayer2.getDataProvider()).toBeUndefined();
 
-    this.layerGroupModel.layers.add(cartoDBLayer1);
-    this.layerGroupModel.layers.add(cartoDBLayer2);
+    this.layersCollection.add(cartoDBLayer1);
+    this.layersCollection.add(cartoDBLayer2);
 
     expect(cartoDBLayer1.getDataProvider() instanceof GeoJSONDataProvider).toBeTruthy();
     expect(cartoDBLayer2.getDataProvider() instanceof GeoJSONDataProvider).toBeTruthy();
   });
 
   it('should translate internal L.CartoDBd3Layer events to Backbone events', function (done) {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    this.layerGroupModel.layers = new Backbone.Collection([
-      cartoDBLayer1
-    ]);
+    var cartoDBLayer1 = new CartoDBLayer({ id: 'layer1' }, { vis: this.vis });
+    this.layersCollection.add(cartoDBLayer1);
 
     var featureClickCallback = jasmine.createSpy('featureClickCallback');
     var featureOverCallback = jasmine.createSpy('featureOverCallback');
@@ -81,12 +80,10 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
   });
 
   it('should set the styles options when meta changes', function () {
-    var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
-    var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
-    this.layerGroupModel.layers = new Backbone.Collection([
-      cartoDBLayer1,
-      cartoDBLayer2
-    ]);
+    var cartoDBLayer1 = new CartoDBLayer({ id: 'layer1' }, { vis: this.vis });
+    var cartoDBLayer2 = new CartoDBLayer({ id: 'layer2' }, { vis: this.vis });
+    this.layersCollection.reset([ cartoDBLayer1, cartoDBLayer2 ]);
+
     var view = new LeafletCartoDBVectorLayerGroupView(this.layerGroupModel, this.leafletMap); // eslint-disable-line
 
     expect(view.options.styles).toEqual([ undefined ]);

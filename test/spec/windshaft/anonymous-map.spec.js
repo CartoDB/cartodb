@@ -66,8 +66,11 @@ describe('windshaft/anonymous-map', function () {
     });
 
     this.client = new WindshaftClient({
-      endpoint: 'v1',
-      urlTemplate: 'http://{user}.wadus.com',
+      endpoints: {
+        get: 'v1',
+        post: 'v1'
+      },
+      urlTemplate: 'http://{user}.example.com',
       userName: 'rambo'
     });
 

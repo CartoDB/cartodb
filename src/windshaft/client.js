@@ -13,25 +13,23 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
 };
 
 var i = 0;
+var MAX_URL_LENGTH = 2033;
+var COMPRESSION_LEVEL = 3;
 
 /**
  * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
  */
 var WindshaftClient = function (options) {
-  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoint']);
+  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoints']);
 
   this.urlTemplate = options.urlTemplate;
   this.userName = options.userName;
-  this.endpoint = options.endpoint;
+  this.endpoints = options.endpoints;
   this.statTag = options.statTag;
-  this.forceCors = options.forceCors || false;
 
   this.url = this.urlTemplate.replace('{user}', this.userName);
 };
-
-WindshaftClient.DEFAULT_COMPRESSION_LEVEL = 3;
-WindshaftClient.MAX_GET_SIZE = 2033;
 
 WindshaftClient.prototype.instantiateMap = function (options) {
   if (!options.mapDefinition) {
@@ -42,7 +40,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
   var params = options.params || {};
   var successCallback = options.success;
   var errorCallback = options.error;
-  var payload = JSON.stringify(mapDefinition);
 
   var ajaxOptions = {
     success: function (data) {
@@ -116,49 +113,72 @@ WindshaftClient.prototype.instantiateMap = function (options) {
     }
   };
 
-  if (this._usePOST(payload, params)) {
-    this._post(payload, params, ajaxOptions);
+  var encodedURL = this._generateEncodedURL(mapDefinition, params);
+  if (this._isURLValid(encodedURL)) {
+    this._get(encodedURL, ajaxOptions);
   } else {
-    this._get(payload, params, ajaxOptions);
+    this._generateCompressedURL(mapDefinition, params, function (compressedURL) {
+      if (this._isURLValid(compressedURL)) {
+        this._get(compressedURL, ajaxOptions);
+      } else {
+        var url = this._getURL(params, 'post');
+        this._post(url, mapDefinition, ajaxOptions);
+      }
+    }.bind(this));
   }
 };
 
-WindshaftClient.prototype._usePOST = function (payload, params) {
-  if (util.isCORSSupported() && this.forceCors) {
-    return true;
-  }
-  return payload.length >= this.constructor.MAX_GET_SIZE;
+WindshaftClient.prototype._generateEncodedURL = function (payload, params) {
+  params = _.extend({
+    config: JSON.stringify(payload)
+  }, params);
+
+  return this._getURL(params);
 };
 
-WindshaftClient.prototype._post = function (payload, params, options) {
+WindshaftClient.prototype._generateCompressedURL = function (payload, params, callback) {
+  var data = JSON.stringify({
+    config: JSON.stringify(payload)
+  });
+
+  LZMA.compress(data, COMPRESSION_LEVEL, function (compressedPayload) {
+    params = _.extend({
+      lzma: util.array2hex(compressedPayload)
+    }, params);
+
+    callback(this._getURL(params));
+  }.bind(this));
+};
+
+WindshaftClient.prototype._isURLValid = function (url) {
+  return url.length < MAX_URL_LENGTH;
+};
+
+WindshaftClient.prototype._post = function (url, payload, options) {
   this._abortPreviousRequest();
   this._previousRequest = $.ajax({
+    url: url,
     crossOrigin: true,
     method: 'POST',
     dataType: 'json',
     contentType: 'application/json',
-    url: this._getURL(params),
-    data: payload,
+    data: JSON.stringify(payload),
     success: options.success,
     error: options.error
   });
 };
 
-WindshaftClient.prototype._get = function (payload, params, options) {
-  var compressFunction = this._getCompressor(payload);
-  compressFunction(payload, this.constructor.DEFAULT_COMPRESSION_LEVEL, function (dataParam) {
-    _.extend(params, dataParam);
-    this._abortPreviousRequest();
-    this._previousRequest = $.ajax({
-      url: this._getURL(params),
-      method: 'GET',
-      dataType: 'jsonp',
-      jsonpCallback: this._jsonpCallbackName(payload),
-      cache: true,
-      success: options.success,
-      error: options.error
-    });
-  }.bind(this));
+WindshaftClient.prototype._get = function (url, options) {
+  this._abortPreviousRequest();
+  this._previousRequest = $.ajax({
+    url: url,
+    method: 'GET',
+    dataType: 'jsonp',
+    jsonpCallback: this._jsonpCallbackName(url),
+    cache: true,
+    success: options.success,
+    error: options.error
+  });
 };
 
 WindshaftClient.prototype._abortPreviousRequest = function () {
@@ -167,37 +187,27 @@ WindshaftClient.prototype._abortPreviousRequest = function () {
   }
 };
 
-WindshaftClient.prototype._getCompressor = function (payload) {
-  if (payload.length < this.constructor.MAX_GET_SIZE) {
-    return function (data, level, callback) {
-      callback({ config: encodeURIComponent(data) });
-    };
-  }
-
-  return function (data, level, callback) {
-    data = JSON.stringify({ config: data });
-    LZMA.compress(data, level, function (encoded) {
-      callback({ lzma: encodeURIComponent(util.array2hex(encoded)) });
-    });
-  };
+WindshaftClient.prototype._getURL = function (params, method) {
+  method = method || 'get';
+  var queryString = this._convertParamsToQueryString(params);
+  var endpoint = this.endpoints[method];
+  return [this.url, endpoint].join('/') + queryString;
 };
 
-WindshaftClient.prototype._getURL = function (params) {
+WindshaftClient.prototype._convertParamsToQueryString = function (params) {
   var queryString = [];
   _.each(params, function (value, name) {
     if (value instanceof Array) {
       _.each(value, function (one_value) {
         queryString.push(name + '[]=' + one_value);
       });
+    } else if (value instanceof Object) {
+      queryString.push(name + '=' + encodeURIComponent(JSON.stringify(value)));
     } else {
-      if (value instanceof Object) {
-        value = encodeURIComponent(JSON.stringify(value));
-      }
-      queryString.push(name + '=' + value);
+      queryString.push(name + '=' + encodeURIComponent(value));
     }
   });
-
-  return [this.url, this.endpoint].join('/') + (queryString ? '?' + queryString.join('&') : '');
+  return queryString.length > 0 ? '?' + queryString.join('&') : '';
 };
 
 WindshaftClient.prototype._jsonpCallbackName = function (payload) {

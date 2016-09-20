@@ -89,17 +89,23 @@ var VisModel = Backbone.Model.extend({
 
   load: function (vizjson) {
     // Create the WindhaftClient
-    var endpoint;
+    var endpoints;
     var WindshaftMapClass;
 
     var datasource = vizjson.datasource;
     var isNamedMap = !!datasource.template_name;
 
     if (isNamedMap) {
-      endpoint = [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/');
+      endpoints = {
+        get: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name, 'jsonp' ].join('/'),
+        post: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/')
+      };
       WindshaftMapClass = WindshaftNamedMap;
     } else {
-      endpoint = WindshaftConfig.MAPS_API_BASE_URL;
+      endpoints = {
+        get: WindshaftConfig.MAPS_API_BASE_URL,
+        post: WindshaftConfig.MAPS_API_BASE_URL
+      };
       WindshaftMapClass = WindshaftAnonymousMap;
     }
 
@@ -111,10 +117,9 @@ var VisModel = Backbone.Model.extend({
     });
 
     var windshaftClient = new WindshaftClient({
-      endpoint: endpoint,
+      endpoints: endpoints,
       urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name,
-      forceCors: datasource.force_cors || true
+      userName: datasource.user_name
     });
 
     var modelUpdater = new ModelUpdater({

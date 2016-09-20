@@ -252,21 +252,26 @@ module Carto
     end
 
     def execute_as_superuser(command)
-      # TODO: instead of selectict here fetch/execute, let the caller choose the method
-      if command =~ /\A\s*SELECT/mi
-        @user.in_database(as: :superuser).fetch command
-      else
-        @user.in_database(as: :superuser).execute command
-      end
+      execute_in_user_database command, as: :superuser
     end
 
     def execute(command)
-      # TODO: instead of selectict here fetch/execute, let the caller choose the method
-      if command =~ /\A\s*SELECT/mi
-        @user.in_database.fetch command
-      else
-        @user.in_database.execute command
-      end
+      execute_in_user_database command
+    end
+
+    # Execute SQL command returning array of results.
+    # Commands with no results (e.g. UPDATE, etc.) will return an empty array (`[]`).
+    # Result rows are returned as hashes with indifferent access.
+    def execute_in_user_database(command, *args)
+      # This admits Carto::User or User users
+      db = @user.in_database(*args)
+      data = case db
+             when Sequel::Database
+               db.fetch(command).all
+             else
+               db.execute command
+             end
+      data.map(&:with_indifferent_access)
     end
 
     def check_copied_table_size(table_name, max_rows)

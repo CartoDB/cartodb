@@ -8,7 +8,7 @@ module Carto::Configuration
   end
 
   def log_file_path(filename)
-    "#{log_files_root}/log/#{filename}")
+    "#{log_files_root}/log/#{filename}"
   end
 
   private

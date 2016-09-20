@@ -705,7 +705,7 @@
             "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
-            "title": "Filter rows by column value",
+            "title": "Filter by column value",
             "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {

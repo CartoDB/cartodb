@@ -70,7 +70,7 @@ module Carto
     # General availabillity check
     def self.check_availability!(user)
       unless user.has_feature_flag?('carto-connectors')
-        raise ConnectorsDisabledError.new(user: user.username)
+        raise ConnectorsDisabledError.new(user: user)
       end
     end
 
@@ -78,7 +78,7 @@ module Carto
     def check_availability!
       Connector.check_availability!(@user)
       if !available?
-        raise ConnectorsDisabledError.new(user: @user.username, connector: @name)
+        raise ConnectorsDisabledError.new(user: @user, provider: @name)
       end
     end
 
@@ -139,7 +139,7 @@ module Carto
     # }
     def self.providers(user = nil)
       providers_info = {}
-      providers_id.each do |id|
+      provider_ids.each do |id|
         next unless provider_public?(id)
         # TODO: load description template for provider id
         description = nil
@@ -152,7 +152,7 @@ module Carto
           available:   available
         }
       end
-      providers
+      providers_info
     end
 
     private

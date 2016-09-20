@@ -4,6 +4,70 @@ require 'spec_helper_min'
 
 module Carto
   describe LegendDefinitionValidator do
+    let(:html_legend_definition) do
+      {
+        pre_html: "<h3>Es acaso</h3>",
+        post_html: "<h3>el mejor artista del mundo?</h3>",
+        title: "La verdad",
+        type: "html",
+        definition: {
+          html: '<h1>Manolo Escobar</h1>'
+        }
+      }
+    end
+
+    let(:category_legend_definition) do
+      {
+        pre_html: "<h3>Es acaso</h3>",
+        post_html: "<h3>el mejor artista del mundo?</h3>",
+        title: "La verdad",
+        type: "category",
+        definition: {}
+      }
+    end
+
+    let(:custom_legend_definition) do
+      {
+        pre_html: "<h3>Es acaso</h3>",
+        post_html: "<h3>el mejor artista del mundo?</h3>",
+        title: "La verdad",
+        type: "custom",
+        definition: {
+          categories: [
+            { title: 'Manolo Escobar' },
+            { title: 'Manolo Escobar', color: '#fff' },
+            { title: 'Manolo Escobar', icon: 'super.png' },
+            { title: 'Manolo Escobar', icon: 'super.png', color: '#fff' }
+          ]
+        }
+      }
+    end
+
+    let(:bubble_legend_definition) do
+      {
+        pre_html: "<h3>Es acaso</h3>",
+        post_html: "<h3>el mejor artista del mundo?</h3>",
+        title: "La verdad",
+        type: "bubble",
+        definition: {
+          color: '#fff'
+        }
+      }
+    end
+
+    let(:choropleth_legend_definition) do
+      {
+        pre_html: "<h3>Es acaso</h3>",
+        post_html: "<h3>el mejor artista del mundo?</h3>",
+        title: "La verdad",
+        type: "choropleth",
+        definition: {
+          prefix: "123",
+          suffix: "foo"
+        }
+      }
+    end
+
     let(:random_definition) do
       {
         hey: 'teacher',

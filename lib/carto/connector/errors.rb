@@ -22,8 +22,8 @@ module Carto
     end
 
     class ConnectorsDisabledError < ConnectorError # ServiceDisabledError ?
-      def initialize(message = 'CARTO-Connectors disabled', user = nil)
-        super message: message, user: user
+      def initialize(message = 'CARTO-Connectors disabled', user = nil, provider = nil)
+        super
       end
     end
   end

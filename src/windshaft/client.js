@@ -46,9 +46,6 @@ WindshaftClient.prototype.instantiateMap = function (options) {
       if (data.errors) {
         errorCallback(data);
       } else {
-        // TODO: Remove this once we're getting something from the Maps API
-        if (i === 0) {
-          // FAKE METADATA FOR LEGENDS
           data.metadata.legends = [
             // Available legends for the first layer
             [
@@ -77,14 +74,7 @@ WindshaftClient.prototype.instantiateMap = function (options) {
                   '#CDCDCD'
                 ]
               }
-            ]
-          ];
-
-          i += 1;
-        } else {
-          // FAKE METADATA FOR LEGENDS
-          data.metadata.legends = [
-            // Available legends for the first layer
+            ],
             [
               {
                 type: 'category',
@@ -95,7 +85,70 @@ WindshaftClient.prototype.instantiateMap = function (options) {
               }
             ]
           ];
+        
+        var choropleths = {
+          'line-color': true,
+          'marker-fill': true,
+          'polygon-fill': true
+        };
+        function getLegendType(rule) {
+          if (rule.mapping === '=') {
+            return 'category';
+          }
+          
+          if (choropleths.hasOwnProperty(rule.prop)) {
+            return 'choropleth';
+          }
+
+          if (rule.prop === 'marker-width') {
+            return 'bubble';
+          }
+
+          return null;
         }
+
+        data.metadata.legends = data.metadata.layers.map(function(layerMeta) {
+          return layerMeta.meta.cartocss_meta.rules.reduce(function(legends, rule) {
+            var legendType = getLegendType(rule);
+            if (legendType !== null) {
+              var legend = {
+                type: legendType,
+              };
+              if (legendType === 'category') {
+                // I would change from color to a generic "value" key
+                legend.categories = rule.filters.map(function(filter, index) {
+                  return { name: filter, color: rule.values[index] };
+                });
+                // Default value is the color for "Others" category
+                if (rule['default-value']) {
+                  legend.categories = legend.categories.concat([{name: 'Others', color: rule['default-value']}]);
+                }
+              } else if (legendType === 'bubble') {
+                legend.bubbles = rule.values;
+                // legend.bubbles = rule.filters.map(function(filter, index) {
+                //   return { label: filter, value: rule.values[index] };
+                // });
+
+                var stats = rule.stats;
+                legend.avg = stats.avg_value / (stats.max_value - stats.min_value)
+                // legend.min_value = stats.min_value;
+                // legend.max_value = stats.max_value;
+                // legend.avg_value = stats.avg_value;
+              } else if (legendType === 'choropleth') {
+                legend.colors = rule.values;
+                // legend.choropleth = rule.filters.map(function(filter, index) {
+                //   return { label: filter, value: rule.values[index] };
+                // });
+                // legend.min_value = stats.min_value;
+                // legend.max_value = stats.max_value;
+                // legend.avg_value = stats.avg_value;
+              }
+              legends.push(legend);
+            };
+
+            return legends;
+          }, []);
+        });
 
         // append fake legends as if the Maps API were returning this
         successCallback(data);

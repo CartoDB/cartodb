@@ -13,12 +13,16 @@ module Carto
       before_filter :ensure_under_max_legends, only: [:create, :update]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
-        error = Carto::LoadError.new("#{exception.record.class.name.demodulize} not found")
+        error_message = "#{exception.record.class.name.demodulize} not found"
+        error = Carto::LoadError.new(error_message)
+
         rescue_from_carto_error(error)
       end
 
       rescue_from ActiveRecord::RecordInvalid do |exception|
-        error = Carto::UnprocesableEntityError.new(exception.record.errors.full_messages.join(', '))
+        error_message = exception.record.errors.full_messages.join(', ')
+        error = Carto::UnprocesableEntityError.new(error_message)
+
         rescue_from_carto_error(error)
       end
 
@@ -28,23 +32,31 @@ module Carto
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
       def index
-        render_jsonp(@layer.legends.map { |legend| hash_for_legend(legend) }, :ok)
+        legend_presentations = @layer.legends.map do |legend|
+          Carto::LegendPresenter.new(legend).to_hash
+        end
+
+        render_jsonp(legend_presentations, :ok)
       end
 
       def show
-        render_jsonp(hash_for_legend(@legend), :ok)
+        legend_presentation = Carto::LegendPresenter.new(@legend).to_hash
+        render_jsonp(legend_presentation, :ok)
       end
 
       def create
-        legend = Carto::Legend.create!(legend_params.merge(layer_id: @layer.id))
+        legend_params_with_layer_id = legend_params.merge(layer_id: @layer.id)
+        legend = Carto::Legend.create!(legend_params_with_layer_id)
 
-        render_jsonp(hash_for_legend(legend), :created)
+        legend_presentation = Carto::LegendPresenter.new(legend).to_hash
+        render_jsonp(legend_presentation, :created)
       end
 
       def update
         @legend.update_attributes!(legend_params)
 
-        render_jsonp(hash_for_legend(@legend), :ok)
+        legend_presentation = Carto::LegendPresenter.new(@legend).to_hash
+        render_jsonp(legend_presentation, :ok)
       end
 
       def destroy
@@ -60,7 +72,9 @@ module Carto
       end
 
       def owners_only
-        unless Carto::Visualization.find(params[:visualization_id]).writable_by?(current_viewer)
+        visualization = Carto::Visualization.find(params[:visualization_id])
+
+        unless visualization.writable_by?(current_viewer)
           raise Carto::UnauthorizedError.new
         end
       end
@@ -69,7 +83,8 @@ module Carto
 
       def ensure_under_max_legends
         unless @layer.legends.count < MAX_LEGENDS_PER_LAYER
-          raise Carto::UnprocesableEntityError.new('Maximum number of legends per layer reached')
+          message = 'Maximum number of legends per layer reached'
+          raise Carto::UnprocesableEntityError.new(message)
         end
       end
 

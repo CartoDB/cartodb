@@ -45,11 +45,12 @@ module Carto
     end
 
     def validate_definition_schema
-      return unless type && definition
+      validator = Carto::LegendDefinitionValidator.new(type, definition)
+      definition_errors = validator.errors
 
-      definition_errors = Carto::LegendDefinitionValidator.errors(type, definition)
-
-      errors.add(:definition, definition_errors.join(', ')) if definition_errors.any?
+      if definition_errors.any?
+        errors.add(:definition, definition_errors.join(', '))
+      end
     end
   end
 end

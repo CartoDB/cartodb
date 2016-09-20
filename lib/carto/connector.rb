@@ -21,9 +21,9 @@ module Carto
       @name = @params[:provider]
       @name ||= DEFAULT_PROVIDER
 
-      raise InvalidParametersError.new("Provider not defined") if @name.blank?
+      raise InvalidParametersError.new(message: "Provider not defined") if @name.blank?
       @provider = Connector.provider_class(@name).try :new, @params
-      raise InvalidParametersError.new("Invalid provider: #{@name}") if @provider.blank?
+      raise InvalidParametersError.new(message: "Invalid provider", provider: @name) if @provider.blank?
     end
 
     def copy_table(schema_name:, table_name:)
@@ -125,7 +125,7 @@ module Carto
     # }
     def self.information(provider_name, user = nil)
       provider = provider_class(provider_name)
-      raise InvalidParametersError.new("Invalid provider: #{provider_name}") if provider.blank?
+      raise InvalidParametersError.new(message: "Invalid provider", provider: provider_name) if provider.blank?
       provider.information
     end
 

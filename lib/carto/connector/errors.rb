@@ -4,7 +4,7 @@ module Carto
     class ConnectorError < StandardError
       attr_reader :user_name
 
-      def initialize(message = 'General error', user = nil, provider = nil)
+      def initialize(message: 'General error', user: nil, provider: nil)
         @user_name = user && user.username
         @provider_name = provider
         message = message.to_s
@@ -14,7 +14,7 @@ module Carto
       end
 
       def error_code
-        ERRORS_MAP.fetch(self.class, UNKNOWN_ERROR_CODE)
+        CartoDB::Importer2::ERRORS_MAP.fetch(self.class, CartoDB::Importer2::ConnectorRunner::UNKNOWN_ERROR_CODE)
       end
     end
 
@@ -22,7 +22,7 @@ module Carto
     end
 
     class ConnectorsDisabledError < ConnectorError # ServiceDisabledError ?
-      def initialize(message = 'CARTO-Connectors disabled', user = nil, provider = nil)
+      def initialize(message: 'CARTO-Connector disabled', user: nil, provider: nil)
         super
       end
     end

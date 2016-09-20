@@ -20,7 +20,7 @@ module Carto
 
       def validate!(only: nil)
         errors = self.errors(only: only)
-        raise InvalidParametersError.new(errors * "\n") if errors.present?
+        raise InvalidParametersError.new(message: errors * "\n") if errors.present?
       end
 
       # Name of the table to be imported

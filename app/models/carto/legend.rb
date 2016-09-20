@@ -23,7 +23,7 @@ module Carto
     before_validation :ensure_definition
 
     def to_hash
-      Carto::Api::LegendPresenter.to_hash(self)
+      Carto::Api::LegendPresenter.new(self).to_hash
     end
 
     private

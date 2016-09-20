@@ -76,30 +76,27 @@ module Carto
     # Check availability for a user and provider
     def check_availability!
       Connector.check_availability!(@user)
-      if !available?
+      if !enabled?
         raise ConnectorsDisabledError.new(user: @user, provider: @name)
       end
     end
 
     # Limits for the user/provider
     def limits
-      Connector.limits provider: @name, user: @user
+      Connector.limits provider_name: @name, user: @user
     end
 
     # Availability for the user/provider
-    def available?
-      limits[:available]
+    def enabled?
+      limits[:enabled]
     end
 
-    def self.limits(provider:, user:)
-      # Load general application defaults
-      available = Cartodb.get_config(:connectors, provider, 'available') || false
-      max_rows  = Cartodb.get_config(:connectors, provider, 'max_rows')
-
-      # TODO: now we should override these values with organization defaults (for org users),
-      #       then with existing user specific limits
-
-      { available: available, max_rows: max_rows }
+    def self.limits(provider_name:, user:)
+      if configuration = user.connector_configuration(provider_name)
+        { enabled: configuration.enabled?, max_rows: configuration.max_rows }
+      else
+        {}
+      end
     end
 
     # Information about a connector's features and parameters.
@@ -133,7 +130,7 @@ module Carto
     #
     # Example:
     # {
-    #   'mysql' => { name: 'MySQL', description: '...', available: true },
+    #   'mysql' => { name: 'MySQL', description: '...', enabled: true },
     #   ...
     # }
     def self.providers(user = nil)
@@ -143,12 +140,12 @@ module Carto
         # TODO: load description template for provider id
         description = nil
         if user
-          available = Connector.limits(user: user, provider: name)[:available]
+          enabled = Connector.limits(user: user, provider_name: id)[:enabled]
         end
         providers_info[id] = {
           name:        provider_name(id),
           description: description,
-          available:   available
+          enabled:     enabled
         }
       end
       providers_info

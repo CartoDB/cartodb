@@ -82,6 +82,9 @@ describe Carto::Connector do
     @user = create_user
     @user.save
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
+    Carto::Connector.providers.keys.each do |provider_name|
+      Carto::ConnectorProvider.create! name: provider_name
+    end
   end
 
   before(:each) do
@@ -90,6 +93,40 @@ describe Carto::Connector do
 
   after(:all) do
     @user.destroy
+    Carto::Connector.providers.keys.each do |provider_name|
+      Carto::ConnectorProvider.find_by_name(provider_name).destroy
+    end
+  end
+
+  it "Should list providers available for a user with default configuration" do
+    default_config = { 'mysql' => { 'enabled' => true }, 'postgres' => { 'enabled' => false } }
+    Cartodb.with_config connectors: default_config do
+      Carto::Connector.providers(@user).should eq(
+        "postgres"  => { name: "PostgreSQL", enabled: false, description: nil },
+        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+        "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
+        "hive"      => { name: "Hive", enabled: false, description: nil }
+      )
+    end
+  end
+
+  it "Should list providers available for a user with specific configuration" do
+    default_config = { 'mysql' => { 'enabled' => true }, 'postgres' => { 'enabled' => false } }
+    postgres = Carto::ConnectorProvider.find_by_name('postgres')
+    user_config = Carto::ConnectorConfiguration.create!(
+      connector_provider_id: postgres.id,
+      user_id: @user.id,
+      enabled: true
+    )
+    Cartodb.with_config connectors: default_config do
+      Carto::Connector.providers(@user).should eq(
+        "postgres"  => { name: "PostgreSQL", enabled: true, description: nil },
+        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+        "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
+        "hive"      => { name: "Hive", enabled: false, description: nil }
+      )
+    end
+    user_config.destroy
   end
 
   describe 'mysql' do
@@ -417,7 +454,7 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      config = { 'mysql' => { 'available' => true, 'max_rows' => 10 } }
+      config = { 'mysql' => { 'enabled' => true, 'max_rows' => 10 } }
       Cartodb.with_config connectors: config do
         connector = TestCountConnector.new(5, parameters, options)
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
@@ -538,7 +575,7 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      config = { 'mysql' => { 'available' => true, 'max_rows' => 10 } }
+      config = { 'mysql' => { 'enabled' => true, 'max_rows' => 10 } }
       Cartodb.with_config connectors: config do
         connector = TestCountConnector.new(10, parameters, options)
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
@@ -654,7 +691,7 @@ describe Carto::Connector do
         }
       }
       options = {
-        logger:  @fake_log,
+        logger: @fake_log,
         user: @user
       }
       connector = TestConnector.new(parameters, options)
@@ -726,6 +763,46 @@ describe Carto::Connector do
           }]
         }
       )
+    end
+
+    it 'requires connection paramters in order to list tables' do
+      parameters = {
+        provider: 'mysql'
+      }
+      options = {
+        logger: @fake_log,
+        user: @user
+      }
+      connector = TestConnector.new(parameters, options)
+      expect {
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error(Carto::Connector::InvalidParametersError)
+
+      # When parameters are not valid nothing should be executed in the database
+      connector.executed_commands.should be_nil
+    end
+
+    it 'checks connection paramters in order to list tables' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          # missing server
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        }
+      }
+      options = {
+        logger: @fake_log,
+        user: @user
+      }
+      connector = TestConnector.new(parameters, options)
+      expect {
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      }.to raise_error(Carto::Connector::InvalidParametersError)
+
+      # When parameters are not valid nothing should be executed in the database
+      connector.executed_commands.should be_nil
     end
 
     it 'Should provide connector metadata' do

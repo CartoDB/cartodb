@@ -1,5 +1,19 @@
 namespace :cartodb do
   namespace :connectors do
+
+    desc "Create Connector Providers for Provider Classes"
+    task create_providers: :environment do
+      Carto::Connector.providers.keys.each do |provider_name|
+        unless Carto::ConnectorProvider.where(name: provider_name).exists?
+          puts "Creating ConnectorProvider #{provider_name}"
+          Carto::ConnectorProvider.create! name: provider_name
+        end
+      end
+      providers = Carto::Connector.providers.keys.map { |name| "'#{name}'" }
+      Carto::ConnectorProvider.where("name NOT IN (#{providers.join(',')})").each do |provider|
+        puts "Provider #{provider.name} is not configured in the code!"
+      end
+    end
     desc 'Adapt connector synchronizations to the new API'
     task adapt_api: :environment do
 

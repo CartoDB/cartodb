@@ -19,19 +19,25 @@ describe CartoDB::Importer2::ConnectorRunner do
     @user.save
     @pg_options = @user.db_service.db_configuration_for
     @feature_flag = FactoryGirl.create(:feature_flag, name: 'carto-connectors', restricted: true)
-
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
+    @providers = %w(mysql postgres sqlserver hive)
+    @fake_log.clear
+    Carto::Connector.providers.keys.each do |provider_name|
+      Carto::ConnectorProvider.create! name: provider_name
+    end
   end
 
   before(:each) do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
-    @providers = %w(mysql postgres sqlserver hive)
     @fake_log.clear
   end
 
   after(:all) do
     @user.destroy
     @feature_flag.destroy
+    Carto::Connector.providers.keys.each do |provider_name|
+      Carto::ConnectorProvider.find_by_name(provider_name).destroy
+    end
   end
 
   include FeatureFlagHelper
@@ -61,7 +67,7 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'available' => true } }
+          config = { provider => { 'enabled' => true } }
           Cartodb.with_config connectors: config do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
@@ -91,7 +97,7 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'available' => true } }
+          config = { provider => { 'enabled' => true } }
           Cartodb.with_config connectors: config do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
@@ -121,7 +127,7 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'available' => true } }
+          config = { provider => { 'enabled' => true } }
           Cartodb.with_config connectors: config do
             expect {
               connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
@@ -150,7 +156,7 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'available' => false } }
+          config = { provider => { 'enabled' => false } }
           Cartodb.with_config connectors: config do
             expect {
               connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
@@ -187,7 +193,7 @@ describe CartoDB::Importer2::ConnectorRunner do
           user: @user
         }
         @providers.each do |provider|
-          config = { provider => { 'available' => true } }
+          config = { provider => { 'enabled' => true } }
           Cartodb.with_config connectors: config do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
@@ -228,6 +234,49 @@ describe CartoDB::Importer2::ConnectorRunner do
       end
     end
   end
+
+  it "Fails if provider is not available for the user" do
+
+    @providers.each do |provider|
+      connector_provider = Carto::ConnectorProvider.find_by_name(provider)
+      config = Carto::ConnectorConfiguration.create!(
+        connector_provider_id: connector_provider.id,
+        user_id: @user.id,
+        enabled: false
+      );
+    end
+
+    with_feature_flag @user, 'carto-connectors', true do
+      parameters = {
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        table:    'thetable',
+        encoding: 'theencoding'
+      }
+      options = {
+        pg:   @pg_options,
+        log:  @fake_log,
+        user: @user
+      }
+      @providers.each do |provider|
+        config = { provider => { 'enabled' => true } }
+
+        Cartodb.with_config connectors: config do
+          expect {
+            connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+            connector.run
+          }.to raise_error(Carto::Connector::ConnectorsDisabledError)
+        end
+      end
+    end
+
+    Carto::ConnectorConfiguration.where(user_id: @user.id).destroy_all
+  end
+
 
   # TODO: check Runner compatibility
 end

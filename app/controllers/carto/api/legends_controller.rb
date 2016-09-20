@@ -10,7 +10,6 @@ module Carto
       before_filter :load_layer,
                     :owners_only
       before_filter :load_legend, only: [:show, :update, :destroy]
-      before_filter :ensure_under_max_legends, only: [:create, :update]
 
       rescue_from ActiveRecord::RecordNotFound do |exception|
         error_message = "#{exception.record.class.name.demodulize} not found"
@@ -76,15 +75,6 @@ module Carto
 
         unless visualization.writable_by?(current_viewer)
           raise Carto::UnauthorizedError.new
-        end
-      end
-
-      MAX_LEGENDS_PER_LAYER = 2
-
-      def ensure_under_max_legends
-        unless @layer.legends.count < MAX_LEGENDS_PER_LAYER
-          message = 'Maximum number of legends per layer reached'
-          raise Carto::UnprocesableEntityError.new(message)
         end
       end
 

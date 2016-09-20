@@ -217,18 +217,71 @@ $buttonColor: #636D72;
 
 /* Legends */
 
-.CDB-Legends {
+.CDB-Legends-canvas {
   position: absolute;
   top: 24px;
   left: 24px;
   width: 240px;
-  padding: 24px;
-  max-height: 300px; /* TODO: Adjust this */
+  height: 200px; /* TODO: Adjust this */
   border-radius: 4px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
 }
+.CDB-Legends-canvasInner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px;
+  border-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow {
+  display: none;
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1;
+  pointer-events: none;
+}
+.CDB-Legends-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  bottom: 0;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow.is-visible {
+  display: block;
+}
+.CDB-Legends-canvas .ps-scrollbar-y-rail {
+  width: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.CDB-Legends-canvas .ps-scrollbar-y {
+  width: 2px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
+.CDB-Legends-canvas .ps-scrollbar-x-rail {
+  height: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.CDB-Legends-canvas .ps-scrollbar-x {
+  height: 3px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
+
 .CDB-LayerLegends {
   margin-top: 32px;
 }

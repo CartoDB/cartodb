@@ -39,8 +39,10 @@ module Carto
           type: "custom",
           definition: {
             categories: [
-              { color: '#fff', title: 'Manolo Escobar' },
-              { color: '#000', icon: 'super.png' }
+              { title: 'Manolo Escobar' },
+              { title: 'Manolo Escobar', color: '#fff' },
+              { title: 'Manolo Escobar', icon: 'super.png' },
+              { title: 'Manolo Escobar', icon: 'super.png', color: '#fff' }
             ]
           }
         }
@@ -86,15 +88,22 @@ module Carto
       end
 
       def legend_is_correct(legend)
-        symbolized_legend = legend.deep_symbolize_keys
-        persisted_legend = Carto::Legend.find(symbolized_legend[:id])
-        persisted_legend_hash = persisted_legend.to_hash
-                                                .except(:created_at, :updated_at, :definition)
+        legend = legend.deep_symbolize_keys
+        saved_legend = LegendPresenter.new(Legend.find(legend[:id])).to_hash
 
-        symbolized_legend.except(:created_at, :updated_at, :definition)
-                         .should eq persisted_legend_hash
+        pruned_legend = prune_legend(legend)
+        pruned_saved_legend = prune_legend(saved_legend)
 
-        symbolized_legend[:definition].with_indifferent_access.should eq persisted_legend.definition
+        legend_definition = legend[:definition].with_indifferent_access
+        saved_legend_definition = saved_legend[:definition]
+                                  .with_indifferent_access
+
+        pruned_legend.should eq pruned_saved_legend
+        legend_definition.should eq saved_legend_definition
+      end
+
+      def prune_legend(legend)
+        legend.except(:created_at, :updated_at, :definition)
       end
 
       describe '#create' do
@@ -124,8 +133,8 @@ module Carto
           end
         end
 
-        it 'should reject more that Carto::Api::LegendController::MAX_LEGENDS_PER_LAYER legends per layer' do
-          Carto::Api::LegendsController::MAX_LEGENDS_PER_LAYER.times do
+        it 'should reject more that Legend:MAX_LEGENDS_PER_LAYER legends per layer' do
+          Legend::MAX_LEGENDS_PER_LAYER.times do
             post_json create_lengend_url, html_legend_payload do |response|
               response.status.should eq 201
 
@@ -219,7 +228,7 @@ module Carto
       end
 
       describe '#show' do
-        before (:all) { @legend = Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
+        before (:all) { @legend = Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
         after  (:all) { @legend.destroy }
 
         def show_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
@@ -246,7 +255,7 @@ module Carto
       end
 
       describe '#update' do
-        before (:all) { @legend = Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
+        before (:all) { @legend = Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
         after  (:all) { @legend.destroy }
 
         def update_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
@@ -267,15 +276,21 @@ module Carto
         end
 
         it 'should let others update a legend' do
-          put_json update_lengend_url(user: @intruder), html_legend_payload do |response|
+          put_json update_lengend_url(user: @intruder), {} do |response|
             response.status.should eq 403
           end
         end
       end
 
       describe '#index' do
-        before (:all) { @legends = 2.times { Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) } }
-        after  (:all) { @legends.map(&:destroy) }
+        before(:all) do
+          Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
+          Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
+        end
+
+        after(:all) do
+          @layer.reload.legends.map(&:destroy)
+        end
 
         def index_lengend_url(user: @user, visualization: @visualization, layer: @layer)
           legends_url(user_domain: user.subdomain,
@@ -302,7 +317,7 @@ module Carto
       end
 
       describe '#delete' do
-        before (:each) { @legend = Carto::Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
+        before (:each) { @legend = Legend.create!(html_legend_payload.merge(layer_id: @layer.id)) }
         after  (:each) { @legend.destroy }
 
         def delete_lengend_url(user: @user, visualization: @visualization, layer: @layer, legend: @legend)
@@ -320,7 +335,7 @@ module Carto
             response.body.should be_empty
           end
 
-          Carto::Legend.exists?(@legend.id).should be_false
+          Legend.exists?(@legend.id).should be_false
         end
 
         it 'should not delete another user\'s legend' do
@@ -328,7 +343,7 @@ module Carto
             response.status.should eq 403
           end
 
-          Carto::Legend.exists?(@legend.id).should be_true
+          Legend.exists?(@legend.id).should be_true
         end
       end
     end

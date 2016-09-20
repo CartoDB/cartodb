@@ -121,7 +121,7 @@ class Asset < Sequel::Model
     mode = chmod_mode
     FileUtils.chmod(mode, local_path.join(filename)) if mode
 
-    p = File.join('/', 'uploads', target_asset_path, filename)
+    p = File.join('/', SUBFOLDER, target_asset_path, filename)
     "#{asset_protocol}//#{CartoDB.account_host}#{p}"
   end
 
@@ -132,8 +132,12 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'')
-      FileUtils.rm("#{Rails.root}/public#{local_url}") rescue ''
+      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'').gsub(SUBFOLDER, '')
+      begin
+        FileUtils.rm("#{Cartodb.config[:importer]['uploads_path']}/#{local_url}")
+      rescue => e
+        CartoDB::Logger.error(message: "Error removing asset", asset: self, exception: e)
+      end
       return
     end
     basename = File.basename(public_url)
@@ -153,6 +157,8 @@ class Asset < Sequel::Model
   end
 
   private
+
+  SUBFOLDER = 'uploads'
 
   def chmod_mode
     # Example in case asset kind should change mode

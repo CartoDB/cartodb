@@ -1,34 +1,35 @@
 {
   "type": "object",
-  "required": ["categories"],
+  "required": [
+    "categories"
+  ],
   "additionalProperties": false,
   "properties": {
     "categories": {
       "type": "array",
-      "items": [
-        {
-          "anyOf": [
-            {
-              "type": "object",
-              "required": ["color", "title"],
-              "additionalProperties": false,
-              "properties": {
-                "color": { "type": "string", "pattern": "^#(?:[0-9a-f]{3}){1,2}$" },
-                "title": { "type": "string" }
-              }
-            },
-            {
-              "type": "object",
-              "required": ["color", "icon"],
-              "additionalProperties": false,
-              "properties": {
-                "color": { "type": "string", "pattern": "^#(?:[0-9a-f]{3}){1,2}$" },
-                "icon": { "type": "string" }
-              }
-            }
-          ]
+      "required": [
+        "title"
+      ],
+      "additionalProperties": false,
+      "items": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#(?:[0-9a-f]{3}){1,2}$"
+          },
+          "icon": {
+            "type": "string"
+          }
         }
-      ]
+      }
     }
   }
 }

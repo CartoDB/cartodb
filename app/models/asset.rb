@@ -1,5 +1,7 @@
 require 'open-uri'
 require_relative '../../lib/cartodb/image_metadata.rb'
+require_relative '../helpers/file_upload'
+
 class Asset < Sequel::Model
 
   many_to_one :user

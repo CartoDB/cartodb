@@ -8,19 +8,20 @@ module Carto
   class LegendDefinitionValidator
     def initialize(type, definition)
       @type = type
-      @definition = definition
+      @definition = definition.with_indifferent_access if definition
     end
 
     def errors
-      return ['could not be validated'] unless definition && location
+      return @errors if @errors
+      return ['could not be validated'] unless @definition && location
 
-      schema = Carto::Definition.instance.load_from_file(schema_location)
-      JSON::Validator.fully_validate(schema, definition.with_indifferent_access)
+      schema = Carto::Definition.instance.load_from_file(location)
+      @errors = JSON::Validator.fully_validate(schema, @definition)
     end
 
     private
 
-    LEGEND_FORMATS_LOCATION = 'lib/formats/legends/'.freeze
+    LEGEND_FORMATS_LOCATION = 'lib/formats/legends'.freeze
 
     def location
       return @location if @location

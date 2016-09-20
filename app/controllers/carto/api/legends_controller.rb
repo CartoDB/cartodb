@@ -28,23 +28,23 @@ module Carto
                   Carto::UnauthorizedError, with: :rescue_from_carto_error
 
       def index
-        render_jsonp(@layer.legends.map(&:to_hash), :ok)
+        render_jsonp(@layer.legends.map { |legend| hash_for_legend(legend) }, :ok)
       end
 
       def show
-        render_jsonp(@legend.to_hash, :ok)
+        render_jsonp(hash_for_legend(@legend), :ok)
       end
 
       def create
         legend = Carto::Legend.create!(legend_params.merge(layer_id: @layer.id))
 
-        render_jsonp(legend.to_hash, :created)
+        render_jsonp(hash_for_legend(legend), :created)
       end
 
       def update
         @legend.update_attributes!(legend_params)
 
-        render_jsonp(@legend.to_hash, :ok)
+        render_jsonp(hash_for_legend(@legend), :ok)
       end
 
       def destroy
@@ -79,6 +79,10 @@ module Carto
 
       def legend_params
         params.slice(:title, :pre_html, :post_html, :type, :definition)
+      end
+
+      def hash_for_legend(legend)
+        Carto::LegendPresenter.new(legend).to_hash
       end
     end
   end

@@ -7,12 +7,8 @@ module Carto::Configuration
     @app_config = YAML.load_file(app_config_file)
   end
 
-  def users_modifications_path
-    log_files_root.join('log', 'users_modifications')
-  end
-
-  def resque_metrics_path
-    "#{log_files_root}/log/resque_metrics.log")
+  def log_file_path(filename)
+    "#{log_files_root}/log/#{filename}")
   end
 
   private

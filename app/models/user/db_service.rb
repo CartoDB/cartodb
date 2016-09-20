@@ -983,7 +983,7 @@ module CartoDB
       end
 
       def monitor_user_notification
-        FileUtils.touch(users_modifications_path)
+        FileUtils.touch(log_file_path('users_modifications'))
         if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? &&
            !Cartodb.config[:signups]["service"]["port"].nil?
           enable_remote_db_user

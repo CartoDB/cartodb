@@ -669,6 +669,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
+        "info-analysis": "Info about analysis",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",

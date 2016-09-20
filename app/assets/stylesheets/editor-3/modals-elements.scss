@@ -60,3 +60,21 @@
 .Modal-titleBasemap {
   margin: $baseSize * 3 0;
 }
+
+
+/* animation analysis */
+.Analysis-animation {
+  height: 96px;
+  border-top-left-radius: $halfBaseSize;
+  border-top-right-radius: $halfBaseSize;
+  background: $cMainText;
+}
+
+.ModalBlockList-item.is-disabled .Analysis-animation {
+  background-color: transparent;
+}
+
+.Analysis-info {
+  padding: 16px;
+}
+

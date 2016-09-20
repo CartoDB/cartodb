@@ -83,6 +83,16 @@ module Carto
         joint_errors = validator.errors.join(', ')
         joint_errors.should include('did not contain a required property')
       end
+
+      it 'rejects wrongly formatted colors' do
+        definition[:color] = '#notcool'
+
+        validator = LegendDefinitionValidator.new(:bubble, definition)
+
+        validator.errors.should_not be_empty
+        joint_errors = validator.errors.join(', ')
+        joint_errors.should include('did not match the regex')
+      end
     end
 
     describe '#choropleth' do
@@ -188,7 +198,7 @@ module Carto
 
           validator.errors.should_not be_empty
           joint_errors = validator.errors.join(', ')
-          joint_errors.should include('additional properties')
+          joint_errors.should include('did not match the regex')
         end
       end
     end

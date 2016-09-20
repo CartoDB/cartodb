@@ -95,10 +95,6 @@ module Carto
       def legend_params
         params.slice(:title, :pre_html, :post_html, :type, :definition)
       end
-
-      def hash_for_legend(legend)
-        Carto::LegendPresenter.new(legend).to_hash
-      end
     end
   end
 end

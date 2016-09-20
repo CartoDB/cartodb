@@ -1,10 +1,14 @@
 module Carto::Configuration
   def db_config
-    @@db_config ||= YAML.load(File.read(db_config_file))
+    @db_config ||= YAML.load(File.read(db_config_file))
   end
 
   def app_config
-    @@app_config = YAML.load_file(app_config_file)
+    @app_config = YAML.load_file(app_config_file)
+  end
+
+  def users_modifications_path
+    log_files_root.join('log', 'users_modifications')
   end
 
   private
@@ -12,6 +16,14 @@ module Carto::Configuration
   def config_files_root
     if ENV['RAILS_CONFIG_BASE_PATH']
       Pathname.new(ENV['RAILS_CONFIG_BASE_PATH'])
+    else
+      Rails.root
+    end
+  end
+
+  def log_files_root
+    if ENV['RAILS_LOG_BASE_PATH']
+      Pathname.new(ENV['RAILS_LOG_BASE_PATH'])
     else
       Rails.root
     end
@@ -30,7 +42,6 @@ module Carto::Configuration
   end
 end
 
-# TODO: singleton
 class Carto::Conf
   include Carto::Configuration
 end

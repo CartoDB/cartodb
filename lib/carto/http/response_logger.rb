@@ -10,7 +10,7 @@ module Carto
       include Carto::Configuration
 
       def self.enabled?
-        defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && Cartodb.config[:http_client_logs]
+        Cartodb.config[:http_client_logs]
       end
 
       def initialize(tag)

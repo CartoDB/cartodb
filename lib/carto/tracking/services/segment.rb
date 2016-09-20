@@ -11,8 +11,8 @@ module Carto
           Resque.enqueue(segment_job, @reporter.id, name, supplied_properties)
         end
 
-        def api_key
-          Cartodb.get_config(:segment, 'api_key')
+        def segment_api_key
+          @segment_api_key ||= Cartodb.get_config(:segment, 'api_key')
         end
       end
     end

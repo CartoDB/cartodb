@@ -9,7 +9,7 @@ module Rails
 
       def database_configuration
         require 'erb'
-        db_config_file
+        db_config
       end
     end
   end

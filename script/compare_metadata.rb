@@ -18,7 +18,7 @@ if data.length > 0
 end
 
 config = YAML.load(File.read('../config/app_config.yml'))
-database = Carto::Conf.new.db_config_file
+database = Carto::Conf.new.db_config
 
 
 RAILS_ENV = ENV['RAILS_ENV'] || 'production'

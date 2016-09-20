@@ -2,7 +2,7 @@
 
 require_relative './carto_json_serializer'
 require_relative '../../controllers/carto/api/legend_presenter'
-require_dependency 'carto/lengend_definition_validator'
+require_dependency 'carto/legend_definition_validator'
 
 module Carto
   class Legend < ActiveRecord::Base

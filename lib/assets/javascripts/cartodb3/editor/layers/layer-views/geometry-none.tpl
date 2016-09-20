@@ -1,1 +1,0 @@
-<p class="CDB-Text CDB-Size-large is-semibold u-upperCase"><%- letter %></p>

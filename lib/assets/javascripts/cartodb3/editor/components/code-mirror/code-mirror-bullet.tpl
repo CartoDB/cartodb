@@ -1,1 +1,0 @@
-<i class="CodeMirror-bullet"></i>

@@ -38,7 +38,7 @@ module Carto
         )
       end
 
-      def errors
+      def errors(only: nil)
         super + @connection.errors(parameters_term: 'connection parameters')
       end
 

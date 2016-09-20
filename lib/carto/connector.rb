@@ -49,12 +49,11 @@ module Carto
     end
 
     def list_tables
-      # TODO: validate! only: [:connection] # we need to implement partial connector validation
+      validate! only: [:connection]
       with_server do
-        tables = execute %{
+        execute %{
           SELECT * FROM ODBCTablesList('#{server_name}');
         }
-        tables.to_a
       end
     end
 
@@ -177,8 +176,11 @@ module Carto
       log "Connector cleaned-up"
     end
 
-    def validate!
-      @provider.validate!
+    # Validate parameters.
+    # An array of parameter names to validate can be passed via :only.
+    # By default all parameters are validated
+    def validate!(only: nil)
+      @provider.validate!(only: only)
     end
 
     def log(message, truncate = true)

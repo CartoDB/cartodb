@@ -10,16 +10,16 @@ module Carto
         @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
       end
 
-      def errors
-        @params.errors
+      def errors(only: nil)
+        @params.errors(only: only)
       end
 
       def valid?
         errors.empty?
       end
 
-      def validate!
-        errors = self.errors
+      def validate!(only: nil)
+        errors = self.errors(only: only)
         raise InvalidParametersError.new(errors * "\n") if errors.present?
       end
 

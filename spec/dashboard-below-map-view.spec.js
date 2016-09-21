@@ -1,4 +1,3 @@
-var cdb = require('cartodb.js');
 var Backbone = require('backbone');
 var DashboardBelowMapView = require('../src/dashboard-below-map-view');
 
@@ -17,17 +16,17 @@ describe('dashboard-below-map-view', function () {
 
   describe('when a time-series widget is added', function () {
     beforeEach(function () {
-      var timeSeriesWidgetModelFake = new cdb.core.Model({
+      var timeSeriesWidgetModelFake = new Backbone.Model({
         type: 'time-series'
       });
-      timeSeriesWidgetModelFake.dataviewModel = new cdb.core.Model();
+      timeSeriesWidgetModelFake.dataviewModel = new Backbone.Model();
       timeSeriesWidgetModelFake.dataviewModel.getUnfilteredDataModel = function () {
-        return new cdb.core.Model();
+        return new Backbone.Model();
       };
       timeSeriesWidgetModelFake.dataviewModel.getData = function () {
         return {};
       };
-      timeSeriesWidgetModelFake.dataviewModel.layer = new cdb.core.Model();
+      timeSeriesWidgetModelFake.dataviewModel.layer = new Backbone.Model();
       this.widgetsCollection.add(timeSeriesWidgetModelFake);
     });
 

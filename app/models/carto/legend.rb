@@ -24,7 +24,7 @@ module Carto
 
     before_validation :ensure_definition
 
-    after_commit :notify_map_change
+    after_commit :notify_layer_change
 
     private
 
@@ -57,9 +57,8 @@ module Carto
       end
     end
 
-    def notify_map_change
-      map = layer.map if layer
-      map.notify_map_change if map
+    def notify_layer_change
+      layer.notify_change
     end
   end
 end

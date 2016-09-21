@@ -15,13 +15,15 @@ module Carto::Configuration
     "#{log_files_root}/log"
   end
 
-  def uploaded_file_path(relative_path)
+  def uploaded_file_path(path)
+    return path if Pathname.new(path).absolute?
+
     upload_path = Cartodb.get_config(:importer, 'uploads_path')
     if upload_path
       # Ugly patch workarounding some hardcoded /uploads
-      "#{upload_path}#{relative_path}".gsub('/uploads/uploads/', '/uploads/')
+      "#{upload_path}#{path}".gsub('/uploads/uploads/', '/uploads/')
     else
-      Rails.root.join("public#{relative_path}").to_s
+      Rails.root.join("public#{path}").to_s
     end
   end
 

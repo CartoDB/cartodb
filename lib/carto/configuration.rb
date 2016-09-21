@@ -8,7 +8,11 @@ module Carto::Configuration
   end
 
   def log_file_path(filename)
-    "#{log_files_root}/log/#{filename}"
+    "#{log_dir_path}/#{filename}"
+  end
+
+  def log_dir_path
+    "#{log_files_root}/log"
   end
 
   def uploaded_file_path(relative_path)

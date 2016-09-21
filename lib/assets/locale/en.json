@@ -705,7 +705,7 @@
             "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
-            "title": "Filter rows by column value",
+            "title": "Filter by column value",
             "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
@@ -1527,7 +1527,7 @@
         "weight-type": "Weight type",
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
-        "workflow": "Workflow",
+        "workflow": "Your workflow",
         "write-max-value": "Write max value",
         "write-min-value": "Write min value",
         "yes": "Yes"

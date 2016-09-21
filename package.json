@@ -35,9 +35,9 @@
     "leaflet": "0.7.3",
     "mustache": "1.1.0",
     "perfect-scrollbar": "0.6.7",
-    "torque.js": "^2.15",
+    "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3",
-    "carto": "https://github.com/CartoDB/carto/archive/master.tar.gz"
+    "carto": "cartodb/carto#master"
   },
   "devDependencies": {
     "browserify": "13.0.0",

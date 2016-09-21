@@ -1,6 +1,11 @@
 var _ = require('underscore');
-var CartoColor = require('cartocolor');
-var colorScales = [CartoColor.Bold[5]]; // Demo colors
+var colorScales = [[
+  '#7F3C8D',
+  '#11A579',
+  '#3969AC',
+  '#F2B701',
+  '#E73F74'
+]]; // Demo colors
 
 /**
  *  Class to set categories to each color

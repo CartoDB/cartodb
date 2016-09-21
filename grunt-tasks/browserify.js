@@ -1,4 +1,19 @@
+var vendorDependencies = ['cartodb.js'];
+
 module.exports = {
+  vendor: {
+    src: vendorDependencies.map(require.resolve),
+    dest: '<%= config.tmp %>/vendor.js',
+    options: {
+      require: vendorDependencies.map(function(vendor) {
+        return [require.resolve(vendor), { expose: vendor }];
+      }),
+      plugin: [
+        ['browserify-resolutions', vendorDependencies]
+      ]
+    }
+  },
+
   src: {
     src: 'src/index_standalone.js',
     dest: '<%= config.dist %>/deep-insights.uncompressed.js',
@@ -27,8 +42,9 @@ module.exports = {
       browserifyOptions: {
         debug: true, // to generate source-maps
       },
+      external: vendorDependencies,
       plugin: [
-        ['browserify-resolutions', '*']
+        ['browserify-resolutions', vendorDependencies]
         // To be more specific we could use the following
         // ['browserify-resolutions', ['backbone']]
       ]

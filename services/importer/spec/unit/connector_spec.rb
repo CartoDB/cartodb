@@ -78,7 +78,7 @@ end
 
 describe Carto::Connector do
   before(:all) do
-    Cartodb.config.merge! connectors: {}
+    Cartodb.config[:connectors] = {}
     @user = create_user
     @user.save
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
@@ -1003,7 +1003,6 @@ describe Carto::Connector do
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
-
 
       expect_executed_commands(
         connector.executed_commands,

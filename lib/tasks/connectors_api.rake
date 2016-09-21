@@ -31,9 +31,13 @@ namespace :cartodb do
       puts "User not found: #{args.user}" if user.blank?
       if provider.present? && user.present?
         active_config = user.connector_configuration(provider.name)
-        user_config = Carto::ConnectorConfiguration.where(connector_provider_id: provider.id, user_id: user.id).first
+        user_config = Carto::ConnectorConfiguration.where(
+          connector_provider_id: provider.id, user_id: user.id
+        ).first
         if user.organization.present?
-          org_config = Carto::ConnectorConfiguration.where(connector_provider_id: provider.id, organization_id: user.organization.id).first
+          org_config = Carto::ConnectorConfiguration.where(
+            connector_provider_id: provider.id, organization_id: user.organization.id
+          ).first
         end
         provider_config = Carto::ConnectorConfiguration.default(provider)
         yield provider, user, active_config, user_config, org_config, provider_config
@@ -46,7 +50,9 @@ namespace :cartodb do
       puts "Provider not found: #{args.provider}" if provider.blank?
       puts "Organization not found: #{args.org}" if org.blank?
       if provider.present? && org.present?
-        org_config = Carto::ConnectorConfiguration.where(connector_provider_id: provider.id, organization_id: user.organization.id).first
+        org_config = Carto::ConnectorConfiguration.where(
+          connector_provider_id: provider.id, organization_id: user.organization.id
+        ).first
         provider_config = Carto::ConnectorConfiguration.default(provider)
         yield provider, org, org_config, provider_config
       end
@@ -85,12 +91,14 @@ namespace :cartodb do
 
     desc "Set user connector configuration"
     task :set_user_config, [:provider, :user, :enabled, :max_rows] => :environment do |_task, args|
-      with_provider_user_config(args) do |provider, user, config, user_config, org_config, provider_config|
+      with_provider_user_config(args) do |provider, user, _config, user_config, _org_config, _provider_config|
         if args.enabled.casecmp('default').zero? && !args.max_rows
           # rake cartodb:connectors:user_config[provider,user,default] will reset to the default configuration
           puts "Will reset configuration for #{provider.name} and user #{user.username}"
           if user_config
-            puts "  Removing existing configuration: #{user_config.enabled.inspect} max_rows: #{user_config.max_rows.inspect}"
+            puts "  Removing existing configuration:"
+            puts "    Enabled: #{user_config.enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description user_config.max_rows}"
             user_config.destroy
           else
             puts "  User didn't have specific configuration"
@@ -101,12 +109,18 @@ namespace :cartodb do
           max_rows = nil if max_rows == 0
           if user_config
             puts "Will update configuration for #{provider.name} and user #{user.username}"
-            puts "  New configuration: enabled: #{enabled.inspect} max_rows: #{max_rows_description max_rows}"
-            puts "  Existing configuration: enabled: #{user_config.enabled.inspect} max_rows: #{max_rows_description user_config.max_rows}"
+            puts "  New configuration:"
+            puts "    Enabled: #{enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description max_rows}"
+            puts "  Existing configuration:"
+            puts "    Enabled: #{user_config.enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description user_config.max_rows}"
             user_config.update_attributes! enabled: enabled, max_rows: max_rows
           else
             puts "Will create a new configuration for #{provider.name} and user #{user.username}"
-            puts "  New configuration: enabled: #{enabled.inspect} max_rows: #{max_rows_description max_rows}"
+            puts "  New configuration: enabled:"
+            puts "    Enabled: #{enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description max_rows}"
             Carto::ConnectorConfiguration.create!(
               connector_provider: provider,
               user: user,
@@ -143,7 +157,9 @@ namespace :cartodb do
           # rake cartodb:connectors:org_config[provider,org,default] will reset to the default configuration
           puts "Will reset configuration for #{provider.name} and user #{org.name}"
           if org_config
-            puts "  Removing existing configuration: #{org_config.enabled.inspect} max_rows: #{org_config.max_rows.inspect}"
+            puts "  Removing existing configuration:"
+            puts "    Enabled: #{org_config.enabled?}"
+            puts "    Max. Rows: #{max_rows_description org_config.max_rows}"
             org_config.destroy
           else
             puts "  Organization didn't have specific configuration"
@@ -154,12 +170,18 @@ namespace :cartodb do
           max_rows = nil if max_rows == 0
           if org_config
             puts "Will update configuration for #{provider.name} and org. #{org.name}"
-            puts "  New configuration: enabled: #{enabled.inspect} max_rows: #{max_rows_description max_rows}"
-            puts "  Existing configuration: enabled: #{org_config.enabled.inspect} max_rows: #{max_rows_description org_config.max_rows}"
+            puts "  New configuration: enabled:"
+            puts "    Enabled: #{enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description max_rows}"
+            puts "  Existing configuration: enabled:"
+            puts "    Enabled: #{org_config.enabled?}"
+            puts "    Max. Rows: #{max_rows_description org_config.max_rows}"
             org_config.update_attributes! enabled: enabled, max_rows: max_rows
           else
             puts "Will create a new configuration for #{provider.name} and org. #{org.name}"
-            puts "  New configuration: enabled: #{enabled.inspect} max_rows: #{max_rows_description max_rows}"
+            puts "  New configuration: enabled:"
+            puts "    Enabled: #{enabled.inspect}"
+            puts "    Max. Rows: #{max_rows_description max_rows}"
             Carto::ConnectorConfiguration.create!(
               connector_provider: provider,
               organization: org,

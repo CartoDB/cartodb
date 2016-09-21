@@ -1,13 +1,13 @@
 {
   "name": "cartodb.js",
   "version": "4.0.0-alpha.1",
-  "description": "CartoDB javascript library",
+  "description": "CARTO javascript library",
   "repository": {
     "type": "git",
     "url": "git://github.com/CartoDB/cartodb.js.git"
   },
   "author": {
-    "name": "CartoDB",
+    "name": "CARTO",
     "url": "https://carto.com/",
     "email": "wadus@carto.com"
   },

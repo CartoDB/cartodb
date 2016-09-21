@@ -58,7 +58,6 @@ module Carto
     end
 
     def force_notify_layer_change
-      byebug
       layer.force_notify_change
     end
   end

@@ -30,13 +30,15 @@ module Carto
 
       def create
         legend_params_with_layer_id = legend_params.merge(layer_id: @layer.id)
-        legend = Legend.create!(legend_params_with_layer_id)
+        legend = Legend.create(legend_params_with_layer_id)
 
-        legend_presentation = LegendPresenter.new(legend).to_hash
-        render_jsonp(legend_presentation, :created)
-      rescue ActiveRecord::RecordInvalid
-        error = legend.errors.full_messages.join(', ')
-        raise Carto::UnprocesableEntityError.new(error)
+        if legend.valid?
+          legend_presentation = LegendPresenter.new(legend).to_hash
+          render_jsonp(legend_presentation, :created)
+        else
+          error = legend.errors.full_messages.join(', ')
+          raise Carto::UnprocesableEntityError.new(error)
+        end
       end
 
       def update
@@ -45,7 +47,7 @@ module Carto
         legend_presentation = LegendPresenter.new(@legend).to_hash
         render_jsonp(legend_presentation, :ok)
       rescue ActiveRecord::RecordInvalid
-        error = legend.errors.full_messages.join(', ')
+        error = @legend.errors.full_messages.join(', ')
         raise Carto::UnprocesableEntityError.new(error)
       end
 
@@ -60,7 +62,7 @@ module Carto
       def load_layer
         @layer = Carto::Layer.find(params[:layer_id])
       rescue ActiveRecord::RecordNotFound
-        raise Carto::LoadError('Layer not found')
+        raise Carto::LoadError.new('Layer not found')
       end
 
       def owners_only
@@ -72,13 +74,13 @@ module Carto
         end
 
       rescue ActiveRecord::RecordNotFound
-        raise Carto::LoadError('Visualization not found')
+        raise Carto::LoadError.new('Visualization not found')
       end
 
       def load_legend
         @legend = @layer.legends.find(params[:id])
       rescue ActiveRecord::RecordNotFound
-        raise Carto::LoadError('Legend not found')
+        raise Carto::LoadError.new('Legend not found')
       end
 
       def legend_params

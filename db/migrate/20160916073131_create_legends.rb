@@ -7,6 +7,7 @@ Sequel.migration do
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
 
+      Uuid :layer_id, type: 'uuid', null: false
       String :title
       String :pre_html
       String :post_html

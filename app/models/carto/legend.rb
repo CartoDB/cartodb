@@ -24,7 +24,7 @@ module Carto
 
     before_validation :ensure_definition
 
-    after_commit :notify_layer_change
+    after_commit :force_notify_layer_change
 
     private
 
@@ -57,8 +57,9 @@ module Carto
       end
     end
 
-    def notify_layer_change
-      layer.notify_change
+    def force_notify_layer_change
+      byebug
+      layer.force_notify_change
     end
   end
 end

@@ -44,7 +44,7 @@ var TorqueLayer = LayerModelBase.extend({
         if (attr === 'cartocss') {
           var hasTorquePropsChanged = this._torqueCartoCSSPropsChanged();
           var usesTurboCarto = this._hasTurboCarto();
-          return this.previous('cartocss') && (hasTorquePropsChanged || usesTurboCarto);
+          return this.previous('cartocss') && (hasTorquePropsChanged || usesTurboCarto);
         }
         return true;
       }
@@ -59,11 +59,14 @@ var TorqueLayer = LayerModelBase.extend({
     var currentCartoCSS = this.get('cartocss');
     var shader = new carto.RendererJS().render(currentCartoCSS);
     var layer = shader.findLayer({ name: '#layer' });
-    var layerShader = layer.getStyle({ property: 1 }, { zoom: 10 });
 
-    var markerFill = layerShader['marker-fill'];
-    if (markerFill && markerFill.name === 'ramp') {
-      return true;
+    if (layer) {
+      var layerShader = layer.getStyle({ property: 1 }, { zoom: 10 });
+
+      var markerFill = layerShader['marker-fill'];
+      if (markerFill && markerFill.name === 'ramp') {
+        return true;
+      }
     }
 
     return false;
@@ -123,15 +126,15 @@ var TorqueLayer = LayerModelBase.extend({
     this.set('renderRange', {});
   },
 
-  isEqual: function(other) {
+  isEqual: function (other) {
     var properties = ['query', 'query_wrapper', 'cartocss'];
     var self = this;
-    return this.get('type') === other.get('type') && _.every(properties, function(p) {
-      return other.get(p) === self.get(p);
-    });
+    return this.get('type') === other.get('type') && _.every(properties, function (p) {
+        return other.get(p) === self.get(p);
+      });
   },
 
-  isVisible: function() {
+  isVisible: function () {
     return true;
   },
 
@@ -139,20 +142,19 @@ var TorqueLayer = LayerModelBase.extend({
     return this.get('layer_name') || this.get('table_name');
   },
 
-  getInteractiveColumnNames: function() {
+  getInteractiveColumnNames: function () {
     return [];
   },
 
-  getInfowindowFieldNames: function() {
+  getInfowindowFieldNames: function () {
     return [];
   },
 
-  hasInteraction: function() {
+  hasInteraction: function () {
     return this.getInteractiveColumnNames() > 0;
   },
 
-  fetchAttributes: function(layer, featureID, callback) {
-  },
+  fetchAttributes: function (layer, featureID, callback) {},
 
   setDataProvider: function (dataProvider) {
     this._dataProvider = dataProvider;
@@ -163,11 +165,11 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   // given a timestamp returns a step (float)
-  timeToStep: function(timestamp) {
+  timeToStep: function (timestamp) {
     var steps = this.get('steps');
     var start = this.get('start');
     var end = this.get('end');
-    var step = (steps * (1000*timestamp - start)) / (end - start);
+    var step = (steps * (1000 * timestamp - start)) / (end - start);
     return step;
   },
 

@@ -58,9 +58,11 @@ module Carto
           layer.save if changed
         end
 
-        visualization.data_layers.legends.each do |legend|
-          legend.layer_id = layer.id
-          legend.save
+        visualization.data_layers.each do |data_layer|
+          data_layer.legends.each do |legend|
+            legend.layer_id = data_layer.id
+            legend.save
+          end
         end
 
         map.data_layers.each(&:register_table_dependencies)

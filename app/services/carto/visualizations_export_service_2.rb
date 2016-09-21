@@ -8,9 +8,10 @@ require 'json'
 # 2.0.1: export Widget.source_id
 # 2.0.2: export username
 # 2.0.3: export state (Carto::State)
+# 2.0.4: export legends (Carto::Legend)
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.3'.freeze
+    CURRENT_VERSION = '2.0.4'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i

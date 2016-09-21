@@ -313,12 +313,17 @@ module Carto
         elsif @layer.torque?
           as_torque
         else
+          legends_presentation = @layer.legends.map do |legend|
+            Carto::Api::LegendPresenter.new(legend).to_hash
+          end
+
           {
             id:         @layer.id,
             type:       'CartoDB',
             infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
             tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
             legend:     @layer.legend,
+            legends:    legends_presentation,
             visible:    @layer.options['visible'],
             options:    options_data
           }

@@ -720,8 +720,14 @@ class DataImport < Sequel::Model
       importer.run(tracker)
       log.append 'After importer run'
     end
+
     store_results(importer, runner, datasource_provider, manual_fields)
     importer.nil? ? false : importer.success?
+  rescue => e
+    # Note: If this exception is not treated, results will not be defined
+    # and the import will finish with a null error_code
+    set_error(manual_fields.fetch(:error_code, 99999))
+    raise e
   end
 
   # Note: Assumes that if importer is nil an error happened

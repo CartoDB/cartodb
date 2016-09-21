@@ -5,7 +5,7 @@
   "properties": {
     "color": {
       "type": "string",
-      "pattern": "^#(?:[0-9a-f]{3}){1,2}$"
+      "pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$"
     }
   }
 }

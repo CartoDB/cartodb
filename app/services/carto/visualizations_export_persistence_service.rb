@@ -45,6 +45,12 @@ module Carto
         visualization.update_attribute(:tags, tags)
 
         visualization.layers.map do |layer|
+          layer.legends.each do |legend|
+            legend.layer_id = layer.id
+
+            legend.save
+          end
+
           # Flag needed because `.changed?` won't realize about options hash changes
           changed = false
           if layer.options.has_key?(:id)

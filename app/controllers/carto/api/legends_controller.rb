@@ -73,13 +73,14 @@ module Carto
       def owners_only
         visualization = Carto::Visualization.find(params[:visualization_id])
 
-        unless visualization.writable_by?(current_viewer)
+        unless visualization.layers.include?(@layer) &&
+               visualization.writable_by?(current_viewer)
           raise Carto::UnauthorizedError.new
         end
       end
 
       def load_legend
-        @legend = Legend.find(params[:id])
+        @legend = @layer.legends.find(params[:id])
       end
 
       def legend_params

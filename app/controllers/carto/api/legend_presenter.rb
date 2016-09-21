@@ -12,7 +12,7 @@ module Carto
           created_at: @legend.created_at,
           definition: @legend.definition,
           id: @legend.id,
-          legend_id: @legend.legend_id,
+          layer_id: @legend.layer_id,
           post_html: @legend.post_html,
           pre_html: @legend.pre_html,
           title: @legend.title,

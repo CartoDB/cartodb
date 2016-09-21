@@ -18,6 +18,18 @@ module Carto
       @user.destroy
     end
 
+    it 'notifies layer change on commit' do
+      Legend.any_instance
+            .expects(:force_notify_layer_change)
+            .at_least(3)
+
+      legend = Legend.create!(layer_id: @layer.id,
+                              type: 'bubble',
+                              definition: { color: '#abc' })
+      legend.update_attributes!(title: 'Cool legend')
+      legend.destroy
+    end
+
     describe '#validations' do
       before(:all) do
         @legend = Legend.new(layer_id: @layer.id)

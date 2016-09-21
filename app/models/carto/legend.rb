@@ -24,7 +24,7 @@ module Carto
 
     before_validation :ensure_definition
 
-    after_commit :invalidate_vizjson
+    after_commit :force_notify_layer_change
 
     private
 
@@ -57,9 +57,8 @@ module Carto
       end
     end
 
-    def invalidate_vizjson
-      map = layer.map if layer
-      map.notify_map_change if map
+    def force_notify_layer_change
+      layer.force_notify_change
     end
   end
 end

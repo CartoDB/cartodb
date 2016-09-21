@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.5 <2.1.0",
+                              "from": "readable-stream@>=2.0.0 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -870,9 +870,9 @@
                           "resolved": "https://registry.npmjs.org/esprima/-/esprima-2.7.3.tgz"
                         },
                         "optionator": {
-                          "version": "0.8.1",
+                          "version": "0.8.2",
                           "from": "optionator@>=0.8.1 <0.9.0",
-                          "resolved": "https://registry.npmjs.org/optionator/-/optionator-0.8.1.tgz",
+                          "resolved": "https://registry.npmjs.org/optionator/-/optionator-0.8.2.tgz",
                           "dependencies": {
                             "prelude-ls": {
                               "version": "1.1.2",
@@ -900,9 +900,9 @@
                               "resolved": "https://registry.npmjs.org/levn/-/levn-0.3.0.tgz"
                             },
                             "fast-levenshtein": {
-                              "version": "1.1.4",
-                              "from": "fast-levenshtein@>=1.1.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-1.1.4.tgz"
+                              "version": "2.0.4",
+                              "from": "fast-levenshtein@>=2.0.4 <2.1.0",
+                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.4.tgz"
                             }
                           }
                         },

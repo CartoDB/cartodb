@@ -11,24 +11,9 @@ module Carto
                     :owners_only
       before_filter :load_legend, only: [:show, :update, :destroy]
 
-      rescue_from ActiveRecord::RecordNotFound do |exception|
-        error_message = "#{exception.record.class.name.demodulize} not found"
-        error = Carto::LoadError.new(error_message)
-
-        rescue_from_carto_error(error)
-      end
-
-      rescue_from ActiveRecord::RecordInvalid do |exception|
-        error_message = exception.record.errors.full_messages.join(', ')
-        error = Carto::UnprocesableEntityError.new(error_message)
-
-        rescue_from_carto_error(error)
-      end
-
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,
-                  Carto::UnprocesableEntityError,
-                  Carto::UnauthorizedError, with: :rescue_from_carto_error
+                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def index
         legend_presentations = @layer.legends.map do |legend|
@@ -49,6 +34,9 @@ module Carto
 
         legend_presentation = LegendPresenter.new(legend).to_hash
         render_jsonp(legend_presentation, :created)
+      rescue ActiveRecord::RecordInvalid
+        error = legend.errors.full_messages.join(', ')
+        raise Carto::UnprocesableEntityError.new(error)
       end
 
       def update
@@ -56,6 +44,9 @@ module Carto
 
         legend_presentation = LegendPresenter.new(@legend).to_hash
         render_jsonp(legend_presentation, :ok)
+      rescue ActiveRecord::RecordInvalid
+        error = legend.errors.full_messages.join(', ')
+        raise Carto::UnprocesableEntityError.new(error)
       end
 
       def destroy
@@ -68,6 +59,8 @@ module Carto
 
       def load_layer
         @layer = Carto::Layer.find(params[:layer_id])
+      rescue ActiveRecord::RecordNotFound
+        raise Carto::LoadError('Layer not found')
       end
 
       def owners_only
@@ -77,10 +70,15 @@ module Carto
                visualization.writable_by?(current_viewer)
           raise Carto::UnauthorizedError.new
         end
+
+      rescue ActiveRecord::RecordNotFound
+        raise Carto::LoadError('Visualization not found')
       end
 
       def load_legend
         @legend = @layer.legends.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        raise Carto::LoadError('Legend not found')
       end
 
       def legend_params

@@ -137,8 +137,8 @@ var TorqueLayer = LayerModelBase.extend({
     var properties = ['query', 'query_wrapper', 'cartocss'];
     var self = this;
     return this.get('type') === other.get('type') && _.every(properties, function (p) {
-        return other.get(p) === self.get(p);
-      });
+      return other.get(p) === self.get(p);
+    });
   },
 
   isVisible: function () {

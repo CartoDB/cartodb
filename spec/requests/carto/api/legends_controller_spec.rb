@@ -73,6 +73,8 @@ module Carto
         }
       end
 
+      let(:fake_uuid) { 'aaaaaaaa-0000-bbbb-1111-cccccccccccc' }
+
       before(:all) do
         @user = FactoryGirl.create(:carto_user)
         @intruder = FactoryGirl.create(:carto_user)
@@ -224,6 +226,29 @@ module Carto
             @payload = choropleth_legend_payload
           end
         end
+
+        it 'handles bad layer_id' do
+          url = legends_url(user_domain: @user.subdomain,
+                            visualization_id: @visualization.id,
+                            layer_id: fake_uuid,
+                            api_key: @user.api_key)
+          post_json url, {} do |response|
+            response.status.should eq 404
+            response.body[:errors].should include('Layer not found')
+          end
+        end
+
+        it 'handles bad visualization_id' do
+          url = legends_url(user_domain: @user.subdomain,
+                            visualization_id: fake_uuid,
+                            layer_id: @layer.id,
+                            api_key: @user.api_key)
+
+          post_json url, {} do |response|
+            response.status.should eq 404
+            response.body[:errors].should include('Visualization not found')
+          end
+        end
       end
 
       describe '#show' do
@@ -249,6 +274,19 @@ module Carto
         it 'should not show a legend to others' do
           get_json show_lengend_url(user: @intruder), {} do |response|
             response.status.should eq 403
+          end
+        end
+
+        it 'handles bad legend_id' do
+          url = legend_url(user_domain: @user.subdomain,
+                           visualization_id: @visualization.id,
+                           layer_id: @layer.id,
+                           id: fake_uuid,
+                           api_key: @user.api_key)
+
+          get_json url, {} do |response|
+            response.status.should eq 404
+            response.body[:errors].should include('Legend not found')
           end
         end
       end
@@ -294,6 +332,19 @@ module Carto
         it 'should let others update a legend' do
           put_json update_lengend_url(user: @intruder), {} do |response|
             response.status.should eq 403
+          end
+        end
+
+        it 'handles bad legend_id' do
+          url = legend_url(user_domain: @user.subdomain,
+                           visualization_id: @visualization.id,
+                           layer_id: @layer.id,
+                           id: fake_uuid,
+                           api_key: @user.api_key)
+
+          put_json url, {} do |response|
+            response.status.should eq 404
+            response.body[:errors].should include('Legend not found')
           end
         end
       end
@@ -361,6 +412,19 @@ module Carto
           end
 
           Legend.exists?(@legend.id).should be_true
+        end
+
+        it 'handles bad legend_id' do
+          url = legend_url(user_domain: @user.subdomain,
+                           visualization_id: @visualization.id,
+                           layer_id: @layer.id,
+                           id: fake_uuid,
+                           api_key: @user.api_key)
+
+          delete_json url, {} do |response|
+            response.status.should eq 404
+            response.body[:errors].should include('Legend not found')
+          end
         end
       end
     end

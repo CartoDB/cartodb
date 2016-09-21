@@ -147,6 +147,12 @@ module Carto
       )
     end
 
+    def build_legends_from_hash(exported_legends)
+      exported_legends.map do |exported_legend|
+        Legend.new(exported_legend)
+      end
+    end
+
     def build_analysis_from_hash(exported_analysis)
       return nil unless exported_analysis
 

@@ -17,7 +17,7 @@ class TestConnector < Carto::Connector
   def execute_as_superuser(command)
     @executed_commands ||= []
     @executed_commands << [:superuser, command, @user.username]
-    nil
+    []
   end
 
   def execute(command)
@@ -25,6 +25,8 @@ class TestConnector < Carto::Connector
     @executed_commands << [:user, command, @user.username]
     if command =~ /\A\s*SELECT\s+\*\s+FROM\s+ODBCTablesList/
       [{ schema: 'abc', name: 'xyz' }]
+    else
+      []
     end
   end
 
@@ -76,6 +78,7 @@ end
 
 describe Carto::Connector do
   before(:all) do
+    Cartodb.config.merge! connectors: {}
     @user = create_user
     @user.save
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)

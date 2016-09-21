@@ -1,11 +1,11 @@
 var _ = require('underscore');
-var colorScales = [
+var colorScales = [[
   '#7F3C8D',
   '#11A579',
   '#3969AC',
   '#F2B701',
   '#E73F74'
-]; // Demo colors
+]]; // Demo colors
 
 /**
  *  Class to set categories to each color

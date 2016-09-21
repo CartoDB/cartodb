@@ -3,7 +3,7 @@ module Carto
     module Services
       module Segment
         def report_to_segment
-          return unless segment_enabled?
+          return unless segment_api_key
 
           segment_job = Resque::TrackingJobs::SendSegmentEvent
           supplied_properties = @format.to_segment
@@ -11,8 +11,8 @@ module Carto
           Resque.enqueue(segment_job, @reporter.id, name, supplied_properties)
         end
 
-        def segment_enabled?
-          Cartodb.config[:segment].present?
+        def segment_api_key
+          @segment_api_key ||= Cartodb.get_config(:segment, 'api_key')
         end
       end
     end

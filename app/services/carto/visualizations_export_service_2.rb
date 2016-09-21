@@ -256,7 +256,8 @@ module Carto
         kind: layer.kind,
         infowindow: layer.infowindow,
         tooltip: layer.tooltip,
-        widgets: layer.widgets.map { |w| export_widget(w) }
+        widgets: layer.widgets.map { |widget| export_widget(widget) },
+        legends: layer.legends.map { |legend| export_legend(legend) }
       }
 
       layer[:active_layer] = true if active_layer
@@ -290,6 +291,16 @@ module Carto
     def export_state(state)
       {
         json: state.json
+      }
+    end
+
+    def export_legend(legend)
+      {
+        definition: legend.definition,
+        post_html: legend.post_html,
+        pre_html: legend.pre_html,
+        title: legend.title,
+        type: legend.type
       }
     end
   end

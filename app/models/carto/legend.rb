@@ -39,7 +39,11 @@ module Carto
     MAX_LEGENDS_PER_LAYER = 2
 
     def under_max_legends_per_layer
-      unless layer.legends.count < MAX_LEGENDS_PER_LAYER
+      other_legends_count = layer.legends.count do |legend|
+        legend != self
+      end
+
+      unless other_legends_count < MAX_LEGENDS_PER_LAYER
         errors.add(:layer_id, 'Maximum number of legends per layer reached')
       end
     end

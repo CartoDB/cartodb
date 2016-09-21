@@ -55,7 +55,7 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
   var attrs = SHARED_ATTRS.concat(legendMetadata.attrs);
   var data = this._findDataForLegend(legendType);
 
-  var modelAttrs = { visible: true };
+  var modelAttrs = {};
   _.each(attrs, function (attr) {
     var attrNameInData = attr;
     var attrNameForModel = attr;

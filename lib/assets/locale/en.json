@@ -481,6 +481,9 @@
         "tilejson": {
           "insert": "Insert your TileJSON URL",
           "invalid": "Invalid URL, please make sure it is correct"
+        },
+        "nasa": {
+          "select": "Select a date from which you want a NASA Worldview basemap"
         }
       },
       "export-data": {

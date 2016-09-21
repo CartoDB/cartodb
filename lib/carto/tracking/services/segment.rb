@@ -3,7 +3,7 @@ module Carto
     module Services
       module Segment
         def report_to_segment
-          return unless api_key
+          return unless segment_api_key
 
           segment_job = Resque::TrackingJobs::SendSegmentEvent
           supplied_properties = @format.to_segment

@@ -18,6 +18,9 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 * Viewer users for organizations.
 * Oauth integration with GitHub
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
+* Configurable paths for logs and configurations through environment variables: `RAILS_CONFIG_BASE_PATH` and `RAILS_LOG_BASE_PATH`.
+  Both are replacements for `Rails.root` and expect the same internal structure so, for example,
+  if you place `app_config.yml` at `/etc/carto/config/app_config.yml`, `RAILS_CONFIG_BASE_PATH` must be `/etc/carto`.
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`

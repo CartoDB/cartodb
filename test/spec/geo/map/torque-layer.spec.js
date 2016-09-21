@@ -10,7 +10,7 @@ describe('geo/map/torque-layer', function () {
   sharedTestsForInteractiveLayers(TorqueLayer);
 
   describe('vis reloading', function () {
-    var ATTRIBUTES = ['sql', 'source'];
+    var ATTRIBUTES = ['sql', 'sql_wrap', 'source'];
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {
@@ -43,7 +43,7 @@ describe('geo/map/torque-layer', function () {
       expect(this.vis.reload).not.toHaveBeenCalled();
     });
 
-    it('should NOT reload the map if a cartocss property has changed and a reload is not needed', function () {
+    it('should NOT reload the map if cartocss property has changed and a reload is not needed', function () {
       var layer = new TorqueLayer({
         cartocss: 'Map { something: "a"; -torque-time-attribute: "column"; }'
       }, { vis: this.vis });
@@ -51,6 +51,26 @@ describe('geo/map/torque-layer', function () {
       layer.set('cartocss', 'Map { something: "b"; -torque-time-attribute: "column"; }');
 
       expect(this.vis.reload).not.toHaveBeenCalled();
+    });
+
+    it('should reload the map if cartocss property has changed and fill has a ramp', function () {
+      var layer = new TorqueLayer({
+        cartocss: 'Map { -torque-time-attribute: "cartodb_id"; } #pepito { marker-fill: ramp([value], (#5B3F95, #1D6996, #129C63, #73AF48, #EDAD08, #E17C05, #C94034, #BA0040), (1, 2, 3, 4, 5, 6, 7, 8), "="); }'
+      }, { vis: this.vis });
+
+      layer.set('cartocss', 'Map { -torque-time-attribute: "cartodb_id"; } #pepito { marker-fill: ramp([value], (#5B3F95, #1D6996, #129C63, #73AF48, #EDAD08, #E17C05, #C94034, #BA0040), (1, 2, 3, 4, 5, 6, 7, 8), "="); comp-op: lighter; }');
+
+      expect(this.vis.reload).toHaveBeenCalled();
+    });
+
+    it('should reload the map if cartocss property has changed and line-color has a ramp', function () {
+      var layer = new TorqueLayer({
+        cartocss: 'Map { -torque-time-attribute: "cartodb_id"; } #layer { }'
+      }, { vis: this.vis });
+
+      layer.set('cartocss', 'Map { -torque-time-attribute: "cartodb_id"; } #layer { marker-line-color: ramp([value], (#5B3F95, #1D6996, #129C63, #73AF48, #EDAD08, #E17C05, #C94034, #BA0040), (1, 2, 3, 4, 5, 6, 7, 8), "="); }');
+
+      expect(this.vis.reload).toHaveBeenCalled();
     });
 
     _.each([

@@ -67,7 +67,13 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
     modelAttrs[attrNameForModel] = data && data[attrNameInData];
   });
 
-  return new ModelClass(modelAttrs);
+  var legendModel = new ModelClass(modelAttrs);
+
+  // TODO: Test this
+  if (data) {
+    legendModel.show();
+  }
+  return legendModel;
 };
 
 Legends.prototype._findDataForLegend = function (legendType) {

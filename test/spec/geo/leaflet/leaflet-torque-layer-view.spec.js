@@ -27,7 +27,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     this.model = new TorqueLayer({
       type: 'torque',
       sql: 'select * from table',
-      cartocss: '#test {}',
+      cartocss: 'Map {}',
       dynamic_cdn: 'dynamic-cdn-value'
     }, { vis: this.vis });
     this.map.addLayer(this.model);
@@ -43,7 +43,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
     var newLayer = new TorqueLayer(this.view.model.attributes, {
       vis: this.vis
     });
-    newLayer.set({ sql: 'select * from table', cartocss: '#test {}' });
+    newLayer.set({ sql: 'select * from table', cartocss: 'Map {}' });
     this.map.layers.reset([newLayer]);
 
     expect(this.mapView._layerViews[newLayer.cid] instanceof L.TorqueLayer).toEqual(true);

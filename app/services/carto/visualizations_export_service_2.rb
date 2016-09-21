@@ -203,6 +203,10 @@ module Carto
 
     def export_visualization(visualization, user)
       layers = visualization.layers_with_data_readable_by(user)
+      active_layer_id = visualization.active_layer_id
+      layer_exports = layers.map do |layer|
+        export_layer(layer, active_layer: active_layer_id == layer.id)
+      end
 
       {
         name: visualization.name,
@@ -218,7 +222,7 @@ module Carto
         bbox: visualization.bbox,
         display_name: visualization.display_name,
         map: export_map(visualization.map),
-        layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        layers: layer_exports,
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),

@@ -1,15 +1,15 @@
 {
   "name": "cartodb-deep-insights.js",
   "version": "0.0.2",
-  "description": "CartoDB Deep Insights JS library",
+  "description": "CARTO Deep Insights JS library",
   "repository": {
     "type": "git",
     "url": "git://github.com/CartoDB/deep-insights.js.git"
   },
   "author": {
-    "name": "CartoDB",
-    "url": "http://cartodb.com/",
-    "email": "wadus@cartodb.com"
+    "name": "CARTO",
+    "url": "http://carto.com/",
+    "email": "wadus@carto.com"
   },
   "contributors": [
     "Javier Álvarez <jmedina@cartodb.com>",

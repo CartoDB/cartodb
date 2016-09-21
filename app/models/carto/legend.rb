@@ -24,6 +24,8 @@ module Carto
 
     before_validation :ensure_definition
 
+    after_commit :invalidate_vizjson
+
     private
 
     def ensure_definition
@@ -53,6 +55,11 @@ module Carto
       if definition_errors.any?
         errors.add(:definition, definition_errors.join(', '))
       end
+    end
+
+    def invalidate_vizjson
+      map = layer.map if layer
+      map.notify_map_change if map
     end
   end
 end

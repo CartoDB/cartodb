@@ -16,7 +16,7 @@ module Cartodb
     return @config if @config
 
     begin
-    config_file_hash = Carto::Conf.new.app_config
+      config_file_hash = Carto::Conf.new.app_config
     rescue => e
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end

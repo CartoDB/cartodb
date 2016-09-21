@@ -132,7 +132,7 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'').gsub(SUBFOLDER, '')
+      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '').gsub(SUBFOLDER, '')
       begin
         FileUtils.rm("#{Cartodb.config[:importer]['uploads_path']}/#{local_url}")
       rescue => e
@@ -158,7 +158,7 @@ class Asset < Sequel::Model
 
   private
 
-  SUBFOLDER = 'uploads'
+  SUBFOLDER = 'uploads'.freeze
 
   def chmod_mode
     # Example in case asset kind should change mode

@@ -18,7 +18,7 @@ module Carto::Configuration
   def uploaded_file_path(relative_path)
     upload_path = Cartodb.get_config(:importer, 'uploads_path')
     if upload_path
-      # Ugly patch workarounding some hardcoded /uploads
+      # Ugly patch workarounding some hardcoded /uploads
       "#{upload_path}#{relative_path}".gsub('/uploads/uploads/', '/uploads/')
     else
       Rails.root.join("public#{relative_path}").to_s

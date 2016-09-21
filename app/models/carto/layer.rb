@@ -232,6 +232,10 @@ module Carto
       options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
     end
 
+    def notify_change
+      map.notify_map_change if map
+    end
+
     private
 
     def tables_from_names(table_names, user)

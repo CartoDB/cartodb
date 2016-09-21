@@ -3,21 +3,21 @@
 module Carto
   module Api
     class LegendPresenter
-      def initialize(layer)
-        @layer = layer
+      def initialize(legend)
+        @legend = legend
       end
 
       def to_hash
         {
-          created_at: @layer.created_at,
-          definition: @layer.definition,
-          id: @layer.id,
-          layer_id: @layer.layer_id,
-          post_html: @layer.post_html,
-          pre_html: @layer.pre_html,
-          title: @layer.title,
-          type: @layer.type,
-          updated_at: @layer.updated_at
+          created_at: @legend.created_at,
+          definition: @legend.definition,
+          id: @legend.id,
+          legend_id: @legend.legend_id,
+          post_html: @legend.post_html,
+          pre_html: @legend.pre_html,
+          title: @legend.title,
+          type: @legend.type,
+          updated_at: @legend.updated_at
         }
       end
     end

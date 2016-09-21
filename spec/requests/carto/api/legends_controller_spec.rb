@@ -42,7 +42,7 @@ module Carto
               { title: 'Manolo Escobar' },
               { title: 'Manolo Escobar', color: '#fff' },
               { title: 'Manolo Escobar', icon: 'super.png' },
-              { title: 'Manolo Escobar', icon: 'super.png', color: '#fff' }
+              { title: 'Manolo Escobar', icon: 'super.png', color: '#FFF' }
             ]
           }
         }
@@ -107,8 +107,7 @@ module Carto
       end
 
       describe '#create' do
-        before (:each)  { @layer.reload.legends.map(&:destroy) }
-        after  (:all)   { @layer.reload.legends.map(&:destroy) }
+        before(:each) { @layer.reload.legends.map(&:destroy) }
 
         def create_lengend_url(user: @user, visualization: @visualization, layer: @layer)
           legends_url(user_domain: user.subdomain,
@@ -266,13 +265,30 @@ module Carto
                      api_key: user.api_key)
         end
 
-        it 'update a legend' do
+        it 'updates a legend' do
           html_legend_payload[:definition][:html] = '<p>modified</p>'
           put_json update_lengend_url, html_legend_payload do |response|
             response.status.should eq 200
 
             legend_is_correct(response.body)
           end
+        end
+
+        it 'updates a legend when max legends reached' do
+          (Legend::MAX_LEGENDS_PER_LAYER - 1).times do
+            Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
+          end
+
+          html_legend_payload[:definition][:html] = '<p>modified</p>'
+          put_json update_lengend_url, html_legend_payload do |response|
+            response.status.should eq 200
+
+            legend_is_correct(response.body)
+          end
+
+          @layer.reload.legends.map(&:destroy)
+
+          @legend = Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
         end
 
         it 'should let others update a legend' do
@@ -284,6 +300,7 @@ module Carto
 
       describe '#index' do
         before(:all) do
+          @layer.reload.legends.map(&:destroy)
           Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
           Legend.create!(html_legend_payload.merge(layer_id: @layer.id))
         end

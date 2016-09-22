@@ -6,12 +6,12 @@
     <%= stylesheet_link_tag 'password_protected.css' %>
   </head>
 
-  <body class='Session-body Session-background--navyBlue'>
-    <div class='Session-centerContainer'>
-      <div class='Session-container'>
+  <body class='PublicPage-body PublicPage-background--navyBlue'>
+    <div class='PublicPage-centerContainer'>
+      <div class='PublicPage-container'>
 
-        <div class='Session-header'>
-          <div class="Session-logo">
+        <div class='PublicPage-header'>
+          <div class="PublicPage-logo">
             <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://carto.com" %>">
               <img src="<%= image_path "layout/carto-logo.svg" %>" alt="CARTO">
             </a>
@@ -20,14 +20,14 @@
 
         <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is protected with password</p>
 
-        <div class='Session-form'>
+        <div class='PublicPage-form'>
           <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
 
-            <div class='Session-input-withTooltip'>
-              <%= password_field_tag 'password', params[:password], class: "Session-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
+            <div class='PublicPage-field-withTooltip'>
+              <%= password_field_tag 'password', params[:password], class: "PublicPage-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
 
               <%- if flash[:error].present? %>
-                <div class="Session-inputTooltip CDB-InfoTooltip CDB-InfoTooltip--left is-error">
+                <div class="PublicPage-inputTooltip CDB-InfoTooltip CDB-InfoTooltip--left u-lSpace--xl is-error">
                   <p class='CDB-Text CDB-Size-medium CDB-InfoTooltip-text'><%= flash[:error] %></p>
                 </div>
               <% end %>

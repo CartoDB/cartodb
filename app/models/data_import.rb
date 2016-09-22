@@ -271,16 +271,18 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
-    path = uploaded_file_path(data_source)
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
-    elsif File.exist?(path) && !File.directory?(path)
-      values[:data_type] = TYPE_FILE
-      values[:data_source] = path
-    elsif Addressable::URI.parse(data_source).host.present?
-      values[:data_type] = TYPE_URL
-      values[:data_source] = data_source
+    else
+      path = uploaded_file_path(data_source)
+      if File.exist?(path) && !File.directory?(path)
+        values[:data_type] = TYPE_FILE
+        values[:data_source] = path
+      elsif Addressable::URI.parse(data_source).host.present?
+        values[:data_type] = TYPE_URL
+        values[:data_source] = data_source
+      end
     end
 
     self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)

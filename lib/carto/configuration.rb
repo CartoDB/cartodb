@@ -16,7 +16,8 @@ module Carto::Configuration
   end
 
   def uploaded_file_path(path)
-    return path if Pathname.new(path).absolute?
+    pathname = Pathname.new(path)
+    return path if pathname.absolute? && pathname.exist?
 
     upload_path = Cartodb.get_config(:importer, 'uploads_path')
     if upload_path

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var $ = require('jquery');
 var DynamicLegendViewBase = require('../base/dynamic-legend-view-base');
 var template = require('./legend-template.tpl');
+var formatter = require('../../../../util/formatter');
 
 var BubbleLegendView = DynamicLegendViewBase.extend({
 
@@ -27,7 +28,8 @@ var BubbleLegendView = DynamicLegendViewBase.extend({
       labelPositions: this._calculateLabelPositions(),
       avgSize: this._calculateAverageSize(),
       avgLabel: this.model.get('avg'),
-      fillColor: this.model.get('fillColor')
+      fillColor: this.model.get('fillColor'),
+      formatter: formatter
     });
   },
 

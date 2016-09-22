@@ -1,7 +1,7 @@
 <div class="Bubble-container u-flex u-justifySpace">
   <ul class="Bubble-numbers u-flex u-justifySpace">
     <% for (var i = 0; i<labels.length; i++) { %>
-      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="color: red !important; bottom: <%- labelPositions[i] %>%"><%- labels[i] %></li>
+      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="color: red !important; bottom: <%- labelPositions[i] %>%"><%- formatter.formatNumber(labels[i]) %></li>
     <% } %>
   </ul>
 
@@ -13,6 +13,6 @@
         </li>
       <% } %>
     </ul>
-    <!--<p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%- avgLabel %></p>-->
+    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%- avgLabel %></p>
   </div>
 </div>

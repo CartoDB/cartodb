@@ -235,23 +235,6 @@ var WindshaftMap = Backbone.Model.extend({
     return layerMeta;
   },
 
-  getBubbleLegendMetadata: function (layerIndex) {
-    return _.find(this._getLegendsMetadata(layerIndex), { type: 'bubble' });
-  },
-
-  getCategoryLegendMetadata: function (layerIndex) {
-    return _.find(this._getLegendsMetadata(layerIndex), { type: 'category' });
-  },
-
-  getChoroplethLegendMetadata: function (layerIndex) {
-    return _.find(this._getLegendsMetadata(layerIndex), { type: 'choropleth' });
-  },
-
-  _getLegendsMetadata: function (layerIndex) {
-    return this.get('metadata').legends &&
-      this.get('metadata').legends[layerIndex];
-  },
-
   _getLayers: function () {
     return (this.get('metadata') && this.get('metadata').layers) || [];
   },

@@ -130,16 +130,25 @@ module Carto
 
       private
 
+      COMMON_MUTABLE_ATTRIBUTES = [
+        :email,
+        :password,
+        :quota_in_bytes,
+        :soft_geocoding_limit,
+        :soft_here_isolines_limit,
+        :soft_obs_general_limit,
+        :soft_obs_snapshot_limit,
+        :soft_twitter_datasource_limit
+      ].freeze
+
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        permit(COMMON_MUTABLE_ATTRIBUTES.merge(:username, :viewer))
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        permit(COMMON_MUTABLE_ATTRIBUTES)
       end
     end
   end

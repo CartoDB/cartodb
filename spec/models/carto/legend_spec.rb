@@ -61,7 +61,7 @@ module Carto
 
         legend.valid?
 
-        legend.errors[:layer_id].should_not be_empty
+        legend.errors[:layer].should_not be_empty
       end
 
       it 'only accepts data layers' do
@@ -69,7 +69,7 @@ module Carto
         legend.valid?
 
         expected_error = '\'tiled\' layers can\'t have legends'
-        legend.errors[:layer_id].should include(expected_error)
+        legend.errors[:layer].should include(expected_error)
       end
 
       it 'accepts torque layers' do
@@ -78,7 +78,7 @@ module Carto
         legend = Legend.new(layer_id: @layer.id)
         legend.valid?
 
-        legend.errors[:layer_id].should be_empty
+        legend.errors[:layer].should be_empty
       end
 
       it 'doesn\'t require a title' do

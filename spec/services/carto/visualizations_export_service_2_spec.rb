@@ -510,6 +510,19 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.3 (without Layer.legends)' do
+          export_2_0_3 = export
+          export_2_0_3[:visualization][:layers].each do |layer|
+            layer.delete(:legends)
+          end
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_3.to_json)
+
+          visualization_export = export_2_0_3[:visualization]
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
+
         it '2.0.2 (without Visualization.state)' do
           export_2_0_2 = export
           export_2_0_2[:visualization].delete(:state)

@@ -2,7 +2,6 @@ var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
 var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
-var PROPERTIES_THAT_CAN_USE_TURBO_CARTO = ['marker-fill', 'marker-line-color'];
 var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-frame-count',
   '-torque-time-attribute',
@@ -43,7 +42,7 @@ var TorqueLayer = LayerModelBase.extend({
     var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
-          return this.previous('cartocss') && (this._torqueCartoCSSPropsChanged() || this._hasTurboCarto());
+          return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
         }
         return true;
       }
@@ -52,31 +51,6 @@ var TorqueLayer = LayerModelBase.extend({
     if (reloadVis) {
       this._reloadVis();
     }
-  },
-
-  _hasTurboCarto: function () {
-    var currentCartoCSS = this.get('cartocss');
-    var shader = new carto.RendererJS().render(currentCartoCSS);
-    var layers = shader.getLayers();
-
-    var isAnyLayerUsingTurboCarto = _.any(layers, function (layer) {
-      if (layer) {
-        var layerShader = layer.getStyle({ property: 1 }, { zoom: 10 });
-
-        var isAnyPropertyUsingCarto = _.any(PROPERTIES_THAT_CAN_USE_TURBO_CARTO, function (property) {
-          var value = layerShader[property];
-          if (value && value.name === 'ramp') {
-            return true;
-          }
-        });
-
-        return isAnyPropertyUsingCarto;
-      }
-
-      return false;
-    });
-
-    return isAnyLayerUsingTurboCarto;
   },
 
   _torqueCartoCSSPropsChanged: function () {

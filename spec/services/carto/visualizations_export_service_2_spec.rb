@@ -165,7 +165,7 @@ describe Carto::VisualizationsExportService2 do
               pre_html: '<h1>Here it comes!</h1>',
               post_html: '<h2>Awesome right? But not so much</h2>',
               definition: {
-                color: '#abc'
+                'color' => '#abc'
               }
             }
           ],

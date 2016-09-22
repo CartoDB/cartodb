@@ -24,10 +24,24 @@ var BubbleLegendView = DynamicLegendViewBase.extend({
     return template({
       labels: this.model.get('values').slice(0).reverse(),
       bubbleSizes: this._calculateBubbleSizes(),
+      labelPositions: this._calculateLabelPositions(),
       avgSize: this._calculateAverageSize(),
       avgLabel: this.model.get('avg'),
       fillColor: this.model.get('fillColor')
     });
+  },
+
+  _calculateLabelPositions: function () {
+    var sizes = this.model.get('sizes').slice(0).reverse();
+    var maxSize = sizes[0];
+    var labelPositions = _.map(sizes, function (size, index) {
+      if (index === 0) {
+        return '100';
+      }
+      return size * 100 / maxSize;
+    });
+    labelPositions.unshift(0);
+    return labelPositions;
   },
 
   _calculateBubbleSizes: function () {

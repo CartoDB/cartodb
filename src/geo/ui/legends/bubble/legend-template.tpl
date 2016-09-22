@@ -1,18 +1,18 @@
 <div class="Bubble-container u-flex u-justifySpace">
-  <ul class="Bubble-numbers">
-    <% for (var i in labels) { %>
-      <li class="Bubble-numbersItem CDB-Text CDB-Size-small"><%- labels[i] %></li>
+  <ul class="Bubble-numbers u-flex u-justifySpace">
+    <% for (var i = 0; i<labels.length; i++) { %>
+      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="color: red !important; bottom: <%- labelPositions[i] %>%"><%- labels[i] %></li>
     <% } %>
   </ul>
 
   <div class="Bubble-inner">
     <ul class="Bubble-list">
       <% for (var i in bubbleSizes) { %>
-        <li class="js-bubbleItem Bubble-item Bubble-item—-<%- i+1 %>">
-          <span class="Bubble-itemCircle" style="background-color: <%= fillColor %>; height: <%- bubbleSizes[i] %>%; width: <%- bubbleSizes[i] %>%"></span>
+        <li class="js-bubbleItem Bubble-item Bubble-item—-<%- i+1 %>" style="height: <%- bubbleSizes[i] %>%; width: <%- bubbleSizes[i] %>%">
+          <span class="Bubble-itemCircle" style="background-color: <%= fillColor %>;" ></span>
         </li>
       <% } %>
     </ul>
-    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%- avgLabel %></p>
+    <!--<p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%- avgLabel %></p>-->
   </div>
 </div>

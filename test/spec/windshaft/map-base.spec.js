@@ -79,7 +79,7 @@ describe('windshaft/map-base', function () {
     jasmine.clock().uninstall();
   });
 
-  describe('createInstance', function () {
+  describe('.createInstance', function () {
     beforeEach(function () {
       this.map = new Map({
         view_bounds_sw: [],
@@ -450,7 +450,7 @@ describe('windshaft/map-base', function () {
     });
   });
 
-  describe('#getBaseURL', function () {
+  describe('.getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
       var windshaftMap = new WindshaftMap({
         layergroupid: '0123456789'
@@ -510,7 +510,7 @@ describe('windshaft/map-base', function () {
     });
   });
 
-  describe('#getDataviewMetadata', function () {
+  describe('.getDataviewMetadata', function () {
     it('should return undefined if dataviews key is not present in the metadata', function () {
       var windshaftMap = new WindshaftMap({
         'layergroupid': '0123456789',

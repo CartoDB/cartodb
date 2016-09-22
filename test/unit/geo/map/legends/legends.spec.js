@@ -18,7 +18,7 @@ describe('geo/map/legends/legends', function () {
         pre_html_snippet: '<p>PRE Category Legend</p>',
         post_html_snippet: '<p>POST Category Legend</p>',
         prefix: 'prefix',
-        sufix: 'sufix'
+        suffix: 'suffix'
       },
       {
         type: 'choropleth',
@@ -26,7 +26,7 @@ describe('geo/map/legends/legends', function () {
         pre_html_snippet: '<p>PRE Choropleth Legend</p>',
         post_html_snippet: '<p>POST Choropleth Legend</p>',
         prefix: 'prefix',
-        sufix: 'sufix'
+        suffix: 'suffix'
       },
       {
         type: 'custom',
@@ -60,7 +60,7 @@ describe('geo/map/legends/legends', function () {
     expect(this.legends.category.get('preHTMLSnippet')).toEqual('<p>PRE Category Legend</p>');
     expect(this.legends.category.get('postHTMLSnippet')).toEqual('<p>POST Category Legend</p>');
     expect(this.legends.category.get('prefix')).toEqual('prefix');
-    expect(this.legends.category.get('sufix')).toEqual('sufix');
+    expect(this.legends.category.get('suffix')).toEqual('suffix');
   });
 
   it('should initialize choropleth legends correctly', function () {
@@ -68,7 +68,7 @@ describe('geo/map/legends/legends', function () {
     expect(this.legends.choropleth.get('preHTMLSnippet')).toEqual('<p>PRE Choropleth Legend</p>');
     expect(this.legends.choropleth.get('postHTMLSnippet')).toEqual('<p>POST Choropleth Legend</p>');
     expect(this.legends.choropleth.get('prefix')).toEqual('prefix');
-    expect(this.legends.choropleth.get('sufix')).toEqual('sufix');
+    expect(this.legends.choropleth.get('suffix')).toEqual('suffix');
   });
 
   it('should initialize custom legends correctly', function () {

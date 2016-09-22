@@ -7,7 +7,7 @@ var ChoroplethLegendView = DynamicLegendViewBase.extend({
       colors: this.model.get('colors'),
       avg: this.model.get('avg'),
       prefix: this.model.get('prefix'),
-      sufix: this.model.get('sufix')
+      suffix: this.model.get('suffix')
     });
   }
 });

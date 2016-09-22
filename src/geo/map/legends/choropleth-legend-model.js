@@ -7,7 +7,7 @@ var ChoroplethLegendModel = DynamicLegendModelBase.extend({
   defaults: function () {
     return _.extend({
       prefix: '',
-      sufix: ''
+      suffix: ''
     }, DynamicLegendModelBase.prototype.defaults.apply(this));
   },
 

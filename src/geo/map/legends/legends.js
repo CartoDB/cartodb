@@ -13,12 +13,12 @@ var LEGENDS_METADATA = {
   },
   category: {
     modelClass: CategoryLegendModel,
-    attrs: [ 'prefix', 'sufix' ],
+    attrs: [ 'prefix', 'suffix' ],
     dynamic: true
   },
   choropleth: {
     modelClass: ChoroplethLegendModel,
-    attrs: [ 'prefix', 'sufix' ],
+    attrs: [ 'prefix', 'suffix' ],
     dynamic: true
   },
   custom: {

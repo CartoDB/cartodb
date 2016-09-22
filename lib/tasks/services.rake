@@ -14,9 +14,9 @@ namespace :cartodb do
 
       raise 'Please specify the username of the user to be modified' if args[:username].blank?
       raise 'Please specify the service to set the provider' if args[:service].blank?
-      raise "Unkown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
+      raise "Unknown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
       raise 'Please specify the provider to be set' if args[:provider].blank?
-      raise "Unkown provider. Please use one of the accepted providers: #{PROVIDERS.join(',')}" if not PROVIDERS.include? args[:provider]
+      raise "Unknown provider. Please use one of the accepted providers: #{PROVIDERS.join(',')}" if not PROVIDERS.include? args[:provider]
 
       user = ::User.find(username: username)
 
@@ -42,9 +42,9 @@ namespace :cartodb do
 
       raise 'Please specify the organization to be modified' if args[:orgname].blank?
       raise 'Please specify the service to set the provider' if args[:service].blank?
-      raise "Unkown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
+      raise "Unknown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
       raise 'Please specify the provider to be set' if args[:provider].blank?
-      raise "Unkown provider. Please use one of the accepted providers: #{PROVIDERS.join(',')}" if not PROVIDERS.include? args[:provider]
+      raise "Unknown provider. Please use one of the accepted providers: #{PROVIDERS.join(',')}" if not PROVIDERS.include? args[:provider]
 
       org = ::Organization.find(name: orgname)
 
@@ -70,15 +70,15 @@ namespace :cartodb do
 
       raise 'Please specify the user to be modified' if args[:username].blank?
       raise 'Please specify the service to set the provider' if args[:service].blank?
-      raise "Unkown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
+      raise "Unknown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
       raise 'Please specify a valid quota' if args[:quota].to_i < 0
 
       user = ::User.find(username: username)
 
       raise "The name '#{username}' does not correspond to any user" if user.nil?
 
-      sevrice_quota_key = "#{service}_quota="
-      user.send(sevrice_quota_key, quota)
+      service_quota_key = "#{service}_quota="
+      user.send(service_quota_key, quota)
       user.save
 
       puts "Changed the user quota for service #{service} to #{quota}."
@@ -96,15 +96,15 @@ namespace :cartodb do
 
       raise 'Please specify the organization to be modified' if args[:orgname].blank?
       raise 'Please specify the service to set the provider' if args[:service].blank?
-      raise "Unkown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
+      raise "Unknown service. Please use one of the accepted services: #{SERVICES.join(',')}" if not SERVICES.include? args[:service]
       raise 'Please specify a valid quota' if args[:quota].to_i < 0
 
       org = ::Organization.find(name: orgname)
 
       raise "The name '#{orgname}' does not correspond to any organization" if org.nil?
 
-      sevrice_quota_key = "#{service}_quota="
-      org.send(sevrice_quota_key, quota)
+      service_quota_key = "#{service}_quota="
+      org.send(service_quota_key, quota)
       org.save
 
       puts "Changed the organization quota for service #{service} to #{quota}."

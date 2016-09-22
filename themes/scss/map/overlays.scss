@@ -374,26 +374,27 @@ $buttonColor: #636D72;
 .Bubble-average {
   display: block;
   position: absolute;
-  right: 90px;
-  width: 50px;
+  right: 105px;
+  white-space: nowrap;
   z-index: 1000;
 }
 .Bubble-average::after {
   display: block;
   position: absolute;
   top: 50%;
-  right: -36px;
-  width: 39px;
+  right: -54px;
+  width: 51px;
   height: 1px;
   border-top: 1px dotted rgba(0, 0, 0, 0.4);
   content: '';
   z-index: 10;
 }
+
 .Bubble-average::before {
   display: block;
   position: absolute;
   top: calc(50% - 1px);
-  right: -36px;
+  right: -54px;
   width: 3px;
   height: 3px;
   border-radius: 50%;

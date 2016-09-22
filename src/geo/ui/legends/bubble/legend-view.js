@@ -44,7 +44,6 @@ var BubbleLegendView = DynamicLegendViewBase.extend({
       if (index === 0) {
         return '100';
       }
-
       return size * 100 / maxSize;
     });
   },

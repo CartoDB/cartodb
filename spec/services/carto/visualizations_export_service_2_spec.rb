@@ -51,18 +51,7 @@ describe Carto::VisualizationsExportService2 do
             '<a href=\"https://carto.com/attributions\">CARTO</a>",' +
             '"labels":{"url":"http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"},' +
             '"urlTemplate":"http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"}').deep_symbolize_keys,
-          kind: 'tiled',
-          widgets: [
-            {
-              options: {
-                aggregation: "count",
-                aggregation_column: "category_t"
-              },
-              title: "Category category_t",
-              type: "category",
-              source_id: "a1"
-            }
-          ]
+          kind: 'tiled'
         },
         {
           options: JSON.parse('{"attribution":"CARTO <a href=\"https://carto.com/attributions\" ' +
@@ -124,6 +113,62 @@ describe Carto::VisualizationsExportService2 do
             '"geometry_type":"point"}},"legend":{"type":"none","show_title":false,"title":"","template":"",' +
             '"visible":true}}').deep_symbolize_keys,
           kind: 'carto',
+          widgets: [
+            {
+              options: {
+                aggregation: "count",
+                aggregation_column: "category_t"
+              },
+              title: "Category category_t",
+              type: "category",
+              source_id: "a1"
+            }
+          ],
+          legends: [
+            {
+              type: 'custom',
+              title: 'the best legend on planet earth',
+              pre_html: '<h1>Here it comes!</h1>',
+              post_html: '<h2>Awesome right?</h2>',
+              definition: {
+                'categories' => [
+                  {
+                    'title' => 'foo',
+                    'color' => '#fabada'
+                  },
+                  {
+                    'title' => 'bar',
+                    'icon' => 'super.png',
+                    'color' => '#fabada'
+                  },
+                  {
+                    'title' => 'ber'
+                  },
+                  {
+                    'title' => 'baz'
+                  },
+                  {
+                    'title' => 'bars',
+                    'icon' => 'dupe.png',
+                    'color' => '#fabada'
+                  },
+                  {
+                    'title' => 'fooz',
+                    'color' => '#fabada'
+                  }
+                ]
+              }
+            },
+            {
+              type: 'bubble',
+              title: 'the second best legend on planet earth',
+              pre_html: '<h1>Here it comes!</h1>',
+              post_html: '<h2>Awesome right? But not so much</h2>',
+              definition: {
+                color: '#abc'
+              }
+            }
+          ],
           infowindow: JSON.parse('{"fields":[],"template_name":"table/views/infowindow_light","template":"",' +
             '"alternative_names":{},"width":226,"maxHeight":180}').deep_symbolize_keys,
           tooltip: JSON.parse('{"fields":[],"template_name":"tooltip_light","template":"","alternative_names":{},' +
@@ -272,6 +317,7 @@ describe Carto::VisualizationsExportService2 do
     end
 
     verify_widgets_vs_export(layer.widgets, layer_export[:widgets])
+    verify_legends_vs_export(layer.legends, layer_export[:legends])
   end
 
   def verify_widgets_vs_export(widgets, widgets_export)
@@ -291,6 +337,20 @@ describe Carto::VisualizationsExportService2 do
     widget.options.symbolize_keys.should eq widget_export[:options]
     widget.layer.should_not be_nil
     widget.source_id.should eq widget_export[:source_id]
+  end
+
+  def verify_legends_vs_export(legends, legends_export)
+    legends.each_with_index do |legend, index|
+      legend_presentation = {
+        definition: legend.definition,
+        post_html: legend.post_html,
+        pre_html: legend.pre_html,
+        title: legend.title,
+        type: legend.type
+      }
+
+      legend_presentation.should eq legends_export[index]
+    end
   end
 
   def verify_analyses_vs_export(analyses, analyses_export)

@@ -134,6 +134,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
+	services/importer/spec/unit/connector_spec.rb \
+	services/importer/spec/unit/connector_runner_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \
@@ -286,6 +288,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/models/carto/legend_spec.rb \
+	spec/requests/carto/api/legends_controller_spec.rb \
+	spec/lib/carto/legend_definition_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

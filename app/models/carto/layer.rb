@@ -67,6 +67,7 @@ module Carto
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
+    has_many :legends, class_name: Carto::Legend, dependent: :destroy
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',

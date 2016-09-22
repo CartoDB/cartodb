@@ -150,6 +150,8 @@ module Carto
     end
 
     def build_legends_from_hash(exported_legends, layer)
+      return [] unless exported_legends
+
       exported_legends.map do |exported_legend|
         legend = Legend.new(exported_legend)
         legend.layer = layer

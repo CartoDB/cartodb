@@ -308,6 +308,16 @@ $buttonColor: #636D72;
   width: 100px;
   height: 100px;
 }
+.Bubble-list::before {
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  width: 140px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  content: '';
+}
+
 .Bubble-item {
   position: absolute;
   bottom: 0;
@@ -423,9 +433,14 @@ $index-items: 7 6 5 4 3 2 1;
   border-radius: $halfBaseSize;
   content: '';
 }
+.Legend-choroplethAverageText {
+  position: absolute;
+  left: -10px;
+  width: 192px;
+}
 .Legend-choroplethAverage {
   position: absolute;
-  bottom: -20px;
+  bottom: -7px;
 }
 .Legend-choroplethAverage::after {
   display: block;

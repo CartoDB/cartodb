@@ -47,9 +47,8 @@
           "zoom":2,
           "updated_at":"2015-03-13T11:24:37+00:00",
           "datasource": {
-            "user_name": "development",
+            "user_name": "cdb",
             "maps_api_template": "http://{user}.localhost.lan:8181",
-            "force_cors": true, // This is sometimes set in the editor,
             "stat_tag": "84ec6844-4b4b-11e5-9c1d-080027880ca6"
           },
           "layers":[
@@ -82,7 +81,7 @@
               "infowindow":{
                 "fields":[
                   {
-                    "name":"pop_est",
+                    "name":"pop2005",
                     "title":true,
                     "position":0
                   }
@@ -197,28 +196,26 @@
               "order":1,
               "visible":true,
               "options":{
-                "sql":"select * from world_borders_hd",
-                "layer_name":"world_borders_hd",
-                "cartocss":"/** choropleth visualization */\n\n#world_borders_hd{\n  polygon-fill: ramp([pop_est], colorbrewer(Greens));\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}",
+                "sql":"select * from world_borders",
+                "layer_name":"world_borders",
+                "cartocss":"/** choropleth visualization */\n\n#world_borders{\n  polygon-fill: ramp([pop2005], colorbrewer(Greens));\n  polygon-opacity: 0.8;\n  line-color: #FFF;\n  line-width: 1;\n  line-opacity: 0.5;\n}",
                 "cartocss_version":"2.1.1",
                 "interactivity":"cartodb_id",
                 "table_name":"\"\"."
               },
               "legends": [
-                // { type: 'bubble', title: 'Bubble Legend', pre_html_snippet: '<p>before</p>', post_html_snippet: '<p>after</p>', fill_color: '#FABADA' },
-                // { type: 'category', title: 'Categories Legend', prefix: 'prefix', sufix: 'sufix' },
-                // { type: 'choropleth', title: 'Choropleth Legend', prefix: 'prefix', sufix: 'sufix' },
-                // {
-                //   type: 'custom', title: 'Custom legend', items: [
-                //     { type: 'color', name: 'Item 1', color: '#CACACA;'},
-                //     { type: 'color', name: 'Item 2', color: '#FABADA;'}
-                //   ]
-                // },
-                // {
-                //   type: 'html',
-                //   title: 'HTML Legend',
-                //   html: '<p class="CDB-Text CDB-Size-small u-mainTextColor u-upperCase">Some markup that gets sanitised<script>alert("hola");<\/script></p>'
-                // }
+                { type: 'choropleth', title: 'Choropleth Legend', prefix: 'prefix', suffix: 'sufix' },
+                {
+                  type: 'custom', title: 'Custom legend', items: [
+                    { type: 'color', name: 'Item 1', color: '#CACACA;'},
+                    { type: 'color', name: 'Item 2', color: '#FABADA;'}
+                  ]
+                },
+                {
+                  type: 'html',
+                  title: 'HTML Legend',
+                  html: '<p class="CDB-Text CDB-Size-small u-mainTextColor u-upperCase">Some markup that gets sanitised<script>alert("hola");<\/script></p>'
+                }
               ]
 
             },
@@ -343,14 +340,17 @@
               "order":2,
               "visible":true,
               "options":{
-                "sql":"select * from populated_places_simple",
-                "layer_name":"populated_places_simple",
-                "cartocss":"#ne_10m_populated_places_simple_copy{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: ramp([pop_max], range(8, 32), jenks());\n  marker-fill: ramp([adm0name], cartocolor(Safe), category(8));\n  marker-allow-overlap: true;\n}",
+                "sql":"select * from ne_10m_populated_places_simple",
+                "layer_name":"ne_10m_populated_places_simple",
+                "cartocss":"#ne_10m_populated_places_simple{\n  marker-fill-opacity: 0.9;\n  marker-line-color: #FFF;\n  marker-line-width: 1;\n  marker-line-opacity: 1;\n  marker-placement: point;\n  marker-type: ellipse;\n  marker-width: ramp([pop_max], range(8, 32), jenks());\n  marker-fill: ramp([adm0name], cartocolor(Safe), category(8));\n  marker-allow-overlap: true;\n}",
                 "cartocss_version":"2.1.1",
                 "interactivity":"cartodb_id",
                 "table_name":"\"\"."
               },
-              "legends": []
+              "legends": [
+                { type: 'bubble', title: 'Bubble Legend', pre_html_snippet: '<p>before</p>', post_html_snippet: '<p>after</p>', fill_color: '#FABADA' },
+                { type: 'category', title: 'Categories Legend', prefix: 'prefix', sufix: 'sufix' }
+              ]
             },
             {
               "options": {

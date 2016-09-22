@@ -67,8 +67,7 @@ describe('windshaft/client', function () {
       expect(this.ajaxParams.cache).toEqual(true);
     });
 
-    // TODO: Make this available again
-    xit('should invoke the success callback', function () {
+    it('should invoke the success callback', function () {
       var successCallback = jasmine.createSpy('successCallback');
 
       this.client.instantiateMap({

@@ -28,12 +28,8 @@ describe('src/vis/model-updater', function () {
     spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {
       return 'http://' + (subdomain ? subdomain + '.' : '') + 'documentation.carto.com';
     });
-    spyOn(this.windshaftMap, 'getLayerMetadata').and.returnValue('metadata');
     spyOn(this.windshaftMap, 'getLayerIndexesByType').and.returnValue([0]);
     spyOn(this.windshaftMap, 'getSupportedSubdomains').and.returnValue(['']);
-    spyOn(this.windshaftMap, 'getBubbleLegendMetadata').and.returnValue({});
-    spyOn(this.windshaftMap, 'getCategoryLegendMetadata').and.returnValue(['']);
-    spyOn(this.windshaftMap, 'getChoroplethLegendMetadata').and.returnValue(['']);
 
     this.visModel = new Backbone.Model();
     this.visModel.setOk = jasmine.createSpy('setOk');
@@ -224,80 +220,243 @@ describe('src/vis/model-updater', function () {
           'http://documentation.carto.com/api/v1/map/90e64f1b9145961af7ba36d71b887dd2:0/0/{z}/{x}/{y}.json.torque'
         ]);
       });
+    });
 
-      it('should update legend models of CartoDB and torque layer models', function () {
-        var layer0 = new Backbone.Model({ type: 'Tiled' });
-        var layer1 = new CartoDBLayer({}, { vis: this.visModel });
-        var layer2 = new CartoDBLayer({}, { vis: this.visModel });
-        var layer3 = new TorqueLayer({}, { vis: this.visModel });
-        this.layersCollection.reset([ layer0, layer1, layer2, layer3 ]);
-
-        this.windshaftMap.getLayerIndexesByType.and.callFake(function (layerType) {
-          if (layerType === 'mapnik') {
-            return [0, 1];
-          }
-          if (layerType === 'torque') {
-            return [2];
-          }
+    describe('legend models', function () {
+      it('should update model for choropleth legends', function () {
+        this.windshaftMap.set('metadata', {
+          layers: [
+            {
+              type: 'mapnik',
+              id: '923b7812-2d56-41c6-ac15-3ce430db090f',
+              meta: {
+                stats: [],
+                cartocss: 'cartocss',
+                'cartocss_meta': {
+                  rules: [
+                    {
+                      selector: '#world_borders',
+                      prop: 'polygon-fill',
+                      mapping: '>',
+                      'default-value': '#edf8e9',
+                      filters: [
+                        152622,
+                        1617029,
+                        6069715,
+                        20532675
+                      ],
+                      values: [
+                        '#bae4b3',
+                        '#74c476',
+                        '#31a354',
+                        '#006d2c'
+                      ],
+                      stats: {
+                        'min_val': 0,
+                        'max_val': 1312978855,
+                        'avg_val': 25088299.0813008
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         });
 
-        this.windshaftMap.getBubbleLegendMetadata.and.callFake(function (layerIndex) {
-          if (layerIndex === 0) {
-            return {
-              bubbles: 'bubbles_layer_0',
-              avg: 'avg_layer_0'
-            };
-          }
-          if (layerIndex === 2) {
-            return {
-              bubbles: 'bubbles_layer_2',
-              avg: 'avg_layer_2'
-            };
-          }
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
+
+        this.layersCollection.reset([ layer ]);
+
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(layer.legends.choropleth.get('colors')).toEqual([
+          { value: '#bae4b3', label: 0 },
+          { value: '#74c476', label: '' },
+          { value: '#31a354', label: '' },
+          { value: '#006d2c', label: 1312978855 }
+        ]);
+        expect(layer.legends.choropleth.get('avg')).toEqual(25088299.0813008);
+        expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
+      });
+
+      it('should update model for category legends', function () {
+        this.windshaftMap.set('metadata', {
+          layers: [
+            {
+              'type': 'mapnik',
+              'id': '923b7812-2d56-41c6-ac15-b090f3ce430d',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss',
+                'cartocss_meta': {
+                  'rules': [
+                    {
+                      'selector': '#ne_10m_populated_places_simple',
+                      'prop': 'marker-fill',
+                      'mapping': '=',
+                      'default-value': '#882255',
+                      'filters': [
+                        'United States of America',
+                        'Russia',
+                        'China',
+                        'Brazil',
+                        'Canada',
+                        'Australia',
+                        'India',
+                        'Mexico'
+                      ],
+                      'values': [
+                        '#88CCEE',
+                        '#CC6677',
+                        '#DDCC77',
+                        '#117733',
+                        '#332288',
+                        '#AA4499',
+                        '#44AA99',
+                        '#999933'
+                      ],
+                      'stats': {}
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         });
 
-        this.windshaftMap.getCategoryLegendMetadata.and.callFake(function (layerIndex) {
-          if (layerIndex === 0) {
-            return {
-              categories: 'categories_layer_0'
-            };
-          }
-          if (layerIndex === 2) {
-            return {
-              categories: 'categories_layer_2'
-            };
-          }
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
+
+        this.layersCollection.reset([ layer ]);
+
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(layer.legends.category.get('categories')).toEqual([
+          { label: 'United States of America', value: '#88CCEE' },
+          { label: 'Russia', value: '#CC6677' },
+          { label: 'China', value: '#DDCC77' },
+          { label: 'Brazil', value: '#117733' },
+          { label: 'Canada', value: '#332288' },
+          { label: 'Australia', value: '#AA4499' },
+          { label: 'India', value: '#44AA99' },
+          { label: 'Mexico', value: '#999933' }
+        ]);
+        expect(layer.legends.category.get('defaultValue')).toEqual('#882255');
+        expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
+      });
+
+      it('should update model for bubble legends with > mapping', function () {
+        this.windshaftMap.set('metadata', {
+          layers: [
+            {
+              'type': 'mapnik',
+              'id': '923b7812-2d56-41c6-ac15-b090f3ce430d',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss',
+                'cartocss_meta': {
+                  'rules': [
+                    {
+                      'selector': '#ne_10m_populated_places_simple',
+                      'prop': 'marker-width',
+                      'mapping': '>',
+                      'default-value': 8,
+                      'filters': [
+                        41316,
+                        139843,
+                        578470,
+                        2769072
+                      ],
+                      'values': [
+                        14,
+                        20,
+                        26,
+                        32
+                      ],
+                      'stats': {
+                        'min_val': -99,
+                        'max_val': 35676000,
+                        'avg_val': 322717.476372576
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         });
 
-        this.windshaftMap.getChoroplethLegendMetadata.and.callFake(function (layerIndex) {
-          if (layerIndex === 0) {
-            return {
-              colors: 'colors_layer_0'
-            };
-          }
-          if (layerIndex === 2) {
-            return {
-              colors: 'colors_layer_2'
-            };
-          }
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
+
+        this.layersCollection.reset([ layer ]);
+
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(layer.legends.bubble.get('values')).toEqual([
+          -99, 41316, 139843, 578470, 2769072, 35676000
+        ]);
+        expect(layer.legends.bubble.get('sizes')).toEqual([
+          8, 14, 20, 26, 32
+        ]);
+        expect(layer.legends.bubble.get('avg')).toEqual(322717.476372576);
+        expect(layer.legends.bubble.isSuccess()).toBeTruthy();
+      });
+
+      it('should update model for bubble legends with < mapping', function () {
+        this.windshaftMap.set('metadata', {
+          layers: [
+            {
+              'type': 'mapnik',
+              'id': '923b7812-2d56-41c6-ac15-b090f3ce430d',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss',
+                'cartocss_meta': {
+                  'rules': [
+                    {
+                      'selector': '#ne_10m_populated_places_simple',
+                      'prop': 'marker-width',
+                      'mapping': '<',
+                      'default-value': 38,
+                      'filters': [
+                        41316,
+                        139843,
+                        578470,
+                        2769072
+                      ],
+                      'values': [
+                        14,
+                        20,
+                        26,
+                        32
+                      ],
+                      'stats': {
+                        'min_val': -99,
+                        'max_val': 35676000,
+                        'avg_val': 322717.476372576
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         });
 
-        this.modelUpdater.updateModels(this.windshaftMap);
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
 
-        expect(layer1.legends.bubble.get('bubbles')).toEqual('bubbles_layer_0');
-        expect(layer1.legends.bubble.get('avg')).toEqual('avg_layer_0');
-        expect(layer1.legends.category.get('categories')).toEqual('categories_layer_0');
-        expect(layer1.legends.choropleth.get('colors')).toEqual('colors_layer_0');
+        this.layersCollection.reset([ layer ]);
 
-        expect(layer2.legends.bubble.get('bubbles')).toBeUndefined();
-        expect(layer2.legends.bubble.get('avg')).toBeUndefined();
-        expect(layer2.legends.category.get('categories')).toBeUndefined();
-        expect(layer2.legends.choropleth.get('colors')).toBeUndefined();
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
-        expect(layer3.legends.bubble.get('bubbles')).toEqual('bubbles_layer_2');
-        expect(layer3.legends.bubble.get('avg')).toEqual('avg_layer_2');
-        expect(layer3.legends.category.get('categories')).toEqual('categories_layer_2');
-        expect(layer3.legends.choropleth.get('colors')).toEqual('colors_layer_2');
+        expect(layer.legends.bubble.get('values')).toEqual([
+          -99, 41316, 139843, 578470, 2769072, 35676000
+        ]);
+        expect(layer.legends.bubble.get('sizes')).toEqual([
+          14, 20, 26, 32, 38
+        ]);
+        expect(layer.legends.bubble.get('avg')).toEqual(322717.476372576);
+        expect(layer.legends.bubble.isSuccess()).toBeTruthy();
       });
     });
 

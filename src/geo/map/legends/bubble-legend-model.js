@@ -13,7 +13,7 @@ var BubbleLegendModel = DynamicLegendModelBase.extend({
   },
 
   hasData: function () {
-    return this.get('bubbles') && this.get('bubbles').length > 0;
+    return this.get('values') && this.get('values').length > 0;
   }
 });
 

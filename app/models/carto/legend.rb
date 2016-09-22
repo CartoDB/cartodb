@@ -26,6 +26,12 @@ module Carto
 
     after_commit :force_notify_layer_change
 
+    def definition
+      super_definition = super
+
+      super_definition.with_indifferent_access if super_definition
+    end
+
     private
 
     def ensure_definition

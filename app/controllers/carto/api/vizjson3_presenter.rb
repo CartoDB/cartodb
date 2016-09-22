@@ -309,8 +309,8 @@ module Carto
         if @layer.base?
           vizjson.merge(as_base)
         else
-          vizjson.merge!(carto_and_torque_common_vizjson)
-          vizjson.merge(@layer.torque? ? as_torque : as_carto)
+          vizjson.merge(as_data)
+                 .merge(@layer.torque? ? as_torque : as_carto)
         end
       end
 
@@ -320,7 +320,7 @@ module Carto
         @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')
       end
 
-      def carto_and_torque_common_vizjson
+      def as_data
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash
         end

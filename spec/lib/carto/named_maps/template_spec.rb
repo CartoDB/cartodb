@@ -343,8 +343,8 @@ module Carto
               @template_hash = nil
             end
 
-            it 'should not contain sql wrap' do
-              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should be_nil
+            it 'should contain sql wrap' do
+              @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should =~ /SELECT manolo FROM (<%= sql %>)/
             end
 
             it 'should wrap sql' do

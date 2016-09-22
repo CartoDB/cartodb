@@ -203,7 +203,7 @@ describe('vis/vis-view', function () {
 
       this.visView.render();
 
-      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('');
+      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('');
     });
 
     it('should hide legends if showLegends is false', function () {
@@ -211,7 +211,7 @@ describe('vis/vis-view', function () {
 
       this.visView.render();
 
-      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('none');
+      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('none');
     });
 
     it('should show/hide legends when showLegends changes', function () {
@@ -219,11 +219,11 @@ describe('vis/vis-view', function () {
 
       this.visModel.set('showLegends', false);
 
-      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('none');
+      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('none');
 
       this.visModel.set('showLegends', true);
 
-      expect(this.visView.$('.CDB-Legends').css('display')).toEqual('block');
+      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('block');
     });
   });
 

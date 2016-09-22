@@ -32,15 +32,8 @@ var BubbleLegendView = DynamicLegendViewBase.extend({
   },
 
   _calculateLabelPositions: function () {
-    var sizes = this.model.get('sizes').slice(0).reverse();
-    var maxSize = sizes[0];
-    var labelPositions = _.map(sizes, function (size, index) {
-      if (index === 0) {
-        return '100';
-      }
-      return size * 100 / maxSize;
-    });
-    labelPositions.unshift(0);
+    var labelPositions = this._calculateBubbleSizes();
+    labelPositions.push(0);
     return labelPositions;
   },
 

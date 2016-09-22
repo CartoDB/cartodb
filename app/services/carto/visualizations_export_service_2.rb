@@ -20,7 +20,7 @@ module Carto
 
   module VisualizationsExportService2Validator
     def check_valid_visualization(visualization)
-      raise "Only derived visualizations can be exported" unless visualization.derived?
+      raise 'Only derived visualizations can be exported' unless visualization.derived?
     end
   end
 
@@ -32,7 +32,7 @@ module Carto
     end
 
     def build_visualization_from_hash_export(exported_hash)
-      raise "Wrong export version" unless compatible_version?(exported_hash[:version])
+      raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
       build_visualization_from_hash(exported_hash[:visualization])
     end
@@ -128,6 +128,7 @@ module Carto
         tooltip: tooltip_with_indifferent_access
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
+      layer.legends = build_legends_from_hash(exported_layer[:legends])
       layer
     end
 

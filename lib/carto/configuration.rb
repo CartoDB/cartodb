@@ -1,3 +1,6 @@
+module Carto
+end
+
 module Carto::Configuration
   def db_config
     @@db_config ||= YAML.load(File.read(db_config_file))
@@ -13,6 +16,10 @@ module Carto::Configuration
 
   def log_dir_path
     "#{log_files_root}/log"
+  end
+
+  def public_path
+    "#{log_files_root}/public"
   end
 
   def uploaded_file_path(path)

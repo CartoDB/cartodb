@@ -6,9 +6,14 @@ var ChoroplethLegendView = DynamicLegendViewBase.extend({
     return template({
       colors: this.model.get('colors'),
       avg: this.model.get('avg'),
+      avgPercentage: this._calculateAVGPercentage(),
       prefix: this.model.get('prefix'),
       suffix: this.model.get('suffix')
     });
+  },
+
+  _calculateAVGPercentage: function () {
+    return this.model.get('avg') * 100 / this.model.get('max');
   }
 });
 

@@ -277,6 +277,7 @@ describe('src/vis/model-updater', function () {
           { value: '#006d2c', label: 1312978855 }
         ]);
         expect(layer.legends.choropleth.get('avg')).toEqual(25088299.0813008);
+        expect(layer.legends.choropleth.get('max')).toEqual(1312978855);
         expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
       });
 

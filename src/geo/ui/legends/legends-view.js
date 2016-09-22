@@ -48,6 +48,9 @@ var LegendsView = Backbone.View.extend({
     this.$shadowBottom = $('<div>').addClass('CDB-Legends-canvasShadow CDB-Legends-canvasShadow--bottom');
     this.$el.append(this.$shadowTop);
     this.$el.append(this.$shadowBottom);
+    _.defer(function () {
+      this._showOrHideShadows();
+    }.bind(this));
   },
 
   _bindScroll: function () {
@@ -62,6 +65,10 @@ var LegendsView = Backbone.View.extend({
   },
 
   _onScroll: function () {
+    this._showOrHideShadows();
+  },
+
+  _showOrHideShadows: function () {
     var $el = $(this._container());
     var currentPos = $el.scrollTop();
     var max = $el.get(0).scrollHeight;

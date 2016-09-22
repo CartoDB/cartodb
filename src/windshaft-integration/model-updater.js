@@ -1,6 +1,6 @@
 var _ = require('underscore');
+var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
 
-// TODO: Could be renamed to windshaft-integrations.js
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.
@@ -137,89 +137,21 @@ ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, 
   return windshaftMap.getBaseURL() + '/' + layerIndexes.join(',') + '/{z}/{x}/{y}.json.torque';
 };
 
-var isRuleForChoroplethLegend = function (rule) {
-  return ['line-color', 'marker-fill', 'polygon-fill'].indexOf(rule.prop) >= 0;
-};
-
-var isRuleForCategoryLegend = function (rule) {
-  return rule.mapping === '=';
-};
-
-var isRuleForBubbleLegend = function (rule) {
-  return rule.prop === 'marker-width';
-};
-
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var layerMetadata = windshaftMap.getLayerMetadata(remoteLayerIndex);
-  if (layerMetadata && layerMetadata.cartocss_meta && layerMetadata.cartocss_meta.rules) {
-    var ruleForChoroplethLegend = _.find(layerMetadata.cartocss_meta.rules, isRuleForChoroplethLegend);
-    if (ruleForChoroplethLegend) {
-      var choroplethLegendModel = layerModel.legends.choropleth;
-      this._updateChoroplethLegendModel(choroplethLegendModel, ruleForChoroplethLegend);
-    }
-
-    var ruleForCategoriesLegend = _.find(layerMetadata.cartocss_meta.rules, isRuleForCategoryLegend);
-    if (ruleForCategoriesLegend) {
-      var categoryLegendModel = layerModel.legends.category;
-      this._updateCategoryLegendModel(categoryLegendModel, ruleForCategoriesLegend);
-    }
-
-    var ruleForBubbleLegend = _.find(layerMetadata.cartocss_meta.rules, isRuleForBubbleLegend);
-    if (ruleForBubbleLegend) {
-      var bubbleLegendModel = layerModel.legends.bubble;
-      this._updateBubbleLegendModel(bubbleLegendModel, ruleForBubbleLegend);
-    }
+  var cartoCSSRules = layerMetadata && layerMetadata.cartocss_meta && layerMetadata.cartocss_meta.rules;
+  if (cartoCSSRules) {
+    _.each(cartoCSSRules, function (rule) {
+      _.each(this._getLayerLegends(layerModel), function (legendModel) {
+        var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
+        if (adapter.canAdapt(rule)) {
+          legendModel.set(_.extend({
+            state: 'success'
+          }, adapter.adapt(rule)));
+        }
+      });
+    }, this);
   }
-};
-
-ModelUpdater.prototype._updateChoroplethLegendModel = function (legendModel, rule) {
-  var values = rule.values;
-  var colors = _.map(values, function (value, i) {
-    var label = '';
-    if (i === 0) {
-      label = rule.stats.min_val;
-    } else if (i === values.length - 1) {
-      label = rule.stats.max_val;
-    }
-    return { value: value, label: label };
-  });
-  legendModel.set({
-    colors: colors,
-    avg: rule.stats.avg_val,
-    state: 'success'
-  });
-};
-
-ModelUpdater.prototype._updateCategoryLegendModel = function (legendModel, rule) {
-  var categories = rule.filters.map(function (filter, index) {
-    return { label: filter, value: rule.values[index] };
-  });
-  legendModel.set({
-    categories: categories,
-    defaultValue: rule['default-value'],
-    state: 'success'
-  });
-};
-
-ModelUpdater.prototype._updateBubbleLegendModel = function (legendModel, rule) {
-  var values = [
-    rule.stats.min_val
-  ].concat(rule.filters)
-  .concat(rule.stats.max_val);
-
-  var sizes = rule.values;
-  if (rule.mapping === '>') {
-    sizes.unshift(rule['default-value']);
-  } else {
-    sizes.push(rule['default-value']);
-  }
-
-  legendModel.set({
-    values: values,
-    sizes: sizes,
-    avg: rule.stats.avg_val,
-    state: 'success'
-  });
 };
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {

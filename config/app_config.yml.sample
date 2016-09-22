@@ -497,6 +497,22 @@ defaults: &defaults
     min_rows: 2000000
     statement_timeout: 1800000
     tolerance_px: 1.0
+  connectors:
+    odbc:
+      available: false
+      max_rows: nil
+    mysql:
+      available: true
+      max_rows: 500000
+    postgresql:
+      available: true
+      max_rows: 500000
+    hive:
+      available: false
+      max_rows: 500000
+    sqlserver:
+      available: false
+      max_rows: 500000
 
 development:
   <<: *defaults

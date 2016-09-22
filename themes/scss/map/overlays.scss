@@ -361,10 +361,10 @@ $buttonColor: #636D72;
   position: absolute;
   margin-bottom: -11px; /* to review */
   padding-right: $baseSize * 2;
-  background: #FFF;
+  background: rgba(#FFF, 0.8);
   z-index: 10;
   &:last-child {
-    margin-bottom: -5px;
+    background: #FFF;
   }
 }
 .Bubble-inner {

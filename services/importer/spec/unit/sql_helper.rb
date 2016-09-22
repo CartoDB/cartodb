@@ -51,7 +51,7 @@ def match_sql_command(sql)
       GRANT\s+SELECT\s+ON\s+(?<table_name>[^\s]+)\s+TO\s+\"?(?<user_name>[^\s\"]+)\"?
     }xi,
     create_table_as_select: %r{
-      CREATE\s+TABLE\s+(?<table_name>[^\s]+)\s+AS\s+SELECT\s+(?<select>.+)
+      CREATE\s+TABLE\s+(?<table_name>[^\s]+)\s+AS\s+SELECT\s+(?<select>.+)(?:\s+LIMIT\s+(?<limit>\d+))?
     }xi,
     drop_foreign_table_if_exists: %r{
       DROP\s+FOREIGN\s+TABLE\s+IF\s+EXISTS\s+(?<table_name>[^\s]+)(?:\s+(?<cascade>CASCADE))?
@@ -64,6 +64,9 @@ def match_sql_command(sql)
     }xi,
     rename_foreign_table: %r{
       ALTER\s+FOREIGN\s+TABLE\s+(?<table_name>.+)\s+RENAME\s+TO\s+(?<new_name>.+)
+    }xi,
+    select_all: %r{
+      SELECT\s+\*\s+FROM\s+(?<from>.+)
     }xi
   }
   option_pair = %r{

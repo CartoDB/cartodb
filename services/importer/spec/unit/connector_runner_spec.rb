@@ -239,11 +239,11 @@ describe CartoDB::Importer2::ConnectorRunner do
 
     @providers.each do |provider|
       connector_provider = Carto::ConnectorProvider.find_by_name(provider)
-      config = Carto::ConnectorConfiguration.create!(
+      Carto::ConnectorConfiguration.create!(
         connector_provider_id: connector_provider.id,
         user_id: @user.id,
         enabled: false
-      );
+      )
     end
 
     with_feature_flag @user, 'carto-connectors', true do
@@ -276,7 +276,6 @@ describe CartoDB::Importer2::ConnectorRunner do
 
     Carto::ConnectorConfiguration.where(user_id: @user.id).destroy_all
   end
-
 
   # TODO: check Runner compatibility
 end

@@ -9,7 +9,7 @@ module Carto
   # This class provides remote database connection services based on FDW
   class Connector
 
-    attr_reader :name
+    attr_reader :provider_name
 
     def initialize(parameters, options = {})
       @logger     = options[:logger]
@@ -18,12 +18,12 @@ module Carto
       @unique_suffix = UUIDTools::UUID.timestamp_create.to_s.delete('-') # .to_i.to_s(16) # or hash from user, etc.
       @params = Parameters.new(parameters)
 
-      @name = @params[:provider]
-      @name ||= DEFAULT_PROVIDER
+      @provider_name = @params[:provider]
+      @provider_name ||= DEFAULT_PROVIDER
 
-      raise InvalidParametersError.new(message: "Provider not defined") if @name.blank?
-      @provider = Connector.provider_class(@name).try :new, @params
-      raise InvalidParametersError.new(message: "Invalid provider", provider: @name) if @provider.blank?
+      raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
+      @provider = Connector.provider_class(@provider_name).try :new, @params
+      raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
     end
 
     def copy_table(schema_name:, table_name:)
@@ -77,13 +77,13 @@ module Carto
     def check_availability!
       Connector.check_availability!(@user)
       if !enabled?
-        raise ConnectorsDisabledError.new(user: @user, provider: @name)
+        raise ConnectorsDisabledError.new(user: @user, provider: @provider_name)
       end
     end
 
     # Limits for the user/provider
     def limits
-      Connector.limits provider_name: @name, user: @user
+      Connector.limits provider_name: @provider_name, user: @user
     end
 
     # Availability for the user/provider
@@ -189,7 +189,7 @@ module Carto
 
     def server_name
       max_len = MAX_PG_IDENTIFIER_LEN - @unique_suffix.size - MIN_TAB_ID_LEN - 1
-      connector_name = Carto::DB::Sanitize.sanitize_identifier @name
+      connector_name = Carto::DB::Sanitize.sanitize_identifier @provider_name
       connector_name[0...max_len]
       "#{connector_name.downcase}_#{@unique_suffix}"
     end

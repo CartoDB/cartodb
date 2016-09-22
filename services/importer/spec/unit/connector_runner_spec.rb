@@ -72,7 +72,7 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
             connector.success?.should be true
-            connector.connector_name.should eq provider
+            connector.provider_name.should eq provider
           end
         end
       end
@@ -102,7 +102,7 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
             connector.success?.should be false
-            connector.connector_name.should eq provider
+            connector.provider_name.should eq provider
             @fake_log.to_s.should match /Invalid parameters: invalid_parameter/m
           end
         end
@@ -198,7 +198,7 @@ describe CartoDB::Importer2::ConnectorRunner do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
             connector.success?.should be false
-            connector.connector_name.should eq provider
+            connector.provider_name.should eq provider
             @fake_log.to_s.should match /SQL EXECUTION ERROR/m
           end
         end

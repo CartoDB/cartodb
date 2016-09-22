@@ -18,7 +18,7 @@
     },
     "error": {
       "default-title": "Oops, there was a problem",
-      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@cartodb.com'>support@cartodb.com</a>"
+      "default-desc": "Reload the page again. If the problem persists contact Bloomberg Help Desk"
     }
   },
   "editor": {

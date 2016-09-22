@@ -184,16 +184,21 @@ module Carto
       @logger.append message, truncate if @logger
     end
 
-    MAX_PG_IDENTIFIER_LEN = 60
+    # maximum unique identifier length in PostgreSQL
+    MAX_PG_IDENTIFIER_LEN = 63
+    # minimum length left available for the table part in foreign table names
     MIN_TAB_ID_LEN        = 10
 
+    # Named used for the foreign server (unique poer Connector instance)
     def server_name
       max_len = MAX_PG_IDENTIFIER_LEN - @unique_suffix.size - MIN_TAB_ID_LEN - 1
       connector_name = Carto::DB::Sanitize.sanitize_identifier @provider_name
-      connector_name[0...max_len]
-      "#{connector_name.downcase}_#{@unique_suffix}"
+      "#{connector_name[0...max_len].downcase}_#{@unique_suffix}"
     end
 
+    # Prefix to be used by foreign table names (so they're unique per Connector instance)
+    # This leaves at least MIN_TAB_ID_LEN available identifier characters given PostgreSQL's
+    # limit of MAX_PG_IDENTIFIER_LEN
     def foreign_prefix
       "#{server_name}_"
     end

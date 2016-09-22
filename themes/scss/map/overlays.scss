@@ -217,25 +217,33 @@ $buttonColor: #636D72;
 
 /* Legends */
 
+$maxLegendContainerHeight: 300px;
+
 .CDB-Legends-canvas {
   position: absolute;
   top: 16px;
   left: 16px;
   width: 240px;
   height: auto;
-  max-height: 300px;
+  max-height: $maxLegendContainerHeight;
   border-radius: 4px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
-  overflow: scroll;
   z-index: 20000;
+  overflow: hidden;
 }
 .CDB-Legends-canvasInner {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   padding: 24px;
   border-radius: $baseSize / 2;
+  box-sizing: border-box;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  max-height: $maxLegendContainerHeight;
 }
 .CDB-Legends-canvasShadow {
   display: none;

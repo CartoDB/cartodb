@@ -72,6 +72,15 @@ module Carto
         legend.errors[:layer_id].should include(expected_error)
       end
 
+      it 'accepts torque layers' do
+        Carto::Layer.any_instance.stubs(:kind)
+                    .returns('torque')
+        legend = Legend.new(layer_id: @layer.id)
+        legend.valid?
+
+        legend.errors[:layer_id].should be_empty
+      end
+
       it 'doesn\'t require a title' do
         @legend.errors[:title].should be_empty
       end

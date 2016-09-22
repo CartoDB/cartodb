@@ -2,7 +2,6 @@ var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
 var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
-var PROPERTIES_THAT_CAN_USE_TURBO_CARTO = ['marker-fill', 'marker-line-color'];
 var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-frame-count',
   '-torque-time-attribute',

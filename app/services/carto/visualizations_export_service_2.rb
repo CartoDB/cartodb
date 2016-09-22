@@ -128,7 +128,7 @@ module Carto
         tooltip: tooltip_with_indifferent_access
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
-      layer.legends = build_legends_from_hash(exported_layer[:legends])
+      layer.legends = build_legends_from_hash(exported_layer[:legends], layer)
       layer
     end
 
@@ -149,9 +149,12 @@ module Carto
       )
     end
 
-    def build_legends_from_hash(exported_legends)
+    def build_legends_from_hash(exported_legends, layer)
       exported_legends.map do |exported_legend|
-        Legend.new(exported_legend)
+        legend = Legend.new(exported_legend)
+        legend.layer = layer
+
+        legend
       end
     end
 

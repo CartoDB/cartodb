@@ -63,10 +63,7 @@ module Carto::Configuration
     if ENV[environment_variable]
       Pathname.new(ENV[environment_variable]).join(subfolder_at_environment).to_s
     else
-      alternative = yield
-      raise "#{environment_variable} is not set and no alternative was provided" unless alternative
-
-      alternative
+      yield
     end
   end
 

@@ -269,7 +269,7 @@ module Carto
           data[:legend] = legend
         end
 
-        data[:legend] = layer_vizjson[:legends] || []
+        data[:legends] = layer_vizjson[:legends] || []
 
         data
       end

@@ -351,6 +351,11 @@
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
         "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
       },
+      "connector-warning-details": {
+        "continue-btn": "Continue",
+        "too-many-rows": "Max number of rows imported from database connector possibly reached.",
+        "unable-to-import-all-rows": "The number of imported rows is equal to the limit of %{maxRowsPerConnectorImport} for database connector. It's very possible that you've reached the limit and only a portion of the data has been imported."
+      },
       "error-details": {
         "check-errors": "Check errors",
         "check-url": "Check that the URL you provided is OK",

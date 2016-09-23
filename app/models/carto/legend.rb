@@ -15,7 +15,7 @@ module Carto
     serialize :definition, ::Carto::CartoJsonSerializer
 
     validates :definition, carto_json_symbolizer: true
-    validates :type, :layer_id, presence: true
+    validates :type, :layer, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 
     validate :on_data_layer,
@@ -34,7 +34,7 @@ module Carto
 
     def on_data_layer
       unless layer.data_layer?
-        errors.add(:layer_id, "'#{layer.kind}' layers can't have legends")
+        errors.add(:layer, "'#{layer.kind}' layers can't have legends")
       end
     end
 
@@ -44,7 +44,7 @@ module Carto
       other_legends = layer.legends.select { |legend| legend.id != id }
 
       unless other_legends.count < MAX_LEGENDS_PER_LAYER
-        errors.add(:layer_id, 'Maximum number of legends per layer reached')
+        errors.add(:layer, 'Maximum number of legends per layer reached')
       end
     end
 

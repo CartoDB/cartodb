@@ -473,7 +473,8 @@
           "enter": "Enter a URL",
           "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g.",
-          "tms": "TMS"
+          "tms": "TMS",
+          "couldnt-validate": "We couldn't validate this, if you're sure it contains data click \"add basemap\"",
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
@@ -492,7 +493,8 @@
           "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
         },
         "tilejson": {
-          "insert": "Insert your TileJSON URL"
+          "insert": "Insert your TileJSON URL",
+          "invalid": "Invalid URL, please make sure it is correct"
         }
       },
       "export-data": {
@@ -1605,7 +1607,7 @@
         "cartocss": "SQL"
       },
       "code-mirror": {
-        "save": "CMD + S to apply your query."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",

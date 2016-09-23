@@ -304,24 +304,12 @@ module Carto
       end
 
       def to_vizjson
+        vizjson = { id: @layer.id }
+
         if @layer.base?
-          {
-            id:      @layer.id,
-            type:    @layer.kind,
-            options: @layer.options
-          }
-        elsif @layer.torque?
-          as_torque
+          vizjson.merge(as_base)
         else
-          {
-            id:         @layer.id,
-            type:       'CartoDB',
-            infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
-            tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
-            legend:     @layer.legend,
-            visible:    @layer.options['visible'],
-            options:    options_data
-          }
+          vizjson.merge(as_data).merge(@layer.torque? ? as_torque : as_carto)
         end
       end
 
@@ -331,25 +319,51 @@ module Carto
         @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')
       end
 
+      def as_data
+        legends_presentation = @layer.legends.map do |legend|
+          Carto::Api::LegendPresenter.new(legend).to_hash
+        end
+
+        {
+          legend: @layer.legend,
+          legends: legends_presentation
+        }
+      end
+
       def as_torque
         layer_options = @layer.options.deep_symbolize_keys
 
         torque = {
-          id:         @layer.id,
           type:       'torque',
-          legend:     @layer.legend,
           options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
         }
 
         torque[:cartocss] = layer_options[:tile_style]
-
         torque[:cartocss_version] = layer_options[:style_version]
-
         torque[:sql] = wrap(sql_from(@layer), @layer.options)
 
-        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
+        if @layer.options['source'].present?
+          torque[:source] = @layer.options['source']
+        end
 
         torque
+      end
+
+      def as_carto
+        {
+          type:       'CartoDB',
+          infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
+          tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
+          visible:    @layer.options['visible'],
+          options:    options_data
+        }
+      end
+
+      def as_base
+        {
+          type:    @layer.kind,
+          options: @layer.options
+        }
       end
 
       def options_data

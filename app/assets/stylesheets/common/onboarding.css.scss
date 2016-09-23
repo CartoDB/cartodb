@@ -23,6 +23,10 @@
 .Onboarding-fake {
   @include flex(0 0 415px);
   height: 100%;
+
+  .is-editing & {
+    @include flex(0 0 560px);
+  }
 }
 
 .Onboarding-body {

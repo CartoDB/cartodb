@@ -1,6 +1,7 @@
 require 'active_record'
 require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
+require_dependency 'carto/query_rewriter'
 
 module Carto
   module LayerTableDependencies
@@ -50,6 +51,7 @@ module Carto
   class Layer < ActiveRecord::Base
     include Carto::TableUtils
     include LayerTableDependencies
+    include Carto::QueryRewriter
 
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
@@ -65,6 +67,7 @@ module Carto
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
+    has_many :legends, class_name: Carto::Legend, dependent: :destroy
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -209,6 +212,28 @@ module Carto
 
     def register_table_dependencies
       self.user_tables = affected_tables if data_layer?
+    end
+
+    def fix_layer_user_information(old_username, new_user, renamed_tables)
+      new_username = new_user.username
+
+      if options.key?(:user_name)
+        old_username ||= options[:user_name]
+        options[:user_name] = new_username
+      end
+
+      if options.key?(:table_name)
+        old_table_name = options[:table_name]
+        options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+      end
+
+      # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
+      query = options[:query]
+      options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
+
+    def force_notify_change
+      map.force_notify_map_change if map
     end
 
     private

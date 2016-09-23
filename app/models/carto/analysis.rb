@@ -62,9 +62,8 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   def update_table_name(old_name, new_name)
-    rename_table_in_definition(analysis_definition, old_name, new_name)
-
-    update_attributes(analysis_definition: analysis_definition)
+    analysis_node.fix_analysis_node_queries(user.username, user, old_name => new_name)
+    save
   end
 
   def analysis_definition_for_api
@@ -87,27 +86,6 @@ class Carto::Analysis < ActiveRecord::Base
   end
 
   private
-
-  RENAMABLE_ATTRIBUTES = ['query', 'table_name'].freeze
-
-  def rename_table_in_definition(definition, target, substitution)
-    return unless definition.is_a?(Hash)
-
-    definition.each do |key, value|
-      case value
-      when String
-        value.gsub!(/\b#{target}\b/, substitution) if RENAMABLE_ATTRIBUTES.include?(key.to_s)
-      when Hash
-        rename_table_in_definition(value, target, substitution)
-      when Array
-        value.each do |element|
-          # Split up the problem, always deal with Hashes.
-          # See https://github.com/CartoDB/cartodb/pull/9651/files
-          rename_table_in_definition({ "#{key}": element }, target, substitution)
-        end
-      end
-    end
-  end
 
   # Analysis definition contains attributes not needed by Analysis API (see #7128).
   # This methods extract the needed ones.

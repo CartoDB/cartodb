@@ -1,6 +1,9 @@
 // Custom styles for custom basemap styles
 // --------------------------------------------------
 
+@import 'cdb-variables/colors';
+
+
 // XYZ panel view
 .XYZPanel-inputIcon--loader {
   right: 75px;
@@ -21,4 +24,18 @@
   width: 900px;
   margin: auto;
   z-index: 0;
+}
+
+.XYZPanel-error {
+  display: none;
+  right: -180px;
+  left: calc(100% + 20px);
+  box-sizing: border-box;
+  a {
+    color: $cWhite;
+    text-decoration: underline;
+  }
+  &.is-visible {
+    display: inline-block;
+  }
 }

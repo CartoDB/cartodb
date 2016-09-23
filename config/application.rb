@@ -59,7 +59,7 @@ module CartoDB
     # Enable the asset pipeline
     config.assets.enabled = false
 
-    config.paths['public'] = [public_path]
+    config.paths['public'] = [public_uploads_path]
 
     config.assets.paths << Rails.root.join('bower_components')
 

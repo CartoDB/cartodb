@@ -1,8 +1,10 @@
 require 'open-uri'
 require_relative '../../lib/cartodb/image_metadata.rb'
 require_relative '../helpers/file_upload'
+require_dependency 'carto/configuration'
 
 class Asset < Sequel::Model
+  include Carto::Configuration
 
   many_to_one :user
 
@@ -112,16 +114,15 @@ class Asset < Sequel::Model
   end
 
   def save_local(filename)
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+    local_path = Pathname.new(public_uploaded_assets_path).join(target_asset_path)
 
-    local_path = file_upload_helper.get_uploads_path.join(target_asset_path)
     FileUtils.mkdir_p local_path
     FileUtils.cp @file.path, local_path.join(filename)
 
     mode = chmod_mode
     FileUtils.chmod(mode, local_path.join(filename)) if mode
 
-    p = File.join('/', SUBFOLDER, target_asset_path, filename)
+    p = File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
     "#{asset_protocol}//#{CartoDB.account_host}#{p}"
   end
 
@@ -132,7 +133,7 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '').gsub(SUBFOLDER, '')
+      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '').gsub(ASSET_SUBFOLDER, '')
       begin
         FileUtils.rm("#{Cartodb.config[:importer]['uploads_path']}/#{local_url}")
       rescue => e
@@ -156,9 +157,9 @@ class Asset < Sequel::Model
     @s3_bucket ||= s3.buckets[bucket_name]
   end
 
-  private
+  ASSET_SUBFOLDER = 'uploads'
 
-  SUBFOLDER = 'uploads'.freeze
+  private
 
   def chmod_mode
     # Example in case asset kind should change mode

@@ -10,6 +10,10 @@ module Carto::Configuration
     @@app_config = YAML.load_file(app_config_file)
   end
 
+  def env_app_config
+    app_config[ENV['RAILS_ENV'] || 'development']
+  end
+
   def log_file_path(filename)
     "#{log_dir_path}/#{filename}"
   end
@@ -18,8 +22,14 @@ module Carto::Configuration
     "#{log_files_root}/log"
   end
 
-  def public_path
-    "#{log_files_root}/public"
+  def public_uploaded_assets_path
+    public_uploads_path('uploads')
+  end
+
+  def public_uploads_path(subfolder = '')
+    path_with_alternative('RAILS_PUBLIC_UPLOADS_PATH', subfolder) do
+      env_app_config[:importer] ? env_app_config[:importer]["uploads_path"] : nil
+    end
   end
 
   def uploaded_file_path(path)
@@ -38,18 +48,26 @@ module Carto::Configuration
   private
 
   def config_files_root
-    if ENV['RAILS_CONFIG_BASE_PATH']
-      Pathname.new(ENV['RAILS_CONFIG_BASE_PATH'])
-    else
-      Rails.root
-    end
+    rails_path('RAILS_CONFIG_BASE_PATH')
   end
 
   def log_files_root
-    if ENV['RAILS_LOG_BASE_PATH']
-      Pathname.new(ENV['RAILS_LOG_BASE_PATH'])
+    rails_path('RAILS_LOG_BASE_PATH')
+  end
+
+  def rails_path(environment_variable)
+    path_with_alternative(environment_variable) { Rails.root }
+  end
+
+  # Returns an string, block should as well
+  def path_with_alternative(environment_variable, subfolder_at_environment = '')
+    if ENV[environment_variable]
+      Pathname.new(ENV[environment_variable]).join(subfolder_at_environment).to_s
     else
-      Rails.root
+      alternative = yield
+      raise "#{environment_variable} is not set and no alternative was provided" unless alternative
+
+      alternative
     end
   end
 

@@ -2,7 +2,8 @@ var _ = require('underscore');
 
 module.exports = {
   canAdapt: function (rule) {
-    return ['line-color', 'marker-fill', 'polygon-fill'].indexOf(rule.prop) >= 0;
+    return ['line-color', 'marker-fill', 'polygon-fill'].indexOf(rule.prop) >= 0 &&
+      rule.stats;
   },
 
   adapt: function (rule) {

@@ -24,6 +24,8 @@ module Carto
 
     before_validation :ensure_definition
 
+    after_commit :force_notify_layer_change
+
     private
 
     def ensure_definition
@@ -53,6 +55,10 @@ module Carto
       if definition_errors.any?
         errors.add(:definition, definition_errors.join(', '))
       end
+    end
+
+    def force_notify_layer_change
+      layer.force_notify_change
     end
   end
 end

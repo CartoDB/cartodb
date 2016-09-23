@@ -63,7 +63,8 @@ module Carto::Configuration
     if ENV[environment_variable]
       Pathname.new(ENV[environment_variable]).join(subfolder_at_environment).to_s
     else
-      yield
+      alternative = yield
+      alternative || ''
     end
   end
 

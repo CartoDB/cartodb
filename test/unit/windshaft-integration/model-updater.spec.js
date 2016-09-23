@@ -223,6 +223,17 @@ describe('src/vis/model-updater', function () {
     });
 
     describe('legend models', function () {
+      it('should "mark" all legend models as success', function () {
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
+        this.layersCollection.reset([ layer ]);
+
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
+        expect(layer.legends.bubble.isSuccess()).toBeTruthy();
+        expect(layer.legends.category.isSuccess()).toBeTruthy();
+      });
+
       it('should update model for choropleth legends', function () {
         this.windshaftMap.set('metadata', {
           layers: [

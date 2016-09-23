@@ -48,8 +48,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _createHistogramView: function () {
+    var chartType = this._torqueLayerModel.get('column_type') === 'date' ? 'time' : 'number';
     this._chartView = new HistogramChartView({
-      type: 'time',
+      type: chartType,
       animationSpeed: 100,
       animationBarDelay: function (d, i) {
         return (i * 3);

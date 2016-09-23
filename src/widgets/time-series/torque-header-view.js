@@ -1,7 +1,7 @@
 var cdb = require('cartodb.js');
 var TorqueControlsView = require('./torque-controls-view');
 var TorqueTimeInfoView = require('./torque-time-info-view');
-var TorqueRenderRangeInfoView = require('./torque-render-range-info-view');
+var TimeSeriesHeaderView = require('./time-series-header-view');
 var TorqueResetRenderRangeView = require('./torque-reset-render-range-view');
 
 /**
@@ -23,8 +23,11 @@ module.exports = cdb.core.View.extend({
     if (!this._rangeFilter.isEmpty()) {
       this.el.classList.add('CDB-Widget-contentSpaced');
       this._appendView(
-        new TorqueRenderRangeInfoView({
-          dataviewModel: this._dataviewModel
+        new TimeSeriesHeaderView({
+          dataviewModel: this._dataviewModel,
+          rangeFilter: this._dataviewModel.filter,
+          events: {},
+          showClearButton: false
         })
       );
       this._appendView(
@@ -41,6 +44,7 @@ module.exports = cdb.core.View.extend({
       );
       this._appendView(
         new TorqueTimeInfoView({
+          dataviewModel: this._dataviewModel,
           torqueLayerModel: this._torqueLayerModel
         })
       );

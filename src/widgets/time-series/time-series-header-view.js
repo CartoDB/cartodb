@@ -2,47 +2,89 @@ var cdb = require('cartodb.js');
 var template = require('./time-series-header.tpl');
 var d3 = require('d3');
 
+var FORMATTER_TYPES = {
+  'number': d3.format(',.0f'),
+  'time': d3.time.format('%H:%M'),
+  'date': d3.time.format('%x')
+};
+
 /**
  * View to reset render range.
  */
 module.exports = cdb.core.View.extend({
+
   className: 'CDB-Widget-header--timeSeries js-header CDB-Widget-contentSpaced',
+
   events: {
     'click .js-clear': '_onClick'
   },
 
-  initialize: function () {
-    this._dataviewModel = this.options.dataviewModel;
-    this._rangeFilter = this.options.rangeFilter;
-    this._rangeFilter.bind('change', this.render, this);
+  options: {
+    showClearButton: true
+  },
+
+  initialize: function (opts) {
+    if (!opts.dataviewModel) throw new Error('dataviewModel is required');
+    if (!opts.rangeFilter) throw new Error('rangeFilter is required');
+
+    this._dataviewModel = opts.dataviewModel;
+    this._rangeFilter = opts.rangeFilter;
+    this._layer = this._dataviewModel.layer;
     this._setupScales();
+    this._initBinds();
   },
 
   render: function () {
-    this.$el.empty();
-    if (!this._rangeFilter.isEmpty()) {
+    var columnType = this._layer.get('column_type');
+    var scale = this._scale;
+    var filter = this._rangeFilter;
+    var start;
+    var end;
+
+    if (!filter.isEmpty()) {
+      if (columnType === 'date') {
+        var startDate = new Date(scale.invert(filter.get('min')));
+        var endDate = new Date(scale.invert(filter.get('max')));
+
+        start = FORMATTER_TYPES['time'](startDate) + ' ' + FORMATTER_TYPES['date'](startDate);
+        end = FORMATTER_TYPES['time'](endDate) + ' ' + FORMATTER_TYPES['date'](endDate);
+      } else {
+        start = FORMATTER_TYPES['number'](scale(filter.get('min')));
+        end = FORMATTER_TYPES['number'](scale(filter.get('max')));
+      }
+
       this.$el.html(
         template({
-          timeFormatter: this._timeFormatter,
-          dateFormatter: this._dateFormatter,
-          startDate: new Date(this._scale.invert(this._rangeFilter.get('min'))),
-          endDate: new Date(this._scale.invert(this._rangeFilter.get('max')))
+          start: start,
+          end: end,
+          showButton: false
         })
       );
     }
+
     return this;
+  },
+
+  _initBinds: function () {
+    this._rangeFilter.bind('change', this.render, this);
+    this.add_related_model(this._rangeFilter);
   },
 
   _setupScales: function () {
     var data = this._dataviewModel.get('data');
-    this._scale = d3.time.scale()
-      .domain([data[0].start * 1000, data[data.length - 1].end * 1000])
-      .nice()
-      .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
+    var columnType = this._layer.get('column_type');
 
-    // for format rules see https://github.com/mbostock/d3/wiki/Time-Formatting
-    this._timeFormatter = d3.time.format('%H:%M');
-    this._dateFormatter = d3.time.format('%x');
+    if (columnType === 'date') {
+      this._scale = d3.time.scale()
+        .domain([data[0].start * 1000, data[data.length - 1].end * 1000])
+        .nice()
+        .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
+    } else {
+      this._scale = d3.scale.linear()
+        .domain([data[0].start, data[data.length - 1].end])
+        .nice()
+        .range([this._dataviewModel.get('start'), this._dataviewModel.get('end')]);
+    }
   },
 
   _onClick: function () {

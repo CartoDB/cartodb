@@ -12,7 +12,6 @@ var validatePresenceOfOptions = function (options, requiredOptions) {
   }
 };
 
-var i = 0;
 var MAX_URL_LENGTH = 2033;
 var COMPRESSION_LEVEL = 3;
 

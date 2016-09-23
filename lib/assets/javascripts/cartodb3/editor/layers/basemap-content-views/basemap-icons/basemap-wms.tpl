@@ -1,1 +1,1 @@
-<p class="CDB-Text CDB-Size-small u-upperCase u-altTextColor">wms</p>
+<p class="CDB-Text CDB-Size-small u-upperCase u-altTextColor">wms/wmts</p>

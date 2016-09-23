@@ -112,6 +112,12 @@ module Carto
         cmds.join "\n"
       end
 
+      def list_tables_command(server_name, _foreign_table_schema, _foreign_prefix, limit)
+        %{
+          SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
+        }
+      end
+
       def features_information
         {
           "sql_queries":    true,

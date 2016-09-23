@@ -48,9 +48,15 @@ module Carto
         must_be_defined_in_derived_class
       end
 
+      # SQL code to list the remote tables
+      # should return a set of rows with two columns: `schema` and `name`
+      def list_tables_command(_server_name)
+        must_be_defined_in_derived_class
+      end
+
       # SQL code to drop the FDW server
       def drop_server_command(server_name)
-        fdw_drop_server server_name
+        fdw_drop_server server_name, cascade: true
       end
 
       # SQL code to drop the user mapping

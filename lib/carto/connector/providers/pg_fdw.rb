@@ -81,6 +81,35 @@ module Carto
         cmds.join "\n"
       end
 
+      def list_tables_command(server_name, schema, foreign_prefix, limit)
+        ext_pg_class = fdw_adjusted_table_name("#{foreign_prefix}pg_class")
+        ext_pg_namespace = fdw_adjusted_table_name("#{foreign_prefix}pg_namespace")
+        commands = []
+        commands << fdw_create_foreign_table_if_not_exists(
+          server_name, schema, ext_pg_class,
+          ['relname name', 'relnamespace oid', 'relkind char'],
+          schema_name: 'pg_catalog', table_name: 'pg_class'
+        )
+        commands << fdw_create_foreign_table_if_not_exists(
+          server_name, schema, ext_pg_namespace,
+          ['nspname name', 'oid oid'],
+          schema_name: 'pg_catalog', table_name: 'pg_namespace'
+        )
+        limit_clause = limit.to_i > 0 ? "LIMIT #{limit}" : ''
+        commands << %{
+          SELECT n.nspname AS schema, c.relname AS name
+          FROM #{fdw_qualified_table_name(schema, ext_pg_class)} c
+          JOIN #{fdw_qualified_table_name(schema, ext_pg_namespace)} n ON n.oid = c.relnamespace
+            WHERE c.relkind = 'r'
+            AND n.nspname NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY schema, name
+            #{limit_clause};
+        }
+        # Since we create foreign tables here this must be executed as superuser
+        # This leaves two foreign tables in schema: ext_pg_class and ext_pg_namespace
+        commands.join(";\n")
+      end
+
       def features_information
         {
           "sql_queries":    false,

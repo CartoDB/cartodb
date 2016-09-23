@@ -54,8 +54,17 @@ module Carto
          }
       end
 
-      def fdw_drop_server(server_name)
-        "DROP SERVER IF EXISTS #{server_name};"
+      def fdw_create_foreign_table_if_not_exists(server_name, schema_name, table_name, columns, options)
+        %{
+          CREATE FOREIGN TABLE IF NOT EXISTS #{qualified_table_name(schema_name, table_name)} (#{columns * ','})
+            SERVER #{server_name}
+            #{options_clause(options)};
+         }
+      end
+
+      def fdw_drop_server(server_name, cascade: false)
+        cascade_clause = cascade ? ' CASCADE' : ''
+        "DROP SERVER IF EXISTS #{server_name}#{cascade_clause};"
       end
 
       def fdw_drop_usermap(server_name, user_name)
@@ -76,6 +85,10 @@ module Carto
       # This performs the same truncation PG does on too long table names
       def fdw_adjusted_table_name(name)
         name[0...PG_MAX_TABLE_NAME_LENGTH]
+      end
+
+      def fdw_qualified_table_name(schema_name, table_name)
+        qualified_table_name(schema_name, table_name)
       end
 
       private

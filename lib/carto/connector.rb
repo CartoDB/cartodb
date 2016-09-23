@@ -48,12 +48,12 @@ module Carto
       end
     end
 
-    def list_tables
+    def list_tables(limit = nil)
       validate! only: [:connection]
       with_server do
-        execute %{
-          SELECT * FROM ODBCTablesList('#{server_name}');
-        }
+        # TODO: let the providers decide what needs to be executed as superuser
+        # (we use superuser here because the provider may need to create auxiliar foreing tables)
+        execute_as_superuser list_tables_command(limit)
       end
     end
 
@@ -253,6 +253,10 @@ module Carto
           AS SELECT * FROM #{foreign_table_name}
             #{limit};
       }
+    end
+
+    def list_tables_command(limit)
+      @provider.list_tables_command(server_name, foreign_table_schema, foreign_prefix, limit)
     end
 
     def execute_as_superuser(command)

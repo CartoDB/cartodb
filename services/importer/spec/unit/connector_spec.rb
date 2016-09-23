@@ -17,20 +17,28 @@ class TestConnector < Carto::Connector
   def execute_as_superuser(command)
     @executed_commands ||= []
     @executed_commands << [:superuser, command, @user.username]
-    []
+    execute_results command
   end
 
   def execute(command)
     @executed_commands ||= []
     @executed_commands << [:user, command, @user.username]
-    if command =~ /\A\s*SELECT\s+\*\s+FROM\s+ODBCTablesList/
+    execute_results command
+  end
+
+  attr_reader :executed_commands
+
+  private
+
+  def execute_results(command)
+    if command =~ /\A\s*SELECT\s+\*\s+FROM\s+ODBCTablesList/mi
       [{ schema: 'abc', name: 'xyz' }]
+    elsif command =~ /SELECT\s+n.nspname\s+AS\s+schema,\s*c.relname\s+AS\s+name/mi
+      [{ schema: 'def', name: 'uvw' }]
     else
       []
     end
   end
-
-  attr_reader :executed_commands
 end
 
 class FailingTestConnector < TestConnector
@@ -696,6 +704,7 @@ describe Carto::Connector do
       }
       connector = TestConnector.new(parameters, options)
       tables = connector.list_tables
+
       tables.should eq [{ schema: 'abc', name: 'xyz' }]
 
       connector.executed_commands.size.should eq 5
@@ -736,11 +745,11 @@ describe Carto::Connector do
           }]
         }, {
           # FETCH TABLES LIST
-          mode: :user,
+          mode: :superuser,
           user: user_name,
           sql: [{
             command: :select_all,
-            from: /ODBCTablesList\('#{Regexp.escape server_name}'\)/
+            from: /ODBCTablesList\('#{Regexp.escape server_name}'\s*,\d+\s*\)/
           }]
         }, {
           # DROP USERMAP
@@ -765,7 +774,7 @@ describe Carto::Connector do
       )
     end
 
-    it 'requires connection paramters in order to list tables' do
+    it 'requires connection parameters in order to list tables' do
       parameters = {
         provider: 'mysql'
       }

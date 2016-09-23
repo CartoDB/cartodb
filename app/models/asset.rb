@@ -157,7 +157,7 @@ class Asset < Sequel::Model
     @s3_bucket ||= s3.buckets[bucket_name]
   end
 
-  ASSET_SUBFOLDER = 'uploads'
+  ASSET_SUBFOLDER = 'uploads'.freeze
 
   private
 

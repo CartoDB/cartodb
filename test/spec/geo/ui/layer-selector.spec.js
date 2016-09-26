@@ -14,8 +14,8 @@ describe('geo/ui/layer-selector', function () {
 
   beforeEach(function() {
     this.vis = new VisModel();
-    layer1 = new CartoDBLayer({ options: { layer_name: 'Layer 1' } }, { vis: this.vis });
-    layer2 = new CartoDBLayer({ options: { layer_name: 'Layer 2' } }, { vis: this.vis });
+    layer1 = new CartoDBLayer({ layer_name: 'Layer 1' }, { vis: this.vis });
+    layer2 = new CartoDBLayer({ layer_name: 'Layer 2' }, { vis: this.vis });
 
     var map = new Map({}, {
       layersCollection: new Layers([layer1, layer2])

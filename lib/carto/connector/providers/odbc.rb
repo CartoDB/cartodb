@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './base'
+require_relative './fdw'
 
 module Carto
   class Connector
@@ -25,9 +25,9 @@ module Carto
     #   * encoding (optional): character encoding used by the external database; default is UTF-8.
     #     The encoding names accepted are those accepted by PostgreSQL.
     #
-    class OdbcProvider < Provider
+    class OdbcProvider < FdwProvider
 
-      def initialize(params)
+      def initialize(context, params)
         super
         @columns = @params[:columns]
         @columns = @columns.split(',').map(&:strip) if @columns

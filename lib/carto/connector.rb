@@ -4,6 +4,7 @@ require_relative 'connector/fdw_support'
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
+require_relative 'connector/context'
 
 module Carto
   # This class provides remote database connection services based on FDW
@@ -11,55 +12,29 @@ module Carto
 
     attr_reader :provider_name
 
-    def initialize(parameters, options = {})
-      @logger     = options[:logger]
-      @user       = options[:user]
+    def initialize(parameters, context)
+      @connector_context = Context.cast(context)
 
-      @unique_suffix = UUIDTools::UUID.timestamp_create.to_s.delete('-') # .to_i.to_s(16) # or hash from user, etc.
       @params = Parameters.new(parameters)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
-      @provider = Connector.provider_class(@provider_name).try :new, @params
+      @provider = Connector.provider_class(@provider_name).try :new, @connector_context, @params
       raise InvalidParametersError.new(message: "Invalid provider", provider: @provider_name) if @provider.blank?
     end
 
     def copy_table(schema_name:, table_name:)
-      log "Connector Copy table  #{schema_name}.#{table_name}"
-      validate!
-      # TODO: logging with CartoDB::Logger
-      with_server do
-        begin
-          qualified_table_name = %{"#{schema_name}"."#{table_name}"}
-          foreign_table_name = @provider.foreign_table_name(foreign_prefix)
-          log "Creating Foreign Table"
-          execute_as_superuser create_foreign_table_command
-          log "Copying Foreign Table"
-          max_rows = limits[:max_rows]
-          execute copy_foreign_table_command(
-            qualified_table_name, qualified_foreign_table_name(foreign_table_name), max_rows
-          )
-          check_copied_table_size(qualified_table_name, max_rows)
-        ensure
-          execute_as_superuser drop_foreign_table_command(foreign_table_name) if foreign_table_name
-        end
-      end
+      @provider.copy_table(schema_name: schema_name, table_name: table_name, limits: limits)
     end
 
     def list_tables(limit = nil)
-      validate! only: [:connection]
-      with_server do
-        # TODO: let the providers decide what needs to be executed as superuser
-        # (we use superuser here because the provider may need to create auxiliar foreing tables)
-        execute_as_superuser list_tables_command(limit)
-      end
+      @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
     end
 
     def remote_data_updated?
-      # TODO: can we detect if query results have changed?
-      true
+      @provider.remote_data_updated?
     end
 
     def remote_table_name
@@ -75,15 +50,15 @@ module Carto
 
     # Check availability for a user and provider
     def check_availability!
-      Connector.check_availability!(@user)
+      Connector.check_availability!(@connector_context.user)
       if !enabled?
-        raise ConnectorsDisabledError.new(user: @user, provider: @provider_name)
+        raise ConnectorsDisabledError.new(user: @connector_context.user, provider: @provider_name)
       end
     end
 
     # Limits for the user/provider
     def limits
-      Connector.limits provider_name: @provider_name, user: @user
+      Connector.limits provider_name: @provider_name, user: @connector_context.user
     end
 
     # Availability for the user/provider
@@ -153,26 +128,6 @@ module Carto
 
     private
 
-    # Execute code that requires a FDW server/user mapping
-    # The server name is given by the method `#server_name`
-    def with_server
-      # Currently we create temporary server and user mapings when we need them,
-      # and drop them after use.
-      log "Creating Server"
-      execute_as_superuser create_server_command
-      log "Creating Usermap"
-      execute_as_superuser create_usermap_command
-      yield
-    rescue => error
-      log "Connector Error #{error}"
-      raise error
-    ensure
-      log "Connector cleanup"
-      execute_as_superuser drop_usermap_command
-      execute_as_superuser drop_server_command
-      log "Connector cleaned-up"
-    end
-
     # Validate parameters.
     # An array of parameter names to validate can be passed via :only.
     # By default all parameters are validated
@@ -181,119 +136,7 @@ module Carto
     end
 
     def log(message, truncate = true)
-      @logger.append message, truncate if @logger
-    end
-
-    # maximum unique identifier length in PostgreSQL
-    MAX_PG_IDENTIFIER_LEN = 63
-    # minimum length left available for the table part in foreign table names
-    MIN_TAB_ID_LEN        = 10
-
-    # Named used for the foreign server (unique poer Connector instance)
-    def server_name
-      max_len = MAX_PG_IDENTIFIER_LEN - @unique_suffix.size - MIN_TAB_ID_LEN - 1
-      connector_name = Carto::DB::Sanitize.sanitize_identifier @provider_name
-      "#{connector_name[0...max_len].downcase}_#{@unique_suffix}"
-    end
-
-    # Prefix to be used by foreign table names (so they're unique per Connector instance)
-    # This leaves at least MIN_TAB_ID_LEN available identifier characters given PostgreSQL's
-    # limit of MAX_PG_IDENTIFIER_LEN
-    def foreign_prefix
-      "#{server_name}_"
-    end
-
-    def foreign_table_schema
-      # since connectors' foreign table names are unique (because
-      # server names are unique and not reused)
-      # we could in principle use any schema (@schema, 'public', 'cdb_importer')
-      CartoDB::Connector::Importer::ORIGIN_SCHEMA
-    end
-
-    def qualified_foreign_table_name(foreign_table_name)
-      %{"#{foreign_table_schema}"."#{foreign_table_name}"}
-    end
-
-    def create_server_command
-      @provider.create_server_command server_name
-    end
-
-    def create_usermap_command
-      [
-        @provider.create_usermap_command(server_name, @user.database_username),
-        @provider.create_usermap_command(server_name, 'postgres')
-      ].join("\n")
-    end
-
-    def create_foreign_table_command
-      @provider.create_foreign_table_command server_name, foreign_table_schema,
-                                             foreign_prefix,
-                                             @user.database_username
-    end
-
-    def drop_server_command
-      @provider.drop_server_command server_name
-    end
-
-    def drop_usermap_command
-      [
-        @provider.drop_usermap_command(server_name, 'postgres'),
-        @provider.drop_usermap_command(server_name, @user.database_username)
-      ].join("\n")
-    end
-
-    def drop_foreign_table_command(foreign_table_name)
-      @provider.drop_foreign_table_command foreign_table_schema, foreign_table_name
-    end
-
-    def copy_foreign_table_command(local_table_name, foreign_table_name, max_rows)
-      limit = (max_rows && max_rows > 0) ? " LIMIT #{max_rows}" : ''
-      %{
-        CREATE TABLE #{local_table_name}
-          AS SELECT * FROM #{foreign_table_name}
-            #{limit};
-      }
-    end
-
-    def list_tables_command(limit)
-      @provider.list_tables_command(server_name, foreign_table_schema, foreign_prefix, limit)
-    end
-
-    def execute_as_superuser(command)
-      execute_in_user_database command, as: :superuser
-    end
-
-    def execute(command)
-      execute_in_user_database command
-    end
-
-    # Execute SQL command returning array of results.
-    # Commands with no results (e.g. UPDATE, etc.) will return an empty array (`[]`).
-    # Result rows are returned as hashes with indifferent access.
-    def execute_in_user_database(command, *args)
-      # This admits Carto::User or User users
-      db = @user.in_database(*args)
-      data = case db
-             when Sequel::Database
-               db.fetch(command).all
-             else
-               db.execute command
-             end
-      data.map(&:with_indifferent_access)
-    end
-
-    def check_copied_table_size(table_name, max_rows)
-      warnings = {}
-      if max_rows && max_rows > 0
-        num_rows = execute(%{
-          SELECT count(*) as num_rows FROM #{table_name};
-        }).first['num_rows']
-        if num_rows == max_rows
-          # The maximum number of rows per connection was reached
-          warnings[:max_rows_per_connection] = max_rows
-        end
-      end
-      warnings
+      @connector_context.log message, truncate
     end
   end
 end

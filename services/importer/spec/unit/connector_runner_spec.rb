@@ -45,8 +45,8 @@ describe CartoDB::Importer2::ConnectorRunner do
   describe 'with working connectors' do
     before(:all) do
       # Simulate connector success by ignoring all db opeartions
-      Carto::Connector.any_instance.stubs(:execute_as_superuser).returns(nil)
-      Carto::Connector.any_instance.stubs(:execute).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
     end
 
     it "Succeeds if parameters are correct" do
@@ -171,8 +171,8 @@ describe CartoDB::Importer2::ConnectorRunner do
   describe 'with failing connectors' do
     before(:all) do
       # Simulate connector success when executing non-privileged SQL
-      Carto::Connector.any_instance.stubs(:execute_as_superuser).returns(nil)
-      Carto::Connector.any_instance.stubs(:execute).raises("SQL EXECUTION ERROR")
+      Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
+      Carto::Connector::Context.any_instance.stubs(:execute).raises("SQL EXECUTION ERROR")
     end
 
     it "Always fails" do
@@ -207,8 +207,8 @@ describe CartoDB::Importer2::ConnectorRunner do
   end
 
   describe 'with invalid provider' do
-    Carto::Connector.any_instance.stubs(:execute_as_superuser).returns(nil)
-    Carto::Connector.any_instance.stubs(:execute).returns(nil)
+    Carto::Connector::Context.any_instance.stubs(:execute_as_superuser).returns(nil)
+    Carto::Connector::Context.any_instance.stubs(:execute).returns(nil)
 
     it "Fails at creation" do
       with_feature_flag @user, 'carto-connectors', true do

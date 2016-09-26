@@ -13,20 +13,21 @@ require_relative '../doubles/table_row_count_limit'
 
 require_relative 'sql_helper'
 
-class TestConnector < Carto::Connector
+class TestConnectorContext < Carto::Connector::Context
+  def initialize(executed_commands, options)
+    @executed_commands = executed_commands
+    super options
+  end
+
   def execute_as_superuser(command)
-    @executed_commands ||= []
     @executed_commands << [:superuser, command, @user.username]
     execute_results command
   end
 
   def execute(command)
-    @executed_commands ||= []
     @executed_commands << [:user, command, @user.username]
     execute_results command
   end
-
-  attr_reader :executed_commands
 
   private
 
@@ -41,7 +42,7 @@ class TestConnector < Carto::Connector
   end
 end
 
-class FailingTestConnector < TestConnector
+class FailingTestConnectorContext < TestConnectorContext
   def execute(command)
     if match_sql(command).first[:command] == :create_table_as_select
       raise "SQL EXECUTION ERROR"
@@ -50,7 +51,7 @@ class FailingTestConnector < TestConnector
   end
 end
 
-class TestCountConnector < TestConnector
+class TestCountConnectorContext < TestConnectorContext
   def initialize(count, *args)
     @test_count = count
     super *args
@@ -97,6 +98,7 @@ describe Carto::Connector do
 
   before(:each) do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
+    @executed_commands = []
   end
 
   after(:all) do
@@ -154,23 +156,23 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -270,21 +272,21 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -328,13 +330,14 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error(Carto::Connector::InvalidParametersError)
 
       # When parameters are not valid nothing should be executed in the database
-      connector.executed_commands.should be_nil
+      @executed_commands.should be_empty
     end
 
     it 'Fails gracefully when copy errs' do
@@ -353,25 +356,25 @@ describe Carto::Connector do
         logger:  @fake_log,
         user: @user
       }
-      connector = FailingTestConnector.new(parameters, options)
+      context = FailingTestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error('SQL EXECUTION ERROR')
 
       # When something fails during table copy the foreign table, user mappings and server should be cleaned up
-      connector.executed_commands.size.should eq 6
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 6
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -464,24 +467,24 @@ describe Carto::Connector do
       }
       config = { 'mysql' => { 'enabled' => true, 'max_rows' => 10 } }
       Cartodb.with_config connectors: config do
-        connector = TestCountConnector.new(5, parameters, options)
+        context = TestCountConnectorContext.new(5, @executed_commands = [], options)
+        connector = Carto::Connector.new(parameters, context)
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
         result.should be_empty
 
-        connector.executed_commands.size.should eq 7
-        server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+        @executed_commands.size.should eq 7
+        server_name = match_sql_command(@executed_commands[0][1])[:server_name]
         foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
         user_name = @user.username
         user_role = @user.database_username
 
         expect_executed_commands(
-          connector.executed_commands,
+          @executed_commands,
           {
             # CREATE SERVER
             mode: :superuser,
             sql: [{
               command: :create_server,
-              server_name: /\Amysql_/,
               fdw_name: 'odbc_fdw',
               options: {
                 'odbc_Driver' => 'MySQL',
@@ -585,24 +588,24 @@ describe Carto::Connector do
       }
       config = { 'mysql' => { 'enabled' => true, 'max_rows' => 10 } }
       Cartodb.with_config connectors: config do
-        connector = TestCountConnector.new(10, parameters, options)
+        context = TestCountConnectorContext.new(10, @executed_commands = [], options)
+        connector = Carto::Connector.new(parameters, context)
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
         result[:max_rows_per_connection].should eq 10
 
-        connector.executed_commands.size.should eq 7
-        server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+        @executed_commands.size.should eq 7
+        server_name = match_sql_command(@executed_commands[0][1])[:server_name]
         foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
         user_name = @user.username
         user_role = @user.database_username
 
         expect_executed_commands(
-          connector.executed_commands,
+          @executed_commands,
           {
             # CREATE SERVER
             mode: :superuser,
             sql: [{
               command: :create_server,
-              server_name: /\Amysql_/,
               fdw_name: 'odbc_fdw',
               options: {
                 'odbc_Driver' => 'MySQL',
@@ -702,25 +705,25 @@ describe Carto::Connector do
         logger: @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       tables = connector.list_tables
 
       tables.should eq [{ schema: 'abc', name: 'xyz' }]
 
-      connector.executed_commands.size.should eq 5
+      @executed_commands.size.should eq 5
 
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Amysql_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'MySQL',
@@ -782,13 +785,14 @@ describe Carto::Connector do
         logger: @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error(Carto::Connector::InvalidParametersError)
 
       # When parameters are not valid nothing should be executed in the database
-      connector.executed_commands.should be_nil
+      @executed_commands.should be_empty
     end
 
     it 'checks connection paramters in order to list tables' do
@@ -805,13 +809,14 @@ describe Carto::Connector do
         logger: @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error(Carto::Connector::InvalidParametersError)
 
       # When parameters are not valid nothing should be executed in the database
-      connector.executed_commands.should be_nil
+      @executed_commands.should be_empty
     end
 
     it 'Should provide connector metadata' do
@@ -855,27 +860,26 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Apostgres_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'PostgreSQL Unicode',
@@ -1000,27 +1004,26 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Asqlserver_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'FreeTDS',
@@ -1142,27 +1145,26 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Ahive_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_Driver' => 'Hortonworks Hive ODBC Driver 64-bit',
@@ -1284,12 +1286,11 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
       expect {
-        TestConnector.new(parameters, options)
+        Carto::Connector.new(parameters, options)
       }.to raise_error(Carto::Connector::InvalidParametersError)
     end
 
@@ -1319,27 +1320,26 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aodbc_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_driver' => 'thedriver',
@@ -1438,27 +1438,26 @@ describe Carto::Connector do
         encoding: 'theencoding'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Aodbc_/,
             fdw_name: 'odbc_fdw',
             options: {
               'odbc_driver' => 'thedriver',
@@ -1563,28 +1562,27 @@ describe Carto::Connector do
         table:    'thetable'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      connector.executed_commands.size.should eq 7
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 7
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
       user_name = @user.username
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Apg_/,
             fdw_name: 'postgres_fdw',
             options: {
               'host' => 'theserver',
@@ -1673,17 +1671,17 @@ describe Carto::Connector do
         invalid_param: 'xyz'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = TestConnector.new(parameters, options)
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error(Carto::Connector::InvalidParametersError)
 
       # When parameters are not valid nothing should be executed in the database
-      connector.executed_commands.should be_nil
+      @executed_commands.should be_empty
     end
 
     it 'Fails gracefully when copy errs' do
@@ -1696,30 +1694,29 @@ describe Carto::Connector do
         table:    'thetable'
       }
       options = {
-        pg:   @pg_options,
-        log:  @fake_log,
+        logger:  @fake_log,
         user: @user
       }
-      connector = FailingTestConnector.new(parameters, options)
+      context = FailingTestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
       expect {
         connector.copy_table schema_name: 'xyz', table_name: 'abc'
       }.to raise_error('SQL EXECUTION ERROR')
 
       # When something fails during table copy the foreign table, user mappings and server should be cleaned up
-      connector.executed_commands.size.should eq 6
-      server_name = match_sql_command(connector.executed_commands[0][1])[:server_name]
+      @executed_commands.size.should eq 6
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
       user_role = @user.database_username
 
       expect_executed_commands(
-        connector.executed_commands,
+        @executed_commands,
         {
           # CREATE SERVER
           mode: :superuser,
           sql: [{
             command: :create_server,
-            server_name: /\Apg_/,
             fdw_name: 'postgres_fdw',
             options: {
               'host' => 'theserver',

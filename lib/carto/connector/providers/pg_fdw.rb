@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './base'
+require_relative './fdw'
 
 module Carto
   class Connector
@@ -29,9 +29,9 @@ module Carto
     #
     # TODO: add support for sql_query parameter
     #
-    class PgFdwProvider < Provider
+    class PgFdwProvider < FdwProvider
 
-      def initialize(params)
+      def initialize(context, params)
         super
       end
 

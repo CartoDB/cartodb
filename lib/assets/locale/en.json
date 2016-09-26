@@ -459,16 +459,28 @@
           "enter": "Enter a URL",
           "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g.",
-          "tms": "TMS"
+          "tms": "TMS",
+          "couldnt-validate": "We couldn't validate this, if you're sure it contains data click \"add basemap\"",
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
           "enter": "Enter your map ID/URL",
           "enter-token": "Enter your access token",
-          "username": "E.g. username.ab12cd3",
-          "access-token": "E.g. pk.bfg32ewdsadeyJ1Ijoi…",
           "error": "Error retrieving your basemap. Please, check your access token.",
           "invalid": "This URL is not valid."
+        },
+        "wms": {
+          "insert": "Insert your WMS/WMTS URL",
+          "invalid": "The URL is either invalid or contains unsupported projections",
+          "see-docs": "see docs",
+          "oh-no": "Oh! No results",
+          "unfortunately": "Unfortunately we couldn't found any layer that matched your search term",
+          "tables-pluralize": "table |||| tables",
+          "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
+        },
+        "tilejson": {
+          "insert": "Insert your TileJSON URL",
+          "invalid": "Invalid URL, please make sure it is correct"
         }
       },
       "export-data": {
@@ -695,7 +707,7 @@
             "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
-            "title": "Filter rows by column value",
+            "title": "Filter by column value",
             "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
@@ -1517,7 +1529,7 @@
         "weight-type": "Weight type",
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
-        "workflow": "Workflow",
+        "workflow": "Your workflow",
         "write-max-value": "Write max value",
         "write-min-value": "Write min value",
         "yes": "Yes"
@@ -1581,7 +1593,7 @@
         "cartocss": "SQL"
       },
       "code-mirror": {
-        "save": "CMD + S to apply your query."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",
@@ -1683,7 +1695,7 @@
       "types": {
         "none": "-",
         "simple": "none",
-        "hexabins": "hexabins",
+        "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
         "heatmap": "pixel",
@@ -1701,6 +1713,7 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
+          "placeholder-text": "There's no geometry in your data that could be styled.",
           "desc": "Change the visualization"
         },
         "unanimatable": {

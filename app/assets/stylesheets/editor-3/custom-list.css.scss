@@ -37,6 +37,12 @@
   max-height: 185px;
   overflow: hidden;
 }
+.CustomList-list.is-customized .CustomList-item--add {
+  display: none;
+}
+.CustomList-itemLink {
+  width: 100%;
+}
 .CustomList-message {
   padding: 16px;
   text-align: center;

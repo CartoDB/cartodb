@@ -43,11 +43,21 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
     config
   end
 
+  def self.for_organization(organization, provider)
+    if provider
+      config = where(organization_id: organization.id, connector_provider_id: provider.id).first
+      if config.blank?
+        config = default(provider)
+      end
+      config
+    end
+  end
+
   def self.for_user(user, provider)
     if provider
       config = where(user_id: user.id, connector_provider_id: provider.id).first
       if config.blank? && user.organization_id.present?
-        config = where(organization_id: user.organization_id, connector_provider_id: provider.id).first
+        config = for_organization(user.organization, provider)
       end
       if config.blank?
         config = default(provider)

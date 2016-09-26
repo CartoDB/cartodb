@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Carto
   module HasConnectorConfiguration
     def connector_configuration(provider_name)

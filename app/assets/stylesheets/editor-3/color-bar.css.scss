@@ -115,11 +115,11 @@
   position: relative;
   top: 12px;
   height: 13px;
-  background-image: image-url('layout/colorpicker/invert.png');
+  background-image: image-url('layout/colorpicker/invert.svg');
   background-repeat: no-repeat;
 }
 .is-inverted .ColorBar-invertLink {
-  background-image: image-url('layout/colorpicker/invert_inverted.png');
+  background-image: image-url('layout/colorpicker/invert_inverted.svg');
 }
 .is-selected .ColorBar-invertLink {
   @include opacity(1);

@@ -143,12 +143,13 @@ module Carto
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(COMMON_MUTABLE_ATTRIBUTES.merge(:username, :viewer))
+        @create_params ||=
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username, :viewer])
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(COMMON_MUTABLE_ATTRIBUTES)
+        @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
       end
     end
   end

@@ -64,4 +64,23 @@ describe Carto::Api::ConnectorsController do
       end
     end
   end
+
+  describe '#show' do
+    it 'returns provider information for regular user' do
+      get_json api_v1_connectors_show_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
+        response.status.should be_success
+        response.body[:features][:sql_queries].should eq true
+        response.body[:features][:list_tables].should eq true
+        response.body[:parameters][:table][:required].should eq true
+        response.body[:parameters][:connection][:database][:required].should eq true
+        response.body[:parameters][:connection][:username][:required].should eq true
+        response.body[:parameters][:connection][:port][:required].should eq false
+      end
+    end
+    it 'returns 422 if provider doesn\'t exists' do
+      get_json api_v1_connectors_show_url(provider_id: 'unknown', user_domain: @user.username, api_key: @user.api_key), {}, @headers do |response|
+        response.status.should eq 422
+      end
+    end
+  end
 end

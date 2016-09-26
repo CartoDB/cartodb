@@ -99,7 +99,7 @@ module Carto
     #     }
     #   }, ...
     # }
-    def self.information(provider_name, user = nil)
+    def self.information(provider_name)
       provider = provider_class(provider_name)
       raise InvalidParametersError.new(message: "Invalid provider", provider: provider_name) if provider.blank?
       provider.information

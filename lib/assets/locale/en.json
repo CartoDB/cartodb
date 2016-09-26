@@ -1596,7 +1596,7 @@
         "cartocss": "SQL"
       },
       "code-mirror": {
-        "save": "CMD + S to apply your query."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",
@@ -1698,7 +1698,7 @@
       "types": {
         "none": "-",
         "simple": "none",
-        "hexabins": "hexabins",
+        "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
         "heatmap": "pixel",

@@ -37,6 +37,9 @@ module Carto
         account_creator.with_password(create_params[:password]) if create_params[:password].present?
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
 
+        param_viewer = create_params[:viewer]
+        account_creator.with_viewer(param_viewer) if param_viewer
+
         if create_params[:soft_geocoding_limit].present?
           account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
         end

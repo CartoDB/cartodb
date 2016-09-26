@@ -269,6 +269,8 @@ module Carto
           data[:legend] = legend
         end
 
+        data[:legends] = layer_vizjson[:legends] || []
+
         data
       end
     end

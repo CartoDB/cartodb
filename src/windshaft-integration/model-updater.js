@@ -140,18 +140,20 @@ ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, 
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var layerMetadata = windshaftMap.getLayerMetadata(remoteLayerIndex);
   var cartoCSSRules = layerMetadata && layerMetadata.cartocss_meta && layerMetadata.cartocss_meta.rules;
-  if (cartoCSSRules) {
-    _.each(cartoCSSRules, function (rule) {
-      _.each(this._getLayerLegends(layerModel), function (legendModel) {
+  _.each(this._getLayerLegends(layerModel), function (legendModel) {
+    var newLegendAttrs = {
+      state: 'success'
+    };
+    if (cartoCSSRules) {
+      _.each(cartoCSSRules, function (rule) {
         var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
         if (adapter.canAdapt(rule)) {
-          legendModel.set(_.extend({
-            state: 'success'
-          }, adapter.adapt(rule)));
+          newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(rule));
         }
       });
-    }, this);
-  }
+    }
+    legendModel.set(newLegendAttrs);
+  });
 };
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {

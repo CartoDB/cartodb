@@ -8,40 +8,50 @@ describe('geo/map/legends/legends', function () {
       {
         type: 'bubble',
         title: 'Bubble Legend',
-        pre_html_snippet: '<p>PRE Bubble Legend</p>',
-        post_html_snippet: '<p>POST Bubble Legend</p>',
-        fill_color: '#FABADA'
+        pre_html: '<p>PRE Bubble Legend</p>',
+        post_html: '<p>POST Bubble Legend</p>',
+        definition: {
+          color: '#FABADA'
+        }
       },
       {
         type: 'category',
         title: 'Categories Legend',
-        pre_html_snippet: '<p>PRE Category Legend</p>',
-        post_html_snippet: '<p>POST Category Legend</p>',
-        prefix: 'prefix',
-        suffix: 'suffix'
+        pre_html: '<p>PRE Category Legend</p>',
+        post_html: '<p>POST Category Legend</p>',
+        definition: {
+          prefix: 'prefix',
+          suffix: 'suffix'
+        }
       },
       {
         type: 'choropleth',
         title: 'Choropleth Legend',
-        pre_html_snippet: '<p>PRE Choropleth Legend</p>',
-        post_html_snippet: '<p>POST Choropleth Legend</p>',
-        prefix: 'prefix',
-        suffix: 'suffix'
+        pre_html: '<p>PRE Choropleth Legend</p>',
+        post_html: '<p>POST Choropleth Legend</p>',
+        definition: {
+          prefix: 'prefix',
+          suffix: 'suffix'
+        }
       },
       {
         type: 'custom',
         title: 'Custom Legend',
-        pre_html_snippet: '<p>PRE Custom Legend</p>',
-        post_html_snippet: '<p>POST Custom Legend</p>',
-        items: [
-          { type: 'color', name: 'Item 1', color: '#CACACA;' },
-          { type: 'color', name: 'Item 2', color: '#FABADA;' }
-        ]
+        pre_html: '<p>PRE Custom Legend</p>',
+        post_html: '<p>POST Custom Legend</p>',
+        definition: {
+          categories: [
+            { type: 'color', name: 'Item 1', color: '#CACACA;' },
+            { type: 'color', name: 'Item 2', color: '#FABADA;' }
+          ]
+        }
       },
       {
         type: 'html',
         title: 'HTML Legend',
-        html: '<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>'
+        definition: {
+          html: '<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>'
+        }
       }
     ], {
       visModel: this.visModel

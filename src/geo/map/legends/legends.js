@@ -8,33 +8,33 @@ var HTMLLegendModel = require('./html-legend-model');
 var LEGENDS_METADATA = {
   bubble: {
     modelClass: BubbleLegendModel,
-    attrs: [ { 'fillColor': 'fill_color' } ],
+    definitionAttrs: [ { 'fillColor': 'color' } ],
     dynamic: true
   },
   category: {
     modelClass: CategoryLegendModel,
-    attrs: [ 'prefix', 'suffix' ],
+    definitionAttrs: [ 'prefix', 'suffix' ],
     dynamic: true
   },
   choropleth: {
     modelClass: ChoroplethLegendModel,
-    attrs: [ 'prefix', 'suffix' ],
+    definitionAttrs: [ 'prefix', 'suffix' ],
     dynamic: true
   },
   custom: {
     modelClass: CustomLegendModel,
-    attrs: [ 'items' ]
+    definitionAttrs: [ { 'items': 'categories' } ]
   },
   html: {
     modelClass: HTMLLegendModel,
-    attrs: [ 'html' ]
+    definitionAttrs: [ 'html' ]
   }
 };
 
 var SHARED_ATTRS = [
   'title',
-  { 'preHTMLSnippet': 'pre_html_snippet' },
-  { 'postHTMLSnippet': 'post_html_snippet' }
+  { 'preHTMLSnippet': 'pre_html' },
+  { 'postHTMLSnippet': 'post_html' }
 ];
 
 var Legends = function (legendsData, deps) {
@@ -52,8 +52,13 @@ var Legends = function (legendsData, deps) {
 
 Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
   var ModelClass = legendMetadata.modelClass;
-  var attrs = SHARED_ATTRS.concat(legendMetadata.attrs);
+  var attrs = SHARED_ATTRS.concat(legendMetadata.definitionAttrs);
   var data = this._findDataForLegend(legendType);
+
+  // Flatten data.definition
+  data = data && _.extend({},
+    _.omit(data, 'definition'),
+    data.definition);
 
   var modelAttrs = {};
   _.each(attrs, function (attr) {

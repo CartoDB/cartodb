@@ -40,7 +40,8 @@ module Carto
 
       upload_path = Cartodb.get_config(:importer, 'uploads_path')
       if upload_path
-        "#{upload_path}#{path}"
+        # Ugly patch needed for backwards compatibility
+        "#{upload_path}#{path}".gsub('/uploads/uploads/', '/uploads/')
       else
         Rails.root.join("public#{path}").to_s
       end

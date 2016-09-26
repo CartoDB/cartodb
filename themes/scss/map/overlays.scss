@@ -225,7 +225,8 @@ $maxLegendContainerHeight: 300px;
   left: 16px;
   width: 240px;
   height: auto;
-  max-height: $maxLegendContainerHeight;
+  //max-height: $maxLegendContainerHeight;
+  max-height: calc(100vh - 120px);
   border-radius: 4px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
@@ -243,7 +244,8 @@ $maxLegendContainerHeight: 300px;
   left: 0px;
   right: 0px;
   bottom: 0px;
-  max-height: $maxLegendContainerHeight;
+  // max-height: $maxLegendContainerHeight;
+  max-height: calc(100vh - 20px);
 }
 .CDB-Legends-canvasShadow {
   display: none;

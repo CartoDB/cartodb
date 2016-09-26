@@ -14,6 +14,7 @@ var LayerLegendsView = Backbone.View.extend({
     this._legendViews = [];
 
     this.model.on('change:visible', this._onLayerVisibilityChanged, this);
+    this.model.on('change:layer_name', this.render, this);
   },
 
   render: function () {

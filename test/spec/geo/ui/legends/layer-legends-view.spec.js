@@ -35,6 +35,15 @@ describe('geo/ui/legends/layer-legends-view', function () {
     expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
   });
 
+  it('should update the name of the layer when it changes', function () {
+    expect(this.layerLegendsView.$el.html()).toMatch('CartoDB Layer #1');
+
+    this.cartoDBLayer.set('layer_name', 'A NEW layer name');
+
+    expect(this.layerLegendsView.$el.html()).not.toMatch('CartoDB Layer #1');
+    expect(this.layerLegendsView.$el.html()).toMatch('A NEW layer name');
+  });
+
   it('should hide/show the layer if check next to title is clicked', function () {
     expect(this.cartoDBLayer.isVisible()).toBeTruthy();
 

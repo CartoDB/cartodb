@@ -25,6 +25,12 @@ module Carto
     #   * encoding (optional): character encoding used by the external database; default is UTF-8.
     #     The encoding names accepted are those accepted by PostgreSQL.
     #
+    # Derived classes for specific ODBC drivers will typically redine at least these methods:
+    #
+    # * `fixed_connection_attributes`
+    # * `required_connection_attributes`
+    # * `optional_connection_attributes`
+    #
     class OdbcProvider < FdwProvider
 
       def initialize(context, params)
@@ -90,30 +96,34 @@ module Carto
         schema
       end
 
-      def create_server_command(server_name)
-        fdw_create_server 'odbc_fdw', server_name, server_options
+      def fdw_create_server(server_name)
+        sql = fdw_create_server_sql 'odbc_fdw', server_name, server_options
+        @connector_context.execute_as_superuser sql
       end
 
-      def create_usermap_command(server_name, username)
-        fdw_create_usermap server_name, username, user_options
+      def fdw_create_usermap(server_name, username)
+        sql = fdw_create_usermap_sql server_name, username, user_options
+        @connector_context.execute_as_superuser sql
       end
 
-      def create_foreign_table_command(server_name, foreign_table_schema, foreign_prefix, username)
+      def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix, username)
         cmds = []
+        foreign_table_name = self.foreign_table_name(foreign_prefix)
         if @columns.present?
-          cmds << fdw_create_foreign_table(
-            server_name, foreign_table_schema, foreign_table_name(foreign_prefix), @columns, table_options
+          cmds << fdw_create_foreign_table_sql(
+            server_name, foreign_table_schema, foreign_table_name, @columns, table_options
           )
         else
           options = table_options.merge(prefix: foreign_prefix)
-          cmds << fdw_import_foreign_schema(server_name, remote_schema_name, foreign_table_schema, options)
+          cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
-        cmds << fdw_grant_select(foreign_table_schema, foreign_table_name(foreign_prefix), username)
-        cmds.join "\n"
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
+        @connector_context.execute_as_superuser cmds.join("\n")
+        foreign_table_name
       end
 
-      def list_tables_command(server_name, _foreign_table_schema, _foreign_prefix, limit)
-        %{
+      def fdw_list_tables(server_name, _foreign_table_schema, _foreign_prefix, limit)
+        @connector_context.execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }
       end

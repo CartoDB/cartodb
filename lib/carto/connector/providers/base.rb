@@ -1,6 +1,18 @@
 # encoding: utf-8
 
 # Base class for Connector Providers
+#
+# This is an abstract class; concrete classes derived from this one
+# must implement these methods:
+#
+# * `copy_table(schema_name:, table_name:, limits:)`
+# * `list_tables(limits:)`
+# * `remote_data_updated?`
+# * `table_name`
+# * `required_parameters`
+# * `optional_parameters`
+# * `features_information`
+#
 module Carto
   class Connector
     class Provider
@@ -22,12 +34,12 @@ module Carto
         raise InvalidParametersError.new(message: errors * "\n") if errors.present?
       end
 
-      def copy_table(schema_name:, table_name:)
-        must_be_defined_in_derived_class schema_name: schema_name, table_name: table_name
+      def copy_table(schema_name:, table_name:, limits:)
+        must_be_defined_in_derived_class schema_name: schema_name, table_name: table_name, limits: limits
       end
 
-      def list_tables(limit)
-        must_be_defined_in_derived_class limit
+      def list_tables(limits:)
+        must_be_defined_in_derived_class limits: limits
       end
 
       def remote_data_updated?

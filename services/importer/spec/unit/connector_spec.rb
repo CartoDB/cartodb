@@ -160,7 +160,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -189,7 +189,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -234,13 +238,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -276,7 +284,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       user_role = @user.database_username
 
@@ -363,7 +371,7 @@ describe Carto::Connector do
       }.to raise_error('SQL EXECUTION ERROR')
 
       # When something fails during table copy the foreign table, user mappings and server should be cleaned up
-      @executed_commands.size.should eq 6
+      @executed_commands.size.should eq 8
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_role = @user.database_username
@@ -391,7 +399,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -427,13 +439,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -472,7 +488,7 @@ describe Carto::Connector do
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
         result.should be_empty
 
-        @executed_commands.size.should eq 7
+        @executed_commands.size.should eq 9
         server_name = match_sql_command(@executed_commands[0][1])[:server_name]
         foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
         user_name = @user.username
@@ -501,7 +517,11 @@ describe Carto::Connector do
               server_name: server_name,
               user_name: user_role,
               options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-            }, {
+            }]
+          }, {
+            # CREATE USER MAPPING
+            mode: :superuser,
+            sql: [{
               command: :create_user_mapping,
               server_name: server_name,
               user_name: 'postgres',
@@ -547,13 +567,17 @@ describe Carto::Connector do
               table_name: foreign_table_name
             }]
           }, {
-            # DROP USERMAP
+            # DROP USER MAPPING
             mode: :superuser,
             sql: [{
               command: :drop_usermapping_if_exists,
               server_name: server_name,
               user_name: 'postgres'
-            }, {
+            }]
+          }, {
+            # DROP USER MAPPING
+            mode: :superuser,
+            sql: [{
               command: :drop_usermapping_if_exists,
               server_name: server_name,
               user_name: user_role
@@ -593,7 +617,7 @@ describe Carto::Connector do
         result = connector.copy_table schema_name: 'xyz', table_name: 'abc'
         result[:max_rows_per_connection].should eq 10
 
-        @executed_commands.size.should eq 7
+        @executed_commands.size.should eq 9
         server_name = match_sql_command(@executed_commands[0][1])[:server_name]
         foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
         user_name = @user.username
@@ -622,7 +646,11 @@ describe Carto::Connector do
               server_name: server_name,
               user_name: user_role,
               options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-            }, {
+            }]
+          }, {
+            # CREATE USER MAPPING
+            mode: :superuser,
+            sql: [{
               command: :create_user_mapping,
               server_name: server_name,
               user_name: 'postgres',
@@ -668,13 +696,17 @@ describe Carto::Connector do
               table_name: foreign_table_name
             }]
           }, {
-            # DROP USERMAP
+            # DROP USER MAPPING
             mode: :superuser,
             sql: [{
               command: :drop_usermapping_if_exists,
               server_name: server_name,
               user_name: 'postgres'
-            }, {
+            }]
+          }, {
+            # DROP USER MAPPING
+            mode: :superuser,
+            sql: [{
               command: :drop_usermapping_if_exists,
               server_name: server_name,
               user_name: user_role
@@ -711,7 +743,7 @@ describe Carto::Connector do
 
       tables.should eq [{ schema: 'abc', name: 'xyz' }]
 
-      @executed_commands.size.should eq 5
+      @executed_commands.size.should eq 7
 
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       user_name = @user.username
@@ -740,7 +772,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -748,20 +784,24 @@ describe Carto::Connector do
           }]
         }, {
           # FETCH TABLES LIST
-          mode: :superuser,
+          mode: :user,
           user: user_name,
           sql: [{
             command: :select_all,
             from: /ODBCTablesList\('#{Regexp.escape server_name}'\s*,\d+\s*\)/
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -867,7 +907,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -896,7 +936,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_UID' => 'theuser', 'odbc_PWD' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -941,13 +985,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1011,7 +1059,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -1040,7 +1088,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_UID' => 'theuser', 'odbc_PWD' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -1083,13 +1135,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+            }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1152,7 +1208,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -1180,7 +1236,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_UID' => 'theuser', 'odbc_PWD' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -1223,13 +1283,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1327,7 +1391,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -1355,7 +1419,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -1398,13 +1466,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1445,7 +1517,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
@@ -1473,7 +1545,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => '{the;password}' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -1516,13 +1592,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1569,7 +1649,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       connector.copy_table schema_name: 'xyz', table_name: 'abc'
 
-      @executed_commands.size.should eq 7
+      @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
@@ -1597,14 +1677,18 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'user' => 'theuser', 'password' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
             options: { 'user' => 'theuser', 'password' => 'thepassword' }
           }]
         }, {
-          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          # IMPORT FOREIGN SCHEMA; GRANT SELECT
           mode: :superuser,
           sql: [{
             command: :import_foreign_schema_limited,
@@ -1638,13 +1722,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role
@@ -1704,7 +1792,7 @@ describe Carto::Connector do
       }.to raise_error('SQL EXECUTION ERROR')
 
       # When something fails during table copy the foreign table, user mappings and server should be cleaned up
-      @executed_commands.size.should eq 6
+      @executed_commands.size.should eq 8
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
       unqualified_foreign_table_name = %{"#{server_name}_thetable"}
       foreign_table_name = %{"cdb_importer".#{unqualified_foreign_table_name}}
@@ -1731,7 +1819,11 @@ describe Carto::Connector do
             server_name: server_name,
             user_name: user_role,
             options: { 'user' => 'theuser', 'password' => 'thepassword' }
-          }, {
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :create_user_mapping,
             server_name: server_name,
             user_name: 'postgres',
@@ -1763,13 +1855,17 @@ describe Carto::Connector do
             table_name: foreign_table_name
           }]
         }, {
-          # DROP USERMAP
+          # DROP USER MAPPING
           mode: :superuser,
           sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-          }, {
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: user_role

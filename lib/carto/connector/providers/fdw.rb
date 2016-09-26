@@ -3,7 +3,16 @@
 require_relative './base'
 
 # Base class for Connector Providers
-# that use FDW to import data through a foreign table
+# that use FDW to import data through a foreign table.
+#
+# This is an abstract class; concrete classes derived from this one
+# must implement these methods to handle FDW operations:
+#
+# * `fdw_create_server(server_name)`
+# * `fdw_create_usermap(server_name, user_name)`
+# * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix, username)`
+# * `fdw_list_tables(limits:)`
+#
 module Carto
   class Connector
     class FdwProvider < Provider
@@ -14,17 +23,21 @@ module Carto
         with_server do
           begin
             qualified_table_name = fdw_qualified_table_name(schema_name, table_name)
-            foreign_table_name = foreign_table_name(foreign_prefix)
             log "Creating Foreign Table"
-            execute_as_superuser _create_foreign_table_command
+            foreign_table_name = fdw_create_foreign_table(
+              server_name,
+              foreign_table_schema,
+              foreign_prefix,
+              @connector_context.user.database_username
+            )
             log "Copying Foreign Table"
             max_rows = limits[:max_rows]
-            execute _copy_foreign_table_command(
+            fdw_copy_foreign_table(
               qualified_table_name, qualified_foreign_table_name(foreign_table_name), max_rows
             )
             check_copied_table_size(qualified_table_name, max_rows)
           ensure
-            execute_as_superuser _drop_foreign_table_command(foreign_table_name) if foreign_table_name
+            fdw_drop_foreign_table(foreign_table_schema, foreign_table_name) if foreign_table_name
           end
         end
       end
@@ -33,9 +46,7 @@ module Carto
         limit = limits[:max_listed_tables]
         validate! only: [:connection]
         with_server do
-          # TODO: let the providers decide what needs to be executed as superuser
-          # (we use superuser here because the provider may need to create auxiliar foreing tables)
-          execute_as_superuser _list_tables_command(limit)
+          fdw_list_tables server_name, foreign_table_schema, foreign_prefix, limit
         end
       end
 
@@ -54,17 +65,19 @@ module Carto
         # Currently we create temporary server and user mapings when we need them,
         # and drop them after use.
         log "Creating Server"
-        execute_as_superuser _create_server_command
-        log "Creating Usermap"
-        execute_as_superuser _create_usermap_command
+        fdw_create_server server_name
+        log "Creating Usermaps"
+        fdw_create_usermap server_name, @connector_context.user.database_username
+        fdw_create_usermap server_name, 'postgres'
         yield
       rescue => error
         log "Connector Error #{error}"
         raise error
       ensure
         log "Connector cleanup"
-        execute_as_superuser _drop_usermap_command
-        execute_as_superuser _drop_server_command
+        fdw_drop_usermap server_name, 'postgres'
+        fdw_drop_usermap server_name, @connector_context.user.database_username
+        fdw_drop_server server_name
         log "Connector cleaned-up"
       end
 
@@ -95,82 +108,54 @@ module Carto
       end
 
       def qualified_foreign_table_name(foreign_table_name)
-        %{"#{foreign_table_schema}"."#{foreign_table_name}"}
+        fdw_qualified_table_name(foreign_table_schema, foreign_table_name)
       end
 
-      def _create_server_command
-        create_server_command server_name
+      # Create FDW server with given name
+      def fdw_create_server(_server_name)
+        must_be_defined_in_derived_class
       end
 
-      def _create_usermap_command
-        [
-          create_usermap_command(server_name, @connector_context.user.database_username),
-          create_usermap_command(server_name, 'postgres')
-        ].join("\n")
+      # Create usermap for the given user
+      def fdw_create_usermap(_server_name, _username)
+        must_be_defined_in_derived_class
       end
 
-      def _create_foreign_table_command
-        create_foreign_table_command server_name, foreign_table_schema,
-                                               foreign_prefix,
-                                               @connector_context.user.database_username
+      # Create the foreign table used for importing
+      # Must return the name of the created foreign table
+      def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix, _username)
+        must_be_defined_in_derived_class
       end
 
-      def _drop_server_command
-        drop_server_command server_name
+      # SQL code to drop the FDW server
+      def fdw_drop_server(server_name)
+        execute_as_superuser fdw_drop_server_sql(server_name, cascade: true)
       end
 
-      def _drop_usermap_command
-        [
-          drop_usermap_command(server_name, 'postgres'),
-          drop_usermap_command(server_name, @connector_context.user.database_username)
-        ].join("\n")
+      # Dop the user mapping
+      def fdw_drop_usermap(server_name, user)
+        execute_as_superuser fdw_drop_usermap_sql(server_name, user)
       end
 
-      def _drop_foreign_table_command(foreign_table_name)
-        drop_foreign_table_command foreign_table_schema, foreign_table_name
+      # Drop the foreign table
+      def fdw_drop_foreign_table(schema_name, table_name)
+        execute_as_superuser fdw_drop_foreign_table_sql(schema_name, table_name)
       end
 
-      def _copy_foreign_table_command(local_table_name, foreign_table_name, max_rows)
-        limit = (max_rows && max_rows > 0) ? " LIMIT #{max_rows}" : ''
-        %{
+      # Copy foreign table to local table
+      def fdw_copy_foreign_table(local_table_name, foreign_table_name, max_rows)
+        limit = max_rows && max_rows > 0 ? " LIMIT #{max_rows}" : ''
+        execute %{
           CREATE TABLE #{local_table_name}
             AS SELECT * FROM #{foreign_table_name}
               #{limit};
         }
       end
 
-      def _list_tables_command(limit)
-        list_tables_command(server_name, foreign_table_schema, foreign_prefix, limit)
-      end
-
-      # SQL code to create the FDW server
-      def create_server_command(_server_name)
+      # Retrieve list of external tables;
+      # should return array of hashes with keys :schema and :name
+      def fdw_list_tables(_limits: {})
         must_be_defined_in_derived_class
-      end
-
-      # SQL code to create the usermap for the user and postgres roles
-      def create_usermap_command(_server_name, _username)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to create the foreign table used for importing
-      def create_foreign_table_command(_server_name, _schema_name, _foreign_prefix, _username)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to drop the FDW server
-      def drop_server_command(server_name)
-        fdw_drop_server server_name, cascade: true
-      end
-
-      # SQL code to drop the user mapping
-      def drop_usermap_command(server_name, user)
-        fdw_drop_usermap server_name, user
-      end
-
-      # SQL code to drop the foreign table
-      def drop_foreign_table_command(schema_name, table_name)
-        fdw_drop_foreign_table schema_name, table_name
       end
 
       def check_copied_table_size(table_name, max_rows)

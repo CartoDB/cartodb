@@ -25,7 +25,7 @@ module Carto
       end
     rescue => e
       CartoDB::Logger.warning(exception: e, message: 'Error logging in via Github Oauth')
-      redirect_to CartoDB.path(self, 'login')
+      redirect_to CartoDB.url(self, 'login')
     end
 
     private
@@ -51,7 +51,7 @@ module Carto
     def signup(api)
       org_name = params[:organization]
       @organization = ::Organization.where(name: org_name).first if org_name.present?
-      return redirect_to CartoDB.path(self, 'login') unless @organization.present? && @organization.auth_github_enabled
+      return redirect_to CartoDB.url(self, 'login') unless @organization.present? && @organization.auth_github_enabled
 
       account_creator = CartoDB::UserAccountCreator.new(Carto::UserCreation::CREATED_VIA_ORG_SIGNUP).
                         with_organization(@organization).

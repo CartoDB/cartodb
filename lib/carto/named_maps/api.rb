@@ -91,8 +91,8 @@ module Carto
           response_code = response.code
           if response_code.to_s =~ /^2/
             response.response_body
-          elsif response_code != 400 && response_code != 404
-            log_response(response, 'destroy')
+          else
+            log_response(response, 'destroy') unless response_code == 404
           end
         end
       end

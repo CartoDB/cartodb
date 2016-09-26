@@ -18,6 +18,7 @@
   @include justify-content(center);
   @include flex(1 1 auto);
   padding: 32px 0 0;
+  overflow: hidden;
 }
 .Modal-container .ScrollView {
   @include align-items(center);

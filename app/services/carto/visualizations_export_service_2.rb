@@ -9,9 +9,10 @@ require 'json'
 # 2.0.2: export username
 # 2.0.3: export state (Carto::State)
 # 2.0.4: export legends (Carto::Legend)
+# 2.0.5: export explicit widget order
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.4'.freeze
+    CURRENT_VERSION = '2.0.5'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -178,7 +179,7 @@ module Carto
       return nil unless exported_widget
 
       Carto::Widget.new(
-        order: order,
+        order: exported_widget[:order] || order, # Order added to export on 2.0.5
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
@@ -291,7 +292,8 @@ module Carto
         options: widget.options,
         type: widget.type,
         title: widget.title,
-        source_id: widget.source_id
+        source_id: widget.source_id,
+        order: widget.order
       }
     end
 

@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.3'
+      version: '2.0.5'
     }
   end
 
@@ -121,7 +121,8 @@ describe Carto::VisualizationsExportService2 do
               },
               title: "Category category_t",
               type: "category",
-              source_id: "a1"
+              source_id: "a1",
+              order: 1
             }
           ],
           legends: [
@@ -324,10 +325,7 @@ describe Carto::VisualizationsExportService2 do
     widgets_export_length = widgets_export.nil? ? 0 : widgets_export.length
     widgets.length.should eq widgets_export_length
     (0..(widgets_export_length - 1)).each do |i|
-      widget = widgets[i]
-      widget.order.should eq i
-
-      verify_widget_vs_export(widget, widgets_export[i])
+      verify_widget_vs_export(widgets[i], widgets_export[i])
     end
   end
 
@@ -337,6 +335,7 @@ describe Carto::VisualizationsExportService2 do
     widget.options.symbolize_keys.should eq widget_export[:options]
     widget.layer.should_not be_nil
     widget.source_id.should eq widget_export[:source_id]
+    widget.order.should eq widget_export[:order]
   end
 
   def verify_legends_vs_export(legends, legends_export)
@@ -570,6 +569,20 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.4 (without Widget.order)' do
+          export_2_0_4 = export
+          export_2_0_4[:visualization][:layers].each do |layer|
+            layer.fetch(:widgets, []).each { |widget| widget.delete(:order) }
+          end
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_4.to_json)
+
+          visualization_export = export_2_0_4[:visualization]
+          visualization_export[:layers][2][:widgets][0][:order] = 0 # Should assign order 0 to the first widget
+          verify_visualization_vs_export(visualization, visualization_export)
+        end
+
         it '2.0.3 (without Layer.legends)' do
           export_2_0_3 = export
           export_2_0_3[:visualization][:layers].each do |layer|

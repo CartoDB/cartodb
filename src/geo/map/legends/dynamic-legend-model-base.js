@@ -7,6 +7,8 @@ var STATE_ERROR = 'error';
 
 var DynamicLegendModelBase = LegendModelBase.extend({
 
+  NON_RESETEABLE_DEFAULT_ATTRS: ['state'],
+
   defaults: function () {
     return _.extend({
       state: STATE_LOADING

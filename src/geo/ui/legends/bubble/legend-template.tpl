@@ -9,7 +9,7 @@
     <ul class="Bubble-list">
       <% for (var i in bubbleSizes) { %>
         <li class="js-bubbleItem Bubble-item Bubble-item—-<%- i+1 %>" style="height: <%- bubbleSizes[i] %>%; width: <%- bubbleSizes[i] %>%">
-          <span class="Bubble-itemCircle" style="background-color: <%= fillColor %>;" ></span>
+          <span class="Bubble-itemCircle" style=" <%- fillColor ? 'background-color:' + fillColor + ';': ''%>" ></span>
         </li>
       <% } %>
     </ul>

@@ -6,7 +6,7 @@ var BubbleLegendModel = DynamicLegendModelBase.extend({
 
   defaults: function () {
     return _.extend({
-      fillColor: '#FABADA',
+      fillColor: '',
       prefix: '',
       suffix: ''
     }, DynamicLegendModelBase.prototype.defaults.apply(this));

@@ -1709,7 +1709,7 @@
       "types": {
         "none": "-",
         "simple": "none",
-        "hexabins": "hexabins",
+        "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
         "heatmap": "pixel",

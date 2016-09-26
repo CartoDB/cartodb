@@ -51,7 +51,6 @@ ModelUpdater.prototype._updateLayerGroupModel = function (windshaftMap) {
   });
 };
 
-// TODO: Move to windshaftMap? (would need to know which layers are visible)
 ModelUpdater.prototype._calculateTileURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];
   _.each(windshaftMap.getSupportedSubdomains(), function (subdomain) {
@@ -65,10 +64,8 @@ ModelUpdater.prototype._generatePNGTileURLTemplate = function (windshaftMap, sub
   return windshaftMap.getBaseURL(subdomain) + '/{layerIndexes}/{z}/{x}/{y}.png';
 };
 
-// TODO: Move to windshaftMap?
 ModelUpdater.prototype._calculateGridURLTemplatesForCartoDBLayers = function (windshaftMap) {
   var urlTemplates = [];
-  // TODO: windshaftMap.getLayerIndexesByType('mapnik') -> give it a name
   var indexesOfMapnikLayers = windshaftMap.getLayerIndexesByType('mapnik');
   if (indexesOfMapnikLayers.length > 0) {
     _.each(indexesOfMapnikLayers, function (index) {
@@ -225,7 +222,6 @@ ModelUpdater.prototype._setError = function (error) {
 };
 
 ModelUpdater.prototype._setLegendErrors = function () {
-  // TODO: Improve this
   var legendModels = this._layersCollection.chain()
     .map(this._getLayerLegends)
     .compact()
@@ -233,7 +229,6 @@ ModelUpdater.prototype._setLegendErrors = function () {
     .value();
 
   _.each(legendModels, function (legendModel) {
-    // TODO: Abstract this
     legendModel.set('state', 'error');
   });
 };

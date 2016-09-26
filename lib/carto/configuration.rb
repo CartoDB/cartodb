@@ -26,7 +26,11 @@ module Carto
 
     def public_uploads_path(subfolder = '')
       path_with_alternative('RAILS_PUBLIC_UPLOADS_PATH', subfolder) do
-        env_app_config && env_app_config[:importer] ? env_app_config[:importer]["uploads_path"] : nil
+        if env_app_config && env_app_config[:importer] && env_app_config[:importer]["uploads_path"]
+          env_app_config[:importer]["uploads_path"]
+        else
+          Rails.root.join('public', subfolder).to_s
+        end
       end
     end
 

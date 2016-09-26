@@ -113,14 +113,20 @@ class Asset < Sequel::Model
     o.public_url(secure: true).to_s
   end
 
-  def save_local(filename)
-    local_path = Pathname.new(public_uploaded_assets_path).join(target_asset_path)
+  def local_dir
+    @local_dir ||= Pathname.new(public_uploaded_assets_path).join(target_asset_path)
+  end
 
-    FileUtils.mkdir_p local_path
-    FileUtils.cp @file.path, local_path.join(filename)
+  def local_filename(filename)
+    local_dir.join(filename)
+  end
+
+  def save_local(filename)
+    FileUtils.mkdir_p local_dir
+    FileUtils.cp @file.path, local_filename(filename)
 
     mode = chmod_mode
-    FileUtils.chmod(mode, local_path.join(filename)) if mode
+    FileUtils.chmod(mode, local_filename(filename)) if mode
 
     p = File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
     "#{asset_protocol}//#{CartoDB.account_host}#{p}"
@@ -133,9 +139,9 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '').gsub(ASSET_SUBFOLDER, '')
+      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '')
       begin
-        FileUtils.rm("#{Cartodb.config[:importer]['uploads_path']}/#{local_url}")
+        FileUtils.rm("#{public_uploads_path}#{local_url}")
       rescue => e
         CartoDB::Logger.error(message: "Error removing asset", asset: self, exception: e)
       end

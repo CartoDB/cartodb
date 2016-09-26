@@ -1893,7 +1893,7 @@ describe Carto::Connector do
           'table'      => { required: true  },
           'schema'     => { required: false },
           'username'   => { required: true  },
-          'password'   => { required: false },
+          'password'   => { required: true },
           'server'     => { required: true  },
           'port'       => { required: false },
           'database'   => { required: true  }

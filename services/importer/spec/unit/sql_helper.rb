@@ -34,7 +34,7 @@ def match_sql_command(sql)
     import_foreign_schema_limited: %r{
       IMPORT\s+FOREIGN\s+SCHEMA\s+\"?(?<remote_schema_name>[^\s\"]+)\"?
         \s+
-        LIMIT\s+TO\s+(?<limited_to>.+)
+        LIMIT\s+TO\s+\((?<limited_to>.+)\)
         \s+
         FROM\s+SERVER\s+(?<server_name>[^\s]+)
         \s+

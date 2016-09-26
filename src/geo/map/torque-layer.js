@@ -152,7 +152,7 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   getName: function () {
-    return this.get('layer_name') || this.get('table_name');
+    return this.get('layer_name');
   },
 
   getInteractiveColumnNames: function () {

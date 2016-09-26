@@ -101,10 +101,8 @@ var CartoDBLayer = LayerModelBase.extend({
     return _.uniq(fieldNames);
   },
 
-  // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name
-  // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
   getName: function () {
-    return this.get('options') && this.get('options').layer_name || this.get('layer_name');
+    return this.get('layer_name');
   },
 
   setDataProvider: function (dataProvider) {

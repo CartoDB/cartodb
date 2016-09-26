@@ -11,11 +11,9 @@
       <div class='PublicPage-container'>
 
         <div class='PublicPage-header'>
-          <div class="PublicPage-logo">
-            <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://carto.com" %>">
-              <img src="<%= image_path "layout/carto-logo.svg" %>" alt="CARTO">
-            </a>
-          </div>
+          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://carto.com" %>">
+            <img src="<%= image_path "layout/carto-logo.svg" %>" alt="CARTO">
+          </a>
         </div>
 
         <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is protected with password</p>

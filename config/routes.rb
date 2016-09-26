@@ -514,6 +514,10 @@ CartoDB::Application.routes.draw do
 
       put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
     end
+
+    # Connectors
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors' => 'connectors#index', as: :api_v1_connectors_index
+
   end
 
   scope :module => 'api/json', :format => :json do

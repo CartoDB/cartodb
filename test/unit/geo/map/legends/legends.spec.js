@@ -93,6 +93,43 @@ describe('geo/map/legends/legends', function () {
     expect(this.legends.html.get('html')).toEqual('<p>Some markup that gets sanitised<script>alert("hola");<\/script></p>');
   });
 
+  it("it should 'show' all legends that have data", function () {
+    this.legends = new Legends([
+      {
+        type: 'bubble',
+        title: 'Bubble Legend',
+        pre_html: '<p>PRE Bubble Legend</p>',
+        post_html: '<p>POST Bubble Legend</p>',
+        definition: {
+          color: '#FABADA'
+        }
+      }
+    ], {
+      visModel: this.visModel
+    });
+
+    expect(this.legends.bubble.isVisible()).toBeTruthy();
+    expect(this.legends.category.isVisible()).toBeFalsy();
+
+    this.legends = new Legends([
+      {
+        type: 'category',
+        title: 'Categories Legend',
+        pre_html: '<p>PRE Category Legend</p>',
+        post_html: '<p>POST Category Legend</p>',
+        definition: {
+          prefix: 'prefix',
+          suffix: 'suffix'
+        }
+      }
+    ], {
+      visModel: this.visModel
+    });
+
+    expect(this.legends.bubble.isVisible()).toBeFalsy();
+    expect(this.legends.category.isVisible()).toBeTruthy();
+  });
+
   describe('binding to vis "reload" event', function () {
     it('should update legends states to loading', function () {
       this.legends.bubble.set('state', 'success');

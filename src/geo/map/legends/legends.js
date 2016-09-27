@@ -74,7 +74,6 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
 
   var legendModel = new ModelClass(modelAttrs);
 
-  // TODO: Test this
   if (data) {
     legendModel.show();
   }

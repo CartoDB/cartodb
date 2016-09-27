@@ -19,6 +19,7 @@ require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/helpers/has_connector_configuration'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -27,6 +28,7 @@ class User < Sequel::Model
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include Carto::HasConnectorConfiguration
 
   self.strict_param_setting = false
 

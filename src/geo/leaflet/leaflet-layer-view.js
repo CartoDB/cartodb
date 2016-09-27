@@ -11,8 +11,8 @@ var LeafletLayerView = function (layerModel, leafletLayer, leafletMap) {
 
   this.setModel(layerModel);
 
-  this.type = layerModel.get('type') || layerModel.get('kind');
-  this.type = this.type.toLowerCase();
+  var type = layerModel.get('type') || layerModel.get('kind');
+  this.type = type && type.toLowerCase();
 };
 
 _.extend(LeafletLayerView.prototype, Backbone.Events);

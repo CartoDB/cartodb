@@ -1,12 +1,23 @@
 # encoding: utf-8
 
 # Base class for Connector Providers
-# that use FDW to import data through a foreign table
-
+#
+# This is an abstract class; concrete classes derived from this one
+# must implement these methods:
+#
+# * `copy_table(schema_name:, table_name:, limits:)`
+# * `list_tables(limits:)`
+# * `remote_data_updated?`
+# * `table_name`
+# * `required_parameters`
+# * `optional_parameters`
+# * `features_information`
+#
 module Carto
   class Connector
     class Provider
-      def initialize(params = {})
+      def initialize(connector_context, params = {})
+        @connector_context = connector_context
         @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
       end
 
@@ -23,44 +34,21 @@ module Carto
         raise InvalidParametersError.new(message: errors * "\n") if errors.present?
       end
 
+      def copy_table(schema_name:, table_name:, limits:)
+        must_be_defined_in_derived_class schema_name: schema_name, table_name: table_name, limits: limits
+      end
+
+      def list_tables(limits:)
+        must_be_defined_in_derived_class limits: limits
+      end
+
+      def remote_data_updated?
+        must_be_defined_in_derived_class
+      end
+
       # Name of the table to be imported
       def table_name
         must_be_defined_in_derived_class
-      end
-
-      # Name of the foreign table that create_foreign_table_command creates
-      def foreign_table_name(_foreign_prefix)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to create the FDW server
-      def create_server_command(_server_name)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to create the usermap for the user and postgres roles
-      def create_usermap_command(_server_name, _username)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to create the foreign table used for importing
-      def create_foreign_table_command(_server_name, _schema_name, _foreign_prefix, _username)
-        must_be_defined_in_derived_class
-      end
-
-      # SQL code to drop the FDW server
-      def drop_server_command(server_name)
-        fdw_drop_server server_name
-      end
-
-      # SQL code to drop the user mapping
-      def drop_usermap_command(server_name, user)
-        fdw_drop_usermap server_name, user
-      end
-
-      # SQL code to drop the foreign table
-      def drop_foreign_table_command(schema_name, table_name)
-        fdw_drop_foreign_table schema_name, table_name
       end
 
       # Parameters required by this connector provider
@@ -82,7 +70,7 @@ module Carto
         # For convenience we'll use instance methods to provide the information
         # en each class. Otherwise all the information needed by such methods
         # would have to be defined in class methods too.
-        test_provider = new({})
+        test_provider = new(nil, {})
         {
           features: test_provider.features_information,
           parameters: test_provider.parameters_information
@@ -113,12 +101,21 @@ module Carto
 
       private
 
-      include FdwSupport
-
-      def must_be_defined_in_derived_class
+      def must_be_defined_in_derived_class(*_)
         raise NotImplementedError, "Method #{caller_locations(1, 1)[0].label} must be defined in derived class"
       end
 
+      def log(message, truncate = true)
+        @connector_context.log message, truncate
+      end
+
+      def execute(sql)
+        @connector_context.execute(sql)
+      end
+
+      def execute_as_superuser(sql)
+        @connector_context.execute_as_superuser(sql)
+      end
     end
 
   end

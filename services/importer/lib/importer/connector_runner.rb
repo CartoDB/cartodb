@@ -92,8 +92,8 @@ module CartoDB
         # but we have no meaningful data to return here.
       end
 
-      def connector_name
-        @connector.name
+      def provider_name
+        @connector.provider_name
       end
 
       private

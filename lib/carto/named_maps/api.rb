@@ -41,7 +41,7 @@ module Carto
           response_code = response.code
           if response_code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          elsif response_code != 409 # Ignora max number of templates reached
+          elsif response_code != 409 # Ignore when max number of templates is reached
             log_response(response, 'create')
           end
         end

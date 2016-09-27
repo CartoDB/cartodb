@@ -1,23 +1,39 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var NON_RESETEABLE_DEFAULT_ATTRS = ['state', 'visible'];
+
 var LegendModelBase = Backbone.Model.extend({
-
-  // Subclasses of this class can override this "constant" and
-  // specify a list of attrs that are included in the defaults but
-  // should NOT be resetted by .reset()
-  NON_RESETEABLE_DEFAULT_ATTRS: [],
-
   defaults: function () {
-    var type = this.constructor.prototype.TYPE;
-    if (!type) throw new Error('Subclasses of LegendModelBase must have a TYPE');
     return {
-      type: type,
       visible: false,
       title: '',
       preHTMLSnippet: '',
-      postHTMLSnippet: ''
+      postHTMLSnippet: '',
+      state: this.constructor.STATE_LOADING
     };
+  },
+
+  initialize: function (attrs, deps) {
+    if (!deps.visModel) throw new Error('visModel is required');
+
+    deps.visModel.on('reload', this._onVisReloading, this);
+  },
+
+  _onVisReloading: function () {
+    this.set('state', this.constructor.STATE_LOADING);
+  },
+
+  isLoading: function () {
+    return this.get('state') === this.constructor.STATE_LOADING;
+  },
+
+  isError: function () {
+    return this.get('state') === this.constructor.STATE_ERROR;
+  },
+
+  isSuccess: function () {
+    return this.get('state') === this.constructor.STATE_SUCCESS;
   },
 
   show: function () {
@@ -32,13 +48,24 @@ var LegendModelBase = Backbone.Model.extend({
     return this.get('visible');
   },
 
+  update: function (attrs) {
+    this.set(attrs);
+  },
+
   reset: function () {
     var defaults = _.omit(this.defaults(),
-      'visible',
-      this.NON_RESETEABLE_DEFAULT_ATTRS
+      NON_RESETEABLE_DEFAULT_ATTRS
     );
     this.set(defaults);
+  },
+
+  hasData: function () {
+    return false;
   }
+}, {
+  STATE_LOADING: 'loading',
+  STATE_SUCCESS: 'success',
+  STATE_ERROR: 'error'
 });
 
 module.exports = LegendModelBase;

@@ -1,8 +1,8 @@
-var DynamicLegendViewBase = require('../base/dynamic-legend-view-base');
+var LegendViewBase = require('../base/legend-view-base');
 var template = require('./legend-template.tpl');
 var formatter = require('../../../../util/formatter');
 
-var ChoroplethLegendView = DynamicLegendViewBase.extend({
+var ChoroplethLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {
     return template({
       colors: this.model.get('colors'),

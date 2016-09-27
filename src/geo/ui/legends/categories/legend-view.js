@@ -1,7 +1,7 @@
-var DynamicLegendViewBase = require('../base/dynamic-legend-view-base');
+var LegendViewBase = require('../base/legend-view-base');
 var template = require('./legend-template.tpl');
 
-var CategoryLegendView = DynamicLegendViewBase.extend({
+var CategoryLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {
     return template({
       categories: this._getCategories()

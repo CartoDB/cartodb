@@ -17,11 +17,13 @@ module Carto
           table_name = source_node.options[:table_name]
           tables_by_name = table_name ? tables_from_names([table_name], user) : []
 
-          tables_by_query + tables_by_name
+          tables_by_query.present? ? tables_by_query : tables_by_name
         end
         dependencies.flatten.compact.uniq
       else
-        (tables_from_query_option + tables_from_table_name_option).compact.uniq
+        tables_by_query = tables_from_query_option
+        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option
+        dependencies.compact.uniq
       end
     end
 

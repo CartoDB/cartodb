@@ -29,6 +29,10 @@
 }
 .BlockList-item.BlockList-item--noAction {
   cursor: default;
+
+  .BlockList-titleText {
+    cursor: default;
+  }
 }
 .BlockList-item.BlockList-item--noAction:hover {
   border: 1px solid $cSecondaryLine;

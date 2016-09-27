@@ -1197,7 +1197,8 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CARTO Logo",
-            "widgets": "Widgets column"
+            "widgets": "Widgets column",
+            "legends": "Legends"
           }
         }
       }

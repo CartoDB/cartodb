@@ -49,7 +49,8 @@ describe Carto::Api::OrganizationUsersController do
                   soft_twitter_datasource_limit: nil,
                   soft_here_isolines_limit: nil,
                   soft_obs_snapshot_limit: nil,
-                  soft_obs_general_limit: nil)
+                  soft_obs_general_limit: nil,
+                  viewer: nil)
 
     params = {
       password: '2{Patrañas}',
@@ -64,6 +65,7 @@ describe Carto::Api::OrganizationUsersController do
     params[:soft_here_isolines_limit] = soft_here_isolines_limit unless soft_here_isolines_limit.nil?
     params[:soft_obs_snapshot_limit] = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
+    params[:viewer] = viewer if viewer
 
     params
   end
@@ -175,6 +177,34 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
+    it 'can create viewers' do
+      login(@organization.owner)
+      username = 'viewer-user'
+      params = user_params(username, viewer: true)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created.viewer.should eq true
+      last_user_created.destroy
+    end
+
+    it 'creates builders by default' do
+      login(@organization.owner)
+      username = 'builder-user'
+      params = user_params(username)
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 200
+
+      @organization.reload
+      last_user_created = @organization.users.detect { |u| u.username == username }
+      last_user_created.viewer.should eq false
+      last_user_created.destroy
+    end
+
     it 'can enable soft geocoding_limit, twitter_datasource_limit, here_isolines_limit, obs_snapshot_limit and obs_general_limit if owner has them' do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
@@ -228,7 +258,6 @@ describe Carto::Api::OrganizationUsersController do
       @organization.reload
       @organization.users.detect { |u| u.username == username }.should be_nil
     end
-
   end
 
   describe 'user update' do

@@ -20,7 +20,7 @@ Sequel.migration do
 
       foreign_key :user_id, :users, type: :uuid, null: true, on_delete: :cascade
       foreign_key :organization_id, :organizations, type: :uuid, null: true, on_delete: :cascade
-      foreign_key :connector_provider_id, :connector_providers, type: :uuid, null: false, on_delete: :cascade
+      foreign_key :connector_provider_id, :connector_providers, type: :uuid, null: false, on_delete: :restrict
     end
 
     alter_table :connector_configurations do

@@ -83,4 +83,14 @@ describe Carto::Api::ConnectorsController do
       end
     end
   end
+
+  describe '#tables' do
+    it 'returns connector tables list' do
+      get_json api_v1_connectors_tables_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
+        response.status.should be_success
+        response.body[0]["schema"].should eq "public"
+        response.body[0]["name"].blank?.should eq false
+      end
+    end
+  end
 end

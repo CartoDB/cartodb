@@ -29,6 +29,11 @@ module Carto
       @provider.copy_table(schema_name: schema_name, table_name: table_name, limits: limits)
     end
 
+    def self.list_tables?(provider)
+      information = Connector.information(provider)
+      information[:features][:list_tables]
+    end
+
     def list_tables(limit = nil)
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
     end

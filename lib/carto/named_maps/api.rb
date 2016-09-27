@@ -38,9 +38,10 @@ module Carto
 
           response = http_client.post(url, params)
 
-          if response.code.to_s =~ /^2/
+          response_code = response.code
+          if response_code.to_s =~ /^2/
             ::JSON.parse(response.response_body).deep_symbolize_keys
-          else
+          elsif response_code != 409 # Ignora max number of templates reached
             log_response(response, 'create')
           end
         end

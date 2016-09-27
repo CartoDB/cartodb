@@ -269,6 +269,8 @@ module Carto
           data[:legend] = legend
         end
 
+        data[:legends] = layer_vizjson[:legends] || []
+
         data
       end
     end
@@ -345,6 +347,9 @@ module Carto
         if @layer.options['source'].present?
           torque[:source] = @layer.options['source']
         end
+
+        sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+        torque[:sql_wrap] = sql_wrap if sql_wrap
 
         torque
       end

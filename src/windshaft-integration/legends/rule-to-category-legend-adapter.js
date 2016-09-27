@@ -23,8 +23,7 @@ module.exports = {
     });
     return {
       categories: categories,
-      defaultValue: rule['default-value'],
-      state: 'success'
+      defaultValue: rule['default-value']
     };
   }
 };

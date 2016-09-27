@@ -32,8 +32,7 @@ module.exports = {
     return {
       colors: colors,
       avg: rule.stats.avg_val,
-      max: rule.stats.max_val,
-      state: 'success'
+      max: rule.stats.max_val
     };
   }
 };

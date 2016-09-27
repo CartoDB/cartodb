@@ -19,8 +19,7 @@ module.exports = {
     return {
       values: values,
       sizes: sizes,
-      avg: rule.stats.avg_val,
-      state: 'success'
+      avg: rule.stats.avg_val
     };
   }
 };

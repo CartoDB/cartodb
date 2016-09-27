@@ -452,7 +452,7 @@
         "desc": "Oops there was an error."
       },
       "no-results": {
-        "title": "'Oh! No results",
+        "title": "Oh! No results",
         "desc": "Unfortunately we could not find anything with these parameters"
       }
     },

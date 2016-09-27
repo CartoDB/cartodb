@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
+var VisModel = require('../../../src/vis/vis');
 var Layers = require('../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
@@ -7,7 +8,8 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 describe('geo/cartodb-layer-group', function () {
   beforeEach(function () {
     this.layersCollection = new Layers();
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
 
     this.cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
@@ -81,8 +83,8 @@ describe('geo/cartodb-layer-group', function () {
       });
 
       var otherLayer = new Backbone.Model();
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: {} });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: {} });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
       this.layersCollection.reset([
         otherLayer,
         this.cartoDBLayer1,
@@ -167,8 +169,8 @@ describe('geo/cartodb-layer-group', function () {
 
   describe('.hasTileURLTemplates', function () {
     beforeEach(function () {
-      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: {} });
-      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: {} });
+      this.cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
+      this.cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
       this.layersCollection.reset([
         this.cartoDBLayer1,
         this.cartoDBLayer2

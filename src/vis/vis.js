@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
-var util = require('cdb.core.util');
+var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
 var WindshaftConfig = require('../windshaft/config');
@@ -9,7 +9,7 @@ var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
 var AnalysisFactory = require('../analysis/analysis-factory');
 var CartoDBLayerGroup = require('../geo/cartodb-layer-group');
-var ModelUpdater = require('./model-updater');
+var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
@@ -22,7 +22,7 @@ var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
     https: false,
-    showLegends: false,
+    showLegends: true,
     showEmptyInfowindowFields: false,
     state: STATE_INIT
   },
@@ -183,7 +183,6 @@ var VisModel = Backbone.Model.extend({
       vis: this
     });
 
-    this._windshaftMap.bind('instanceRequested', this._onMapInstanceRequested, this);
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
     // Lastly: reset the layer models on the map
@@ -204,10 +203,6 @@ var VisModel = Backbone.Model.extend({
     _.defer(function () {
       this.trigger('load', this);
     }.bind(this));
-  },
-
-  _onMapInstanceRequested: function () {
-    this.trigger('reload');
   },
 
   _onMapInstanceCreated: function () {
@@ -280,6 +275,7 @@ var VisModel = Backbone.Model.extend({
     options = options || {};
     options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
     if (this._instantiateMapWasCalled) {
+      this.trigger('reload');
       this._windshaftMap.createInstance(options);
     }
   },

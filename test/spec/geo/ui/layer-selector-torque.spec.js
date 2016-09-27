@@ -1,18 +1,19 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
+var VisModel = require('../../../../src/vis/vis');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var Layers = require('../../../../src/geo/map/layers');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var Template = require('../../../../src/core/template');
 var LayerSelector = require('../../../../src/geo/ui/layer-selector');
 
-describe('geo/ui/layer-selector (torque)', function() {
+describe('geo/ui/layer-selector (torque)', function () {
 
   var layerSelector;
 
   beforeEach(function() {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
 
     var l1 = new TorqueLayer({ layer_name: 'Layer 1' }, { vis: this.vis });
     var l2 = new TorqueLayer({ layer_name: 'Layer 2' }, { vis: this.vis });

@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var VisModel = require('../../../../src/vis/vis');
 var LayersCollection = require('../../../../src/geo/map/layers');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
@@ -14,7 +15,7 @@ describe('src/geo/leaflet/leaflet-cartodb-vector-layer-group-view.js', function 
     });
     this.layerGroupModel.getTileURLTemplates = function () { return [ 'http://carto.com/{z}/{x}/{y}.png' ]; };
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
   });
 
   it('should register a new GeoJSONDataProvider on each CartoDBLayer on the layergroup', function () {

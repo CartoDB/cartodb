@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
+var VisModel = require('../../../src/vis/vis');
 var Map = require('../../../src/geo/map');
 var MapView = require('../../../src/geo/map-view');
 var TileLayer = require('../../../src/geo/map/tile-layer');
@@ -12,7 +13,9 @@ var LayerGroupModel = CartoDBLayerGroup;
 describe('core/geo/map-view', function () {
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
+    spyOn(this.vis, 'reload');
+
     this.map = new Map();
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);

@@ -2,6 +2,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
+var VisModel = require('../../../../src/vis/vis');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
@@ -13,7 +14,7 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'height': '200px',
       'width': '200px'
     });
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     this.map = new Map();
     this.mapView = new LeafletMapView({
       el: container,

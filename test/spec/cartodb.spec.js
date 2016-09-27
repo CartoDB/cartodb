@@ -156,36 +156,6 @@ describe('cartodb.js bundle', function() {
       expect(cdb.geo.ui.Tooltip).toEqual(jasmine.any(Function));
     });
 
-    it('should have a cdb.geo.ui object w/ legend models', function() {
-      expect(cdb.geo.ui.Legend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Bubble).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Category).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Choropleth).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Color).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Custom).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Density).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Intensity).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.None).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legend.Stacked).toEqual(jasmine.any(Function));
-
-      expect(cdb.geo.ui.LegendItemModel).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.LegendItem).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.LegendItems).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.LegendModel).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.Legends).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.BaseLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.BubbleLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.CategoryLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.ChoroplethLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.ColorLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.CustomLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.DebugLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.DensityLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.IntensityLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.NoneLegend).toEqual(jasmine.any(Function));
-      expect(cdb.geo.ui.StackedLegend).toEqual(jasmine.any(Function));
-    });
-
     it('should have a cdb.common object', function() {
       expect(cdb.geo.common).toEqual(jasmine.any(Object));
     });

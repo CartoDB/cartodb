@@ -5,7 +5,8 @@ describe('dataviews/formula-dataview-model', function () {
   beforeEach(function () {
     this.map = jasmine.createSpyObj('map', ['getViewBounds', 'bind', 'reload']);
     this.map.getViewBounds.and.returnValue([[1, 2], [3, 4]]);
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
 
     this.layer = new Backbone.Model();
     this.layer.getDataProvider = jasmine.createSpy('getDataProvider');

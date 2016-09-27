@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
@@ -12,14 +13,16 @@ describe('core/geo/map', function () {
   var map;
 
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
-    map = new Map();
+    this.vis = new VisModel();
+    map = new Map(null, { vis: this.vis });
   });
 
   describe('.initialize', function () {
     it('should parse bounds and set attributes', function () {
       var map = new Map({
         bounds: [[0, 1], [2, 3]]
+      }, {
+        vis: this.vis
       });
 
       expect(map.get('view_bounds_sw')).toEqual([0, 1]);
@@ -33,6 +36,8 @@ describe('core/geo/map', function () {
       var map = new Map({
         center: [41.40282319070747, 2.3435211181640625],
         zoom: 10
+      }, {
+        vis: this.vis
       });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
@@ -41,7 +46,9 @@ describe('core/geo/map', function () {
     });
 
     it('should set the default center and zoom if no center and bounds are given', function () {
-      var map = new Map();
+      var map = new Map(null, {
+        vis: this.vis
+      });
 
       expect(map.get('center')).toEqual(map.defaults.center);
       expect(map.get('original_center')).toEqual(map.defaults.center);
@@ -51,7 +58,7 @@ describe('core/geo/map', function () {
     it('should parse the center when given a string', function () {
       var map = new Map({
         center: '[41.40282319070747, 2.3435211181640625]'
-      });
+      }, { vis: this.vis });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
     });
@@ -108,7 +115,7 @@ describe('core/geo/map', function () {
   });
 
   it('should update the attributions of the map when layers are reset/added/removed', function () {
-    map = new Map();
+    map = new Map(null, { vis: this.vis });
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
@@ -175,7 +182,7 @@ describe('core/geo/map', function () {
   describe('API methods', function () {
     beforeEach(function () {
       this.map = new Map({}, {
-        vis: {}
+        vis: this.vis
       });
     });
 
@@ -313,7 +320,7 @@ describe('core/geo/map', function () {
         var map = new Map({
           bounds: [[1, 2], [3, 4]],
           center: '[41.40282319070747, 2.3435211181640625]'
-        });
+        }, { vis: this.vis });
 
         // Change internal attributes
         map.set({
@@ -331,7 +338,7 @@ describe('core/geo/map', function () {
       it('should set the original center if bounds are not present', function () {
         var map = new Map({
           center: [41.40282319070747, 2.3435211181640625]
-        });
+        }, { vis: this.vis });
 
         map.set({
           center: 'different'

@@ -1,10 +1,12 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
 describe('geo/map/torque-layer', function () {
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
   });
 
   sharedTestsForInteractiveLayers(TorqueLayer);

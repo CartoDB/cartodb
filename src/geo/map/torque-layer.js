@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
+var Legends = require('./legends/legends');
 var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
 var TORQUE_LAYER_CARTOCSS_PROPS = [
   '-torque-frame-count',
@@ -34,6 +35,11 @@ var TorqueLayer = LayerModelBase.extend({
 
     this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
+
+    this.legends = new Legends(attrs.legends, {
+      visModel: this._vis
+    });
+    this.unset('legends');
 
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
@@ -120,7 +126,7 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   getName: function () {
-    return this.get('layer_name') || this.get('table_name');
+    return this.get('layer_name');
   },
 
   getInteractiveColumnNames: function () {

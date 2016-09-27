@@ -66,6 +66,12 @@ var Layers = Backbone.Collection.extend({
     return this.select(function (layerModel) {
       return layerModel.get('type') === layerType;
     });
+  },
+
+  getLayersWithLegends: function () {
+    return this.select(function (layerModel) {
+      return !!layerModel.legends;
+    });
   }
 });
 

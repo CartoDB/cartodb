@@ -84,9 +84,6 @@ var WindshaftMap = Backbone.Model.extend({
     var payload = request.payload;
     var params = request.params;
     var options = request.options;
-
-    this.trigger('instanceRequested');
-
     this.client.instantiateMap({
       mapDefinition: payload,
       params: params,
@@ -230,18 +227,11 @@ var WindshaftMap = Backbone.Model.extend({
 
   getLayerMetadata: function (layerIndex) {
     var layerMeta = {};
-    var metadataLayerIndex = this._localLayerIndexToWindshaftLayerIndex(layerIndex);
     var layers = this._getLayers();
-    if (layers && layers[metadataLayerIndex]) {
-      layerMeta = layers[metadataLayerIndex].meta || {};
+    if (layers && layers[layerIndex]) {
+      layerMeta = layers[layerIndex].meta || {};
     }
     return layerMeta;
-  },
-
-  _localLayerIndexToWindshaftLayerIndex: function (layerIndex) {
-    var layers = this._getLayers();
-    var hasTiledLayer = layers.length > 0 && (layers[0].type === 'http' || layers[0].type === 'plain');
-    return hasTiledLayer ? ++layerIndex : layerIndex;
   },
 
   _getLayers: function () {

@@ -160,7 +160,21 @@
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "short-title": "Data observatory"
+      "short-title": "Data observatory",
+      "age-and-gender": "Age and Gender",
+      "boundaries": "Boundaries",
+      "education": "Education",
+      "employment": "Employment",
+      "families": "Families",
+      "housing": "Housing",
+      "income": "Income",
+      "language": "Language",
+      "migration": "Migration",
+      "nationality": "Nationality",
+      "population-segments": "Population segments",
+      "race-and-ethnicity": "Race and Ethnicity",
+      "religion": "Religion",
+      "transportation": "Transportation"
     },
     "merge": {
       "title": "Join columns from 2nd layer",

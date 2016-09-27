@@ -37,6 +37,9 @@ module Carto
         account_creator.with_password(create_params[:password]) if create_params[:password].present?
         account_creator.with_quota_in_bytes(create_params[:quota_in_bytes]) if create_params[:quota_in_bytes].present?
 
+        param_viewer = create_params[:viewer]
+        account_creator.with_viewer(param_viewer) if param_viewer
+
         if create_params[:soft_geocoding_limit].present?
           account_creator.with_soft_geocoding_limit(create_params[:soft_geocoding_limit])
         end
@@ -130,16 +133,26 @@ module Carto
 
       private
 
+      COMMON_MUTABLE_ATTRIBUTES = [
+        :email,
+        :password,
+        :quota_in_bytes,
+        :soft_geocoding_limit,
+        :soft_here_isolines_limit,
+        :soft_obs_general_limit,
+        :soft_obs_snapshot_limit,
+        :soft_twitter_datasource_limit
+      ].freeze
+
       # TODO: Use native strong params when in Rails 4+
       def create_params
-        permit(:email, :username, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        @create_params ||=
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username, :viewer])
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
-        permit(:email, :password, :quota_in_bytes, :soft_geocoding_limit, :soft_here_isolines_limit,
-               :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_twitter_datasource_limit)
+        @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
       end
     end
   end

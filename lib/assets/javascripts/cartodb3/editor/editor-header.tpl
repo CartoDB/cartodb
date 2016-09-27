@@ -11,7 +11,7 @@
       <% if (!isSimple) { %>
       <div class="js-share-users"></div>
       <% } %>
-      <div class="CDB-Text CDB-Size-medium u-altTextColor"><%- published %></div>
+      <div class="Editor-HeaderInfo-publishDate CDB-Text CDB-Size-medium u-altTextColor"><%- published %></div>
     </div>
   </div>
 </div>

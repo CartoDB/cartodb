@@ -12,7 +12,6 @@ var FORMATTER_TYPES = {
  * View to reset render range.
  */
 module.exports = cdb.core.View.extend({
-
   className: 'CDB-Widget-header--timeSeries js-header CDB-Widget-contentSpaced',
 
   events: {
@@ -35,7 +34,7 @@ module.exports = cdb.core.View.extend({
   },
 
   render: function () {
-    var columnType = this._layer.get('column_type');
+    var columnType = this._getColumnType();
     var scale = this._scale;
     var filter = this._rangeFilter;
     var start;
@@ -57,9 +56,11 @@ module.exports = cdb.core.View.extend({
         template({
           start: start,
           end: end,
-          showButton: false
+          showClearButton: this.options.showClearButton
         })
       );
+    } else {
+      this.$el.empty();
     }
 
     return this;
@@ -70,9 +71,13 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this._rangeFilter);
   },
 
+  _getColumnType: function () {
+    return this._layer.get('column_type') || this._dataviewModel.get('column_type');
+  },
+
   _setupScales: function () {
     var data = this._dataviewModel.get('data');
-    var columnType = this._layer.get('column_type');
+    var columnType = this._getColumnType();
 
     if (columnType === 'date') {
       this._scale = d3.time.scale()

@@ -33,6 +33,9 @@ module ModelFactories
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
 
+      schema_prefix = user.organization.present? ? "#{user.sql_safe_database_schema}." : ""
+      data_layer.options['query'] = "SELECT * FROM #{schema_prefix}#{table_name}"
+
       if user.force_builder?
         data_layer.options['style_properties'] = style_properties(geometry_type)
       end

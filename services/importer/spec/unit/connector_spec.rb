@@ -1141,7 +1141,7 @@ describe Carto::Connector do
             command: :drop_usermapping_if_exists,
             server_name: server_name,
             user_name: 'postgres'
-            }]
+          }]
         }, {
           # DROP USER MAPPING
           mode: :superuser,

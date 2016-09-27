@@ -164,7 +164,7 @@ describe Carto::Builder::Public::EmbedsController do
 
       post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
 
-      response.body.include?('The password is not ok').should be true
+      response.body.include?('Invalid password').should be true
       response.status.should == 403
     end
 

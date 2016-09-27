@@ -96,37 +96,37 @@ $sDates-defaultWidth: 434px;
 }
 .DatePicker-simpleDropdown {
   position: absolute;
-  right: -16px;
   top: 49px;
+  right: -16px;
   width: 236px;
-  padding: 0;
   border: 1px solid #CCC;
-  font: normal 13px/20px "Lato",sans-serif;
-  background: white;
   border-radius: $border-radius;
-  box-shadow: rgba(black, 0.1) 0 0 2px 2px;
+  padding: 0;
+  background: #ffffff;
+  font: normal 13px/20px "Lato",sans-serif;
+  box-shadow: rgba(#000000, 0.1) 0 0 2px 2px;
 }
-.DatePicker-simpleDropdown:after,
-.DatePicker-simpleDropdown:before {
-  content: '';
+.DatePicker-simpleDropdown::after,
+.DatePicker-simpleDropdown::before {
   position: absolute;
-  left: 50%;
   top: -10px;
+  left: 50%;
+  content: '';
 }
-.DatePicker-simpleDropdown:after {
+.DatePicker-simpleDropdown::after {
   top: -8px;
   margin-left: -4px;
-  border-left: 8px solid transparent;
   border-right: 8px solid transparent;
   border-bottom: 8px solid $cCard-hoverFill;
+  border-left: 8px solid transparent;
   z-index: 1;
 }
-.DatePicker-simpleDropdown:before {
+.DatePicker-simpleDropdown::before {
   top: -10px;
   margin-left: -6px;
-  border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 10px solid #CCC;
+  border-left: 10px solid transparent;
   z-index: 0;
 }
 

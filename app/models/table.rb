@@ -1144,7 +1144,7 @@ class Table
 
   def drop_index(column, prefix = '', concurrent: false)
     concurrently = concurrent ? 'CONCURRENTLY' : ''
-    owner.in_database.execute(%{DROP INDEX "#{concurrently} #{index_name(column, prefix)}"})
+    owner.in_database.execute(%{DROP INDEX #{concurrently} "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy

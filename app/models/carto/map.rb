@@ -1,9 +1,9 @@
 require 'active_record'
 
 require_relative '../../helpers/bounding_box_helper'
+require_relative './carto_json_serializer'
 
 class Carto::Map < ActiveRecord::Base
-
   has_many :layers_maps
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
@@ -27,6 +27,9 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0]
   }.freeze
+
+  serialize :embed_options, ::Carto::CartoJsonSerializer
+  validates :embed_options, carto_json_symbolizer: true
 
   def data_layers
     layers.select(&:carto?)
@@ -121,6 +124,14 @@ class Carto::Map < ActiveRecord::Base
 
   def update_dataset_dependencies
     data_layers.each(&:register_table_dependencies)
+  end
+
+  def show_menu=(show_menu = false)
+    embed_options[:show_menu] = show_menu
+  end
+
+  def show_menu
+    embed_options[:show_menu] || false
   end
 
   private

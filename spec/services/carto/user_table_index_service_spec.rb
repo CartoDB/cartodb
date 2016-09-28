@@ -274,7 +274,7 @@ describe Carto::UserTableIndexService do
   end
 
   def stub_drop_index(column)
-    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX)
+    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
   end
 
   def create_widget(analysis, child: false, column: 'col', type: 'histogram')

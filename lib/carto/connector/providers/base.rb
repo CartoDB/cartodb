@@ -7,6 +7,7 @@
 #
 # * `copy_table(schema_name:, table_name:, limits:)`
 # * `list_tables(limits:)`
+# * `check_connection`
 # * `remote_data_updated?`
 # * `table_name`
 # * `required_parameters`
@@ -40,6 +41,10 @@ module Carto
 
       def list_tables(limits:)
         must_be_defined_in_derived_class limits: limits
+      end
+
+      def check_connection
+        must_be_defined_in_derived_class
       end
 
       def remote_data_updated?

@@ -31,6 +31,8 @@ class Carto::Map < ActiveRecord::Base
   serialize :embed_options, ::Carto::CartoJsonSerializer
   validates :embed_options, carto_json_symbolizer: true
 
+  validate :validate_embed_options
+
   def data_layers
     layers.select(&:carto?)
   end
@@ -135,6 +137,14 @@ class Carto::Map < ActiveRecord::Base
   end
 
   private
+
+  def validate_embed_options
+    location = "#{Rails.root}/lib/formats/map/embed_options.json"
+    schema = Carto::Definition.instance.load_from_file(location)
+
+    errors = JSON::Validator.fully_validate(schema, embed_options)
+    errors.add(:embed_options, errors.join(', '))
+  end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = user_tables.first

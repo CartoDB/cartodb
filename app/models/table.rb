@@ -1122,7 +1122,7 @@ class Table
   def pg_indexes
     owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname as column, i.relname as name, i.indisvalid as valid
+        a.attname as column, i.relname as name, ix.indisvalid as valid
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a, pg_namespace n
       WHERE

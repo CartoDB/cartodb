@@ -77,6 +77,9 @@
 .CDB-infowindow-listItem:first-child {
   margin-top: 0;
 }
+.CDB-infowindow-listItem--order1 {
+  display: none;
+}
 
 .CDB-infowindow-list .ps-scrollbar-y-rail {
   width: 1px !important; // Resets standard scroll track color

@@ -56,40 +56,40 @@ describe Map do
       end
 
       describe '#embed_options' do
-        it 'sets show_menu true by default' do
-          @map.show_menu.should eq true
+        it 'sets dashboard_menu true by default' do
+          @map.dashboard_menu.should eq true
         end
 
-        it 'allows to change show_menu' do
-          @map.show_menu = false
-          @map.show_menu.should be_false
+        it 'allows to change dashboard_menu' do
+          @map.dashboard_menu = false
+          @map.dashboard_menu.should be_false
 
-          @map.show_menu = true
-          @map.show_menu.should be_true
+          @map.dashboard_menu = true
+          @map.dashboard_menu.should be_true
         end
 
-        it 'rejects a non-boolean show_menu value' do
-          @map.show_menu = 'patata'
+        it 'rejects a non-boolean dashboard_menu value' do
+          @map.dashboard_menu = 'patata'
 
           @map.valid?.should be_false
           @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
         end
 
-        it 'requies a show_menu value' do
-          @map.show_menu = nil
+        it 'requies a dashboard_menu value' do
+          @map.dashboard_menu = nil
 
           @map.valid?.should be_false
           @map.errors[:embed_options].should_not be_empty
           @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
         end
 
-        it 'requires show_menu to be present' do
+        it 'requires dashboard_menu to be present' do
           old_options = @map.embed_options.dup
           @map.embed_options = Hash.new
 
           @map.valid?.should be_false
           @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('did not contain a required property of \'show_menu\'')
+          @map.errors[:embed_options][0].should include('did not contain a required property of \'dashboard_menu\'')
 
           @map.embed_options = old_options
         end

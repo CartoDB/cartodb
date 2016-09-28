@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "show_menu": {
+      "type": "boolean"
+    }
+  }
+}

@@ -11,20 +11,20 @@ describe Carto::Api::ConnectorsController do
     @connector_provider_postgres = FactoryGirl.create(:connector_provider, name: 'postgres')
     @connector_provider_hive = FactoryGirl.create(:connector_provider, name: 'hive')
     @connector_config_user = FactoryGirl.create(:connector_configuration,
-                                                  user_id: @user.id,
-                                                  connector_provider_id: @connector_provider_postgres.id,
-                                                  enabled: true,
-                                                  max_rows: 100)
-    @connector_config_org_user = FactoryGirl.create(:connector_configuration,
-                                                      user_id: @org_user_1.id,
-                                                      connector_provider_id: @connector_provider_hive.id,
-                                                      enabled: false,
-                                                      max_rows: 100)
-    @connector_config_org = FactoryGirl.create(:connector_configuration,
-                                                 organization_id: @organization.id,
-                                                 connector_provider_id: @connector_provider_hive.id,
+                                                 user_id: @user.id,
+                                                 connector_provider_id: @connector_provider_postgres.id,
                                                  enabled: true,
                                                  max_rows: 100)
+    @connector_config_org_user = FactoryGirl.create(:connector_configuration,
+                                                     user_id: @org_user_1.id,
+                                                     connector_provider_id: @connector_provider_hive.id,
+                                                     enabled: false,
+                                                     max_rows: 100)
+    @connector_config_org = FactoryGirl.create(:connector_configuration,
+                                                organization_id: @organization.id,
+                                                connector_provider_id: @connector_provider_hive.id,
+                                                enabled: true,
+                                                max_rows: 100)
   end
 
   after(:all) do

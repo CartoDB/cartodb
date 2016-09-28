@@ -155,6 +155,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/connectors/importer_overviews_spec.rb \
+	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \

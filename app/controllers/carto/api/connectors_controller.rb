@@ -25,12 +25,11 @@ module Carto
       def connect
         provider_id = params[:provider_id]
         parameters = build_connection_parameters(params)
-        parameters[:table] = 'check_connection_test_table';
         begin
           connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
           render_jsonp({"connected": connector.check_connection})
         rescue
-          render_jsonp({ errors: "Error connecting to provider #{provider_id}" }, 400)
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
         end
       end
 

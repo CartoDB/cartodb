@@ -9,8 +9,8 @@ require_relative './base'
 # must implement these methods to handle FDW operations:
 #
 # * `fdw_create_server(server_name)`
-# * `fdw_create_usermap(server_name, user_name)`
-# * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix)`
+# * `fdw_create_usermap(server_name)`
+# * `fdw_create_foreign_table(server_name, schema_name)`
 # * `fdw_list_tables(limits:)`
 # * `fdw_check_connection(server_name)`
 #
@@ -27,8 +27,7 @@ module Carto
             log "Creating Foreign Table"
             foreign_table_name = fdw_create_foreign_table(
               server_name,
-              foreign_table_schema,
-              foreign_prefix
+              foreign_table_schema
             )
             log "Copying Foreign Table"
             max_rows = limits[:max_rows]
@@ -46,7 +45,7 @@ module Carto
         limit = limits[:max_listed_tables]
         validate! only: [:connection]
         with_server do
-          fdw_list_tables server_name, foreign_table_schema, foreign_prefix, limit
+          fdw_list_tables server_name, foreign_table_schema, limit
         end
       end
 
@@ -54,7 +53,7 @@ module Carto
         ok = false
         validate! only: [:connection]
         with_server do
-          ok = fdw_check_connection server_name, foreign_prefix
+          ok = fdw_check_connection(server_name)
         end
         ok
         # TODO: rescue exceptions and return false?
@@ -94,18 +93,14 @@ module Carto
       # minimum length left available for the table part in foreign table names
       MIN_TAB_ID_LEN        = 10
 
-      # Named used for the foreign server (unique poer Connector instance)
+      # Named used for the foreign server (unique per Connector instance)
+      # Its length is limited so that when used as a prefix for an identifier
+      # it leaves at least MIN_TAB_ID_LEN+1 available identifier characters given PostgreSQL's
+      # limit of MAX_PG_IDENTIFIER_LEN (so a separator such as "_" can also be included)
       def server_name
         max_len = MAX_PG_IDENTIFIER_LEN - unique_suffix.size - MIN_TAB_ID_LEN - 1
         connector_name = Carto::DB::Sanitize.sanitize_identifier self.class.to_s.split('::').last
         "#{connector_name[0...max_len].downcase}_#{unique_suffix}"
-      end
-
-      # Prefix to be used by foreign table names (so they're unique per Connector instance)
-      # This leaves at least MIN_TAB_ID_LEN available identifier characters given PostgreSQL's
-      # limit of MAX_PG_IDENTIFIER_LEN
-      def foreign_prefix
-        "#{server_name}_"
       end
 
       def foreign_table_schema
@@ -131,7 +126,7 @@ module Carto
 
       # Create the foreign table used for importing
       # Must return the name of the created foreign table
-      def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix)
+      def fdw_create_foreign_table(_server_name, _schema_name)
         must_be_defined_in_derived_class
       end
 

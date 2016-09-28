@@ -91,8 +91,13 @@ module Carto
         @params[:table]
       end
 
-      def foreign_table_name(prefix, name = nil)
-        fdw_adjusted_table_name("#{prefix}#{name || table_name}")
+      def foreign_table_name_for(server_name, name = nil)
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+      end
+
+      def unique_prefix_for(server_name)
+        # server_name should already be unique
+        "#{server_name}_"
       end
 
       def remote_schema_name
@@ -111,15 +116,15 @@ module Carto
         execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix)
+      def fdw_create_foreign_table(server_name, foreign_table_schema)
         cmds = []
-        foreign_table_name = self.foreign_table_name(foreign_prefix)
+        foreign_table_name = foreign_table_name_for(server_name)
         if @columns.present?
           cmds << fdw_create_foreign_table_sql(
             server_name, foreign_table_schema, foreign_table_name, @columns, table_options
           )
         else
-          options = table_options.merge(prefix: foreign_prefix)
+          options = table_options.merge(prefix: unique_prefix_for(server_name))
           cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
         cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
@@ -127,15 +132,15 @@ module Carto
         foreign_table_name
       end
 
-      def fdw_list_tables(server_name, _foreign_table_schema, _foreign_prefix, limit)
+      def fdw_list_tables(server_name, _foreign_table_schema, limit)
         execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }
       end
 
-      def fdw_check_connection(server_name, foreign_prefix)
+      def fdw_check_connection(server_name)
         cmds = []
-        foreign_table_name = self.foreign_table_name(foreign_prefix, 'check')
+        foreign_table_name = foreign_table_name_for(server_name, 'check_connection')
         columns = ['ok int']
         cmds << fdw_create_foreign_table_sql(
           server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")

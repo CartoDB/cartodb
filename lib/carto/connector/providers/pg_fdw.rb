@@ -53,8 +53,13 @@ module Carto
         @params[:table]
       end
 
-      def foreign_table_name(prefix)
-        fdw_adjusted_table_name("#{prefix}#{table_name}")
+      def foreign_table_name_for(server_name, name = nil)
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+      end
+
+      def unique_prefix_for(server_name)
+        # server_name should already be unique
+        "#{server_name}_"
       end
 
       def remote_schema_name
@@ -72,24 +77,24 @@ module Carto
         execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, schema, foreign_prefix)
+      def fdw_create_foreign_table(server_name, schema)
         remote_table = table_name
-        foreign_table = foreign_table_name(foreign_prefix)
+        foreign_table = foreign_table_name_for(server_name)
         options = table_options
         cmds = []
         cmds << fdw_import_foreign_schema_limited_sql(server_name, remote_schema_name, schema, remote_table, options)
         if remote_table != foreign_table
           cmds << fdw_rename_foreign_table_sql(schema, remote_table, foreign_table)
         end
-        cmds << fdw_grant_select_sql(schema, foreign_table_name(foreign_prefix), @connector_context.database_username)
+        cmds << fdw_grant_select_sql(schema, foreign_table, @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
         foreign_table
       end
 
-      def fdw_list_tables(server_name, schema, foreign_prefix, limit)
+      def fdw_list_tables(server_name, schema, limit)
         # Create auxiliar foreign tables for pg_class, pg_namespace
-        ext_pg_class = fdw_adjusted_table_name("#{foreign_prefix}pg_class")
-        ext_pg_namespace = fdw_adjusted_table_name("#{foreign_prefix}pg_namespace")
+        ext_pg_class = foreign_table_name_for(server_name, 'pg_class')
+        ext_pg_namespace = foreign_table_name_for(server_name, 'pg_namespace')
         commands = []
         commands << fdw_create_foreign_table_if_not_exists_sql(
           server_name, schema, ext_pg_class,
@@ -121,8 +126,8 @@ module Carto
         execute_as_superuser(commands.join("\n"))
       end
 
-      def fdw_check_connection(server_name, foreign_prefix)
-        fdw_list_tables(server_name, 'public', foreign_prefix, 1)
+      def fdw_check_connection(server_name)
+        fdw_list_tables(server_name, 'public', 1)
         true
       end
 

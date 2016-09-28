@@ -112,8 +112,8 @@ module Carto
 
         execute_as_superuser %{
           SELECT n.nspname AS schema, c.relname AS name
-          FROM #{fdw_qualified_table_name(schema, ext_pg_class)} c
-          JOIN #{fdw_qualified_table_name(schema, ext_pg_namespace)} n ON n.oid = c.relnamespace
+          FROM #{fdw_qualified_table_name(foreign_table_schema, ext_pg_class)} c
+          JOIN #{fdw_qualified_table_name(foreign_table_schema, ext_pg_namespace)} n ON n.oid = c.relnamespace
             WHERE c.relkind = 'r'
             AND n.nspname NOT IN ('pg_catalog', 'information_schema')
             ORDER BY schema, name
@@ -128,7 +128,7 @@ module Carto
       end
 
       def fdw_check_connection(server_name)
-        fdw_list_tables(server_name, 'public', 1)
+        fdw_list_tables(server_name, 1)
         true
       end
 

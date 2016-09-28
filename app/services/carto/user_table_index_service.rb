@@ -44,7 +44,7 @@ module Carto
       drop_index_on = auto_indexed_columns - columns_to_index
       drop_index_on.each do |col|
         CartoDB::Logger.debug(message: 'Auto index', action: 'drop', table: @user_table, column: col)
-        @table.drop_index(col, AUTO_INDEX_PREFIX)
+        @table.drop_index(col, AUTO_INDEX_PREFIX, concurrent: true)
       end
     rescue => e
       CartoDB::Logger.error(exception: e, message: 'Error auto-indexing table', table: @user_table)

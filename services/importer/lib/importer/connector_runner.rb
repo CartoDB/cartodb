@@ -60,7 +60,7 @@ module CartoDB
       end
 
       def remote_data_updated?
-        @connecctor.remote_data_updated?
+        @connector.remote_data_updated?
       end
 
       def tracker

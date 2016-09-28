@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.2.23",
+  "version": "4.2.25",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -14,8 +14,8 @@
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
-      "from": "git://github.com/CartoDB/backbone-model-file-upload.git#1.0.0",
-      "resolved": "git://github.com/CartoDB/backbone-model-file-upload.git#ff2c75cdf7e8e8e7dd651b4f69f14d13abe23a19",
+      "from": "cartodb/backbone-model-file-upload#1.0.0",
+      "resolved": "git://github.com/cartodb/backbone-model-file-upload.git#ff2c75cdf7e8e8e7dd651b4f69f14d13abe23a19",
       "dependencies": {
         "bower": {
           "version": "1.7.9",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {

@@ -120,6 +120,11 @@ module Carto
         execute_as_superuser(commands.join("\n"))
       end
 
+      def fdw_check_connection(server_name, foreign_prefix, _username)
+        fdw_list_tables(server_name, 'public', foreign_prefix, 1)
+        true
+      end
+
       def features_information
         {
           "sql_queries":    false,

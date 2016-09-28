@@ -12,6 +12,7 @@ require_relative './base'
 # * `fdw_create_usermap(server_name, user_name)`
 # * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix, username)`
 # * `fdw_list_tables(limits:)`
+# * `fdw_check_connection(server_name)`
 #
 module Carto
   class Connector
@@ -48,6 +49,16 @@ module Carto
         with_server do
           fdw_list_tables server_name, foreign_table_schema, foreign_prefix, limit
         end
+      end
+
+      def check_connection
+        ok = false
+        validate! only: [:connection]
+        with_server do
+          ok = fdw_check_connection server_name, foreign_prefix, @connector_context.user.database_username
+        end
+        ok
+        # TODO: rescue exceptions and return false?
       end
 
       def remote_data_updated?
@@ -124,6 +135,12 @@ module Carto
       # Create the foreign table used for importing
       # Must return the name of the created foreign table
       def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix, _username)
+        must_be_defined_in_derived_class
+      end
+
+      # Check the connection with a server: returns OK for valid connections;
+      # otherwise it either raises an exception or returns false.
+      def fdw_check_connection(_server_name)
         must_be_defined_in_derived_class
       end
 

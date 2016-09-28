@@ -82,12 +82,17 @@ module Carto
         {}
       end
 
+      # Return table options to connect to a query (used for checking the connection)
+      def options_for_query(_query)
+        must_be_defined_in_derived_class
+      end
+
       def table_name
         @params[:table]
       end
 
-      def foreign_table_name(prefix)
-        fdw_adjusted_table_name("#{prefix}#{table_name}")
+      def foreign_table_name(prefix, name = nil)
+        fdw_adjusted_table_name("#{prefix}#{name || table_name}")
       end
 
       def remote_schema_name
@@ -126,6 +131,21 @@ module Carto
         @connector_context.execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }
+      end
+
+      def fdw_check_connection(server_name, foreign_prefix, username) # avoid username (use @connector_context...)
+        cmds = []
+        foreign_table_name = self.foreign_table_name(foreign_prefix, 'check')
+        columns = ['ok int']
+        cmds << fdw_create_foreign_table_sql(
+          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")
+        )
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
+        execute_as_superuser cmds.join("\n")
+        result = execute %{
+          SELECT * FROM #{qualified_foreign_table_name foreign_table_name};
+        }
+        result && result.first[:ok] == 1
       end
 
       def features_information
@@ -217,7 +237,12 @@ module Carto
         params.merge(non_connection_parameters).parameters
       end
 
+      def check_table_options(query)
+        table_options.merge(
+          sql_query: query,
+          table: 'check_table' # Not used, but required
+        )
+      end
     end
-
   end
 end

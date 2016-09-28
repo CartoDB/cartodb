@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "required": ["show_menu"],
   "additionalProperties": false,
   "properties": {
     "show_menu": {

@@ -5,14 +5,11 @@ require 'support/helpers'
 require_relative '../../../../app/controllers/carto/api/maps_controller'
 require_relative '../../../../spec/requests/api/json/maps_controller_shared_examples'
 
-
 describe Carto::Api::MapsController do
+  include Carto::Factories::Visualizations, HelperMethods
 
   it_behaves_like 'maps controllers' do
   end
-
-  include Carto::Factories::Visualizations
-  include HelperMethods
 
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
@@ -27,8 +24,8 @@ describe Carto::Api::MapsController do
     ::User[@user2.id].destroy
   end
 
-  def create_show_map_url(user, map_id)
-    api_v1_maps_show_url(user_domain: user.username, api_key: user.api_key, id: map_id)
+  def create_show_map_url(user: @user, map: @map)
+    map_url(user_domain: user.username, api_key: user.api_key, id: map.id)
   end
 
   describe '#show' do
@@ -46,11 +43,12 @@ describe Carto::Api::MapsController do
         response.body[:view_bounds_ne].should eq @map.view_bounds_ne
         response.body[:legends].should eq @map.legends
         response.body[:scrollwheel].should eq @map.scrollwheel
+        response.body[:show_menu].should eq @map.show_menu
       end
     end
 
     it 'returns 401 for unathorized user' do
-      get_json api_v1_maps_show_url(user_domain: @user2.username, api_key: 'wadus', id: @map.id) do |response|
+      get_json map_url(user_domain: @user2.username, api_key: 'wadus', id: @map.id) do |response|
         response.status.should eq 401
       end
     end
@@ -62,7 +60,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'returns 404 for unexisting map' do
-      get_json create_show_map_url(@user, 'wadus') do |response|
+      get_json create_show_map_url(@user, random_uuid) do |response|
         response.status.should eq 404
       end
     end

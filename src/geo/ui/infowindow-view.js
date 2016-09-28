@@ -95,10 +95,6 @@ var Infowindow = View.extend({
     return wait_callback;
   },
 
-  isCustomTemplate: function () {
-    return this.model.get('template_name') === '' && this.model.get('template') !== '';
-  },
-
   /**
    *  Render infowindow content
    */
@@ -111,12 +107,8 @@ var Infowindow = View.extend({
 
       var data = this.model.get('content') ? this.model.get('content').data : {};
 
-      // If a custom template is not applied, let's sanitize
-      // fields for the template rendering
-      if (!this.isCustomTemplate()) {
-        // Sanitized fields
-        fields = _.map(fields, this._sanitizeField, this);
-      }
+      // Sanitized fields
+      fields = _.map(fields, this._sanitizeField, this);
 
       // Join plan fields values with content to work with
       // custom infowindows and CartoDB infowindows.
@@ -254,6 +246,16 @@ var Infowindow = View.extend({
     }
   },
 
+  _sanitizeValue: function (key, obj) {
+    var t = typeof (obj);
+
+    if (t !== 'object' || obj === null) {
+      return String(obj);
+    }
+
+    return obj;
+  },
+
   _sanitizeField: function (attr) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value === null || attr.value === undefined) {
@@ -272,7 +274,7 @@ var Infowindow = View.extend({
     }
 
     // Save new sanitized value
-    attr.value = attr.value.toString();
+    attr.value = JSON.parse(JSON.stringify(attr.value), this._sanitizeValue);
 
     return attr;
   },

@@ -193,6 +193,37 @@ describe('geo/ui/infowindow-view', function() {
     expect(item2.find('.CDB-infowindow-subtitle').text()).toEqual('jamon2');
   });
 
+  it("shouldn't convert the value if it is an object or an array", function () {
+    var template = '<div class="js-infowindow">\
+      <a href="#close" class="cartodb-popup-close-button close">x</a>\
+       <div class="cartodb-popup-content-wrapper">\
+         <div class="js-content">\
+           <ul class="CDB-infowindow-listItem">{{#jamon1}}<li>{{jamon2}}, {{istrue}}, "{{isempty}}", {{isnum}}</li>{{/jamon1}}</ul>\
+           <ul class="CDB-infowindow-listItem">{{#jamon3}}<li>{{.}}</li>{{/jamon3}}</ul>\
+         </div>\
+       </div>\
+       <div class="hook"></div>\
+    </div>';
+
+    model.set({
+      content: {
+        fields: [
+          { title: 'jamon1', value: [{ jamon2: 'jamon2', istrue: true, isempty: '', isnum: 9 }] },
+          { title: 'jamon3', value: ['jamon4', 'jamon5'] }
+        ]
+      },
+      template: template,
+      template_type: 'mustache'
+    });
+
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.text()).toContain('jamon2, true, "", 9');
+    var item2 = view.$el.find('.CDB-infowindow-listItem:nth-child(2)');
+    expect(item2.text()).toContain('jamon4jamon5');
+  });
+
   it('should close the infowindow when user clicks close button', function () {
     model.set({
       template: '<div><button class="js-close">X</button></div>'

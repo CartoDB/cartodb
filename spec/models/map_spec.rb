@@ -44,6 +44,66 @@ describe Map do
       end
     end
 
+    describe '#validations' do
+      before(:all) do
+        @map_user = FactoryGirl.create(:carto_user)
+        @map = Carto::Map.create(user_id: @map_user.id)
+      end
+
+      after(:all) do
+        @map.destroy
+        @map_user.destroy
+      end
+
+      describe '#embed_options' do
+        it 'sets show_menu true by default' do
+          @map.show_menu.should eq true
+        end
+
+        it 'allows to change show_menu' do
+          @map.show_menu = false
+          @map.show_menu.should be_false
+
+          @map.show_menu = true
+          @map.show_menu.should be_true
+        end
+
+        it 'rejects a non-boolean show_menu value' do
+          @map.show_menu = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'requies a show_menu value' do
+          @map.show_menu = nil
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
+        end
+
+        it 'requires show_menu to be present' do
+          old_options = @map.embed_options.dup
+          @map.embed_options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('did not contain a required property of \'show_menu\'')
+
+          @map.embed_options = old_options
+        end
+
+        it 'rejects spammy embed_options' do
+          @map.embed_options[:spam] = 'hell'
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('spam')
+        end
+      end
+    end
+
     describe '#destroy' do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)

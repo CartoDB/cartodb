@@ -10,7 +10,7 @@ var ChoroplethLegendModel = LegendModelBase.extend({
     });
   },
 
-  hasData: function () {
+  isAvailable: function () {
     return this.get('colors') && this.get('colors').length > 0;
   }
 });

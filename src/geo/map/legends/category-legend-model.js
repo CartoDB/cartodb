@@ -8,7 +8,7 @@ var CategoryLegendModel = LegendModelBase.extend({
     });
   },
 
-  hasData: function () {
+  isAvailable: function () {
     return this.get('categories') && this.get('categories').length > 0;
   }
 });

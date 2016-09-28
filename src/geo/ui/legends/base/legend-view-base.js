@@ -28,7 +28,7 @@ var LegendViewBase = Backbone.View.extend({
   _generateHTML: function () {
     var html = [];
     if (this.model.isSuccess()) {
-      if (this.model.hasData()) {
+      if (this.model.isAvailable()) {
         html.push(this._getLegendHTML());
       } else {
         html.push(this._getNoDataAvailableHTML());

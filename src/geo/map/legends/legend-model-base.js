@@ -59,7 +59,7 @@ var LegendModelBase = Backbone.Model.extend({
     this.set(defaults);
   },
 
-  hasData: function () {
+  isAvailable: function () {
     return false;
   }
 }, {

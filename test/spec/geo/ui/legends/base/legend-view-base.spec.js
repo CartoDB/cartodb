@@ -5,7 +5,7 @@ var LegendModelBase = require('../../../../../../src/geo/map/legends/legend-mode
 var MyLegendModel = LegendModelBase.extend({
   TYPE: 'something',
 
-  hasData: function () {
+  isAvailable: function () {
     return true;
   }
 });
@@ -69,7 +69,7 @@ describe('geo/ui/legends/legend-view-base.js', function () {
   describe('if model has been loaded and has no data', function () {
     beforeEach(function () {
       this.model.set('state', 'success');
-      spyOn(this.model, 'hasData').and.returnValue(false);
+      spyOn(this.model, 'isAvailable').and.returnValue(false);
       this.myLegend.render();
     });
 

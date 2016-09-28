@@ -11,7 +11,7 @@ var BubbleLegendModel = LegendModelBase.extend({
     });
   },
 
-  hasData: function () {
+  isAvailable: function () {
     return this.get('values') && this.get('values').length > 0;
   }
 });

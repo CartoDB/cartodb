@@ -10,7 +10,7 @@ var StaticLegendModelBase = LegendModelBase.extend({
 
   _onVisReloading: function () {},
 
-  hasData: function () { return true; }
+  isAvailable: function () { return true; }
 });
 
 module.exports = StaticLegendModelBase;

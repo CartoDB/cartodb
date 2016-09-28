@@ -378,9 +378,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_maps_layers_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id'            => 'layers#show',    as: :api_v1_maps_layers_show
 
-    # Maps
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id'                          => 'maps#show',    as: :api_v1_maps_show
-
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
@@ -409,6 +406,8 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
     scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
+      resources :maps, only: [:show, :update], constraints: { id: /[0-z\-]+/ }
+
       # Organization user management
       scope 'organization/:id_or_name/' do
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create

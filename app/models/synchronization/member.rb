@@ -11,16 +11,19 @@ require_relative '../../../services/importer/lib/importer/post_import_handler'
 require_relative '../../../lib/cartodb/errors'
 require_relative '../../../lib/cartodb/import_error_codes'
 require_relative '../../../services/platform-limits/platform_limits'
+require_dependency 'carto/configuration'
 
 include CartoDB::Datasources
 
 module CartoDB
   module Synchronization
+
     class << self
       attr_accessor :repository
     end
 
     class Member
+      include Carto::Configuration
       include Virtus.model
 
       MAX_RETRIES     = 10
@@ -93,7 +96,7 @@ module CartoDB
       end
 
       def synchronizations_logger
-        @@synchronizations_logger ||= ::Logger.new("#{Rails.root}/log/synchronizations.log")
+        @@synchronizations_logger ||= ::Logger.new(log_file_path("synchronizations.log"))
       end
 
       def interval=(seconds=3600)

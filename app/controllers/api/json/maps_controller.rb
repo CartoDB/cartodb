@@ -50,7 +50,6 @@ class Api::Json::MapsController < Api::ApplicationController
                  :view_bounds_sw,
                  :view_bounds_ne,
                  :legends,
-                 :scrollwheel,
-                 :show_menu)
+                 :scrollwheel)
   end
 end

@@ -588,54 +588,34 @@ describe('vis/vis', function () {
           'updated_at': '2016-04-20T17:05:02+00:00',
           'layers': [
             {
-              'type': 'layergroup',
+              'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
+              'type': 'CartoDB',
+              'infowindow': {
+                'fields': [],
+                'template_name': 'table/views/infowindow_light',
+                'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
+                'alternative_names': {},
+                'width': 226,
+                'maxHeight': 180
+              },
+              'tooltip': {
+                'fields': [],
+                'template_name': 'tooltip_light',
+                'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
+                'alternative_names': {},
+                'maxHeight': 180
+              },
+              'legends': [
+                { type: 'bubble', title: 'My Bubble Legend' }
+              ],
+              'order': 1,
+              'visible': true,
               'options': {
-                'user_name': 'cdb',
-                'maps_api_template': 'http://{user}.localhost.lan:8181',
-                'sql_api_template': 'http://{user}.localhost.lan:8080',
-                'filter': 'mapnik',
-                'layer_definition': {
-                  'stat_tag': '70af2a72-0709-11e6-a834-080027880ca6',
-                  'version': '3.0.0',
-                  'layers': [
-                    {
-                      'id': 'e0d06945-74cd-4421-8229-561c3cabc854',
-                      'type': 'CartoDB',
-                      'infowindow': {
-                        'fields': [],
-                        'template_name': 'table/views/infowindow_light',
-                        'template': '<div class=\'CDB-infowindow CDB-infowindow--light js-infowindow\'>\n  <div class=\'CDB-infowindow-container\'>\n    <div class=\'CDB-infowindow-bg\'>\n      <div class=\'CDB-infowindow-inner\'>\n        <ul class=\'CDB-infowindow-list js-content\'>\n          {{#loading}}\n            <div class=\'CDB-Loader js-loader is-visible\'></div>\n          {{/loading}}\n          {{#content.fields}}\n          <li class=\'CDB-infowindow-listItem\'>\n            {{#title}}<h5 class=\'CDB-infowindow-subtitle\'>{{title}}</h5>{{/title}}\n            {{#value}}<h4 class=\'CDB-infowindow-title\'>{{{ value }}}</h4>{{/value}}\n            {{^value}}<h4 class=\'CDB-infowindow-title\'>null</h4>{{/value}}\n          </li>\n          {{/content.fields}}\n        </ul>\n      </div>\n    </div>\n    <div class=\'CDB-hook\'>\n      <div class=\'CDB-hook-inner\'></div>\n    </div>\n  </div>\n</div>\n',
-                        'alternative_names': {},
-                        'width': 226,
-                        'maxHeight': 180
-                      },
-                      'tooltip': {
-                        'fields': [],
-                        'template_name': 'tooltip_light',
-                        'template': '<div class=\'CDB-Tooltip CDB-Tooltip--isLight\'>\n  <ul class=\'CDB-Tooltip-list\'>\n    {{#fields}}\n      <li class=\'CDB-Tooltip-listItem\'>\n        {{#title}}\n          <h3 class=\'CDB-Tooltip-listTitle\'>{{{ title }}}</h3>\n        {{/title}}\n        <h4 class=\'CDB-Tooltip-listText\'>{{{ value }}}</h4>\n      </li>\n    {{/fields}}\n  </ul>\n</div>\n',
-                        'alternative_names': {},
-                        'maxHeight': 180
-                      },
-                      'legend': {
-                        'type': 'none',
-                        'show_title': false,
-                        'title': '',
-                        'template': '',
-                        'visible': true
-                      },
-                      'order': 1,
-                      'visible': true,
-                      'options': {
-                        'layer_name': 'arboles',
-                        'cartocss': 'cartocss',
-                        'cartocss_version': '2.1.1',
-                        'interactivity': 'cartodb_id',
-                        'source': 'a2'
-                      }
-                    }
-                  ]
-                },
-                'attribution': ''
+                'layer_name': 'arboles',
+                'cartocss': 'cartocss',
+                'cartocss_version': '2.1.1',
+                'interactivity': 'cartodb_id',
+                'source': 'a2'
               }
             }
           ],

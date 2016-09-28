@@ -71,11 +71,6 @@ cdb.geo.ui.Annotation = require('./geo/ui/annotation');
 cdb.geo.ui.Image = require('./geo/ui/image');
 cdb.geo.ui.Zoom = require('./geo/ui/zoom/zoom-view');
 
-// setup expected object structure here, to avoid circular references
-_.extend(cdb.geo.ui, require('./geo/ui/legend-exports'));
-cdb.geo.ui.Legend = require('./geo/ui/legend');
-_.extend(cdb.geo.ui.Legend, require('./geo/ui/legend/legend-view-exports'));
-
 cdb.geo.ui.InfowindowModel = require('./geo/ui/infowindow-model');
 cdb.geo.ui.Infowindow = require('./geo/ui/infowindow-view');
 

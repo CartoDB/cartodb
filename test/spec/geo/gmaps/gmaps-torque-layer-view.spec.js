@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
+var VisModel = require('../../../../src/vis/vis');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsLayerViewFactory = require('../../../../src/geo/gmaps/gmaps-layer-view-factory');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
@@ -10,7 +11,7 @@ var torque = require('torque.js');
 describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     var map = new Map();
     var mapView = new GoogleMapsMapView({
       el: container,

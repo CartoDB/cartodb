@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var log = require('cdb.log');
 var Model = require('../../../src/core/model');
 var Map = require('../../../src/geo/map');
+var VisModel = require('../../../src/vis/vis');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
@@ -57,7 +58,7 @@ describe('windshaft/map-base', function () {
       userName: 'rambo'
     });
 
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     this.cartoDBLayerGroup = new Model();
     this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
     this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
@@ -78,7 +79,7 @@ describe('windshaft/map-base', function () {
     jasmine.clock().uninstall();
   });
 
-  describe('createInstance', function () {
+  describe('.createInstance', function () {
     beforeEach(function () {
       this.map = new Map({
         view_bounds_sw: [],
@@ -247,14 +248,6 @@ describe('windshaft/map-base', function () {
         });
 
         expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
-      });
-
-      it('should trigger the `instanceRequested` event', function () {
-        var instanceRequestedCallback = jasmine.createSpy('instanceRequestedCallback');
-        this.windshaftMap.bind('instanceRequested', instanceRequestedCallback);
-        this.windshaftMap.createInstance();
-
-        expect(instanceRequestedCallback).toHaveBeenCalled();
       });
 
       it('should trigger the `instanceCreated` event', function () {
@@ -455,73 +448,9 @@ describe('windshaft/map-base', function () {
       expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
       expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
     });
-
-    it('should ignore http layers present in the response', function () {
-      this.windshaftMap.set({
-        layergroupid: 'layergroupid',
-        metadata: {
-          layers: [
-            {
-              'type': 'http'
-            },
-            {
-              'type': 'mapnik',
-              'meta': 'cartodb-metadata',
-              'widgets': {
-                'dataviewId': {
-                  'url': {
-                    'http': 'http://example.com',
-                    'https': 'https://example.com'
-                  }
-                }
-              }
-            },
-            {
-              'type': 'torque',
-              'meta': 'torque-metadata'
-            }
-          ]
-        }
-      });
-
-      expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
-      expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
-    });
-
-    it('should ignore plain layers present in the response', function () {
-      this.windshaftMap.set({
-        layergroupid: 'layergroupid',
-        metadata: {
-          layers: [
-            {
-              'type': 'plain'
-            },
-            {
-              'type': 'mapnik',
-              'meta': 'cartodb-metadata',
-              'widgets': {
-                'dataviewId': {
-                  'url': {
-                    'http': 'http://example.com',
-                    'https': 'https://example.com'
-                  }
-                }
-              }
-            },
-            {
-              'type': 'torque',
-              'meta': 'torque-metadata'
-            }
-          ]
-        }
-      });
-
-      expect(this.windshaftMap.getLayerMetadata(0)).toEqual('cartodb-metadata');
-      expect(this.windshaftMap.getLayerMetadata(1)).toEqual('torque-metadata');
-    });
   });
 
-  describe('#getBaseURL', function () {
+  describe('.getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
       var windshaftMap = new WindshaftMap({
         layergroupid: '0123456789'
@@ -581,7 +510,7 @@ describe('windshaft/map-base', function () {
     });
   });
 
-  describe('#getDataviewMetadata', function () {
+  describe('.getDataviewMetadata', function () {
     it('should return undefined if dataviews key is not present in the metadata', function () {
       var windshaftMap = new WindshaftMap({
         'layergroupid': '0123456789',

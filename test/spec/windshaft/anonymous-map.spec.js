@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var VisModel = require('../../../src/vis/vis');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var WindshaftClient = require('../../../src/windshaft/client');
@@ -35,7 +36,7 @@ var createFakeDataview = function (attrs, windshaftMap, layer, analysisCollectio
 describe('windshaft/anonymous-map', function () {
   beforeEach(function () {
     this.analysisCollection = new Backbone.Collection();
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
     this.cartoDBLayer1 = new CartoDBLayer({
       id: 'layer1',
       sql: 'sql1',

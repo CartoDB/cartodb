@@ -1,16 +1,18 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var TorqueLayer = require('../../../../src/geo/map/torque-layer');
 var sharedTestsForInteractiveLayers = require('./shared-for-interactive-layers');
 
 describe('geo/map/torque-layer', function () {
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
   });
 
   sharedTestsForInteractiveLayers(TorqueLayer);
 
   describe('vis reloading', function () {
-    var ATTRIBUTES = ['sql', 'source'];
+    var ATTRIBUTES = ['sql', 'sql_wrap', 'source'];
 
     _.each(ATTRIBUTES, function (attribute) {
       it("should reload the vis when '" + attribute + "' attribute changes", function () {
@@ -43,7 +45,7 @@ describe('geo/map/torque-layer', function () {
       expect(this.vis.reload).not.toHaveBeenCalled();
     });
 
-    it('should NOT reload the map if a cartocss property has changed and a reload is not needed', function () {
+    it('should NOT reload the map if cartocss property has changed and a reload is not needed', function () {
       var layer = new TorqueLayer({
         cartocss: 'Map { something: "a"; -torque-time-attribute: "column"; }'
       }, { vis: this.vis });

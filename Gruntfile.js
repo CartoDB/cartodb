@@ -6,32 +6,26 @@ var jasmineCfg = require('./grunt/tasks/jasmine');
  *  framework
  *
  */
-module.exports = function(grunt) {
-
+module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
   var semver = require('semver');
 
   var pkg = grunt.file.readJSON('package.json');
 
-  if (!pkg.version || !semver.valid(pkg.version)) {
-    grunt.fail.fatal('package.json version is not valid' , 1);
+  if (!pkg.version || !semver.valid(pkg.version)) {
+    grunt.fail.fatal('package.json version is not valid', 1);
   }
 
   var version = pkg.version.split('.');
-  var VERSION_OBJ =  {
-      major:      version[0],
-      minor:      version[0] + '.' + version[1],
-      bugfixing:  pkg.version
-   }
 
   var config = {
     dist: 'dist',
     tmp: '.tmp',
     version: {
-      major:      version[0],
-      minor:      version[0] + '.' + version[1],
-      bugfixing:  pkg.version
+      major: version[0],
+      minor: version[0] + '.' + version[1],
+      bugfixing: pkg.version
     },
     pkg: pkg
   };
@@ -41,11 +35,11 @@ module.exports = function(grunt) {
     config: config,
     dist: 'dist',
     version: {
-      major:      version[0],
-      minor:      version[0] + '.' + version[1],
-      bugfixing:  pkg.version
+      major: version[0],
+      minor: version[0] + '.' + version[1],
+      bugfixing: pkg.version
     },
-    pkg:  pkg,
+    pkg: pkg,
     gitinfo: {},
     browserify: require('./grunt/tasks/browserify').task(grunt),
     exorcise: require('./grunt/tasks/exorcise').task(),
@@ -56,6 +50,7 @@ module.exports = function(grunt) {
     sass: require('./grunt/tasks/scss').task(grunt, config),
     watch: require('./grunt/tasks/watch').task(),
     connect: require('./grunt/tasks/connect').task(config),
+    copy: require('./grunt/tasks/copy').task(config),
     clean: require('./grunt/tasks/clean').task(),
     concat: require('./grunt/tasks/concat').task(grunt, config),
     uglify: require('./grunt/tasks/uglify').task(),
@@ -71,7 +66,6 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('publish', function (target) {
-
     if (!grunt.file.exists('secrets.json')) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
     }
@@ -85,7 +79,7 @@ module.exports = function(grunt) {
         !grunt.config('secrets').S3_SECRET ||
         !grunt.config('secrets').S3_BUCKET
       ) {
-      grunt.fail.fatal('S3 keys not specified in secrets.json' , 1);
+      grunt.fail.fatal('S3 keys not specified in secrets.json', 1);
     }
 
     grunt.task.run([
@@ -117,7 +111,7 @@ module.exports = function(grunt) {
     grunt.config.set('bump', options);
   });
 
-  grunt.registerTask('invalidate', function(){
+  grunt.registerTask('invalidate', function () {
     if (!grunt.file.exists('secrets.json')) {
       grunt.fail.fatal('secrets.json file does not exist, copy secrets.example.json and rename it' , 1);
     }
@@ -129,7 +123,7 @@ module.exports = function(grunt) {
         !grunt.config('secrets').FASTLY_API_KEY ||
         !grunt.config('secrets').FASTLY_CARTODB_SERVICE
       ) {
-      grunt.fail.fatal('Fastly keys not specified in secrets.json' , 1);
+      grunt.fail.fatal('Fastly keys not specified in secrets.json', 1);
     }
 
     grunt.task.run([
@@ -137,7 +131,7 @@ module.exports = function(grunt) {
     ]);
   });
 
-  grunt.registerTask('preWatch', function() {
+  grunt.registerTask('preWatch', function () {
     grunt.config('config.doWatchify', true); // required for browserify to use watch files instead
   });
 
@@ -156,13 +150,14 @@ module.exports = function(grunt) {
     'clean:dist',
     'replace',
     'gitinfo',
+    'copy:fonts'
   ];
   var css = allDeps
     .concat([
       'sass',
       'concat',
       'cssmin',
-      'imagemin',
+      'imagemin'
     ]);
   var js = allDeps
     .concat([
@@ -173,7 +168,7 @@ module.exports = function(grunt) {
     .concat(js)
     .concat([
       'exorcise',
-      'uglify',
+      'uglify'
     ]);
   var devJS = allDeps
     .concat('preWatch')
@@ -183,16 +178,16 @@ module.exports = function(grunt) {
     'watch'
   ];
 
-  grunt.registerTask('lint', 'lint source files', function() {
+  grunt.registerTask('lint', 'lint source files', function () {
     var done = this.async();
-    require("child_process").exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+    require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
       if (error) {
         grunt.log.fail(error);
 
         // Filter out lines that are ignored,
         // e.g. "src/foobar.js:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override."
         grunt.log.fail(stdout.replace(/.+--no-ignore.+(\r?\n|\r)/g, ''));
-        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).')
+        grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
       } else {
         grunt.log.ok('All linted files OK!');
         grunt.log.writeln('Note that files listed in .eslintignore are not linted');
@@ -213,10 +208,9 @@ module.exports = function(grunt) {
     'jasmine',
     'lint'
   ])));
-  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat(watch)));
+  grunt.registerTask('dev', _.uniq(css.concat(devJS).concat('gitinfo').concat(watch)));
   grunt.registerTask('dev:css', _.uniq(css.concat(watch)));
   grunt.registerTask('dev:js', _.uniq(devJS.concat(watch)));
-
 
   /**
    * Delegate task to commandline.
@@ -243,4 +237,4 @@ module.exports = function(grunt) {
       }, done);
     });
   }
-}
+};

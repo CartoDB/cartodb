@@ -1,6 +1,16 @@
 var _ = require('underscore');
 var LayerModelBase = require('./layer-model-base');
 var carto = require('carto');
+var Legends = require('./legends/legends');
+var ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD = ['sql', 'sql_wrap', 'source', 'cartocss'];
+var TORQUE_LAYER_CARTOCSS_PROPS = [
+  '-torque-frame-count',
+  '-torque-time-attribute',
+  '-torque-aggregation-function',
+  '-torque-data-aggregation',
+  '-torque-resolution'
+];
+var LAYER_NAME_IN_CARTO_CSS = 'Map';
 
 /**
  * Model for a Torque Layer
@@ -19,18 +29,6 @@ var TorqueLayer = LayerModelBase.extend({
     time: undefined // should be a Date instance
   },
 
-  ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD: ['sql', 'source', 'cartocss'],
-
-  TORQUE_LAYER_CARTOCSS_PROPS: [
-    '-torque-frame-count',
-    '-torque-time-attribute',
-    '-torque-aggregation-function',
-    '-torque-data-aggregation',
-    '-torque-resolution'
-  ],
-
-  LAYER_NAME_IN_CARTO_CSS: 'Map',
-
   initialize: function (attrs, options) {
     options = options || {};
     if (!options.vis) throw new Error('vis is required');
@@ -38,11 +36,16 @@ var TorqueLayer = LayerModelBase.extend({
     this._vis = options.vis;
     this.bind('change', this._onAttributeChanged, this);
 
+    this.legends = new Legends(attrs.legends, {
+      visModel: this._vis
+    });
+    this.unset('legends');
+
     LayerModelBase.prototype.initialize.apply(this, arguments);
   },
 
   _onAttributeChanged: function () {
-    var reloadVis = _.any(this.ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
+    var reloadVis = _.any(ATTRIBUTES_THAT_TRIGGER_VIS_RELOAD, function (attr) {
       if (this.hasChanged(attr)) {
         if (attr === 'cartocss') {
           return this.previous('cartocss') && this._torqueCartoCSSPropsChanged();
@@ -69,9 +72,9 @@ var TorqueLayer = LayerModelBase.extend({
 
   _getTorqueLayerCartoCSSProperties: function (renderer, cartoCSS) {
     var shader = renderer.render(cartoCSS);
-    var layer = shader.findLayer({ name: this.LAYER_NAME_IN_CARTO_CSS });
+    var layer = shader.findLayer({ name: LAYER_NAME_IN_CARTO_CSS });
     var properties = {};
-    _.each(this.TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
+    _.each(TORQUE_LAYER_CARTOCSS_PROPS, function (property) {
       var value = layer && layer.eval(property);
       if (value) {
         properties[property] = value;
@@ -110,36 +113,35 @@ var TorqueLayer = LayerModelBase.extend({
     this.set('renderRange', {});
   },
 
-  isEqual: function(other) {
+  isEqual: function (other) {
     var properties = ['query', 'query_wrapper', 'cartocss'];
     var self = this;
-    return this.get('type') === other.get('type') && _.every(properties, function(p) {
+    return this.get('type') === other.get('type') && _.every(properties, function (p) {
       return other.get(p) === self.get(p);
     });
   },
 
-  isVisible: function() {
+  isVisible: function () {
     return true;
   },
 
   getName: function () {
-    return this.get('layer_name') || this.get('table_name');
+    return this.get('layer_name');
   },
 
-  getInteractiveColumnNames: function() {
+  getInteractiveColumnNames: function () {
     return [];
   },
 
-  getInfowindowFieldNames: function() {
+  getInfowindowFieldNames: function () {
     return [];
   },
 
-  hasInteraction: function() {
+  hasInteraction: function () {
     return this.getInteractiveColumnNames() > 0;
   },
 
-  fetchAttributes: function(layer, featureID, callback) {
-  },
+  fetchAttributes: function (layer, featureID, callback) {},
 
   setDataProvider: function (dataProvider) {
     this._dataProvider = dataProvider;
@@ -150,11 +152,11 @@ var TorqueLayer = LayerModelBase.extend({
   },
 
   // given a timestamp returns a step (float)
-  timeToStep: function(timestamp) {
+  timeToStep: function (timestamp) {
     var steps = this.get('steps');
     var start = this.get('start');
     var end = this.get('end');
-    var step = (steps * (1000*timestamp - start)) / (end - start);
+    var step = (steps * (1000 * timestamp - start)) / (end - start);
     return step;
   },
 

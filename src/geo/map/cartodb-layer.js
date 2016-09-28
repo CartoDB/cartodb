@@ -3,6 +3,7 @@ var config = require('../../cdb.config');
 var LayerModelBase = require('./layer-model-base');
 var InfowindowTemplate = require('./infowindow-template');
 var TooltipTemplate = require('./tooltip-template');
+var Legends = require('./legends/legends');
 
 var CartoDBLayer = LayerModelBase.extend({
   defaults: {
@@ -28,6 +29,11 @@ var CartoDBLayer = LayerModelBase.extend({
     this.tooltip = new TooltipTemplate(attrs.tooltip);
     this.unset('infowindow');
     this.unset('tooltip');
+
+    this.legends = new Legends(attrs.legends, {
+      visModel: this._vis
+    });
+    this.unset('legends');
 
     this.bind('change', this._onAttributeChanged, this);
 
@@ -95,10 +101,8 @@ var CartoDBLayer = LayerModelBase.extend({
     return _.uniq(fieldNames);
   },
 
-  // Layers inside a "layergroup" layer have the layer_name defined in options.layer_name
-  // Layers inside a "namedmap" layer have the layer_name defined in the root of their definition
   getName: function () {
-    return this.get('options') && this.get('options').layer_name || this.get('layer_name');
+    return this.get('layer_name');
   },
 
   setDataProvider: function (dataProvider) {

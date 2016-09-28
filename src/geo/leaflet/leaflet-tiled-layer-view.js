@@ -3,15 +3,15 @@ var L = require('leaflet');
 var LeafletLayerView = require('./leaflet-layer-view');
 
 var LeafletTiledLayerView = L.TileLayer.extend({
-  initialize: function(layerModel, leafletMap) {
+  initialize: function (layerModel, leafletMap) {
     L.TileLayer.prototype.initialize.call(this, layerModel.get('urlTemplate'), {
-      tms:          layerModel.get('tms'),
-      attribution:  layerModel.get('attribution'),
-      minZoom:      layerModel.get('minZoom'),
-      maxZoom:      layerModel.get('maxZoom'),
-      subdomains:   layerModel.get('subdomains') || 'abc',
+      tms: !!layerModel.get('tms'),
+      attribution: layerModel.get('attribution'),
+      minZoom: layerModel.get('minZoom'),
+      maxZoom: layerModel.get('maxZoom'),
+      subdomains: layerModel.get('subdomains') || 'abc',
       errorTileUrl: layerModel.get('errorTileUrl'),
-      opacity:      layerModel.get('opacity')
+      opacity: layerModel.get('opacity')
     });
     LeafletLayerView.call(this, layerModel, this, leafletMap);
   },
@@ -28,17 +28,17 @@ var LeafletTiledLayerView = L.TileLayer.extend({
 });
 
 _.extend(LeafletTiledLayerView.prototype, LeafletLayerView.prototype, {
-
-  _modelUpdated: function() {
-    _.defaults(this.leafletLayer.options, _.clone(this.model.attributes));
-    this.leafletLayer.options.subdomains = this.model.get('subdomains') || 'abc';
-    this.leafletLayer.options.attribution = this.model.get('attribution');
-    this.leafletLayer.options.maxZoom = this.model.get('maxZoom');
-    this.leafletLayer.options.minZoom = this.model.get('minZoom');
-    // set url and reload
+  _modelUpdated: function () {
+    _.extend(this.leafletLayer.options, {
+      subdomains: this.model.get('subdomains') || 'abc',
+      attribution: this.model.get('attribution'),
+      maxZoom: this.model.get('maxZoom'),
+      minZoom: this.model.get('minZoom'),
+      tms: !!this.model.get('tms')
+    });
+    // Set url and reload
     this.leafletLayer.setUrl(this.model.get('urlTemplate'));
   }
-
 });
 
 module.exports = LeafletTiledLayerView;

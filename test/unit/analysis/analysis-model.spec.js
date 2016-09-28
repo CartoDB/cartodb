@@ -4,7 +4,8 @@ var AnalysisFactory = require('../../../src/analysis/analysis-factory.js');
 
 describe('src/analysis/analysis-model.js', function () {
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new Backbone.Model();
+    this.vis.reload = jasmine.createSpy('reload');
     var fakeCamshaftReference = {
       getSourceNamesForAnalysisType: function (analysisType) {
         var map = {

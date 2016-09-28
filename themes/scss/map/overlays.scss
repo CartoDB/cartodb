@@ -50,7 +50,7 @@ $buttonColor: #636D72;
     border-bottom-left-radius: 4px;
   }
 }
-.CDB-Zoom-action--out:before {
+.CDB-Zoom-action--out::before {
   position: absolute;
   left: 50%;
   width: 11px;
@@ -60,7 +60,7 @@ $buttonColor: #636D72;
   content: '';
 }
 .CDB-Zoom-action--in {
-  &:before {
+  &::before {
     position: absolute;
     left: 50%;
     width: 11px;
@@ -69,7 +69,7 @@ $buttonColor: #636D72;
     background: $buttonColor;
     content: '';
   }
-  &:after {
+  &::after {
     position: absolute;
     top: 11px;
     width: 1px;
@@ -161,7 +161,7 @@ $buttonColor: #636D72;
   cursor: pointer;
   z-index: 10;
 
-  &:before {
+  &::before {
     display: block;
     position: absolute;
     top: 0;
@@ -172,7 +172,7 @@ $buttonColor: #636D72;
     border-left: 48px solid transparent;
     content: '';
   }
-  &:after {
+  &::after {
     display: block;
     position: absolute;
     top: -22px;
@@ -214,3 +214,289 @@ $buttonColor: #636D72;
   height: auto;
   z-index: 10;
 }
+
+/* Legends */
+
+$maxLegendContainerHeight: 300px;
+
+.CDB-Legends-canvas {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 240px;
+  height: auto;
+  //max-height: $maxLegendContainerHeight;
+  max-height: calc(100vh - 120px);
+  border-radius: 4px;
+  background: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  box-sizing: border-box;
+  z-index: 20000;
+  overflow: hidden;
+}
+.CDB-Legends-canvasInner {
+  overflow: hidden;
+  padding: 24px;
+  border-radius: $baseSize / 2;
+  box-sizing: border-box;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  max-height: calc(100vh - 20px);
+}
+.CDB-Legends-canvasShadow {
+  display: none;
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1;
+  pointer-events: none;
+}
+.CDB-Legends-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  bottom: 0;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow.is-visible {
+  display: block;
+  z-index: 10;
+}
+.CDB-Legends-canvas .ps-scrollbar-y-rail {
+  width: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.CDB-Legends-canvas .ps-scrollbar-y {
+  width: 2px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
+.CDB-Legends-canvas .ps-scrollbar-x-rail {
+  height: 2px !important; // Resetting standard scroll track color
+  background: #EEE;
+  z-index: 3;
+}
+.CDB-Legends-canvas .ps-scrollbar-x {
+  height: 3px !important; // Resetting standard scroll bar color
+  background: #AAA;
+}
+
+.CDB-LayerLegends {
+  margin-top: 32px;
+}
+.CDB-LayerLegends:first-child {
+  margin-top: 0;
+}
+.CDB-Legend-item {
+  margin-bottom: 16px;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.CDB-Legend-item.is-disabled {
+  @include css3-prefix(filter, grayscale(100%));
+  opacity: 0.4;
+}
+
+.Bubble-list {
+  @include display-flex();
+  @include justify-content(center);
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+.Bubble-list::before {
+  position: absolute;
+  right: 50%;
+  bottom: 0;
+  width: 140px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  content: '';
+}
+
+.Bubble-item {
+  position: absolute;
+  bottom: 0;
+  cursor: pointer;
+}
+.Bubble-container {
+  @include display-flex();
+  max-height: 100px;
+}
+.Bubble-itemCircle {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  background: #F8AB17;
+  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+.Bubble-item::before {
+  position: absolute;
+  top: 5px;
+  right: 50%;
+  width: 140px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  content: '';
+}
+.Bubble-item.is-filter::before {
+  display: none;
+}
+.Bubble-numbers {
+  position: relative;
+}
+.Bubble-item.is-filter .Bubble-itemCircle {
+  background: #F9F9F9 !important;
+  opacity: 1 !important;
+  &::before {
+    display: none;
+  }
+}
+.Bubble-numbersItem {
+  position: absolute;
+  margin-bottom: -11px; /* to review */
+  padding-right: $baseSize * 2;
+  background: rgba(#FFF, 0.8);
+  z-index: 10;
+  &:last-child {
+    background: #FFF;
+  }
+}
+.Bubble-inner {
+  @include display-flex();
+  position: relative;
+}
+.Bubble-average {
+  display: block;
+  position: absolute;
+  right: 105px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+.Bubble-average::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -54px;
+  width: 51px;
+  height: 1px;
+  border-top: 1px dotted rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
+}
+
+.Bubble-average::before {
+  display: block;
+  position: absolute;
+  top: calc(50% - 1px);
+  right: -54px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
+}
+
+$opacity-list: 0.95 0.9 0.85 0.8 0.75 0.7 0.65;
+$index-items: 7 6 5 4 3 2 1;
+@each $current-opacity in $opacity-list {
+  $i: index($opacity-list, $current-opacity);
+  .Bubble-item—-#{$i} {
+    opacity: $current-opacity;
+    z-index: nth($index-items, $i);
+  }
+}
+
+
+
+.Legend-choropleth {
+  position: relative;
+  height: $baseSize;
+  margin-bottom: 28px;
+  box-sizing: border-box;
+  border-radius: $halfBaseSize;
+}
+.Legend-choropleth::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: $halfBaseSize;
+  content: '';
+}
+.Legend-choroplethAverageText {
+  position: absolute;
+  left: -10px;
+  white-space: nowrap;
+}
+.Legend-choroplethAverage {
+  position: absolute;
+  bottom: -7px;
+}
+.Legend-choroplethAverage::after {
+  display: block;
+  position: absolute;
+  top: -14px;
+  width: 1px;
+  height: 12px;
+  margin-left: 50%;
+  border-left: 1px dotted rgba(#000, 0.4);
+  content: '';
+}
+
+.Legend-categoryListItem {
+  margin-bottom: 6px;
+}
+.Legend-categoryListItem:last-child {
+  margin-bottom: 0;
+}
+.Legend-categoryCircle {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.Legend-categoryCircle::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+  content: '';
+}
+
+.Legend-placeholder {
+  position: relative;
+  margin: 0 -24px;
+}
+.Legend-loading {
+  display: none;
+}
+.CDB-Legend-item.is-loading .Legend-loading {
+  display: block;
+}
+.Legend-placeholderInner {
+  padding: 12px 24px 0;
+}
+
+

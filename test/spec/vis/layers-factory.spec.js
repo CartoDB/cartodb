@@ -5,11 +5,12 @@ var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
 _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 
+var VisModel = require('../../../src/vis/vis');
 var LayersFactory = require('../../../src/vis/layers-factory');
 
 describe('vis/layers-factory', function () {
   beforeEach(function () {
-    this.vis = jasmine.createSpyObj('vis', ['reload']);
+    this.vis = new VisModel();
   });
 
   describe('https/http', function () {

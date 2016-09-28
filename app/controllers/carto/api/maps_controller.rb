@@ -3,6 +3,8 @@
 module Carto
   module Api
     class MapsController < ::Api::ApplicationController
+      include Carto::ControllerHelper
+
       ssl_required :show, :update
 
       before_filter :load_map, :owners_only
@@ -12,14 +14,14 @@ module Carto
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
-        render_jsonp(map_presentation, :ok)
+        render_jsonp(map_presentation)
       end
 
       def update
         @map.show_menu = show_menu if show_menu
         @map.update_attributes!(update_params)
 
-        render_jsonp(map_presentation, :ok)
+        render_jsonp(map_presentation)
       end
 
       private
@@ -32,7 +34,7 @@ module Carto
 
       def owners_only
         unless @map.writable_by_user?(current_viewer)
-          raise Carto::UnauthorizedError
+          raise Carto::LoadError.new('Map not found')
         end
       end
 
@@ -43,7 +45,6 @@ module Carto
                                         :legends,
                                         :provider,
                                         :scrollwheel,
-                                        :table_id,
                                         :view_bounds_ne,
                                         :view_bounds_sw,
                                         :zoom)

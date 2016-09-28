@@ -1,14 +1,16 @@
 # encoding: utf-8
 
 require 'socket'
+require 'carto/configuration'
 
 module Carto
   module Http
 
     class ResponseLogger
+      include Carto::Configuration
 
       def self.enabled?
-        defined?(Rails) && Rails.respond_to?(:root) && Rails.root.present? && Cartodb.config[:http_client_logs]
+        Cartodb.config[:http_client_logs]
       end
 
       def initialize(tag)
@@ -30,7 +32,7 @@ module Carto
       end
 
       def logger
-        @@logger ||= Logger.new("#{Rails.root}/log/http_client.log")
+        @@logger ||= Logger.new(log_file_path('http_client.log'))
       end
     end
 

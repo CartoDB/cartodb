@@ -33,7 +33,7 @@ class Carto::Map < ActiveRecord::Base
 
   validate :validate_embed_options
 
-  before_validation :ensure_embed_options
+  after_initialize :ensure_embed_options
 
   def data_layers
     layers.select(&:carto?)
@@ -130,18 +130,18 @@ class Carto::Map < ActiveRecord::Base
     data_layers.each(&:register_table_dependencies)
   end
 
-  def show_menu=(show_menu = false)
+  def show_menu=(show_menu)
     embed_options[:show_menu] = show_menu
   end
 
   def show_menu
-    embed_options[:show_menu] || false
+    embed_options[:show_menu]
   end
 
   private
 
   def ensure_embed_options
-    self.embed_options ||= Hash.new
+    self.embed_options ||= { show_menu: true }
   end
 
   def validate_embed_options
@@ -149,7 +149,7 @@ class Carto::Map < ActiveRecord::Base
     schema = Carto::Definition.instance.load_from_file(location)
 
     json_errors = JSON::Validator.fully_validate(schema, embed_options)
-    errors.add(:embed_options, json_errors.join(', '))
+    errors.add(:embed_options, json_errors.join(', ')) if json_errors.any?
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

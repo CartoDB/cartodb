@@ -7,7 +7,7 @@ module Carto
         @map = map
       end
 
-      def to_poro
+      def to_hash
         {
           bounding_box_ne: @map.bounding_box_ne,
           bounding_box_sw: @map.bounding_box_sw,

@@ -8,6 +8,8 @@ module Carto
 
       ssl_required :index, :show, :tables
 
+      before_filter :check_availability
+
       def index
         render_jsonp(Carto::Connector.providers(current_user))
       end
@@ -60,6 +62,10 @@ module Carto
           parameters[:connection][:password] = request_params[:password]
         end
         parameters
+      end
+
+      def check_availability
+        head 404 unless Connector.available?(current_user)
       end
     end
   end

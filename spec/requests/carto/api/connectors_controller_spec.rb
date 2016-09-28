@@ -85,6 +85,9 @@ describe Carto::Api::ConnectorsController do
   end
 
   describe '#tables' do
+    before(:each) do
+      pending "Provision odbc_fdw in CI server"
+    end
     it 'returns connector tables list' do
       get_json api_v1_connectors_tables_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
         response.status.should be_success
@@ -95,6 +98,9 @@ describe Carto::Api::ConnectorsController do
   end
 
   describe '#connect' do
+    before(:each) do
+      pending "Provision odbc_fdw in CI server"
+    end
     it 'returns true if connection went ok' do
       get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
         response.status.should be_success

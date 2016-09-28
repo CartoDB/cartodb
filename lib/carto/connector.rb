@@ -57,6 +57,10 @@ module Carto
       end
     end
 
+    def self.available?(user)
+      user.has_feature_flag?('carto-connectors')
+    end
+
     # Check availability for a user and provider
     def check_availability!
       Connector.check_availability!(@connector_context.user)

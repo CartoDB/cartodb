@@ -519,6 +519,7 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors' => 'connectors#index', as: :api_v1_connectors_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
 
 
   end

@@ -33,8 +33,8 @@ describe Carto::Api::ConnectorsController do
     @connector_config_user.destroy
     @connector_config_org_user.destroy
     @connector_config_org.destroy
-    @connector_provider.destroy
-    @connector_provider_org.destroy
+    @connector_provider_postgres.destroy
+    @connector_provider_hive.destroy
   end
 
   describe '#index' do
@@ -90,6 +90,21 @@ describe Carto::Api::ConnectorsController do
         response.status.should be_success
         response.body[0]["schema"].should eq "public"
         response.body[0]["name"].blank?.should eq false
+      end
+    end
+  end
+
+  describe '#connect' do
+    it 'returns true if connection went ok' do
+      get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'carto_db_test', username: 'postgres'), {}, @headers do |response|
+        response.status.should be_success
+        response.body[:connected].should eq true
+      end
+    end
+    it 'returns 400 if connection went ko' do
+      get_json api_v1_connectors_connect_url(provider_id: 'postgres', user_domain: @user.username, api_key: @user.api_key, server: 'localhost', port: '5432', database: 'unknown_db', username: 'postgres'), {}, @headers do |response|
+        response.status.should be 400
+        response.body[:errors].present?.should eq true
       end
     end
   end

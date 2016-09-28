@@ -247,11 +247,11 @@ var Infowindow = View.extend({
   },
 
   _sanitizeValue: function (key, val) {
-    if (!_.isObject(val)) {
-      return String(val);
+    if (_.isObject(val)) {
+      return val;
     }
 
-    return val;
+    return String(val);
   },
 
   _sanitizeField: function (attr) {

@@ -1,38 +1,38 @@
 var _ = require('underscore');
+var Rule = require('./rule');
 
 var VALID_PROPS = ['line-color', 'marker-fill', 'polygon-fill'];
 var VALID_MAPPINGS = ['>', '>=', '<', '<='];
 
+var generateColors = function (buckets) {
+  return _.map(buckets, function (bucket, i) {
+    var label = '';
+    if (i === 0) {
+      label = bucket.filter.start;
+    } else if (i === buckets.length - 1) {
+      label = bucket.filter.end;
+    }
+    return { value: bucket.value, label: label.toString() };
+  });
+};
+
 module.exports = {
   canAdapt: function (rule) {
-    return this._ruleHasValidProperty(rule) &&
-      this._ruleHasValidMapping(rule);
-  },
-
-  _ruleHasValidProperty: function (rule) {
-    return _.contains(VALID_PROPS, rule.prop);
-  },
-
-  _ruleHasValidMapping: function (rule) {
-    return _.contains(VALID_MAPPINGS, rule.mapping);
+    rule = new Rule(rule);
+    return rule.matchesAnyProperty(VALID_PROPS) &&
+      rule.matchesAnyMapping(VALID_MAPPINGS);
   },
 
   adapt: function (rule) {
-    var values = rule.values;
-    var colors = _.map(values, function (value, i) {
-      var label = '';
-      if (i === 0) {
-        label = rule.stats.min_val;
-      } else if (i === values.length - 1) {
-        label = rule.stats.max_val;
-      }
-      return { value: value, label: label };
-    });
+    rule = new Rule(rule);
+
+    var rangeBuckets = rule.getBucketsWithRangeFilter();
+    var lastBucket = _.last(rangeBuckets);
 
     return {
-      colors: colors,
-      avg: rule.stats.avg_val,
-      max: rule.stats.max_val
+      colors: generateColors(rangeBuckets),
+      avg: rule.getFilterAvg(),
+      max: lastBucket.filter.end
     };
   }
 };

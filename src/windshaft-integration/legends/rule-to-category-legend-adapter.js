@@ -1,29 +1,31 @@
 var _ = require('underscore');
+var Rule = require('./rule');
 
 var VALID_PROPS = ['line-color', 'marker-fill', 'polygon-fill'];
 var VALID_MAPPINGS = ['='];
 
+var generateCategories = function (buckets) {
+  return _.map(buckets, function (bucket) {
+    return { label: bucket.filter.name, value: bucket.value };
+  });
+};
+
 module.exports = {
   canAdapt: function (rule) {
-    return this._ruleHasValidProperty(rule) &&
-      this._ruleHasValidMapping(rule);
-  },
-
-  _ruleHasValidProperty: function (rule) {
-    return _.contains(VALID_PROPS, rule.prop);
-  },
-
-  _ruleHasValidMapping: function (rule) {
-    return _.contains(VALID_MAPPINGS, rule.mapping);
+    rule = new Rule(rule);
+    return rule.matchesAnyProperty(VALID_PROPS) &&
+      rule.matchesAnyMapping(VALID_MAPPINGS);
   },
 
   adapt: function (rule) {
-    var categories = rule.filters.map(function (filter, index) {
-      return { label: filter, value: rule.values[index] };
-    });
+    rule = new Rule(rule);
+
+    var categoryFilteredBuckets = rule.getBucketsWithCategoryFilter();
+    var unfilteredBuckets = rule.getBucketsWithDefaultFilter();
+
     return {
-      categories: categories,
-      defaultValue: rule['default-value']
+      categories: generateCategories(categoryFilteredBuckets),
+      defaultValue: _.isEmpty(unfilteredBuckets) ? undefined : unfilteredBuckets[0].value
     };
   }
 };

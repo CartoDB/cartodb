@@ -1198,7 +1198,8 @@
             "layer_selector": "Layer selector",
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
-            "legends": "Legends"
+            "legends": "Legends",
+            "dashboard_menu": "Render dashboard menu"
           }
         }
       }

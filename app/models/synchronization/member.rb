@@ -17,6 +17,8 @@ include CartoDB::Datasources
 
 module CartoDB
   module Synchronization
+    include Carto::Configuration
+
     class << self
       attr_accessor :repository
     end

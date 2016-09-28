@@ -12,6 +12,7 @@ module Carto
           bounding_box_ne: @map.bounding_box_ne,
           bounding_box_sw: @map.bounding_box_sw,
           center: @map.center,
+          embed_options: @map.embed_options,
           id: @map.id,
           legends: @map.legends,
           provider: @map.provider,

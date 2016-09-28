@@ -17,11 +17,13 @@ module Carto
           table_name = source_node.options[:table_name]
           tables_by_name = table_name ? tables_from_names([table_name], user) : []
 
-          tables_by_query + tables_by_name
+          tables_by_query.present? ? tables_by_query : tables_by_name
         end
         dependencies.flatten.compact.uniq
       else
-        (tables_from_query_option + tables_from_table_name_option).compact.uniq
+        tables_by_query = tables_from_query_option
+        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option
+        dependencies.compact.uniq
       end
     end
 
@@ -67,7 +69,10 @@ module Carto
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
-    has_many :legends, class_name: Carto::Legend, dependent: :destroy
+    has_many :legends,
+             class_name: Carto::Legend,
+             dependent: :destroy,
+             order: :created_at
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -230,6 +235,10 @@ module Carto
       # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
       query = options[:query]
       options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
+
+    def force_notify_change
+      map.force_notify_map_change if map
     end
 
     private

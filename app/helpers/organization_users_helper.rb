@@ -39,7 +39,7 @@ module OrganizationUsersHelper
   def permit(*permitted)
     hardened_params = params.dup
 
-    hardened_params.keep_if { |k, _v| permitted.include?(k.to_sym) }
+    hardened_params.keep_if { |k, _v| permitted.flatten.include?(k.to_sym) }
 
     hardened_params.symbolize_keys
   end

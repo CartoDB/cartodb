@@ -8,9 +8,11 @@ require 'json'
 # 2.0.1: export Widget.source_id
 # 2.0.2: export username
 # 2.0.3: export state (Carto::State)
+# 2.0.4: export legends (Carto::Legend)
+# 2.0.5: export explicit widget order
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.3'.freeze
+    CURRENT_VERSION = '2.0.5'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -19,7 +21,7 @@ module Carto
 
   module VisualizationsExportService2Validator
     def check_valid_visualization(visualization)
-      raise "Only derived visualizations can be exported" unless visualization.derived?
+      raise 'Only derived visualizations can be exported' unless visualization.derived?
     end
   end
 
@@ -31,7 +33,7 @@ module Carto
     end
 
     def build_visualization_from_hash_export(exported_hash)
-      raise "Wrong export version" unless compatible_version?(exported_hash[:version])
+      raise 'Wrong export version' unless compatible_version?(exported_hash[:version])
 
       build_visualization_from_hash(exported_hash[:visualization])
     end
@@ -127,6 +129,7 @@ module Carto
         tooltip: tooltip_with_indifferent_access
       )
       layer.widgets = build_widgets_from_hash(exported_layer[:widgets], layer: layer)
+      layer.legends = build_legends_from_hash(exported_layer[:legends], layer)
       layer
     end
 
@@ -147,6 +150,17 @@ module Carto
       )
     end
 
+    def build_legends_from_hash(exported_legends, layer)
+      return [] unless exported_legends
+
+      exported_legends.map do |exported_legend|
+        legend = Legend.new(exported_legend)
+        legend.layer = layer
+
+        legend
+      end
+    end
+
     def build_analysis_from_hash(exported_analysis)
       return nil unless exported_analysis
 
@@ -165,7 +179,7 @@ module Carto
       return nil unless exported_widget
 
       Carto::Widget.new(
-        order: order,
+        order: exported_widget[:order] || order, # Order added to export on 2.0.5
         layer: layer,
         type: exported_widget[:type],
         title: exported_widget[:title],
@@ -203,6 +217,10 @@ module Carto
 
     def export_visualization(visualization, user)
       layers = visualization.layers_with_data_readable_by(user)
+      active_layer_id = visualization.active_layer_id
+      layer_exports = layers.map do |layer|
+        export_layer(layer, active_layer: active_layer_id == layer.id)
+      end
 
       {
         name: visualization.name,
@@ -218,7 +236,7 @@ module Carto
         bbox: visualization.bbox,
         display_name: visualization.display_name,
         map: export_map(visualization.map),
-        layers: layers.map { |l| export_layer(l, active_layer: visualization.active_layer_id == l.id) },
+        layers: layer_exports,
         overlays: visualization.overlays.map { |o| export_overlay(o) },
         analyses: visualization.analyses.map { |a| exported_analysis(a) },
         user: export_user(visualization.user),
@@ -252,7 +270,8 @@ module Carto
         kind: layer.kind,
         infowindow: layer.infowindow,
         tooltip: layer.tooltip,
-        widgets: layer.widgets.map { |w| export_widget(w) }
+        widgets: layer.widgets.map { |widget| export_widget(widget) },
+        legends: layer.legends.map { |legend| export_legend(legend) }
       }
 
       layer[:active_layer] = true if active_layer
@@ -273,7 +292,8 @@ module Carto
         options: widget.options,
         type: widget.type,
         title: widget.title,
-        source_id: widget.source_id
+        source_id: widget.source_id,
+        order: widget.order
       }
     end
 
@@ -286,6 +306,16 @@ module Carto
     def export_state(state)
       {
         json: state.json
+      }
+    end
+
+    def export_legend(legend)
+      {
+        definition: legend.definition,
+        post_html: legend.post_html,
+        pre_html: legend.pre_html,
+        title: legend.title,
+        type: legend.type
       }
     end
   end

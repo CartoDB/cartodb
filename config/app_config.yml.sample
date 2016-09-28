@@ -499,19 +499,19 @@ defaults: &defaults
     tolerance_px: 1.0
   connectors:
     odbc:
-      available: false
+      enabled: false
       max_rows: nil
     mysql:
-      available: true
+      enabled: true
       max_rows: 500000
     postgresql:
-      available: true
+      enabled: true
       max_rows: 500000
     hive:
-      available: false
+      enabled: false
       max_rows: 500000
     sqlserver:
-      available: false
+      enabled: false
       max_rows: 500000
 
 development:

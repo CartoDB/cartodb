@@ -3,6 +3,8 @@
 
 @import 'cdb-utilities/mixins';
 
+$border-radius: 4px;
+
 .DatePicker-timers {
   @include display-flex();
   margin: 0 14px;

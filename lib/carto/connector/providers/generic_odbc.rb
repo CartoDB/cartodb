@@ -12,7 +12,7 @@ module Carto
     #
     class GenericOdbcProvider < OdbcProvider
 
-      def initialize(params)
+      def initialize(context, params)
         super
         if @connection
           @dsn        = @connection[:dsn]

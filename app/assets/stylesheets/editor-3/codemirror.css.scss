@@ -60,6 +60,10 @@
   background: #4F5B60;
 }
 
+.CodeMirror-readonlyLine ~ .CodeMirror-line span {
+  color: $cWhite !important;
+}
+
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   position: absolute;

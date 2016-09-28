@@ -61,7 +61,9 @@
 .CustomList-itemLink {
   width: 100%;
 }
-
+.CustomList-item--invert {
+  @include display-flex();
+}
 /* TODO move to cartoassets and change to border-top and :first-child */
 .CDB-ListDecoration-item:last-type-of {
   border-bottom: 0;

@@ -1,3 +1,5 @@
+require_dependency 'carto/configuration'
+
 module Cartodb
   def self.get_config(*config_chain)
     current = Cartodb.config
@@ -14,7 +16,7 @@ module Cartodb
     return @config if @config
 
     begin
-    config_file_hash = YAML.load_file("#{Rails.root}/config/app_config.yml")
+      config_file_hash = Carto::Conf.new.app_config
     rescue => e
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end

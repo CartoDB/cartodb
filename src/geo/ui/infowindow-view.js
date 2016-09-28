@@ -246,14 +246,12 @@ var Infowindow = View.extend({
     }
   },
 
-  _sanitizeValue: function (key, obj) {
-    var t = typeof (obj);
-
-    if (t !== 'object' || obj === null) {
-      return String(obj);
+  _sanitizeValue: function (key, val) {
+    if (!_.isObject(val)) {
+      return String(val);
     }
 
-    return obj;
+    return val;
   },
 
   _sanitizeField: function (attr) {

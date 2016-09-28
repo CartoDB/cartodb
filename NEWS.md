@@ -18,6 +18,16 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 * Viewer users for organizations.
 * Oauth integration with GitHub
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
+* Configurable paths for logs and configurations through environment variables. If not set, they default to `Rails.root` as usual.
+  * `RAILS_CONFIG_BASE_PATH`. Example: /etc/carto
+  * `RAILS_LOG_BASE_PATH`. Example: /tmp/carto
+  Both are replacements for `Rails.root` and expect the same internal structure so, for example,
+  if you place `app_config.yml` at `/etc/carto/config/app_config.yml`, `RAILS_CONFIG_BASE_PATH` must be `/etc/carto`.
+    The same happens with logs, which are stored into `#{RAILS_LOG_BASE_PATH}/logs/filename.log`).
+    This way those variables can be a drop-in replacement for `Rails.root`, guaranteeing compatibility with Rails project structure.
+* Configurable path for public uploads:
+  * `RAILS_PUBLIC_UPLOADS_PATH`. Example: /var/carto/assets. Defaults to `env_app_config[:importer]["uploads_path"]`
+  This will store user uploaded assets at `#{RAILS_PUBLIC_UPLOADS_PATH}/uploads` (needed for backwards compatibility).
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`

@@ -4,6 +4,7 @@ require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
 require 'cartodb/sequel_connection_helper'
+require 'carto/configuration'
 
 # To avoid collisions with User model
 module CartoDB
@@ -11,6 +12,7 @@ module CartoDB
   module UserModule
     class DBService
       include CartoDB::MiniSequel
+      include Carto::Configuration
       extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
@@ -981,7 +983,7 @@ module CartoDB
       end
 
       def monitor_user_notification
-        FileUtils.touch(Rails.root.join('log', 'users_modifications'))
+        FileUtils.touch(log_file_path('users_modifications'))
         if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? &&
            !Cartodb.config[:signups]["service"]["port"].nil?
           enable_remote_db_user

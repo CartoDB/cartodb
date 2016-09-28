@@ -1178,7 +1178,7 @@ describe User do
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
     data_import = DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/clubbing.csv').run_import!
+                      :data_source => fake_data_path('clubbing.csv')).run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
     uuid      = UserTable.where(id: table_id).first.table_visualization.id

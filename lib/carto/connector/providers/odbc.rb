@@ -103,12 +103,12 @@ module Carto
 
       def fdw_create_server(server_name)
         sql = fdw_create_server_sql 'odbc_fdw', server_name, server_options
-        @connector_context.execute_as_superuser sql
+        execute_as_superuser sql
       end
 
       def fdw_create_usermap(server_name, username)
         sql = fdw_create_usermap_sql server_name, username, user_options
-        @connector_context.execute_as_superuser sql
+        execute_as_superuser sql
       end
 
       def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix, username)
@@ -123,17 +123,17 @@ module Carto
           cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
         cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
-        @connector_context.execute_as_superuser cmds.join("\n")
+        execute_as_superuser cmds.join("\n")
         foreign_table_name
       end
 
       def fdw_list_tables(server_name, _foreign_table_schema, _foreign_prefix, limit)
-        @connector_context.execute %{
+        execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }
       end
 
-      def fdw_check_connection(server_name, foreign_prefix, username) # avoid username (use @connector_context...)
+      def fdw_check_connection(server_name, foreign_prefix, username)
         cmds = []
         foreign_table_name = self.foreign_table_name(foreign_prefix, 'check')
         columns = ['ok int']

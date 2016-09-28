@@ -134,14 +134,16 @@ class Carto::Map < ActiveRecord::Base
     embed_options[:show_menu] = show_menu
   end
 
+  DEFAULT_SHOW_MENU = true
+
   def show_menu
-    embed_options[:show_menu]
+    embed_options[:show_menu] || DEFAULT_SHOW_MENU
   end
 
   private
 
   def ensure_embed_options
-    self.embed_options ||= { show_menu: true }
+    self.embed_options ||= { show_menu: DEFAULT_SHOW_MENU }
   end
 
   def validate_embed_options

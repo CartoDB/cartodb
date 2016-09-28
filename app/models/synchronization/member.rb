@@ -17,11 +17,13 @@ include CartoDB::Datasources
 
 module CartoDB
   module Synchronization
+
     class << self
       attr_accessor :repository
     end
 
     class Member
+      include Carto::Configuration
       include Virtus.model
 
       MAX_RETRIES     = 10

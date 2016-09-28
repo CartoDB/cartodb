@@ -161,11 +161,21 @@ describe Carto::UserTableIndexService do
 
     it 'does not drop manual indices' do
       @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
-                                                  { name: 'idx', column: 'date', valid: true }])
+                                                  { name: 'idx', column: 'date', valid: false }])
       @table1.service.stubs(:estimated_row_count).returns(100)
       create_widget(@analysis1, column: 'number')
 
       @table1.service.stubs(:drop_index).never
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
+    end
+
+    it 'drops and recreates invalid auto indices' do
+      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number', valid: false)])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number')
+
+      stub_drop_index('number').once
+      stub_create_index('number').once
       Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
   end
@@ -267,11 +277,11 @@ describe Carto::UserTableIndexService do
 
   private
 
-  def automatic_index_record(table, column)
+  def automatic_index_record(table, column, valid: true)
     {
       name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX),
       column: column,
-      valid: true
+      valid: valid
     }
   end
 

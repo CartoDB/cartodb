@@ -9,9 +9,10 @@ require_relative './base'
 # must implement these methods to handle FDW operations:
 #
 # * `fdw_create_server(server_name)`
-# * `fdw_create_usermap(server_name, user_name)`
-# * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix, username)`
-# * `fdw_list_tables(limits:)`
+# * `fdw_create_usermap(server_name)`
+# * `fdw_create_foreign_table(server_name)`
+# * `fdw_list_tables(server_name, limit)`
+# * `fdw_check_connection(server_name)`
 #
 module Carto
   class Connector
@@ -24,12 +25,7 @@ module Carto
           begin
             qualified_table_name = fdw_qualified_table_name(schema_name, table_name)
             log "Creating Foreign Table"
-            foreign_table_name = fdw_create_foreign_table(
-              server_name,
-              foreign_table_schema,
-              foreign_prefix,
-              @connector_context.user.database_username
-            )
+            foreign_table_name = fdw_create_foreign_table(server_name)
             log "Copying Foreign Table"
             max_rows = limits[:max_rows]
             fdw_copy_foreign_table(
@@ -37,7 +33,7 @@ module Carto
             )
             check_copied_table_size(qualified_table_name, max_rows)
           ensure
-            fdw_drop_foreign_table(foreign_table_schema, foreign_table_name) if foreign_table_name
+            fdw_drop_foreign_table(foreign_table_name) if foreign_table_name
           end
         end
       end
@@ -46,8 +42,18 @@ module Carto
         limit = limits[:max_listed_tables]
         validate! only: [:connection]
         with_server do
-          fdw_list_tables server_name, foreign_table_schema, foreign_prefix, limit
+          fdw_list_tables server_name, limit
         end
+      end
+
+      def check_connection
+        ok = false
+        validate! only: [:connection]
+        with_server do
+          ok = fdw_check_connection(server_name)
+        end
+        ok
+        # TODO: rescue exceptions and return false?
       end
 
       def remote_data_updated?
@@ -67,16 +73,14 @@ module Carto
         log "Creating Server"
         fdw_create_server server_name
         log "Creating Usermaps"
-        fdw_create_usermap server_name, @connector_context.user.database_username
-        fdw_create_usermap server_name, 'postgres'
+        fdw_create_usermaps server_name
         yield
       rescue => error
         log "Connector Error #{error}"
         raise error
       ensure
         log "Connector cleanup"
-        fdw_drop_usermap server_name, 'postgres'
-        fdw_drop_usermap server_name, @connector_context.user.database_username
+        fdw_drop_usermaps server_name
         fdw_drop_server server_name
         log "Connector cleaned-up"
       end
@@ -86,20 +90,17 @@ module Carto
       # minimum length left available for the table part in foreign table names
       MIN_TAB_ID_LEN        = 10
 
-      # Named used for the foreign server (unique poer Connector instance)
+      # Named used for the foreign server (unique per Connector instance)
+      # Its length is limited so that when used as a prefix for an identifier
+      # it leaves at least MIN_TAB_ID_LEN+1 available identifier characters given PostgreSQL's
+      # limit of MAX_PG_IDENTIFIER_LEN (so a separator such as "_" can also be included)
       def server_name
         max_len = MAX_PG_IDENTIFIER_LEN - unique_suffix.size - MIN_TAB_ID_LEN - 1
         connector_name = Carto::DB::Sanitize.sanitize_identifier self.class.to_s.split('::').last
         "#{connector_name[0...max_len].downcase}_#{unique_suffix}"
       end
 
-      # Prefix to be used by foreign table names (so they're unique per Connector instance)
-      # This leaves at least MIN_TAB_ID_LEN available identifier characters given PostgreSQL's
-      # limit of MAX_PG_IDENTIFIER_LEN
-      def foreign_prefix
-        "#{server_name}_"
-      end
-
+      # Schema where (temporary) foreign tables will be created
       def foreign_table_schema
         # since connectors' foreign table names are unique (because
         # server names are unique and not reused)
@@ -116,14 +117,20 @@ module Carto
         must_be_defined_in_derived_class
       end
 
-      # Create usermap for the given user
-      def fdw_create_usermap(_server_name, _username)
+      # Create usermaps
+      def fdw_create_usermaps(_server_name)
         must_be_defined_in_derived_class
       end
 
       # Create the foreign table used for importing
       # Must return the name of the created foreign table
-      def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix, _username)
+      def fdw_create_foreign_table(_server_name)
+        must_be_defined_in_derived_class
+      end
+
+      # Check the connection with a server: returns OK for valid connections;
+      # otherwise it either raises an exception or returns false.
+      def fdw_check_connection(_server_name)
         must_be_defined_in_derived_class
       end
 
@@ -133,13 +140,14 @@ module Carto
       end
 
       # Dop the user mapping
-      def fdw_drop_usermap(server_name, user)
-        execute_as_superuser fdw_drop_usermap_sql(server_name, user)
+      def fdw_drop_usermaps(server_name)
+        execute_as_superuser fdw_drop_usermap_sql(server_name, 'postgres')
+        execute_as_superuser fdw_drop_usermap_sql(server_name, @connector_context.database_username)
       end
 
       # Drop the foreign table
-      def fdw_drop_foreign_table(schema_name, table_name)
-        execute_as_superuser fdw_drop_foreign_table_sql(schema_name, table_name)
+      def fdw_drop_foreign_table(table_name)
+        execute_as_superuser fdw_drop_foreign_table_sql(foreign_table_schema, table_name)
       end
 
       # Copy foreign table to local table

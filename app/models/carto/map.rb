@@ -33,6 +33,8 @@ class Carto::Map < ActiveRecord::Base
 
   validate :validate_embed_options
 
+  before_validation :ensure_embed_options
+
   def data_layers
     layers.select(&:carto?)
   end
@@ -137,6 +139,10 @@ class Carto::Map < ActiveRecord::Base
   end
 
   private
+
+  def ensure_embed_options
+    self.embed_options ||= Hash.new
+  end
 
   def validate_embed_options
     location = "#{Rails.root}/lib/formats/map/embed_options.json"

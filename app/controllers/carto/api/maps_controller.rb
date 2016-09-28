@@ -10,7 +10,6 @@ module Carto
       before_filter :load_map, :owners_only
 
       rescue_from Carto::LoadError,
-                  Carto::UnauthorizedError,
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
@@ -18,10 +17,12 @@ module Carto
       end
 
       def update
-        @map.show_menu = show_menu if show_menu
         @map.update_attributes!(update_params)
 
         render_jsonp(map_presentation)
+      rescue ActiveRecord::RecordInvalid
+        validation_errors = @map.errors.full_messages.join(', ')
+        raise Carto::UnprocesableEntityError.new(validation_errors)
       end
 
       private
@@ -42,16 +43,13 @@ module Carto
         @update_params ||= params.slice(:bounding_box_ne,
                                         :bounding_box_sw,
                                         :center,
+                                        :embed_options,
                                         :legends,
                                         :provider,
                                         :scrollwheel,
                                         :view_bounds_ne,
                                         :view_bounds_sw,
                                         :zoom)
-      end
-
-      def show_menu
-        @show_menu ||= params.slice(:show_menu)
       end
 
       def map_presentation(map: @map)

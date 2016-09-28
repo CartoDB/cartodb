@@ -246,6 +246,14 @@ var Infowindow = View.extend({
     }
   },
 
+  _sanitizeValue: function (key, val) {
+    if (_.isObject(val)) {
+      return val;
+    }
+
+    return String(val);
+  },
+
   _sanitizeField: function (attr) {
     // Check null or undefined :| and set both to empty == ''
     if (attr.value === null || attr.value === undefined) {
@@ -264,7 +272,7 @@ var Infowindow = View.extend({
     }
 
     // Save new sanitized value
-    attr.value = attr.value.toString();
+    attr.value = JSON.parse(JSON.stringify(attr.value), this._sanitizeValue);
 
     return attr;
   },

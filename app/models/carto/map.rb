@@ -148,7 +148,8 @@ class Carto::Map < ActiveRecord::Base
     location = "#{Rails.root}/lib/formats/map/embed_options.json"
     schema = Carto::Definition.instance.load_from_file(location)
 
-    json_errors = JSON::Validator.fully_validate(schema, embed_options)
+    embed_options_wia = embed_options.with_indifferent_access
+    json_errors = JSON::Validator.fully_validate(schema, embed_options_wia)
     errors.add(:embed_options, json_errors.join(', ')) if json_errors.any?
   end
 

@@ -5,13 +5,13 @@
       <div class="Form-rowData Form-rowData--full">
         <div class="RadioButton js-day">
           <button type="button" class="RadioButton-input <% if (layerType === 'day') { %>is-checked<% } %>"></button>
-          <label class="Metadata-label Metadata-label--auto CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis" for="nasa-type-day">"><%- _t('components.modals.add-basemap.nasa.day') %></label>
+          <label class="Metadata-label Metadata-label--auto CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis" for="nasa-type-day"><%- _t('components.modals.add-basemap.nasa.day') %></label>
         </div>
       </div>
       <div class="Form-rowData Form-rowData--full">
         <div class="RadioButton js-night">
           <button type="button" class="RadioButton-input <% if (layerType === 'night') { %>is-checked<% } %>"/></button>
-          <label class="Metadata-label Metadata-label--auto CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis" for="nasa-type-night">"><%- _t('components.modals.add-basemap.nasa.night') %></label>
+          <label class="Metadata-label Metadata-label--auto CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis" for="nasa-type-night"><%- _t('components.modals.add-basemap.nasa.night') %></label>
         </div>
       </div>
     </div>

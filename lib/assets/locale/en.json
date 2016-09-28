@@ -452,7 +452,7 @@
         "desc": "Oops there was an error."
       },
       "no-results": {
-        "title": "'Oh! No results",
+        "title": "Oh! No results",
         "desc": "Unfortunately we could not find anything with these parameters"
       }
     },
@@ -495,6 +495,12 @@
         "tilejson": {
           "insert": "Insert your TileJSON URL",
           "invalid": "Invalid URL, please make sure it is correct"
+        },
+        "nasa": {
+          "select": "Select a date from which you want a NASA Worldview basemap",
+          "day": "Day",
+          "night": "Night",
+          "cant-select": "You can't select a date in night mode"
         }
       },
       "export-data": {
@@ -1664,7 +1670,9 @@
         "save": "CMD + S to apply your html.",
         "errors": {
           "empty": "Template can't be empty."
-        }
+        },
+        "pre-html": "<!-- insert your custom html code above this line -->",
+        "post-html": "<!-- insert your custom html code below this line -->"
       },
       "menu-tab-pane-labels": {
         "color": "color",
@@ -1702,7 +1710,7 @@
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
-        "untitled": "\"Untitled\""
+        "untitled": "Untitled"
       }
     },
     "style": {

@@ -5,6 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
+require_relative '../lib/carto/configuration'
 
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
@@ -20,6 +21,8 @@ end
 
 module CartoDB
   class Application < Rails::Application
+    include Carto::Configuration
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -55,6 +58,8 @@ module CartoDB
 
     # Enable the asset pipeline
     config.assets.enabled = false
+
+    config.paths['public'] = [public_uploads_path]
 
     config.assets.paths << Rails.root.join('bower_components')
 

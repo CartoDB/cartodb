@@ -1,15 +1,19 @@
 require 'ruby-prof'
 
+require 'carto/configuration'
+
 module CartoDB
 
   # A profiler based on https://github.com/justinweiss/request_profiler/
   class Profiler
+    include Carto::Configuration
+
     def initialize(options = {})
       @printer = options[:printer] || ::RubyProf::CallTreePrinter
       @exclusions = options[:exclude]
 
       @path = options[:path]
-      @path ||= Rails.root + 'tmp/performance' if defined?(Rails)
+      @path ||= log_dir_path + 'tmp/performance' if defined?(Rails)
       @path ||= ::File.join((ENV["TMPDIR"] || "/tmp"), 'performance')
       @path = Pathname(@path)
     end

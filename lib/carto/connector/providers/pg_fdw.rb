@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './base'
+require_relative './fdw'
 
 module Carto
   class Connector
@@ -27,16 +27,19 @@ module Carto
     # This is not intended for production at the moment, this class is here to validate and test the
     # Connector hierarchy design.
     #
+    # Note that the password parameter is required: postgres_fdw won't allow non-superusers to connect
+    # to foreign servers that don't require a password (and table copy is performed using a non-superuser).
+    #
     # TODO: add support for sql_query parameter
     #
-    class PgFdwProvider < Provider
+    class PgFdwProvider < FdwProvider
 
-      def initialize(params)
+      def initialize(context, params)
         super
       end
 
-      REQUIRED_PARAMETERS = %w(table server database username).freeze
-      OPTIONAL_PARAMETERS = %w(schema port password).freeze
+      REQUIRED_PARAMETERS = %w(table server database username password).freeze
+      OPTIONAL_PARAMETERS = %w(schema port).freeze
 
       def optional_parameters
         OPTIONAL_PARAMETERS
@@ -60,25 +63,61 @@ module Carto
         schema
       end
 
-      def create_server_command(server_name)
-        fdw_create_server 'postgres_fdw', server_name, server_options
+      def fdw_create_server(server_name)
+        execute_as_superuser fdw_create_server_sql('postgres_fdw', server_name, server_options)
       end
 
-      def create_usermap_command(server_name, username)
-        fdw_create_usermap server_name, username, user_options
+      def fdw_create_usermap(server_name, username)
+        execute_as_superuser fdw_create_usermap_sql(server_name, username, user_options)
       end
 
-      def create_foreign_table_command(server_name, schema, foreign_prefix, username)
+      def fdw_create_foreign_table(server_name, schema, foreign_prefix, username)
         remote_table = table_name
         foreign_table = foreign_table_name(foreign_prefix)
         options = table_options
         cmds = []
-        cmds << fdw_import_foreign_schema_limited(server_name, remote_schema_name, schema, remote_table, options)
+        cmds << fdw_import_foreign_schema_limited_sql(server_name, remote_schema_name, schema, remote_table, options)
         if remote_table != foreign_table
-          cmds << fdw_rename_foreign_table(schema, remote_table, foreign_table)
+          cmds << fdw_rename_foreign_table_sql(schema, remote_table, foreign_table)
         end
-        cmds << fdw_grant_select(schema, foreign_table_name(foreign_prefix), username)
-        cmds.join "\n"
+        cmds << fdw_grant_select_sql(schema, foreign_table_name(foreign_prefix), username)
+        execute_as_superuser cmds.join("\n")
+        foreign_table
+      end
+
+      def fdw_list_tables(server_name, schema, foreign_prefix, limit)
+        # Create auxiliar foreign tables for pg_class, pg_namespace
+        ext_pg_class = fdw_adjusted_table_name("#{foreign_prefix}pg_class")
+        ext_pg_namespace = fdw_adjusted_table_name("#{foreign_prefix}pg_namespace")
+        commands = []
+        commands << fdw_create_foreign_table_if_not_exists_sql(
+          server_name, schema, ext_pg_class,
+          ['relname name', 'relnamespace oid', 'relkind char'],
+          schema_name: 'pg_catalog', table_name: 'pg_class'
+        )
+        commands << fdw_create_foreign_table_if_not_exists_sql(
+          server_name, schema, ext_pg_namespace,
+          ['nspname name', 'oid oid'],
+          schema_name: 'pg_catalog', table_name: 'pg_namespace'
+        )
+        limit_clause = limit.to_i > 0 ? "LIMIT #{limit}" : ''
+        execute_as_superuser(commands.join("\n"))
+
+        execute_as_superuser %{
+          SELECT n.nspname AS schema, c.relname AS name
+          FROM #{fdw_qualified_table_name(schema, ext_pg_class)} c
+          JOIN #{fdw_qualified_table_name(schema, ext_pg_namespace)} n ON n.oid = c.relnamespace
+            WHERE c.relkind = 'r'
+            AND n.nspname NOT IN ('pg_catalog', 'information_schema')
+            ORDER BY schema, name
+            #{limit_clause};
+        }
+      ensure
+        # Drop auxiliar foreign tables for pg_class, pg_namespace
+        commands = []
+        commands << fdw_drop_foreign_table_sql(schema, ext_pg_namespace) if ext_pg_namespace
+        commands << fdw_drop_foreign_table_sql(schema, ext_pg_class) if ext_pg_class
+        execute_as_superuser(commands.join("\n"))
       end
 
       def features_information

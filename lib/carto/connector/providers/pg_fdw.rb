@@ -67,11 +67,12 @@ module Carto
         execute_as_superuser fdw_create_server_sql('postgres_fdw', server_name, server_options)
       end
 
-      def fdw_create_usermap(server_name, username)
-        execute_as_superuser fdw_create_usermap_sql(server_name, username, user_options)
+      def fdw_create_usermaps(server_name)
+        execute_as_superuser fdw_create_usermap_sql(server_name, @connector_context.database_username, user_options)
+        execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, schema, foreign_prefix, username)
+      def fdw_create_foreign_table(server_name, schema, foreign_prefix)
         remote_table = table_name
         foreign_table = foreign_table_name(foreign_prefix)
         options = table_options
@@ -80,7 +81,7 @@ module Carto
         if remote_table != foreign_table
           cmds << fdw_rename_foreign_table_sql(schema, remote_table, foreign_table)
         end
-        cmds << fdw_grant_select_sql(schema, foreign_table_name(foreign_prefix), username)
+        cmds << fdw_grant_select_sql(schema, foreign_table_name(foreign_prefix), @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
         foreign_table
       end
@@ -120,7 +121,7 @@ module Carto
         execute_as_superuser(commands.join("\n"))
       end
 
-      def fdw_check_connection(server_name, foreign_prefix, _username)
+      def fdw_check_connection(server_name, foreign_prefix)
         fdw_list_tables(server_name, 'public', foreign_prefix, 1)
         true
       end

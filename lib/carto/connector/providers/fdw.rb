@@ -10,7 +10,7 @@ require_relative './base'
 #
 # * `fdw_create_server(server_name)`
 # * `fdw_create_usermap(server_name, user_name)`
-# * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix, username)`
+# * `fdw_create_foreign_table(server_name, schema_name, foreign_prefix)`
 # * `fdw_list_tables(limits:)`
 # * `fdw_check_connection(server_name)`
 #
@@ -28,8 +28,7 @@ module Carto
             foreign_table_name = fdw_create_foreign_table(
               server_name,
               foreign_table_schema,
-              foreign_prefix,
-              @connector_context.user.database_username
+              foreign_prefix
             )
             log "Copying Foreign Table"
             max_rows = limits[:max_rows]
@@ -55,7 +54,7 @@ module Carto
         ok = false
         validate! only: [:connection]
         with_server do
-          ok = fdw_check_connection server_name, foreign_prefix, @connector_context.user.database_username
+          ok = fdw_check_connection server_name, foreign_prefix
         end
         ok
         # TODO: rescue exceptions and return false?
@@ -78,16 +77,14 @@ module Carto
         log "Creating Server"
         fdw_create_server server_name
         log "Creating Usermaps"
-        fdw_create_usermap server_name, @connector_context.user.database_username
-        fdw_create_usermap server_name, 'postgres'
+        fdw_create_usermaps server_name
         yield
       rescue => error
         log "Connector Error #{error}"
         raise error
       ensure
         log "Connector cleanup"
-        fdw_drop_usermap server_name, 'postgres'
-        fdw_drop_usermap server_name, @connector_context.user.database_username
+        fdw_drop_usermaps server_name
         fdw_drop_server server_name
         log "Connector cleaned-up"
       end
@@ -127,14 +124,14 @@ module Carto
         must_be_defined_in_derived_class
       end
 
-      # Create usermap for the given user
-      def fdw_create_usermap(_server_name, _username)
+      # Create usermaps
+      def fdw_create_usermaps(_server_name)
         must_be_defined_in_derived_class
       end
 
       # Create the foreign table used for importing
       # Must return the name of the created foreign table
-      def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix, _username)
+      def fdw_create_foreign_table(_server_name, _schema_name, _foreign_prefix)
         must_be_defined_in_derived_class
       end
 
@@ -150,8 +147,9 @@ module Carto
       end
 
       # Dop the user mapping
-      def fdw_drop_usermap(server_name, user)
-        execute_as_superuser fdw_drop_usermap_sql(server_name, user)
+      def fdw_drop_usermaps(server_name)
+        execute_as_superuser fdw_drop_usermap_sql(server_name, 'postgres')
+        execute_as_superuser fdw_drop_usermap_sql(server_name, @connector_context.database_username)
       end
 
       # Drop the foreign table

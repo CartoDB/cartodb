@@ -106,12 +106,12 @@ module Carto
         execute_as_superuser sql
       end
 
-      def fdw_create_usermap(server_name, username)
-        sql = fdw_create_usermap_sql server_name, username, user_options
-        execute_as_superuser sql
+      def fdw_create_usermaps(server_name)
+        execute_as_superuser fdw_create_usermap_sql(server_name, @connector_context.database_username, user_options)
+        execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix, username)
+      def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix)
         cmds = []
         foreign_table_name = self.foreign_table_name(foreign_prefix)
         if @columns.present?
@@ -122,7 +122,7 @@ module Carto
           options = table_options.merge(prefix: foreign_prefix)
           cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
-        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
         foreign_table_name
       end
@@ -133,14 +133,14 @@ module Carto
         }
       end
 
-      def fdw_check_connection(server_name, foreign_prefix, username)
+      def fdw_check_connection(server_name, foreign_prefix)
         cmds = []
         foreign_table_name = self.foreign_table_name(foreign_prefix, 'check')
         columns = ['ok int']
         cmds << fdw_create_foreign_table_sql(
           server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")
         )
-        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
         result = execute %{
           SELECT * FROM #{qualified_foreign_table_name foreign_table_name};

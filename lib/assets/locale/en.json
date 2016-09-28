@@ -495,6 +495,12 @@
         "tilejson": {
           "insert": "Insert your TileJSON URL",
           "invalid": "Invalid URL, please make sure it is correct"
+        },
+        "nasa": {
+          "select": "Select a date from which you want a NASA Worldview basemap",
+          "day": "Day",
+          "night": "Night",
+          "cant-select": "You can't select a date in night mode"
         }
       },
       "export-data": {

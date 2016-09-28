@@ -186,16 +186,6 @@ module Carto
       @user ||= map.nil? ? nil : map.user
     end
 
-    def wrapped_sql(user)
-      query_wrapper = options.symbolize_keys[:query_wrapper]
-      sql = default_query(user)
-      if query_wrapper.present? && torque?
-        query_wrapper.gsub('<%= sql %>', sql)
-      else
-        sql
-      end
-    end
-
     def default_query(user = nil)
       sym_options = options.symbolize_keys
       query = sym_options[:query]

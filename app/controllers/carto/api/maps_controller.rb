@@ -3,37 +3,31 @@
 module Carto
   module Api
     class MapsController < ::Api::ApplicationController
-
       ssl_required :show
 
       before_filter :load_map
+
+      rescue_from Carto::LoadError,
+                  Carto::UnauthorizedError,
+                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
         render_jsonp(Carto::Api::MapPresenter.new(@map).to_poro)
       end
 
-      protected
+      private
 
       def load_map
-        raise RecordNotFound unless is_uuid?(params[:id])
-
-        # User must be owner or have permissions for the map's visualization
-        vis = Carto::Visualization.where({
-            user_id: current_user.id,
-            map_id: params[:id],
-            kind: Carto::Visualization::KIND_GEOM
-          }).first
-        raise RecordNotFound if vis.nil?
-
-        @map = Carto::Map.where(id: params[:id]).first
-        raise RecordNotFound if @map.nil?
+        @map = Carto::Map.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        raise Carto::LoadError.new('Map not found')
       end
 
-      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-      def is_uuid?(text)
-        !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+      def onwers_only
+        unless @map.writable_by_user?(current_viewer)
+          raise Carto::UnauthorizedError
+        end
       end
-
     end
   end
 end

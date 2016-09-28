@@ -3,8 +3,6 @@
 
 @import 'cdb-utilities/mixins';
 
-$border-radius: 4px;
-
 .DatePicker-timers {
   @include display-flex();
   margin: 0 14px;
@@ -25,39 +23,4 @@ $border-radius: 4px;
 // Hide sliders for number type, not needed for the calendar
 .DatePicker-timersInput .CDB-OptionInput-item:first-child {
   display: none;
-}
-.DatePicker-simpleDropdown {
-  position: absolute;
-  top: 49px;
-  right: -16px;
-  width: 236px;
-  padding: 0;
-  border: 1px solid #CCC;
-  border-radius: $border-radius;
-  background: #FFF;
-  font: normal 13px/20px "Lato",sans-serif;
-  box-shadow: rgba(#000, 0.1) 0 0 2px 2px;
-}
-.DatePicker-simpleDropdown::after,
-.DatePicker-simpleDropdown::before {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  content: '';
-}
-.DatePicker-simpleDropdown::after {
-  top: -8px;
-  margin-left: -4px;
-  border-right: 8px solid transparent;
-  border-bottom: 8px solid $cCard-hoverFill;
-  border-left: 8px solid transparent;
-  z-index: 1;
-}
-.DatePicker-simpleDropdown::before {
-  top: -10px;
-  margin-left: -6px;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #CCC;
-  border-left: 10px solid transparent;
-  z-index: 0;
 }

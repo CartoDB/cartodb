@@ -3,7 +3,7 @@
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">
         <li class="u-flex">
-          <button class="u-actionTextColor js-back">
+          <button class="u-actionTextColor js-back u-rSpace--m">
             <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
           </button>
           <%- attribute %>

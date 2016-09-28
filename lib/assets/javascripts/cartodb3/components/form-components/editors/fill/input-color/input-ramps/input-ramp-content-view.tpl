@@ -2,7 +2,7 @@
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
     <li class="InputColor-modalHeader CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <div class="u-flex u-alignStart">
-        <button class="u-rSpace u-actionTextColor js-back">
+        <button class="u-rSpace--m u-actionTextColor js-back">
           <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
         </button>
         <%- attribute %>

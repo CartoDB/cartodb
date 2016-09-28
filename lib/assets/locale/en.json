@@ -656,6 +656,13 @@
               "body": "Your map is %{private} Change privacy to embed map"
             }
           },
+          "cartodbjs": {
+            "title": "CARTO.js",
+            "body": "Add your map to your applications using this URL.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
           "mobile-sdk": {
             "title": "CARTO Mobile SDK",
             "body": "Add your map to your native mobile applications using this line of code.",

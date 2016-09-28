@@ -30,6 +30,11 @@ module Carto
     private
 
     def generate_indices
+      auto_indices(valid: false).each do |idx|
+        CartoDB::Logger.debug(message: 'Auto index', action: 'drop invalid', table: @user_table, column: idx[:column])
+        @table.drop_index(idx[:column], AUTO_INDEX_PREFIX, concurrent: true)
+      end
+
       widget_columns = (@table.estimated_row_count > MINIMUM_ROW_COUNT_TO_INDEX) ? columns_with_widgets : []
       columns_to_index = widget_columns.select { |c| indexable_column?(c) }
 
@@ -79,8 +84,8 @@ module Carto
       false
     end
 
-    def auto_indices
-      indices.select { |i| i[:name].starts_with?(AUTO_INDEX_PREFIX) }
+    def auto_indices(valid: true)
+      indices.select { |i| i[:name].starts_with?(AUTO_INDEX_PREFIX) && i[:valid] == valid }
     end
 
     def indices

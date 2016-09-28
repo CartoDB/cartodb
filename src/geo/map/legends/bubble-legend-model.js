@@ -7,7 +7,8 @@ var BubbleLegendModel = LegendModelBase.extend({
       type: 'bubble',
       fillColor: '',
       prefix: '',
-      suffix: ''
+      suffix: '',
+      values: []
     });
   },
 

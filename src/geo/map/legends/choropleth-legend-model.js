@@ -6,7 +6,8 @@ var ChoroplethLegendModel = LegendModelBase.extend({
     return _.extend(LegendModelBase.prototype.defaults.apply(this), {
       type: 'choropleth',
       prefix: '',
-      suffix: ''
+      suffix: '',
+      colors: []
     });
   },
 

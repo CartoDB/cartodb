@@ -4,7 +4,8 @@ var LegendModelBase = require('./legend-model-base');
 var CategoryLegendModel = LegendModelBase.extend({
   defaults: function () {
     return _.extend(LegendModelBase.prototype.defaults.apply(this), {
-      type: 'category'
+      type: 'category',
+      categories: []
     });
   },
 

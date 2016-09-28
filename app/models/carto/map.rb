@@ -35,8 +35,6 @@ class Carto::Map < ActiveRecord::Base
 
   after_initialize :ensure_embed_options
 
-  before_validation :update_embed_options
-
   def data_layers
     layers.select(&:carto?)
   end
@@ -136,17 +134,32 @@ class Carto::Map < ActiveRecord::Base
     embed_options[:dashboard_menu] = dashboard_menu
   end
 
-  DEFAULT_dashboard_menu = true
+  DEFAULT_DASHBOARD_MENU = true
 
   def dashboard_menu
-    embed_options[:dashboard_menu] || (self.dashboard_menu = DEFAULT_OPTIONS)
+    embed_options[:dashboard_menu] ||
+      (self.dashboard_menu = DEFAULT_DASHBOARD_MENU)
+  end
+
+  def layer_selector=(layer_selector)
+    embed_options[:layer_selector] = layer_selector
+  end
+
+  DEFAULT_LAYER_SELECTOR = true
+
+  def layer_selector
+    embed_options[:layer_selector] ||
+      (self.layer_selector = DEFAULT_LAYER_SELECTOR)
   end
 
   private
 
   def ensure_embed_options
     self.embed_options ||= {
-      dashboard_menu: DEFAULT_dashboard_menu
+      dashboard_menu: DEFAULT_DASHBOARD_MENU,
+      layer_selector: DEFAULT_LAYER_SELECTOR,
+      legends: legends,
+      scrollwheel: scrollwheel
     }
   end
 

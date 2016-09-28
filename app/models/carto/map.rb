@@ -35,6 +35,8 @@ class Carto::Map < ActiveRecord::Base
 
   after_initialize :ensure_embed_options
 
+  before_validation :update_embed_options
+
   def data_layers
     layers.select(&:carto?)
   end
@@ -130,20 +132,22 @@ class Carto::Map < ActiveRecord::Base
     data_layers.each(&:register_table_dependencies)
   end
 
-  def show_menu=(show_menu)
-    embed_options[:show_menu] = show_menu
+  def dashboard_menu=(dashboard_menu)
+    embed_options[:dashboard_menu] = dashboard_menu
   end
 
-  DEFAULT_SHOW_MENU = true
+  DEFAULT_dashboard_menu = true
 
-  def show_menu
-    embed_options[:show_menu] || DEFAULT_SHOW_MENU
+  def dashboard_menu
+    embed_options[:dashboard_menu] || (self.dashboard_menu = DEFAULT_OPTIONS)
   end
 
   private
 
   def ensure_embed_options
-    self.embed_options ||= { show_menu: DEFAULT_SHOW_MENU }
+    self.embed_options ||= {
+      dashboard_menu: DEFAULT_dashboard_menu
+    }
   end
 
   def validate_embed_options

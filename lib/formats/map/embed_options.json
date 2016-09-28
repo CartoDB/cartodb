@@ -1,9 +1,9 @@
 {
   "type": "object",
-  "required": ["show_menu"],
+  "required": ["dashboard_menu"],
   "additionalProperties": false,
   "properties": {
-    "show_menu": {
+    "dashboard_menu": {
       "type": "boolean"
     }
   }

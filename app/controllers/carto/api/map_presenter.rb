@@ -17,7 +17,7 @@ module Carto
           legends: @map.legends,
           provider: @map.provider,
           scrollwheel: @map.scrollwheel,
-          show_menu: @map.show_menu,
+          dashboard_menu: @map.dashboard_menu,
           user_id: @map.user_id,
           view_bounds_ne: @map.view_bounds_ne,
           view_bounds_sw: @map.view_bounds_sw,

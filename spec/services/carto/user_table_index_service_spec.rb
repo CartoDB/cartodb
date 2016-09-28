@@ -120,7 +120,7 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number', valid: true }])
       @table1.service.stubs(:estimated_row_count).returns(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
@@ -131,7 +131,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns (in multi-column indexes)' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+                                                  { name: 'idx', column: 'date', valid: true }])
       @table1.service.stubs(:estimated_row_count).returns(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
@@ -159,7 +160,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not drop manual indices' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+                                                  { name: 'idx', column: 'date', valid: true }])
       @table1.service.stubs(:estimated_row_count).returns(100)
       create_widget(@analysis1, column: 'number')
 
@@ -266,7 +268,11 @@ describe Carto::UserTableIndexService do
   private
 
   def automatic_index_record(table, column)
-    { name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX), column: column }
+    {
+      name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX),
+      column: column,
+      valid: true
+    }
   end
 
   def stub_create_index(column)

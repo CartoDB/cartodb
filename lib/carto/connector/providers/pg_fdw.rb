@@ -77,10 +77,11 @@ module Carto
         execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, schema)
+      def fdw_create_foreign_table(server_name)
         remote_table = table_name
         foreign_table = foreign_table_name_for(server_name)
         options = table_options
+        schema = foreign_table_schema
         cmds = []
         cmds << fdw_import_foreign_schema_limited_sql(server_name, remote_schema_name, schema, remote_table, options)
         if remote_table != foreign_table
@@ -91,18 +92,18 @@ module Carto
         foreign_table
       end
 
-      def fdw_list_tables(server_name, schema, limit)
+      def fdw_list_tables(server_name, limit)
         # Create auxiliar foreign tables for pg_class, pg_namespace
         ext_pg_class = foreign_table_name_for(server_name, 'pg_class')
         ext_pg_namespace = foreign_table_name_for(server_name, 'pg_namespace')
         commands = []
         commands << fdw_create_foreign_table_if_not_exists_sql(
-          server_name, schema, ext_pg_class,
+          server_name, foreign_table_schema, ext_pg_class,
           ['relname name', 'relnamespace oid', 'relkind char'],
           schema_name: 'pg_catalog', table_name: 'pg_class'
         )
         commands << fdw_create_foreign_table_if_not_exists_sql(
-          server_name, schema, ext_pg_namespace,
+          server_name, foreign_table_schema, ext_pg_namespace,
           ['nspname name', 'oid oid'],
           schema_name: 'pg_catalog', table_name: 'pg_namespace'
         )
@@ -121,8 +122,8 @@ module Carto
       ensure
         # Drop auxiliar foreign tables for pg_class, pg_namespace
         commands = []
-        commands << fdw_drop_foreign_table_sql(schema, ext_pg_namespace) if ext_pg_namespace
-        commands << fdw_drop_foreign_table_sql(schema, ext_pg_class) if ext_pg_class
+        commands << fdw_drop_foreign_table_sql(foreign_table_schema, ext_pg_namespace) if ext_pg_namespace
+        commands << fdw_drop_foreign_table_sql(foreign_table_schema, ext_pg_class) if ext_pg_class
         execute_as_superuser(commands.join("\n"))
       end
 

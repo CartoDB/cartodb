@@ -10,8 +10,8 @@ require_relative './base'
 #
 # * `fdw_create_server(server_name)`
 # * `fdw_create_usermap(server_name)`
-# * `fdw_create_foreign_table(server_name, schema_name)`
-# * `fdw_list_tables(limits:)`
+# * `fdw_create_foreign_table(server_name)`
+# * `fdw_list_tables(server_name, limit)`
 # * `fdw_check_connection(server_name)`
 #
 module Carto
@@ -25,10 +25,7 @@ module Carto
           begin
             qualified_table_name = fdw_qualified_table_name(schema_name, table_name)
             log "Creating Foreign Table"
-            foreign_table_name = fdw_create_foreign_table(
-              server_name,
-              foreign_table_schema
-            )
+            foreign_table_name = fdw_create_foreign_table(server_name)
             log "Copying Foreign Table"
             max_rows = limits[:max_rows]
             fdw_copy_foreign_table(
@@ -36,7 +33,7 @@ module Carto
             )
             check_copied_table_size(qualified_table_name, max_rows)
           ensure
-            fdw_drop_foreign_table(foreign_table_schema, foreign_table_name) if foreign_table_name
+            fdw_drop_foreign_table(foreign_table_name) if foreign_table_name
           end
         end
       end
@@ -45,7 +42,7 @@ module Carto
         limit = limits[:max_listed_tables]
         validate! only: [:connection]
         with_server do
-          fdw_list_tables server_name, foreign_table_schema, limit
+          fdw_list_tables server_name, limit
         end
       end
 
@@ -103,6 +100,7 @@ module Carto
         "#{connector_name[0...max_len].downcase}_#{unique_suffix}"
       end
 
+      # Schema where (temporary) foreign tables will be created
       def foreign_table_schema
         # since connectors' foreign table names are unique (because
         # server names are unique and not reused)
@@ -126,7 +124,7 @@ module Carto
 
       # Create the foreign table used for importing
       # Must return the name of the created foreign table
-      def fdw_create_foreign_table(_server_name, _schema_name)
+      def fdw_create_foreign_table(_server_name)
         must_be_defined_in_derived_class
       end
 
@@ -148,8 +146,8 @@ module Carto
       end
 
       # Drop the foreign table
-      def fdw_drop_foreign_table(schema_name, table_name)
-        execute_as_superuser fdw_drop_foreign_table_sql(schema_name, table_name)
+      def fdw_drop_foreign_table(table_name)
+        execute_as_superuser fdw_drop_foreign_table_sql(foreign_table_schema, table_name)
       end
 
       # Copy foreign table to local table

@@ -116,7 +116,7 @@ module Carto
         execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, foreign_table_schema)
+      def fdw_create_foreign_table(server_name)
         cmds = []
         foreign_table_name = foreign_table_name_for(server_name)
         if @columns.present?
@@ -132,7 +132,7 @@ module Carto
         foreign_table_name
       end
 
-      def fdw_list_tables(server_name, _foreign_table_schema, limit)
+      def fdw_list_tables(server_name, limit)
         execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }

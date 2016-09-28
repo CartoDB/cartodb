@@ -41,7 +41,7 @@ describe Carto::Api::MapsController do
         view_bounds_sw: "[24.51713945052515, -89.329833984375]",
         zoom: 7,
         embed_options: {
-          show_menu: false
+          dashboard_menu: false
         }
       }
     end
@@ -53,7 +53,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'validates on update' do
-      payload[:embed_options] = { spammy: 'hell', show_menu: true }
+      payload[:embed_options] = { spammy: 'hell', dashboard_menu: true }
       put_json create_show_map_url, payload do |response|
         response.status.should eq 422
       end
@@ -110,7 +110,9 @@ describe Carto::Api::MapsController do
         response.body[:view_bounds_ne].should eq @map.view_bounds_ne
         response.body[:legends].should eq @map.legends
         response.body[:scrollwheel].should eq @map.scrollwheel
-        response.body[:show_menu].should eq @map.show_menu
+
+        response_embed_options = response.body[:dashboard_menu]
+        response_embed_options[:dashboard_menu].should eq @map.dashboard_menu
       end
     end
 

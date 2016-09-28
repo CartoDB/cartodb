@@ -142,8 +142,8 @@ class Carto::Map < ActiveRecord::Base
     location = "#{Rails.root}/lib/formats/map/embed_options.json"
     schema = Carto::Definition.instance.load_from_file(location)
 
-    errors = JSON::Validator.fully_validate(schema, embed_options)
-    errors.add(:embed_options, errors.join(', '))
+    json_errors = JSON::Validator.fully_validate(schema, embed_options)
+    errors.add(:embed_options, json_errors.join(', '))
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

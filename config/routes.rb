@@ -405,8 +405,10 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
+    UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
+
     scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
-      resources :maps, only: [:show, :update], constraints: { id: /[0-z\-]+/ }
+      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
       # Organization user management
       scope 'organization/:id_or_name/' do

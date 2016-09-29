@@ -103,5 +103,5 @@
   }
 }
 .Editor-HeaderInfo-publishDate {
-  max-width: 160px;
+  @include flex(1);
 }

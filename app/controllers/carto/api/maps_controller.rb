@@ -44,9 +44,7 @@ module Carto
                                         :bounding_box_sw,
                                         :center,
                                         :embed_options,
-                                        :legends,
                                         :provider,
-                                        :scrollwheel,
                                         :view_bounds_ne,
                                         :view_bounds_sw,
                                         :zoom)

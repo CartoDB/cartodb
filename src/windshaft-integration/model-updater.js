@@ -150,19 +150,15 @@ ModelUpdater.prototype._updateLegendModel = function (legendModel, layerMetadata
     };
     if (cartoCSSRules) {
       var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
-      var cartoCSSRule = _.find(cartoCSSRules, function (rule) {
-        if (adapter.canAdapt(rule)) {
-          return rule;
-        }
-      });
-      if (cartoCSSRule) {
-        newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(cartoCSSRule));
+      var ruleForLegend = _.find(cartoCSSRules, adapter.canAdapt);
+      if (ruleForLegend) {
+        newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(ruleForLegend));
       }
     }
     legendModel.set(newLegendAttrs);
   } catch (error) {
     legendModel.set({ state: 'error' });
-    log.error("legend of type '" + legendModel.get('type') + "'couldn't be updated: " + error.message);
+    log.error("legend of type '" + legendModel.get('type') + "' couldn't be updated: " + error.message);
   }
 };
 

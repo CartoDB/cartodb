@@ -33,6 +33,10 @@ module Carto
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
     end
 
+    def check_connection
+      @provider.check_connection
+    end
+
     def remote_data_updated?
       @provider.remote_data_updated?
     end

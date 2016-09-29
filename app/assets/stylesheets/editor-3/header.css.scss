@@ -102,3 +102,6 @@
     color: $cWhite;
   }
 }
+.Editor-HeaderInfo-publishDate {
+  @include flex(1);
+}

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.2.29",
+  "version": "4.2.30",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -86,7 +86,7 @@
                             },
                             "readable-stream": {
                               "version": "2.0.6",
-                              "from": "readable-stream@>=2.0.0 <2.1.0",
+                              "from": "readable-stream@>=2.0.5 <2.1.0",
                               "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz",
                               "dependencies": {
                                 "core-util-is": {
@@ -162,9 +162,9 @@
                       "resolved": "https://registry.npmjs.org/fs-extra/-/fs-extra-0.26.7.tgz",
                       "dependencies": {
                         "graceful-fs": {
-                          "version": "4.1.8",
+                          "version": "4.1.9",
                           "from": "graceful-fs@>=4.1.2 <5.0.0",
-                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.8.tgz"
+                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.9.tgz"
                         },
                         "jsonfile": {
                           "version": "2.4.0",
@@ -442,9 +442,9 @@
                               }
                             },
                             "sshpk": {
-                              "version": "1.10.0",
+                              "version": "1.10.1",
                               "from": "sshpk@>=1.7.0 <2.0.0",
-                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.0.tgz",
+                              "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.1.tgz",
                               "dependencies": {
                                 "asn1": {
                                   "version": "0.2.3",
@@ -472,9 +472,9 @@
                                   "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
                                 },
                                 "tweetnacl": {
-                                  "version": "0.13.3",
-                                  "from": "tweetnacl@>=0.13.0 <0.14.0",
-                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.13.3.tgz"
+                                  "version": "0.14.3",
+                                  "from": "tweetnacl@>=0.14.0 <0.15.0",
+                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
                                 },
                                 "jodid25519": {
                                   "version": "1.0.2",
@@ -489,14 +489,7 @@
                                 "bcrypt-pbkdf": {
                                   "version": "1.0.0",
                                   "from": "bcrypt-pbkdf@>=1.0.0 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.0.tgz",
-                                  "dependencies": {
-                                    "tweetnacl": {
-                                      "version": "0.14.3",
-                                      "from": "tweetnacl@>=0.14.3 <0.15.0",
-                                      "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
-                                    }
-                                  }
+                                  "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.0.tgz"
                                 }
                               }
                             }
@@ -900,9 +893,9 @@
                               "resolved": "https://registry.npmjs.org/levn/-/levn-0.3.0.tgz"
                             },
                             "fast-levenshtein": {
-                              "version": "2.0.4",
+                              "version": "2.0.5",
                               "from": "fast-levenshtein@>=2.0.4 <2.1.0",
-                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.4.tgz"
+                              "resolved": "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.5.tgz"
                             }
                           }
                         },
@@ -1270,7 +1263,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <2.0.0",
+                  "from": "turf-jenks@>=1.0.1 <1.1.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1570,7 +1563,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <2.0.0",
+              "from": "turf-jenks@>=1.0.1 <1.1.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {

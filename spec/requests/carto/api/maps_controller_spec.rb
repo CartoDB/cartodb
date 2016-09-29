@@ -41,7 +41,10 @@ describe Carto::Api::MapsController do
         view_bounds_sw: "[24.51713945052515, -89.329833984375]",
         zoom: 7,
         embed_options: {
-          dashboard_menu: false
+          dashboard_menu: false,
+          legends: true,
+          scrollwheel: true,
+          layer_selector: true
         }
       }
     end
@@ -111,8 +114,11 @@ describe Carto::Api::MapsController do
         response.body[:legends].should eq @map.legends
         response.body[:scrollwheel].should eq @map.scrollwheel
 
-        response_embed_options = response.body[:dashboard_menu]
+        response_embed_options = response.body[:embed_options]
         response_embed_options[:dashboard_menu].should eq @map.dashboard_menu
+        response_embed_options[:layer_selector].should eq @map.layer_selector
+        response_embed_options[:legends].should eq @map.embed_options[:legends]
+        response_embed_options[:scrollwheel].should eq @map.embed_options[:scrollwheel]
       end
     end
 

@@ -93,9 +93,7 @@ var VisModel = Backbone.Model.extend({
     var WindshaftMapClass;
 
     var datasource = vizjson.datasource;
-    var isNamedMap = !!datasource.template_name;
-
-    if (isNamedMap) {
+    if (vizjson.isNamedMap()) {
       endpoints = {
         get: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name, 'jsonp' ].join('/'),
         post: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/')
@@ -322,27 +320,45 @@ var VisModel = Backbone.Model.extend({
   },
 
   _newLayerModels: function (vizjson) {
-    var layersOptions = {
-      https: this.get('https'),
-      vis: this
-    };
     // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
     // will be merged and released. Leaving this here for backwards compatibility
     // and to make sure everything still works fine during the release and next
     // few moments (e.g: some viz.json files might be cached, etc.).
     var layersData = this._flattenLayers(vizjson.layers);
     return _.map(layersData, function (layerData) {
-      // Torque layers need some extra attributes that are present
-      // in the datasource entry of the viz.json
-      if (layerData.type === 'torque') {
-        layerData = _.extend(layerData, {
-          'user_name': vizjson.datasource.user_name,
-          'maps_api_template': vizjson.datasource.maps_api_template,
-          'stat_tag': vizjson.datasource.stat_tag
-        });
+      return this._createLayerModel(layerData, vizjson);
+    }, this);
+  },
+
+  _createLayerModel: function (layerData, vizjson) {
+    var layersOptions = {
+      https: this.get('https'),
+      vis: this
+    };
+
+    // Torque layers need some extra attributes that are present
+    // in the datasource entry of the viz.json
+    if (layerData.type === 'torque') {
+      var extraAttrs = {
+        user_name: vizjson.datasource.user_name,
+        maps_api_template: vizjson.datasource.maps_api_template,
+        stat_tag: vizjson.datasource.stat_tag,
+      };
+      if (vizjson.isNamedMap()) {
+        extraAttrs.named_map = {
+          name: vizjson.datasource.template_name
+        };
       }
-      return LayersFactory.create(layerData.type, layerData, layersOptions);
-    });
+      if (this.get('apiKey')) {
+        extraAttrs.api_key = this.get('apiKey');
+      }
+      if (this.get('authToken')) {
+        extraAttrs.auth_token = this.get('authToken');
+      }
+
+      layerData = _.extend(layerData, extraAttrs);
+    }
+    return LayersFactory.create(layerData.type, layerData, layersOptions);
   },
 
   _flattenLayers: function (vizjsonLayers) {

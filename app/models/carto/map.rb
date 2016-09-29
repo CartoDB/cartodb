@@ -137,11 +137,7 @@ class Carto::Map < ActiveRecord::Base
   DEFAULT_DASHBOARD_MENU = true
 
   def dashboard_menu
-    if embed_options.key?(:dashboard_menu)
-      embed_options[:dashboard_menu]
-    else
-      self.dashboard_menu = DEFAULT_DASHBOARD_MENU
-    end
+    embed_options[:dashboard_menu]
   end
 
   def layer_selector=(value)
@@ -151,11 +147,7 @@ class Carto::Map < ActiveRecord::Base
   DEFAULT_LAYER_SELECTOR = true
 
   def layer_selector
-    if embed_options.key?(:layer_selector)
-      embed_options[:layer_selector]
-    else
-      self.layer_selector = DEFAULT_LAYER_SELECTOR
-    end
+    embed_options[:layer_selector]
   end
 
   private

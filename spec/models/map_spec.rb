@@ -60,6 +60,10 @@ describe Map do
           @map.dashboard_menu.should eq true
         end
 
+        it 'sets layer_selector true by default' do
+          @map.layer_selector.should eq true
+        end
+
         it 'allows to change dashboard_menu' do
           @map.dashboard_menu = false
           @map.dashboard_menu.should be_false
@@ -68,8 +72,23 @@ describe Map do
           @map.dashboard_menu.should be_true
         end
 
+        it 'allows to change layer_selector' do
+          @map.layer_selector = false
+          @map.layer_selector.should be_false
+
+          @map.layer_selector = true
+          @map.layer_selector.should be_true
+        end
+
         it 'rejects a non-boolean dashboard_menu value' do
           @map.dashboard_menu = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'rejects a non-boolean layer_selector value' do
+          @map.layer_selector = 'patata'
 
           @map.valid?.should be_false
           @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
@@ -83,6 +102,14 @@ describe Map do
           @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
         end
 
+        it 'requies a layer_selector value' do
+          @map.layer_selector = nil
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
+        end
+
         it 'requires dashboard_menu to be present' do
           old_options = @map.embed_options.dup
           @map.embed_options = Hash.new
@@ -90,6 +117,17 @@ describe Map do
           @map.valid?.should be_false
           @map.errors[:embed_options].should_not be_empty
           @map.errors[:embed_options][0].should include('did not contain a required property of \'dashboard_menu\'')
+
+          @map.embed_options = old_options
+        end
+
+        it 'requires layer_selector to be present' do
+          old_options = @map.embed_options.dup
+          @map.embed_options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('did not contain a required property of \'layer_selector\'')
 
           @map.embed_options = old_options
         end

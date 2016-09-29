@@ -34,9 +34,7 @@ describe Carto::Api::MapsController do
         bounding_box_ne: "[85.0511, 179]",
         bounding_box_sw: "[-85.0511, -179]",
         center: "[28.483177058570757, -82.825927734375]",
-        legends: true,
         provider: "leaflet",
-        scrollwheel: true,
         view_bounds_ne: "[32.30570601389429, -76.32202148437499]",
         view_bounds_sw: "[24.51713945052515, -89.329833984375]",
         zoom: 7,
@@ -111,8 +109,6 @@ describe Carto::Api::MapsController do
         response.body[:zoom].should eq @map.zoom
         response.body[:view_bounds_sw].should eq @map.view_bounds_sw
         response.body[:view_bounds_ne].should eq @map.view_bounds_ne
-        response.body[:legends].should eq @map.legends
-        response.body[:scrollwheel].should eq @map.scrollwheel
 
         response_embed_options = response.body[:embed_options]
         response_embed_options[:dashboard_menu].should eq @map.dashboard_menu

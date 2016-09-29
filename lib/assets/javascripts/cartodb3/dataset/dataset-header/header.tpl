@@ -3,7 +3,7 @@
     <% if (isSync && isOwner) { %>
       <span class="SyncInfo-state SyncInfo-state--<%- syncState %> u-rSpace--m js-syncState"></span>
     <% } %>
-    <div class="Editor-HeaderInfo-titleText js-name">
+    <div class="Editor-HeaderInfo-titleText is-larger js-name">
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
     <% if (isCustomQueryApplied) { %>

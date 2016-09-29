@@ -53,9 +53,16 @@
   margin-bottom: 7px;
 }
 .Editor-HeaderInfo-titleText {
+  @include flex(1);
   display: block;
-  min-width: 128px;
+  width: 0;
   padding-right: 24px;
+
+  &.is-larger {
+
+    @include flex(none);
+    width: auto;
+  }
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();

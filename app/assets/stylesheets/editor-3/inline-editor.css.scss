@@ -16,6 +16,5 @@
 }
 
 .Inline-editor-text {
-  @include flex(1);
-  width: 0;
+  min-width: 128px;
 }

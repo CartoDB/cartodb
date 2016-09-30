@@ -75,5 +75,12 @@ describe Carto::Layer do
       affected.count.should eq 1
       affected.should include @table2
     end
+
+    describe '#affected_table_names' do
+      it "should return the affected tables" do
+        sql = "select coalesce('tabname', null) from cdb_tablemetadata;select 1;select * from spatial_ref_sys"
+        @layer.send(:affected_table_names, sql).should =~ ["cartodb.cdb_tablemetadata", "public.spatial_ref_sys"]
+      end
+    end
   end
 end

@@ -98,7 +98,7 @@ describe Carto::Layer do
     end
 
     it 'correctly parses quoted usernames' do
-      parse('{table,"\"user-hyphen\".pepito"}').should eq ['table', '"user".pepito']
+      parse('{table,"\"user-hyphen\".pepito"}').should eq ['table', '"user-hyphen".pepito']
     end
 
     it 'correctly parses quoted usernames and tablenames' do

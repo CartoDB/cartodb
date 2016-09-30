@@ -52,10 +52,13 @@ module Carto
     private
 
     def parse_cdb_querytables_result(result)
-      result.split(',').map do |table_name|
-        t = table_name.gsub!(/[\{\}]/, '')
+      return [] unless result.present?
+      tables = result[1..-2].split(',').map do |table_name|
+        # "\"user-name\".table" -> "user-name".table
+        t = table_name.gsub(/(?<!\\)"/, '').gsub('\\"', '"')
         (t.blank? ? nil : t)
-      end.compact.uniq
+      end
+      tables.compact.uniq
     end
   end
 

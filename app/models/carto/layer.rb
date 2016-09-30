@@ -48,18 +48,6 @@ module Carto
       schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       tables_from_names(["#{schema_prefix}#{table_name}"], user)
     end
-
-    private
-
-    def parse_cdb_querytables_result(result)
-      return [] unless result.present?
-      tables = result[1..-2].split(',').map do |table_name|
-        # "\"user-name\".table" -> "user-name".table
-        t = table_name.gsub(/(?<!\\)"/, '').gsub('\\"', '"')
-        (t.blank? ? nil : t)
-      end
-      tables.compact.uniq
-    end
   end
 
   class Layer < ActiveRecord::Base
@@ -252,8 +240,8 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      parse_cdb_querytables_result(query_tables['cdb_querytables'])
+      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTables(#{user.in_database.quote(query)}))")
+      query_tables.column_values(0).uniq
     end
 
     def query

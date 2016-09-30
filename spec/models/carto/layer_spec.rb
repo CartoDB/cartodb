@@ -83,31 +83,4 @@ describe Carto::Layer do
       end
     end
   end
-
-  describe '#parse_cdb_querytables_result' do
-    def parse(result)
-      Carto::Layer.new.send(:parse_cdb_querytables_result, result)
-    end
-
-    it 'correctly parses unquoted identifiers' do
-      parse('{table,pepito}').should eq ['table', 'pepito']
-    end
-
-    it 'correctly parses qualified identifiers' do
-      parse('{table,user.pepito}').should eq ['table', 'user.pepito']
-    end
-
-    it 'correctly parses quoted usernames' do
-      parse('{table,"\"user-hyphen\".pepito"}').should eq ['table', '"user-hyphen".pepito']
-    end
-
-    it 'correctly parses quoted usernames and tablenames' do
-      parse('{"\"my-name\".\"is-wadus\",table"}').should eq ['"my-name"."is-wadus"', 'table']
-    end
-
-    it 'does not return anything for empty results' do
-      parse('{}').should eq []
-      parse('').should eq []
-    end
-  end
 end

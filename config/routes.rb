@@ -342,7 +342,7 @@ CartoDB::Application.routes.draw do
         as: :api_v1_maps_update
   end
 
-  scope :module => 'carto/api', :format => :json do
+  scope module: 'carto/api', format: :json do
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }

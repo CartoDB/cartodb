@@ -104,5 +104,10 @@ describe Carto::Layer do
     it 'correctly parses quoted usernames and tablenames' do
       parse('{"\"my-name\".\"is-wadus\",table"}').should eq ['"my-name"."is-wadus"', 'table']
     end
+
+    it 'does not return anything for empty results' do
+      parse('{}').should eq []
+      parse('').should eq []
+    end
   end
 end

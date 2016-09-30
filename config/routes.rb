@@ -466,10 +466,6 @@ CartoDB::Application.routes.draw do
       end
     end
 
-    # V3
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
-    end
-
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#show', as: :api_v1_organization_groups_show, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }

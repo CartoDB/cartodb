@@ -46,7 +46,7 @@ namespace :cartodb do
 
     def with_provider_org_config(args)
       provider = find_by_uuid_or_name(args.provider, Carto::ConnectorProvider)
-      org      = find_by_uuid_or_name(args.user, Carto::Organization)
+      org      = find_by_uuid_or_name(args.org, Carto::Organization)
       puts "Provider not found: #{args.provider}" if provider.blank?
       puts "Organization not found: #{args.org}" if org.blank?
       if provider.present? && org.present?

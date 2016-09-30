@@ -18,9 +18,4 @@
 .Inline-editor-text {
   @include flex(1);
   width: 0;
-
-  &.is-larger {
-    @include flex(none);
-    width: auto;
-  }
 }

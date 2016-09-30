@@ -59,10 +59,13 @@
   padding-right: 24px;
 
   &.is-larger {
-
-    @include flex(none);
-    width: auto;
+    @include flex(1 1 100%);
   }
+}
+.Editor-HeaderInfo-details {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(0 1 100%);
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();

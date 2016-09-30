@@ -49,6 +49,14 @@ module Carto
                end
         data.map(&:with_indifferent_access)
       end
+
+      def username
+        @user.username
+      end
+
+      def database_username
+        @user.database_username
+      end
     end
   end
 end

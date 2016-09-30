@@ -29,8 +29,17 @@ module Carto
       @provider.copy_table(schema_name: schema_name, table_name: table_name, limits: limits)
     end
 
+    def self.list_tables?(provider)
+      information = Connector.information(provider)
+      information[:features][:list_tables]
+    end
+
     def list_tables(limit = nil)
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
+    end
+
+    def check_connection
+      @provider.check_connection
     end
 
     def remote_data_updated?
@@ -46,6 +55,10 @@ module Carto
       unless user.has_feature_flag?('carto-connectors')
         raise ConnectorsDisabledError.new(user: user)
       end
+    end
+
+    def self.available?(user)
+      user.has_feature_flag?('carto-connectors')
     end
 
     # Check availability for a user and provider
@@ -95,7 +108,7 @@ module Carto
     #     }
     #   }, ...
     # }
-    def self.information(provider_name, user = nil)
+    def self.information(provider_name)
       provider = provider_class(provider_name)
       raise InvalidParametersError.new(message: "Invalid provider", provider: provider_name) if provider.blank?
       provider.information

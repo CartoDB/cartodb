@@ -955,7 +955,7 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_BoolAsChar" => '0',
+              "odbc_BoolsAsChar" => '0',
               "odbc_ByteaAsLongVarBinary" => '1',
               "odbc_MaxVarcharSize" => '256',
               "schema" => 'public',

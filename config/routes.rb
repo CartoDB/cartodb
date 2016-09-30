@@ -450,6 +450,37 @@ CartoDB::Application.routes.draw do
 
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
+
+    # V3
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
+      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+      end
+
+      resource :metrics, only: [:create]
+
+      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
+        resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+        resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resource :state, only: [:update]
+
+        scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
+          resources :legends,
+                    only: [:index, :show, :create, :update, :destroy],
+                    constraints: { id: /[^\/]+/ }
+        end
+      end
+
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
+        get 'download' => 'visualization_exports#download', as: :download
+      end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
+    end
   end
 
   scope :module => 'api/json', :format => :json do
@@ -636,6 +667,12 @@ CartoDB::Application.routes.draw do
       scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
         resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
       end
+
+      # Connectors
+      get 'connectors' => 'connectors#index', as: :api_v1_connectors_index
+      get 'connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
+      get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
+      get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
     end
   end
 end

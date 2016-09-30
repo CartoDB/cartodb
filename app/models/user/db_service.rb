@@ -23,7 +23,7 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.11.1'.freeze
-      ODBC_FDW_VERSION = '0.0.1'.freeze
+      ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user

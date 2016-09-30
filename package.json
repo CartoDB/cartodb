@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.2.23",
+  "version": "4.2.35",
   "description": "CartoDB UI frontend",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
-    "backbone-model-file-upload": "1.0.0",
+    "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.0",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.3.3",
     "browserify-shim": "3.8.12",

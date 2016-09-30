@@ -23,7 +23,7 @@ module Carto
           Driver:               'PostgreSQL Unicode',
           ByteaAsLongVarBinary: 1,
           MaxVarcharSize:       256,
-          BoolAsChar:           0
+          BoolsAsChar:          0
         }
       end
 

@@ -1,4 +1,4 @@
-<div class="CDB-Text CDB-Fieldset u-tSpace-xl">
+<div class="CDB-Text CDB-Fieldset u-tSpace--m">
   <div class="CDB-Legend CDB-Legend--big u-ellipsis CDB-Text CDB-Size-medium u-rSpace--m">
     <div class="Infowindow-listFieldsOrder CDB-Shape u-iblock u-malign">
       <div class="CDB-Shape-rectsHandle is-small">

@@ -328,10 +328,21 @@ CartoDB::Application.routes.draw do
     resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
   end
 
+  UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
+
+  # These are some legacy routes that use custom names, some of them are over-
+  # written by the resource name generators in carto/api. Moving them up here
+  # resolves the conflict. TODO: remove api/json routes when deprecated.
+  scope module: 'api/json',
+        format: :json,
+        path: '(/user/:user_domain)(/u/:user_domain)/api/v1' do
+    # Maps
+    put 'maps/:id' => 'maps#update',
+        constraints: { id: UUID_REGEXP },
+        as: :api_v1_maps_update
+  end
+
   scope :module => 'carto/api', :format => :json do
-
-    # V1 api/json calls
-
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
@@ -404,8 +415,6 @@ CartoDB::Application.routes.draw do
 
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
-
-    UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
     scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
@@ -555,9 +564,6 @@ CartoDB::Application.routes.draw do
     # User assets
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
-
-    # Maps
-    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
 
     # Map layers
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#create',  as: :api_v1_maps_layers_create

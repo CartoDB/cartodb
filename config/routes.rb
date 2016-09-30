@@ -328,20 +328,6 @@ CartoDB::Application.routes.draw do
     resources :mobile_apps, path: '(/user/:user_domain)(/u/:user_domain)/your_apps/mobile', except: [:edit]
   end
 
-  UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
-
-  # These are some legacy routes that use custom names, some of them are over-
-  # written by the resource name generators in carto/api. Moving them up here
-  # resolves the conflict. TODO: remove api/json routes when deprecated.
-  scope module: 'api/json',
-        format: :json,
-        path: '(/user/:user_domain)(/u/:user_domain)/api/v1' do
-    # Maps
-    put 'maps/:id' => 'maps#update',
-        constraints: { id: UUID_REGEXP },
-        as: :api_v1_maps_update
-  end
-
   scope module: 'carto/api', format: :json do
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
@@ -416,33 +402,72 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v1/' do
-      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
+    UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
-      # Organization user management
-      scope 'organization/:id_or_name/' do
-        post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
-        get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
-        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
-        put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
+    scope '(/user/:user_domain)(/u/:user_domain)/api/' do
+      scope 'v1/' do
+        resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
+
+        # Organization user management
+        scope 'organization/:id_or_name/' do
+          post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
+          get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
+          delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
+          put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
+        end
+
+        # Overlays
+        scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
+          resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+        end
       end
 
-      # Overlays
-      scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
-        resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+      scope 'v2/' do
+        resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
+
+        # EUMAPI v2
+        scope 'organization/:id_or_name/' do
+          get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
+          post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
+          get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
+          delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
+          put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
+        end
+      end
+
+      scope 'v3/' do
+        scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+          resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+        end
+
+        scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+          match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+        end
+
+        resource :metrics, only: [:create]
+
+        scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
+          resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+          resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+          resource :state, only: [:update]
+
+          scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
+            resources :legends,
+                      only: [:index, :show, :create, :update, :destroy],
+                      constraints: { id: /[^\/]+/ }
+          end
+        end
+
+        resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
+          get 'download' => 'visualization_exports#download', as: :download
+        end
+
+        put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
       end
     end
 
-    # Using v2 to add index to EUMAPI since /users is taken in v1
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v2/' do
-      # Organization user management
-      scope 'organization/:id_or_name/' do
-        get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
-        post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
-        get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
-        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
-        put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
-      end
+    # V3
+    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
     end
 
     # Groups
@@ -493,37 +518,6 @@ CartoDB::Application.routes.draw do
 
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
-
-    # V3
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
-      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
-        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-      end
-
-      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
-        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
-      end
-
-      resource :metrics, only: [:create]
-
-      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
-        resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-        resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
-        resource :state, only: [:update]
-
-        scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
-          resources :legends,
-                    only: [:index, :show, :create, :update, :destroy],
-                    constraints: { id: /[^\/]+/ }
-        end
-      end
-
-      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
-        get 'download' => 'visualization_exports#download', as: :download
-      end
-
-      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
-    end
   end
 
   scope :module => 'api/json', :format => :json do
@@ -564,6 +558,9 @@ CartoDB::Application.routes.draw do
     # User assets
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
+
+    # Maps
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
 
     # Map layers
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#create',  as: :api_v1_maps_layers_create

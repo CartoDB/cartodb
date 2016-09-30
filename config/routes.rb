@@ -402,70 +402,6 @@ CartoDB::Application.routes.draw do
     # Organization (new endpoint that deprecates old, unused one, so v1)
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:id/users' => 'organizations#users', as: :api_v1_organization_users, constraints: { id: /[^\/]+/ }
 
-    UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
-
-    scope '(/user/:user_domain)(/u/:user_domain)/api/' do
-      scope 'v1/' do
-        resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
-
-        # Organization user management
-        scope 'organization/:id_or_name/' do
-          post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
-          get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
-          delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
-          put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
-        end
-
-        # Overlays
-        scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
-          resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
-        end
-      end
-
-      scope 'v2/' do
-        resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
-
-        # EUMAPI v2
-        scope 'organization/:id_or_name/' do
-          get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
-          post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
-          get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
-          delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
-          put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
-        end
-      end
-
-      scope 'v3/' do
-        scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
-          resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-        end
-
-        scope '/viz/:id', constraints: { id: /[^\/]+/ } do
-          match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
-        end
-
-        resource :metrics, only: [:create]
-
-        scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
-          resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-          resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
-          resource :state, only: [:update]
-
-          scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
-            resources :legends,
-                      only: [:index, :show, :create, :update, :destroy],
-                      constraints: { id: /[^\/]+/ }
-          end
-        end
-
-        resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
-          get 'download' => 'visualization_exports#download', as: :download
-        end
-
-        put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
-      end
-    end
-
     # Groups
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups' => 'groups#index', as: :api_v1_organization_groups, constraints: { organization_id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/organization/:organization_id/groups/:group_id' => 'groups#show', as: :api_v1_organization_groups_show, constraints: { organization_id: /[^\/]+/, group_id: /[^\/]+/ }
@@ -639,6 +575,69 @@ CartoDB::Application.routes.draw do
     get '/superadmin/stats/total_likes' => 'platform#total_likes'
   end
 
+  UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
+
+  scope module: Carto::Api, path: '(/user/:user_domain)(/u/:user_domain)/api/', format: :json do
+    scope 'v3/' do
+      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
+        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+      end
+
+      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
+        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
+      end
+
+      resource :metrics, only: [:create]
+
+      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
+        resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
+        resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resource :state, only: [:update]
+
+        scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
+          resources :legends,
+                    only: [:index, :show, :create, :update, :destroy],
+                    constraints: { id: /[^\/]+/ }
+        end
+      end
+
+      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
+        get 'download' => 'visualization_exports#download', as: :download
+      end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
+    end
+
+    scope 'v2/' do
+      resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
+
+      # EUMAPI v2
+      scope 'organization/:id_or_name/' do
+        get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
+        post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
+      end
+    end
+
+    scope 'v1/' do
+      resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
+
+      # Organization user management
+      scope 'organization/:id_or_name/' do
+        post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
+        get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show
+        delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v1_organization_users_delete
+        put    'users/:u_username', to: 'organization_users#update',  as: :api_v1_organization_users_update
+      end
+
+      # Overlays
+      scope 'viz/:visualization_id/', constraints: { visualization_id: /[0-z\-]+/ } do
+        resources :overlays, only: [:index, :show, :create, :update, :destroy], constraints: { id: /[0-z\-]+/ }
+      end
+    end
+  end
 end
 
 # rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg

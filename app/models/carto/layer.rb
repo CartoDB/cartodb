@@ -48,6 +48,15 @@ module Carto
       schema_prefix = user_name.present? && table_name.present? && !table_name.include?('.') ? %{"#{user_name}".} : ''
       tables_from_names(["#{schema_prefix}#{table_name}"], user)
     end
+
+    private
+
+    def parse_cdb_querytables_result(result)
+      result.split(',').map do |table_name|
+        t = table_name.gsub!(/[\{\}]/, '')
+        (t.blank? ? nil : t)
+      end.compact.uniq
+    end
   end
 
   class Layer < ActiveRecord::Base
@@ -240,12 +249,8 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
       query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      query_tables['cdb_querytables'].split(',').map { |table_name|
-        t = table_name.gsub!(/[\{\}]/, '')
-        (t.blank? ? nil : t)
-      }.compact.uniq
+      parse_cdb_querytables_result(query_tables['cdb_querytables'])
     end
 
     def query

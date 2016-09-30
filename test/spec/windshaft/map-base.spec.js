@@ -49,14 +49,13 @@ describe('windshaft/map-base', function () {
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
-    this.client = new WindshaftClient({
-      endpoints: {
-        get: 'v1',
-        post: 'v1'
-      },
+
+    this.windshaftSettings = {
       urlTemplate: 'http://{user}.example.com',
       userName: 'rambo'
-    });
+    };
+
+    this.client = new WindshaftClient(this.windshaftSettings);
 
     this.vis = new VisModel();
     this.cartoDBLayerGroup = new Model();
@@ -71,7 +70,8 @@ describe('windshaft/map-base', function () {
       modelUpdater: this.modelUpdater,
       dataviewsCollection: this.dataviewsCollection,
       layersCollection: this.layersCollection,
-      analysisCollection: this.analysisCollection
+      analysisCollection: this.analysisCollection,
+      windshaftSettings: this.windshaftSettings
     });
   });
 
@@ -84,6 +84,8 @@ describe('windshaft/map-base', function () {
       this.map = new Map({
         view_bounds_sw: [],
         view_bounds_ne: []
+      }, {
+        layersFactory: {}
       });
 
       this.filter = new CategoryFilter({
@@ -305,7 +307,8 @@ describe('windshaft/map-base', function () {
           modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
+          analysisCollection: this.analysisCollection,
+          windshaftSettings: this.windshaftSettings
         });
 
         this.windshaftMap.createInstance({
@@ -331,7 +334,8 @@ describe('windshaft/map-base', function () {
           modelUpdater: this.modelUpdater,
           dataviewsCollection: this.dataviewsCollection,
           layersCollection: this.layersCollection,
-          analysisCollection: this.analysisCollection
+          analysisCollection: this.analysisCollection,
+          windshaftSettings: this.windshaftSettings
         });
 
         this.windshaftMap.createInstance({
@@ -452,61 +456,36 @@ describe('windshaft/map-base', function () {
 
   describe('.getBaseURL', function () {
     it("should return Windshaft's url if no CDN info is present", function () {
-      var windshaftMap = new WindshaftMap({
+      this.windshaftMap.set({
         layergroupid: '0123456789'
-      }, {
-        client: this.client,
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
       });
-      expect(windshaftMap.getBaseURL()).toEqual('http://rambo.example.com/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://rambo.example.com/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for http when CDN info is present', function () {
-      var windshaftMap = new WindshaftMap({
+      this.windshaftMap.set({
         layergroupid: '0123456789',
         cdn_url: {
           http: 'cdn.http.example.com',
           https: 'cdn.https.example.com'
         }
-      }, {
-        client: this.client,
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
       });
 
-      expect(windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('http://cdn.http.example.com/rambo/api/v1/map/0123456789');
     });
 
     it('should return the CDN URL for https when CDN info is present', function () {
-      this.client = new WindshaftClient({
-        endpoints: {
-          get: 'v1',
-          post: 'v1'
-        },
-        urlTemplate: 'https://{user}.example.com',
-        userName: 'rambo'
-      });
+      this.windshaftSettings.urlTemplate = 'https://{user}.example.com';
 
-      var windshaftMap = new WindshaftMap({
+      this.windshaftMap.set({
         layergroupid: '0123456789',
         cdn_url: {
           http: 'cdn.http.example.com',
           https: 'cdn.https.example.com'
         }
-      }, {
-        client: this.client,
-        modelUpdater: this.modelUpdater,
-        dataviewsCollection: this.dataviewsCollection,
-        layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
       });
 
-      expect(windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
+      expect(this.windshaftMap.getBaseURL()).toEqual('https://cdn.https.example.com/rambo/api/v1/map/0123456789');
     });
   });
 
@@ -531,7 +510,8 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
+        analysisCollection: this.analysisCollection,
+        windshaftSettings: this.windshaftSettings
       });
 
       var dataviewMetadata = windshaftMap.getDataviewMetadata('whatever');
@@ -564,7 +544,8 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
+        analysisCollection: this.analysisCollection,
+        windshaftSettings: this.windshaftSettings
       });
 
       dataviewMetadata = windshaftMap.getDataviewMetadata('whatever');
@@ -605,7 +586,8 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
+        analysisCollection: this.analysisCollection,
+        windshaftSettings: this.windshaftSettings
       });
 
       var dataviewMetadata = windshaftMap.getDataviewMetadata('dataviewId');
@@ -693,7 +675,8 @@ describe('windshaft/map-base', function () {
         modelUpdater: this.modelUpdater,
         dataviewsCollection: this.dataviewsCollection,
         layersCollection: this.layersCollection,
-        analysisCollection: this.analysisCollection
+        analysisCollection: this.analysisCollection,
+        windshaftSettings: this.windshaftSettings
       });
 
       var dataviewMetadata = windshaftMap.getDataviewMetadata('dataviewId');
@@ -716,17 +699,14 @@ describe('windshaft/map-base', function () {
 
   describe('.getSupportedSubdomains', function () {
     it('should return supported subdomains if urlTemplate uses http', function () {
-      this.windshaftMap.set({
-        urlTemplate: 'http://{username}.carto.com'
-      });
+      this.windshaftSettings.urlTemplate = 'http://{username}.carto.com';
 
       expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['0', '1', '2', '3']);
     });
 
     it('should return no subdomains if urlTemplate uses https', function () {
-      this.windshaftMap.set({
-        urlTemplate: 'https://{username}.carto.com'
-      });
+      this.windshaftSettings.urlTemplate = 'https://{username}.carto.com';
+
       expect(this.windshaftMap.getSupportedSubdomains()).toEqual(['']);
     });
   });

@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var LZMA = require('lzma');
 var util = require('../core/util');
+var WindshaftConfig = require('./config');
 
 var validatePresenceOfOptions = function (options, requiredOptions) {
   var missingOptions = _.filter(requiredOptions, function (option) {
@@ -19,15 +20,22 @@ var COMPRESSION_LEVEL = 3;
  * Windshaft client. It provides a method to create instances of maps in Windshaft.
  * @param {object} options Options to set up the client
  */
-var WindshaftClient = function (options) {
-  validatePresenceOfOptions(options, ['urlTemplate', 'userName', 'endpoints']);
+var WindshaftClient = function (settings) {
+  validatePresenceOfOptions(settings, ['urlTemplate', 'userName']);
 
-  this.urlTemplate = options.urlTemplate;
-  this.userName = options.userName;
-  this.endpoints = options.endpoints;
-  this.statTag = options.statTag;
+  if (settings.templateName) {
+    this.endpoints = {
+      get: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName, 'jsonp' ].join('/'),
+      post: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', settings.templateName ].join('/')
+    };
+  } else {
+    this.endpoints = {
+      get: WindshaftConfig.MAPS_API_BASE_URL,
+      post: WindshaftConfig.MAPS_API_BASE_URL
+    };
+  }
 
-  this.url = this.urlTemplate.replace('{user}', this.userName);
+  this.url = settings.urlTemplate.replace('{user}', settings.userName);
 };
 
 WindshaftClient.prototype.instantiateMap = function (options) {

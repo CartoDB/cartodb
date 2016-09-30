@@ -3,7 +3,6 @@ var Backbone = require('backbone');
 var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
-var WindshaftConfig = require('../windshaft/config');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
@@ -21,7 +20,6 @@ var STATE_ERROR = 'error'; // vis has been sent to Windshaft and there were some
 var VisModel = Backbone.Model.extend({
   defaults: {
     loading: false,
-    https: false,
     showLegends: true,
     showEmptyInfowindowFields: false,
     state: STATE_INIT
@@ -89,21 +87,25 @@ var VisModel = Backbone.Model.extend({
 
   load: function (vizjson) {
     // Create the WindhaftClient
-    var endpoints;
-    var WindshaftMapClass;
 
     var datasource = vizjson.datasource;
+
+    this._windshaftSettings = {
+      urlTemplate: vizjson.datasource.maps_api_template,
+      userName: vizjson.datasource.user_name,
+      statTag: vizjson.datasource.stat_tag,
+      apiKey: this.get('apiKey'),
+      authToken: this.get('authToken')
+    };
+
     if (vizjson.isNamedMap()) {
-      endpoints = {
-        get: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name, 'jsonp' ].join('/'),
-        post: [ WindshaftConfig.MAPS_API_BASE_URL, 'named', datasource.template_name ].join('/')
-      };
+      this._windshaftSettings.templateName = vizjson.datasource.template_name;
+    }
+
+    var WindshaftMapClass;
+    if (vizjson.isNamedMap()) {
       WindshaftMapClass = WindshaftNamedMap;
     } else {
-      endpoints = {
-        get: WindshaftConfig.MAPS_API_BASE_URL,
-        post: WindshaftConfig.MAPS_API_BASE_URL
-      };
       WindshaftMapClass = WindshaftAnonymousMap;
     }
 
@@ -114,11 +116,7 @@ var VisModel = Backbone.Model.extend({
       layersCollection: this._layersCollection
     });
 
-    var windshaftClient = new WindshaftClient({
-      endpoints: endpoints,
-      urlTemplate: datasource.maps_api_template,
-      userName: datasource.user_name
-    });
+    var windshaftClient = new WindshaftClient(this._windshaftSettings);
 
     var modelUpdater = new ModelUpdater({
       visModel: this,
@@ -136,9 +134,15 @@ var VisModel = Backbone.Model.extend({
     }, {
       client: windshaftClient,
       modelUpdater: modelUpdater,
+      windshaftSettings: this._windshaftSettings,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
+    });
+
+    this._layersFactory = new LayersFactory({
+      visModel: this,
+      windshaftSettings: this._windshaftSettings
     });
 
     // Create the Map
@@ -155,8 +159,8 @@ var VisModel = Backbone.Model.extend({
       provider: vizjson.map_provider,
       vector: vizjson.vector
     }, {
-      vis: this,
-      layersCollection: this._layersCollection
+      layersCollection: this._layersCollection,
+      layersFactory: this._layersFactory
     });
 
     // Reset the collection of overlays
@@ -326,39 +330,8 @@ var VisModel = Backbone.Model.extend({
     // few moments (e.g: some viz.json files might be cached, etc.).
     var layersData = this._flattenLayers(vizjson.layers);
     return _.map(layersData, function (layerData) {
-      return this._createLayerModel(layerData, vizjson);
+      return this._layersFactory.createLayer(layerData.type, layerData);
     }, this);
-  },
-
-  _createLayerModel: function (layerData, vizjson) {
-    var layersOptions = {
-      https: this.get('https'),
-      vis: this
-    };
-
-    // Torque layers need some extra attributes that are present
-    // in the datasource entry of the viz.json
-    if (layerData.type === 'torque') {
-      var extraAttrs = {
-        user_name: vizjson.datasource.user_name,
-        maps_api_template: vizjson.datasource.maps_api_template,
-        stat_tag: vizjson.datasource.stat_tag,
-      };
-      if (vizjson.isNamedMap()) {
-        extraAttrs.named_map = {
-          name: vizjson.datasource.template_name
-        };
-      }
-      if (this.get('apiKey')) {
-        extraAttrs.api_key = this.get('apiKey');
-      }
-      if (this.get('authToken')) {
-        extraAttrs.auth_token = this.get('authToken');
-      }
-
-      layerData = _.extend(layerData, extraAttrs);
-    }
-    return LayersFactory.create(layerData.type, layerData, layersOptions);
   },
 
   _flattenLayers: function (vizjsonLayers) {

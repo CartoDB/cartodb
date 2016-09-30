@@ -10,7 +10,7 @@ describe('geo/ui/tooltip-view', function() {
   beforeEach(function() {
     container = $("<div id='map'>").css('height', '1000px');
     $('body').append(container)
-    var map = new Map();
+    var map = new Map(null, { layersFactory: {} });
     mapView = new LeafletMapView({
       el: $('#map'),
       map: map,

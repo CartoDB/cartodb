@@ -9,7 +9,6 @@ var DEFAULT_OPTIONS = {
   loaderControl: true,
   infowindow: true,
   tooltip: true,
-  time_slider: true,
   logo: true,
   show_empty_infowindow_fields: false
 };
@@ -27,27 +26,7 @@ var createVis = function (el, vizjson, options) {
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-
-  // TODO: We can check if all required options are present here! eg: if viz.json has some analyses
-  // apiKey or authToken will be required (otherwise we know requests to Windshaft will fail)...
-
-  var showLegends = true;
-  if (_.isBoolean(options.legends)) {
-    showLegends = options.legends;
-  } else if (_.isBoolean(vizjson.legends)) {
-    showLegends = vizjson.legends;
-  }
-
-  var visModel = new VisModel({
-    title: options.title || vizjson.title,
-    description: options.description || vizjson.description,
-    apiKey: options.apiKey,
-    authToken: options.authToken,
-    showLegends: showLegends,
-    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true
-  });
+  var visModel = new VisModel();
 
   new VisView({ // eslint-disable-line
     el: el,
@@ -73,7 +52,28 @@ var createVis = function (el, vizjson, options) {
 var loadVizJSON = function (visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
+
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
+
+  var showLegends = true;
+  if (_.isBoolean(options.legends)) {
+    showLegends = options.legends;
+  } else if (_.isBoolean(vizjson.legends)) {
+    showLegends = vizjson.legends;
+  }
+
+  visModel.set({
+    title: options.title || vizjson.title,
+    description: options.description || vizjson.description,
+    apiKey: options.apiKey,
+    authToken: options.authToken,
+    showLegends: showLegends,
+    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true
+  });
+
   visModel.load(vizjson);
+
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();
   }

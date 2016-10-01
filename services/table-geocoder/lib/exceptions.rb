@@ -84,7 +84,7 @@ module Carto
         'Google geocoder timed out',
         %q{Your geocoding request timed out after several attempts.
            Please check your quota usage in the <a href='https://console.developers.google.com/'>Google Developers Console</a>
-           and <a href='mailto:support@cartodb.com?subject=Google geocoder timed out'>contact us</a>
+           and <a href='mailto:support@carto.com?subject=Google geocoder timed out'>contact us</a>
            if you are within the usage limits.}.squish,
         AdditionalInfo::SOURCE_USER
         )

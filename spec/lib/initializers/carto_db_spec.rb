@@ -27,8 +27,9 @@ describe CartoDB do
 
     it 'Tests extract_real_subdomain()' do
       username = 'test'
-      expected_session_domain = '.cartodb.com'
+      expected_session_domain = '.carto.com'
 
+      CartoDB.clear_internal_cache
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
 
       request = Doubles::Request.new({
@@ -39,17 +40,17 @@ describe CartoDB do
 
     it 'Tests extract_host_subdomain()' do
       username = 'test'
-      expected_session_domain = '.cartodb.com'
+      expected_session_domain = '.carto.com'
 
       CartoDB.expects(:get_session_domain).returns(expected_session_domain)
 
-      # test.cartodb.com
+      # test.carto.com
       request = Doubles::Request.new({
                                        host: "#{username}#{expected_session_domain}"
                                      })
       CartoDB.extract_host_subdomain(request).should eq nil
 
-      # test.cartodb.com/u/whatever
+      # test.carto.com/u/whatever
       request = Doubles::Request.new({
                                        host: "#{username}#{expected_session_domain}",
                                        params: {
@@ -63,11 +64,11 @@ describe CartoDB do
       username = 'test'
       orgname = 'testorg'
       user_domain = 'whatever'
-      expected_session_domain = '.cartodb.com'
+      expected_session_domain = '.carto.com'
 
       CartoDB.expects(:get_session_domain).at_least(0).returns(expected_session_domain)
 
-      # testorg.cartodb.com/u/whatever
+      # testorg.carto.com/u/whatever
       request = Doubles::Request.new({
                                        host: "#{orgname}#{expected_session_domain}",
                                        params: {
@@ -75,7 +76,7 @@ describe CartoDB do
                                        }
                                      })
       CartoDB.username_from_request(request).should eq user_domain
-      # test.cartodb.com
+      # test.carto.com
       request = Doubles::Request.new({
                                        host: "#{username}#{expected_session_domain}"
                                      })
@@ -99,7 +100,7 @@ describe CartoDB do
     end
 
     it 'Tests base_url()' do
-      expected_session_domain = '.cartodb.com'
+      expected_session_domain = '.carto.com'
       expected_http_port = ':12345'
       expected_https_port = ':67890'
       username = 'test'
@@ -137,7 +138,7 @@ describe CartoDB do
       # Reset and check without subdomains
       CartoDB.clear_internal_cache
 
-      expected_session_domain = 'cartodb.com'
+      expected_session_domain = 'carto.com'
 
       CartoDB.unstub(:get_subdomainless_urls)
       CartoDB.expects(:get_subdomainless_urls).returns(true)
@@ -167,6 +168,23 @@ describe CartoDB do
 
       CartoDB.base_url(username, nil, protocol_override_http)
         .should eq "#{protocol_override_http}://#{expected_session_domain}#{expected_http_port}/user/#{username}"
+    end
+
+    it 'tests base_url() without logged user' do
+      expected_session_domain = 'carto.com'
+      expected_ip = '127.0.0.1'
+      expected_https_port = ':67890'
+
+      CartoDB.clear_internal_cache
+      CartoDB.stubs(:use_https?).returns(true)
+      CartoDB.stubs(:get_https_port).returns(expected_https_port)
+
+      CartoDB.stubs(:get_subdomainless_urls).returns(true)
+      CartoDB.stubs(:get_session_domain).returns(expected_session_domain)
+      CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_session_domain}#{expected_https_port}"
+
+      CartoDB.stubs(:request_host).returns(expected_ip)
+      CartoDB.base_url(nil, nil, nil).should eq "https://#{expected_ip}#{expected_https_port}"
     end
 
   end

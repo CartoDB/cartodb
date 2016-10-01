@@ -4,10 +4,10 @@
     <p class="margin15 light">You have denied the oauth access for <%= @token.client_application.user.username %>. You can change this setting later if you reconsider.</p>
   </div>
   <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
+    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "https://carto.com/signup" %></p>
   </div>
 </section>
 
 <footer class="short">
-  <h1><%= link_to 'CartoDB', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
+  <h1><%= link_to 'CARTO', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
 </footer>

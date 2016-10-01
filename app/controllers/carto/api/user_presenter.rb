@@ -25,6 +25,7 @@ module Carto
           quota_in_bytes:   @user.quota_in_bytes,
           db_size_in_bytes: @user.db_size_in_bytes,
           table_count:      @user.table_count,
+          viewer:           @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count
         }
@@ -36,6 +37,14 @@ module Carto
         poro
       end
 
+      def to_poro_without_id
+        presentation = to_poro
+
+        presentation.delete(:id)
+
+        presentation
+      end
+
       def to_public_poro
         return {} if @user.nil?
 
@@ -43,7 +52,8 @@ module Carto
           id:               @user.id,
           username:         @user.username,
           avatar_url:       @user.avatar_url,
-          base_url:         @user.public_url
+          base_url:         @user.public_url,
+          viewer:           @user.viewer?
         }
 
         if @options[:fetch_groups] == true
@@ -75,6 +85,7 @@ module Carto
           account_type: @user.account_type,
           table_quota: @user.table_quota,
           table_count: @user.table_count,
+          viewer: @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
@@ -102,6 +113,21 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
           },
+          geocoder_provider: @user.geocoder_provider,
+          isolines_provider: @user.isolines_provider,
+          routing_provider: @user.routing_provider,
+          obs_snapshot: {
+            quota:       @user.organization_user? ? @user.organization.obs_snapshot_quota : @user.obs_snapshot_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_snapshot_block_price : @user.obs_snapshot_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_snapshot_calls : @user.get_obs_snapshot_calls,
+            hard_limit:  @user.hard_obs_snapshot_limit?
+          },
+          obs_general: {
+            quota:       @user.organization_user? ? @user.organization.obs_general_quota : @user.obs_general_quota,
+            block_price: @user.organization_user? ? @user.organization.obs_general_block_price : @user.obs_general_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_obs_general_calls : @user.get_obs_general_calls,
+            hard_limit:  @user.hard_obs_general_limit?
+          },
           twitter: {
             enabled:     @user.organization_user? ? @user.organization.twitter_datasource_enabled         : @user.twitter_datasource_enabled,
             quota:       @user.organization_user? ? @user.organization.twitter_datasource_quota           :  @user.twitter_datasource_quota,
@@ -110,11 +136,14 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.twitter_imports_count          : @user.twitter_imports_count,
             hard_limit:  @user.hard_twitter_datasource_limit
           },
+          salesforce: {
+            enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
-            },
+          },
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
@@ -125,7 +154,6 @@ module Carto
             dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
-            arcgis_datasource: @user.arcgis_datasource_enabled?,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
             google_maps_enabled: @user.google_maps_enabled?
           },
@@ -140,7 +168,7 @@ module Carto
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flag_names,
           base_url: @user.public_url,
-          needs_password_confirmation: @user.needs_password_confirmation?
+          needs_password_confirmation: @user.needs_password_confirmation?,
         }
 
         if @user.organization.present?
@@ -150,6 +178,17 @@ module Carto
 
         if !@user.groups.nil?
           data[:groups] = @user.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro }
+        end
+
+        if @user.mobile_sdk_enabled?
+          data[:mobile_apps] = {
+            mobile_xamarin: @user.mobile_xamarin,
+            mobile_custom_watermark: @user.mobile_custom_watermark,
+            mobile_offline_maps: @user.mobile_offline_maps,
+            mobile_gis_extension: @user.mobile_gis_extension,
+            mobile_max_open_users: @user.mobile_max_open_users,
+            mobile_max_private_users: @user.mobile_max_private_users
+          }
         end
 
         if options[:extended]

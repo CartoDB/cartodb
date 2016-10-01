@@ -17,15 +17,15 @@
 
 .TabLink {
   display: block;
-  width: 118px;
+  width: 138px;
   height: 38px;
-  padding: 0 10px;
+  padding: 0;
   border: 1px solid $cStructure-mainLine;
   border-radius: $sCard-borderRadius;
   color: $cTypography-secondary;
   font-size: 14px;
   line-height: 38px;
-  cursor: pointer;
+  box-sizing: content-box;
 
   &:hover {
     border-color: rgba(#BBD7F2, 1);
@@ -37,6 +37,8 @@
 .TabLink:hover {
   border-color: rgba(#BBD7F2, 1);
 }
+.is-selected > .TabLink,
+.is-selected > .TabLink:hover,
 .TabLink.selected,
 .TabLink.selected:hover {
   border-color: rgba(#DDD, 1);
@@ -71,8 +73,15 @@
   }
 }
 .TabLink.arcgis {
-  width: 130px;
+  width: 160px;
 }
+.TabLink.box {
+  width: auto;
+  height: auto;
+  margin: 0;
+  display: block;
+}
+
 
 // Tab icons
 .TabIcon {
@@ -90,6 +99,8 @@
     height: $height;
     background-position: $x 0;
   }
+  .is-selected > .TabLink .TabIcon.is-#{$name},
+  .is-selected > .TabLink:hover .TabIcon.is-#{$name},
   .TabLink.selected .TabIcon.is-#{$name},
   .TabLink:hover .TabIcon.is-#{$name} {
     background-position: $x $y;

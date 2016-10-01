@@ -190,7 +190,7 @@ module Carto
       end
 
       def load_table
-        @table = Carto::Visualization.where(user_id: @user.id, name: @table_name).first
+        @table = Carto::Visualization.where(user_id: @user.id, type: 'table', name: @table_name).first
         render json: { errors: "Table #{@username}.#{@table_name} not found" }, status: 404 unless @table
       end
 

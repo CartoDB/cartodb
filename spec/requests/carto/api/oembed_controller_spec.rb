@@ -158,7 +158,7 @@ describe Carto::Api::OembedController do
         .should eq expected_results
 
       CartoDB.clear_internal_cache
-      domain = 'cartodb.com'
+      domain = 'carto.com'
       orgname = 'testorg'
       CartoDB.expects(:get_session_domain).returns(domain)
       CartoDB.expects(:get_http_port).at_least(0).returns(nil)            # Easier to test without port specified

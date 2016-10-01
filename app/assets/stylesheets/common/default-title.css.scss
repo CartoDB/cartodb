@@ -13,12 +13,7 @@
 .DefaultTitle.is-disabled {
   color: rgba($cTypography-paragraphs, 0.4);
 }
-.DefaultTitle-link {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-larger;
-  color: $cTypography-paragraphs;
-  &:hover {
-    color: $cTypography-headers;
-    text-decoration: underline;
-  }
+
+.DefaultTitle a {
+  color: #666;
 }

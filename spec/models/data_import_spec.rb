@@ -5,12 +5,12 @@ describe DataImport do
   before(:each) do
     ::User.all.each(&:destroy)
     @user = create_user(username: 'test', email: "client@example.com", password: "clientex")
-    stub_named_maps_calls
+    bypass_named_maps
     @table = create_table(user_id: @user.id)
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -46,7 +46,7 @@ describe DataImport do
     Table.any_instance.stubs(:cartodbfy).raises(CartoDB::CartoDBfyInvalidID)
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     )
 
@@ -61,7 +61,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -77,7 +77,7 @@ describe DataImport do
 
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -101,7 +101,7 @@ describe DataImport do
   it 'should allow to create a table from a query' do
     data_import_1 = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 
@@ -121,7 +121,7 @@ describe DataImport do
   it 'imports a simple file' do
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now
     ).run_import!
 
@@ -134,7 +134,7 @@ describe DataImport do
   it 'imports a simple file with latlon' do
     data_import = DataImport.create(
       user_id: @user.id,
-      data_source: '/../services/importer/spec/fixtures/csv_with_geojson.csv',
+      data_source: Rails.root.join('services/importer/spec/fixtures/csv_with_geojson.csv').to_s,
       updated_at: Time.now
     ).run_import!
 
@@ -176,7 +176,7 @@ describe DataImport do
   it "can create a table from a query selecting only the cartodb_id" do
     data_import_1 = DataImport.create(
       user_id: @user.id,
-      data_source: '/../db/fake_data/clubbing.csv',
+      data_source: fake_data_path('clubbing.csv'),
       updated_at: Time.now).run_import!
     data_import_1.state.should be == 'complete'
 
@@ -297,6 +297,25 @@ describe DataImport do
       data_import.log.to_s.should =~ /sample message/
       data_import.save
       data_import.logger.should == 'existing log'
+    end
+  end
+
+  context 'viewer users' do
+    after(:each) do
+      @user.viewer = false
+      @user.save
+    end
+
+    it "can't create new data imports" do
+      @user.viewer = true
+      @user.save
+
+      data_import = DataImport.new(
+        user_id:    @user.id,
+        table_name: 'fromviewer',
+        from_query: 'fromviewer_q'
+      )
+      expect { data_import.save }.to raise_error(Sequel::ValidationFailed, "user Viewer users can't create data imports")
     end
   end
 end

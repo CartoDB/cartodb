@@ -7,6 +7,7 @@ $cPrivacy-private:  rgba(#FF6C6C, 1);
 $cPrivacy-public:   rgba(#8EB83F, 1);
 $cPrivacy-other:    rgba(#F5A623, 1);
 
+/*
 .PrivacyIndicator {
   display: inline-block;
   position: relative;
@@ -34,4 +35,4 @@ $cPrivacy-other:    rgba(#F5A623, 1);
 .PrivacyIndicator.is-link:before,
 .PrivacyIndicator.is-password:before {
   background-color: $cPrivacy-other;
-}
+}*/

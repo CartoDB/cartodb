@@ -97,7 +97,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   margin-left: 4px;
   height: 18px;
   background: #8EB83F;
-  border-radius: 35px;
+  border-radius: 5px;
   font-size: $sFontSize-smaller;
   line-height: 18px;
   color: white;
@@ -112,7 +112,7 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 .OrganizationList-userInfoData--paragraph {
   color: $cTypography-linkSecondary;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: normal;
 
   &:not(:last-child) { margin-right: 20px; }
 }
@@ -121,7 +121,6 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
   font-size: 10px;
   margin-right: 4px;
 }
-
 .OrganizationList-userStats {
   width: 200px;
   margin-top: 10px;

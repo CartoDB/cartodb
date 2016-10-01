@@ -1,0 +1,48 @@
+// Context switcher styles (map view, table view)
+// ----------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.Editor-contextSwitcher {
+  position: absolute;
+  bottom: 32px;
+  left: calc(50% - 32px);
+  border-radius: 4px;
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  z-index: 4;
+}
+.Editor-contextSwitcher.in-table {
+  bottom: 39px;
+}
+.Editor-contextSwitcher.is-moved {
+  left: calc(50% - 216px);
+}
+.Editor-contextSwitcher.has-timeSeries {
+  bottom: 190px;
+}
+.Editor-contextSwitcherButton {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 32px;
+  height: 32px;
+  background: $cWhite;
+  text-align: center;
+  cursor: pointer;
+}
+.Editor-contextSwitcherButton.is-selected {
+  background: $cMainBg;
+}
+.Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
+  fill: $cWhite;
+}
+.Editor-contextSwitcherMedia {
+  fill: $cBlue;
+}
+@media (max-width: 1300px) {
+  .Editor-contextSwitcher.is-moved {
+    left: calc(50% - 176px);
+  }
+}

@@ -18,17 +18,7 @@ module CartoDB
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'
   SURROGATE_NAMESPACE_VIZJSON = 'rj'
 
-  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see app/models/table.rb -> RESERVED_COLUMN_NAMES
-  POSTGRESQL_RESERVED_WORDS = %W{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC AUTHORIZATION BETWEEN BINARY BOTH CASE CAST
-                                  CHECK COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
-                                  CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
-                                  GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
-                                  LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING PRIMARY
-                                  REFERENCES RIGHT SELECT SESSION_USER SIMILAR SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION UNIQUE USER
-                                  USING VERBOSE WHEN WHERE XMIN XMAX }
-
-  RESERVED_COLUMN_NAMES = %W{ FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid }
+  RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
 
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
@@ -37,16 +27,24 @@ module CartoDB
   # @param path String Rails route name
   # @param params Hash Parameters to send to the url (Optional)
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
-  def self.url(context, path, params={}, user = nil)
+  def self.url(context, path, params = {}, user = nil)
+    # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
+    base_url = CartoDB.base_url_from_request(context.request, user)
+    base_url + context.polymorphic_path(path, params.merge(user_domain: nil))
+  end
+
+  # Helper method to encapsulate Rails base URL generation compatible with our subdomainless mode
+  # @param request A request to extract subdomain and parameters from
+  # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
+  def self.base_url_from_request(request, user = nil)
     if user.nil?
-      subdomain = self.extract_subdomain(context.request)
+      subdomain = extract_subdomain(request)
       org_username = nil
     else
       subdomain = user.subdomain
       org_username = user.organization_username
     end
-    # Must clean user_domain or else polymorphic_path will use it and generate again /u/xxx/user/xxx
-    CartoDB.base_url(subdomain, org_username) + context.polymorphic_path(path, params.merge({user_domain:nil}))
+    CartoDB.base_url(subdomain, org_username)
   end
 
   # Helper method to encapsulate Rails URL path generation compatible with our subdomainless mode
@@ -76,7 +74,7 @@ module CartoDB
     self.subdomainless_urls? ? '' : request.host.to_s.gsub(self.session_domain, '')
   end
 
-  # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.cartodb.com)
+  # Flexible subdomain extraction: If /u/xxx or /user/xxxx present uses it, else uses request host (xxx.carto.com)
   def self.extract_host_subdomain(request)
     self.username_from_request(request).nil? ? nil : self.subdomain_from_request(request)
   end
@@ -96,7 +94,7 @@ module CartoDB
   # Note: use ||= only for fields who always have a non-nil, non-false value
   #       else, rely on defined? and pure assignment to allow nils and values caching the value
 
-  # Stores the non-user part of the domain (e.g. '.cartodb.com')
+  # Stores the non-user part of the domain (e.g. '.carto.com')
   def self.session_domain
     @@session_domain ||= self.get_session_domain
   end
@@ -163,20 +161,25 @@ module CartoDB
     base_url
   end
 
-  def self.domainless_base_url(subdomain, protocol_override=nil)
+  def self.domainless_base_url(subdomain, protocol_override = nil)
+    base_domain = domainless_base_domain(protocol_override)
+    if !subdomain.nil? && !subdomain.empty?
+      "#{base_domain}/user/#{subdomain}"
+    else
+      base_domain
+    end
+  end
+
+  def self.domainless_base_domain(protocol_override = nil)
     protocol = self.protocol(protocol_override)
-    port = protocol == 'http' ? self.http_port : self.https_port
+    port = protocol == 'http' ? http_port : https_port
     if ip?(request_host)
-      "#{protocol}://#{request_host}#{port}/user/#{subdomain}"
+      "#{protocol}://#{request_host}#{port}"
     else
       request_subdomain = request_host.sub(session_domain, '')
-      request_subdomain += '.' if request_subdomain.length > 0 && !request_subdomain.end_with?('.')
+      request_subdomain += '.' if !request_subdomain.empty? && !request_subdomain.end_with?('.')
 
-      if !subdomain.nil? && subdomain != ''
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}/user/#{subdomain}"
-      else
-        "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
-      end
+      "#{protocol}://#{request_subdomain}#{session_domain}#{port}"
     end
   end
 
@@ -237,5 +240,19 @@ module CartoDB
     Cartodb.config[:data_library] && Cartodb.config[:data_library]['path']
   end
 
-end
+  def self.python_path
+    if Cartodb.config[:importer]['python_path'].blank?
+      ""
+    else
+      Cartodb.config[:importer]['python_path']
+    end
+  end
 
+  def self.python_bin_path
+    if Cartodb.config[:importer]['python_bin_path'].blank?
+      `which python`.strip
+    else
+      Cartodb.config[:importer]['python_bin_path']
+    end
+  end
+end

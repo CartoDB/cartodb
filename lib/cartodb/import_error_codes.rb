@@ -11,7 +11,7 @@ module CartoDB
   IMPORTER_ERROR_CODES = {
     1 => {
       title: 'Install error',
-      what_about: "Something seems to be wrong with the cartodb install. Please <a href='mailto:support@cartob.com?subject=Install error'>contact us</a> and we'll try to fix that quickly.",
+      what_about: "Something seems to be wrong with the CARTO install. Please <a href='mailto:support@cartob.com?subject=Install error'>contact us</a> and we'll try to fix that quickly.",
       source: ERROR_SOURCE_CARTODB
     },
     1000 => {
@@ -26,7 +26,7 @@ module CartoDB
     },
     1002 => {
       title: 'Unsupported/Unrecognized file type',
-      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support@cartodb.com'>support email</a>!",
+      what_about: "Should we support this filetype? Let us know in our <a href='mailto:support@carto.com'>support email</a>!",
       source: ERROR_SOURCE_USER
     },
     1003 => {
@@ -41,12 +41,12 @@ module CartoDB
     },
     1005 => {
       title: 'Empty file',
-      what_about: "The file appears to have no processable information. Double check that the file is indeed correct and it contains supported data. If everything appears fine, try uploading it again or <a href='mailto:support@cartodb.com?subject=Empty file'>contact us</a>.",
+      what_about: "The file appears to have no processable information. Double check that the file is indeed correct and it contains supported data. If everything appears fine, try uploading it again or <a href='mailto:support@carto.com?subject=Empty file'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     1006 => {
       title: 'Invalid SHP file',
-      what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@cartodb.com?subject=Invalid SHP file'>contact us</a>.",
+      what_about: "Your file appears broken. Double check that all the necessary parts of the file are included in your ZIP archive (including .shp, .prj etc.). Also, try opening the file locally using QGIS or another tool. If everything appears okay, <a href='mailto:support@carto.com?subject=Invalid SHP file'>contact us</a>.",
       source: ERROR_SOURCE_USER
     },
     1007 => {
@@ -71,7 +71,7 @@ module CartoDB
     },
     1012 => {
       title: 'Error connecting to datasource',
-      what_about: "There was an error trying to connect to the datasource. If this problem stays, please contact <a href='mailto:support@cartodb.com?subject=Error connecting to datasource'>support@cartodb.com</a>.",
+      what_about: "There was an error trying to connect to the datasource. If this problem stays, please contact <a href='mailto:support@carto.com?subject=Error connecting to datasource'>support@carto.com</a>.",
       source: ERROR_SOURCE_EXTERNAL
     },
     1013 => {
@@ -91,7 +91,7 @@ module CartoDB
     },
     1016 => {
       title: 'Dropbox permission revoked',
-      what_about: "CartoDB has not permission to access your files at Dropbox. Please import file again.",
+      what_about: "CARTO has not permission to access your files at Dropbox. Please import file again.",
       source: ERROR_SOURCE_USER
     },
     1017 => {
@@ -116,7 +116,7 @@ module CartoDB
     },
     1021 => {
       title: 'Box permission revoked',
-      what_about: "CartoDB has not permission to access your files at Box. Please import file again.",
+      what_about: "CARTO has not permission to access your files at Box. Please import file again.",
       source: ERROR_SOURCE_USER
     },
     1100 => {
@@ -134,9 +134,29 @@ module CartoDB
       what_about: "Provided URL can't be resolved to a known server. Maybe that URL is wrong or behind a private network. Please provide a valid, public URL and try again.",
       source: ERROR_SOURCE_USER
     },
+    1103 => {
+      title: 'Partial file error',
+      what_about: "The resource you are trying to reach is accessible but the file transfer was shorter or larger than expected. This happens when the server first reports an expected transfer size, and then delivers data that doesn't match the previously given size. Please, try again.",
+      source: ERROR_SOURCE_USER
+    },
+    1500 => {
+      title: 'Connector error',
+      what_about: "The connector used to fetch the resourced failed.",
+      source: ERROR_SOURCE_USER
+    },
+    1501 => {
+      title: 'Connectors disabled',
+      what_about: "The type of connector you were trying to use is not enabled",
+      source: ERROR_SOURCE_USER
+    },
+    1502 => {
+      title: 'Connector invalid parameters',
+      what_about: "The connector couldn't be configured because the parameters were not valid.",
+      source: ERROR_SOURCE_USER
+    },
     2001 => {
       title: 'Unable to load data',
-      what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@cartodb.com?subject=Import load error'>contact us</a> and we will help you to load your data.",
+      what_about: "We couldn't load data from your file into the database.  Please <a href='mailto:support@carto.com?subject=Import load error'>contact us</a> and we will help you to load your data.",
       source: ERROR_SOURCE_USER
     },
     2002 => {
@@ -180,8 +200,8 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     2010 => {
-      title: 'Incompatible CartoDB table',
-      what_about: "There was an error when converting your table into a CartoDB table. Please <a href='mailto:support@cartodb.com?subject=CartoDBfy error'>contact us</a> and we will help you to load your data.",
+      title: 'Incompatible CARTO table',
+      what_about: "There was an error when converting your table into a CARTO table. Please <a href='mailto:support@carto.com?subject=CartoDBfy error'>contact us</a> and we will help you to load your data.",
       source: ERROR_SOURCE_USER
     },
     2011 => {
@@ -206,7 +226,7 @@ module CartoDB
     },
     3101 => {
       title: 'Missing projection (.prj) file',
-      what_about: "CartoDB needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp.",
+      what_about: "CARTO needs a PRJ file for all Shapefile archives uploaded. Contact your data provider to see about aquiring one if it was missing. Otherwise see spatialreference.org to locate the right one if you know it. Remember, the file name for your .prj must be the same as your .shp.",
       source: ERROR_SOURCE_USER
     },
     3201 => {
@@ -231,7 +251,7 @@ module CartoDB
     },
     8003 => {
       title: 'Error creating table from SQL query',
-      what_about: "We couldn't create a table from your query. Please check it doesn't return duplicate column names. Please <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> if you need help editing your query.",
+      what_about: "We couldn't create a table from your query. Please check it doesn't return duplicate column names. Please <a href='mailto:support@carto.com?subject=Unknown error'>contact us</a> if you need help editing your query.",
       source: ERROR_SOURCE_USER
     },
     8004 => {
@@ -244,9 +264,15 @@ module CartoDB
       what_about: "You can't add more layers to your map. Please upgrade your account.",
       source: ERROR_SOURCE_USER
     },
+    8006 => {
+      title: "Not enough Twitter credits",
+      what_about: "Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@carto.com?subject=Exceeded%20Twitter%20quota'>" \
+                  "Sales</a> if you have questions about how to obtain more credits.",
+      source: ERROR_SOURCE_USER
+    },
     6666 => {
       title: 'Dataset too big',
-      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20big%20import%20error'>support@cartodb.com</a>.",
+      what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20big%20import%20error'>support@carto.com</a>.",
       source: ERROR_SOURCE_USER
     },
     6667 => {
@@ -257,13 +283,13 @@ module CartoDB
     6668 => {
       title: 'Too many table rows',
       what_about: "You cannot import this dataset. The number of rows exceeds the maximum dataset quota permitted " \
-                  "for your account. Please contact <a href='mailto:sales@cartodb.com?subject=Dataset%20too%20many" \
+                  "for your account. Please contact <a href='mailto:sales@carto.com?subject=Dataset%20too%20many" \
                   "%20table%20rows%20import%20error'>Sales</a> if you have questions about importing this dataset.",
       source: ERROR_SOURCE_USER
     },
     6669 => {
       title: 'Too many concurrent imports',
-      what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@cartodb.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@cartodb.com</a>.",
+      what_about: "You cannot import more data until one of your active imports finishes. If you need further import slots contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@carto.com</a>.",
       source: ERROR_SOURCE_USER
     },
     6670 => {
@@ -274,7 +300,7 @@ module CartoDB
     99999 => {
       title: 'Unknown',
       what_about: "Sorry, something went wrong and we're not sure what. Try
-      uploading your file again, or <a href='mailto:support@cartodb.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly.",
+      uploading your file again, or <a href='mailto:support@carto.com?subject=Unknown error'>contact us</a> and we'll try to help you quickly.",
       source: ERROR_SOURCE_CARTODB
     }
   }

@@ -1,55 +1,5 @@
-<% content_for(:subject) { @subject } %>
+<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>Map shared with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@visualization.user.username} has shared a new map called <strong>#{@visualization.name}</strong> with you.</p>" %>
 
-<% content_for :body do %>
-  <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;"><%= @subject %></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
-              <tr>
-                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">Your colleague <%= @visualization.user.username %> has shared a new map called <strong><%= @visualization.name %></strong> with you.</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
+<%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
 
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Go to the map</a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your map' } %>

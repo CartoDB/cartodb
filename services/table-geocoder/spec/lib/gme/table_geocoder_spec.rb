@@ -15,6 +15,7 @@ describe Carto::Gme::TableGeocoder do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', formatter: '{street}')
 
     @mandatory_args = {
       connection: connection_stub,
@@ -22,7 +23,8 @@ describe Carto::Gme::TableGeocoder do
       client_id: 'my_client_id',
       private_key: 'my_private_key',
       usage_metrics: @usage_metrics_stub,
-      log: @log
+      log: @log,
+      geocoding_model: @geocoding_model
     }
   end
 
@@ -79,7 +81,7 @@ describe Carto::Gme::TableGeocoder do
       @table_geocoder.stubs(:data_input_blocks).returns([])
 
       @table_geocoder.run
-      @table_geocoder.state.should == 'completed'
+      @geocoding_model.state.should == 'completed'
     end
 
     it "if there's an uncontrolled exception, sets the state to 'failed' and raises it" do
@@ -94,7 +96,7 @@ describe Carto::Gme::TableGeocoder do
       @table_geocoder.stubs(:geocode).raises(StandardError, 'unexpected exception')
 
       expect { @table_geocoder.run }.to raise_error('unexpected exception')
-      @table_geocoder.state.should == 'failed'
+      @geocoding_model.state.should == 'failed'
     end
 
     it "processes 1 block at a time, keeping track of processed rows in each block" do
@@ -201,7 +203,8 @@ describe Carto::Gme::TableGeocoder do
         private_key: 'my_private_key',
         max_block_size: 4,
         usage_metrics: @usage_metrics_stub,
-        log: @log
+        log: @log,
+        geocoding_model: @geocoding_model
       }
 
       @table_geocoder = Carto::Gme::TableGeocoder.new(params)

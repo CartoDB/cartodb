@@ -37,6 +37,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String email_field Which LDAP entry field represents the email
   # @param String domain_bases List of DCs conforming the path.
   #                            Serialized, e.g. "['a','b']", due to Rails 3 or PG gem issue handling `PG text[]` fields
+  # @param String additional_search_filter Additional filter to add (with &) to the search query if present
   # @param String user_object_class Name of the attribute where the sers are maped in LDAP
   # @param String group_object_class Name of the attribute where the groups are maped in LDAP
   # @param DateTime created_at (Self-generated)
@@ -45,16 +46,16 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   attr_readonly :user_id_field
 
   validates :organization, :host, :port, :connection_user, :connection_password, :user_id_field, :username_field,
-  :email_field, :user_object_class, :group_object_class, :presence => true
+            :email_field, :user_object_class, :group_object_class, presence: true
 
-  validates :ca_file, :length => { :minimum => 0, :allow_nil => true }
+  validates :ca_file, length: { minimum: 0, allow_nil: true }
 
-  validates :encryption, :inclusion => { :in => [ ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS ], :allow_nil => true }
-  validates :ssl_version, :inclusion => { :in => [ ENCRYPTION_SSL_VERSION_TLSV1_1 ], :allow_nil => true }
+  validates :encryption,  inclusion: { in: [ENCRYPTION_SIMPLE_TLS, ENCRYPTION_START_TLS], allow_nil: true }
+  validates :ssl_version, inclusion: { in: [ENCRYPTION_SSL_VERSION_TLSV1_1], allow_nil: true }
   validate :domain_bases_not_empty
 
   def domain_bases_list
-    self.domain_bases.split(DOMAIN_BASES_SEPARATOR)
+    domain_bases.split(DOMAIN_BASES_SEPARATOR) if domain_bases
   end
 
   def domain_bases_list=(list)
@@ -65,34 +66,25 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
-    @last_authentication_result = nil
+    ldap_connection = Net::LDAP.new
+    ldap_connection.host = self.host
+    ldap_connection.port = self.port
+    configure_encryption(ldap_connection)
 
-    # To be used for domain bases search
-    username_stringified_filter = "#{self.user_id_field}=#{username}"
-    # To be used in real search
-    username_filter =  Net::LDAP::Filter.eq(self.user_id_field, username)
+    ldap_connection.auth self.connection_user, self.connection_password
 
-    domain_base = domain_bases_list.find { |domain|
-      # This is just checking if provided auth user can connect, connection is not stored
-      ldap_connection = connect("#{username_stringified_filter},#{domain}", password)
-      result = ldap_connection.bind
-      @last_authentication_result = ldap_connection.get_operation_result
-      result
-    }
-    return false if domain_base.nil?
+    valid_ldap_entry = nil
+    domain_bases_list.find do |domain|
+      valid_ldap_entry = ldap_connection.bind_as(
+        base: domain,
+        filter: search_filter(username),
+        password: password
+      )
+    end
+    @last_authentication_result = ldap_connection.get_operation_result
+    return false unless valid_ldap_entry
 
-    search_results = search(domain_base, username_filter)
-    return false if search_results.nil?
-
-    #Sample result
-    # [ #<Net::LDAP::Entry:0x00000008c54628 @myhash={
-    #     :dn=>["cn=test,dc=cartodb"],
-    #     :objectclass=>["simpleSecurityObject", "organizationalRole"],
-    #     :cn=>["test"],
-    #     :description=>["xxxx"],
-    #     :userpassword=>["{SSHA}aaaaa"]
-    # }> ]
-    Carto::Ldap::Entry.new(search_results.is_a?(Array) ? search_results.first : search_results, self)
+    Carto::Ldap::Entry.new(valid_ldap_entry.first, self)
   end
 
   # INFO: Resets connection if already made
@@ -129,9 +121,18 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   private
 
+  def search_filter(username)
+    user_id_filter = "(#{user_id_field}=#{username})"
+    if additional_search_filter.present?
+      "(&#{user_id_filter}#{additional_search_filter})"
+    else
+      user_id_filter
+    end
+  end
+
   def domain_bases_not_empty
-    errors.add(:domain_bases, "No domain bases set") if self.domain_bases.to_s.length == 0
-    errors.add(:domain_bases_list, "Domain bases list empty") if domain_bases_list.length < 1
+    errors.add(:domain_bases, "No domain bases set") unless domain_bases.present?
+    errors.add(:domain_bases_list, "Domain bases list empty") unless domain_bases_list.present?
   end
 
   def search_in_domain_bases(filter)

@@ -28,18 +28,18 @@
 .PublicUserProfile-description {
   margin: 0 0 30px;
   color: $cTypography-linkSecondaryHover;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: $sFontWeight-lighter;
-  line-height: 32px;
+  line-height: 30px;
 }
 
 .PublicUserProfile-details {
   margin: 0 0 15px;
 }
 .PublicUserProfile-detail {
-  margin: 0 0 15px;
+  margin: 0 0 12px;
   color: $cTypography-linkSecondary;
-  font-size: $sFontSize-large;
+  font-size: $sFontSize-normal;
   line-height: normal;
 }
 .PublicUserProfile-detail .CDB-IconFont {

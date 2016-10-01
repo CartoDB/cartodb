@@ -1,23 +1,28 @@
 require 'active_record'
 require_relative '../visualization/stats'
+require_relative '../../helpers/embed_redis_cache'
+require_dependency 'cartodb/redis_vizjson_cache'
+require_dependency 'carto/named_maps/api'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Carto::Visualization < ActiveRecord::Base
   include CacheHelper
+  include Carto::AuthTokenGenerator
 
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
+  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
-  TYPE_CANONICAL = 'table'
-  TYPE_DERIVED = 'derived'
-  TYPE_SLIDE = 'slide'
-  TYPE_REMOTE = 'remote'
+  TYPE_CANONICAL = 'table'.freeze
+  TYPE_DERIVED = 'derived'.freeze
+  TYPE_SLIDE = 'slide'.freeze
+  TYPE_REMOTE = 'remote'.freeze
 
-  KIND_GEOM   = 'geom'
-  KIND_RASTER = 'raster'
+  KIND_GEOM   = 'geom'.freeze
+  KIND_RASTER = 'raster'.freeze
 
-  PRIVACY_PUBLIC = 'public'
-  PRIVACY_PRIVATE = 'private'
-  PRIVACY_LINK = 'link'
-  PRIVACY_PROTECTED = 'password'
+  PRIVACY_PUBLIC = 'public'.freeze
+  PRIVACY_PRIVATE = 'private'.freeze
+  PRIVACY_LINK = 'link'.freeze
+  PRIVACY_PROTECTED = 'password'.freeze
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
@@ -27,7 +32,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :user_table, class_name: Carto::UserTable, primary_key: :map_id, foreign_key: :map_id, inverse_of: :visualization
 
-  has_one :permission, inverse_of: :entity, conditions: { entity_type: 'vis' }, foreign_key: :entity_id
+  belongs_to :permission
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization
@@ -37,11 +42,13 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays
+  has_many :overlays, order: '"order"'
 
   belongs_to :parent, class_name: Carto::Visualization, primary_key: :parent_id
 
-  belongs_to :map
+  belongs_to :active_layer, class_name: Carto::Layer
+
+  belongs_to :map, class_name: Carto::Map
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -49,9 +56,17 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
+  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+
+  belongs_to :state, class_name: Carto::State
+  after_save :save_state_if_needed
+
+  def self.columns
+    super.reject { |c| c.name == 'url_options' }
+  end
 
   def ==(other_visualization)
-    self.id == other_visualization.id
+    id == other_visualization.id
   end
 
   def size
@@ -76,8 +91,17 @@ class Carto::Visualization < ActiveRecord::Base
     super(tags)
   end
 
+  def layers_with_data_readable_by(user)
+    return [] unless map
+    map.layers.select { |l| l.data_readable_by?(user) }
+  end
+
   def related_tables
     @related_tables ||= get_related_tables
+  end
+
+  def related_tables_readable_by(user)
+    layers_with_data_readable_by(user).map { |l| l.affected_tables_readable_by(user) }.flatten.uniq
   end
 
   def related_canonical_visualizations
@@ -128,8 +152,8 @@ class Carto::Visualization < ActiveRecord::Base
     is_public? || is_link_privacy?
   end
 
-  def is_writable_by_user(user)
-    user_id == user.id || has_write_permission?(user)
+  def writable_by?(user)
+    (user_id == user.id && !user.viewer?) || has_write_permission?(user)
   end
 
   def varnish_key
@@ -140,8 +164,8 @@ class Carto::Visualization < ActiveRecord::Base
     get_surrogate_key(CartoDB::SURROGATE_NAMESPACE_VISUALIZATION, id)
   end
 
-  def qualified_name(viewer_user=nil)
-    if viewer_user.nil? || is_owner_user?(viewer_user)
+  def qualified_name(viewer_user = nil)
+    if viewer_user.nil? || owner?(viewer_user)
       name
     else
       "#{user.sql_safe_database_schema}.#{name}"
@@ -187,14 +211,36 @@ class Carto::Visualization < ActiveRecord::Base
     data_layers.count == 1 || related_tables.count == 1
   end
 
-  def data_layers
-    return [] if map.nil?
-    map.data_layers
+  def layers
+    map ? map.layers : []
   end
 
-  def layers
-    return [] if map.nil?
-    map.layers
+  def data_layers
+    map ? map.data_layers : []
+  end
+
+  def user_layers
+    map ? map.user_layers : []
+  end
+
+  def carto_and_torque_layers
+    map ? map.carto_and_torque_layers : []
+  end
+
+  def torque_layers
+    map ? map.torque_layers : []
+  end
+
+  def other_layers
+    map ? map.other_layers : []
+  end
+
+  def base_layers
+    map ? map.base_layers : []
+  end
+
+  def named_map_layers
+    map ? map.named_map_layers : []
   end
 
   def password_valid?(password)
@@ -202,7 +248,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def organization?
-    privacy == PRIVACY_PRIVATE and permission.acl.size > 0
+    privacy == PRIVACY_PRIVATE && !permission.acl.empty?
   end
 
   def password_protected?
@@ -210,8 +256,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def private?
-    # This organization? check is kept for backwards compatibility
-    is_privacy_private? and not organization?
+    is_privacy_private? && !organization?
   end
 
   def is_privacy_private?
@@ -230,29 +275,16 @@ class Carto::Visualization < ActiveRecord::Base
     !(kind_raster? || type_slide?)
   end
 
-  # INFO: discouraged, since it forces using internal constants
-  # Use explicit methods instead.
-  # Needed for backwards compatibility
-  def has_permission?(user, permission_type)
-    return is_owner_user?(user) if permission_id.nil?
-    is_owner_user?(user) || permission.is_permitted?(user, permission_type)
-  end
-
   def get_auth_tokens
-    named_map = get_named_map
-    raise CartoDB::InvalidMember unless named_map
-
-    tokens = named_map.template[:template][:auth][:valid_tokens]
-    raise CartoDB::InvalidMember if tokens.size == 0
-    tokens
+    [get_auth_token]
   end
 
   def mapviews
     @mapviews ||= CartoDB::Visualization::Stats.mapviews(stats)
   end
 
-  def total_mapviews(user=nil)
-    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, user).total_mapviews
+  def total_mapviews
+    @total_mapviews ||= CartoDB::Visualization::Stats.new(self, nil).total_mapviews
   end
 
   def geometry_types
@@ -264,7 +296,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def has_read_permission?(user)
-    user && (is_owner_user?(user) || (permission && permission.user_has_read_permission?(user)))
+    user && (owner?(user) || (permission && permission.user_has_read_permission?(user)))
   end
 
   def estimated_row_count
@@ -289,35 +321,141 @@ class Carto::Visualization < ActiveRecord::Base
     likes.count
   end
 
-  private
-
-  def get_named_map
-    return nil if type == TYPE_REMOTE
-    data = named_maps.get(CartoDB::NamedMapsWrapper::NamedMap.template_name(id))
-    data.nil? ? false : data
+  def widgets
+    # Preload widgets for all layers
+    ActiveRecord::Associations::Preloader.new(layers, :widgets).run
+    layers.map(&:widgets).flatten
   end
 
-  def named_maps(force_init = false)
-    # TODO: read refactor skips all write complexity, check visualization/member for more details
-    if @named_maps.nil? || force_init
-      name_param = user.username
-      api_key_param = user.api_key
-      @named_maps = CartoDB::NamedMapsWrapper::NamedMaps.new(
-        {
-          name:     name_param,
-          api_key:  api_key_param
-        },
-        {
-          domain:     Cartodb.config[:tiler]['internal']['domain'],
-          port:       Cartodb.config[:tiler]['internal']['port'] || 443,
-          protocol:   Cartodb.config[:tiler]['internal']['protocol'],
-          verifycert: (Cartodb.config[:tiler]['internal']['verifycert'] rescue true),
-          host:       (Cartodb.config[:tiler]['internal']['host'] rescue nil)
-        },
-        configuration
-      )
+  def analysis_widgets
+    widgets.select { |w| w.source_id.present? }
+  end
+
+  def attributions_from_derived_visualizations
+    related_canonical_visualizations.map(&:attributions).reject(&:blank?)
+  end
+
+  def get_named_map
+    return false if type == TYPE_REMOTE
+
+    named_maps_api.show
+  end
+
+  def save_named_map
+    return if type == TYPE_REMOTE || mapcapped?
+
+    get_named_map ? named_maps_api.update : named_maps_api.create
+  end
+
+  def invalidate_cache
+    redis_vizjson_cache.invalidate(id)
+    embed_redis_cache.invalidate(id)
+    CartoDB::Varnish.new.purge(varnish_vizjson_key)
+  end
+
+  def allowed_auth_tokens
+    entities = [user] + permission.entities_with_read_permission
+    entities.map(&:get_auth_token)
+  end
+
+  def mapcapped?
+    mapcaps.exists?
+  end
+
+  def latest_mapcap
+    mapcaps.first
+  end
+
+  def uses_builder_features?
+    analyses.any? || widgets.any? || mapcapped?
+  end
+
+  def add_source_analyses
+    return unless analyses.empty?
+
+    carto_and_torque_layers.each_with_index do |layer, index|
+      analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+
+      if analysis.save
+        layer.options[:source] = analysis.natural_id
+        layer.options[:letter] = analysis.natural_id.first
+        layer.save
+      else
+        CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
+      end
     end
-    @named_maps
+  end
+
+  def ids_json
+    layers_for_hash = layers.map do |layer|
+      { layer_id: layer.id, widgets: layer.widgets.map(&:id) }
+    end
+
+    {
+      visualization_id: id,
+      map_id: map.id,
+      layers: layers_for_hash
+    }
+  end
+
+  def populate_ids(ids_json)
+    self.id = ids_json[:visualization_id]
+    map.id = ids_json[:map_id]
+
+    map.layers.each_with_index do |layer, index|
+      stored_layer_ids = ids_json[:layers][index]
+      stored_layer_id = stored_layer_ids[:layer_id]
+
+      layer.id = stored_layer_id
+      layer.maps = [map]
+
+      layer.widgets.each_with_index do |widget, widget_index|
+        widget.id = stored_layer_ids[:widgets][widget_index]
+        widget.layer_id = stored_layer_id
+      end
+    end
+  end
+
+  def for_presentation
+    mapcapped? ? latest_mapcap.regenerate_visualization : self
+  end
+
+  # TODO: we should make visualization privacy/security methods aware of mapcaps and make those
+  # deal with all the different the cases internally.
+  # See https://github.com/CartoDB/cartodb/pull/9678
+  def non_mapcapped
+    mapcapped? ? latest_mapcap.visualization : self
+  end
+
+  def state
+    super ? super : build_state
+  end
+
+  private
+
+  def build_state
+    self.state = Carto::State.new(user: user, visualization: self)
+  end
+
+  def save_state_if_needed
+    if state.changed?
+      state.visualization = self unless state.visualization
+      state.user = user unless state.user
+
+      update_attribute(:state_id, state.id) if state.save && !state_id
+    end
+  end
+
+  def named_maps_api
+    Carto::NamedMaps::Api.new(self)
+  end
+
+  def redis_vizjson_cache
+    @redis_vizjson_cache ||= CartoDB::Visualization::RedisVizjsonCache.new
+  end
+
+  def embed_redis_cache
+    @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
   end
 
   def password_digest(password, salt)
@@ -338,16 +476,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def sorted_related_table_names
-    sorted_table_names = related_tables.map{ |table|
-      "#{user.database_schema}.#{table.name}"
-    }.sort { |i, j|
-      i <=> j
-    }.join(',')
+    mapped_table_names = related_tables.map { |table| "#{user.database_schema}.#{table.name}" }
+
+    mapped_table_names.sort { |i, j| i <=> j }.join(',')
   end
 
   def get_related_tables
     return [] unless map
-    map.carto_and_torque_layers.flat_map { |layer| layer.affected_tables}.uniq
+
+    map.carto_and_torque_layers.flat_map(&:affected_tables).uniq
   end
 
   def get_related_canonical_visualizations
@@ -355,20 +492,18 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def get_related_visualizations_by_types(types)
-    Carto::Visualization.where(map_id: related_tables.collect(&:map_id), type: types).all
+    Carto::Visualization.where(map_id: related_tables.map(&:map_id), type: types).all
   end
 
   def has_write_permission?(user)
-    user && (is_owner_user?(user) || (permission && permission.user_has_write_permission?(user)))
+    user && !user.viewer? && (owner?(user) || (permission && permission.user_has_write_permission?(user)))
   end
 
-  def is_owner_user?(user)
-    self.user_id == user.id
+  def owner?(user)
+    user_id == user.id
   end
 
-  def configuration
-    return {} unless defined?(Cartodb)
-    Cartodb.config
+  def varnish_vizjson_key
+    ".*#{id}:vizjson"
   end
-
 end

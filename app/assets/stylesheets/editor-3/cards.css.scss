@@ -1,0 +1,58 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Card {
+  @include display-flex();
+  @include flex(1 0 0);
+  @include align-items(center);
+  @include flex-direction(column);
+  margin-right: $baseSize * 2;
+  padding: 20px;
+  border: 1px solid $cWhite;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &.is-disabled {
+    @include justify-content(center);
+    border: 1px solid rgba($cMainLine, 0.5);
+    background-color: $cThirdBackground;
+  }
+}
+
+.Card-icon {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+
+  .is-disabled > & {
+    opacity: 0.5;
+  }
+}
+
+.Card-body {
+  text-align: center;
+}
+
+.Card--privacy {
+  @include display-flex;
+  @include flex-direction(column);
+  @include justify-content(flex-end);
+  padding: 25px;
+  cursor: pointer;
+
+  &:hover,
+  &.is-selected {
+    border: 1px solid $cBlue;
+    background-color: $cWhite;
+  }
+}

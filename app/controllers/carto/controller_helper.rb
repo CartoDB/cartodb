@@ -12,8 +12,8 @@ module Carto
   end
 
   class UUIDParameterFormatError < CartoError
-    def initialize(parameter, status = 400)
-      super("Parameter not UUID format: #{parameter}", status)
+    def initialize(parameter:, value:, status: 400)
+      super("Parameter not UUID format. Parameter: #{parameter}. Value: #{value}", status)
     end
   end
 
@@ -43,7 +43,7 @@ module Carto
       if is_uuid?(param)
         param
       else
-        raise Carto::UUIDParameterFormatError.new(parameter)
+        raise Carto::UUIDParameterFormatError.new(parameter: parameter, value: param)
       end
     end
 
@@ -58,7 +58,7 @@ module Carto
     end
 
     def rescue_from_standard_error(error)
-      CartoDB.report_exception(error, "Error", request: request, user: current_user)
+      CartoDB::Logger.error(exception: error)
       message = error.message
       respond_to do |format|
         format.html { render text: message, status: 500 }

@@ -45,9 +45,9 @@ log "Sending file '${IMPORT_FILE}'"
 
 if [[ "$v1" = Darwin ]];
 then
-  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -E "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
+  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.carto.com/api/v1/imports/?api_key=${API_KEY}" | sed -E "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
 else
-  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/?api_key=${API_KEY}" | sed -r "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
+  job_id=`curl -s -F file=@${IMPORT_FILE} "${PROTOCOL}://${CDB_USER}.carto.com/api/v1/imports/?api_key=${API_KEY}" | sed -r "s/\{\"item_queue_id\":${ITEM_ID_REGEX}.*/\1/"`
 fi
 
 log "Waiting for job '${job_id}' to be completed"
@@ -56,15 +56,15 @@ while true
 do
   if [[ "$v1" = Darwin ]];
   then
-    status=`curl -s "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -E 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
+    status=`curl -s "${PROTOCOL}://${CDB_USER}.carto.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -E 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
   else
-    status=`curl -s "${PROTOCOL}://${CDB_USER}.cartodb.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -r 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
+    status=`curl -s "${PROTOCOL}://${CDB_USER}.carto.com/api/v1/imports/${job_id}?api_key=${API_KEY}" | sed -r 's/(.*)\"state\":\"([a-z]+)\"(.*)/\2/'`
   fi
   log "JOB '${job_id}' STATE: ${status}"
 
   if [[ -n $NOTIFICATION_EMAIL ]]
   then
-    log "${PROTOCOL}://${CDB_USER}.cartodb.com" | mail -s "CartoDB import finished: ${IMPORT_FILE}" "${NOTIFICATION_EMAIL}"
+    log "${PROTOCOL}://${CDB_USER}.carto.com" | mail -s "CartoDB import finished: ${IMPORT_FILE}" "${NOTIFICATION_EMAIL}"
   fi
 
   if [[ $status == 'complete' ]]

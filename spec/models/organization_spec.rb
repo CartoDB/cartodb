@@ -3,7 +3,9 @@ require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
+require 'helpers/unique_names_helper'
 
+include UniqueNamesHelper
 include CartoDB
 
 describe 'refactored behaviour' do
@@ -35,7 +37,7 @@ describe Organization do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     begin
       @user.destroy
     rescue
@@ -90,7 +92,7 @@ describe Organization do
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
       org_quota = 1234567890
-      org_name = "wadus#{rand(10000)}"
+      org_name = unique_name('org')
       org_seats = 5
 
       username = @user.username
@@ -123,8 +125,52 @@ describe Organization do
       organization.destroy
     end
 
+    it 'validates viewer and builder quotas' do
+      quota = 1234567890
+      name = unique_name('org')
+      seats = 1
+      viewer_seats = 1
+
+      organization = Organization.new(name: name, quota_in_bytes: quota, seats: seats, viewer_seats: viewer_seats).save
+
+      user = create_validated_user
+      CartoDB::UserOrganization.new(organization.id, user.id).promote_user_to_admin
+      organization.reload
+      user.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 1
+      organization.users.should include(user)
+
+      viewer = create_validated_user(organization: organization, viewer: true)
+
+      viewer.valid? should be_true
+      viewer.reload
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should include(viewer)
+
+      builder = create_validated_user(organization: organization, viewer: false)
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should_not include(builder)
+
+      viewer2 = create_validated_user(organization: organization, viewer: true)
+      organization.reload
+
+      organization.remaining_seats.should eq 0
+      organization.remaining_viewer_seats.should eq 0
+      organization.users.should_not include(viewer2)
+
+      organization.destroy_cascade
+    end
+
     it 'Tests setting a user as the organization owner' do
-      org_name = "wadus#{rand(10000)}"
+      org_name = unique_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -156,7 +202,7 @@ describe Organization do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
-      org_name = "wadus#{rand(10000)}"
+      org_name = unique_name('org')
       organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
@@ -246,7 +292,7 @@ describe Organization do
 
   describe '#unique_name' do
     it 'Tests uniqueness of name' do
-      org_name = "wadus#{rand(1000)}"
+      org_name = unique_name('org')
 
       organization = Organization.new
       organization.name = org_name
@@ -274,7 +320,7 @@ describe Organization do
 
   describe '#org_shared_vis' do
     it "checks fetching all shared visualizations of an organization's members " do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+      bypass_named_maps
 
       # Don't check/handle DB permissions
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
@@ -392,15 +438,6 @@ describe Organization do
     after(:all) do
       @organization.destroy
     end
-    it "should return organizations over their map view quota" do
-      Organization.any_instance.stubs(:owner).returns(@owner)
-      Organization.overquota.should be_empty
-      Organization.any_instance.stubs(:get_api_calls).returns(30)
-      Organization.any_instance.stubs(:map_view_quota).returns(10)
-      Organization.overquota.map(&:id).should include(@organization.id)
-      Organization.overquota.size.should == Organization.count
-    end
-
     it "should return organizations over their geocoding quota" do
       Organization.any_instance.stubs(:owner).returns(@owner)
       Organization.overquota.should be_empty
@@ -425,14 +462,32 @@ describe Organization do
       Organization.overquota.size.should == Organization.count
     end
 
-    it "should return organizations near their map view quota" do
+    it "should return organizations over their data observatory snapshot quota" do
       Organization.any_instance.stubs(:owner).returns(@owner)
-      Organization.any_instance.stubs(:get_api_calls).returns(81)
-      Organization.any_instance.stubs(:map_view_quota).returns(100)
       Organization.overquota.should be_empty
-      Organization.overquota(0.20).map(&:id).should include(@organization.id)
-      Organization.overquota(0.20).size.should == Organization.count
-      Organization.overquota(0.10).should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns 0
+      Organization.any_instance.stubs(:geocoding_quota).returns 10
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns 30
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns 10
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
+    end
+
+    it "should return organizations over their data observatory general quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.overquota.should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns 0
+      Organization.any_instance.stubs(:geocoding_quota).returns 10
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns 0
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns 10
+      Organization.any_instance.stubs(:get_obs_general_calls).returns 30
+      Organization.any_instance.stubs(:obs_general_quota).returns 10
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
     end
 
     it "should return organizations near their geocoding quota" do
@@ -455,6 +510,46 @@ describe Organization do
       Organization.any_instance.stubs(:geocoding_quota).returns(100)
       Organization.any_instance.stubs(:get_here_isolines_calls).returns(81)
       Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_general_calls).returns(0)
+      Organization.any_instance.stubs(:obs_general_quota).returns(100)
+      Organization.overquota.should be_empty
+      Organization.overquota(0.20).map(&:id).should include(@organization.id)
+      Organization.overquota(0.20).size.should == Organization.count
+      Organization.overquota(0.10).should be_empty
+    end
+
+    it "should return organizations near their data observatory snapshot quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(120)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
+      Organization.any_instance.stubs(:geocoding_quota).returns(100)
+      Organization.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_general_calls).returns(0)
+      Organization.any_instance.stubs(:obs_general_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      Organization.overquota.should be_empty
+      Organization.overquota(0.20).map(&:id).should include(@organization.id)
+      Organization.overquota(0.20).size.should == Organization.count
+      Organization.overquota(0.10).should be_empty
+    end
+
+    it "should return organizations near their data observatory general quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(120)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns(0)
+      Organization.any_instance.stubs(:geocoding_quota).returns(100)
+      Organization.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(0)
+      Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      Organization.any_instance.stubs(:get_obs_general_calls).returns(81)
+      Organization.any_instance.stubs(:obs_general_quota).returns(100)
       Organization.overquota.should be_empty
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count
@@ -462,16 +557,16 @@ describe Organization do
     end
   end
 
-  def random_attributes(attributes={})
-    random = rand(999)
+  def random_attributes(attributes = {})
+    random = unique_name('viz')
     {
-        name:         attributes.fetch(:name, "name #{random}"),
-        description:  attributes.fetch(:description, "description #{random}"),
-        privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
-        tags:         attributes.fetch(:tags, ['tag 1']),
-        type:         attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
-        user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
+      name:         attributes.fetch(:name, random),
+      description:  attributes.fetch(:description, "description #{random}"),
+      privacy:      attributes.fetch(:privacy, Visualization::Member::PRIVACY_PUBLIC),
+      tags:         attributes.fetch(:tags, ['tag 1']),
+      type:         attributes.fetch(:type, Visualization::Member::TYPE_DERIVED),
+      user_id:      attributes.fetch(:user_id, UUIDTools::UUID.timestamp_create.to_s)
     }
-  end #random_attributes
+  end # random_attributes
 
 end

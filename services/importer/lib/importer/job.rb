@@ -34,7 +34,7 @@ module CartoDB
       end
 
       def log(message, truncate = true)
-        @logger.append(message, nil, truncate)
+        @logger.append(message, truncate)
       end
 
       def table_name
@@ -56,7 +56,7 @@ module CartoDB
       end
 
       def import_error_percent
-        if !imported_rows.nil? && !source_file_rows.nil?
+        if !imported_rows.nil? && !(source_file_rows.to_i == 0)
           return ((imported_rows - source_file_rows).abs.to_f/source_file_rows)*100
         else
           return nil
@@ -64,7 +64,6 @@ module CartoDB
       end
 
       def delete_job_table
-        CartoDB.notify_debug('Dropping temp table', schema: @schema, table: table_name)
         delete_temp_table(table_name)
       end
 

@@ -139,7 +139,7 @@ class Admin::PagesController < Admin::AdminController
 
       # TODO: move to helper
       if @maps_count == 0 && @tables_num == 0
-        description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+        description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
       else
         description << " has"
 
@@ -155,7 +155,7 @@ class Admin::PagesController < Admin::AdminController
           description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
         end
 
-        description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
+        description << " · View #{@name} CARTO profile for the latest activity and contribute to Open Data by creating an account in CARTO"
       end
 
       @page_description = description
@@ -211,12 +211,12 @@ class Admin::PagesController < Admin::AdminController
 
   def index_subdomainfull
     if current_user && current_viewer && current_user.id == current_viewer.id
-      # username.cartodb.com should redirect to the user dashboard in the maps view if the user is logged in
+      # username.carto.com should redirect to the user dashboard in the maps view if the user is logged in
       redirect_to CartoDB.url(self, 'dashboard')
     else
       # Asummes either current_user nil or at least different from current_viewer
-      # username.cartodb.com should redirect to the public user feeds view if the username is not the user's username
-      # username.cartodb.com should redirect to the public user feeds view if the user is not logged in
+      # username.carto.com should redirect to the public user feeds view if the username is not the user's username
+      # username.carto.com should redirect to the public user feeds view if the user is not logged in
       redirect_to CartoDB.url(self, 'public_user_feed_home')
     end
   end
@@ -231,7 +231,7 @@ class Admin::PagesController < Admin::AdminController
       redirect_to CartoDB.url(self, 'public_user_feed_home')
     else
       # We cannot get any user information from domain, path or session
-      redirect_to login_url
+      redirect_to CartoDB.url(self, 'login')
     end
   end
 
@@ -255,12 +255,12 @@ class Admin::PagesController < Admin::AdminController
 
     # TODO: move to helper
     if @datasets.size == 0
-      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
       description << " has published #{@datasets.size} public #{'dataset'.pluralize(@datasets.size)}"
     end
 
-    description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
+    description << " · View #{@name} CARTO profile for the latest activity and contribute to Open Data by creating an account in CARTO"
 
     @page_description = description
 
@@ -288,7 +288,7 @@ class Admin::PagesController < Admin::AdminController
 
     # TODO: move to helper
     if @visualizations.size == 0 && @tables_num == 0
-      description << " uses CartoDB to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
+      description << " uses CARTO to transform location intelligence into dynamic renderings that enable discovery of trends and patterns"
     else
       description << " has"
 
@@ -304,7 +304,7 @@ class Admin::PagesController < Admin::AdminController
         description << " published #{@tables_num} public #{'dataset'.pluralize(@tables_num)}"
       end
 
-      description << " · View #{@name} CartoDB profile for the latest activity and contribute to Open Data by creating an account in CartoDB"
+      description << " · View #{@name} CARTO profile for the latest activity and contribute to Open Data by creating an account in CARTO"
     end
 
     @page_description = description

@@ -81,7 +81,7 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
         SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
             cartodb_georef_status = orig.cartodb_georef_status
         FROM any_temp_table AS orig
-        WHERE trim(dest."any_column_name"::text) = orig.geocode_string AND dest.cartodb_georef_status IS NULL
+        WHERE trim(dest."any_column_name"::text) = trim(orig.geocode_string) AND dest.cartodb_georef_status IS NULL
       }.squish
     end
   end
@@ -120,8 +120,8 @@ describe CartoDB::InternalGeocoder::QueryGeneratorFactory do
           SET the_geom = CASE WHEN orig.cartodb_georef_status THEN orig.the_geom ELSE dest.the_geom END,
               cartodb_georef_status = orig.cartodb_georef_status
           FROM any_temp_tablename AS orig
-          WHERE trim(dest.region_column_name::text) = orig.geocode_string
-            AND trim(dest.country_column_name::text) = orig.country
+          WHERE trim(dest.region_column_name::text) = trim(orig.geocode_string)
+            AND trim(dest.country_column_name::text) = trim(orig.country)
             AND dest.cartodb_georef_status IS NULL
         }.squish
     end

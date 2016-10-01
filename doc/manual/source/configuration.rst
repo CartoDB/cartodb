@@ -36,7 +36,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron'
           className: 'positron_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions">CARTO</a>'
         dark_matter_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -44,7 +44,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Dark matter'
           className: 'dark_matter_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
         positron_lite_rainbow:
           url: 'http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png'
           subdomains: 'abcd'
@@ -52,7 +52,7 @@ Here is an example config.yml:
           maxZoom: '18'
           name: 'Positron (lite)'
           className: 'positron_lite_rainbow'
-          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="http://cartodb.com/attributions#basemaps">CartoDB</a>'
+          attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'
 
       stamen:
         toner_stamen:
@@ -79,21 +79,21 @@ you should add the labels key to the basemap config, as follows:
     maxZoom: '18'
     name: 'Positron'
     className: 'positron_rainbow'
-    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "http://cartodb.com/attributions#basemaps">CartoDB</a>'
+    attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href= "https://carto.com/attributions">CARTO</a>'
     labels:
       url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
 
 Domainless URLs
 ---------------
 
-Historically, CartoDB URLs were based on a ``username.cartodb.com/PATH`` schema.
+Historically, CartoDB URLs were based on a ``username.carto.com/PATH`` schema.
 When Multiuser accounts were introduced, an alternate schema
-``organizationname.cartodb.com/u/username/PATH`` was built alongside the "classic" one.
+``organizationname.carto.com/u/username/PATH`` was built alongside the "classic" one.
 Both schemas introduce some problems for opensource and/or custom installs of the platform,
 as they require DNS changes each time a new user or organization is added.
 
 Subdomainless urls are the answer to this problems. Modifying some configuration settings,
-any CartoDB installation can be setup to work with a new schema, ``cartodb.com/user/username/PATH.``
+any CartoDB installation can be setup to work with a new schema, ``carto.com/user/username/PATH.``
 
 The following sections details the steps to make it work and the limitations it has.
 
@@ -135,7 +135,7 @@ to always have a subdomain. Any will do, but must be present. If you remove the 
 will work as intended without any subdomain.
 
 When subdomainless urls are used, organizations will be ignored from the urls. In fact,
-typing ``whatever.cartodb.com/user/user1`` and ``cartodb.com/user/user1`` is the same. The platform
+typing ``whatever.carto.com/user/user1`` and ``carto.com/user/user1`` is the same. The platform
 will replicate the sent subdomain fragment to avoid CORS errors but no existing organization
 checks will be performed. You should be able to use them, assign quota to the organization users, etc.
 
@@ -153,11 +153,11 @@ For example:
   common_data:
     protocol: 'https'
     username: 'common-data'
-    base_url: 'https://common-data.cartodb.com'
+    base_url: 'https://common-data.carto.com'
     format: 'shp'
 
 
-Use ``https://common-data.cartodb.com`` as the base url to retrieve all the public datasets from that user.
+Use ``https://common-data.carto.com`` as the base url to retrieve all the public datasets from that user.
 
 This is the default behaviour in CartoDB, but if you want to use your own system and user for this purpose you
 have to define the ``username`` property pointing to the user that will provide the datasets in your own instance.

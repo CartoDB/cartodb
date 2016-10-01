@@ -81,6 +81,8 @@
   margin-right: $sMargin-elementInline;
 }
 .ChangePrivacy-shareFooter {
+  height: 97px;
+  box-sizing: border-box;
   background-color: $cStructure-grayBkg;
   @include display-flex();
   @include justify-content(space-between, justify);

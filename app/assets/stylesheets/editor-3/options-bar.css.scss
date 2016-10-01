@@ -1,0 +1,18 @@
+@import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
+
+.Options-bar {
+  @include align-items(center);
+  @include flex(0 0 auto);
+  position: relative;
+  margin-right: -25px;
+  margin-left: -25px;
+  padding: 25px;
+  box-sizing: border-box;
+}
+.Options-bar--right {
+  @include justify-content(flex-end);
+}
+.Options-bar.is-dark {
+  color: $cWhite;
+}

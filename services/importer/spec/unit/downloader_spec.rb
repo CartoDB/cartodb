@@ -1,8 +1,11 @@
 # encoding: utf-8
+require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/downloader'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../../../../spec/helpers/file_server_helper'
 
 include CartoDB::Importer2
+include FileServerHelper
 
 describe Downloader do
   before do
@@ -42,9 +45,28 @@ describe Downloader do
     end
 
     it 'extracts the source_file name from the URL' do
-      stub_download(url: @file_url, filepath: @file_filepath)
+      stub_download(url: @file_url, filepath: @file_filepath, content_disposition: false)
 
       downloader = Downloader.new(@file_url)
+      downloader.run
+      downloader.source_file.name.should eq 'ne_110m_lakes'
+    end
+
+    it 'extracts the source_file name from the URL for S3 actual paths' do
+      url = 'http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv' +
+            '?AWSAccessKeyId=XXXXXXXXXXXXXXXXXXXX&Expires=1461934764&Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXM%3D'
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(url)
+      downloader.run
+      downloader.source_file.name.should eq 'ne_110m_lakes'
+    end
+
+    it 'extracts the source_file name from the URL for S3 paths without extra parameters' do
+      url = "http://s3.amazonaws.com/com.cartodb.imports.staging/XXXXXXXXXXXXXXXXXXXX/ne_110m_lakes.csv"
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(url)
       downloader.run
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
@@ -124,6 +146,32 @@ describe Downloader do
       downloader.source_file.filename.should eq 'ok_data.csv.gz'
     end
 
+    it 'uses the geojson extension if the header is text/plain' do
+      url_geojson = "http://www.example.com/tm_world_borders_simpl_0_8.geojson"
+      filepath_geojson  = path_to('tm_world_borders_simpl_0_8.geojson')
+      stub_download(
+          url: url_geojson,
+          filepath: filepath_geojson,
+          headers: { 'Content-Type' => 'text/plain' }
+      )
+      downloader = Downloader.new(url_geojson)
+      downloader.run
+      downloader.source_file.filename.should eq 'tm_world_borders_simpl_0_8.geojson'
+    end
+
+    it 'uses the kml extension if the header is text/plain' do
+      url_kml = "http://www.example.com/abandoned.kml"
+      filepath_kml  = path_to('abandoned.kml')
+      stub_download(
+          url: url_kml,
+          filepath: filepath_kml,
+          headers: { 'Content-Type' => 'text/plain' }
+      )
+      downloader = Downloader.new(url_kml)
+      downloader.run
+      downloader.source_file.filename.should eq 'abandoned.kml'
+    end
+
     it 'extracts the source_file name from Content-Disposition header' do
       stub_download(
         url: @fusion_tables_url,
@@ -145,14 +193,16 @@ describe Downloader do
 
     it 'supports accented URLs' do
       [
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común'},
+        { url: 'spec/fixtures/política_agraria_común.csv', name: 'política_agraria_común' },
         # TODO: move to master branch
-        { url: 'https://raw.githubusercontent.com/CartoDB/cartodb/master/services/importer/spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ'}
-      ].each { |url_and_name|
-        downloader = Downloader.new(url_and_name[:url])
-        downloader.run
-        downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
-      }
+        { url: 'spec/fixtures/many_characters_áÁñÑçÇàÀ.csv', name: 'many_characters_áÁñÑçÇàÀ' }
+      ].each do |url_and_name|
+        serve_file url_and_name[:url] do |url|
+          downloader = Downloader.new(url)
+          downloader.run
+          downloader.source_file.name.should eq(url_and_name[:name]), "Error downloading #{url_and_name[:url]}, name: #{downloader.source_file.name}"
+        end
+      end
 
     end
 
@@ -186,6 +236,20 @@ describe Downloader do
       downloader = Downloader.new(@file_url)
       lambda { downloader.run }.should raise_error DownloadError
     end
+
+    it "raises if download fails with partial file error" do
+      stub_download(
+        url:      @file_url,
+        filepath: @file_filepath,
+        headers:  {}
+      )
+
+      Typhoeus::Response.any_instance.stubs(:mock).returns(false)
+      Typhoeus::Response.any_instance.stubs(:return_code).returns(:partial_file)
+
+      downloader = Downloader.new(@file_url)
+      lambda { downloader.run }.should raise_error PartialDownloadError
+    end
   end
 
   describe '#source_file' do
@@ -201,17 +265,21 @@ describe Downloader do
     end
 
     it 'returns a source_file name' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.name.should eq 'ne_110m_lakes'
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.name.should eq 'ne_110m_lakes'
+      end
     end
 
     it 'returns a local filepath' do
-      downloader = Downloader.new(@file_url)
-      downloader.run
-      downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      serve_file 'spec/support/data/ne_110m_lakes.zip' do |url|
+        downloader = Downloader.new(url)
+        downloader.run
+        downloader.source_file.fullpath.should match /#{@file_url.split('/').last}/
+      end
     end
-  end #source_file
+  end
 
   describe '#name_from' do
     it 'gets the file name from the Content-Disposition header if present' do
@@ -266,14 +334,10 @@ describe Downloader do
       downloader = Downloader.new(hard_url)
       downloader.send(:name_from, headers, hard_url).should eq 'my_file.xlsx'
     end
-  end #name_from
+  end
 
-  def stub_download(options)
-    url       = options.fetch(:url)
-    filepath  = options.fetch(:filepath)
-    headers   = options.fetch(:headers, {})
-
-    Typhoeus.stub(url).and_return(response_for(filepath, headers))
+  def stub_download(url:, filepath:, headers: {}, content_disposition: true)
+    Typhoeus.stub(url).and_return(response_for(filepath, headers, content_disposition: content_disposition))
   end
 
   def stub_failed_download(options)
@@ -284,26 +348,26 @@ describe Downloader do
     Typhoeus.stub(url).and_return(failed_response_for(filepath, headers))
   end
 
-  def response_for(filepath, headers={})
+  def response_for(filepath, headers = {}, content_disposition: true)
      response = Typhoeus::Response.new(
         code:     200,
         body:     File.new(filepath).read.to_s,
-        headers:  headers.merge(headers_for(filepath))
+        headers:  headers.merge(headers_for(filepath, content_disposition: content_disposition))
      )
      response
-  end #response_for
+  end
 
   def failed_response_for(filepath, headers={})
      Typhoeus::Response.new(code: 404, body: nil, headers: {})
-  end #response_for
+  end
 
-  def headers_for(filepath)
+  def headers_for(filepath, content_disposition: true)
+    return {} unless content_disposition
     filename = filepath.split('/').last
     { "Content-Disposition" => "attachment; filename=#{filename}" }
-  end #headers_for
+  end
 
   def path_to(filename)
     File.join(File.dirname(__FILE__), '..', 'fixtures', filename)
   end
-end # Downloader
-
+end

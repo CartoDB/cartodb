@@ -40,13 +40,20 @@ class Api::Json::ImportsController < Api::ApplicationController
 
         if params[:url].present?
           validate_url!(params.fetch(:url)) unless Rails.env.development? || Rails.env.test?
-          options.merge!(data_source: params.fetch(:url))
+          options[:data_source] = params.fetch(:url)
+        elsif params[:connector].present?
+          options[:service_name] = 'connector'
+          options[:service_item_id] = params[:connector].to_json
         elsif params[:remote_visualization_id].present?
           external_source = external_source(params[:remote_visualization_id])
-          options.merge!( { data_source: external_source.import_url.presence } )
+          options[:data_source] = external_source.import_url.presence
         else
           options = @stats_aggregator.timing('upload-or-enqueue') do
-            results = file_upload_helper.upload_file_to_storage(params, request, Cartodb.config[:importer]['s3'])
+            results = file_upload_helper.upload_file_to_storage(
+              filename_param: params[:filename],
+              file_param: params[:file],
+              request_body: request.body,
+              s3_config: Cartodb.config[:importer]['s3'])
             # Not queued import is set by skipping pending state and setting directly as already enqueued
             options.merge({
                               data_source: results[:file_uri].presence,
@@ -130,7 +137,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     raise "service_item_id field should be empty or a string" unless (params[:service_item_id].is_a?(String) ||
                                                                       params[:service_item_id].is_a?(NilClass))
 
-    # Keep in sync with http://docs.cartodb.com/cartodb-platform/import-api.html#params
+    # Keep in sync with https://docs.carto.com/cartodb-platform/import-api.html#params
     {
       user_id:                current_user.id,
       table_name:             params[:table_name].presence,
@@ -201,7 +208,7 @@ class Api::Json::ImportsController < Api::ApplicationController
     if params[:privacy].present?
       privacy = (UserTable::PRIVACY_VALUES_TO_TEXTS.invert)[params[:privacy].downcase]
       raise "Unknown value '#{params[:privacy]}' for 'privacy'. Allowed values are: #{[UserTable::PRIVACY_VALUES_TO_TEXTS.values[0..-2].join(', '), UserTable::PRIVACY_VALUES_TO_TEXTS.values[-1]].join(' and ')}" if privacy.nil?
-      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://cartodb.com/pricing for more info." if !current_user.valid_privacy?(privacy)
+      raise "Your account type (#{current_user.account_type.tr('[]','')}) does not allow to create private datasets. Check https://carto.com/pricing for more info." if !current_user.valid_privacy?(privacy)
       privacy
     else
       nil

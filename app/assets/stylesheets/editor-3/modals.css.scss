@@ -1,0 +1,254 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+
+/* WIP*/
+.Dialog.is-white {
+  background: $cWhite;
+}
+
+.Filters-typeItem {
+  @include display-flex(); /* todo when create new layout */
+}
+.DatasetsList-itemMeta {
+  @include align-items(baseline); /* todo when create new layout */
+}
+
+.Modal-body {
+  padding-top: 24px;
+}
+
+.Modal-body-inner {
+  width: 944px;
+  margin: 0 auto;
+}
+
+.Modal-body-header {
+  margin-bottom: 16px;
+}
+
+.Modal-analysisContainer {
+  margin-bottom: 48px;
+}
+
+.Modal-actions {
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  width: 80%;
+  max-width: 640px;
+  margin: $baseSize * 4 auto 0;
+  padding: $baseSize * 4 0 0;
+  border-top: 1px solid $cMainLine;
+
+  &.is-narrow {
+    margin: 0 auto;
+  }
+}
+
+.Modal-actions-button {
+  margin-right: 20px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.ModalBlockList-item-header {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include align-items(center);
+}
+
+.ModalBlockList-item-headerTitle {
+  @include flex(1);
+}
+.ModalBlockList-item-headerSubTitle {
+  width: 100px; /* fix naming depending the rest of designs */
+}
+
+.ModalBlockList {
+  @include display-flex();
+  @include flex-wrap(wrap);
+  box-sizing: border-box;
+}
+
+.ModalBlockList-item {
+  @include display-flex();
+  width: 304px;
+  min-width: 304px;
+  margin: 0 4px 8px;
+  padding: 16px;
+  border: 1px solid $cWhite;
+  border-radius: 4px;
+  background: $cWhite;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.ModalBlockList-itemInput {
+  margin-right: $baseSize;
+}
+
+.ModalBlockList-item:hover {
+  @include transition(border, 200ms, ease-in);
+  border: 1px solid $cHoverLine;
+}
+
+.ModalBlockList-item--full {
+  @include align-items(inherit);
+  width: 100%;
+  min-width: 100%;
+  margin: 16px 0 0;
+}
+
+.ModalBlockList-item.is-selected {
+  border: 1px solid rgba($cBlue, 0.48);
+}
+.ModalBlockList-item.is-disabled {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: auto;
+  opacity: 0.5;
+}
+
+.ModalBlockList-item-body {
+  @include display-flex();
+}
+.ModalBlockList-item-media {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba($cBlue, 0.08);
+}
+
+
+.Form-row {
+  @include align-items(center);
+}
+
+/* Add Layer Modal */
+.ModalDataset-itemInfo {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(1);
+  @include justify-content(space-between);
+  width: 100%;
+  max-width: 850px;
+}
+
+.ModalDataset-itemInfoTitle {
+  max-width: 50%;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+.Carousel-Navigation.is-disabled {
+  opacity: 0.24;
+}
+
+.Upgrade-info {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(space-between);
+  padding: 20px;
+  border-top: 1px solid rgba($cBlue, 0.32);
+  background: rgba($cBlue, 0.08);
+}
+
+.Upgrade-infoActions {
+  @include display-flex();
+  @include align-items(center);
+}
+
+.AddLayer-tabs {
+  display: block;
+  width: 780px;
+  padding: 28px 0;
+  overflow-x: hidden;
+}
+
+.ConnectDataset-header {
+  padding: 28px 0 16px;
+}
+
+.DatasetsList-avatarImg {
+  width: $baseSize * 2;
+  height: $baseSize * 2;
+  border-radius: 2px;
+}
+
+.Modal-containerList {
+  width: 528px;
+  margin: 0 auto;
+}
+
+.Publish-modal {
+  @include display-flex();
+  @include flex-direction(column);
+  width: 100%;
+  height: 100%;
+}
+
+.Publish-modalHeader {
+  @include flex(0 0 auto);
+  padding: $baseSize * 3 0;
+}
+
+.Publish-modalBody {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
+  position: relative;
+  padding-bottom: 100px;
+  overflow: hidden;
+}
+
+.Publish-modalBody.is-simple,
+.Publish-modalFooter,
+.Publish-modalContent {
+  background-color: $cThirdBackground;
+}
+
+.Publish-modalShadow {
+  width: 100%;
+  background-color: $cWhite;
+}
+
+.Publish-modalMenu,
+.Publish-modalShadow {
+  position: relative;
+  // In orden to change border by shadow, uncomment this
+  // min-height: 5px; // to be able to show the shadow if no content inside.
+  // box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid $cMainLine;
+  z-index: 1;
+}
+
+.Publish-modalShare {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex-grow(1);
+  @include justify-content(center);
+  @include align-items(center);
+}
+
+.Publish-modalButton {
+  height: 24px;
+}
+
+.CDB-NavSubmenu-item.is-selected .Publish-modalLink {
+  border-color: $cMainText;
+}
+
+.Upgrade-icon {
+  padding: $baseSize;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+}
+
+.Upgrade-body {
+  text-align: left;
+}

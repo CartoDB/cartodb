@@ -1,4 +1,5 @@
 AllCops:
+  TargetRubyVersion: 2.2
   Include:
   - "**/*.gemspec"
   - "**/*.podspec"
@@ -115,7 +116,7 @@ Style/CollectionMethods:
     collect!: map!
     find_all: select
     detect: find
-    reduce: inject
+    inject: reduce
 Style/CommentAnnotation:
   Description: Checks formatting of special comments (TODO, FIXME, OPTIMIZE, HACK,
     REVIEW).
@@ -513,7 +514,7 @@ Metrics/AbcSize:
   Description: A calculated magnitude based on number of assignments, branches, and
     conditions.
   Enabled: true
-  Max: 25
+  Max: 35
 Metrics/BlockNesting:
   Description: Avoid excessive block nesting
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#three-is-the-number-thou-shalt-count

@@ -24,12 +24,14 @@ module MinimalValidator
 
     def validate_presence_of_with_custom_message(attributes, custom_message)
       has_errors = false
+      error_attribute = nil
       attributes.each do |attribute, value|
         if (value.nil? || value.empty?)
+          error_attribute = attribute
           has_errors = true
         end
       end
-      errors.store(custom_message) if has_errors
+      errors.store(error_attribute.to_sym, custom_message) if has_errors
     end
 
     def validate_available_name
@@ -57,4 +59,3 @@ module MinimalValidator
     attr_accessor :errors
   end
 end
-

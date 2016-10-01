@@ -22,19 +22,20 @@ module Cartodb
     end
 
     def google_signup_url
-      "#{self.host}/google/signup"
+      "#{host}/google/signup"
     end
 
     def build_request(path, body, method, timeout = 200)
       http_client = Carto::Http::Client.get('central', log_requests: true)
       http_client.request(
-        "#{ @host }/#{ path }",
+        "#{@host}/#{path}",
         method: method,
         body: body.to_json,
-        userpwd: "#{ @auth[:username] }:#{ @auth[:password] }",
+        userpwd: "#{@auth[:username]}:#{@auth[:password]}",
         headers: { "Content-Type" => "application/json" },
         ssl_verifypeer: Rails.env.production?,
-        timeout: timeout
+        timeout: timeout,
+        followlocation: true
       )
     end
 
@@ -112,6 +113,29 @@ module Cartodb
       return send_request("api/organizations/#{ organization_name }", nil, :delete, [204])
     end # delete_organization
 
-  end
+    ############################################################################
+    # Mobile apps
 
+    def get_mobile_apps(username)
+      send_request("api/users/#{username}/mobile_apps", nil, :get, [200])
+    end
+
+    def get_mobile_app(username, app_id)
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :get, [200])
+    end
+
+    def create_mobile_app(username, mobile_app_attributes)
+      body = { mobile_app: mobile_app_attributes }
+      send_request("api/users/#{username}/mobile_apps", body, :post, [201])
+    end
+
+    def update_mobile_app(username, app_id, mobile_app_attributes)
+      body = { mobile_app: mobile_app_attributes }
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", body, :put, [204])
+    end
+
+    def delete_mobile_app(username, app_id)
+      send_request("api/users/#{username}/mobile_apps/#{app_id}", nil, :delete, [204])
+    end
+  end
 end

@@ -26,14 +26,7 @@ _:-ms-lang(x),
 .IntermediateInfo--flex {
   min-height: 0;
 }
-.IntermediateInfo-title {
-  display: block;
-  margin: $sMargin-elementInline 0 $sMargin-min;
-  color: $cTypography-paragraphs;
-  font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-normal;
-  line-height: $sLineHeight-largest;
-}
+
 .IntermediateInfo-title--error {
   color: $cHighlight-negative;
 }

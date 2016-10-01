@@ -1,0 +1,115 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Share-input {
+  position: relative;
+}
+
+.Share-input-field {
+  padding-right: 50px;
+}
+
+.Share-copy {
+  @include transform(translateY(-50%));
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.Share-info {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  height: 30px;
+  padding: $baseSize * 4 0 0;
+  text-align: center;
+
+  .CDB-Button {
+    padding: 0 4px;
+  }
+}
+
+.Share-with.is-hidden {
+  display: none;
+}
+
+.Share-user {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: $halfBaseSize / 2;
+  background-position: center center;
+  background-size: cover;
+}
+
+.Share-wrapper {
+  overflow: auto;
+}
+
+.Share-filtersRow {
+  height: 60px;
+}
+
+.Share-user--big {
+  width: 24px;
+  height: 24px;
+}
+
+.Share-user--huge {
+  width: 38px;
+  height: 38px;
+}
+
+.Share-permission {
+  @include display-flex();
+  @include align-items(center);
+  @include transition(border 200ms ease-in);
+  margin-bottom: $baseSize;
+  padding: $baseSize * 2;
+  border: 1px solid $cWhite;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+
+  &.is-selected {
+    border: 1px solid $cBlue;
+  }
+}
+
+.Share-permissionInfo {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(1 1 auto);
+}
+
+.Share-permissionIcon {
+  @include display-flex();
+  @include justify-content(center);
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  margin-right: $baseSize * 2;
+  box-sizing: border-box;
+  border: 1px solid $cMainLine;
+  border-radius: 3px;
+  font-size: 22px;
+}
+
+.Share-togglers {
+  @include display-flex();
+
+  .Share-toggler.is-disabled {
+    opacity: 0.4;
+
+    // In order to make parent tipsyable on mouseover
+    .CDB-Toggle {
+      visibility: hidden;
+    }
+  }
+}
+
+.Share-toggler {
+  position: relative;
+}

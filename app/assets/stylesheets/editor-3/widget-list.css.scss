@@ -7,15 +7,6 @@
   flex-wrap: wrap;
 }
 
-.WidgetList-fakeInner { // TODO: REMOVE ME
-  width: 940px;
-  margin: auto;
-  .CDB-NavMenu-Inner {
-    padding-top: 10px;
-    text-align: center;
-  }
-}
-
 .WidgetList-option {
   margin-right: 16px;
 }
@@ -24,6 +15,7 @@
   @include align-items(baseline);
   flex: 0 0 304px;
   width: 304px;
+  max-width: 304px;
   margin: 0 4px 8px;
   box-sizing: border-box;
   padding: $baseSize * 2;
@@ -31,15 +23,90 @@
   border-radius: $baseSize / 2;
   background: $cWhite;
 }
-.WidgetList-item:hover {
-  border: 1px solid $cBlue;
-  background: #F5FAFE;
-}
 .WidgetList-inner {
-  @include display-flex;
-  flex-wrap: wrap;
-  width: 100%;
+  @include flex(1);
+  min-width: 0;
 }
-.WidgetList-title {
-  @include display-flex;
+.WidgetPlaceHolder {
+  @include display-flex();
+  @include flex(1);
+  margin-right: 24px;
 }
+.WidgetPlaceHolder-media {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+.WidgetPlaceHolder-txt {
+  @include flex(1);
+}
+.WidgetPlaceHolder-title {
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+.WidgetPlaceHolder-text {
+  height: 8px;
+  border-radius: 2px;
+  background: $cThirdBackground;
+}
+
+.Widget-selectTitle {
+  width: 124px;
+}
+
+.Widget-categoryFake {
+  height: 4px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: $cSecondaryBackground;
+  box-sizing: border-box;
+}
+.Widget-categoryFakeText {
+  width: 100px;
+  height: 4px;
+  margin: 7px 0;
+  border-radius: 10px;
+  background: #F2F6F9;
+}
+.Widget-histogramFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
+}
+.Widget-histogramFakeContainer .Widget-categoryFakeText {
+  margin-bottom: 9px;
+}
+.Widget-histogramFake {
+  position: relative;
+  height: 20px;
+  border-top: 1px solid $cSecondaryLine;
+  border-bottom: 1px solid $cSecondaryLine;
+}
+.Widget-histogramFake::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: $cSecondaryLine;
+  content: '';
+}
+.Widget-formulaFakeContainer {
+  margin-bottom: 12px;
+  padding-top: 1px;
+}
+.Widget-formulaFake {
+  position: relative;
+  width: 96px;
+  height: 20px;
+  background: $cSecondaryLine;
+}
+
+
+
+
+
+

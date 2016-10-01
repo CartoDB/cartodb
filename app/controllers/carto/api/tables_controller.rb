@@ -11,19 +11,24 @@ module Carto
 
       before_filter :set_start_time
 
+      before_filter :load_user_table, only: [:show]
+      before_filter :read_privileges?, only: [:show]
+
       def show
-        return head(404) if table == nil
-        return head(403) unless table.table_visualization.has_permission?(current_user, Carto::Permission::ACCESS_READONLY)
-        render_jsonp(table.public_values({request:request}, current_user).merge(schema: table.schema(reload: true)))
+        table = @user_table.service
+        render_jsonp(table.public_values({ request: request }, current_user).merge(schema: table.schema(reload: true)))
       end
 
       private
 
-      def table
-        @table ||= Carto::Helpers::TableLocator.new.get_by_id_or_name(params.fetch('id'), current_user)
-        @table
+      def load_user_table
+        @user_table = Carto::Helpers::TableLocator.new.get_by_id_or_name(params[:id], current_user)
+        raise RecordNotFound unless @user_table
       end
 
+      def read_privileges?
+        head(403) unless current_user && @user_table.visualization.is_viewable_by_user?(current_user)
+      end
     end
   end
 end

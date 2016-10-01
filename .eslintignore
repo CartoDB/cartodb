@@ -72,7 +72,6 @@
 **/lib/assets/javascripts/cartodb/common/dialogs/create/create_listing.js
 **/lib/assets/javascripts/cartodb/common/dialogs/create/create_loading.js
 **/lib/assets/javascripts/cartodb/common/dialogs/create/create_map_model.js
-**/lib/assets/javascripts/cartodb/common/dialogs/create/create_onboarding.js
 **/lib/assets/javascripts/cartodb/common/dialogs/create/create_view.js
 **/lib/assets/javascripts/cartodb/common/dialogs/create/footer/guessing_toggler_view.js
 **/lib/assets/javascripts/cartodb/common/dialogs/create/footer/privacy_toggler_view.js
@@ -797,3 +796,4 @@
 **/lib/assets/test/spec/cartodb/table_public/tableview_public.spec.js
 **/lib/assets/test/spec/SpecHelper.js
 **/lib/assets/test/spec/SpecHelper3.js
+**/lib/assets/node_modules/jquery-ui.js

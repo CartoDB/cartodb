@@ -1,6 +1,8 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:title) do %><%= @visualization.name %><% end %>
 
-<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
+<%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
@@ -21,7 +23,7 @@
 
     <%# Legacy from current embed %>
     <div class="NotSupportedDialog" id="not_supported_dialog" style="display: none">
-      <h2 class="NotSupportedDialog-title">CartoDB</h2>
+      <h2 class="NotSupportedDialog-title">CARTO</h2>
       <p class="NotSupportedDialog-desc">This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
       <ul class="NotSupportedDialog-list">
         <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Safari" href="http://www.apple.com/safari/" class="safari">Safari</a></li>
@@ -30,7 +32,7 @@
       </ul>
     </div>
 
-    <div class="Navmenu js-Navmenu">
+    <div class="CDB-Text CDB-Size-medium Navmenu js-Navmenu">
       <div class="u-inner">
         <div class="PublicMap-block">
           <div class="PublicMap-gradient"></div>
@@ -73,6 +75,12 @@
                       data-likes-size="big">
                     </a>
                   </li>
+
+                  <li class="Navmenu-subItem">
+                    <a href="#" class="Navmenu-link js-Navmenu-link--download-map">
+                      <i class="CDB-IconFont CDB-IconFont-downloadCircle Navmenu-icon"></i>
+                    </a>
+                  </li>
                 </ul>
               </li>
 
@@ -91,7 +99,7 @@
 
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
-                    <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
+                    <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=CARTO">
                       <i class="CDB-IconFont CDB-IconFont-twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
                   </li>
@@ -103,7 +111,7 @@
                   </li>
 
                   <li class="Navmenu-subItem">
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB") %>&source=CartoDB" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO") %>&source=CARTO" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
                       <i class="CDB-IconFont CDB-IconFont-linkedin Navmenu-icon"></i>
                     </a>
                   </li>
@@ -119,7 +127,7 @@
 
             <ul class="Navmenu-list u-hideOnTablet">
               <li class="Navmenu-item">
-                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in cartodb</a>
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit js-Navmenu-editLink" href="<%= CartoDB.url(self, 'public_visualizations_show', {id: @visualization.id }, @visualization.user) %>">Edit in CARTO</a>
               </li>
             </ul>
           </div>
@@ -127,7 +135,7 @@
       </div>
     </div>
 
-    <div class="PublicMap-secondary">
+    <div class="CDB-Text PublicMap-secondary">
       <div class="u-inner">
         <div class="PublicMap-block">
           <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
@@ -179,25 +187,25 @@
 
                     <div class="DatasetsList-itemInfo">
                       <div class="DatasetsList-itemPrimaryInfo">
-                        <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText">
+                        <h3 class="DatasetsList-itemTitle DefaultTitle u-ellipsLongText CDB-Text CDB-Size-large u-mainTextColor">
                           <a href="<%= CartoDB.url(self, 'public_table', {id: vis.table.name}, @user_domain.nil? ? nil : @related_tables_owners[vis.table.user_id]) %>" title="<%= vis.table.name %>" class="DefaultTitle-link u-ellipsLongText"><%= vis.table.name %></a>
                         </h3>
                         <% if vis.description %>
-                          <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText"><%= raw vis.description_html_safe %></div>
+                          <div class="DefaultDescription DatasetsList-itemDescription u-ellipsLongText CDB-Text CDB-Size-medium u-altTextColor"><%= raw vis.description_html_safe %></div>
                         <% end %>
                       </div>
                     </div>
 
                     <div class="DatasetsList-itemSecondaryInfo">
-                      <div class="DatasetsList-itemMeta">
-                        <span class="PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
+                      <div class="DatasetsList-itemMeta CDB-Size-medium">
+                        <span class="CDB-Tag CDB-Text CDB-Size-small is-semibold u-upperCase PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
                         <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', {id: vis.id}, vis.user) %>" class="js-likes"
                           data-vis-id="<%= vis.id %>"
                           data-likes-count="<%= vis.likes.count %>">
                         </a>
                         <% if (vis.table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
-                            <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon"></i>
+                            <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon u-altTextColor CDB-Size-small"></i>
                             <%= "#{number_to_human(vis.table.service.rows_counted, format: "%n%u", units: { unit: "", thousand: "K", million: "M" }, delimiter: ",")} row#{vis.table.service.rows_counted.size == 1 ? "" : "s"}" %>
                           </span>
                         <% end %>
@@ -265,11 +273,11 @@
                 <div class="MapCard-content MapCard-content--compact">
                   <div class="MapCard-contentBody">
                     <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                      <h3 class="MapCard-title DefaultTitle">
+                      <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
                         <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
                       </h3>
                     </div>
-                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                    <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">
                       <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                       <%= time_ago_in_words(vis.updated_at) %> ago
                     </div>
@@ -335,7 +343,7 @@
     var belong_organization = <%= @visualization.user.has_organization? %>;
     var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
     var vizdata = <%= safe_js_object @visualization.to_vizjson({https_request: request.protocol == 'https://'}).to_json %>;
-    var login_url = "<%= login_url %>";
+    var login_url = "<%= CartoDB.url(self, 'login') %>";
 
     // Generating map options
     var bool_fn = function(v) { return v == 'true' };
@@ -363,7 +371,7 @@
       'legends':          bool_fn
     });
 
-    <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
+    <% if (@visualization.password_protected? or @visualization.is_privacy_private?) and @protected_map_tokens %>
       map_options.auth_token = [];
       <% @protected_map_tokens.each do |token| %>
           map_options.auth_token.push('<%= token %>');

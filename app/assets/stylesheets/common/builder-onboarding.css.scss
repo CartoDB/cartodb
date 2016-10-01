@@ -1,0 +1,225 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+@import 'cdb-variables/colors';
+
+$sSmallDescriptionWidth: 200px;
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$sWidgetsPadWidth: 378px;
+$cBackgroundColor: #2E3C43;
+
+.BuilderOnboarding {
+  @include display-flex();
+  height: 100%;
+  pointer-events: auto;
+}
+
+.BuilderOnboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.BuilderOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.BuilderOnboarding-contentWrapper {
+  @include flex(1);
+  @include display-flex();
+  @include align-items(center);
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+  z-index: 5;
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 {
+  @include justify-content(center);
+}
+
+.BuilderOnboarding-contentWrapper.is-step1,
+.BuilderOnboarding-contentWrapper.is-step2,
+.BuilderOnboarding-contentWrapper.is-step3 {
+  @include justify-content(flex-start);
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 {
+  @include justify-content(flex-end);
+}
+
+.BuilderOnboarding-forget,
+.BuilderOnboarding-header,
+.BuilderOnboarding-footer,
+.BuilderOnboarding-step {
+  display: none;
+}
+
+.BuilderOnboarding-footer .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-header p,
+.BuilderOnboarding-contentWrapper .BuilderOnboarding-step p {
+  @include opacity(0);
+  @include transition(opacity, 200ms, ease-in-out, 1s);
+}
+
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step p {
+  @include transition(opacity, 100ms, ease-in-out, 100ms);
+}
+
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-footer.is-step0 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-footer.is-step1 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-footer.is-step2 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-footer.is-step3 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-footer.is-step4 .BuilderOnboarding-footerButtons,
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-header.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-step.is-step0 p,
+.BuilderOnboarding-contentWrapper.is-step1 .BuilderOnboarding-step.is-step1 p,
+.BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-step.is-step2 p,
+.BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-step.is-step3 p,
+.BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step.is-step4 p {
+  @include opacity(1);
+}
+
+.BuilderOnboarding.is-step0 .BuilderOnboarding-header,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-footer.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-footer.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-footer.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-footer.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-footer.is-step4,
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step0,
+.BuilderOnboarding.is-step1 .BuilderOnboarding-step.is-step1,
+.BuilderOnboarding.is-step2 .BuilderOnboarding-step.is-step2,
+.BuilderOnboarding.is-step3 .BuilderOnboarding-step.is-step3,
+.BuilderOnboarding.is-step4 .BuilderOnboarding-step.is-step4 {
+  display: block;
+}
+
+.BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step1 {
+  @include opacity(0);
+}
+
+.BuilderOnboarding-body {
+  width: auto;
+  margin: 0 80px;
+}
+
+.BuilderOnboarding-description {
+  @include transition(width, 100ms, ease-in-out);
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-normal;
+}
+
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad4 {
+  @include opacity(0.88);
+  background: $cBackgroundColor;
+}
+
+.BuilderOnboarding-pad4,
+.BuilderOnboarding-pad5 {
+  @include transition(all, 200ms, ease-in-out, 300ms);
+  position: absolute;
+  top: 0;
+  right: -$sWidgetsPadWidth;
+  width: $sWidgetsPadWidth;
+  height: 100%;
+  background: image-url('layout/widgets.png') no-repeat center center;
+  background-color: $cSecondaryBackground;
+  background-position: 50% 0;
+  z-index: 0;
+}
+
+.BuilderOnboarding-pad,
+.BuilderOnboarding-pad2,
+.BuilderOnboarding-pad3,
+.BuilderOnboarding-pad4 {
+  @include transition(width, 300ms, ease-in-out);
+  width: 0;
+  height: 100%;
+  z-index: 10;
+}
+
+.BuilderOnboarding.is-step1 {
+  .BuilderOnboarding-pad2 {
+    width: 72px;
+  }
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
+}
+.BuilderOnboarding.is-step2 {
+  .BuilderOnboarding-pad {
+    width: 72px;
+  }
+  .BuilderOnboarding-pad2 {
+    width: 345px;
+  }
+  .BuilderOnboarding-pad5 {
+    @include transition(right, 0, ease-in-out, 0);
+    right: -$sWidgetsPadWidth;
+  }
+  .BuilderOnboarding-description {
+    width: $sBigDescriptionWidth;
+  }
+}
+
+.BuilderOnboarding.is-step3 {
+  .BuilderOnboarding-pad2 {
+    width: 0;
+  }
+  .BuilderOnboarding-pad3 {
+    @include flex(1);
+  }
+
+  .BuilderOnboarding-description {
+    width: $sSmallDescriptionWidth;
+  }
+
+  .BuilderOnboarding-pad4 {
+    @include transition(right, 0, ease-in-out, 0);
+    right: 0;
+    width: $sWidgetsPadWidth - 13;
+    background: $cBackgroundColor;
+  }
+
+  .BuilderOnboarding-contentWrapper {
+    @include flex(0 0 416px);
+  }
+  .BuilderOnboarding-pad5 {
+    right: 0;
+  }
+}
+
+.BuilderOnboarding.is-step4 {
+  .BuilderOnboarding-pad {
+    @include flex(1);
+  }
+  .BuilderOnboarding-pad4 {
+    position: relative;
+    width: $sWidgetsPadWidth;
+    background: none;
+  }
+  .BuilderOnboarding-description {
+    width: $sRegularDescriptionWidth;
+  }
+  .BuilderOnboarding-pad5 {
+    right: 0;
+  }
+}
+
+.BuilderOnboarding-forgetLabel {
+  cursor: pointer;
+}
+
+.BuilderOnboarding-shadow {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: $sWidgetsPadWidth - 13;
+  height: 60px;
+  z-index: 1;
+}

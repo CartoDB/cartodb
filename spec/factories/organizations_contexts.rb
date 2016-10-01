@@ -1,9 +1,21 @@
 # encoding: utf-8
 require_relative '../support/factories/users'
+require 'helpers/unique_names_helper'
+
+include UniqueNamesHelper
 
 class TestUserFactory
   include CartoDB::Factories
+end
 
+module TableSharing
+  def share_table_with_user(table, user, access: CartoDB::Permission::ACCESS_READONLY)
+    vis = table.table_visualization
+    per = vis.permission
+    per.set_user_permission(user, access)
+    per.save
+    per.reload
+  end
 end
 
 shared_context 'organization with users helper' do
@@ -17,9 +29,10 @@ shared_context 'organization with users helper' do
 
   def test_organization
     organization = Organization.new
-    organization.name = org_name = "org#{rand(9999)}"
+    organization.name = unique_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 15
+    organization.viewer_seats = 15
     organization
   end
 
@@ -32,8 +45,8 @@ shared_context 'organization with users helper' do
 
     @org_user_owner = @helper.create_owner(@organization)
 
-    @org_user_1 = @helper.create_test_user("a#{random_username}", @organization)
-    @org_user_2 = @helper.create_test_user("b#{random_username}", @organization)
+    @org_user_1 = @helper.create_test_user(unique_name('user'), @organization)
+    @org_user_2 = @helper.create_test_user(unique_name('user'), @organization)
 
     @organization.reload
 

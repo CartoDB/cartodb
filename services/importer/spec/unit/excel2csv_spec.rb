@@ -11,6 +11,10 @@ require_relative '../doubles/csv_normalizer'
 include Mocha::ParameterMatchers
 
 describe CartoDB::Importer2::Excel2Csv do
+  before(:each) do
+    CartoDB.stubs(:python_path).returns('')
+    CartoDB.stubs(:python_bin_path).returns(`which python`.strip)
+  end
 
   describe '#excel2csv' do
     before(:each) do

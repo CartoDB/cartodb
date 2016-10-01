@@ -1,6 +1,23 @@
  var _ = require('underscore');
  var timer = require("grunt-timer");
  var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+ var duplicatedDependencies = require('./lib/build/tasks/shrinkwrap-duplicated-dependencies.js');
+
+ var REQUIRED_NPM_VERSION = /2.14.[0-9]+/;
+ var REQUIRED_NODE_VERSION = /0.10.[0-9]+/;
+ var SHRINKWRAP_MODULES_TO_VALIDATE = [
+  'backbone',
+  'camshaft-reference',
+  'carto',
+  'cartodb.js',
+  'cartocolor',
+  'd3',
+  'jquery',
+  'leaflet',
+  'perfect-scrollbar',
+  'torque.js',
+  'turbo-carto'
+];
 
   /**
    *  CartoDB UI assets generation
@@ -9,6 +26,45 @@
   module.exports = function(grunt) {
 
     if (timer) timer.init(grunt);
+
+    function preFlight(done) {
+      function checkVersion(cmd, versionRegExp, name, done) {
+        require("child_process").exec(cmd, function (error, stdout, stderr) {
+          var err = null;
+          if (error) {
+            err = 'failed to check version for ' + name;
+          } else {
+            if (!versionRegExp.test(stdout)) {
+              err = 'installed ' + name + ' version does not match with required one ' + versionRegExp.toString() + " installed: " +  stdout;
+            }
+          }
+          if (err) {
+            grunt.log.fail(err);
+          }
+          done && done(err ? new Error(err): null);
+        });
+      }
+      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+    }
+
+    preFlight(function (err) {
+      if (err) {
+        grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+        grunt.log.fail("PLEASE installed required versions to build CARTO:\n- npm: " + REQUIRED_NPM_VERSION + "\n- node: " + REQUIRED_NODE_VERSION);
+        grunt.log.fail("#################################################");
+        process.exit(1);
+      }
+    });
+
+    var duplicatedModules = duplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+    if (duplicatedModules.length > 0) {
+      grunt.log.fail("############### /!\\ CAUTION /!\\ #################");
+      grunt.log.fail("Duplicated dependencies found in npm-shrinkwrap.json file.");
+      grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
+      grunt.log.fail("#################################################");
+      process.exit(1);
+    }
 
     var ROOT_ASSETS_DIR = './public/assets/';
     var ASSETS_DIR = './public/assets/<%= pkg.version %>';
@@ -72,7 +128,9 @@
     grunt.loadNpmTasks('grunt-available-tasks');
 
     // Load Grunt tasks
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt, {
+      pattern: ['grunt-*', '@*/grunt-*', '!grunt-timer']
+    });
 
     require('./lib/build/tasks/manifest').register(grunt, ASSETS_DIR);
 
@@ -91,16 +149,28 @@
 
     grunt.registerTask('invalidate', "invalidate cache", function() {
       var done = this.async();
-      var cmd = grunt.template.process("curl -H 'Fastly-Key: <%= aws.FASTLY_API_KEY %>' -X POST 'https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'");
-      console.log(cmd);
-      require("child_process").exec(cmd, function(error, stdout, stderr) {
-        if (!error) {
-          grunt.log.ok('CDN invalidated (fastly) -> ' + stdout);
+      var url = require('url');
+      var https = require('https');
+
+      var options = url.parse(grunt.template.process('https://api.fastly.com/service/<%= aws.FASTLY_CARTODB_SERVICE %>/purge_all'));
+      options['method'] = 'POST';
+      options['headers'] = {
+        'Fastly-Key': aws.FASTLY_API_KEY,
+        'Content-Length': '0' //Disables chunked encoding
+      };
+      console.log(options);
+
+      https.request(options, function(response) {
+        if(response.statusCode == 200) {
+          grunt.log.ok('CDN invalidated (fastly)');
         } else {
-          grunt.log.error('CDN not invalidated (fastly)');
+          grunt.log.error('CDN not invalidated (fastly), code: ' + response.statusCode)
         }
         done();
-      });
+      }).on('error', function(e) {
+        grunt.log.error('CDN not invalidated (fastly)');
+        done();
+      }).end();
     });
 
     grunt.registerTask('config', "generates assets config for current configuration", function() {
@@ -145,13 +215,11 @@
       grunt.config.set(name, val);
     });
 
-    grunt.registerTask('jasmine-server', function () {
-      grunt.log.writeln('Deprecated, just use `grunt dev`, open http://localhost:8089 (if not opened automatically)');
-    });
-
+    // still have to use this custom task because registerCmdTask outputs tons of warnings like:
+    // path/to/some/ignored/files:0:0: File ignored because of your .eslintignore file. Use --no-ignore to override.
     grunt.registerTask('lint', 'lint source files', function () {
       var done = this.async();
-      require('child_process').exec('PATH=$(npm bin):$PATH semistandard', function (error, stdout, stderr) {
+      require('child_process').exec('(git diff --name-only --relative; git diff origin/master.. --name-only --relative) | grep \'\\.js\\?$\' | xargs node_modules/.bin/semistandard', function (error, stdout, stderr) {
         if (error) {
           grunt.log.fail(error);
 
@@ -161,18 +229,22 @@
           grunt.fail.warn('try `node_modules/.bin/semistandard --format src/filename.js` to auto-format code (you might still need to fix some things manually).');
         } else {
           grunt.log.ok('All linted files OK!');
-          grunt.log.writeln('Note that files listed in .eslintignore are not linted');
+          grunt.log.writelns('>> Note that files listed in .eslintignore are not linted');
         }
         done();
       });
     });
 
+    registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
+    registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
+
     // Order in terms of task dependencies
     grunt.registerTask('js',          ['cdb', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
-    'For manual testing use `grunt jasmine` directly', ['lint', 'pre_default', 'jasmine']);
-    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:deep_insights', 'copy:cartodbjs_v4']);
+    'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);
+    grunt.registerTask('editor3', ['browserify:vendor_editor3', 'browserify:common_editor3', 'browserify:editor3', 'browserify:public_editor3']);
+    grunt.registerTask('css_editor_3', ['copy:cartofonts', 'copy:iconfont', 'copy:cartoassets', 'copy:perfect_scrollbar', 'copy:colorpicker', 'copy:deep_insights', 'copy:cartodbjs_v4']);
     grunt.registerTask('css',         ['copy:vendor', 'css_editor_3', 'copy:app', 'compass', 'concat:css']);
     grunt.registerTask('default',     ['pre_default', 'css', 'manifest']);
     grunt.registerTask('minimize',    ['default', 'copy:js', 'exorcise', 'uglify']);
@@ -188,4 +260,30 @@
       ['setConfig:env.browserify_watch:true', 'browserify', 'build-jasmine-specrunners', 'connect', 'watch']);
     grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting',
       ['setConfig:assets_dir:./tmp/sourcemaps', 'config', 'js', 'copy:js', 'exorcise', 'uglify']);
+
+    /**
+     * Delegate task to commandline.
+     * @param {String} name - If taskname starts with npm it's run a npm script (i.e. `npm run foobar`
+     * @param {Object} d - d as in data
+     * @param {Array} d.args - arguments to pass to the d.cmd
+     * @param {String} [d.cmd = process.execPath]
+     * @param {String} [d.desc = ''] - description
+     * @param {...string} args space-separated arguments passed to the cmd
+     */
+    function registerCmdTask (name, opts) {
+      opts = _.extend({
+        cmd: process.execPath,
+        desc: '',
+        args: []
+      }, opts);
+      grunt.registerTask(name, opts.desc, function () {
+        // adapted from http://stackoverflow.com/a/24796749
+        var done = this.async();
+        grunt.util.spawn({
+          cmd: opts.cmd,
+          args: opts.args,
+          opts: { stdio: 'inherit' }
+        }, done);
+      });
+    }
   };

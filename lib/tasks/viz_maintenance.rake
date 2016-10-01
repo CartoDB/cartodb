@@ -114,6 +114,18 @@ namespace :cartodb do
       puts "Visualization #{args[:vis_id]} imported"
     end
 
+    desc "Exports a .carto file including visualization metadata and the tables"
+    task :export_full_visualization, [:vis_id] => :environment do |_, args|
+      visualization_id = args[:vis_id]
+      raise "Missing visualization id argument" unless visualization_id
+
+      visualization = Carto::Visualization.where(id: visualization_id).first
+      raise "Visualization not found" unless visualization
+
+      file = Carto::VisualizationExport.new.export(visualization, visualization.user)
+      puts "Visualization exported: #{file}"
+    end
+
     desc "Purges old visualization backups"
     task :purge_old_visualization_backups => :environment do |_|
       vis_export_service = Carto::VisualizationsExportService.new
@@ -123,6 +135,20 @@ namespace :cartodb do
       purged_count = vis_export_service.purge_old
 
       puts "Purge complete. Removed #{purged_count} items"
+    end
+
+    desc "Updates visualizations auth tokens from named maps"
+    task update_auth_tokens: :environment do |_|
+      Carto::Visualization.find_each(conditions: "privacy = 'password'") do |visualization|
+        puts "Updating #{visualization.id}"
+        begin
+          tokens = visualization.get_auth_tokens
+          puts "  from #{visualization.auth_token} to #{tokens.first}"
+          visualization.update_column(:auth_token, tokens.first)
+        rescue => e
+          puts "ERROR #{e.inspect}"
+        end
+      end
     end
 
     private

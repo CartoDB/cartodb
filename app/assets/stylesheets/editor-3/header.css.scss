@@ -5,16 +5,29 @@
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
+.Editor-HeaderInfoEditor {
+  @include display-flex();
+  height: 64px;
+  margin-bottom: 21px;
+}
+.Editor-HeaderInfoEditorShape {
+  line-height: 44px;
+}
+
 .Editor-HeaderInfo {
   @include display-flex();
-  @include align-items(flex-start);
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 
   &.is-block {
     display: block;
   }
 }
-.Editor-HeaderInfo-ListItem {
+
+.Editor-HeaderInfo--noMargin {
+  margin-bottom: 0;
+}
+
+.Editor-HeaderInfo-listItem {
   display: inline-block;
   margin-right: 8px;
   vertical-align: middle;
@@ -24,35 +37,48 @@
   }
 }
 
-.Editor-HeaderInfo-Inner {
+.Editor-HeaderInfo-inner {
   @include flex(1);
+  max-width: calc(100% - 32px);
 }
-.Editor-HeaderInfo-Back {
+.Editor-HeaderInfo-inner--wide {
+  max-width: 100%;
+}
+.Editor-HeaderInfo-back {
   margin-top: 7px;
 }
-.Editor-HeaderInfo-Title {
+.Editor-HeaderInfo-title {
+  @include display-flex();
+  @include align-items(center);
+  margin-bottom: 7px;
+}
+.Editor-HeaderInfo-titleText {
+  @include flex(1);
+  display: block;
+  width: 0;
+  padding-right: 16px;
+}
+.Editor-HeaderInfo-actions {
   @include display-flex();
   @include align-items(center);
 }
-.Editor-HeaderInfo-TitleText {
-  @include flex(1);
-  width: 0;
-  padding-right: 16px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.Editor-HeaderInfo-ActionsItem {
-  display: inline-block;
+.Editor-HeaderInfo-actionsItem {
   margin-left: 4px;
-  vertical-align: middle;
 }
-.Editor-HeaderInfo-ActionsItem:first-child {
+.Editor-HeaderInfo-actionsItem:first-child {
   margin-left: 0;
+}
+
+.Editor-HeaderPad {
+  width: $baseSize * 3;
+  min-width: $baseSize * 3;
+  height: $baseSize * 3;
+  box-sizing: border-box;
 }
 
 .Editor-HeaderNumeration {
   width: $baseSize * 3;
+  min-width: $baseSize * 3;
   height: $baseSize * 3;
   border: 1px solid $cMainLine;
   border-radius: 4px;
@@ -62,4 +88,20 @@
   line-height: 23px;
   text-align: center;
   box-sizing: border-box;
+}
+
+.Editor-headerLayerName {
+  @include flex(1);
+}
+
+.Editor-HeaderInfo.is-dark {
+  .Editor-HeaderInfo-titleText {
+    color: $cWhite;
+  }
+  .CDB-IconFont-arrowPrev {
+    color: $cWhite;
+  }
+}
+.Editor-HeaderInfo-publishDate {
+  @include flex(1);
 }

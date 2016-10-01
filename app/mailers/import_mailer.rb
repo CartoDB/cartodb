@@ -23,7 +23,7 @@ class ImportMailer < ActionMailer::Base
   def set_subject
     if @total_tables == 1
       if @errors.nil?
-        subject = "Your CartoDB dataset import just finished"
+        subject = "Your dataset import just finished"
       else
         subject = "There was some error while importing your dataset"
       end
@@ -31,7 +31,7 @@ class ImportMailer < ActionMailer::Base
       if @imported_tables == 0
         subject = "There was some error while importing your datasets"
       else
-        subject = "Your CartoDB datasets import just finished"
+        subject = "Your datasets import just finished"
       end
     end
 

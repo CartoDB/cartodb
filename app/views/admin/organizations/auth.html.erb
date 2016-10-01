@@ -31,71 +31,86 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label FormAccount-label--multipleLines">Whitelisted email domains</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Whitelisted email domains</label>
           </div>
           <div class="FormAccount-rowData">
             <div class="FormAccount-tags js-domains">
-              <ul class="FormAccount-tagsList js-domainsList">
-                <span class= "FormAccount-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. cartodb.com)</span>
+              <ul class="CDB-Text CDB-Size-medium FormAccount-tagsList js-domainsList">
+                <span class= "CDB-Text CDB-Size-small u-altTextColor FormAccount-tagsList--placeholder js-placeholder">Only valid domains will be added (ex. carto.com)</span>
               </ul>
             </div>
-            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist", :placeholder => "Only valid domains will be added (ex. cartodb.com)" %>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText warning">If empty, login and signup pages will be disabled</p>
+            <%= f.hidden_field :whitelisted_email_domains, :value => "#{ @organization[:whitelisted_email_domains].join(',') if !@organization[:whitelisted_email_domains].blank? }", :class => "js-whitelist CDB-InputText CDB-Text", :placeholder => "Only valid domains will be added (ex. carto.com)" %>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">If empty, login and signup pages will be disabled</p>
             </div>
           </div>
         </div>
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Username / password</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Username / password</label>
           </div>
           <div class="FormAccount-rowData">
             <div class="Toggler">
               <%= f.check_box :auth_username_password_enabled, :id => "auth_username_password_enabled" %>
               <%= label_tag(:auth_username_password_enabled, '') %>
             </div>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText">Allow users to signup with their own username & email submission</p>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Allow users to signup with their own username & email submission</p>
             </div>
           </div>
         </div>
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Google Apps Login</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Apps Login</label>
           </div>
           <div class="FormAccount-rowData">
             <div class="Toggler">
               <%= f.check_box :auth_google_enabled, :id => "auth_google_enabled" %>
               <%= label_tag(:auth_google_enabled, '') %>
             </div>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText">Allow users to signup with their own Google domain account</p>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Allow users to signup with their own Google domain account</p>
             </div>
           </div>
         </div>
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Strong Passwords</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">GitHub Login</label>
+          </div>
+          <div class="FormAccount-rowData">
+            <div class="Toggler">
+              <%= f.check_box :auth_github_enabled, :id => "auth_github_enabled" %>
+              <%= label_tag(:auth_github_enabled, '') %>
+            </div>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Allow users to signup with their own GitHub account</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="FormAccount-row">
+          <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Strong Passwords</label>
           </div>
           <div class="FormAccount-rowData">
             <div class="Toggler">
               <%= f.check_box :strong_passwords_enabled, :id => "strong_passwords_enabled" %>
               <%= label_tag(:strong_passwords_enabled, '') %>
             </div>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText">Passwords must contain 8 characters, and require a combination of letters, numbers, and/or special characters.</p>
+            <div class="u-flex u-lSpace--xl">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Passwords must contain 8 characters, and require a combination of letters, numbers, and/or special characters.</p>
             </div>
           </div>
         </div>
 
         <div class="FormAccount-footer">
           <p class="FormAccount-footerText"></p>
-          <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-            <% content_tag(:span, 'Save changes') %>
-          <% end %>
+          <button type="submit" class="CDB-Button CDB-Button--primary">
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+          </button>
         </div>
 
       <% end %>

@@ -2,8 +2,10 @@
 
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/tables_controller'
+require 'helpers/unique_names_helper'
 
 describe Carto::Api::TablesController do
+  include UniqueNamesHelper
 
   describe '#show legacy tests' do
 
@@ -15,7 +17,7 @@ describe Carto::Api::TablesController do
     end
 
     before(:each) do
-      stub_named_maps_calls
+      bypass_named_maps
       delete_user_data @user
     end
 
@@ -44,7 +46,7 @@ describe Carto::Api::TablesController do
     it "check imported table metadata" do
       data_import = DataImport.create(
                                       user_id: @user.id,
-                                      data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'
+                                      data_source: Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').to_s
                                       ).run_import!
 
       get_json api_v1_tables_show_url(params.merge(id: data_import.table_id)) do |response|
@@ -154,7 +156,7 @@ describe Carto::Api::TablesController do
     include_context 'organization with users helper'
 
     it 'loads my table if other user has shared a table with the same name with me' do
-      table_name = "table#{rand(99999)}"
+      table_name = unique_name('table')
       his_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_2.id)
       share_table(his_table, @org_user_2, @org_user_1)
       my_table = create_table(privacy: UserTable::PRIVACY_PRIVATE, name: table_name, user_id: @org_user_1.id)

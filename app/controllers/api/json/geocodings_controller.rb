@@ -16,7 +16,7 @@ class Api::Json::GeocodingsController < Api::ApplicationController
         geocoding = current_user.geocodings_dataset.where(id: params[:id]).first
         return head(401) unless geocoding && params[:state] == 'cancelled'
         @stats_aggregator.timing('save') do
-          geocoding.update(state: 'cancelled')
+          geocoding.cancel
         end
         render_jsonp(geocoding.reload)
       rescue => e

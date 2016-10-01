@@ -1,107 +1,163 @@
 namespace :cartodb do
   namespace :ldap do
-    desc "Tests an LDAP connection"
-    task :test_ldap_connection, [] => :environment do |t, args|
+    desc "Tests an LDAP connection. Returns a summary of all tests ran, with success status and error messages."
+    task :test_ldap_connection, [:from_database] => :environment do |_t, args|
+      args.with_defaults(from_database: false)
 
-      raise "Missing HOST" if ENV['HOST'].blank?
-      host = ENV['HOST']
+      test_user     = ENV['TEST_USER']
+      test_password = ENV['TEST_PASSWORD']
+      test_search   = ENV['TEST_SEARCH']
+      ldap = if args.from_database
+               Carto::Ldap::Configuration.first
+             else
+               ldap_configuration_from_environment(Carto::Organization.new)
+             end
 
-      raise "Missing PORT" if ENV['PORT'].blank?
-      port = ENV['PORT']
+      # Test configuration
+      config_result = if ldap.valid?
+                        { success: true }
+                      else
+                        { success: false, error: ldap.errors.to_h }
+                      end
 
-      encryption = ENV['ENCRYPTION'].blank? ? nil : ENV['ENCRYPTION']
+      result = { config: config_result }
 
-      ssl_version = ENV['SSL_VERSION'].blank? ? nil : ENV['SSL_VERSION']
-
-      raise "Missing CONNECTION_USER" if ENV['CONNECTION_USER'].blank?
-      connection_user = ENV['CONNECTION_USER']
-
-      raise "Missing CONNECTION_PASSWORD" if ENV['CONNECTION_PASSWORD'].blank?
-      connection_password = ENV['CONNECTION_PASSWORD']
-
-      ldap = Carto::Ldap::Configuration.new({
-          host:                 host,
-          port:                 port,
-          encryption:           encryption,
-          ssl_version:          ssl_version,
-          connection_user:      connection_user,
-          connection_password:  connection_password,
-        })
-
-      result = ldap.test_connection
-
-      if result[:success]
-        puts "OK"
-      else
-        puts "ERROR:\n#{result[:error]}"
+      REQUIRED_FIELDS = [:host, :port, :connection_user, :connection_password].freeze
+      if !config_result[:success] && config_result[:error].keys.any? { |k| REQUIRED_FIELDS.include?(k) }
+        result[:connection] = { success: false, error: 'Configuration not valid' }
       end
+
+      # Test connection
+      result[:connection] = ldap.test_connection unless result[:connection]
+
+      CONNECTION_DEPENDENT_TESTS = [:login, :user_search, :group_search, :search].freeze
+      if result[:connection][:success]
+        result[:connection].delete(:connection)
+        if ldap.domain_bases.present?
+          result[:login] = if test_user.present? && test_password.present?
+                            test_ldap_user(ldap, test_user, test_password)
+                           else
+                             { success: false, error: 'Test credentials not provided' }
+                           end
+
+          result[:user_search] = if ldap.user_object_class.present?
+                                   user_count = ldap.users.count
+                                   { success: user_count > 0, count: user_count }
+                                 else
+                                   { success: false, error: 'User class not provided' }
+                                 end
+
+          result[:group_search] = if ldap.group_object_class.present?
+                                    group_count = ldap.groups.count
+                                    { success: group_count > 0, count: group_count }
+                                  else
+                                    { success: false, error: 'Group class not provided' }
+                                  end
+
+          result[:search] = if test_search.present?
+                              object_count = ldap.send(:search_in_domain_bases, Net::LDAP::Filter.eq('objectClass', test_search)).count
+                              { success: true, count: object_count }
+                            else
+                              { success: false, error: 'Object class not provided' }
+                            end
+        else
+          CONNECTION_DEPENDENT_TESTS.each do |test|
+            result[test] = { success: false, error: 'Domain bases not provided' }
+          end
+        end
+      else
+        CONNECTION_DEPENDENT_TESTS.each do |test|
+          result[test] = { success: false, error: 'Connection failed' }
+        end
+      end
+      puts JSON.pretty_generate(result)
     end
 
     # INFO: Separate multiple domain names by commas
     desc "Creates an LDAP Configuration entry"
-    task :create_ldap_configuration, [] => :environment do |t, args|
+    task :create_ldap_configuration, [] => :environment do |_t, _args|
 
       if ENV['ORGANIZATION_ID'].blank?
         if ENV['ORGANIZATION_NAME'].blank?
           raise "Missing ORGANIZATION_ID and ORGANIZATION_NAME. Must provide one of both"
         else
-          organization_id = ::Organization.where(name: ENV['ORGANIZATION_NAME']).first.id
+          organization = Carto::Organization.where(name: ENV['ORGANIZATION_NAME']).first
         end
-       else
-        organization_id = ENV['ORGANIZATION_ID']
-       end
+      else
+        organization = Carto::Organization.find(ENV['ORGANIZATION_ID'])
+      end
+      ldap = ldap_configuration_from_environment(organization)
 
-      raise "Missing HOST" if ENV['HOST'].blank?
-      host = ENV['HOST']
+      unless ldap.valid?
+        missing = ldap.errors.keys.reject { |k| k == :domain_bases_list }
+        raise "Missing: " + missing.join(', ').upcase
+      end
 
-      raise "Missing PORT" if ENV['PORT'].blank?
-      port = ENV['PORT']
-
-      encryption = ENV['ENCRYPTION'].blank? ? nil : ENV['ENCRYPTION']
-
-      ssl_version = ENV['SSL_VERSION'].blank? ? nil : ENV['SSL_VERSION']
-
-      raise "Missing CONNECTION_USER" if ENV['CONNECTION_USER'].blank?
-      connection_user = ENV['CONNECTION_USER']
-
-      raise "Missing CONNECTION_PASSWORD" if ENV['CONNECTION_PASSWORD'].blank?
-      connection_password = ENV['CONNECTION_PASSWORD']
-
-      raise "Missing USER_ID_FIELD" if ENV['USER_ID_FIELD'].blank?
-      user_id_field = ENV['USER_ID_FIELD']
-
-      raise "Missing USERNAME_FIELD" if ENV['USERNAME_FIELD'].blank?
-      username_field = ENV['USERNAME_FIELD']
-
-      email_field = ENV['EMAIL_FIELD'].blank? ? nil : ENV['EMAIL_FIELD']
-
-      raise "Missing DOMAIN_BASES" if ENV['DOMAIN_BASES'].blank?
-      domain_bases = ENV['DOMAIN_BASES'].split(Carto::Ldap::Configuration::DOMAIN_BASES_SEPARATOR)
-
-      raise "Missing USER_OBJECT_CLASS" if ENV['USER_OBJECT_CLASS'].blank?
-      user_object_class = ENV['USER_OBJECT_CLASS']
-
-      raise "Missing GROUP_OBJECT_CLASS" if ENV['GROUP_OBJECT_CLASS'].blank?
-      group_object_class = ENV['GROUP_OBJECT_CLASS']
-
-      ldap = Carto::Ldap::Configuration.create({
-          organization_id:      organization_id,
-          host:                 host,
-          port:                 port,
-          encryption:           encryption,
-          ssl_version:          ssl_version,
-          connection_user:      connection_user,
-          connection_password:  connection_password,
-          user_id_field:        user_id_field,
-          username_field:       username_field,
-          email_field:          email_field,
-          domain_bases_list:    domain_bases,
-          user_object_class:    user_object_class,
-          group_object_class:   group_object_class
-        })
-
-      puts "LDAP configuration created with id: #{ldap.id}"
+      if ldap.save
+        puts "LDAP configuration created with id: #{ldap.id}"
+      else
+        puts "Error saving LDAP configuration"
+      end
     end
 
+    desc "Deletes existing LDAP Configuration entries"
+    task :reset_ldap_configuration, [] => :environment do |_t, _args|
+      Carto::Ldap::Configuration.delete_all
+    end
+  end
+
+  private
+
+  def ldap_configuration_from_environment(organization)
+    # Mandatory: connection parameters
+    host = ENV['HOST']
+    port = ENV['PORT']
+    ssl_version = ENV['SSL_VERSION'].blank? ? nil : ENV['SSL_VERSION']
+    encryption = ENV['ENCRYPTION'].blank? ? nil : ENV['ENCRYPTION']
+    connection_user = ENV['CONNECTION_USER']
+    connection_password = ENV['CONNECTION_PASSWORD']
+
+    # Optional: for testing auth/searches
+    user_id_field            = ENV['USER_ID_FIELD']
+    domain_bases             = ENV['DOMAIN_BASES']
+    additional_search_filter = ENV['ADDITIONAL_SEARCH_FILTER']
+
+    # Optional: for testing searches
+    username_field     = ENV['USERNAME_FIELD']
+    email_field        = ENV['EMAIL_FIELD']
+    user_object_class  = ENV['USER_OBJECT_CLASS']
+    group_object_class = ENV['GROUP_OBJECT_CLASS']
+
+    Carto::Ldap::Configuration.new(
+      organization:             organization,
+      host:                     host,
+      port:                     port,
+      encryption:               encryption,
+      ssl_version:              ssl_version,
+      connection_user:          connection_user,
+      connection_password:      connection_password,
+      user_id_field:            user_id_field,
+      username_field:           username_field,
+      additional_search_filter: additional_search_filter,
+      email_field:              email_field,
+      domain_bases:             domain_bases,
+      user_object_class:        user_object_class,
+      group_object_class:       group_object_class
+    )
+  end
+
+  def test_ldap_user(ldap, test_user, test_password)
+    unless ldap.user_id_field.present? && ldap.username_field.present? && ldap.email_field.present?
+      return { success: false, error: 'User id, username or email attribute names not specified.' }
+    end
+
+    entry = ldap.authenticate(test_user, test_password)
+    return { success: false, error: 'Cannot login with test credentials' } unless entry
+
+    if entry.email && entry.username
+      { success: true, email: entry.email, username: entry.username }
+    else
+      { success: false, error: 'Cannot retrieve user attributes. Check the email and username attribute names' }
+    end
   end
 end

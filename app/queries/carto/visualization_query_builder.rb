@@ -196,8 +196,8 @@ class Carto::VisualizationQueryBuilder
   def build
     query = Carto::Visualization.scoped
 
-    if @name && !(@id || @user_id || @organization_id)
-      CartoDB.notify_debug("VQB query by name without user_id nor org_id", stack: caller.take(25))
+    if @name && !(@id || @user_id || @organization_id || @owned_by_or_shared_with_user_id || @shared_with_user_id)
+      CartoDB::Logger.debug(message: "VQB query by name without user_id nor org_id")
     end
 
     if @id
@@ -250,13 +250,14 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @exclude_synced_external_sources
-      query = query.joins(%Q{
+      query = query.joins(%{
                             LEFT JOIN external_sources es
                               ON es.visualization_id = visualizations.id
                           })
-                   .joins(%Q{
+                   .joins(%{
                             LEFT JOIN external_data_imports edi
-                              ON  edi.external_source_id = es.id
+                              ON edi.external_source_id = es.id
+                              AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
                               #{exclude_only_synchronized}
                           })
                    .where("edi.id IS NULL")

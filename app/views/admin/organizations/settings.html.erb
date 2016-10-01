@@ -7,6 +7,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
     var avatar_valid_extensions = <%= raw @avatar_valid_extensions %>;
+    var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>"
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
@@ -28,7 +29,7 @@
 
       <div class="FormAccount-row js-avatarSelector">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Organization logo</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Organization logo</label>
         </div>
         <div class="FormAccount-rowData FormAccount-avatar">
           <div class="FormAccount-avatarPreview">
@@ -45,7 +46,7 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Brand color</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Brand color</label>
         </div>
         <div class="FormAccount-rowData">
           <button type="button" class="js-colorPicker UserSettings-ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
@@ -59,22 +60,22 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Display name</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Display name</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :display_name, :class => "FormAccount-input FormAccount-input--med" %>
+          <%= f.text_field :display_name, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Check your <a href="<%= CartoDB.base_url(@organization.name) %>">public page</a></p>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Website</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Website</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :website, :class => "FormAccount-input FormAccount-input--med" %>
+          <%= f.text_field :website, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -83,10 +84,10 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Description</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Description</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+          <%= f.text_area :description, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -95,10 +96,10 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Twitter username</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Twitter username</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :twitter_username, :class => "FormAccount-input FormAccount-input--med" %>
+          <%= f.text_field :twitter_username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
         </div>
         <div class="FormAccount-rowInfo">
           <p class="FormAccount-rowInfoText"></p>
@@ -107,60 +108,57 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Disqus shortname</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Disqus shortname</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :discus_shortname, :class => "FormAccount-input FormAccount-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
+          <%= f.text_field :discus_shortname, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :placeholder => "If empty, CARTO will moderate them for you" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Be notified by new comments in your pages</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Be notified by new comments in your pages</p>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Internal support email</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Internal support email</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :admin_email, :class => "FormAccount-input FormAccount-input--med", :placeholder => "if empty, we will use your email" %>
+          <%= f.text_field :admin_email, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :placeholder => "if empty, we will use your email" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Email you will use to give support to your users</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Email you will use to give support to your users</p>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Default new user quota</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Default new user quota</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
+          <%= f.text_field :default_quota_in_bytes, :value => "#{ ( @organization[:default_quota_in_bytes].to_i / (1024 * 1024) ) if !@organization[:default_quota_in_bytes].blank? }", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @organization.errors[:default_quota_in_bytes].present? } js-userQuota" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if (@organization.errors[:default_quota_in_bytes].present?) %>
-              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @organization.errors[:default_quota_in_bytes].first %></p>
+              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @organization.errors[:default_quota_in_bytes].first %></p>
             <% else %>
-              <p class="FormAccount-rowInfoText">Set (in MB) the quota of new users in your organization</p>
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Set (in MB) the quota of new users in your organization</p>
             <% end %>
           </div>
         </div>
       </div>
 
-      <div class="FormAccount-title">
-        <p class="FormAccount-titleText">Users API key</p>
-      </div>
-
-      <span class="FormAccount-separator"></span>
-
       <div class="FormAccount-row">
+        <p class="CDB-Text CDB-Size-large u-bSpace--xl">Users API key</p>
         <div class="FormAccount-rowData">
-          <button class="Button--link js-regenerateOrgUsersApiKey" data-current_username="<%= current_user.username %>">Regenerate all API keys</button>
+          <button class="CDB-Button CDB-Button--secondary js-regenerateOrgUsersApiKey"  data-current_username="<%= current_user.username %>">
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Regenerate all API keys</span>
+          </button>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">This involves all your organization users API keys</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">This involves all your organization users API keys</p>
           </div>
         </div>
       </div>
 
-      <% if current_user.has_feature_flag?('google_maps') && current_user.organization_owner? %>
+      <% if current_user.google_maps_geocoder_enabled? && current_user.organization_owner? %>
 
         <div class="FormAccount-title">
           <p class="FormAccount-titleText">Configure API keys from external providers</p>
@@ -170,7 +168,7 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Google Maps query string</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps query string</label>
           </div>
           <div class="FormAccount-rowData">
             <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
@@ -178,22 +176,22 @@
           <div class="FormAccount-rowInfo">
             <p class="FormAccount-rowInfoText">
               This is the <%= @organization.name %> Google Maps query string.
-              Contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              Contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
             </p>
           </div>
         </div>
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label FormAccount-label--multipleLines">Google Maps private key</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Google Maps private key</label>
           </div>
           <div class="FormAccount-rowData">
-            <%= f.text_field :google_maps_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
+            <%= f.text_field :google_maps_private_key, class: "FormAccount-input FormAccount-input--long is-disabled", :readonly => "true" %>
           </div>
           <div class="FormAccount-rowInfo">
             <p class="FormAccount-rowInfoText">
               This is the <%= @organization.name %> Google Maps private key
-              contact with <a href="mailto:support@cartodb.com">support@cartodb.com</a> to change it.
+              contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
             </p>
           </div>
         </div>
@@ -202,9 +200,9 @@
 
       <div class="FormAccount-footer">
         <p class="FormAccount-footerText"></p>
-        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-          <% content_tag(:span, 'Save changes') %>
-        <% end %>
+          <button type="submit" class="CDB-Button CDB-Button--primary">
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+          </button>
       </div>
     <% end %>
 

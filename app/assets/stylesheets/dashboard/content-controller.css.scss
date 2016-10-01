@@ -9,7 +9,9 @@
   display: block;
   min-height: 600px;
   margin: 0 auto;
-  padding-top: 81px
+  padding-top: 80px;
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
 }
 
 .ContentController.on-boarding { 

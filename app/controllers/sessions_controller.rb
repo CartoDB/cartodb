@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
+require_dependency 'oauth/github/config'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -17,7 +18,8 @@ class SessionsController < ApplicationController
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
 
   before_filter :load_organization
-  before_filter :initialize_google_plus_config
+  before_filter :initialize_google_plus_config,
+                :initialize_github_config
   before_filter :api_authorization_required, only: :show
 
   def new
@@ -27,11 +29,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if Carto::Ldap::Manager.new.configuration_present?
-      user = authenticate_with_ldap
-    else
-      user = authenticate_with_credentials_or_google
-    end
+    # Try LDAP authentication first
+    user = authenticate_with_ldap if Carto::Ldap::Manager.new.configuration_present?
+
+    # Fallback to google/password if LDAP deactivated or failed
+    user = authenticate_with_credentials_or_google unless user
+
     (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
@@ -134,6 +137,15 @@ class SessionsController < ApplicationController
     @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action, 'google_access_token', button_color)
   end
 
+  def initialize_github_config
+    unless @organization && !@organization.auth_github_enabled
+      @github_config = Carto::Github::Config.instance(form_authenticity_token,
+                                                      invitation_token: params[:invitation_token],
+                                                      organization_name: @organization.try(:name))
+      @button_color = @organization && @organization.color ? organization_color(@organization) : nil
+    end
+  end
+
   def extract_username(request, params)
     (params[:email].present? ? username_from_email(params[:email]) : CartoDB.extract_subdomain(request)).strip.downcase
   end
@@ -147,8 +159,8 @@ class SessionsController < ApplicationController
 
   def authenticate_with_ldap
     username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
-      # INFO: LDAP allows characters that we don't
-    authenticate!(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
+    # INFO: LDAP allows characters that we don't
+    authenticate(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
   end
 
   def authenticate_with_credentials_or_google

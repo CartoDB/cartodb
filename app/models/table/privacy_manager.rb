@@ -11,30 +11,30 @@ module CartoDB
     end
 
     def apply_privacy_change(metadata_table, old_privacy, privacy_changed = false)
-      begin
+      @table.map.save
+
+      # Separate on purpose as if fails here no need to revert visualizations' privacy
+      revertable_privacy_change(metadata_table, old_privacy) do
+        # Map saving actually doesn't changes privacy, but to keep on same reverting logic
         @table.map.save
+        set_from_table_privacy(@table.privacy)
+      end
 
-        # Separate on purpose as if fails here no need to revert visualizations' privacy
-        revertable_privacy_change(metadata_table, old_privacy) do
-          # Map saving actually doesn't changes privacy, but to keep on same reverting logic
-          @table.map.save
-          set_from_table_privacy(@table.privacy)
-        end
+      revertable_privacy_change(metadata_table, old_privacy,
+                                [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
+        propagate_to([metadata_table.table_visualization])
+        notify_privacy_affected_entities(metadata_table) if privacy_changed
+      end
 
-        revertable_privacy_change(metadata_table, old_privacy,
-                                  [metadata_table.table_visualization] + metadata_table.affected_visualizations) do
-          propagate_to([metadata_table.table_visualization])
-          notify_privacy_affected_entities(metadata_table) if privacy_changed
-        end
-
-      rescue NoMethodError => exception
-        CartoDB.notify_debug("#{exception.message} #{exception.backtrace}", {
-          table_id: @table.id,
-          table_name: @table.name,
-          user_id: @table.user_id,
-          data_import_id: @table.data_import_id
-          })
-
+    rescue NoMethodError => exception
+      if @table.map.nil? && exception.message =~ /undefined method `save' for nil:NilClass/
+        CartoDB::Logger.debug(message: 'Privacy change of table with no map',
+                              exception: exception,
+                              table_id: @table.id,
+                              table_name: @table.name,
+                              user: User.where(id: @table.user_id),
+                              data_import_id: @table.data_import_id)
+      else
         raise exception
       end
     end
@@ -42,7 +42,7 @@ module CartoDB
     def set_from_visualization(visualization)
       set_public                if visualization.public?
       set_public_with_link_only if visualization.public_with_link?
-      set_private               if visualization.private? or visualization.organization?
+      set_private               if visualization.private? || visualization.organization?
       table.update(privacy: privacy)
       self
     end
@@ -82,18 +82,31 @@ module CartoDB
     def set_public
       self.privacy = ::UserTable::PRIVACY_PUBLIC
       set_database_permissions(grant_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
+        set_database_permissions(grant_query(overview_table))
+      end
       self
     end
 
     def set_private
       self.privacy = ::UserTable::PRIVACY_PRIVATE
       set_database_permissions(revoke_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
+        set_database_permissions(revoke_query(overview_table))
+      end
       self
     end
 
     def set_public_with_link_only
       self.privacy = ::UserTable::PRIVACY_LINK
       set_database_permissions(grant_query)
+      overviews_service = Carto::OverviewsService.new(owner.in_database)
+      overviews_service.overview_tables(fully_qualified_table_name(table.name)).each do |overview_table|
+        set_database_permissions(grant_query(overview_table))
+      end
+      self
     end
 
     def owner
@@ -104,16 +117,17 @@ module CartoDB
       owner.in_database(as: :superuser).run(query)
     end
 
-    def revoke_query
-      %Q{
-        REVOKE SELECT ON "#{owner.database_schema}"."#{table.name}"
+    def revoke_query(table_name = @table.name)
+      %{
+        REVOKE SELECT ON #{fully_qualified_table_name(table_name)}
         FROM #{CartoDB::PUBLIC_DB_USER}
       }
     end
 
-    def grant_query
-      %Q{
-        GRANT SELECT ON "#{owner.database_schema}"."#{table.name}"
+    def grant_query(table_name = nil)
+      table_name ||= table.name
+      %{
+        GRANT SELECT ON #{fully_qualified_table_name(table_name)}
         TO #{CartoDB::PUBLIC_DB_USER};
       }
     end
@@ -141,7 +155,7 @@ module CartoDB
         end
       end
 
-      if errors.length > 0
+      if !errors.empty?
         CartoDB.notify_error("Errors reverting Table privacy", user_id: metadata_table.user_id,
                                                                table_id: metadata_table.id,
                                                                errors: errors)
@@ -151,6 +165,10 @@ module CartoDB
     def notify_privacy_affected_entities(metadata_table)
       propagate_to(metadata_table.affected_visualizations, true)
       update_cdb_tablemetadata
+    end
+
+    def fully_qualified_table_name(table_name)
+      %{"#{owner.database_schema}"."#{table_name}"}
     end
   end
 end

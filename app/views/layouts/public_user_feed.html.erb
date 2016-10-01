@@ -4,7 +4,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, cartodb">
+    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, carto">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -36,7 +36,7 @@
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
       var base_url = '<%= @base_url %>';
-      var login_url = "<%= login_url %>";
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
       var avatar_url= '<%= @avatar_url %>';
 
       var favMapViewAttrs = {

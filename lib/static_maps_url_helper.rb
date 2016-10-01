@@ -14,6 +14,11 @@ module Carto
         static_maps_image_url_fragment(visualization.id, map_width, map_height)
     end
 
+    def url_for_static_map_with_visualization(visualization, request_protocol, map_width, map_height)
+      static_maps_base_url(visualization.user.username, request_protocol) +
+        static_maps_image_url_fragment(visualization.id, map_width, map_height)
+    end
+
     private
 
     # INFO: Assumes no trailing '/' comes inside, so returned string doesn't has it either
@@ -34,9 +39,9 @@ module Carto
     end
 
     def static_maps_image_url_fragment(visualization_id, width, height)
-      template_id = CartoDB::NamedMapsWrapper::NamedMap.template_name(visualization_id)
+      template_name = Carto::NamedMaps::Template.new(Carto::Visualization.find(visualization_id)).name
 
-      "/api/v1/map/static/named/#{template_id}/#{width}/#{height}.png"
+      "/api/v1/map/static/named/#{template_name}/#{width}/#{height}.png"
     end
 
   end

@@ -1,6 +1,8 @@
 # encoding: utf-8
+require_relative '../../lib/carto/table_utils'
 
 module BoundingBoxHelper
+  extend Carto::TableUtils
 
   DEFAULT_BOUNDS = {
     minlon: -179,
@@ -101,7 +103,7 @@ module BoundingBoxHelper
         ST_YMin(ST_Extent(#{column_name})) AS miny,
         ST_XMax(ST_Extent(#{column_name})) AS maxx,
         ST_YMax(ST_Extent(#{column_name})) AS maxy
-      FROM #{table_name} AS subq
+      FROM #{safe_table_name_quoting(table_name)} AS subq
     }).first
 
     result
@@ -137,7 +139,8 @@ module BoundingBoxHelper
 
   def self.save_bounding_box(bounds, table_name, column_name, id)
     polygon_sql = to_polygon(bounds[:minx], bounds[:miny], bounds[:maxx], bounds[:maxy])
-    update_sql = %Q{UPDATE #{table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
+    safe_table_name = safe_table_name_quoting(table_name)
+    update_sql = %{UPDATE #{safe_table_name} SET #{column_name} = #{polygon_sql} WHERE id = '#{id}';}
     Rails::Sequel.connection.run(update_sql)
   end
 end

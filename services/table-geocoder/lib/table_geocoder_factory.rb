@@ -8,13 +8,13 @@ require_relative 'exceptions'
 module Carto
   class TableGeocoderFactory
 
-    def self.get(user, cartodb_geocoder_config, table_service, params = {})
+    def self.get(user, geocoding_model, cartodb_geocoder_config, table_service, params = {})
       # Reset old connections to make sure changes apply.
       # NOTE: This assumes it's being called from a Resque job
       user.db_service.reset_pooled_connections
       log = params.fetch(:log)
-      log.append 'TableGeocoderFactory.get()'
-      log.append "params: #{params.select{|k| k != :log}.to_s}"
+      log.append_and_store 'TableGeocoderFactory.get()'
+      log.append_and_store "params: #{params.select{ |k| k != :log }}"
 
       if user == table_service.owner
         user_connection = user.in_database
@@ -39,13 +39,11 @@ module Carto
       kind = instance_config.fetch(:kind)
 
       if kind == 'high-resolution'
-        if user.has_feature_flag?('google_maps')
-          if user.google_maps_geocoder_enabled?
-            geocoder_class = Carto::Gme::TableGeocoder
-            instance_config.merge!(client_id: user.google_maps_client_id, private_key: user.google_maps_private_key)
-          else
-            raise GeocoderErrors::MisconfiguredGmeGeocoderError.new
-          end
+        if user.google_maps_geocoder_enabled?
+          geocoder_class = Carto::Gme::TableGeocoder
+
+          instance_config[:client_id] = user.google_maps_client_id
+          instance_config[:private_key] = user.google_maps_private_key
         else
           geocoder_class = CartoDB::TableGeocoder
         end
@@ -55,10 +53,11 @@ module Carto
 
       instance_config[:usage_metrics] = get_geocoder_metrics_instance(user)
       instance_config[:log] = log
+      instance_config[:geocoding_model] = geocoding_model
 
-      log.append "geocoder_class = #{geocoder_class.to_s}"
+      log.append_and_store "geocoder_class = #{geocoder_class}"
       instance = geocoder_class.new(instance_config)
-      log.append "geocoder_type = #{instance.name}"
+      log.append_and_store "geocoder_type = #{instance.name}"
       instance
     end
 

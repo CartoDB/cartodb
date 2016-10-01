@@ -2,6 +2,7 @@
 require_relative '../spec_helper'
 require_relative '../../app/connectors/importer'
 require_relative '../doubles/result'
+require_relative '../helpers/feature_flag_helper'
 require 'csv'
 
 describe CartoDB::Importer2::Overviews do
@@ -11,7 +12,7 @@ describe CartoDB::Importer2::Overviews do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do
@@ -19,23 +20,7 @@ describe CartoDB::Importer2::Overviews do
     @feature_flag.destroy
   end
 
-  def set_feature_flag(user, feature, state)
-    user.reload
-    if state != user.has_feature_flag?(feature)
-      ff = FeatureFlag[name: feature]
-      ffu = FeatureFlagsUser[feature_flag_id: ff.id, user_id: user.id]
-      if state
-        unless ffu
-          FeatureFlagsUser.new(feature_flag_id: ff.id, user_id: user.id).save
-        end
-      else
-        ff.update restricted: false unless ff.restricted
-        ffu.delete if ffu
-      end
-      user.reload
-    end
-    user
-  end
+  include FeatureFlagHelper
 
   def overview_tables(user, table)
     overviews = user.in_database do |db|
@@ -56,6 +41,21 @@ describe CartoDB::Importer2::Overviews do
         SELECT CDB_DropOverviews('#{table}'::regclass)
       }
     end
+  end
+
+  def public_table?(user, table)
+    has_privilege = user.in_database do |db|
+      db.fetch %{
+        SELECT has_table_privilege('publicuser', '#{table}'::regclass, 'SELECT');
+      }
+    end
+    has_privilege.first[:has_table_privilege]
+  end
+
+  def set_table_privacy(table, privacy)
+    CartoDB::TablePrivacyManager.new(table)
+                                .send(:set_from_table_privacy, privacy)
+                                .update_cdb_tablemetadata
   end
 
   it 'should not create overviews if the feature flag is not enabled' do
@@ -226,6 +226,48 @@ describe CartoDB::Importer2::Overviews do
     end
   end
 
+  it 'synchronize overviews privacy with that of the base table' do
+    user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400, private_tables_enabled: true)
+    set_feature_flag user, 'create_overviews', true
+    Cartodb.with_config overviews: { 'min_rows' => 500 } do
+      user.has_feature_flag?('create_overviews').should eq true
+      Cartodb.get_config(:overviews, 'min_rows').should eq 500
+
+      public_privacy  = ::UserTable::PRIVACY_PUBLIC
+      private_privacy = ::UserTable::PRIVACY_PRIVATE
+      link_privacy    = ::UserTable::PRIVACY_LINK
+
+      filepath = "#{Rails.root}/spec/support/data/cities-box.csv"
+      data_import = DataImport.create(
+        user_id:     user.id,
+        data_source: filepath,
+        updated_at:  Time.now,
+        append:      false,
+        privacy:     private_privacy
+      )
+      data_import.values[:data_source] = filepath
+      data_import.run_import!
+      data_import.success.should eq true
+      table = UserTable[id: data_import.table.id]
+      has_overviews?(user, table.name).should eq true
+      ov_tables = overview_tables(user, table.name)
+      # Check overviews are private
+      ov_tables.none? { |ov_table| public_table?(user, ov_table) }.should eq true
+
+      set_table_privacy table, public_privacy
+      # Check overviews are public
+      ov_tables.all? { |ov_table| public_table?(user, ov_table) }.should eq true
+
+      set_table_privacy table, private_privacy
+      # Check overviews are private
+      ov_tables.none? { |ov_table| public_table?(user, ov_table) }.should eq true
+
+      set_table_privacy table, link_privacy
+      # Check overviews are public
+      ov_tables.all? { |ov_table| public_table?(user, ov_table) }.should eq true
+    end
+  end
+
   it 'should use the overviews-specific statement timeout' do
     set_feature_flag @user, 'create_overviews', true
     Cartodb.with_config overviews: { 'min_rows' => 500, 'statement_timeout' => 1 } do
@@ -247,9 +289,12 @@ describe CartoDB::Importer2::Overviews do
       data_import.stubs(:puts)
       CartoDB.stubs(:notify_error)
 
-      expect { data_import.run_import! }.to raise_error(Sequel::DatabaseError)
-      data_import.success.should eq false
-      data_import.log.entries.should match(/canceling statement due to statement timeout/)
+      # The overviews timeout should abort overviews creation but otherwise
+      # import the dataset correctly.
+      data_import.run_import!
+      data_import.success.should eq true
+      table_name = UserTable[id: data_import.table.id].name
+      has_overviews?(@user, table_name).should eq false
     end
   end
 end

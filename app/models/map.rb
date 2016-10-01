@@ -79,11 +79,18 @@ class Map < Sequel::Model
   end
 
   def notify_map_change
+    visualization = visualizations.first
+
+    force_notify_map_change unless visualization && visualization.latest_mapcap
+  end
+
+  def force_notify_map_change
     update_related_named_maps
     invalidate_vizjson_varnish_cache
   end
 
   def before_destroy
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
     super
     invalidate_vizjson_varnish_cache
   end
@@ -95,21 +102,30 @@ class Map < Sequel::Model
   def validate
     super
     errors.add(:user_id, "can't be blank") if user_id.blank?
+    errors.add(:user, "Viewer users can't save maps") if user && user.viewer
   end
 
   def recalculate_bounds!
-    result = get_map_bounds
-    # switch to (lat,lon) for the frontend
-    update(
-      view_bounds_ne: "[#{result[:maxy]}, #{result[:maxx]}]",
-      view_bounds_sw: "[#{result[:miny]}, #{result[:minx]}]"
-    )
+    set_boundaries(get_map_bounds)
+    save
+  rescue Sequel::DatabaseError => exception
+    CartoDB::notify_exception(exception, user: user)
+  end
+
+  def set_default_boundaries!
+    bounds = get_map_bounds
+    set_boundaries(bounds)
+    recenter_using_bounds(bounds)
+    recalculate_zoom(bounds)
+    save
   rescue Sequel::DatabaseError => exception
     CartoDB::notify_exception(exception, user: user)
   end
 
   def viz_updated_at
-    get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
+    latest_mapcap = visualizations.first.latest_mapcap
+
+    latest_mapcap ? latest_mapcap.created_at : get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
   end
 
   def invalidate_vizjson_varnish_cache
@@ -131,12 +147,19 @@ class Map < Sequel::Model
   end
 
   def can_add_layer(user)
+    return false if self.user.max_layers && self.user.max_layers <= carto_and_torque_layers.count
+    return false if self.user.viewer
+
     current_vis = visualizations.first
     current_vis.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
   end
 
   def visualizations
     @visualizations_collection ||= CartoDB::Visualization::Collection.new.fetch(map_id: [id]).to_a
+  end
+
+  def visualization
+    visualizations.first
   end
 
   def process_privacy_in(layer)
@@ -159,17 +182,13 @@ class Map < Sequel::Model
     (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
   end
 
-  def recenter_using_bounds!
-    bounds = get_map_bounds
+  def recenter_using_bounds(bounds)
     x = (bounds[:maxx] + bounds[:minx]) / 2
     y = (bounds[:maxy] + bounds[:miny]) / 2
-    update(center: "[#{y},#{x}]")
-  rescue Sequel::DatabaseError => exception
-    CartoDB::notify_exception(exception, user: user)
+    self.center = "[#{y},#{x}]"
   end
 
-  def recalculate_zoom!
-    bounds = get_map_bounds
+  def recalculate_zoom(bounds)
     latitude_size = bounds[:maxy] - bounds[:miny]
     longitude_size = bounds[:maxx] - bounds[:minx]
 
@@ -179,9 +198,7 @@ class Map < Sequel::Model
     zoom = -1 * ((Math.log([longitude_size, latitude_size].max) / Math.log(2)) - (Math.log(360) / Math.log(2)))
     zoom = [[zoom.round, 1].max, MAXIMUM_ZOOM].min
 
-    update(zoom: zoom)
-  rescue Sequel::DatabaseError => exception
-    CartoDB::notify_exception(exception, user: user)
+    self.zoom = zoom
   end
 
   def view_bounds_data
@@ -213,6 +230,12 @@ class Map < Sequel::Model
   def get_map_bounds
     # (lon,lat) as comes out from postgis
     BoundingBoxHelper.get_table_bounds(user.in_database, table_name)
+  end
+
+  def set_boundaries(bounds)
+    # switch to (lat,lon) for the frontend
+    self.view_bounds_ne = "[#{bounds[:maxy]}, #{bounds[:maxx]}]"
+    self.view_bounds_sw = "[#{bounds[:miny]}, #{bounds[:minx]}]"
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

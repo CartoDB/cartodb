@@ -6,24 +6,27 @@
   <%= javascript_include_tag 'cdb.js', 'sessions.js' %>
 <% end %>
 
-<div class="Sessions" style="<%= background %>">
-  <%= render partial: 'admin/shared/sessions_header', locals: { align: "" } %>
-
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
-      <div class="Sessions-notloggedin">
+      <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>">
         <div class="u-inner">
           <div class="Sessions-left">
+            <div class="Sessions-logoContainer">
+              <picture class="Navbar-brand">
+                <% if @organization.present? && @organization.avatar_url.present? %>
+                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
+                <% else %>
+                  <% if @organization.present? %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <% else %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% end %>
+                <% end %>
+              </picture>
+            </div>
+
             <div class="Sessions-form">
-              <h1 class="Sessions-title u-vspace-xs">Login to CartoDB</h1>
-              <p class="Sessions-description">Help other people understand the world we live in, with maps.</p>
-
-              <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
-                <div class="Sessions-sep"></div>
-
-                <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
-              <% end %>
-
               <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
 
                 <% if @organization.nil? || @organization.auth_google_enabled %>
@@ -33,10 +36,8 @@
 
                 <% if @organization.nil? || @organization.auth_username_password_enabled %>
 
-                  <div class="Sessions-sep"></div>
-
                   <div class="Sessions-field">
-                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "Sessions-input" %>
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -44,16 +45,22 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= password_field_tag :password, "", placeholder: "password", class: "Sessions-input" %>
+                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                    <% end %>
+
+                    <% unless Cartodb.config[:cartodb_com_hosted] %>
+                      <div class="Sessions-inputLinkAside">
+                        <%= link_to 'Forgot?', forget_password_url %>
+                      </div>
                     <% end %>
                   </div>
 
                   <div class="Sessions-field">
                     <p>
-                      <button type="submit" class="Btn Btn--green Btn--m is-highlight u-tupper Sessions-button js-Sessions-button js-Loading u-right">
+                      <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
                         <span class="js-Loading-text">Login</span>
                         <span class="js-Loading-anim" style="display: none;">
                           <span class="Loading-item">
@@ -73,9 +80,16 @@
                   </div>
 
                 <% end %>
+                <div class="Sessions-field Sessions-oauthContainer">
+                  <% if @google_plus_config.present? && (@organization.nil? || @organization.auth_google_enabled) %>
+                    <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                  <% end %>
 
+                  <% if @github_config.present? %>
+                    <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
+                  <% end %>
+                </div>
               <% end %>
-
             </div>
           </div>
         </div>
@@ -86,12 +100,12 @@
       </div>
     </div>
   </div>
-  
+
   <% unless cartodb_com_hosted? %>
     <footer class="Sessions-footer">
       <div class="u-inner">
-        <div class="Sessions-notloggedin">
-          <p class="Sessions-text Sessions-text--footer u-txt-center"><%= link_to "Forgot password?", forget_password_url %> · <%= link_to 'Create an account', "https://cartodb.com/signup" %></p>
+        <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
         </div>
       </div>
     </footer>

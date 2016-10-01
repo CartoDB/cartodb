@@ -1,13 +1,16 @@
 # encoding: utf-8
 require_relative '../../models/map/presenter'
-require_dependency 'resque/user_jobs'
-require_dependency 'static_maps_url_helper'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'
 require_relative '../carto/api/visualization_presenter'
 require_relative '../../helpers/embed_redis_cache'
+
+require_dependency 'carto/tracking/events'
+require_dependency 'resque/user_jobs'
+require_dependency 'static_maps_url_helper'
 require_dependency 'static_maps_url_helper'
 require_dependency 'carto/user_db_size_cache'
+require_dependency 'carto/ghost_tables_manager'
 
 class Admin::VisualizationsController < Admin::AdminController
   include CartoDB, VisualizationsControllerHelper
@@ -35,6 +38,7 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
 
   after_filter :update_user_last_activity, only: [:index, :show]
+  after_filter :track_dashboard_visit, only: :index
 
   skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
@@ -57,23 +61,29 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def show
+    table_action = request.original_fullpath =~ %r{/tables/}
     unless current_user.present?
-      if request.original_fullpath =~ %r{/tables/}
-        return(redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id]}))
+      if table_action
+        return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
       else
-        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
       end
     end
 
     @google_maps_query_string = @visualization.user.google_maps_query_string
     @basemaps = @visualization.user.basemaps
 
-    unless @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READWRITE)
-      if request.original_fullpath =~ %r{/tables/}
-        return redirect_to CartoDB.url(self, 'public_table_map', {id: request.params[:id], redirected:true})
-      else
-        return redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id], redirected:true})
+    if table_action
+      if current_user.force_builder? && @visualization.has_read_permission?(current_user)
+        return redirect_to CartoDB.url(self, 'builder_dataset', id: request.params[:id])
+      elsif !@visualization.has_write_permission?(current_user)
+        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
+    elsif !@visualization.has_write_permission?(current_user)
+      return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
+                                     id: request.params[:id], redirected: true)
+    elsif current_user.force_builder?
+      return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
     end
 
     respond_to { |format| format.html }
@@ -99,13 +109,13 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     if @visualization.organization?
-      unless current_user and @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+      unless current_user && @visualization.has_read_permission?(current_user)
         return(embed_forbidden)
       end
     end
 
-    return(redirect_to :protocol => 'https://') if @visualization.organization? \
-                                                   and not (request.ssl? or request.local? or Rails.env.development?)
+    return(redirect_to protocol: 'https://') if @visualization.is_privacy_private? \
+                                                && !(request.ssl? || request.local? || Rails.env.development?)
 
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
@@ -122,8 +132,8 @@ class Admin::VisualizationsController < Admin::AdminController
     @api_key = nil
     @can_copy = false
 
-    if current_user && @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
-      if @visualization.organization?
+    if current_user && @visualization.has_read_permission?(current_user)
+      if @visualization.is_privacy_private?
         @auth_tokens = current_user.get_auth_tokens
         @use_https = true
         @api_key = current_user.api_key
@@ -200,8 +210,8 @@ class Admin::VisualizationsController < Admin::AdminController
 
     return(embed_forbidden) unless @visualization.is_accesible_by_user?(current_user)
     return(public_map_protected) if @visualization.password_protected?
-    if current_user && @visualization.organization? &&
-        @visualization.has_permission?(current_user, Visualization::Member::PERMISSION_READONLY)
+    if current_user && @visualization.is_privacy_private? &&
+       @visualization.has_read_permission?(current_user)
       return(show_organization_public_map)
     end
     # Legacy redirect, now all public pages also with org. name
@@ -439,15 +449,11 @@ class Admin::VisualizationsController < Admin::AdminController
   private
 
   def link_ghost_tables
-    return true unless current_user.present?
+    return unless current_user.has_feature_flag?('ghost_tables')
 
-    if current_user.search_for_modified_table_names && current_user.has_feature_flag?('ghost_tables')
-      # this should be removed from there once we have the table triggers enabled in cartodb-postgres extension
-      # test if there is a job already for this
-      if !current_user.link_ghost_tables_working
-        ::Resque.enqueue(::Resque::UserJobs::SyncTables::LinkGhostTables, current_user.id)
-      end
-    end
+    # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
+    # or asynchronously otherwise.
+    Carto::GhostTablesManager.new(current_user.id).link_ghost_tables
   end
 
   def user_metadata_propagation
@@ -460,7 +466,7 @@ class Admin::VisualizationsController < Admin::AdminController
     return true unless current_user.present?
     begin
       visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-      ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
+      ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, current_user.id, visualizations_api_url) if current_user.should_load_common_data?
     rescue Exception => e
       # We don't block the load of the dashboard because we aren't able to load common dat
       CartoDB.notify_exception(e, {user:current_user})
@@ -484,8 +490,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def org_user_has_map_permissions?(user, visualization)
-    user && visualization && visualization.organization? &&
-      visualization.has_permission?(user, Visualization::Member::PERMISSION_READONLY)
+    user && visualization && visualization.has_read_permission?(user)
   end
 
   def resolve_visualization_and_table
@@ -682,4 +687,10 @@ class Admin::VisualizationsController < Admin::AdminController
     @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
   end
 
+  def track_dashboard_visit
+    current_user_id = current_user.id
+    Carto::Tracking::Events::VisitedPrivatePage.new(current_user_id,
+                                                    user_id: current_user_id,
+                                                    page: 'dashboard').report
+  end
 end

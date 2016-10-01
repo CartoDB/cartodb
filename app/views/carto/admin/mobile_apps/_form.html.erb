@@ -1,0 +1,182 @@
+<%= form_for @mobile_app, as: :mobile_app, url: (@mobile_app.persisted? ? CartoDB.url(self, 'mobile_app', { id: @mobile_app.id }, current_user) : CartoDB.url(self, 'mobile_apps', {}, current_user)), html: { class: "js-MobileAppForm" } do |f| %>
+  <%= csrf_meta_tags %>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row js-iconSelector">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">App icon</label>
+    </div>
+    <div class="FormAccount-rowData FormAccount-avatar">
+      <div class="FormAccount-avatarPreview">
+        <img src="" class="FormAccount-avatarPreviewImage" />
+      </div>
+      <div class="FormAccount-avatar--input">
+        <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image", :required => "true" %>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Name</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :name, :placeholder => "Application name", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :required => "true" %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Description</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_area :description, :placeholder => "Application description", :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+    </div>
+    <div class="FormAccount-rowInfo">
+      <p class="FormAccount-rowInfoText"></p>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Platform</label>
+    </div>
+
+    <div class="FormAccount-rowData">
+      <%- mobile_platforms = @mobile_app.data(current_user, fetch_mobile_platforms: true)[:mobile_platforms] %>
+      <%- if @mobile_app.persisted? %>
+        <%- platform = mobile_platforms[@mobile_app.platform.to_sym] %>
+        <div class="RadioButton u-rspace--20">
+          <input class="CDB-Radio js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" checked required>
+          <span class="CDB-Radio-face"></span>
+          <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-secondaryTextColor u-lSpace--xl"><%= platform[:text] %></label>
+        </div>
+      <% else %>
+        <%- mobile_platforms.each do |platform, values| %>
+          <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+          <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+          <div class="RadioButton u-rspace--20">
+            <input class="CDB-Radio js-appPlatformsLegendOption" type="radio" name="mobile_app[platform]" value="<%= platform %>" <%= is_disabled %> <%= is_checked %> required>
+            <span class="CDB-Radio-face"></span>
+            <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-lSpace--xl <%= values[:available] === true ? 'u-secondaryTextColor' : 'u-altTextColor' %>"><%= values[:text] %></label>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Application ID</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <%= f.text_field :app_id, :placeholder => "com.example.my.app", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @mobile_app.errors[:app_id].present? } #{'is-disabled' if @mobile_app.persisted?}", :required => "true", :readonly => @mobile_app.persisted? %>
+
+      <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+        <p class="CDB-Text CDB-Size-small u-altTextColor js-appPlatformsLegend"></p>
+      </div>
+    </div>
+  </div>
+
+   <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">App type</label>
+    </div>
+    <%- app_types = @mobile_app.data(current_user, fetch_app_types: true)[:app_types] %>
+    <%- if @mobile_app.persisted? %>
+      <%- app_type = app_types[@mobile_app.app_type.to_sym] %>
+      <div class="FormAccount-rowData in-block u-vspace-s">
+        <div class="RadioButton">
+          <input class="CDB-Radio" type="radio" checked required>
+          <span class="CDB-Radio-face"></span>
+          <label class="Ru-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-secondaryTextColor u-lSpace--xl"><%= @mobile_app.app_type.capitalize %></label>
+        </div>
+        <div class="FormAccount-rowInfo u-lspace-28">
+          <p class="FormAccount-rowInfoText"><%= app_type[:text].html_safe %></p>
+        </div>
+      </div>
+    <% else %>
+
+      <%- app_types.each do |type, values| %>
+        <%- is_disabled = values[:available] === true ? '' : 'disabled' %>
+        <%- is_checked = values[:selected] === true ? 'checked' : '' %>
+
+        <div class="FormAccount-rowData in-block u-vspace-s">
+          <div class="RadioButton">
+            <input class="CDB-Radio" type="radio" name="mobile_app[app_type]" value="<%= type %>" <%= is_checked %> <%= is_disabled %> required>
+            <span class="CDB-Radio-face"></span>
+            <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium is-semibold u-lSpace--xl <%= is_disabled == 'disabled' ? 'u-altTextColor' : 'u-secondaryTextColor' %>"><%= type.capitalize %></label>
+          </div>
+          <div class="FormAccount-rowInfo u-lspace-28">
+            <p class="FormAccount-rowInfoText"><%= values[:text].html_safe %></p>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="FormAccount-footer FormAccount-footer--noMarginBottom">
+    <p class="FormAccount-footerText"></p>
+    <button type="submit" class="CDB-Button CDB-Button--primary">
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+    </button>
+  </div>
+
+  <%- if @mobile_app.persisted? %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">License key</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your API Key</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
+      </div>
+    </div>
+
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Application quota</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="ProgressBar-container">
+        <div class="ProgressBar">
+          <span class="ProgressBar-bar <%= progress_bar_range(progress_bar_width) %>" style="width: <%= progress_bar_width %>%"></span>
+        </div>
+        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %> monthly users</div>
+      </div>
+    </div>
+
+  <% end %>
+
+  <%- if @mobile_app.persisted? %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText">Delete application</p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row FormAccount-row--wideMarginBottom">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Are you sure?</label>
+      </div>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowData">
+          <span class="CDB-Size-medium FormAccount-button--deleteAccount js-deleteMobileApp">Delete this application</span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+<% end %>

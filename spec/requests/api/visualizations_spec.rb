@@ -6,8 +6,7 @@ require 'uri'
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
-require_relative '../../../app/models/visualization/migrator'
-require_relative '../../../app/models/overlay/migrator'
+require 'helpers/unique_names_helper'
 
 
 def app
@@ -19,6 +18,7 @@ end
 # You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
 # ./spec/requests/carto/api/visualizations_controller_specs.rb.
 describe Api::Json::VisualizationsController do
+  include UniqueNamesHelper
   include Rack::Test::Methods
   include DataRepository
 
@@ -35,12 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    stub_named_maps_calls
-    @db = Rails::Sequel.connection
-    Sequel.extension(:pagination)
-
-    CartoDB::Visualization.repository = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    CartoDB::Overlay.repository       = DataRepository::Backend::Sequel.new(@db, :overlays)
+    bypass_named_maps
 
     begin
       delete_user_data @user
@@ -49,14 +44,14 @@ describe Api::Json::VisualizationsController do
       raise unless exception.class.to_s == 'CartoDB::NamedMapsWrapper::HTTPResponseError'
     end
 
-    @headers = { 
+    @headers = {
       'CONTENT_TYPE'  => 'application/json',
     }
     host! 'test.localhost.lan'
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -104,7 +99,7 @@ describe Api::Json::VisualizationsController do
       source_visualization  = table.fetch('table_visualization')
 
       payload = { source_visualization_id: source_visualization.fetch('id') }
-      
+
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
 
@@ -173,7 +168,7 @@ describe Api::Json::VisualizationsController do
         source_visualization_id:  visualization.fetch('id'),
         name:                     visualization_name
       }
-      
+
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
       last_response.status.should == 200
@@ -336,7 +331,7 @@ describe Api::Json::VisualizationsController do
       source_visualization_id = table.fetch('table_visualization').fetch('id')
 
       payload = { source_visualization_id: source_visualization_id }
-      
+
       post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
       response          = JSON.parse(last_response.body)
       visualization_id  = response.fetch('id')
@@ -345,7 +340,7 @@ describe Api::Json::VisualizationsController do
       last_response.status.should == 200
 
       delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
-      
+
       get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
@@ -422,7 +417,7 @@ describe Api::Json::VisualizationsController do
 
   describe '#slides_sorting' do
     it 'checks proper working of prev/next' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
+      bypass_named_maps
 
       map_id = ::Map.create(user_id: @user.id).id
 
@@ -580,51 +575,10 @@ describe Api::Json::VisualizationsController do
     end
   end
 
-  describe '#source_visualization_id_and_hierarchy' do
-    it 'checks proper working of parent_id' do
-      CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true, :delete => true)
-
-      map_id = ::Map.create(user_id: @user.id).id
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-       factory({
-                 name: "PARENT #{UUIDTools::UUID.timestamp_create.to_s}",
-                 type: CartoDB::Visualization::Member::TYPE_DERIVED
-               }).to_json, @headers
-      body = JSON.parse(last_response.body)
-      parent_vis_id = body.fetch('id')
-
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 1 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             parent_id: parent_vis_id,
-             map_id: map_id
-           }.to_json, @headers
-      vis_1_body = JSON.parse(last_response.body)
-
-      # This should also set as next sibiling of vis_1 as has no prev_id/next_id set
-      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           {
-             name: "CHILD 2 #{UUIDTools::UUID.timestamp_create.to_s}",
-             type: CartoDB::Visualization::Member::TYPE_SLIDE,
-             source_visualization_id: vis_1_body.fetch('id'),
-             parent_id: parent_vis_id
-           }.to_json, @headers
-      vis_2_body = JSON.parse(last_response.body)
-
-      vis_2_body.fetch('prev_id').should eq vis_1_body.fetch('id')
-
-      vis_2_body.fetch('parent_id').should eq vis_1_body.fetch('parent_id')
-      vis_1_body.fetch('parent_id').should eq parent_vis_id
-      vis_2_body.fetch('id').should_not eq vis_1_body.fetch('id')
-    end
-  end
-
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {
-      name:                     attributes.fetch(:name, "visualization #{rand(9999)}"),
+      name:                     attributes.fetch(:name, unique_name('viz')),
       tags:                     attributes.fetch(:tags, ['foo', 'bar']),
       map_id:                   attributes.fetch(:map_id, ::Map.create(user_id: @user.id).id),
       description:              attributes.fetch(:description, 'bogus'),
@@ -641,10 +595,10 @@ describe Api::Json::VisualizationsController do
   def table_factory(options={})
     privacy = options.fetch(:privacy, 1)
 
-    seed    = rand(9999)
-    payload = { 
-      name:         "table #{seed}",
-      description:  "table #{seed} description"
+    name    = unique_name('table')
+    payload = {
+      name:         name,
+      description:  "#{name} description"
     }
     post "/api/v1/tables?api_key=#{@api_key}",
       payload.to_json, @headers
@@ -658,4 +612,3 @@ describe Api::Json::VisualizationsController do
     table_attributes
   end #table_factory
 end # Api::Json::VisualizationsController
-

@@ -2,6 +2,7 @@
 
 require_relative '../../lib/importer/mail_notifier'
 require_relative '../../../../spec/rspec_configuration.rb'
+require          'active_support/core_ext' # Needed for string.blank?
 
 describe CartoDB::Importer2::MailNotifier do
 

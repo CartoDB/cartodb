@@ -7,9 +7,9 @@ module Carto
       @database = database
     end
 
-    def create_overviews(table_name)
+    def create_overviews(table_name, tolerance_px)
       @database.run %{
-        SELECT cartodb.CDB_CreateOverviews('#{table_name}'::REGCLASS);
+        SELECT cartodb.CDB_CreateOverviewsWithToleranceInPixels('#{table_name}'::REGCLASS, '#{tolerance_px}'::float8);
       }
     end
 
@@ -30,8 +30,6 @@ module Carto
     rescue Sequel::DatabaseError => e
       raise unless e.to_s.match /relation .+ does not exist/
     end
-
-    private
 
     def overview_tables(table_name)
       overviews_data = @database.fetch(%{SELECT * FROM cartodb.CDB_Overviews('#{table_name}'::REGCLASS)})

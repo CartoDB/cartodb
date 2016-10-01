@@ -1,0 +1,48 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+// Styles for infobox element
+// ------------------------------
+
+.Infobox-wrapper {
+  width: 100%;
+  margin-top: -25px;
+  margin-bottom: -25px;
+}
+.Infobox {
+  @include flex(2);
+  margin-right: -25px;
+  margin-left: -25px;
+  padding: 25px;
+  background: $cThirdBackground;
+
+  &.is-error {
+    background: $cError;
+    color: $cWhite;
+  }
+
+  &.is-alert {
+    background: rgba($cHighlightYellow, 0.64);
+  }
+
+  &.is-dark {
+    background: rgba(40, 44, 47, 0.64);
+    color: $cHighlightYellow;
+  }
+}
+.Infobox-quota {
+  @include flex(10);
+  margin-right: $baseSize * 5;
+}
+.Infobox-buttons {
+  @include display-flex();
+  @include flex(10);
+}
+.Infobox-button {
+  @include flex(1);
+
+  &.Infobox-button--right {
+    text-align: right;
+  }
+}

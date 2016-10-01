@@ -11,22 +11,19 @@ describe Visualization::Member do
     Sequel.extension(:pagination)
 
     Visualization.repository  = DataRepository::Backend::Sequel.new(@db, :visualizations)
-    Overlay.repository        = DataRepository.new # In-memory storage
   end
 
   before(:each) do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
-    user_apikey = '123'
-    @user_mock = mock
-    @user_mock.stubs(:id).returns(user_id)
-    @user_mock.stubs(:username).returns(user_name)
-    @user_mock.stubs(:api_key).returns(user_apikey)
-    @user_mock.stubs(:avatar_url).returns('')
-    @user_mock.stubs(:public_url).returns("http://#{user_name}.cartodb.com")
-    @user_mock.stubs(:groups).returns([])
+    @user_mock = create_mocked_user(
+      user_id: user_id,
+      user_name: user_name,
+      public_url: "http://#{user_name}.carto.com",
+      groups: []
+    )
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new

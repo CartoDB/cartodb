@@ -1,26 +1,29 @@
 // Layout Header
 // --------------------------------------------------
 
-@import "../variables/mixins";
-@import "../variables/colors";
-@import "../variables/sizes";
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
 
-$height: 71px;
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+
 $cHeader-light: rgba(#61AEEC, 1);
 $cHeader-dark:  rgba(#3A91D7, 1);
 
 .Header {
-  display: block;
+  @include display-flex();
+  @include align-items(center);
   width: 100%;
-  height: $height;
-  @include background-gradient($cHeader-light, $cHeader-dark);
-  @include css3-prefix(box-shadow, inset rgba(black, 0.2) 0 -1px 0 0);
+  height: 80px;
+  background: $cBlue;
 }
 .Header-inner {
-  position:relative;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center);
+  position: relative;
 }
 .Header-navigationList {
   @include display-flex();
@@ -34,9 +37,7 @@ $cHeader-dark:  rgba(#3A91D7, 1);
 }
 .Header-navigationBreadcrumbItem {
   padding-left:6px;
-  font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-lighter;
-  color: rgba(white, 0.6);
+  color: rgba($cWhite, 0.6);
 }
 .Header-navigationBreadcrumbParagraph {
   text-overflow: ellipsis;
@@ -50,53 +51,41 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   margin-left: $sMargin-section;
 }
 .Header-navigationLink {
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-bold;
+  font-size: $sFontSize-normal;
   line-height: $sLineHeight-largest;
-  text-transform: uppercase;
   color: #fff;
   transition: all .15s;
 
   &:hover {
     text-decoration: none;
-    color: rgba(#fff, .6);;
+    color: rgba(#FFF, 0.6);
   }
 }
 .Header-navigationBreadcrumbItem:first-child { padding-left: 0 }
 .Header-navigationBreadcrumbLink {
-  font-size: $sFontSize-largest;
-  font-weight: $sFontWeight-lighter;
-  color: white;
+  color: $cWhite;
 
-  &:hover {
-    color: white;
-    text-decoration: underline;
-    &:after { border-top-color: white }
-  }
   &.is-disabled {
-    color: rgba(white, 0.6);
-
-    &:hover {
-      color: rgba(white, 0.6);
-      text-decoration: none;
-      cursor: default;
-    }
+    color: rgba(white, 0.8);
+    cursor: default;
   }
 }
-.Header-settings { height: 70px }
 .Header-settingsList {
-  height: 100%;
   @include display-flex();
   @include justify-content(space-between, justify);
   @include align-items(center, center);
+  height: 100%;
 }
 .Header-settingsItem {
   position: relative;
   margin-left: $sMargin-section;
-  font-weight: $sFontWeight-normal;
-  font-size: $sFontSize-smallUpperCase;
-  line-height: $sLineHeight-larger;
   text-transform: uppercase;
+}
+.Header-settingsLink--public {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  text-transform: none;
 }
 .Header-settingsItem--avatar {}
 .Header-settingsLink {
@@ -109,10 +98,10 @@ $cHeader-dark:  rgba(#3A91D7, 1);
   }
 }
 .Header-settingsLink.Header-settingsLink--dashboard {
-  color: rgba(#fff, .6);
+  color: #FFF;
 }
 .Header-settingsLink.Header-settingsLink--dashboard:hover {
-  color: #fff;
+  text-decoration: underline;
 }
 .Header-darrow {
   position: relative;

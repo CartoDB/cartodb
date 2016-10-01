@@ -2,8 +2,8 @@
 
 require_relative '../../../models/visualization/presenter'
 require_relative '../../../helpers/bounding_box_helper'
-require_relative '../../../../services/named-maps-api-wrapper/lib/named-maps-wrapper/exceptions'
-require_relative '../../../../lib/cartodb/event_tracker'
+
+require_dependency 'carto/tracking/events'
 
 class Api::Json::TablesController < Api::ApplicationController
   TABLE_QUOTA_REACHED_TEXT = 'You have reached your table quota'
@@ -21,14 +21,9 @@ class Api::Json::TablesController < Api::ApplicationController
       begin
         @table = ::Table.new
         @table.user_id = current_user.id
-        if params[:name]
-          @table.name = params[:name]
-        else
-          @table.name = ::Table.get_valid_table_name('', {
-              connection:       current_user.in_database,
-              database_schema:  current_user.database_schema
-          })
-        end
+
+        @table.name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(params[:name])
+
         @table.description    = params[:description]   if params[:description]
         @table.the_geom_type  = params[:the_geom_type] if params[:the_geom_type]
         @table.force_schema   = params[:schema]        if params[:schema]
@@ -42,11 +37,14 @@ class Api::Json::TablesController < Api::ApplicationController
         if save_status
           render_jsonp(@table.public_values({request:request}), 200, { location: "/tables/#{@table.id}" })
 
-          custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                               'type' => @table.table_visualization.type,  
-                               'vis_id' => @table.table_visualization.id, 
-                               'origin' => 'blank'}
-          Cartodb::EventTracker.new.send_event(current_user, 'Created dataset', custom_properties)
+          table_visualization = @table.table_visualization
+          if table_visualization
+            current_viewer_id = current_viewer.id
+            Carto::Tracking::Events::CreatedDataset.new(current_viewer_id,
+                                                        visualization_id: table_visualization.id,
+                                                        user_id: current_viewer_id,
+                                                        origin: 'blank').report
+          end
         else
           CartoDB::StdoutLogger.info 'Error on tables#create', @table.errors.full_messages
           render_jsonp( { :description => @table.errors.full_messages,
@@ -54,6 +52,9 @@ class Api::Json::TablesController < Api::ApplicationController
                         }, 400)
         end
       rescue CartoDB::QuotaExceeded
+        current_viewer_id = current_viewer.id
+        Carto::Tracking::Events::ExceededQuota.new(current_viewer_id,
+                                                   user_id: current_viewer_id).report
         render_jsonp({ errors: [TABLE_QUOTA_REACHED_TEXT]}, 400)
       end
 
@@ -111,46 +112,28 @@ class Api::Json::TablesController < Api::ApplicationController
       rescue => e
         CartoDB::StdoutLogger.info e.class.name, e.message
         render_jsonp({ :errors => [translate_error(e.message.split("\n").first)] }, 400) and return
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
       end
-
     end
   end
 
   def destroy
     @stats_aggregator.timing('tables.destroy') do
+      table_visualization = @table.table_visualization
 
-      begin
-        @stats_aggregator.timing('ownership-check') do
-          return head(403) unless @table.table_visualization.is_owner?(current_user)
-        end
-
-        custom_properties = {'privacy' => @table.table_visualization.privacy, 
-                             'type' => @table.table_visualization.type,  
-                             'vis_id' => @table.table_visualization.id}
-
-        @stats_aggregator.timing('delete') do
-          @table.destroy
-        end
-
-        Cartodb::EventTracker.new.send_event(current_user, 'Deleted dataset', custom_properties)
-
-        head :no_content
-      rescue CartoDB::NamedMapsWrapper::HTTPResponseError => exception
-        CartoDB::StdoutLogger.info "Communication error with tiler API. HTTP Code: #{exception.message}", exception.template_data
-        render_jsonp({ errors: { named_maps_api: "Communication error with tiler API. HTTP Code: #{exception.message}" } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapDataError => exception
-        render_jsonp({ errors: { named_map: exception } }, 400)
-      rescue CartoDB::NamedMapsWrapper::NamedMapsDataError => exception
-        render_jsonp({ errors: { named_maps: exception } }, 400)
+      @stats_aggregator.timing('ownership-check') do
+        return head(403) unless table_visualization.is_owner?(current_user)
       end
 
+      @stats_aggregator.timing('delete') do
+        @table.destroy
+      end
+
+      current_viewer_id = current_viewer.id
+      Carto::Tracking::Events::DeletedDataset.new(current_viewer_id,
+                                                  user_id: current_viewer_id,
+                                                  visualization_id: table_visualization.id).report
+
+      head :no_content
     end
   end
 

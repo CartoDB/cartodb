@@ -16,7 +16,7 @@ describe CartoDB::ConnectionPool do
   end
 
   after(:each) do
-    @new_user.destroy unless @new_user.nil?
+    @users.map(&:destroy) if @users
   end
 
   def database_object_count
@@ -35,18 +35,17 @@ describe CartoDB::ConnectionPool do
 
   describe '#eviction_policy' do
     it 'evicts older connection (LRU)' do
-      @new_user = create_user
-      conn_1 = $user_1.in_database
-      conn_2 = $user_2.in_database
-      conn_3 = @new_user.in_database
-      pool_contains?(conn_1).should be_false
-      pool_contains?(conn_2).should be_true
-      pool_contains?(conn_3).should be_true
+      @users = [create_user, create_user, create_user]
+      conns = @users.map(&:in_database)
 
-      conn_1 = $user_1.in_database
-      pool_contains?(conn_1).should be_true
-      pool_contains?(conn_2).should be_false
-      pool_contains?(conn_3).should be_true
+      pool_contains?(conns[0]).should be_false
+      pool_contains?(conns[1]).should be_true
+      pool_contains?(conns[2]).should be_true
+
+      conns[0] = @users[0].in_database
+      pool_contains?(conns[0]).should be_true
+      pool_contains?(conns[1]).should be_false
+      pool_contains?(conns[2]).should be_true
     end
   end
 
@@ -60,22 +59,21 @@ describe CartoDB::ConnectionPool do
 
       initial_user_count = user_object_count
       initial_db_count = database_object_count
-      @new_user = create_user
+      @users = [create_user, create_user, create_user]
 
       # Create some connections to user database and check that they are not leaked
       (0..4).each do |_|
-        [$user_1, $user_2, @new_user].each do |user|
+        @users.each do |user|
           user.in_database.test_connection.should be_true
         end
       end
       database_object_count.should < (initial_db_count + MAX_ALLOWABLE_CONNECTIONS)
 
       # Destroy new user and ensure it does not leaks (as soon as his db connection is evicted)
-      @new_user.destroy
-      @new_user = nil
+      @users.delete_at(0).destroy
 
       (0..4).each do |_|
-        [$user_1, $user_2].each do |user|
+        @users.each do |user|
           user.in_database.test_connection.should be_true
         end
       end

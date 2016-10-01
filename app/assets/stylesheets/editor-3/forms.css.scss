@@ -1,0 +1,118 @@
+// Styles for Form Layout
+// --------------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Editor-formInner {
+  @include display-flex();
+  @include align-items(center);
+  min-height: $baseSize * 4;
+  margin-top: $baseSize;
+}
+.Options-form .Editor-formInner {
+  margin-top: 0;
+}
+.Editor-formInput,
+.Editor-formLabel {
+  @include flex(1);
+  position: relative;
+}
+.Editor-formInput:focus {
+  outline: none;
+}
+.Editor-formInner--noMargin {
+  margin-top: 0;
+  padding-top: $baseSize;
+}
+.Editor-formInner--nested {
+  position: relative;
+}
+.Editor-formInner--nested::before {
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: 8px;
+  width: 1px;
+  background: $cSecondaryLine;
+  content: '';
+}
+.Editor-formInner--nested .CDB-Legend {
+  position: relative;
+  width: 72px;
+  padding-left: 24px;
+}
+.Editor-formInner--nested .CDB-Legend::before {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  width: 5px;
+  height: 5px;
+  border: 1px solid $cMainLine;
+  border-radius: 50%;
+  background: $cWhite;
+  content: '';
+  box-sizing: border-box;
+}
+
+
+.Editor-formInner .Editor-formSelect {
+  max-width: 158px;
+}
+.Editor-formSelect {
+  @include flex(1);
+}
+
+.Editor-boxModal .CDB-Legend {
+  padding-left: 0;
+}
+
+.Editor-boxModal .CDB-Legend::before {
+  display: none;
+}
+
+.Editor-checker {
+  width: 100%;
+}
+.Editor-checker--slim .Editor-formInner {
+  min-height: 20px;
+}
+.Editor-checkerInput {
+  width: 92px;
+  margin-right: 12px;
+}
+/* move to CartoAssets */
+.Editor-checkerInput .CDB-Checkbox-face {
+  flex: 0 0 16px;
+  width: 16px; // Forcing to be at least that width
+  min-width: 0;
+}
+.Editor-checkerLabel {
+  margin-left: 8px;
+}
+.Editor-checkerComponent {
+  width: 158px;
+}
+
+// TODO: fix this in CartoAsssets
+.CDB-OptionInput-container {
+  height: 100%;
+}
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+.CDB-OptionInput-item--categories .InputColor {
+  padding: 0;
+}
+.CDB-ColorBar.is-link {
+  cursor: pointer;
+}
+.Form-InputFill.is-disabled {
+  border-color: #EEE;
+  background: #F9F9F9;
+  cursor: default;
+}
+.RampItem-bar {
+  width: 50px;
+}

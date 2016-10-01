@@ -68,7 +68,7 @@ module CartoDB
             Url::Dropbox::DATASOURCE_NAME,
             Url::Box::DATASOURCE_NAME,
             Url::GDrive::DATASOURCE_NAME,
-            Url::InstagramOAuth::DATASOURCE_NAME,
+            # Url::InstagramOAuth::DATASOURCE_NAME,
             Url::MailChimp::DATASOURCE_NAME
           ]
         end

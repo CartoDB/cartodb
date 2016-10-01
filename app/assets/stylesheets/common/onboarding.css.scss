@@ -1,0 +1,167 @@
+@import '../variables/mixins';
+@import '../variables/colors';
+@import '../variables/sizes';
+@import 'cdb-variables/colors';
+
+.Onboarding {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.AnalysisCompletionDetails {
+  @include display-flex();
+  height: 100%;
+}
+
+.Onboarding-fake {
+  @include flex(0 0 415px);
+  height: 100%;
+
+  .is-editing & {
+    @include flex(0 0 560px);
+  }
+}
+
+.Onboarding-body {
+  width: 466px;
+}
+
+.Onboarding-contentWrapper {
+  @include flex(1);
+  @include opacity(0.88);
+  @include display-flex();
+  @include justify-content(center);
+  @include align-items(center);
+  height: 100%;
+  background: #2E3C43;
+  pointer-events: all;
+}
+
+.Onboarding-headerTitle {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
+.Onboarding-headerText {
+  margin-bottom: $sMargin-group;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.Onboarding-headerDescription {
+  margin-bottom: $sMargin-group;
+  color: #FFF;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+}
+
+.Onboarding-description {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-small;
+}
+
+.Onboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.Onboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.Onboarding-footer--marginRight {
+  margin-right: $sMargin-group;
+}
+
+.Onboarding-list {
+  margin-left: $sMargin-group;
+}
+
+.Onboarding-listItem {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  list-style: disc;
+}
+
+.Onboarding-listItemValue {
+  display: inline-block;
+  margin-bottom: 2 * $sMargin-min;
+  padding: 4px 5px;
+  border-radius: 2px;
+  background: #1E272B;
+  color: #FFF;
+  font-family: 'Monaco', 'Monospace';
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+}
+
+.Onboarding-listItem .Onboarding-listItemDescription {
+  margin: 0;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-small;
+}
+
+.Onboarding-forgetLabel {
+  cursor: pointer;
+}
+
+.Onboarding-readMore {
+  color: $cWhite;
+  text-decoration: underline;
+}
+
+.Onboarding-readMore:hover {
+  text-decoration: none;
+}
+
+.Onboarding.is-closing { /* "forwards" to keep the last keyframe's styles after animation ended */
+  @include animation(fade-and-scale-out 80ms ease-in forwards);
+}
+
+.Onboarding.is-opening {
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
+
+@include keyframes(fade-and-scale-out) {
+  0% {
+    @include opacity(1);
+    @include transform(scale(1));
+  }
+  80% {
+    @include opacity(0.05);
+    @include transform(scale(1.4));
+  }
+  100% {
+    @include opacity(0);
+    @include transform(scale(2));
+  }
+}
+
+@include keyframes(fade-and-scale-in) {
+  0% {
+    @include opacity(0);
+    @include transform(scale(2));
+  }
+  10% {
+    @include opacity(0.9);
+    @include transform(scale(1.1));
+  }
+  100% {
+    @include opacity(1);
+    @include transform(scale(1));
+  }
+}

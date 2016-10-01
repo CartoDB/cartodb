@@ -14,7 +14,7 @@ module CartoDB
         @options          = options
         @configuration    = configuration
         @layergroup_data  = layergroup
-        @named_map_name   = NamedMap.template_name(@visualization.id)
+        @named_map_name   = Carto::NamedMaps::Template.new(Carto::Visualization.find(@visualization.id)).name
       end
 
       # Prepares additional data to decorate layers in the LAYER_TYPES_TO_DECORATE list
@@ -53,7 +53,7 @@ module CartoDB
               sql_api_template: ApplicationHelper.sql_api_template(privacy_type),
               # tiler_* and sql_api_* are kept for backwards compatibility
               tiler_protocol:   @visualization.password_protected? ?
-                                  @configuration[:tiler]['private']['protocol'] : 
+                                  @configuration[:tiler]['private']['protocol'] :
                                   @configuration[:tiler]['public']['protocol'],
               tiler_domain:     @visualization.password_protected? ?
                                   @configuration[:tiler]['private']['domain'] :
@@ -99,56 +99,31 @@ module CartoDB
       def data_for_carto_layer(layer_vizjson)
         # TODO: this id will probably be removed from named maps
         data = {
-            id: layer_vizjson[:id],
-            layer_name: layer_vizjson[:options][:layer_name],
-            interactivity: layer_vizjson[:options][:interactivity],
-            visible: layer_vizjson[:visible]
-          }
+          id: layer_vizjson[:id],
+          layer_name: layer_vizjson[:options][:layer_name],
+          interactivity: layer_vizjson[:options][:interactivity],
+          visible: layer_vizjson[:visible]
+        }
 
-        if layer_vizjson.include?(:infowindow) && !layer_vizjson[:infowindow].nil? &&
-             !layer_vizjson[:infowindow].fetch('fields').nil? && layer_vizjson[:infowindow].fetch('fields').size > 0
-          data[:infowindow] = layer_vizjson[:infowindow]
+        vizjson_infowindow = layer_vizjson[:infowindow]
+        vizjson_infowindow_fields = vizjson_infowindow['fields'] if vizjson_infowindow
+
+        if vizjson_infowindow.present? && vizjson_infowindow_fields && !vizjson_infowindow_fields.empty?
+          data[:infowindow] = vizjson_infowindow
         end
 
-        if layer_vizjson.include?(:tooltip) && !layer_vizjson[:tooltip].nil? &&
-             !layer_vizjson[:tooltip].fetch('fields').nil? && layer_vizjson[:tooltip].fetch('fields').size > 0
-          data[:tooltip] = layer_vizjson[:tooltip]
+        vizjson_tooltip = layer_vizjson[:tooltip]
+        vizjson_tooltip_fields = vizjson_tooltip['fields'] if vizjson_tooltip
+
+        if vizjson_tooltip.present? && vizjson_tooltip_fields && !vizjson_tooltip_fields.empty?
+          data[:tooltip] = vizjson_tooltip
         end
 
-        if layer_vizjson.include?(:legend) && !layer_vizjson[:legend].nil? &&
-             layer_vizjson[:legend].fetch('type') != 'none'
-          data[:legend] = layer_vizjson[:legend]
-        end
+        vizjson_legend = layer_vizjson[:legend]
+        data[:legend] = vizjson_legend if vizjson_legend.present? && vizjson_legend.fetch('type') != 'none'
+
         data
       end
-
-      # Loads the data of a given named map
-      # It completes/overrides data from the children if visualization has a parent_id
-      def load_named_map_data
-        named_maps = NamedMaps.new(
-            {
-              name:     @options.fetch(:user_name),
-              api_key:  @options.fetch(:api_key)
-            },
-            {
-              protocol:   @configuration[:tiler]['internal']['protocol'],
-              domain:     @configuration[:tiler]['internal']['domain'],
-              port:       @configuration[:tiler]['internal']['port'],
-              verifycert: (@configuration[:tiler]['internal']['verifycert'] rescue true)
-            }
-          )
-        @named_map = named_maps.get(NamedMap.template_name(@visualization.id))
-        unless @named_map.nil?
-          if @visualization.parent_id.nil?
-            @named_map_template = @named_map.template.fetch(:template)
-          else
-            parent_named_map = named_maps.get(NamedMap.template_name(@visualization.parent_id))
-            @named_map_template = parent_named_map.template.fetch(:template).merge(@named_map.template.fetch(:template))
-          end
-        end
-        @loaded = true
-      end
-
     end
   end
 end

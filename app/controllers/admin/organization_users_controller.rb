@@ -20,11 +20,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
   def new
     @user = ::User.new
-    @user.quota_in_bytes = (current_user.organization.unassigned_quota < 100.megabytes ? current_user.organization.unassigned_quota : 100.megabytes)
+    organization = current_user.organization
+    @user.quota_in_bytes = organization.unassigned_quota < 100.megabytes ? organization.unassigned_quota : 100.megabytes
 
     @user.soft_geocoding_limit = current_user.soft_geocoding_limit
     @user.soft_here_isolines_limit = current_user.soft_here_isolines_limit
+    @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
+    @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+
+    @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
 
     respond_to do |format|
       format.html { render 'new' }
@@ -49,21 +54,30 @@ class Admin::OrganizationUsersController < Admin::AdminController
       params[:user],
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
-        :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit])
+        :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
+        :soft_obs_snapshot_limit, :soft_obs_general_limit
+      ])
+    @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
     current_user.copy_account_features(@user)
 
+    # Validate password first, so nicer errors are displayed
+    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) && @user.valid?
+
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     @user.save(raise_on_failure: true)
     @user.create_in_central
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
-    ::Resque.enqueue(::Resque::UserJobs::CommonData::LoadCommonData, @user.id, common_data_url)
+    ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
     @user.organization.notify_if_seat_limit_reached
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
-    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
     flash.now[:error] = e.user_message
     render 'new', status: 422
@@ -103,22 +117,40 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.set_fields(attributes, [:twitter_username]) if attributes[:twitter_username].present?
     @user.set_fields(attributes, [:location]) if attributes[:location].present?
 
+    @user.viewer = attributes[:viewer] == 'true'
+
     @user.password = attributes[:password] if attributes[:password].present?
     @user.password_confirmation = attributes[:password_confirmation] if attributes[:password_confirmation].present?
     @user.soft_geocoding_limit = attributes[:soft_geocoding_limit] if attributes[:soft_geocoding_limit].present?
     @user.soft_here_isolines_limit = attributes[:soft_here_isolines_limit] if attributes[:soft_here_isolines_limit].present?
+    @user.soft_obs_snapshot_limit = attributes[:soft_obs_snapshot_limit] if attributes[:soft_obs_snapshot_limit].present?
+    @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
 
+    model_validation_ok = @user.valid?
+    if attributes[:password].present? || attributes[:password_confirmation].present?
+      model_validation_ok &&= @user.valid_password?(:password, attributes[:password], attributes[:password_confirmation])
+    end
+
+    unless model_validation_ok
+      raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
+    end
+
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
+    # update_in_central is duplicated because we don't wan ta local save if Central fails,
+    # but before/after save at user can change some attributes that we also want to persist.
+    # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
     @user.update_in_central
 
     @user.save(raise_on_failure: true)
 
+    @user.update_in_central
+
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e
-    CartoDB.report_exception(e, "Validation error", request: request, user: current_user)
+    CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
     flash.now[:error] = e.user_message
     render 'edit', status: 422
@@ -133,22 +165,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
   def destroy
     raise "Can't delete user. #{'Has shared entities' if @user.has_shared_entities?}" unless @user.can_delete
 
-    @user.delete_in_central
     @user.destroy
+    @user.delete_in_central
     flash[:success] = "User was successfully deleted."
     redirect_to CartoDB.url(self, 'organization', {}, current_user)
   rescue CartoDB::CentralCommunicationFailure => e
-    CartoDB.report_exception(e)
     if e.user_message =~ /No organization user found with username/
-      @user.destroy
-      flash[:success] = "#{e.user_message}. User was deleted from the organization server."
+      flash[:success] = "User was successfully deleted."
       redirect_to CartoDB.url(self, 'organization', {}, current_user)
     else
-      set_flash_flags(nil, true)
-      flash[:error] = "User was not deleted. #{e.user_message}"
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user from central', target_user: @user.username)
+      flash[:success] = "#{e.user_message}. User was deleted from the organization server."
+      redirect_to organization_path(user_domain: params[:user_domain])
     end
   rescue => e
+    CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
     flash[:error] = "User was not deleted. #{e.message}"
     redirect_to organization_path(user_domain: params[:user_domain])
   end
@@ -170,7 +201,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def extras_enabled?
-    extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_tweets_enabled?
+    extra_geocodings_enabled? || extra_here_isolines_enabled? || extra_obs_snapshot_enabled? || extra_obs_general_enabled? || extra_tweets_enabled?
   end
 
   def extra_geocodings_enabled?
@@ -178,6 +209,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def extra_here_isolines_enabled?
+    true
+  end
+
+  def extra_obs_snapshot_enabled?
+    true
+  end
+
+  def extra_obs_general_enabled?
     true
   end
 

@@ -17,7 +17,7 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="FormAccount-Section u-inner">
+<div class="CDB-Text FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="FormAccount-Content">
@@ -31,92 +31,115 @@
 
       <span class="FormAccount-separator"></span>
 
-      <div class="FormAccount-row js-avatarSelector">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Avatar</label>
-        </div>
-        <div class="FormAccount-rowData FormAccount-avatar">
-          <div class="FormAccount-avatarPreview">
-            <img src="<%= @user.avatar %>" class="FormAccount-avatarPreviewImage" />
+      <div class="FormAccount-row FormAccount-rowHorizontal">
+        <div class="CDB-Text js-avatarSelector FormAccount-avatarSelector">
+          <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Avatar</label>
           </div>
-          <div class="FormAccount-avatar--input">
-            <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
-            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+          <div class="FormAccount-rowData FormAccount-avatar">
+            <div class="FormAccount-avatarPreview">
+              <img src="<%= @user.avatar %>" class="FormAccount-avatarPreviewImage" />
+            </div>
+            <div class="FormAccount-avatar--input">
+              <%= f.file_field :avatar_url, :class => "FormAccount-fileAvatar js-fileAvatar", :value => "Change image" %>
+              <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+                <p class="CDB-Text CDB-Size-small u-altTextColor">Recommended images should be 128x128 pixels of size</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Name</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <%= f.text_field :name, :class => "FormAccount-input FormAccount-input--med" %>
-
-          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Other users would reach you by your public name</p>
+        <div class="FormAccount-userType">
+          <div class="FormAccount-rowLabel">
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User type</label>
+          </div>
+          <div class="FormAccount-rowData FormAccount-userRole">
+            <% if @user.viewer? %>
+              <div>
+                <span class="UserRoleIndicator Viewer CDB-Text CDB-Size-small is-semibold u-altTextColor">VIEWER</span>
+                <% if @user.organization %>
+                  <a href="mailto:<%= @user.organization.admin_email %>">Become a Builder</a>
+                <% end %>
+              </div>
+              <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace">Read-only access for datasets and maps</p>
+            <% end %>
+            <% if @user.builder? %>
+              <span class="UserRoleIndicator Builder CDB-Text CDB-Size-small is-semibold u-altTextColor">BUILDER</span>
+              <p class="CDB-Text CDB-Size-small u-altTextColor u-tSpace">Write access for editing and building datasets and maps</p>
+            <% end %>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Website</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Name</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :website, :class => "FormAccount-input FormAccount-input--med" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText"></p>
-        </div>
-      </div>
+          <%= f.text_field :name, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
 
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Location</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <%= f.text_field :location, :class => "FormAccount-input FormAccount-input--med" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText"></p>
-        </div>
-      </div>
-
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Your description</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <%= f.text_area :description, :class => "FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText"></p>
-        </div>
-      </div>
-
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Twitter username</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <%= f.text_field :twitter_username, :class => "FormAccount-input FormAccount-input--med" %>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <p class="FormAccount-rowInfoText"></p>
-        </div>
-      </div>
-
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Disqus shortname</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <%= f.text_field :disqus_shortname, :class => "FormAccount-input FormAccount-input--med", :placeholder => "If empty, CartoDB will moderate them for you" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Be notified by new comments in your pages</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Other users would reach you by your public name</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Website</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :website, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Location</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :location, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your description</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_area :description, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Twitter username</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :twitter_username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med" %>
+        </div>
+        <div class="FormAccount-rowInfo">
+          <p class="CDB-Text CDB-Size-small u-altTextColor"></p>
+        </div>
+      </div>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Disqus shortname</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <%= f.text_field :disqus_shortname, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :placeholder => "If empty, CARTO will moderate them for you" %>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Be notified by new comments in your pages</p>
           </div>
         </div>
       </div>
@@ -129,24 +152,24 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Available for hire</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Available for hire</label>
         </div>
         <div class="FormAccount-rowData">
           <div class="Toggler">
             <%= f.check_box :available_for_hire, :id => "available_for_hire" %>
             <%= label_tag(:available_for_hire, '') %>
           </div>
-          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Show a banner in your public profile linked to your email</p>
+          <div class="FormAccount-rowInfo u-lSpace--xl">
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Show a banner in your public profile linked to your email</p>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-footer">
         <p class="FormAccount-footerText"></p>
-        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-          <% content_tag(:span, 'Save changes') %>
-        <% end %>
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
       </div>
     <% end %>
   </div>

@@ -42,7 +42,7 @@ describe CartoDB::SQLApi do
 
   def stub_api_request(code, response_file)
     response = File.open(path_to(response_file)).read
-    Typhoeus.stub(/.*cartodb.com\/api\/v[12]/).and_return(
+    Typhoeus.stub(/.*carto.com\/api\/v[12]/).and_return(
       Typhoeus::Response.new(code: code, body: response)
     )
   end # stub_api_request
@@ -56,13 +56,13 @@ describe CartoDB::SQLApi do
   TEST_SQL_API_CONFIG =  {:sql_api => {
       "private" => {
         "protocol" =>   'http',
-        "domain" => 'cartodb.com',
+        "domain" => 'carto.com',
         "endpoint" =>  '/api/v1/sql',
         "port" =>       8080
       },
       "public" => {
         "protocol" =>   'http',
-        "domain" =>    'cartodb.com',
+        "domain" =>    'carto.com',
         "endpoint" =>   '/api/v2/sql',
         "port" =>       8080
       }

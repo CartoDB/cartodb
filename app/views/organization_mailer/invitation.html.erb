@@ -1,61 +1,27 @@
-<% content_for(:subject) { @subject } %>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>Hello and welcome!</p>
+    <p>Join the <%= @invitation.organization.name %> organization in CARTO. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
+    <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
+    <p>Here are some resources to get you up and running:</p>
+    <ul>
+      <li><a href="https://carto.com/docs/carto-builder/">CARTO Docs</a>: Guides, FAQs and tutorials</li>
+      <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies and white papers for inspiration</li>
+      <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
+    </ul>
 
-<% content_for :body do %>
-  <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You are invited to join the <%= @invitation.organization.name_to_display %> organization at CartoDB</td>
-        </tr>
+    <p>Below is a personalised message from your account administrator:</p>
+  </td>
+</tr>
 
-        <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">Please join the <%= @invitation.organization.name_to_display %> organization account at CartoDB:</td>
-        </tr>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p><i><%= simple_format(@invitation.welcome_text) %></i></p>
+  </td>
+</tr>
 
-        <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;"><%= simple_format(@invitation.welcome_text) %></td>
-        </tr>
-
-        <tr>
-          <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">
-            <p>Welcome to <%= @invitation.organization.name_to_display %>! Please click on the button below to create your account.</p>
-            <p>Happy mapping!</p>
-          </td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-top: none; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <td align="center"><a href="<%= @invitation_signup_link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 30px; -webkit-border-radius: 30px; -moz-border-radius: 30px; display: inline-block;" class="mobile-button">Create your account</a></td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-<% end %>
-
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>Happy mapping!</p>
+  </td>
+</tr>

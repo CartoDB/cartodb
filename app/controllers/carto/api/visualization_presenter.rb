@@ -63,7 +63,9 @@ module Carto
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
-          url: url
+          url: url,
+          uses_builder_features: @visualization.uses_builder_features?,
+          auth_tokens: auth_tokens
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
         poro
@@ -94,11 +96,11 @@ module Carto
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
         if @visualization.is_privacy_private?
-          # Final url will be like ORG.cartodb.com/u/VIEWER/viz/OWNER_SCHEMA.VIS_ID/public_map
+          # Final url will be like ORG.carto.com/u/VIEWER/viz/OWNER_SCHEMA.VIS_ID/public_map
           base_url_username = @current_viewer.username
           vis_id_schema = @visualization.user.sql_safe_database_schema
         else
-          # Final url will be like ORG.cartodb.com/u/VIEWER/viz/VIS_ID/public_map
+          # Final url will be like ORG.carto.com/u/VIEWER/viz/VIS_ID/public_map
           base_url_username = @visualization.user.username
           vis_id_schema = nil
         end
@@ -112,6 +114,16 @@ module Carto
       end
 
       private
+
+      def auth_tokens
+        if @visualization.password_protected? && @visualization.user.id == @current_viewer.id
+          @visualization.get_auth_tokens
+        elsif @visualization.is_privacy_private?
+          @current_viewer.get_auth_tokens
+        else
+          []
+        end
+      end
 
       def related_tables
         related = @visualization.table ?

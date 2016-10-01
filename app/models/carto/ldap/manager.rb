@@ -55,7 +55,7 @@ module Carto
         @ldap_email = ldap_email
         @cartodb_username = cartodb_username
         @organization_id = cartodb_organization_id
-        super("'#{ldap_username}' not found at CartoDB (username:'#{cartodb_username}', organization id:'#{cartodb_organization_id}')")
+        super("'#{ldap_username}' not found at CARTO (username:'#{cartodb_username}', organization id:'#{cartodb_organization_id}')")
       end
 
       attr_reader :ldap_email, :ldap_username, :cartodb_username, :organization_id

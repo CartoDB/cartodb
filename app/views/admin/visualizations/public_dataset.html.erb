@@ -1,6 +1,8 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:page_title) do %><%= @table.name.gsub(/_/," ") %><% end %>
 
-<%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CartoDB" : "Map created by #{@name} in CartoDB" %><% end %>
+<%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
@@ -19,7 +21,7 @@
   <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
 
   <script>
-    var table_name          = '<%=raw @table.owner.sql_safe_database_schema %>.<%= @table.name %>';
+    var table_name          = '<%=raw @table.qualified_table_name %>';
     var table_id            = '<%= @table.id %>';
     var schema              = <%= safe_js_object @table.schema.to_json %>;
     var user_name           = '<%= @user.username %>';
@@ -32,7 +34,7 @@
     var use_https           = <%= @use_https =%>;
     var api_key             = <%= safe_js_object @api_key.to_json %>;
     var base_url            = '<%= @table.owner.public_url(nil, request.protocol == "https://" ? "https" : "http") %>';
-    var login_url           = "<%= login_url %>";
+    var login_url           = "<%= CartoDB.url(self, 'login') %>";
 
     var debug = false;
     <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
@@ -66,7 +68,7 @@
 <%= content_for(:content) do %>
   <%= render 'admin/shared/public_header' %>
 
-  <div class="PublicMap-map js-map" id="map">
+  <div class="CDB-Text PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center js-spinner"></div>
 
     <div class="panes pane_table u-hideOnTablet"></div>
@@ -83,7 +85,7 @@
 
   <%# Legacy from current embed %>
   <div class="NotSupportedDialog" id="not_supported_dialog" style="display: none">
-    <h2 class="NotSupportedDialog-title">CartoDB</h2>
+    <h2 class="NotSupportedDialog-title">CARTO</h2>
     <p class="NotSupportedDialog-desc">This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
     <ul class="NotSupportedDialog-list">
       <li class="NotSupportedDialog-item"><a class="NotSupportedDialog-itemLink NotSupportedDialog-itemLink--Safari" href="http://www.apple.com/safari/" class="safari">Safari</a></li>
@@ -94,7 +96,7 @@
 
   <div class="separator bottom"></div>
 
-  <div class="Navmenu js-Navmenu">
+  <div class="CDB-Text CDB-Size-medium Navmenu js-Navmenu">
     <div class="u-inner">
       <div class="PublicMap-block">
         <div class="PublicMap-gradient"></div>
@@ -150,8 +152,8 @@
 
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <li class="Navmenu-item u-hideOnTablet">
-                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active js-oneclick" href="http://oneclick.cartodb.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
-                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CartoDB</a>
+                <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active js-oneclick" href="https://oneclick.carto.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CARTO</a>
               </li>
             <% end %>
           </ul>
@@ -160,7 +162,7 @@
     </div>
   </div>
 
-  <div class="PublicMap-secondary PublicMap-secondary--bottom">
+  <div class="CDB-Text PublicMap-secondary PublicMap-secondary--bottom">
     <div class="u-inner">
       <div class="PublicMap-block">
         <div class="PublicMap-leftBlock PublicMap-leftBlock--large">
@@ -225,17 +227,17 @@
         <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-vis-id="<%= vis.id %>" data-vis-owner-name="<%= vis.user[:username] %>">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, user) %>" class="MapCard-header js-header">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
               <div class="MapCard-content MapCard-content--compact">
                 <div class="MapCard-contentBody">
                   <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                    <h3 class="MapCard-title DefaultTitle">
+                    <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
                       <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
                     </h3>
                   </div>
-                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff">
+                  <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">
                     <i class="CDB-IconFont CDB-IconFont-clock DefaultTimeDiff-icon"></i>
                     <%= time_ago_in_words(vis.updated_at) %> ago
                   </div>

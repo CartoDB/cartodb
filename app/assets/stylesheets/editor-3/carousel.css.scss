@@ -1,0 +1,12 @@
+// Styles for carousel (icons active and normal)
+// --------------------------------------------------
+
+@import 'cdb-variables/colors';
+
+.Style-fill {
+  fill: $cHoverLine;
+}
+
+.Carousel-item.is-selected .Style-fill {
+  fill: $cMainBg;
+}

@@ -25,12 +25,12 @@ describe Search::Twitter do
 
   describe '#filters' do
     it 'tests max and total results filters' do
-      twitter_datasource = Search::Twitter.get_new(get_config, CartoDB::Datasources::Doubles::User.new)
-
       big_quota = 123456
       user = CartoDB::Datasources::Doubles::User.new({
         twitter_datasource_quota: big_quota
       })
+      twitter_datasource = Search::Twitter.get_new(get_config, user)
+
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
       maxresults_filter.should eq CartoDB::TwitterSearch::SearchAPI::MAX_PAGE_RESULTS
       totalresults_filter = twitter_datasource.send :build_total_results_field, user
@@ -41,6 +41,7 @@ describe Search::Twitter do
         twitter_datasource_quota: small_quota,
         soft_twitter_datasource_limit: false
       })
+      twitter_datasource = Search::Twitter.get_new(get_config, user)
       maxresults_filter = twitter_datasource.send :build_maxresults_field, user
       maxresults_filter.should eq small_quota
       totalresults_filter = twitter_datasource.send :build_total_results_field, user
@@ -374,4 +375,3 @@ describe Search::Twitter do
   end
 
 end
-

@@ -72,7 +72,7 @@ describe Carto::Api::GrantablesController do
         per_page = 1
 
         # this expectation is based on known naming:
-        expected_ids = [@org_user_1.id, @org_user_2.id, group_1.id, group_2.id, @org_user_owner.id]
+        expected_ids = [group_1.id, group_2.id, @org_user_owner.id, @org_user_1.id, @org_user_2.id]
 
         expected_ids.each { |expected_id|
           page = expected_ids.index(expected_id) + 1
@@ -96,7 +96,7 @@ describe Carto::Api::GrantablesController do
       end
 
       it 'can filter by name' do
-        group = @carto_organization.groups.first 
+        group = @carto_organization.groups.first
         get_json api_v1_grantables_index_url(user_domain: @org_user_owner.username, organization_id: @carto_organization.id, api_key: @org_user_owner.api_key), {q: group.display_name}, @headers do |response|
           response.status.should == 200
           response.body[:grantables].length.should == 1

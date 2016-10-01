@@ -1,39 +1,39 @@
-<div class="Header" id="header">
+<div class="Header CDB-Text" id="header">
   <div class="u-inner Header-inner">
     <div class="Header-navigation">
       <ul class="Header-navigationList">
         <li class="js-logo">
-          <a href="<%= root_url %>">
-            <span class="Logo Logo--avatar">
-              <i class="CDB-IconFont CDB-IconFont-cartoFante"></i>
+          <a href="<%= CartoDB.url(self, 'root') %>">
+            <span class="Logo">
+              <img src="<%= image_path "layout/carto-logo.svg" %>" alt="carto">
             </span>
           </a>
         </li>
         <li>
           <ul class="Header-navigationBreadcrumb">
             <% if current_user.has_organization? %>
-              <li class="Header-navigationBreadcrumbItem"><p class="Header-navigationBreadcrumbParagraph"><%= current_user.organization.name %></p> /</li>
+              <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large"><p class="Header-navigationBreadcrumbParagraph"><%= current_user.organization.name %></p> /</li>
             <% end %>
-            <li class="Header-navigationBreadcrumbItem">
+            <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large">
               <% if params[:controller] != "admin/visualizations" %>
                 <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
               <% else %>
                 <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
               <% end %>
             </li>
-            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown"></li>
+            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown CDB-Text CDB-Size-large"></li>
           </ul>
         </li>
       </ul>
     </div>
     <div class="Header-settings">
-      <ul class="Header-settingsList">
+      <ul class="Header-settingsList CDB-Text CDB-Size-medium">
         <% unless cartodb_com_hosted? %>
         <li class="Header-settingsItem">
-          <a target="_blank" href="http://cartodb.com/gallery/" class="Header-settingsLink Header-settingsLink--dashboard">Gallery</a>
+          <a target="_blank" href="https://carto.com/gallery/" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Gallery</a>
         </li>
         <li class="Header-settingsItem">
-          <a target="_blank" href="http://docs.cartodb.com/" class="Header-settingsLink Header-settingsLink--dashboard">Documentation</a>
+          <a target="_blank" href="https://carto.com/docs" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Documentation</a>
         </li>
         <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
           <a href="#/notifications" class="UserNotifications">

@@ -4,5 +4,5 @@
 </div>
 
 <div class="WidgetList-inner js-inner">
-  <h3 class="WidgetList-title CDB-Text CDB-Size-large u-bSpace--xl"><%- columnName %></h3>
+  <h3 class="u-ellipsis CDB-Text CDB-Size-large u-bSpace--m"><%- columnName %></h3>
 </div>

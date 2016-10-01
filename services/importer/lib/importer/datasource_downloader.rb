@@ -4,14 +4,15 @@ require_relative './exceptions'
 require_relative './source_file'
 require_relative '../../../data-repository/filesystem/local'
 require_relative './unp'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class DatasourceDownloader
+      include CartoDB::Importer2::QuotaCheckHelpers
 
       def initialize(datasource, item_metadata, options = {}, logger = nil, repository = nil)
         @checksum = nil
-
         @source_file = nil
         @datasource = datasource
         @item_metadata = item_metadata
@@ -68,12 +69,11 @@ module CartoDB
         false
       end
 
-      # @return Bool
       def multi_resource_import_supported?
         @datasource.multi_resource_import_supported?(@item_metadata[:id])
       end
 
-      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository
+      attr_reader  :source_file, :item_metadata, :datasource, :options, :logger, :repository, :etag, :checksum, :last_modified
 
       private
 
@@ -109,6 +109,9 @@ module CartoDB
             @http_response_code = @datasource.get_http_response_code if @datasource.providers_download_url?
           rescue => exception
             if exception.message =~ /quota/i
+              user_id = @options[:user_id]
+              report_over_quota(user_id) if user_id
+
               raise StorageQuotaExceededError
             else
               raise
@@ -120,24 +123,22 @@ module CartoDB
         self
       end
 
-      def raise_if_over_storage_quota(size, available_quota_in_bytes=nil)
-        return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if size > available_quota_in_bytes.to_i
-      end
-
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
         # Skip storing if no data came in
         return if resource_data.empty?
 
         data = StringIO.new(resource_data)
         name = filename
-        raise_if_over_storage_quota(data.size, available_quota_in_bytes)
+
+        raise_if_over_storage_quota(requested_quota: data.size,
+                                    available_quota: available_quota_in_bytes,
+                                    user_id: @options[:user_id])
+
         self.source_file = SourceFile.new(filepath(name), name)
         # Delete if exists
         repository.remove(source_file.path) if repository.respond_to?(:remove)
         repository.store(source_file.path, data)
       end
-
 
       def filepath(name)
         repository.fullpath_for(name)

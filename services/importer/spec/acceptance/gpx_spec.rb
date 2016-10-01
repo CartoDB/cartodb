@@ -1,5 +1,6 @@
 # encoding: utf-8
 require_relative '../../../../spec/rspec_configuration'
+require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/runner'
 require_relative '../../lib/importer/job'
 require_relative '../../lib/importer/downloader'
@@ -15,25 +16,36 @@ describe 'GPX regression tests' do
   include_context "cdb_importer schema"
   include_context "no stats"
 
+  before(:all) do
+    @user = create_user
+    @user.save
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
   it 'imports GPX files' do
     filepath    = path_to('route2.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
+    runner      = CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                 user: @user
+                                                )
     runner.run
 
-    geometry_type_for(runner).should be
+    geometry_type_for(runner, @user).should be
   end
 
   it 'imports a multi layer GPX file' do
     filepath    = path_to('multiple_layer.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
+    runner      = CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                 user: @user
+                                                )
     runner.run
 
     runner.results.each { |result| result.success.should eq true }
@@ -43,10 +55,10 @@ describe 'GPX regression tests' do
   it 'imports a single layer GPX file that becomes two layer dataset' do
     filepath    = path_to('one_layer.gpx')
     downloader  = CartoDB::Importer2::Downloader.new(filepath)
-    runner      = CartoDB::Importer2::Runner.new(pg: @pg_options,
+    runner      = CartoDB::Importer2::Runner.new(pg: @user.db_service.db_configuration_for,
                                                  downloader: downloader,
-                                                 log: CartoDB::Importer2::Doubles::Log.new,
-                                                 user: CartoDB::Importer2::Doubles::User.new)
+                                                 log: CartoDB::Importer2::Doubles::Log.new(@user),
+                                                 user: @user)
     runner.run
 
     runner.results.each { |result| result.success.should eq true }

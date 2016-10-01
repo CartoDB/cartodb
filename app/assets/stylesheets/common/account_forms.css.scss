@@ -20,7 +20,7 @@ $sLabel-width: 140px;
 .FormAccount-title {
   display: inline-block;
   width: 100%;
-  margin: 30px 0;
+  margin: 30px 0 28px 0;
 }
 .FormAccount-titleHeader {
   display: block;
@@ -28,14 +28,9 @@ $sLabel-width: 140px;
   padding-bottom: 12px;
   border-bottom: 1px solid $cStructure-mainLine;
   color: $cTypography-headers;
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-bold;
 }
 .FormAccount-titleText {
   color: $cTypography-paragraphs;
-  font-size: $sFontSize-large;
-  font-style: normal;
-  font-weight: $sFontWeight-lighter;
 }
 .FormAccount-titleText--negative {
   color: $cHighlight-negative;
@@ -48,8 +43,6 @@ $sLabel-width: 140px;
 }
 .FormAccount-listItem {
   color: $cTypography-paragraphs;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
 }
 .VerticalAligned--FormRow {
   @include display-flex();
@@ -60,7 +53,7 @@ $sLabel-width: 140px;
   @include display-flex();
   @include flex-direction(column);
   @include justify-content(flex-start, start);
-  margin: 0 0 20px;
+  margin: 0 0 32px;
 }
 .FormAccount-row--wideMarginBottom {
   margin-bottom: 100px;
@@ -83,9 +76,6 @@ $sLabel-width: 140px;
     border: 1px solid $cStructure-mainLine;
     border-radius: 50px;
     color: $cTypography-paragraphs;
-    font-size: $sFontSize-smallUpperCase;
-    font-weight: $sFontWeight-small;
-    line-height: $sLineHeight-small;
     content: '';
   }
   &:first-child:before {
@@ -138,8 +128,6 @@ $sLabel-width: 140px;
 }
 .FormAccount-label {
   color: $cTypography-paragraphs;
-  font-size: $sFontSize-normal;
-  font-weight: $sFontWeight-normal;
   text-transform: capitalize;
 }
 .FormAccount-label.FormAccount-label--verticalAlignTop {
@@ -155,14 +143,14 @@ $sLabel-width: 140px;
   @include flex-grow(1);
 }
 .FormAccount-rowPreview {
-  width: 735px;
+  width: 600px;
 }
 .FormAccount-separator {
   display: block;
   position: relative;
   width: 100%;
   height: 1px;
-  margin-bottom: 25px;
+  margin-bottom: 16px;
   background-color: $cStructure-darkGrey;
   z-index: 0;
 }
@@ -174,14 +162,15 @@ $sLabel-width: 140px;
   @include align-items(center);
   position: relative;
 }
-
+.FormAccount-rowData.in-block {
+  @include flex-direction(column);
+  @include align-items(flex-start);
+}
 .FormAccount-planTag {
   padding: 5px 10px;
   border-radius: 4px;
   background-color: $cHighlight-positive;
   color: #FFFFFF;
-  font-size: 13px;
-  font-weight: normal;
 }
 
 .FormAccount-rowData.FormAccount-rowData--alignLeft {
@@ -233,7 +222,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   outline: none;
   color: #666666;
-  font-weight: $sFontWeight-lighter;
   z-index: 2;
 
   &:focus {
@@ -266,19 +254,19 @@ $sLabel-width: 140px;
 }
 // Sizes
 .FormAccount-input--totalwidth {
-  width: 100%;
+  width: 100% !important;
 }
 .FormAccount-input--longer {
-  width: 434px;
+  width: 434px !important;
 }
 .FormAccount-input--long {
-  width: 354px;
+  width: 354px !important;
 }
 .FormAccount-input--med {
-  width: 274px;
+  width: 274px !important;
 }
 .FormAccount-input--short {
-  width: 114px;
+  width: 114px !important;
 }
 // Types
 .FormAccount-input.has-icon {
@@ -318,16 +306,24 @@ $sLabel-width: 140px;
   z-index: 2;
 }
 .FormAccount-inputIcon {
-  color: $cTypography-help;
-  font-size: $sFontSize-larger;
-
-  position: absolute;
   top: 12px;
   right: 14px;
+  position: absolute;
+  color: $cTypography-help;
+  font-size: $sFontSize-larger;
   z-index: 3;
 }
 .FormAccount-inputIcon--clock {
   top: 11px;
+}
+.FormAccount-inputIcon--noIcon {
+  width: 100%;
+  height: 100%;
+  color: $cTypography-help;
+  font-size: $sFontSize-normal;
+  line-height: 100px;
+  text-align: center;
+  text-transform: uppercase;
 }
 .FormAccount-inputError {
   @include transition(top, 200ms, ease-in-out);
@@ -341,7 +337,6 @@ $sLabel-width: 140px;
   border-radius: 4px;
   background: #FFF4F4;
   color: $cHighlight-negative;
-  font-size: $sFontSize-normal;
   line-height: 38px;
   z-index: 1;
 }
@@ -368,6 +363,12 @@ $sLabel-width: 140px;
   max-height: 110px;
   padding: 9px 12px;
 }
+.FormAccount-textarea.no-resize {
+  resize: none;
+}
+.FormAccount-textarea--longHeight {
+  height: 90px;
+}
 .FormAccount-textarea.is-disabled {
   color: $cTypography-help;
 }
@@ -384,6 +385,17 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
   line-height: $sLineHeight-large;
+}
+.FormAccount-row.FormAccount-rowHorizontal {
+  @include flex-direction(row);
+  @include justify-content(space-between, justify);
+}
+.FormAccount-userRole {
+  margin-top: 20px;
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-items(baseline, baseline);
+  @include justify-content(space-between, justify);
 }
 .FormAccount-avatarPreview {
   @include display-flex();
@@ -424,8 +436,8 @@ $sLabel-width: 140px;
 }
 .FormAccount-avatar .input-group {
   position: absolute;
-  top: 10px;
-  left: 120px;
+  top: 14px;
+  left: 114px;
 }
 .FormAccount-avatar .form-control {
   display: none;
@@ -440,8 +452,8 @@ $sLabel-width: 140px;
   position: absolute;
   top: 0;
   left: 0;
-  width: 85px;
-  margin-left: 2px;
+  width: 120px;
+  font-size: 12px;
   color: $cTypography-link;
   &:hover {
     color: $cTypography-linkHover;
@@ -458,11 +470,10 @@ $sLabel-width: 140px;
   }
 }
 .FormAccount-link {
-  color: $cTypography-link;
+  color: #1181FB;
   font-weight: normal;
-  text-decoration: underline;
   &:hover {
-    color: $cTypography-linkHover;
+    text-decoration: underline;
     cursor: pointer;
   }
 }
@@ -528,7 +539,8 @@ $sLabel-width: 140px;
   @include display-flex();
 
   &.FormAccount-rowInfo--marginLeft {
-    margin-left: 20px;
+    margin-left: 12px;
+    width: 224px;
   }
   &.FormAccount-rowInfoText--multipleLines {
     width: 500px;
@@ -588,6 +600,7 @@ $sLabel-width: 140px;
   color: $cTypography-secondary;
   font-size: $sFontSize-normal;
   font-weight: $sFontWeight-lighter;
+  line-height: 22px;
 }
 .FormAccount-footerIcon {
   width: 20px;
@@ -635,6 +648,7 @@ $sLabel-width: 140px;
   }
 }
 .FormAccount-tagsList.tagit .tagit-new {
+  width: 160px;
   padding: 7px 4px 2px 7px;
 }
 .FormAccount-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
@@ -668,12 +682,9 @@ $sLabel-width: 140px;
 
 .FormAccount-tagsList--placeholder {
   position: absolute;
-  left: 0;
-  padding: 0 0 0 12px;
-  color: #AAAAAA;
+  top: 12px;
+  left: 12px;
   font-style: italic;
-  font-weight: 300;
-  line-height: 38px;
 }
 
 .FormAccount-button--deleteAccount {

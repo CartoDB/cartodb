@@ -1,0 +1,49 @@
+// Tipsy tooltip
+// --------------------------------------------------
+
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.tipsy {
+  position: absolute;
+  font-family: 'Open Sans';
+}
+.tipsy-inner {
+  display: inline-block;
+  padding: $baseSize;
+  border-radius: $halfBaseSize;
+  background: rgba($cMainBg, 0.8);
+  color: $cWhite;
+  font-size: 12px;
+  line-height: 16px;
+}
+.tipsy-arrow-n {
+  border-bottom-color: rgba($cMainBg, 0.8);
+}
+.tipsy-arrow-s {
+  border-top-color: rgba($cMainBg, 0.8);
+}
+.tipsy-arrow-e {
+  border-left-color: rgba($cMainBg, 0.8);
+}
+.tipsy-arrow-w {
+  border-right-color: rgba($cMainBg, 0.8);
+}
+
+.tipsy.is-error {
+  .tipsy-arrow-n {
+    border-bottom-color: $cError;
+  }
+  .tipsy-arrow-s {
+    border-top-color: $cError;
+  }
+  .tipsy-arrow-e {
+    border-left-color: $cError;
+  }
+  .tipsy-arrow-w {
+    border-right-color: $cError;
+  }
+  .tipsy-inner {
+    background: $cError;
+  }
+}

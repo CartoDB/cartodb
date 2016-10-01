@@ -66,8 +66,13 @@ class Admin::UsersController < Admin::AdminController
       @user.set_fields(attributes, [:email])
     end
 
-    @user.save(raise_on_failure: true)
+    if attributes[:builder_enabled].present?
+      @user.set_fields(attributes, [:builder_enabled])
+    end
+
+    raise Sequel::ValidationFailed.new('Validation failed') unless @user.valid?
     @user.update_in_central
+    @user.save(raise_on_failure: true)
 
     update_session_security_token(@user) if password_change
 
@@ -122,7 +127,7 @@ class Admin::UsersController < Admin::AdminController
     cdb_logout
 
     if Cartodb::Central.sync_data_with_cartodb_central?
-      redirect_to "http://www.cartodb.com"
+      redirect_to "https://carto.com"
     else
       render(file: "public/404.html", layout: false, status: 404)
     end

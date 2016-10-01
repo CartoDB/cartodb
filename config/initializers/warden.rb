@@ -79,6 +79,30 @@ Warden::Strategies.add(:google_access_token) do
   end
 end
 
+Warden::Strategies.add(:github_oauth) do
+  def valid_github_oauth_strategy_for_user(user)
+    user.organization.nil? || user.organization.auth_github_enabled
+  end
+
+  def authenticate!
+    if params[:github_api]
+      github_api = params[:github_api]
+      github_id = github_api.id
+      user = User.where(github_user_id: github_id).first
+      unless user
+        user = User.where(email: github_api.email, github_user_id: nil).first
+        if user && valid_github_oauth_strategy_for_user(user)
+          user.github_user_id = github_id
+          user.save
+        end
+      end
+      user && valid_github_oauth_strategy_for_user(user) ? success!(user) : fail!
+    else
+      fail!
+    end
+  end
+end
+
 Warden::Strategies.add(:ldap) do
   def authenticate!
     (fail! and return) unless (params[:email] && params[:password])
@@ -91,7 +115,8 @@ Warden::Strategies.add(:ldap) do
         cartodb_username: exception.cartodb_username, organization_id: exception.organization_id,
         ldap_username: exception.ldap_username, ldap_email: exception.ldap_email)
     end
-    (fail! and return) unless user
+    # Fails, but do not stop processin other strategies (allows fallbacks)
+    return unless user
 
     success!(user, :message => "Success")
     request.flash['logged'] = true

@@ -2,12 +2,20 @@
 
 module LoginHelper
 
-  DEFAULT_BACKGROUND_COLOR = "#354046"
+  DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze
 
   def background
-    base_color = @organization && @organization.color ? @organization.color : DEFAULT_BACKGROUND_COLOR
-    color = "#{darken_color(base_color,0.6)}, #{base_color}"
-    "background-image: url(#{image_path('backgrounds/sessions.png')}), linear-gradient(to bottom right, #{color});"
+    base_color = (@organization.present? && @organization.color.present?) ? @organization.color : DEFAULT_BACKGROUND_COLOR
+    color = color_to_rgb(base_color)
+
+    "background-image: linear-gradient(0deg, #F9F9F9 70%, rgba(#{color}, 0.4) 100%);"
+  end
+
+  def color_to_rgb(hex_color)
+    hex_color = hex_color.delete('#')
+    rgb = hex_color.scan(/../).map(&:hex)
+
+    "#{rgb[0]}, #{rgb[1]}, #{rgb[2]}"
   end
 
   def darken_color(hex_color, amount=0.4)
@@ -16,15 +24,31 @@ module LoginHelper
     rgb[0] = (rgb[0].to_i * amount).round
     rgb[1] = (rgb[1].to_i * amount).round
     rgb[2] = (rgb[2].to_i * amount).round
+
     "#%02x%02x%02x" % rgb
   end
 
   def organization_color(organization)
-    !organization.nil? ? darken_color(organization.color, 0.7) : "#292E33"
+    !organization.nil? ? darken_color(organization.color, 0.4) : "#292E33"
   end
 
-  def login_org_avatar
-    @organization && @organization.name != "team" && !@organization.avatar_url.blank?
+  def render_organization_avatar
+    brand_path = image_path("layout/sessions/brand.png")
+
+    if @organization && @organization.name != 'team' && @organization.avatar_url.present?
+      avatar_url = @organization.avatar_url.sub(/^https?\:/, '')
+      "<picture class=\"Navbar-brand\">
+        <img src=\"#{avatar_url}\" alt=\"#{@organization.name}\" height=\"48\" />
+      </picture>
+      <sup>
+        <img src=\"#{brand_path}\" alt=\"CartoDB\" height=\"26\" width=\"26\">
+      </sup>".html_safe
+    else
+      "<picture class=\"Navbar-brand\">
+        <source type='image/svg+xml' srcset=\"#{brand_path}\">
+        <img src=\"#{brand_path}\" alt='CARTO' height=\"48\" width=\"48\" />
+      </picture>".html_safe
+    end
   end
 
   def forget_password_url
@@ -46,5 +70,5 @@ module LoginHelper
       }
     end
   end
-  
+
 end

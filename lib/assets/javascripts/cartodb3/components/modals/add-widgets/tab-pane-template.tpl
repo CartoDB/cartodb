@@ -1,4 +1,6 @@
-<div class="WidgetList-fakeInner">
-  <ul class="CDB-NavMenu-Inner CDB-Text is-semibold CDB-Size-medium js-menu"></ul>
-  <div class="js-content"></div>
+<div class="Modal-navigation">
+  <ul class="Modal-navigationInner CDB-Text is-semibold CDB-Size-medium js-menu"></ul>
 </div>
+<div class="Modal-inner Modal-inner--with-navigation js-content">
+</div>
+

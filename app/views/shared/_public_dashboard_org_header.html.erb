@@ -1,4 +1,4 @@
-<div class="UserInfo js-user-info">
+<div class="CDB-Text UserInfo js-user-info">
   <div class="UserAvatar UserInfo-avatar">
     <% if @avatar_url %>
       <img src="<%= @avatar_url %>" class="UserAvatar-img UserAvatar-img--large" />
@@ -16,7 +16,7 @@
       <% end %>
       <% content_for(:js) do %>
         <div class="js-breadcrumb-dropdown-content Dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
-          <ul class="BreadcrumbsDropdown-list">
+          <ul class="CDB-Text BreadcrumbsDropdown-list">
             <li class="BreadcrumbsDropdown-listItem">
               <nav class="BreadcrumbsDropdown-options">
                 <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>

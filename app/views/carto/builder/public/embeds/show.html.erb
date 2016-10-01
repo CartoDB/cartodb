@@ -1,0 +1,39 @@
+<% require_dependency 'static_maps_url_helper' %>
+
+<%= content_for(:title) do %><%= @vizjson[:title].nil? ? 'Untitled map' : @vizjson[:title] %><% end %>
+
+<%= content_for(:description) do %><%= @vizjson[:description] ? "#{@vizjson[:description].strip_tags}. " : "" %>Map created by <%= @vizjson[:user][:fullname] %> in CARTO<% end %>
+
+<%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
+
+<%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'public_editor3', 'deep_insights', media: 'all' %>
+  <style type="text/css">
+    html, body {
+      position:relative;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+<% end %>
+
+<%= content_for(:content) do %>
+  <div id="dashboard"></div>
+<% end %>
+
+<%= content_for(:js) do %>
+  <script>
+    var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
+    var stateJSON = <%= safe_js_object @state.to_json %>;
+    var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+  </script>
+  <%= javascript_include_tag 'vendor_editor3.js' %>
+  <%= javascript_include_tag 'common_editor3.js' %>
+  <%= javascript_include_tag 'public_editor3.js' %>
+
+  <%= insert_trackjs('builder-embeds') %>
+  <%= insert_google_analytics('embeds', true) %>
+<% end %>

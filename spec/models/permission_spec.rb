@@ -5,6 +5,7 @@ require_relative '../spec_helper'
 include CartoDB
 
 describe CartoDB::Permission do
+  include Carto::Factories::Visualizations
 
   before(:all) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
@@ -18,7 +19,7 @@ describe CartoDB::Permission do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -41,12 +42,13 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
       vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:save_named_map)
       vis_entity_mock.stubs(:table).returns(vis_table_mock)
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
       vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:id).returns(entity_id)
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
@@ -72,9 +74,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @user.username
         #check default acl is correct
       )
       permission.save
@@ -105,31 +105,9 @@ describe CartoDB::Permission do
         permission2.save
       }.to raise_exception
 
-      # Missing entity_type
-      permission2 = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id:      entity_id,
-      )
-      expect {
-        permission2.save
-      }.to raise_exception
-
-      # Missing entity_id
-      permission2 = Permission.new(
-          owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_type:      entity_type,
-      )
-      expect {
-        permission2.save
-      }.to raise_exception
-
       # Owner helper methods
       permission2 = Permission.new
       permission2.owner = @user
-      permission2.entity_id = entity_id
-      permission2.entity_type = entity_type
       permission2.save
       permission2.owner.should eq @user
       permission2.owner_id.should eq @user.id
@@ -145,7 +123,6 @@ describe CartoDB::Permission do
       Visualization::Member.any_instance.stubs(:new).returns vis_mock
       permission2 = Permission.new
       permission2.owner = @user
-      permission2.entity = vis_mock
       permission2.save
 
       # invalid ACL formats
@@ -206,6 +183,107 @@ describe CartoDB::Permission do
       user2.destroy
     end
 
+    it 'fails granting write permission for viewer users' do
+      user2 = create_user(viewer: true)
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      prepare_vis_mock_in_permission
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username
+      ).save
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READWRITE
+        }
+      ]
+
+      expect {
+        permission.save
+      }.to raise_error(Sequel::ValidationFailed, "access_control_list grants write to viewers: #{user2.username}")
+
+      user2.destroy
+    end
+
+    it 'allows granting read permission for viewer users' do
+      user2 = create_user(viewer: true)
+
+      # Don't check/handle DB permissions
+      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
+      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
+      # No need to check for real DB visualizations
+      prepare_vis_mock_in_permission
+
+      permission = Permission.new(
+        owner_id:       @user.id,
+        owner_username: @user.username
+      ).save
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READONLY
+        }
+      ]
+
+      permission.save
+      permission.reload
+
+      permission.permission_for_user(user2).should eq Permission::ACCESS_READONLY
+
+      user2.destroy
+    end
+
+    it 'changes RW to RO permission to builders becoming viewers' do
+      user = create_user
+      user2 = create_user(viewer: false)
+
+      map, table, table_visualization, visualization = create_full_visualization(Carto::User.find(user.id))
+
+      permission = CartoDB::Permission[table_visualization.permission.id]
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: user2.id,
+            username: user2.username
+          },
+          access: Permission::ACCESS_READWRITE
+        }
+      ]
+      Table.any_instance.expects(:add_read_write_permission).once.returns(true)
+      permission.save
+      permission.reload
+
+      permission.permission_for_user(user2).should eq CartoDB::Permission::ACCESS_READWRITE
+
+      user2.viewer = true
+      Table.any_instance.expects(:remove_access).once.returns(true)
+      Table.any_instance.expects(:add_read_permission).once.returns(true)
+      user2.save
+      user2.reload
+
+      permission.reload
+      permission.permission_for_user(user2).should eq CartoDB::Permission::ACCESS_READONLY
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+
+      user2.destroy
+      user.destroy
+    end
+
     it 'supports groups' do
       entity_id = UUIDTools::UUID.timestamp_create.to_s
       entity_type = Permission::ENTITY_TYPE_VISUALIZATION
@@ -225,12 +303,13 @@ describe CartoDB::Permission do
       vis_entity_mock.stubs(:permission).returns(vis_perm_mock)
       vis_entity_mock.stubs(:table?).returns(true)
       vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+      vis_entity_mock.stubs(:save_named_map)
       vis_entity_mock.stubs(:table).returns(vis_table_mock)
       vis_entity_mock.stubs(:related_tables).returns([])
       vis_entity_mock.stubs(:privacy=)
       vis_entity_mock.stubs(:store)
       vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-      vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+      vis_entity_mock.stubs(:id).returns(entity_id)
       vis_entity_mock.stubs(:name).returns("foobar_visualization")
       Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
 
@@ -258,9 +337,7 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id:      entity_id,
-        entity_type:    entity_type
+        owner_username: @user.username
         #check default acl is correct
       )
       permission.save
@@ -306,10 +383,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id: UUIDTools::UUID.timestamp_create.to_s,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+        owner_username: @user.username
+      ).save
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -358,10 +433,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_id: UUIDTools::UUID.timestamp_create.to_s,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+        owner_username: @user.username
+      ).save
       permission.acl = [
         {
           type: Permission::TYPE_USER,
@@ -382,14 +455,14 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
 
-      permission.is_permitted?(user3_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user3_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user3_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user3_mock, Permission::ACCESS_READWRITE).should eq true
 
-      permission.is_permitted?(user4_mock, Permission::ACCESS_READONLY).should eq false
-      permission.is_permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user4_mock, Permission::ACCESS_READONLY).should eq false
+      permission.permitted?(user4_mock, Permission::ACCESS_READWRITE).should eq false
     end
 
     it 'checks organizations vs users permissions precedence' do
@@ -409,10 +482,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id: UUIDTools::UUID.timestamp_create.to_s,
-          entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
+          owner_username: @user.username
+      ).save
       # User has more access than org
       permission.acl = [
           {
@@ -433,10 +504,10 @@ describe CartoDB::Permission do
           }
       ]
       permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
-      # Organization has more permissions than user. Should get overriden (user prevails)
+      # Organization has more permissions than user. Should get inherited (RW prevails)
       permission.acl = [
           {
               type: Permission::TYPE_USER,
@@ -456,31 +527,8 @@ describe CartoDB::Permission do
           }
       ]
       permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
-
-      # User has revoked permissions, org has permissions. User revoked should prevail
-      permission.acl = [
-          {
-              type: Permission::TYPE_USER,
-              entity: {
-                  id: user2_mock.id,
-                  username: user2_mock.username
-              },
-              access: Permission::ACCESS_NONE
-          },
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id: org_mock.id,
-                  username: org_mock.name
-              },
-              access: Permission::ACCESS_READWRITE
-          }
-      ]
-      permission.save
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq false
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq false
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
 
       # Organization permission only
       permission.acl = [
@@ -495,8 +543,8 @@ describe CartoDB::Permission do
       ]
       permission.save
 
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
-      permission.is_permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READONLY).should eq true
+      permission.permitted?(user2_mock, Permission::ACCESS_READWRITE).should eq true
     end
 
   end
@@ -514,27 +562,25 @@ describe CartoDB::Permission do
       Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
       Permission.any_instance.stubs(:grant_db_permission).returns(nil)
       # No need to check for real DB visualizations
-      prepare_vis_mock_in_permission
+      prepare_vis_mock_in_permission(entity_id)
 
       permission = Permission.new(
           owner_id:       @user.id,
-          owner_username: @user.username,
-          entity_id:      entity_id,
-          entity_type:    Permission::ENTITY_TYPE_VISUALIZATION
-      )
+          owner_username: @user.username
+      ).save
 
-      # Before saving, create old entries
+      # Create old entries
       CartoDB::SharedEntity.new(
-          recipient_id:   @user.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-          entity_id:      entity_id,
-          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        recipient_id:   @user.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      entity_id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
       CartoDB::SharedEntity.new(
-          recipient_id:   user2_mock.id,
-          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-          entity_id:      entity_id,
-          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        recipient_id:   user2_mock.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      entity_id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       ).save
 
       CartoDB::SharedEntity.all.count.should eq 2
@@ -623,10 +669,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
+        owner_username: @user.username
       )
-      permission.entity_id = permission.entity.id
 
       permission.save
 
@@ -666,10 +710,8 @@ describe CartoDB::Permission do
 
       permission = Permission.new(
         owner_id:       @user.id,
-        owner_username: @user.username,
-        entity_type: Permission::ENTITY_TYPE_VISUALIZATION
-      )
-      permission.entity_id = permission.entity.id
+        owner_username: @user.username
+      ).save
 
       Resque.stubs(:enqueue).returns(nil)
 
@@ -733,17 +775,17 @@ describe CartoDB::Permission do
 
   end
 
-  def prepare_vis_mock_in_permission
+  def prepare_vis_mock_in_permission(viz_id = UUIDTools::UUID.timestamp_create.to_s)
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table).returns(nil)
     vis_entity_mock.stubs(:related_tables).returns([])
     vis_entity_mock.stubs(:table?).returns(true)
     vis_entity_mock.stubs(:invalidate_cache).returns(nil)
+    vis_entity_mock.stubs(:save_named_map)
     vis_entity_mock.stubs(:type).returns(CartoDB::Visualization::Member::TYPE_DERIVED)
-    vis_entity_mock.stubs(:id).returns(UUIDTools::UUID.timestamp_create.to_s)
+    vis_entity_mock.stubs(:id).returns(viz_id)
     vis_entity_mock.stubs(:name).returns("foobar_visualization")
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
 end
-

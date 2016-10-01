@@ -91,7 +91,7 @@ describe Carto::UserCreation do
       user_data.organization = @organization
       user_data.google_sign_in = false
 
-      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!')
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!', false)
       invitation.save
 
       user_creation = Carto::UserCreation.
@@ -103,6 +103,23 @@ describe Carto::UserCreation do
       saved_user = user_creation.user
       saved_user.username.should == user_data.username
       saved_user.enable_account_token.should be_nil
+    end
+
+    it 'with viewer invitations creates viewer users' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      user_data = FactoryGirl.build(:valid_user, organization: @organization, google_sign_in: false)
+
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, [user_data.email], 'Welcome!', true)
+      invitation.save
+
+      user_creation = Carto::UserCreation.
+                      new_user_signup(user_data).
+                      with_invitation_token(invitation.token(user_data.email))
+      user_creation.next_creation_step until user_creation.finished?
+      user_creation.reload
+
+      user_creation.user.viewer.should eq true
     end
 
     it 'neither creates a new User nor sends the mail and marks creation as failure if saving fails' do

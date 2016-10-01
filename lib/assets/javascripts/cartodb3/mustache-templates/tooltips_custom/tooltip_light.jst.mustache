@@ -1,0 +1,12 @@
+<div class="CDB-Tooltip CDB-Tooltip--isLight">
+  <ul class="CDB-Tooltip-list">
+    {{#content.fields}}
+      <li class="CDB-Tooltip-listItem">
+        {{#title}}
+          <h3 class="CDB-Tooltip-listTitle">{{{ name }}}</h3>
+        {{/title}}
+        <h4 class="CDB-Tooltip-listText">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
+      </li>
+    {{/content.fields}}
+  </ul>
+</div>

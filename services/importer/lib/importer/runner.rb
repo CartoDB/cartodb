@@ -8,12 +8,15 @@ require_relative './exceptions'
 require_relative './result'
 require_relative '../../../datasources/lib/datasources/datasources_factory'
 require_relative '../../../platform-limits/platform_limits'
-
 require_relative '../../../../lib/cartodb/stats/importer'
+require_relative '../../../../lib/carto/visualization_exporter'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class Runner
+      include CartoDB::Importer2::QuotaCheckHelpers
+
       # Legacy guessed average "final size" of an imported file
       # e.g. a Shapefile shrinks after import. This won't help in scenarios like CSVs (which tend to grow)
       QUOTA_MAGIC_NUMBER      = 0.3
@@ -63,6 +66,7 @@ module CartoDB
         @results             = []
         @stats               = []
         @warnings = {}
+        @visualizations = []
       end
 
       def loader_options=(value)
@@ -143,10 +147,10 @@ module CartoDB
       def success?
         # TODO: Change this, "runner" can be ok even if no data has changed, should expose "data_changed" attribute
         return true unless remote_data_updated?
-        results.select(&:success?).length > 0
+        (results.count(&:success?) + @visualizations.count) > 0
       end
 
-      attr_reader :results, :log, :loader, :stats, :downloader, :warnings
+      attr_reader :results, :log, :loader, :stats, :downloader, :warnings, :visualizations
 
       private
 
@@ -166,7 +170,11 @@ module CartoDB
 
         @importer_stats.timing('resource') do
           @importer_stats.timing('quota_check') do
-            raise_if_over_storage_quota(source_file)
+            file_size = File.size(source_file.fullpath)
+            user_id = @user.id if @user
+            raise_if_over_storage_quota(requested_quota: QUOTA_MAGIC_NUMBER * file_size,
+                                        available_quota: available_quota,
+                                        user_id: user_id)
           end
 
           @importer_stats.timing('file_size_limit_check') do
@@ -175,7 +183,6 @@ module CartoDB
             end
           end
         end
-
         if !downloader.nil? && downloader.provides_stream? && loader.respond_to?(:streamed_run_init)
           streamed_loader_run(@job, loader, downloader)
         else
@@ -203,6 +210,12 @@ module CartoDB
 
         # Delete job temporary table from cdb_importer schema
         delete_job_table
+
+        CartoDB::Logger.warning(exception: exception,
+                                message: "Error importing data",
+                                table_name: @job.table_name,
+                                log: @job.logger.to_s,
+                                path: source_file.fullpath)
 
         @job.log "Errored importing data from #{source_file.fullpath}:"
         @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false
@@ -254,11 +267,14 @@ module CartoDB
           end
 
           @importer_stats.timing('import') do
-            if unpacker.source_files.length > MAX_TABLES_PER_IMPORT
+            source_files = unpacker.source_files
+
+            table_files = table_files(source_files)
+            if table_files.length > MAX_TABLES_PER_IMPORT
               add_warning(max_tables_per_import: MAX_TABLES_PER_IMPORT)
             end
 
-            unpacker.source_files.each_with_index do |source_file, index|
+            table_files.each_with_index do |source_file, index|
               next if (index >= MAX_TABLES_PER_IMPORT)
               @job.new_table_name if (index > 0)
 
@@ -266,6 +282,14 @@ module CartoDB
               log.append "Filename: #{source_file.fullpath} Size (bytes): #{source_file.size}"
               import_stats = execute_import(source_file, @downloader)
               @stats << import_stats
+            end
+
+            visualization_files = visualization_files(source_files)
+            visualization_files.each do |visualization_source_file|
+              visualization = build_visualization_source_file(visualization_source_file)
+              log.append "Contains visualization #{visualization.id}: #{visualization.name}."
+              @visualizations.push(visualization)
+              log.store
             end
           end
 
@@ -275,6 +299,23 @@ module CartoDB
           end
 
         end
+      end
+
+      def table_files(source_files)
+        source_files.select { |source_file| !has_visualization_extension?(source_file) }
+      end
+
+      def visualization_files(source_files)
+        source_files.select { |source_file| has_visualization_extension?(source_file) }
+      end
+
+      def has_visualization_extension?(source_file)
+        Carto::VisualizationExporter.has_visualization_extension?(source_file.path)
+      end
+
+      def build_visualization_source_file(source_file)
+        json_export = File.open(source_file.fullpath, "r") { |file| file.read }
+        Carto::VisualizationsExportService2.new.build_visualization_from_json_export(json_export)
       end
 
       def multi_resource_import
@@ -307,8 +348,13 @@ module CartoDB
 
             @importer_stats.timing('quota_check') do
               log.append "Starting import for #{subres_downloader.source_file.fullpath}"
-              log.store   # Checkpoint-save
-              raise_if_over_storage_quota(subres_downloader.source_file)
+              log.store
+
+              file_size = File.size(subres_downloader.source_file.fullpath)
+              user_id = @user.id if @user
+              raise_if_over_storage_quota(requested_quota: QUOTA_MAGIC_NUMBER * file_size,
+                                          available_quota: available_quota,
+                                          user_id: user_id)
             end
 
             @importer_stats.timing('import') do
@@ -402,13 +448,6 @@ module CartoDB
 
       def delete_job_table
         @job.delete_job_table
-      end
-
-      def raise_if_over_storage_quota(source_file)
-        file_size   = File.size(source_file.fullpath)
-        over_quota  = available_quota < QUOTA_MAGIC_NUMBER * file_size
-        raise StorageQuotaExceededError if over_quota
-        self
       end
     end
   end

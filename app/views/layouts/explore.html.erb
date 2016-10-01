@@ -4,7 +4,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="cartodb, maps, data visualization tools, big data, location intelligence, deep insights, datasets">
+    <meta name="keywords" content="carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -16,7 +16,7 @@
     <meta property="og:image" content="<%= @avatar_url %>" />
     <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed', 'explore' %>
   </head>
-  <body class="PublicBody PublicBody--grey">
+  <body class="CDB-Text PublicBody PublicBody--grey">
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap FavMap--tall FavMap--highShadow is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="FavMapTitle is-hidden js-favMapTitle">
@@ -36,7 +36,7 @@
       var config = <%= safe_js_object frontend_config_public({https_apis: request.protocol == 'https://' }) %>;
       var account_host = '<%= CartoDB.account_host %>';
       var base_url = '<%= @base_url %>';
-      var login_url = "<%= login_url %>";
+      var login_url = "<%= CartoDB.url(self, 'login') %>";
       var avatar_url= '<%= @avatar_url %>';
     </script>
 

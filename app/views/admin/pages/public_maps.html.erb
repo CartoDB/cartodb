@@ -1,8 +1,8 @@
-<%= content_for(:title) do %>CartoDB · Maps by <%= @name %><% end %>
+<%= content_for(:title) do %>CARTO · Maps by <%= @name %><% end %>
 
 <%= content_for(:description) do %><%= @page_description %><% end %>
 
-<div class="PublicBody-content">
+<div class="CDB-Text PublicBody-content">
   <% if @visualizations.size == 0 %>
     <%= render 'admin/shared/no_results', is_maps: true, alt_url: CartoDB.url(self, 'public_datasets_home') %>
   <% else %>

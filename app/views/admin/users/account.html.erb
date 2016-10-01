@@ -22,7 +22,7 @@
 
 <%= render :partial => 'shared/flash_message' %>
 
-<div class="FormAccount-Section u-inner">
+<div class="CDB-Text FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="FormAccount-Content">
@@ -37,31 +37,31 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Username</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Username</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :username, readonly: true, :class => "FormAccount-input FormAccount-input--med is-disabled" %>
+          <%= f.text_field :username, readonly: true, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled" %>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="FormAccount-rowInfoText">Subdomain cannot be changed</p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Subdomain cannot be changed</p>
           </div>
         </div>
       </div>
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="FormAccount-label">Email</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Email</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= f.text_field :email, class: "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
+          <%= f.text_field :email, class: "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:email].present? } #{ 'is-disabled' unless @user.can_change_email? }", readonly: !@user.can_change_email? %>
           <% if current_user.organization.present? %>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText">Your URL: <%= "#{current_user.organization.name}.#{CartoDB.account_host}/u/#{current_user.username}" %></p>
+              <p class="CDB-Text CDB-Size-small u-altTextColor">Your URL: <%= "#{current_user.organization.name}.#{CartoDB.account_host}/u/#{current_user.username}" %></p>
             </div>
           <% end %>
         </div>
         <div class="FormAccount-rowInfo">
           <% if @user.errors[:email].present? %>
-            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error">Email not valid</p>
+            <p class="CDB-Text CDB-Size-small FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace">Email not valid</p>
           <% elsif @user.google_sign_in %>
             <p class="FormAccount-rowInfoText">Your account is linked to your Google account. <% unless @user.should_display_old_password? %> You can change the email if you set a password.</p> <% end %>
           <% end %>
@@ -73,14 +73,14 @@
         <% if @user.should_display_old_password? %>
           <div class="FormAccount-row">
             <div class="FormAccount-rowLabel">
-              <label class="FormAccount-label">Old password</label>
+              <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Old password</label>
             </div>
             <div class="FormAccount-rowData">
-              <%= f.password_field :old_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+              <%= f.password_field :old_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:old_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:old_password].present?) %>
-                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:old_password].first%></p>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:old_password].first%></p>
               <% end %>
             </div>
           </div>
@@ -89,24 +89,24 @@
         <div class="VerticalAligned--FormRow">
           <div class="FormAccount-row">
             <div class="FormAccount-rowLabel">
-              <label class="FormAccount-label">New password</label>
+              <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New password</label>
             </div>
             <div class="FormAccount-rowData">
-              <%= f.password_field :new_password, :class => "FormAccount-input FormAccount-input--med #{ 'FormAccount-input--error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+              <%= f.password_field :new_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'has-error' if @user.errors[:new_password].present? } #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
             <div class="FormAccount-rowInfo">
               <% if (@user.errors[:new_password].present?) %>
-                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error"><%= @user.errors[:new_password].first%></p>
+                <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= @user.errors[:new_password].first%></p>
               <% end %>
             </div>
           </div>
 
           <div class="FormAccount-row js-confirmPassword">
             <div class="FormAccount-rowLabel">
-              <label class="FormAccount-label">Confirm password</label>
+              <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Confirm password</label>
             </div>
             <div class="FormAccount-rowData">
-              <%= f.password_field :confirm_password, :class => "FormAccount-input FormAccount-input--med #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
+              <%= f.password_field :confirm_password, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' unless @user.can_change_password? }", readonly: !@user.can_change_password? %>
             </div>
           </div>
         </div>
@@ -122,15 +122,32 @@
 
         <div class="FormAccount-row">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Your billing plan</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your billing plan</label>
           </div>
           <div class="FormAccount-rowData">
-            <div class="FormAccount-planTag"><%= current_user.account_type %></div>
+            <div class="FormAccount-planTag CDB-Size-medium"><%= current_user.account_type %></div>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-              <p class="FormAccount-rowInfoText"><a href="<%= current_user.plan_url(request.protocol) %>" class="FormAccount-link">View details</a></p>
+              <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= current_user.plan_url(request.protocol) %>" class="FormAccount-link">View details</a></p>
             </div>
           </div>
         </div>
+      <% end %>
+
+      <% if (@user.builder_enabled?)  %>
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Builder</label>
+        </div>
+        <div class="FormAccount-rowData">
+          <div class="Toggler">
+            <%= f.check_box :builder_enabled, id: "builder_enabled" %>
+            <%= label_tag(:builder_enabled, '') %>
+          </div>
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="CDB-Text CDB-Size-small u-altTextColor">Use the Builder for creating and updating maps</p>
+          </div>
+        </div>
+      </div>
       <% end %>
 
       <%# if none of the services are activated, this block shouldn't appear %>
@@ -154,9 +171,9 @@
           <p class="FormAccount-footerText"></p>
         <% end %>
 
-        <%= button_tag(type: 'submit', class: 'Button Button--main') do %>
-          <% content_tag(:span, 'Save changes') %>
-        <% end %>
+        <button type="submit" class="CDB-Button CDB-Button--primary">
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
+        </button>
       </div>
 
       <% if @can_be_deleted -%>
@@ -168,10 +185,10 @@
 
         <div class="FormAccount-row FormAccount-row--wideMarginBottom">
           <div class="FormAccount-rowLabel">
-            <label class="FormAccount-label">Are you sure?</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Are you sure?</label>
           </div>
           <div class="FormAccount-rowData">
-            <span class="FormAccount-button--deleteAccount js-deleteAccount">Delete my account and all my data</span>
+            <span class="FormAccount-button--deleteAccount CDB-Size-medium js-deleteAccount">Delete my account and all my data</span>
           </div>
         </div>
       <% end %>

@@ -1,8 +1,8 @@
 
 <section class="sessions shadow">
   <div class="content">
-    <h2><%= @token.client_application.user.username %> CartoDB</h2>
-    <p class="margin15 light"><%= @token.client_application.user.username %> wants to connect to your cartoDB database. This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
+    <h2><%= @token.client_application.user.username %> CARTO</h2>
+    <p class="margin15 light"><%= @token.client_application.user.username %> wants to connect to your CARTO database. This means that <%= @token.client_application.user.username %> will be able to modify, create and delete fields from your database.</p>
 
     <%= form_tag authorize_url do %>
       <%= hidden_field_tag "oauth_token", @token.token %>
@@ -16,10 +16,10 @@
     <% end %>
   </div>
   <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "http://cartodb.com/signup" %></p>
+    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "https://carto.com/signup" %></p>
   </div>
 </section>
 
 <footer class="short">
-  <h1><%= link_to 'CartoDB', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
+  <h1><%= link_to 'CARTO', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
 </footer>

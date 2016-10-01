@@ -1,0 +1,21 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Inline-editor {
+  @include display-flex();
+  position: relative;
+}
+
+.Inline-editor-input {
+  display: none;
+  position: absolute;
+  left: 0;
+  padding: 10px 8px;
+  z-index: 1;
+}
+
+.Inline-editor-text {
+  @include flex(1);
+  width: 0;
+}

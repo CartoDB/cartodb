@@ -11,7 +11,6 @@ describe Carto::Widget do
       loaded_widget.title.should == widget.title
       loaded_widget.layer.should == widget.layer
       loaded_widget.options.should == widget.options
-      loaded_widget.options_json.should == JSON.parse(widget.options).symbolize_keys
       widget.destroy
     end
 
@@ -33,7 +32,7 @@ describe Carto::Widget do
       end
 
       it 'triggers notify_map_change on related map(s)' do
-        map = mock()
+        map = mock
         map.stubs(:id).returns(@map.id)
         map.expects(:notify_map_change).twice
         Map.stubs(:where).with(id: map.id).returns([map])
@@ -46,7 +45,7 @@ describe Carto::Widget do
 
   describe 'Format and validation' do
     before(:each) do
-      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' }.to_json)
+      @widget = FactoryGirl.build(:widget_with_layer, options: { valid: 'format' })
     end
 
     it 'validates correct options format' do
@@ -87,6 +86,48 @@ describe Carto::Widget do
 
       widget2.destroy
       widget.destroy
+    end
+  end
+
+  context 'viewer users' do
+    before(:each) do
+      Map.any_instance.stubs(:update_related_named_maps)
+      @user = FactoryGirl.create(:carto_user)
+      @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
+      @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
+      @layer = @visualization.data_layers.first
+    end
+
+    after(:each) do
+      @visualization.destroy
+      @map.destroy
+      @user.destroy
+    end
+
+    it "can't create a new widget" do
+      user = @visualization.user
+      user.viewer = true
+      user.save
+      @visualization.reload
+      @layer.reload
+
+      widget = FactoryGirl.build(:widget, layer: @layer)
+      widget.save.should be_false
+      widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
+    end
+
+    it "can't delete widgets" do
+      widget = FactoryGirl.create(:widget, layer: @layer)
+
+      user = @visualization.user
+      user.viewer = true
+      user.save
+      @visualization.reload
+      widget = Carto::Widget.find(widget.id)
+
+      widget.destroy.should eq false
+      Carto::Widget.exists?(widget.id).should eq true
+      widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
     end
   end
 end

@@ -1,4 +1,4 @@
-namespace :cartodb do
+namespace :carto do
   namespace :db do
 
     desc "get modified layers"
@@ -44,6 +44,41 @@ namespace :cartodb do
       end
       puts "TOTAL: #{affected_visualizations.length}"
     end
+
+    desc "CARTO rebranding attribution change"
+    task set_carto_attribution: :environment do
+      puts "Updating layer attributions"
+      ActiveRecord::Base.logger = nil
+
+      total = Carto::Layer.count
+      acc = 0
+      errors = 0
+
+      Carto::Layer.find_each do |layer|
+        acc += 1
+        puts "#{acc} / #{total}" if acc % 100 == 0
+        begin
+          attribution = layer.options['attribution']
+          if attribution.present?
+            attribution.gsub!('CartoDB', 'CARTO')
+            attribution.gsub!('cartodb.com', 'carto.com')
+            attribution.gsub!('http://carto', 'https://carto')
+            attribution.gsub!(
+              'OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>',
+              'OpenStreetMap</a> contributors')
+          end
+          category = layer.options['category']
+          if category.present? && category == 'CartoDB'
+            layer.options['category'] = 'CARTO'
+          end
+          layer.save
+        rescue => e
+          errors += 1
+          STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+        end
+      end
+
+      puts "Finished. Total: #{total}. Errors: #{errors}"
+    end
   end
 end
-

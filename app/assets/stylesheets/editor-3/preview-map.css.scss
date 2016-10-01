@@ -1,0 +1,44 @@
+// Preview map styles
+// --------------------------------------------------
+
+@import 'cdb-variables/colors';
+@import 'cdb-utilities/mixins';
+
+.PreviewMap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(#000, 0.6);
+  z-index: 51;
+}
+.PreviewMap-canvas {
+  @include transform(translateZ(0));
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  bottom: 40px;
+  left: 40px;
+  border-radius: 5px;
+  background: $cWhite;
+  overflow: hidden;
+}
+.PreviewMap-map {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 65px;
+  left: 0;
+  border-radius: 5px 5px 0 0;
+  background: $cWhite;
+  overflow: hidden;
+}
+.PreviewMap-info {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 35px;
+  padding: 15px;
+}

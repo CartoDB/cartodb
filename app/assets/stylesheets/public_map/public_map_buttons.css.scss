@@ -48,7 +48,7 @@ $linkedin: #007BB6;
   transition: all 0.3s;
   border-width: 2px;
   border-style: solid;
-  border-radius: 50px;
+  border-radius: 4px;
   outline: none;
   font-size: 12px;
   font-weight: 600;
@@ -136,4 +136,8 @@ $linkedin: #007BB6;
       background: darken($linkedin, 5%);
     }
   }
+}
+.PublicButton--public {
+  font-size: $sFontSize-normal;
+  text-transform: none;
 }

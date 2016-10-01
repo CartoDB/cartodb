@@ -1,15 +1,20 @@
 require 'active_record'
 
 module Carto
-
   class UserTable < ActiveRecord::Base
 
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
 
+    PRIVACY_VALUES_TO_TEXTS = {
+      PRIVACY_PRIVATE => 'private',
+      PRIVACY_PUBLIC => 'public',
+      PRIVACY_LINK => 'link'
+    }.freeze
+
     belongs_to :visualization, primary_key: :map_id, foreign_key: :map_id,
-                conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
+                               conditions: { type: Carto::Visualization::TYPE_CANONICAL }, inverse_of: :user_table
 
     belongs_to :user
 
@@ -68,15 +73,23 @@ module Carto
     end
 
     def private?
-      self.privacy == PRIVACY_PRIVATE
+      privacy == PRIVACY_PRIVATE
     end
 
     def public?
-      self.privacy == PRIVACY_PUBLIC
+      privacy == PRIVACY_PUBLIC
     end
 
     def public_with_link_only?
-      self.privacy == PRIVACY_LINK
+      privacy == PRIVACY_LINK
+    end
+
+    def privacy_text
+      PRIVACY_VALUES_TO_TEXTS[privacy].upcase
+    end
+
+    def readable_by?(user)
+      !private? || is_owner?(user) || visualization_readable_by?(user)
     end
 
     def estimated_row_count
@@ -87,10 +100,14 @@ module Carto
       service.actual_row_count
     end
 
+    def sync_table_id
+      self.table_id = service.get_table_id
+    end
+
     private
 
     def fully_qualified_name
-      "#{user.database_schema}.#{name}"
+      "\"#{user.database_schema}\".#{name}"
     end
 
     def is_owner?(user)
@@ -121,6 +138,9 @@ module Carto
       Carto::Synchronization.where(user_id: user_id, name: name).first
     end
 
+    def visualization_readable_by?(user)
+      user && visualization && visualization.permission && visualization.permission.user_has_read_permission?(user)
+    end
   end
 
 end

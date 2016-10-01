@@ -1,70 +1,21 @@
-<% content_for(:subject) { @subject } %>
+<tr>
+  <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
+    <p>You have been invited to CARTO as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+    <p>Here are some resources to get you up and running:</p>
+    <ul>
+      <li><a href="https://carto.com/docs/carto-builder/">CARTO Docs</a>: Guides, FAQs and tutorials</li>
+      <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies and white papers for inspiration</li>
+      <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
+    </ul>
 
-<% content_for :body do %>
-  <tr>
-    <td>
-      <!-- HEADER -->
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 0; border-collapse: separate !important; border-top-left-radius: 4px; border-top-right-radius: 4px; width: 100% !important;">
-        <% if @user_needs_password %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 0 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
-          </tr>
+    <% if @user_needs_password %>
+      <p>If you have not received your password, contact your administrator at <strong><%= @owner.email %></strong>.</p>
+    <% end %>
+  </td>
+</tr>
 
-          <tr>
-            <td align="left" style="padding: 20px 50px 40px 50px; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;">If you have not received your password, contact your administrator at <strong><%= @owner.username %></strong>.</td>
-          </tr>
-        <% else %>
-          <tr>
-            <td align="left" style="padding: 40px 50px 40px 50px; font-weight: bold; font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333;">You have been invited to CartoDB</td>
-          </tr>
-        <% end %>
-      </table>
-    </td>
-  </tr>
-
-  <tr>
-    <td>
-      <!-- CONTENT -->
-      <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #ffffff; border: 1px solid #dddddd; border-bottom: 1px solid #cccccc; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; width: 100% !important;">
-        <tr>
-          <td valign="top" style="padding: 0;">
-            <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F2FAE8; border-bottom: 1px solid #dddddd; width: 100% !important;">
-              <tr>
-                <td align="left" style="padding: 40px 50px 40px 50px; font-family: Helvetica, Arial, sans-serif;">
-                  <p style="margin: 0; font-size: 16px; line-height: 25px; color: #666666;">You have been invited to CartoDB as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-        <tr>
-          <td style="padding: 40px 50px 40px 50px;" align="center" class="padding">
-            <table border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-              <tr>
-                <td align="center">
-                  <!-- BULLETPROOF BUTTON -->
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" class="mobile-button-container">
-                    <tr>
-                      <td align="center" style="padding: 0;">
-                        <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
-                          <tr>
-                            <% if @enable_account_link.nil? %>
-                              <td align="center"><a href="<%= @link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Go to your dashboard</a></td>
-                            <% else %>
-                              <td align="center"><a href="<%= @enable_account_link %>" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #3AA9E3; border-top: 15px solid #3AA9E3; border-bottom: 15px solid #3AA9E3; border-left: 25px solid #3AA9E3; border-right: 25px solid #3AA9E3; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Activate your account</a></td>
-                            <% end %>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+<% if @enable_account_link.nil? %>
+  <%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'Go to your dashboard' } %>
+<% else %>
+  <%= render partial: 'mailer_modules/link_to_action', locals: { link: @enable_account_link, link_text: 'Activate your account' } %>
 <% end %>

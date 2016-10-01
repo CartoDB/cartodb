@@ -1,0 +1,129 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+
+.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer {
+  position: relative;
+  z-index: 2;
+}
+
+.CDB-ListDecoration-itemLink.is-selected .ColorBarContainer::before {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  bottom: -6px;
+  left: -6px;
+  border: 1px solid rgba($cBlue, 0.64);
+  border-radius: 8px;
+  background: rgba($cBlue, 0.08);
+  content: '';
+  z-index: 1;
+}
+
+.CDB-ListDecoration-itemLink--double {
+  padding: 16px;
+}
+
+.ColorBarContainer {
+  @include display-flex();
+  @include flex-direction(row);
+  width: 100%;
+  border-radius: 6px;
+  background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0.08)),
+  linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%, rgba(0, 0, 0, 0.08));
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+.ColorBar {
+  position: relative;
+  width: 100%;
+  height: $baseSize - 2;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: $baseSize - 2;
+  box-sizing: border-box;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.ColorBar.is-selected {
+  position: relative;
+}
+.ColorBar.is-selected::after {
+  position: absolute;
+  right: 0;
+  bottom: -14px;
+  left: 0;
+  height: 1px;
+  background: $cMainBg;
+  content: '';
+}
+
+.ColorBar-gradient {
+  border: 0;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: $baseSize - 2;
+    content: '';
+  }
+}
+.ColorBar.ColorBar--spaceMedium {
+  margin-right: $baseSize / 2;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+.ColorBar.ColorBar--spaceless {
+  border-width: 1px 0;
+  border-radius: 0;
+}
+.ColorBar.ColorBar--spaceless:first-child {
+  border-width: 1px 0 1px 1px;
+  border-radius: $baseSize - 2 0 0 $baseSize - 2;
+}
+.ColorBar.ColorBar--spaceless:last-child {
+  border-width: 1px 1px 1px 0;
+  border-radius: 0 $baseSize - 2 $baseSize - 2 0;
+}
+.ColorBar.ColorBar--spaceSmall {
+  margin-right: 2px;
+  border-radius: 2px;
+}
+.ColorBar.ColorBar--spaceSmall:first-child {
+  border-radius: $baseSize - 2 3px 3px $baseSize - 2;
+}
+.ColorBar.ColorBar--spaceSmall:last-child {
+  margin-right: 0;
+  border-radius: 3px $baseSize - 2 $baseSize - 2 3px;
+}
+
+.ColorBarWrapper--withInvertLink {
+  @include flex(1);
+}
+.ColorBar-invertLink {
+  @include flex(0 0 27px);
+  @include opacity(0);
+  position: relative;
+  top: 12px;
+  height: 13px;
+  background-image: image-url('layout/colorpicker/invert.svg');
+  background-repeat: no-repeat;
+}
+.is-inverted .ColorBar-invertLink {
+  background-image: image-url('layout/colorpicker/invert_inverted.svg');
+}
+.is-selected .ColorBar-invertLink {
+  @include opacity(1);
+}
+.CustomList-item--invert:hover .ColorBar-invertLink {
+  @include opacity(1);
+}

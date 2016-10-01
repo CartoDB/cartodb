@@ -4,9 +4,10 @@
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var username = "<%= current_user.username %>";
+    var authenticity_token = "<%= form_authenticity_token %>";
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
-    var authenticity_token = "<%= form_authenticity_token %>";
+    var mobile_enabled = "<%= current_user.mobile_sdk_enabled? %>"
   </script>
   <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
 <% end %>
@@ -25,15 +26,15 @@
       <div class="Filters-inner">
         <span class="Filters-separator"></span>
         <div class="Filters-row">
-          <ul class="Filters-group">
-            <li>
-              <a href="<%= CartoDB.url(self, 'organization') %>" class="Filters-typeLink Filters-actionButton NavButton NavButton--back">
-                <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+          <ul class="Filters-group CDB-Text CDB-Size-medium">
+            <li class="u-flex u-alignCenter">
+              <a href="<%= CartoDB.url(self, 'organization') %>" class="u-actionTextColor u-flex u-alignCenter">
+                <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
             <li class="Filters-typeItem">
               <div class="FormAccount-title">
-                <p class="FormAccount-titleText"><%= @user.username.capitalize %></p>
+                <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= @user.username.capitalize %></p>
               </div>
             </li>
           </ul>

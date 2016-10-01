@@ -55,7 +55,13 @@ module CartoDB
         else
           # This case happens before process the files when there
           # is no file stats
-          files << File.basename(data_import.service_item_id)
+          if !data_import.service_item_id.blank?
+            # Imports from files, URLs or connectors have a service_item_id
+            files << File.basename(data_import.service_item_id)
+          elsif !data_import.table_name.blank?
+            # Imports from queries or table duplications use table_name
+            files << File.basename(data_import.table_name)
+          end
         end
 
         files

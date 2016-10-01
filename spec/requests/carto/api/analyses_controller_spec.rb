@@ -12,6 +12,7 @@ describe Carto::Api::AnalysesController do
     @user = FactoryGirl.create(:carto_user)
     @user2 = FactoryGirl.create(:carto_user)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+    bypass_named_maps
     @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
   end
 
@@ -41,9 +42,9 @@ describe Carto::Api::AnalysesController do
 
     def verify_analysis_response_body(response_body, analysis)
       response_body[:id].should eq analysis.id
-      analysis_definition_json = response_body[:analysis_definition].symbolize_keys
-      analysis_definition_json.should eq analysis.analysis_definition_json
-      analysis_definition_json[:id].should eq analysis.natural_id
+      analysis_definition = response_body[:analysis_definition]
+      analysis_definition.deep_symbolize_keys.should eq analysis.analysis_definition.deep_symbolize_keys
+      analysis_definition[:id].should eq analysis.natural_id
     end
 
     it 'returns existing analysis by uuid' do
@@ -67,11 +68,12 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'returns existing analysis by json first id with uuid ids' do
+      bypass_named_maps
       analysis2 = FactoryGirl.create(
         :source_analysis,
         visualization_id: @visualization.id,
         user_id: @user.id,
-        analysis_definition: %({"id": "#{UUIDTools::UUID.random_create}"})
+        analysis_definition: { id: UUIDTools::UUID.random_create.to_s }
       )
 
       get_json viz_analysis_url(@user, @visualization, analysis2.natural_id) do |response|
@@ -96,18 +98,51 @@ describe Carto::Api::AnalysesController do
     end
 
     it 'creates new analysis' do
+      bypass_named_maps
       post_json create_analysis_url(@user, @visualization), payload do |response|
         response.status.should eq 201
         response.body[:id].should_not be_nil
-        analysis_definition_json = response.body[:analysis_definition].symbolize_keys
-        analysis_definition_json.should eq payload[:analysis_definition]
+        analysis_definition = response.body[:analysis_definition].symbolize_keys
+        analysis_definition.should eq payload[:analysis_definition]
 
         a = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
         a.should_not eq nil
         a.user_id.should eq @user.id
         a.visualization_id.should eq @visualization.id
-        a.analysis_definition_json.should eq payload[:analysis_definition]
+        a.analysis_definition.deep_symbolize_keys.should eq payload[:analysis_definition].deep_symbolize_keys
+
+        a.destroy
       end
+    end
+
+    it 'overrides old analysis in the same visualization if they have the same natural id' do
+      bypass_named_maps
+      Carto::Analysis.where(visualization_id: @visualization.id).count.should eq 1
+
+      updated_analysis = { analysis_definition: @analysis.analysis_definition }
+      updated_analysis[:analysis_definition][:params] = { query: 'select * from whatever_overrided' }
+
+      post_json create_analysis_url(@user, @visualization), updated_analysis do |response|
+        response.status.should eq 201
+
+        # Check that update worked
+        response_body = response.body
+        response_body[:id].should eq @analysis.id
+        response_body[:analysis_definition][:id].should eq @analysis.natural_id
+        response_body[:analysis_definition].should eq updated_analysis[:analysis_definition]
+      end
+
+      # Check that no analysis is _added_
+      analyses = Carto::Analysis.where(visualization_id: @visualization.id).all
+      analyses.count.should eq 1
+      new_analysis = analyses.first
+      new_analysis.analysis_definition.should eq updated_analysis[:analysis_definition]
+      new_analysis.updated_at.should be > @analysis.updated_at
+
+      # Check that the old analysis was updated
+      @analysis.reload
+      new_analysis.created_at.should eq @analysis.created_at
+      new_analysis.updated_at.should eq @analysis.updated_at
     end
 
     it 'returns 422 if payload visualization or user id do not match with url' do
@@ -186,17 +221,18 @@ describe Carto::Api::AnalysesController do
 
     it 'updates existing analysis' do
       @analysis.reload
-      @analysis.analysis_definition_json[:id].should_not eq new_payload[:analysis_definition][:id]
-      @analysis.analysis_definition_json[new_key].should be_nil
+      @analysis.analysis_definition[:id].should_not eq new_payload[:analysis_definition][:id]
+      @analysis.analysis_definition[new_key].should be_nil
+      bypass_named_maps
 
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
         response.status.should eq 200
         response.body[:analysis_definition].symbolize_keys.should eq new_payload[:analysis_definition]
         a = Carto::Analysis.find(@analysis.id)
-        a.analysis_definition_json[:id].should eq new_payload[:analysis_definition][:id]
-        a.analysis_definition_json[new_key].should eq new_payload[:analysis_definition][new_key]
+        a.analysis_definition[:id].should eq new_payload[:analysis_definition][:id]
+        a.analysis_definition[new_key].should eq new_payload[:analysis_definition][new_key]
 
-        a.analysis_definition_json.should eq new_payload[:analysis_definition]
+        a.analysis_definition.deep_symbolize_keys.should eq new_payload[:analysis_definition].deep_symbolize_keys
       end
     end
 
@@ -267,6 +303,7 @@ describe Carto::Api::AnalysesController do
 
   describe '#destroy' do
     it 'destroys existing analysis' do
+      bypass_named_maps
       delete_json viz_analysis_url(@user, @visualization, @analysis) do |response|
         response.status.should eq 200
         Carto::Analysis.where(id: @analysis.id).first.should be_nil

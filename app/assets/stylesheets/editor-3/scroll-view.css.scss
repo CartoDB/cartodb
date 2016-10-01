@@ -1,0 +1,69 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.ScrollView {
+  @include display-flex();
+  @include flex-direction(column);
+  margin-top: -19px;
+
+  &,
+  .ScrollView-wrapper {
+    @include display-flex();
+    @include flex-direction(column);
+    @include flex(1);
+    position: relative;
+    margin-right: -24px;
+    margin-left: -24px;
+    padding-right: 24px;
+    padding-left: 24px;
+    min-height: 0;
+  }
+
+  .ScrollView-content {
+    @include flex(1);
+    padding: 18px 0;
+  }
+}
+
+.ScrollView--horizontal {
+
+  &,
+  & .ScrollView-wrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ScrollView-content {
+    padding: 0 0 18px;
+  }
+}
+
+.ScrollView-shadow {
+  @include transition(opacity, 400ms);
+  @include opacity(0);
+  display: block;
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.ScrollView-shadow--top,
+.ScrollView-shadow--bottom {
+  right: -1px;
+  left: -1px;
+  height: 18px;
+}
+
+.ScrollView-shadow--top {
+  top: 0;
+  background-image: linear-gradient(-180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 88%);
+}
+
+.ScrollView-shadow--bottom {
+  bottom: 0;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 88%);
+}
+
+.ScrollView-shadow.is-visible {
+  @include opacity(1);
+}

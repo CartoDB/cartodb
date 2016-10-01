@@ -14,11 +14,11 @@ namespace :cartodb do
       # </div>
       # <div class="block last">
       #   <h3></h3>
-      #   <h4><a href="#">A new status update on blog.cartodb.com</a></h4>
+      #   <h4><a href="#">A new status update on blog.carto.com</a></h4>
       #   <p>Wanted to give everyone an update that we’ve disabled our status blog located at temporarily while we work out all of the kinks in our two shiny new product of two brothers of the man in red... <a href="#">Read more</a></p>
       # </div>
 
-      feed_url = "http://blog.cartodb.com/rss"
+      feed_url = "https://blog.carto.com/rss"
       doc = Nokogiri.parse(open(feed_url))
       content = ""
       items = doc.search('item')

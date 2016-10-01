@@ -1,6 +1,8 @@
 @import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
+@import 'cdb-variables/colors';
+
 
 $sSmallWidth: 670px;
 
@@ -14,7 +16,6 @@ body.is-inDialog {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 50;
   background: rgba(white,1);
   background: -moz-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
   background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(white,1)), color-stop(50%, rgba(white,0.95)), color-stop(100%, rgba(white,0.9)));
@@ -22,6 +23,7 @@ body.is-inDialog {
   background: -o-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
   background: -ms-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
   background: linear-gradient(to bottom, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
+  z-index: 1000;
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
 }
 .Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
@@ -101,7 +103,6 @@ body.is-inDialog {
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
-  padding-bottom: 0;
   overflow: auto;
 }
 .Dialog-body.Dialog-body--share {
@@ -131,10 +132,12 @@ body.is-inDialog {
   position: relative;
   background: none;
 }
+.Dialog-body .ListingContent {
+  margin-bottom: 100px;
+}
 .Dialog-footer {
   padding: $sMargin-group 0;
   text-align: center;
-  border-top: 1px solid $cStructure-mainLine;
 }
 .Dialog-footer--withoutBorder { border-top: none }
 .Dialog-footer--simple {
@@ -191,9 +194,13 @@ body.is-inDialog {
     color: $cIcons-active !important;
   }
 }
+.Dialog-headerIcon--twitter {
+  border-color: #55ACEE;
+  color: #55ACEE;
+}
 .Dialog-headerIcon--negative {
-  color: $cHighlight-negative;
-  border-color: $cHighlight-negative;
+  color: $cError;
+  border-color: $cError;
 }
 .Dialog-headerIcon--positive {
   color: $cHighlight-positive;
@@ -366,5 +373,12 @@ $sNarrower-width: 620px;
   100% {
     @include opacity(0.0);
     @include transform(scale(2.0));
+  }
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /* IE10+ CSS styles go here */
+  .Dialog-body .ListingContent {
+    margin-bottom: 200px;
   }
 }

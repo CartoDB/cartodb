@@ -46,12 +46,16 @@ module ApplicationHelper
   end
 
   def sql_api_template(privacy="private")
-      sql_api = Cartodb.config[:sql_api][privacy]
-      if CartoDB.subdomainless_urls?
-        sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/{user}"
-      else
-        sql_api["protocol"] + "://{user}." + sql_api["domain"] + ":" + sql_api["port"].to_s
-      end
+    sql_api_url('{user}', privacy)
+  end
+
+  def sql_api_url(username, privacy = 'private')
+    sql_api = Cartodb.config[:sql_api][privacy]
+    if CartoDB.subdomainless_urls?
+      sql_api["protocol"] + "://" + sql_api["domain"] + ":" + sql_api["port"].to_s + "/user/#{username}"
+    else
+      sql_api["protocol"] + "://#{username}." + sql_api["domain"] + ":" + sql_api["port"].to_s
+    end
   end
 
   def maps_api_template(privacy="private")
@@ -64,7 +68,7 @@ module ApplicationHelper
   end
 
   module_function :maps_api_template
-  module_function :sql_api_template
+  module_function :sql_api_template, :sql_api_url
 
   def frontend_config
     config = {
@@ -85,7 +89,8 @@ module ApplicationHelper
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
       upgrade_url:                cartodb_com_hosted? ? false : "#{current_user.upgrade_url(request.protocol)}",
-      licenses:                   Carto::License.all
+      licenses:                   Carto::License.all,
+      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
     }
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
@@ -250,11 +255,11 @@ module ApplicationHelper
   end
 
   def terms_path
-    'https://cartodb.com/terms'
+    'https://carto.com/terms'
   end
 
   def privacy_path
-    'https://cartodb.com/privacy'
+    'https://carto.com/privacy'
   end
 
   def vis_json_url(vis_id, context, user=nil)

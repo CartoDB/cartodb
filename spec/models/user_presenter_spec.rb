@@ -9,7 +9,7 @@ describe Carto::Api::UserPresenter do
   end
 
   it "Compares old and new ways of 'presenting' user data" do
-    CartoDB::NamedMapsWrapper::NamedMaps.any_instance.stubs(:get => nil, :create => true, :update => true)
+    bypass_named_maps
 
     # Non-org user
     user = create_user({
@@ -60,7 +60,7 @@ describe Carto::Api::UserPresenter do
     user.set_relationships_from_central({ feature_flags: [ feature_flag1.id.to_s, feature_flag2.id.to_s ]})
     user.save
 
-    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false)
+    compare_data(user.data, Carto::Api::UserPresenter.new(Carto::User.where(id: user.id).first).data, false, false)
 
     # Now org user, organization and another member
 
@@ -107,7 +107,8 @@ describe Carto::Api::UserPresenter do
 
   protected
 
-  def compare_data(old_data, new_data, org_user = false)
+  def compare_data(original_old_data, new_data, org_user = false, mobile_sdk_enabled = false)
+    old_data = add_new_keys(original_old_data)
     # INFO: new organization presenter now doesn't contain users
     old_data[:organization].delete(:users) if old_data[:organization]
 
@@ -115,7 +116,7 @@ describe Carto::Api::UserPresenter do
     #new_data.should eq old_data
 
     # To detect deltas not migrated to new presenter
-    new_data.keys.should == old_data.keys
+    new_data.keys.sort.should == old_data.keys.sort
 
     new_data[:id].should == old_data[:id]
     new_data[:email].should == old_data[:email]
@@ -141,6 +142,8 @@ describe Carto::Api::UserPresenter do
     new_data[:api_calls_block_price].should == old_data[:api_calls_block_price]
     new_data[:geocoding].should == old_data[:geocoding]
     new_data[:here_isolines].should == old_data[:here_isolines]
+    new_data[:obs_snapshot].should == old_data[:obs_snapshot]
+    new_data[:obs_general].should == old_data[:obs_general]
     new_data[:twitter].should == old_data[:twitter]
     new_data[:billing_period].should == old_data[:billing_period]
     new_data[:max_layers].should == old_data[:max_layers]
@@ -156,9 +159,12 @@ describe Carto::Api::UserPresenter do
     new_data[:new_dashboard_enabled].should == old_data[:new_dashboard_enabled]
     new_data[:feature_flags].should == old_data[:feature_flags]
     new_data[:base_url].should == old_data[:base_url]
+    new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+    new_data[:isolines_provider].should == old_data[:isolines_provider]
+    new_data[:routing_provider].should == old_data[:routing_provider]
 
     if org_user
-      new_data[:organization].keys.should == old_data[:organization].keys
+      new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
 
       # This is an implicit test of OrganizationPresenter...
       # INFO: we have a weird error sometimes running builds that fails comparing dates despite having equal value...
@@ -178,11 +184,15 @@ describe Carto::Api::UserPresenter do
       new_data[:organization][:quota_in_bytes].should == old_data[:organization][:quota_in_bytes]
       new_data[:organization][:geocoding_quota].should == old_data[:organization][:geocoding_quota]
       new_data[:organization][:here_isolines_quota].should == old_data[:organization][:here_isolines_quota]
+      new_data[:organization][:obs_snapshot_quota].should == old_data[:organization][:obs_snapshot_quota]
+      new_data[:organization][:obs_general_quota].should == old_data[:organization][:obs_general_quota]
       new_data[:organization][:map_view_quota].should == old_data[:organization][:map_view_quota]
       new_data[:organization][:twitter_datasource_quota].should == old_data[:organization][:twitter_datasource_quota]
       new_data[:organization][:map_view_block_price].should == old_data[:organization][:map_view_block_price]
       new_data[:organization][:geocoding_block_price].should == old_data[:organization][:geocoding_block_price]
       new_data[:organization][:here_isolines_block_price].should == old_data[:organization][:here_isolines_block_price]
+      new_data[:organization][:obs_snapshot_block_price].should == old_data[:organization][:obs_snapshot_block_price]
+      new_data[:organization][:obs_general_block_price].should == old_data[:organization][:obs_general_block_price]
       new_data[:organization][:seats].should == old_data[:organization][:seats]
       new_data[:organization][:twitter_username].should == old_data[:organization][:twitter_username]
       new_data[:organization][:location].should == old_data[:organization][:location]
@@ -191,10 +201,30 @@ describe Carto::Api::UserPresenter do
       #owner is excluded from the users list
       new_data[:organization][:website].should == old_data[:organization][:website]
       new_data[:organization][:avatar_url].should == old_data[:organization][:avatar_url]
+      new_data[:geocoder_provider].should == old_data[:geocoder_provider]
+      new_data[:isolines_provider].should == old_data[:isolines_provider]
+      new_data[:routing_provider].should == old_data[:routing_provider]
+    end
+
+    if mobile_sdk_enabled
+      new_data[:mobile_apps].keys.sort.should == old_data[:mobile_apps].keys.sort
+
+      new_data[:mobile_apps][:mobile_xamarin].should = new_data[:mobile_apps].mobile_xamarin
+      new_data[:mobile_apps][:mobile_custom_watermark].should = new_data[:mobile_apps].mobile_custom_watermark
+      new_data[:mobile_apps][:mobile_offline_maps].should = new_data[:mobile_apps].mobile_offline_maps
+      new_data[:mobile_apps][:mobile_gis_extension].should = new_data[:mobile_apps].mobile_gis_extension
+      new_data[:mobile_apps][:mobile_max_open_users].should = new_data[:mobile_apps].mobile_max_open_users
+      new_data[:mobile_apps][:mobile_max_private_users].should = new_data[:mobile_apps].mobile_max_private_users
     end
 
     # TODO: Pending migration and testing of :real_table_count & :last_active_time
 
+  end
+
+  def add_new_keys(user_poro)
+    new_poro = user_poro.dup.deep_merge(viewer: false)
+    new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
+    new_poro
   end
 
   def create_org(org_name, org_quota, org_seats)

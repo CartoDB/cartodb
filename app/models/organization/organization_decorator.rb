@@ -18,6 +18,7 @@ module CartoDB
         },
         quota_in_bytes:  self.quota_in_bytes,
         unassigned_quota: self.unassigned_quota,
+        used_quota:      self.db_size_in_bytes,
         api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),
         api_calls_quota: self.map_view_quota,
         geocoding: {
@@ -27,6 +28,17 @@ module CartoDB
         here_isolines: {
           quota:       self.here_isolines_quota,
           monthly_use: self.get_here_isolines_calls
+        },
+        geocoder_provider: self.geocoder_provider,
+        isolines_provider: self.isolines_provider,
+        routing_provider: self.routing_provider,
+        obs_snapshot: {
+          quota:       obs_snapshot_quota,
+          monthly_use: get_obs_snapshot_calls
+        },
+        obs_general: {
+          quota:       obs_general_quota,
+          monthly_use: get_obs_general_calls
         },
         twitter: {
           enabled:     self.twitter_datasource_enabled,

@@ -5,16 +5,16 @@ describe Geocoding do
   before(:all) do
     @user  = create_user(geocoding_quota: 200, geocoding_block_price: 1500)
 
-    stub_named_maps_calls
+    bypass_named_maps
     @table = FactoryGirl.create(:user_table, user_id: @user.id)
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     @user.destroy
   end
 
@@ -115,7 +115,9 @@ describe Geocoding do
     end
 
     it 'marks the geocoding as failed if the geocoding job fails' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+                                    user_table: @table, geometry_type: 'polygon',
+                                    kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 10
       CartoDB::TableGeocoder.any_instance.stubs(:used_batch_request?).returns false
       CartoDB::TableGeocoder.any_instance.stubs(:run).raises("Error")
@@ -179,7 +181,9 @@ describe Geocoding do
     end
 
     it 'succeeds if there are no rows to geocode' do
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+                                    user_table: @table, geometry_type: 'polygon',
+                                    kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 0
       geocoding.run!
       geocoding.processed_rows.should eq 0
@@ -207,7 +211,9 @@ describe Geocoding do
         payload[:email] == @user.email && payload[:processed_rows] == 0
       }
 
-      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', user_table: @table, formatter: 'b')
+      geocoding = FactoryGirl.build(:geocoding, user: @user, formatter: 'a', 
+                                    user_table: @table, geometry_type: 'polygon',
+                                    kind: 'admin0')
       geocoding.class.stubs(:processable_rows).returns 0
       geocoding.run!
     end

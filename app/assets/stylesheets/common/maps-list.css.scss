@@ -13,8 +13,7 @@
   @include flex-wrap(wrap);
   position: relative;
   width: $sLayout-width + $sMargin-element;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 4px auto 0;
   padding-left: $sMargin-elementInline;
   padding-right: $sMargin-elementInline;
 }

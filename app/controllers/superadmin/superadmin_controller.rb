@@ -2,6 +2,8 @@ class Superadmin::SuperadminController < ActionController::Base
   include SslRequirement
   before_filter :authenticate
 
+  rescue_from StandardError, with: :rescue_from_superadmin_error
+
   # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
   unless Rails.env.production? || Rails.env.staging?
     def self.ssl_required(*splat)
@@ -23,5 +25,12 @@ class Superadmin::SuperadminController < ActionController::Base
 
   def current_user
     super(CartoDB.extract_subdomain(request))
+  end
+
+  private
+
+  def rescue_from_superadmin_error(error)
+    CartoDB::Logger.error(exception: error)
+    render(json: { errors: { message: error.inspect, backtrace: error.backtrace.inspect } }, status: 500)
   end
 end

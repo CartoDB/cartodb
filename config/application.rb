@@ -5,6 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "sequel-rails/railtie"
 require "action_mailer/railtie"
+require_relative '../lib/carto/configuration'
 
 if defined?(Bundler)
   Bundler.require(:default, :assets, Rails.env)
@@ -20,6 +21,8 @@ end
 
 module CartoDB
   class Application < Rails::Application
+    include Carto::Configuration
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -56,6 +59,8 @@ module CartoDB
     # Enable the asset pipeline
     config.assets.enabled = false
 
+    config.paths['public'] = [public_uploads_path]
+
     config.assets.paths << Rails.root.join('bower_components')
 
     # Default setting is [/\w+\.(?!js|css).+/, /application.(css|js)$/]
@@ -74,7 +79,10 @@ module CartoDB
       public_map.js
       public_map_deps.js
       editor.js
+      vendor_editor3.js
+      common_editor3.js
       editor3.js
+      dataset.js
       public_editor3.js
       account_templates.js
       account_deps.js
@@ -101,6 +109,10 @@ module CartoDB
       confirmation_templates.js
       confirmation.js
       new_public_table.js
+
+      mobile_apps.js
+      mobile_apps_templates.js
+      mobile_apps_deps.js
 
       explore_deps.js
       explore.js
@@ -141,6 +153,7 @@ module CartoDB
       cartod1b.css
       user_feed.css
       explore.css
+      mobile_apps.css
 
       plugins/tipsy.css
 
@@ -176,7 +189,7 @@ require 'cartodb/connection_pool'
 require 'cartodb/pagination'
 require 'cartodb/mini_sequel'
 require 'cartodb/central'
-#require 'importer/lib/cartodb-importer'
+# require 'importer/lib/cartodb-importer'
 require 'importer/lib/cartodb-migrator'
 require 'varnish/lib/cartodb-varnish'
 $pool = CartoDB::ConnectionPool.new

@@ -13,26 +13,91 @@
   position: relative;
   width: 100vw;
   height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
+
 .Editor-wrapper {
   @include display-flex();
   position: relative;
   height: 100%;
+  min-height: 450px;
 }
 .Editor-panel {
-  @include block-shadow();
   @include transition(width, 300ms, ease-in-out);
-  width: 344px;
-  height: 100vh;
-  padding: 25px;
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex(1);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 0;
+  padding: 19px 25px 0;
   box-sizing: border-box;
 }
-.Editor-panel.is-larger {
+.Editor-panel.is-dark {
+  background: $cMainBg;
+}
+.Editor-content {
+  @include display-flex();
+  @include flex(1);
+  @include flex-direction(column);
+  position: relative;
+  min-height: 0;
+}
+.Editor-content.is-disabled {
+  opacity: 0.24;
+}
+.Editor-panelWrapper {
+  position: relative;
+  width: 344px;
+}
+.Editor-panelWrapper.is-larger {
   width: 488px;
 }
-.Editor-content .CDB-HeaderInfo {
-  margin: 0 0 32px;
+
+.Editor-panel .ps-scrollbar-y-rail {
+  right: 0 !Important;
+  width: 2px !Important; // Resets standard scroll track color
+  background: #EEE;
+  z-index: 3;
 }
+.Editor-panel .ps-scrollbar-y {
+  width: 2px !Important; // Resets standard scroll bar color
+  background: #AAA;
+}
+.Editor-panel .ps-scrollbar-x-rail {
+  height: 2px !Important; // Resets standard scroll track color
+  background: #EEE;
+  z-index: 3;
+  border-top: 12px solid $cWhite;
+  border-bottom: 2px solid $cWhite;
+}
+.Editor-panel .ps-scrollbar-x {
+  height: 2px !Important; // Resets standard scroll bar color
+  background: #AAA;
+  pointer-events: all;
+}
+.Editor-panel .ps-scrollbar-x-rail:hover .ps-scrollbar-x {
+  bottom: -1px !Important; // Resets standard scroll bar position
+  height: 4px !Important; // Resets standard scroll bar color
+}
+.Editor-panel .ps-scrollbar-x:hover {
+  bottom: -1px !Important; // Resets standard scroll bar position
+  height: 4px !Important; // Resets standard scroll bar color
+}
+
+
+
+
+
+/* deep insights */
 .CDB-Dashboard-canvas {
   @include block-shadow();
+  @include flex(1);
+}
+.CDB-Dashboard-canvas.is-dark {
+  background: #293A41;
 }

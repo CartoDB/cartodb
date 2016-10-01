@@ -1,0 +1,24 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.CustomRamp {
+  @include display-flex();
+}
+.CustomRamp-list {
+  border-top: 1px solid #DDD;
+}
+.CustomRamp .CustomRamp-listOptions {
+  @include flex(1);
+}
+.CustomRamp-clear {
+  $padding: $baseSize + 4;
+  padding: $padding $padding $padding 0;
+  color: $cBlue;
+}
+.RampItem-bar {
+  width: 50px;
+}
+.RampItem-text {
+  max-width: calc(100% - 60px);
+}

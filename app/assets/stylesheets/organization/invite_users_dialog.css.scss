@@ -26,6 +26,13 @@ $width: 800px;
   width: $width;
   background: #F9F9F9;
 }
+.Form-rowData.InviteUsers-userType {
+  @include justify-content(flex-start);
+
+  .Form-label {
+    margin-left: 10px;
+  }
+}
 .InviteUsers-formFooterSticky {
   position: fixed;
   bottom: 0;

@@ -62,7 +62,7 @@
   </script>
 <% end %>
 
-<iframe id="google_login_button_iframe" src="<%= config.iframe_src %>" width="300" height="41" frameborder="0"></iframe>
+<iframe src="<%= config.iframe_src %>" width="100%" height="49" frameborder="0" class="Sessions-oauthButton"></iframe>
 
 <form action="<%= config.signup_action %>" method="POST">
   <input type="hidden" value="<%= config.unauthenticated_valid_access_token %>" id="google_signup_access_token" name="google_signup_access_token" />

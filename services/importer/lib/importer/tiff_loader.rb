@@ -58,7 +58,7 @@ module CartoDB
       end
 
       def raster2pgsql
-        @raster2pgsql ||= Raster2Pgsql.new(job.table_name, source_file.fullpath, job.pg_options)
+        @raster2pgsql ||= Raster2Pgsql.new(job.table_name, source_file.fullpath, job.pg_options, job.db)
       end
 
       def valid_table_names

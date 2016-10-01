@@ -1,4 +1,4 @@
-<button class="NavButton Dialog-closeBtn js-close">
-  <i class="CDB-IconFont CDB-IconFont-close"></i>
+<button class="CDB-Shape js-close Dialog-closeBtn">
+  <div class="CDB-Shape-close is-blue is-huge"></div>
 </button>
 <div class="Dialog-contentWrapper js-content"></div>

@@ -5,6 +5,7 @@ require_relative '../../lib/carto/http/client'
 
 module CartoDB
   class SQLApi
+
     class SQLApiError < StandardError; end
     class SQLError < SQLApiError; end
     class PermissionError < SQLApiError; end
@@ -17,6 +18,16 @@ module CartoDB
 
     attr_accessor :api_key, :username, :timeout, :base_url
     attr_reader   :response_code, :parsed_response
+
+    # privacy: 'public' / 'private'
+    def self.with_user(user, privacy)
+      new(
+        base_url: ::ApplicationHelper.sql_api_url(user.username, privacy),
+        protocol: 'https',
+        username: user.username,
+        api_key: user.api_key
+      )
+    end
 
     def initialize(arguments)
       self.username = arguments.fetch(:username)

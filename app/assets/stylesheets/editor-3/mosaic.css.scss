@@ -1,0 +1,73 @@
+// Mosaic styles
+// ----------------------------------------------
+
+/* SG
+# Mosaic
+```
+<ul class="Mosaic">
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+  <li class="Mosaic-item"></li>
+</ul>
+```
+*/
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+
+.Mosaic-list {
+  @include display-flex();
+  @include flex-wrap(wrap);
+}
+.Mosaic-item {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: $halfBaseSize;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.Mosaic-item::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: $halfBaseSize;
+  pointer-events: none;
+  content: '';
+}
+.Mosaic-item--dashed::before {
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
+.Mosaic-item:hover::before {
+  @include transition(all, 300ms);
+  border: 1px solid rgba(0, 0, 0, 0.24);
+}
+.Mosaic-item.is-selected::before {
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  border: 2px solid $cBlue;
+}
+.Mosaic-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.Mosaic-inner {
+  border-radius: $halfBaseSize;
+  overflow: hidden;
+  pointer-events: none;
+}
+.Mosaic-button {
+  width: 40px;
+  color: #1785FB;
+  line-height: 40px;
+}

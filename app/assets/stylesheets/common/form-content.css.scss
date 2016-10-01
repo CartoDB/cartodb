@@ -117,17 +117,8 @@ $sLabel-width: 140px;
   line-height: normal;
 }
 .Form-rowPreview { width: 735px }
-.Form-separator {
-  position: relative;
-  display: block;
-  padding: 0 $sMargin-element;
-  line-height: 50px;
-  background: transparent;
-  font-size: 14px;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-secondary;
-  z-index: 0;
-}
+
+
 .Form-rowData {
   position: relative;
   @include display-flex();
@@ -537,6 +528,8 @@ $sLabel-width: 140px;
   border-radius: 4px;
   background: white;
   z-index: 2;
+  font-size: 12px;
+  line-height: 16px;
 }
 .Form-tagsList.tagit { padding: 0 5px 5px 5px }
 .Form-tagsList.tagit .tagit-choice {
@@ -572,7 +565,7 @@ $sLabel-width: 140px;
   font-style: italic;
   color: #AAA
 }
-.Form-tags.is-focus { border-color: #999 }
+.Form-tags.is-focus { border-color: #1181FB }
 .Form-tags.is-disabled {
   background: $cStructure-grayBkg;
 

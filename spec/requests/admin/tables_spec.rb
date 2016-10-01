@@ -26,7 +26,7 @@ describe Admin::TablesController do
   end
 
   before(:each) do
-    stub_named_maps_calls
+    bypass_named_maps
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
     @db = Rails::Sequel.connection
     delete_user_data @user
@@ -37,7 +37,7 @@ describe Admin::TablesController do
   end
 
   after(:all) do
-    stub_named_maps_calls
+    bypass_named_maps
     delete_user_data(@user)
     @user.destroy
   end

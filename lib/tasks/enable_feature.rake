@@ -108,16 +108,36 @@ namespace :cartodb do
 
     # WARNING: For use only at development, opensource and custom installs.
     # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
-    desc "add feature flag"
-    task :add_feature_flag, [:feature] => :environment do |t, args|
+    desc "add feature flag and optionally set restricted (default is true)"
+    task :add_feature_flag, [:feature, :restricted] => :environment do |_task, args|
+      restricted = args[:restricted] ? args[:restricted].casecmp('false') != 0 : true
 
-      ff = FeatureFlag[:name => args[:feature]]
-      if ff.nil?
-        ff = FeatureFlag.new(name: args[:feature], restricted: true)
-        ff.id = FeatureFlag.order(:id).last.id + 1
+      ff = FeatureFlag[name: args[:feature]]
+      if !ff
+        ff = FeatureFlag.new(name: args[:feature], restricted: restricted)
+        ff.id = FeatureFlag.any? ? FeatureFlag.order(:id).last.id + 1 : 0
         ff.save
+
+        puts "[INFO]\tFeature flag '#{args[:feature]}' created and restricted set to '#{ff.restricted}'"
       else
-        raise "[ERROR]  Feature '#{args[:feature]}' already exists"
+        raise "[ERROR]\tFeature '#{args[:feature]}' already exists and its restricted set to '#{ff.restricted}'"
+      end
+    end
+
+    # WARNING: For use only at development, opensource and custom installs.
+    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    desc "change feature flag to restricted or unrestricted"
+    task :change_feature_restricted, [:feature, :restricted] => :environment do |_task, args|
+      restricted = args[:restricted] ? args[:restricted].casecmp('false') != 0 : true
+
+      ff = FeatureFlag[name: args[:feature]]
+      if ff
+        ff.restricted = restricted
+        ff.save
+
+        puts "[INFO]\tFeature flag '#{args[:feature]}' restricted set to '#{ff.restricted}'"
+      else
+        raise "[ERROR]\tFeature '#{args[:feature]}' doesn't exist"
       end
     end
 

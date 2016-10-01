@@ -29,7 +29,7 @@ module CartoDB
       DEFAULT_ENCODING  = 'UTF-8'
 
       def self.supported?(extension)
-        !(%w{ .tif .tiff .sql }.include?(extension))
+        !(%w{ .tif .tiff }.include?(extension))
       end
 
       def initialize(job, source_file, layer = nil, ogr2ogr = nil, georeferencer = nil)
@@ -293,9 +293,9 @@ module CartoDB
       end
 
       def check_for_import_errors
-        raise DuplicatedColumnError.new(job.logger) if ogr2ogr.duplicate_column?
-        raise InvalidGeoJSONError.new(job.logger) if ogr2ogr.invalid_geojson?
-        raise TooManyColumnsError.new(job.logger) if ogr2ogr.too_many_columns?
+        raise DuplicatedColumnError.new if ogr2ogr.duplicate_column?
+        raise InvalidGeoJSONError.new if ogr2ogr.invalid_geojson?
+        raise TooManyColumnsError.new if ogr2ogr.too_many_columns?
 
         if ogr2ogr.statement_timeout?
           raise StatementTimeoutError.new(ogr2ogr.command_output, ERRORS_MAP[CartoDB::Importer2::StatementTimeoutError])
@@ -306,24 +306,24 @@ module CartoDB
         end
 
         if ogr2ogr.file_too_big?
-          raise FileTooBigError.new(job.logger)
+          raise FileTooBigError.new
         end
 
         if ogr2ogr.unsupported_format?
-          raise UnsupportedFormatError.new(job.logger)
+          raise UnsupportedFormatError.new
         end
 
         if ogr2ogr.kml_style_missing?
-          raise KmlWithoutStyleIdError.new(job.logger)
+          raise KmlWithoutStyleIdError.new 'StyleID missing in KML file'
         end
 
         # Could be OOM, could be wrong input
         if ogr2ogr.segfault_error?
-          raise LoadError.new(job.logger)
+          raise LoadError.new 'Ogr2ogr SEGFAULT ERROR'
         end
 
         if ogr2ogr.exit_code == 256 && ogr2ogr.encoding_error?
-          raise EncodingError.new(job.logger)
+          raise EncodingError.new "Ogr2ogr encoding error"
         end
 
         # Some kind of error in ogr2ogr could lead to a partial import and we don't want it
@@ -332,7 +332,7 @@ module CartoDB
           job.logger.append "ogr2ogr.exit_code = " + ogr2ogr.exit_code.to_s
           job.logger.append "ogr2ogr.command = " + ogr2ogr.command, truncate=false
           job.logger.append "ogr2ogr.command_output = " + ogr2ogr.command_output, truncate=false
-          raise LoadError.new(job.logger)
+          raise LoadError.new 'Ogr2ogr ERROR'
         end
       end
 

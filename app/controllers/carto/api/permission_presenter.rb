@@ -29,16 +29,16 @@ module Carto
           id:         @permission.id,
           owner:      owner,
           entity: {
-            id:       @permission.entity_id,
-            type:     @permission.entity_type
+            id:       @permission.visualization.id,
+            type:     'vis'
           },
-          acl:        @permission.acl.map { |entry|
+          acl:        @permission.acl.map do |entry|
             {
               type:   entry[:type],
               entity: entity_decoration(entry),
               access: entry[:access]
             }
-          },
+          end,
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
         }

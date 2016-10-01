@@ -108,6 +108,7 @@ describe Admin::PagesController do
     it 'redirects to login page if no user is especified' do
       anyuser = prepare_user('anyuser')
       host! 'localhost.lan'
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
       CartoDB.stubs(:subdomainless_urls?).returns(true)
 
       get '', {}, JSON_HEADER

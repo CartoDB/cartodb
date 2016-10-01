@@ -44,6 +44,21 @@ module CartoDB
           monthly_use: self.organization_user? ? self.organization.get_here_isolines_calls : self.get_here_isolines_calls,
           hard_limit:  self.hard_here_isolines_limit?
         },
+        geocoder_provider: self.geocoder_provider,
+        isolines_provider: self.isolines_provider,
+        routing_provider: self.routing_provider,
+        obs_snapshot: {
+          quota:       organization_user? ? organization.obs_snapshot_quota : obs_snapshot_quota,
+          block_price: organization_user? ? organization.obs_snapshot_block_price : obs_snapshot_block_price,
+          monthly_use: organization_user? ? organization.get_obs_snapshot_calls : get_obs_snapshot_calls,
+          hard_limit:  hard_obs_snapshot_limit?
+        },
+        obs_general: {
+          quota:       organization_user? ? organization.obs_general_quota : obs_general_quota,
+          block_price: organization_user? ? organization.obs_general_block_price : obs_general_block_price,
+          monthly_use: organization_user? ? organization.get_obs_general_calls : get_obs_general_calls,
+          hard_limit:  hard_obs_general_limit?
+        },
         twitter: {
           enabled:     self.organization_user? ? self.organization.twitter_datasource_enabled         : self.twitter_datasource_enabled,
           quota:       self.organization_user? ? self.organization.twitter_datasource_quota           :  self.twitter_datasource_quota,
@@ -51,6 +66,9 @@ module CartoDB
           block_size:  self.organization_user? ? self.organization.twitter_datasource_block_size      : self.twitter_datasource_block_size,
           monthly_use: self.organization_user? ? self.organization.get_twitter_imports_count          : self.get_twitter_imports_count,
           hard_limit:  self.hard_twitter_datasource_limit
+        },
+        salesforce: {
+          enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
         },
         billing_period: self.last_billing_cycle,
         api_key: self.api_key,
@@ -65,7 +83,6 @@ module CartoDB
           dedicated_support: self.dedicated_support?,
           remove_logo: self.remove_logo?,
           sync_tables: self.sync_tables_enabled,
-          arcgis_datasource: self.arcgis_datasource_enabled?,
           google_maps_geocoder_enabled: self.google_maps_geocoder_enabled?,
           google_maps_enabled: self.google_maps_enabled?
         },
@@ -80,7 +97,8 @@ module CartoDB
         avatar_url: self.avatar,
         feature_flags: self.feature_flags,
         base_url: self.public_url,
-        needs_password_confirmation: self.needs_password_confirmation?
+        needs_password_confirmation: self.needs_password_confirmation?,
+        viewer: viewer
       }
 
       if self.organization.present?

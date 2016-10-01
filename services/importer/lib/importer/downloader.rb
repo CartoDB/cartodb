@@ -15,36 +15,37 @@ require_relative './url_translator/kimono_labs'
 require_relative './unp'
 require_relative '../../../../lib/carto/http/client'
 require_relative '../../../../lib/carto/url_validator'
+require_relative '../helpers/quota_check_helpers.rb'
 
 module CartoDB
   module Importer2
     class Downloader
-
+      include CartoDB::Importer2::QuotaCheckHelpers
       extend Carto::UrlValidator
 
       # in seconds
       HTTP_CONNECT_TIMEOUT = 60
       DEFAULT_HTTP_REQUEST_TIMEOUT = 600
       MAX_REDIRECTS = 5
-      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'
+      URL_ESCAPED_CHARACTERS = 'áéíóúÁÉÍÓÚñÑçÇàèìòùÀÈÌÒÙ'.freeze
 
-      DEFAULT_FILENAME        = 'importer'
+      DEFAULT_FILENAME        = 'importer'.freeze
       CONTENT_DISPOSITION_RE  = %r{;\s*filename=(.*;|.*)}
       URL_RE                  = %r{://}
       URL_TRANSLATORS         = [
-                                  UrlTranslator::OSM2,
-                                  UrlTranslator::OSM,
-                                  UrlTranslator::FusionTables,
-                                  UrlTranslator::GitHub,
-                                  UrlTranslator::GoogleMaps,
-                                  UrlTranslator::GoogleDocs,
-                                  UrlTranslator::KimonoLabs
-                                ]
+        UrlTranslator::OSM2,
+        UrlTranslator::OSM,
+        UrlTranslator::FusionTables,
+        UrlTranslator::GitHub,
+        UrlTranslator::GoogleMaps,
+        UrlTranslator::GoogleDocs,
+        UrlTranslator::KimonoLabs
+      ].freeze
 
       CONTENT_TYPES_MAPPING = [
         {
           content_types: ['text/plain'],
-          extensions: ['txt', 'kml']
+          extensions: ['txt', 'kml', 'geojson']
         },
         {
           content_types: ['text/csv'],
@@ -80,17 +81,21 @@ module CartoDB
         },
         {
           content_types: ['application/zip'],
-          extensions: ['zip']
+          extensions: ['zip', 'carto']
         },
         {
           content_types: ['application/x-gzip'],
-          extensions: ['tgz','gz']
+          extensions: ['tgz', 'gz']
         },
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
           extensions: ['json']
+        },
+        {
+          content_types: ['application/osm3s+xml'],
+          extensions: ['osm']
         }
-      ]
+      ].freeze
 
       def self.supported_extensions
         @supported_extensions ||= CartoDB::Importer2::Unp::SUPPORTED_FORMATS
@@ -98,10 +103,15 @@ module CartoDB
                                   .sort_by(&:length).reverse
       end
 
+      def self.supported_extensions_match
+        @supported_extensions_match ||= supported_extensions.map { |ext|
+          ext = ext.gsub('.', '\\.')
+          [/#{ext}$/i, /#{ext}(?=\.)/i, /#{ext}(?=\?)/i, /#{ext}(?=&)/i]
+        }.flatten
+      end
+
       def self.url_filename_regex
-        @url_filename_regex ||= Regexp.new(
-                                 "[[:word:]]+#{Regexp.union(supported_extensions)}+",
-                                 true)
+        @url_filename_regex ||= Regexp.new("[[:word:]-]+#{Regexp.union(supported_extensions_match)}+", Regexp::IGNORECASE)
       end
 
       def initialize(url, http_options = {}, options = {}, seed = nil, repository = nil)
@@ -109,6 +119,7 @@ module CartoDB
         raise UploadError if url.nil?
 
         @http_options = http_options
+        @options = options
         @importer_config = options[:importer_config]
         @ogr2ogr_config = options[:ogr2ogr]
         @seed         = seed
@@ -199,8 +210,13 @@ module CartoDB
         self
       end
 
-      def set_downloaded_source_file(available_quota_in_bytes=nil)
-        raise_if_over_storage_quota(headers, available_quota_in_bytes)
+      def set_downloaded_source_file(available_quota_in_bytes = nil)
+        if available_quota_in_bytes
+          raise_if_over_storage_quota(requested_quota: content_length_from(headers),
+                                      available_quota: available_quota_in_bytes.to_i,
+                                      user_id: @options[:user_id])
+        end
+
         @etag           = etag_from(headers)
         @last_modified  = last_modified_from(headers)
         return self unless modified?
@@ -209,12 +225,6 @@ module CartoDB
 
         self.source_file  = nil unless modified?
         self
-      end
-
-      def raise_if_over_storage_quota(headers, available_quota_in_bytes=nil)
-        return self unless available_quota_in_bytes
-        raise StorageQuotaExceededError if
-          content_length_from(headers) > available_quota_in_bytes.to_i
       end
 
       def headers
@@ -245,7 +255,7 @@ module CartoDB
         download_error = false
         error_response = nil
 
-        temp_name = filepath(DEFAULT_FILENAME << '_' << random_name)
+        temp_name = filepath(DEFAULT_FILENAME + '_' + random_name)
 
         downloaded_file = File.open(temp_name, 'wb')
         request = http_client.request(@translated_url, typhoeus_options)
@@ -299,6 +309,8 @@ module CartoDB
             raise UnauthorizedDownloadError.new(error_response.body)
           elsif error_response.code == 404
             raise NotFoundDownloadError.new(error_response.body)
+          elsif error_response.return_code == :partial_file
+            raise PartialDownloadError.new("DOWNLOAD ERROR: A file transfer was shorter or larger than expected")
           else
             raise DownloadError.new("DOWNLOAD ERROR: Code:#{error_response.code} Body:#{error_response.body}")
           end
@@ -444,4 +456,3 @@ module CartoDB
     end
   end
 end
-

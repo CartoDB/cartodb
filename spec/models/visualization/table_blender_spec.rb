@@ -6,11 +6,28 @@ include CartoDB::Visualization
 
 # TODO this file cannot be executed in isolation
 describe TableBlender do
+  let(:user) do
+    FactoryGirl.create(:valid_user, private_tables_enabled: true, viewer: true)
+  end
+
+  let(:map_mock) do
+    map = mock
+    map.stubs(:to_hash).returns({})
+    map.stubs(:user).returns(user)
+    map.stubs(:user_layers).returns([])
+    map.stubs(:carto_and_torque_layers).returns([])
+    map
+  end
+
   describe '#blend' do
-    it 'returns a map with layers from the passed tables' do
-      pending
+    it 'raises an error for viewer users' do
+      tables = [fake_public_table, fake_private_table]
+      expect {
+        TableBlender.new(user, tables).blend
+      }.to raise_error(/Viewer users can't blend tables/)
+      user.destroy
     end
-  end #blend
+  end
 
   # TODO test too coupled with implementation outside blender
   # refactor once Privacy is extracted
@@ -37,14 +54,15 @@ describe TableBlender do
     table = mock
     table.stubs(:private?).returns(false)
     table.stubs(:public_with_link_only?).returns(false)
+    table.stubs(:map).returns(map_mock)
     table
-  end #fake_public_table
+  end
 
   def fake_private_table
     table = mock
     table.stubs(:private?).returns(true)
     table.stubs(:public_with_link_only?).returns(false)
+    table.stubs(:map).returns(map_mock)
     table
-  end #fake_private_table
-end # TableBlender
-
+  end
+end

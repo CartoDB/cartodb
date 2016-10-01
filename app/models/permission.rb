@@ -18,9 +18,10 @@ module CartoDB
 
     @old_acl = nil
 
-    ACCESS_READONLY   = 'r'
-    ACCESS_READWRITE  = 'rw'
-    ACCESS_NONE       = 'n'
+    ACCESS_READONLY   = 'r'.freeze
+    ACCESS_READWRITE  = 'rw'.freeze
+    ACCESS_NONE       = 'n'.freeze
+    SORTED_ACCESSES   = [ACCESS_READWRITE, ACCESS_READONLY, ACCESS_NONE].freeze
 
     TYPE_USER         = 'user'
     TYPE_ORGANIZATION = 'org'
@@ -45,15 +46,7 @@ module CartoDB
     end
 
     def real_entity_type
-      if self.entity_type == ENTITY_TYPE_VISUALIZATION
-        if self.entity.type == CartoDB::Visualization::Member::TYPE_CANONICAL
-          return CartoDB::Visualization::Member::TYPE_CANONICAL
-        else
-          return CartoDB::Visualization::Member::TYPE_DERIVED
-        end
-      else
-        return self.entity_type
-      end
+      entity.type
     end
 
     def notify_permissions_change(permissions_changes)
@@ -297,35 +290,24 @@ module CartoDB
 
     # @return Mixed|nil
     def entity
-      case self.entity_type
-        when ENTITY_TYPE_VISUALIZATION
-          CartoDB::Visualization::Member.new(id:self.entity_id).fetch
-        else
-          nil
-      end
-    end
-
-    # @param value Mixed
-    def entity=(value)
-      if value.kind_of? CartoDB::Visualization::Member
-        self.entity_type = ENTITY_TYPE_VISUALIZATION
-        self.entity_id = value.id
-      else
-        raise PermissionError.new('Unsupported entity type')
-      end
+      @visualization ||= CartoDB::Visualization::Collection.new.fetch(permission_id: id).first
     end
 
     def validate
       super
-      errors.add(:owner_id, 'cannot be nil') if (self.owner_id.nil? || self.owner_id.empty?)
-      errors.add(:owner_username, 'cannot be nil') if (self.owner_username.nil? || self.owner_username.empty?)
-      errors.add(:entity_id, 'cannot be nil') if (self.entity_id.nil? || self.entity_id.empty?)
-      errors.add(:entity_type, 'cannot be nil') if (self.entity_type.nil? || self.entity_type.empty?)
-      errors.add(:entity_type, 'invalid type') unless self.entity_type == ENTITY_TYPE_VISUALIZATION
-      unless new?
+      errors.add(:owner_id, 'cannot be nil') if owner_id.nil? || owner_id.empty?
+      errors.add(:owner_username, 'cannot be nil') if owner_username.nil? || owner_username.empty?
+      viewer_writers = users_with_permissions(ACCESS_READWRITE).select(&:viewer)
+      unless viewer_writers.empty?
+        errors.add(:access_control_list, "grants write to viewers: #{viewer_writers.map(&:username).join(',')}")
+      end
+
+      if new?
+        errors.add(:acl, 'must be empty on initial creation') if acl.present?
+      else
         validates_presence [:id]
       end
-    end #validate
+    end
 
     def before_save
       super
@@ -336,10 +318,7 @@ module CartoDB
       if !@old_acl.nil?
         self.notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
       end
-    end
-
-    def after_save
-      update_shared_entities unless new?
+      update_shared_entities
     end
 
     def after_destroy
@@ -350,38 +329,27 @@ module CartoDB
       self.notify_permissions_change(CartoDB::Permission.compare_new_acl(self.acl, []))
     end
 
-    def before_destroy
-      destroy_shared_entities
-    end
-
     # @param subject ::User
     # @return String Permission::ACCESS_xxx
     def permission_for_user(subject)
-      permission = nil
-
       # Common scenario
       return ACCESS_READWRITE if is_owner?(subject)
 
-      acl.map { |entry|
-        if entry[:type] == TYPE_USER && entry[:id] == subject.id
-          permission = entry[:access]
-        end
+      permission_entries = acl.select do |entry|
+        (entry[:type] == TYPE_USER && entry[:id] == subject.id) ||
+          (entry[:type] == TYPE_GROUP && !subject.groups.nil? && subject.groups.map(&:id).include?(entry[:id])) ||
+          (entry[:type] == TYPE_ORGANIZATION && !subject.organization.nil? && subject.organization.id == entry[:id])
+      end
 
-        if entry[:type] == TYPE_GROUP && permission == nil
-          if !subject.groups.nil? && subject.groups.collect(&:id).include?(entry[:id])
-            permission = entry[:access]
-          end
-        end
+      higher_access(permission_entries.map { |entry| entry[:access] })
+    end
 
-        # Organization has lower precedence than user, if set leave as it is
-        if entry[:type] == TYPE_ORGANIZATION && permission == nil
-          if !subject.organization.nil? && subject.organization.id == entry[:id]
-            permission = entry[:access]
-          end
-        end
-      }
-      permission = ACCESS_NONE if permission.nil?
-      permission
+    def higher_access(accesses)
+      return ACCESS_NONE if accesses.empty?
+      index = SORTED_ACCESSES.index do |access|
+        accesses.include?(access)
+      end
+      SORTED_ACCESSES[index]
     end
 
     def permission_for_org
@@ -405,7 +373,7 @@ module CartoDB
     # Note: Does not check ownership
     # @param subject ::User
     # @param access String Permission::ACCESS_xxx
-    def is_permitted?(subject, access)
+    def permitted?(subject, access)
       permission = permission_for_user(subject)
       Permission::PERMISSIONS_MATRIX[access].include? permission
     end
@@ -419,7 +387,7 @@ module CartoDB
     end
 
     def destroy_shared_entities
-      CartoDB::SharedEntity.where(entity_id: self.entity_id).delete
+      CartoDB::SharedEntity.where(entity_id: entity.id).delete
     end
 
     def clear
@@ -441,8 +409,8 @@ module CartoDB
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   user[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-            entity_id:      self.entity_id,
-            entity_type:    type_for_shared_entity(self.entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         if e.table?
@@ -455,8 +423,8 @@ module CartoDB
         shared_entity = CartoDB::SharedEntity.new(
             recipient_id:   org[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_ORGANIZATION,
-            entity_id:      self.entity_id,
-            entity_type:    type_for_shared_entity(self.entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         if e.table?
@@ -469,8 +437,8 @@ module CartoDB
         CartoDB::SharedEntity.new(
             recipient_id:   group[:id],
             recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_GROUP,
-            entity_id:      entity_id,
-            entity_type:    type_for_shared_entity(entity_type)
+            entity_id:      entity.id,
+            entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
         ).save
 
         # You only want to switch it off when request is a permission request coming from database
@@ -479,19 +447,21 @@ module CartoDB
         end
       end
 
-      if e.table? and (org or users.any?)
-        e.invalidate_cache
-      end
+      e.invalidate_cache
+      e.save_named_map
     end
 
-    def users_with_permissions(permission_type)
-      user_ids = relevant_user_acl_entries(acl).select { |entry|
-        permission_type.include?(entry[:access])
-      }.map { |entry|
-          entry[:id]
-      }
-
+    def users_with_permissions(access)
+      user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
       ::User.where(id: user_ids).all
+    end
+
+    def entity_type
+      ENTITY_TYPE_VISUALIZATION
+    end
+
+    def entity_id
+      entity.id
     end
 
     private
@@ -506,15 +476,6 @@ module CartoDB
       end
       permission = ACCESS_NONE if permission.nil?
       permission
-    end
-
-    # @param permission_type ENTITY_TYPE_xxxx
-    # @throws PermissionError
-    def type_for_shared_entity(permission_type)
-      if permission_type == ENTITY_TYPE_VISUALIZATION
-        return CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
-      end
-      PermissionError.new('Invalid permission type for shared entity')
     end
 
     # when removing permission form a table related visualizations should
@@ -672,7 +633,7 @@ module CartoDB
     end
 
     def is_permitted(table, access)
-      table.permission.is_permitted?(@user, access)
+      table.permission.permitted?(@user, access)
     end
 
     def add_read_permission(table)

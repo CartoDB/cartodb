@@ -1,15 +1,15 @@
 {
   "name": "cartodb-ui",
   "version": "4.2.35",
-  "description": "CartoDB UI frontend",
+  "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
     "url": "git://github.com/CartoDB/cartodb.git"
   },
   "author": {
-    "name": "CartoDB",
-    "url": "https://cartodb.com/",
-    "email": "wadus@cartodb.com"
+    "name": "CARTO",
+    "url": "https://carto.com/",
+    "email": "wadus@carto.com"
   },
   "contributors": [],
   "license": "BSD-3-Clause",

@@ -35,6 +35,8 @@ class Carto::Map < ActiveRecord::Base
 
   after_initialize :ensure_embed_options
 
+  after_commit :force_notify_map_change
+
   def data_layers
     layers.select(&:carto?)
   end

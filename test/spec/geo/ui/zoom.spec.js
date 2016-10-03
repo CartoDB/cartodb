@@ -4,7 +4,7 @@ var Template = require('../../../../src/core/template');
 
 describe('geo/ui/zoom', function () {
   beforeEach(function () {
-    this.map = new Map();
+    this.map = new Map(null, { layersFactory: {} });
     spyOn(this.map, 'bind').and.callThrough();
     spyOn(this.map, 'setZoom').and.callThrough();
     this.view = new Zoom({

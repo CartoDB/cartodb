@@ -12,7 +12,7 @@ describe('geo/ui/search', function () {
       .height(500)
       .width(500);
     $('body').append(this.$el);
-    this.map = new Map();
+    this.map = new Map(null, { layersFactory: {} });
     this.mapView = new LeafletMapView({
       el: this.$el,
       map: this.map,

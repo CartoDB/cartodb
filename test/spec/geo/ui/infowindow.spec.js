@@ -11,7 +11,7 @@ describe('geo/ui/infowindow-view', function() {
   beforeEach(function() {
     var container = $('<div>').css('height', '200px');
 
-    map = new Map();
+    map = new Map(null, { layersFactory: {} });
 
     mapView = new MapView({
       el: container,
@@ -252,7 +252,7 @@ describe('geo/ui/infowindow-view', function() {
 
       var container = $('<div>').css('height', '200px');
 
-      map = new Map();
+      map = new Map(null, { layersFactory: {} });
 
       mapView = new MapView({
         el: container,
@@ -360,7 +360,7 @@ describe('geo/ui/infowindow-view', function() {
         { title: 'test2', position: 2, value: "b"}
       ];
 
-      map = new Map();
+      map = new Map(null, { layersFactory: {} });
 
       mapView = new MapView({
         el: container,

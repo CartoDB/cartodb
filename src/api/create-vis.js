@@ -9,7 +9,6 @@ var DEFAULT_OPTIONS = {
   loaderControl: true,
   infowindow: true,
   tooltip: true,
-  time_slider: true,
   logo: true,
   show_empty_infowindow_fields: false
 };
@@ -27,10 +26,29 @@ var createVis = function (el, vizjson, options) {
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
+  var visModel = new VisModel();
 
-  // TODO: We can check if all required options are present here! eg: if viz.json has some analyses
-  // apiKey or authToken will be required (otherwise we know requests to Windshaft will fail)...
+  if (typeof vizjson === 'string') {
+    var url = vizjson;
+    Loader.get(url, function (vizjson) {
+      if (vizjson) {
+        loadVizJSON(el, visModel, vizjson, options);
+      } else {
+        throw new Error('error fetching viz.json file');
+      }
+    });
+  } else {
+    loadVizJSON(el, visModel, vizjson, options);
+  }
+
+  return visModel;
+};
+
+var loadVizJSON = function (el, visModel, vizjsonData, options) {
+  var vizjson = new VizJSON(vizjsonData);
+  applyOptionsToVizJSON(vizjson, options);
+
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
 
   var showLegends = true;
   if (_.isBoolean(options.legends)) {
@@ -39,7 +57,7 @@ var createVis = function (el, vizjson, options) {
     showLegends = vizjson.legends;
   }
 
-  var visModel = new VisModel({
+  visModel.set({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
@@ -54,26 +72,8 @@ var createVis = function (el, vizjson, options) {
     model: visModel
   });
 
-  if (typeof vizjson === 'string') {
-    var url = vizjson;
-    Loader.get(url, function (vizjson) {
-      if (vizjson) {
-        loadVizJSON(visModel, vizjson, options);
-      } else {
-        throw new Error('error fetching viz.json file');
-      }
-    });
-  } else {
-    loadVizJSON(visModel, vizjson, options);
-  }
-
-  return visModel;
-};
-
-var loadVizJSON = function (visModel, vizjsonData, options) {
-  var vizjson = new VizJSON(vizjsonData);
-  applyOptionsToVizJSON(vizjson, options);
   visModel.load(vizjson);
+
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();
   }

@@ -22,7 +22,8 @@ describe('src/vis/model-updater', function () {
       layersCollection: {},
       dataviewsCollection: {},
       analysisCollection: {},
-      modelUpdater: {}
+      modelUpdater: {},
+      windshaftSettings: {}
     });
 
     spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {

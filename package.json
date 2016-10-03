@@ -1,15 +1,15 @@
 {
   "name": "cartodb-ui",
-  "version": "4.2.31",
-  "description": "CartoDB UI frontend",
+  "version": "4.2.35",
+  "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
     "url": "git://github.com/CartoDB/cartodb.git"
   },
   "author": {
-    "name": "CartoDB",
-    "url": "https://cartodb.com/",
-    "email": "wadus@cartodb.com"
+    "name": "CARTO",
+    "url": "https://carto.com/",
+    "email": "wadus@carto.com"
   },
   "contributors": [],
   "license": "BSD-3-Clause",
@@ -66,6 +66,7 @@
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
     "jasmine": "2.5.2",
+    "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",

@@ -1518,6 +1518,15 @@ describe User do
         end.to raise_error(/role "#{role}" does not exist/)
         db.disconnect
       end
+
+      it 'deletes temporary analysis tables' do
+        db = @org_user_2.in_database
+        db.run('CREATE TABLE analysis_123 (a int)')
+        db.run(%{INSERT INTO cdb_analysis_catalog (username, cache_tables, node_id, analysis_def)
+                 VALUES ('#{@org_user_2.username}', '{analysis_123}', 'a0', '{}')})
+        @org_user_2.destroy
+        db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
+      end
     end
   end
 

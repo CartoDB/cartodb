@@ -240,12 +240,8 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
-      query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      query_tables['cdb_querytables'].split(',').map { |table_name|
-        t = table_name.gsub!(/[\{\}]/, '')
-        (t.blank? ? nil : t)
-      }.compact.uniq
+      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTables(#{user.in_database.quote(query)}))")
+      query_tables.column_values(0).uniq
     end
 
     def query

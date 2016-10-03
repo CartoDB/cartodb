@@ -1525,6 +1525,8 @@ describe User do
         db.run(%{INSERT INTO cdb_analysis_catalog (username, cache_tables, node_id, analysis_def)
                  VALUES ('#{@org_user_2.username}', '{analysis_123}', 'a0', '{}')})
         @org_user_2.destroy
+
+        db = @org_user_owner.in_database
         db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
       end
     end

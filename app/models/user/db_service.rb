@@ -390,6 +390,7 @@ module CartoDB
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
+              drop_analysis_cache
               drop_all_functions_from_schema(@user.database_schema)
               database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
             end
@@ -812,6 +813,17 @@ module CartoDB
             join pg_roles on (pg_roles.oid=pg_auth_members.roleid) where pg_user.usename='#{role}'
           }).each do |rolname|
           conn.run("REVOKE \"#{rolname[:rolname]}\" FROM \"#{role}\" CASCADE")
+        end
+      end
+
+      def drop_analysis_cache
+        list_sql = "SELECT DISTINCT unnest(cache_tables) FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
+        delete_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(list_sql).map(:unnest).each do |cache_table_name|
+            database.run("DROP TABLE #{cache_table_name}")
+          end
+          database.run(delete_sql)
         end
       end
 

@@ -19,3 +19,6 @@
   @include flex(1);
   width: 0;
 }
+.Inline-editor-text.is-hidden {
+  opacity: 0.24;
+}

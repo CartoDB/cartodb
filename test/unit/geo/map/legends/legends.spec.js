@@ -129,22 +129,4 @@ describe('geo/map/legends/legends', function () {
     expect(this.legends.bubble.isVisible()).toBeFalsy();
     expect(this.legends.category.isVisible()).toBeTruthy();
   });
-
-  describe('binding to vis "reload" event', function () {
-    it('should update legends states to loading', function () {
-      this.legends.bubble.set('state', 'success');
-      this.legends.category.set('state', 'success');
-      this.legends.choropleth.set('state', 'success');
-
-      expect(this.legends.bubble.isLoading()).toBeFalsy();
-      expect(this.legends.category.isLoading()).toBeFalsy();
-      expect(this.legends.choropleth.isLoading()).toBeFalsy();
-
-      this.visModel.trigger('reload');
-
-      expect(this.legends.bubble.isLoading()).toBeTruthy();
-      expect(this.legends.category.isLoading()).toBeTruthy();
-      expect(this.legends.choropleth.isLoading()).toBeTruthy();
-    });
-  });
 });

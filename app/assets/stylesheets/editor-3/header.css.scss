@@ -59,7 +59,7 @@
   padding-right: 24px;
 
   &.is-larger {
-    @include flex(1 1 100%);
+    width: auto;
   }
 }
 .Editor-HeaderInfo-details {

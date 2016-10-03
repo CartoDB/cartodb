@@ -28,28 +28,23 @@ var createVis = function (el, vizjson, options) {
 
   var visModel = new VisModel();
 
-  new VisView({ // eslint-disable-line
-    el: el,
-    model: visModel
-  });
-
   if (typeof vizjson === 'string') {
     var url = vizjson;
     Loader.get(url, function (vizjson) {
       if (vizjson) {
-        loadVizJSON(visModel, vizjson, options);
+        loadVizJSON(el, visModel, vizjson, options);
       } else {
         throw new Error('error fetching viz.json file');
       }
     });
   } else {
-    loadVizJSON(visModel, vizjson, options);
+    loadVizJSON(el, visModel, vizjson, options);
   }
 
   return visModel;
 };
 
-var loadVizJSON = function (visModel, vizjsonData, options) {
+var loadVizJSON = function (el, visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
 
@@ -70,6 +65,11 @@ var loadVizJSON = function (visModel, vizjsonData, options) {
     showLegends: showLegends,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
+  });
+
+  new VisView({ // eslint-disable-line
+    el: el,
+    model: visModel
   });
 
   visModel.load(vizjson);

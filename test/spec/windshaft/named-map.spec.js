@@ -56,7 +56,7 @@ describe('windshaft/named-map', function () {
       dataviewsCollection: new Backbone.Collection(),
       layersCollection: this.layersCollection,
       analysisCollection: this.analysisCollection,
-      windshaftSettings: this.windshaftSettings
+      windshaftSettings: {}
     });
   });
 

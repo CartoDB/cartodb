@@ -34,7 +34,7 @@ class Carto::Map < ActiveRecord::Base
   validate :validate_embed_options
 
   after_initialize :ensure_embed_options
-
+  after_find :ensure_embed_options
   after_commit :force_notify_map_change
 
   def data_layers

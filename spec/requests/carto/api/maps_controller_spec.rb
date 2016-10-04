@@ -60,7 +60,7 @@ describe Carto::Api::MapsController do
       end
     end
 
-    it 'returns 401 for unathorized user' do
+    it 'returns 401 for unauthorized user' do
       put_json map_url(user_domain: @user2.subdomain,
                        api_key: 'wadus',
                        id: @map.id) do |response|
@@ -74,7 +74,7 @@ describe Carto::Api::MapsController do
       end
     end
 
-    it 'returns 404 for unexisting map' do
+    it 'returns 404 for inexistent map' do
       put_json map_url(user_domain: @user.subdomain,
                        api_key: @user.api_key,
                        id: random_uuid) do |response|
@@ -118,7 +118,7 @@ describe Carto::Api::MapsController do
       end
     end
 
-    it 'returns 401 for unathorized user' do
+    it 'returns 401 for unauthorized user' do
       get_json map_url(user_domain: @user2.subdomain,
                        api_key: 'wadus',
                        id: @map.id) do |response|
@@ -132,7 +132,7 @@ describe Carto::Api::MapsController do
       end
     end
 
-    it 'returns 404 for unexisting map' do
+    it 'returns 404 for inexistent map' do
       get_json map_url(user_domain: @user.subdomain,
                        api_key: @user.api_key,
                        id: random_uuid) do |response|

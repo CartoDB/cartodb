@@ -450,37 +450,6 @@ CartoDB::Application.routes.draw do
 
     # ImageProxy
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/image_proxy' => 'image_proxy#show'
-
-    # V3
-    scope '(/user/:user_domain)(/u/:user_domain)/api/v3' do
-      scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
-        resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-      end
-
-      scope '/viz/:id', constraints: { id: /[^\/]+/ } do
-        match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
-      end
-
-      resource :metrics, only: [:create]
-
-      scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
-        resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
-        resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
-        resource :state, only: [:update]
-
-        scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
-          resources :legends,
-                    only: [:index, :show, :create, :update, :destroy],
-                    constraints: { id: /[^\/]+/ }
-        end
-      end
-
-      resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
-        get 'download' => 'visualization_exports#download', as: :download
-      end
-
-      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
-    end
   end
 
   scope :module => 'api/json', :format => :json do
@@ -556,12 +525,8 @@ CartoDB::Application.routes.draw do
     # Organizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/org/'      => 'organizations#show',  as: :api_v1_organization_show
 
-    # V2
-    # --
-
     # WMS
     get '(/user/:user_domain)(/u/:user_domain)/api/v2/wms' => 'wms#proxy', as: :api_v2_wms_proxy
-
   end
 
   namespace :superadmin do
@@ -608,7 +573,7 @@ CartoDB::Application.routes.draw do
 
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
-  scope module: Carto::Api, path: '(/user/:user_domain)(/u/:user_domain)/api/', format: :json do
+  scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', format: :json do
     scope 'v3/' do
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
@@ -642,7 +607,7 @@ CartoDB::Application.routes.draw do
     scope 'v2/' do
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
-      # EUMAPI v2
+      # EUMAPI
       scope 'organization/:id_or_name/' do
         get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
         post   'users',             to: 'organization_users#create',  as: :api_v2_organization_users_create
@@ -655,7 +620,7 @@ CartoDB::Application.routes.draw do
     scope 'v1/' do
       resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
 
-      # Organization user management
+      # EUMAPI
       scope 'organization/:id_or_name/' do
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v1_organization_users_show

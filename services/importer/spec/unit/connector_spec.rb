@@ -111,7 +111,7 @@ describe Carto::Connector do
   it "Should list providers available for a user with default configuration" do
     default_config = { 'mysql' => { 'enabled' => true }, 'postgres' => { 'enabled' => false } }
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(@user).should eq(
+      Carto::Connector.providers(user: @user).should eq(
         "postgres"  => { name: "PostgreSQL", enabled: false, description: nil },
         "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
@@ -129,7 +129,7 @@ describe Carto::Connector do
       enabled: true
     )
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(@user).should eq(
+      Carto::Connector.providers(user: @user).should eq(
         "postgres"  => { name: "PostgreSQL", enabled: true, description: nil },
         "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },

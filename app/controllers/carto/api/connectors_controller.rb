@@ -11,7 +11,7 @@ module Carto
       before_filter :check_availability
 
       def index
-        render_jsonp(Carto::Connector.providers(current_user))
+        render_jsonp(Carto::Connector.providers(user: current_user))
       end
 
       def show

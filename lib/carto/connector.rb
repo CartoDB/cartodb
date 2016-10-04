@@ -121,15 +121,23 @@ module Carto
     #   'mysql' => { name: 'MySQL', description: '...', enabled: true },
     #   ...
     # }
-    def self.providers(user = nil)
+    #
+    # By default only `public` providers are returned; use `all: true` to return all of them.
+    # If a `user:` argument is provided, the  `enabled` key will indicate if the provider is
+    # enabled for the user; otherwise it indicates if it is enabled by default.
+    #
+    def self.providers(user: nil, all: false)
       providers_info = {}
       provider_ids.each do |id|
-        next unless provider_public?(id)
+        next unless all || provider_public?(id)
         # TODO: load description template for provider id
         description = nil
-        if user
-          enabled = Connector.limits(user: user, provider_name: id)[:enabled]
-        end
+        enabled = if user
+                    Connector.limits(user: user, provider_name: id)[:enabled]
+                  else
+                    provider = ConnectorProvider.find_by_name(id)
+                    ConnectorConfiguration.default(provider).enabled if provider
+                  end
         providers_info[id] = {
           name:        provider_name(id),
           description: description,

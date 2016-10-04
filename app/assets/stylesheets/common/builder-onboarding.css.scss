@@ -25,11 +25,10 @@ $cBackgroundColor: #2E3C43;
 
 .BuilderOnboarding-contentWrapper {
   @include flex(1);
-  @include opacity(0.88);
   @include display-flex();
   @include align-items(center);
   height: 100%;
-  background: $cBackgroundColor;
+  background: rgba($cBackgroundColor, 0.88);
   pointer-events: all;
   z-index: 5;
 }

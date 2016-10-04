@@ -1122,7 +1122,7 @@ class Table
   def pg_indexes
     owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname as column, i.relname as name
+        a.attname as column, i.relname as name, ix.indisvalid as valid
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a, pg_namespace n
       WHERE
@@ -1142,8 +1142,9 @@ class Table
     owner.in_database.execute(%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")})
   end
 
-  def drop_index(column, prefix = '')
-    owner.in_database.execute(%{DROP INDEX "#{index_name(column, prefix)}"})
+  def drop_index(column, prefix = '', concurrent: false)
+    concurrently = concurrent ? 'CONCURRENTLY' : ''
+    owner.in_database.execute(%{DROP INDEX #{concurrently} "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy

@@ -82,12 +82,22 @@ module Carto
         {}
       end
 
+      # Return table options to connect to a query (used for checking the connection)
+      def options_for_query(_query)
+        must_be_defined_in_derived_class
+      end
+
       def table_name
         @params[:table]
       end
 
-      def foreign_table_name(prefix)
-        fdw_adjusted_table_name("#{prefix}#{table_name}")
+      def foreign_table_name_for(server_name, name = nil)
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+      end
+
+      def unique_prefix_for(server_name)
+        # server_name should already be unique
+        "#{server_name}_"
       end
 
       def remote_schema_name
@@ -98,34 +108,49 @@ module Carto
 
       def fdw_create_server(server_name)
         sql = fdw_create_server_sql 'odbc_fdw', server_name, server_options
-        @connector_context.execute_as_superuser sql
+        execute_as_superuser sql
       end
 
-      def fdw_create_usermap(server_name, username)
-        sql = fdw_create_usermap_sql server_name, username, user_options
-        @connector_context.execute_as_superuser sql
+      def fdw_create_usermaps(server_name)
+        execute_as_superuser fdw_create_usermap_sql(server_name, @connector_context.database_username, user_options)
+        execute_as_superuser fdw_create_usermap_sql(server_name, 'postgres', user_options)
       end
 
-      def fdw_create_foreign_table(server_name, foreign_table_schema, foreign_prefix, username)
+      def fdw_create_foreign_table(server_name)
         cmds = []
-        foreign_table_name = self.foreign_table_name(foreign_prefix)
+        foreign_table_name = foreign_table_name_for(server_name)
         if @columns.present?
           cmds << fdw_create_foreign_table_sql(
             server_name, foreign_table_schema, foreign_table_name, @columns, table_options
           )
         else
-          options = table_options.merge(prefix: foreign_prefix)
+          options = table_options.merge(prefix: unique_prefix_for(server_name))
           cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
-        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, username)
-        @connector_context.execute_as_superuser cmds.join("\n")
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
+        execute_as_superuser cmds.join("\n")
         foreign_table_name
       end
 
-      def fdw_list_tables(server_name, _foreign_table_schema, _foreign_prefix, limit)
-        @connector_context.execute %{
+      def fdw_list_tables(server_name, limit)
+        execute %{
           SELECT * FROM ODBCTablesList('#{server_name}',#{limit.to_i});
         }
+      end
+
+      def fdw_check_connection(server_name)
+        cmds = []
+        foreign_table_name = foreign_table_name_for(server_name, 'check_connection')
+        columns = ['ok int']
+        cmds << fdw_create_foreign_table_sql(
+          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")
+        )
+        cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
+        execute_as_superuser cmds.join("\n")
+        result = execute %{
+          SELECT * FROM #{qualified_foreign_table_name foreign_table_name};
+        }
+        result && result.first[:ok] == 1
       end
 
       def features_information
@@ -217,7 +242,12 @@ module Carto
         params.merge(non_connection_parameters).parameters
       end
 
+      def check_table_options(query)
+        table_options.merge(
+          sql_query: query,
+          table: 'check_table' # Not used, but required
+        )
+      end
     end
-
   end
 end

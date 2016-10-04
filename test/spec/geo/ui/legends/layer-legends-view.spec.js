@@ -8,6 +8,11 @@ describe('geo/ui/legends/layer-legends-view', function () {
     var vis = new Backbone.Model();
     vis.reload = jasmine.createSpy('reload');
 
+    this.renderModel = new Backbone.Model({
+      legends: true,
+      layerSelector: true
+    });
+
     this.cartoDBLayer = new CartoDBLayer({
       layer_name: 'CartoDB Layer #1',
       legends: [
@@ -17,7 +22,8 @@ describe('geo/ui/legends/layer-legends-view', function () {
     }, { vis: vis });
 
     this.layerLegendsView = new LayerLegendsView({
-      model: this.cartoDBLayer
+      model: this.cartoDBLayer,
+      renderModel: this.renderModel
     });
 
     this.layerLegendsView.render();

@@ -499,4 +499,11 @@ $index-items: 7 6 5 4 3 2 1;
   padding: 12px 24px 0;
 }
 
+.Legends,
+.LayerSelector {
+  &.is-hidden {
+    display: none;
+  }
+}
+
 

@@ -35,8 +35,15 @@ var createVis = function (el, vizjson, options) {
   var showLegends = true;
   if (_.isBoolean(options.legends)) {
     showLegends = options.legends;
-  } else if (_.isBoolean(vizjson.legends)) {
-    showLegends = vizjson.legends;
+  } else if (_.isBoolean(vizjson.embed_options.legends)) {
+    showLegends = vizjson.embed_options.legends;
+  }
+
+  var showLayerSelector = true;
+  if (_.isBoolean(options.layer_selector)) {
+    showLayerSelector = options.layer_selector;
+  } else if (_.isBoolean(vizjson.embed_options.layer_selector)) {
+    showLayerSelector = vizjson.embed_options.layer_selector;
   }
 
   var visModel = new VisModel({
@@ -45,6 +52,7 @@ var createVis = function (el, vizjson, options) {
     apiKey: options.apiKey,
     authToken: options.authToken,
     showLegends: showLegends,
+    showLayerSelector: showLayerSelector,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });

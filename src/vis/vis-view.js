@@ -20,6 +20,7 @@ var Vis = View.extend({
     this.overlays = [];
 
     this.model.on('change:showLegends', this._onShowLegendsChanged, this);
+    this.model.on('change:showLayerSelector', this._onShowLayerSelectorChanged, this);
     _.bindAll(this, '_onResize');
   },
 
@@ -83,19 +84,31 @@ var Vis = View.extend({
 
   _renderLegends: function () {
     this._legendsView = new LegendsView({
-      layersCollection: this.model.map.layers
+      layersCollection: this.model.map.layers,
+      showLegends: this.model.get('showLegends'),
+      showLayerSelector: this.model.get('showLayerSelector')
     });
-    if (!this.model.get('showLegends')) {
-      this._legendsView.hide();
-    }
+
+    // if (!this.model.get('showLegends')) {
+    //   this._legendsView.hide();
+    // }
+
     this.$el.append(this._legendsView.render().$el);
   },
 
   _onShowLegendsChanged: function () {
     if (this.model.get('showLegends') === true) {
-      this._legendsView.show();
+      this._legendsView.showLegends();
     } else {
-      this._legendsView.hide();
+      this._legendsView.hideLegends();
+    }
+  },
+
+  _onShowLayerSelectorChanged: function () {
+    if (this.model.get('showLayerSelector') === true) {
+      this._legendsView.showLayerSelector();
+    } else {
+      this._legendsView.hideLayerSelector();
     }
   },
 

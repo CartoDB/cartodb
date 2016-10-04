@@ -220,6 +220,7 @@ describe Carto::VisualizationsExportService2 do
     visualization.attributions.should eq visualization_export[:attributions]
     visualization.bbox.should eq visualization_export[:bbox]
     visualization.display_name.should eq visualization_export[:display_name]
+    visualization.version.should eq visualization_export[:version]
 
     verify_state_vs_export(visualization.state, visualization_export[:state])
 
@@ -1006,6 +1007,7 @@ describe Carto::VisualizationsExportService2 do
       imported_visualization.attributions.should eq original_visualization.attributions
       imported_visualization.bbox.should eq original_visualization.bbox
       imported_visualization.display_name.should eq original_visualization.display_name
+      imported_visualization.version.should eq original_visualization.version
 
       verify_maps_match(imported_visualization.map, original_visualization.map)
 

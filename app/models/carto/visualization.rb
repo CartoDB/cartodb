@@ -24,8 +24,6 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
 
-  DEFAULT_VERSION = 2
-
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 

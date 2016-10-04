@@ -139,6 +139,14 @@ describe Map do
           @map.errors[:embed_options].should_not be_empty
           @map.errors[:embed_options][0].should include('spam')
         end
+
+        it 'rejects incomplete embed_options' do
+          @map.embed_options.delete(:dashboard_menu)
+
+          @map.valid?.should be_false
+          @map.errors[:embed_options].should_not be_empty
+          @map.errors[:embed_options][0].should include('dashboard_menu')
+        end
       end
     end
 

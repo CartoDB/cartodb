@@ -85,7 +85,9 @@ class Table
   end
 
   def save
-    @user_table.save
+    ActiveRecord::Base.transaction do
+      @user_table.save
+    end
     self
   end
 

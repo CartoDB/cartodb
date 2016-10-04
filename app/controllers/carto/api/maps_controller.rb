@@ -40,14 +40,14 @@ module Carto
       end
 
       def update_params
-        @update_params ||= params.slice(:bounding_box_ne,
-                                        :bounding_box_sw,
-                                        :center,
-                                        :embed_options,
-                                        :provider,
-                                        :view_bounds_ne,
-                                        :view_bounds_sw,
-                                        :zoom)
+        params.slice(:bounding_box_ne,
+                     :bounding_box_sw,
+                     :center,
+                     :embed_options,
+                     :provider,
+                     :view_bounds_ne,
+                     :view_bounds_sw,
+                     :zoom)
       end
 
       def map_presentation

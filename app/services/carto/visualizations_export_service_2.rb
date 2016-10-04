@@ -48,7 +48,7 @@ module Carto
       visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
         description: exported_visualization[:description],
-        version: exported_visualization[:version],
+        version: exported_visualization[:version] || Carto::Visualization::DEFAULT_VERSION,
         type: exported_visualization[:type],
         tags: exported_visualization[:tags],
         privacy: exported_visualization[:privacy],

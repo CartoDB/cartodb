@@ -48,6 +48,8 @@ module CartoDB
 
       DEFAULT_OPTIONS_VALUE = '{}'
 
+      DEFAULT_VERSION = 2
+
       # Upon adding new attributes modify also:
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
       # spec/support/helpers.rb -> random_attributes_for_vis_member
@@ -78,7 +80,7 @@ module CartoDB
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
       attribute :auth_token,          String, default: nil
-      attribute :version,             Integer, default: 2
+      attribute :version,             Integer, default: DEFAULT_VERSION
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil

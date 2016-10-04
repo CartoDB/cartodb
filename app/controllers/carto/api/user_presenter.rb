@@ -87,6 +87,7 @@ module Carto
           table_count: @user.table_count,
           viewer: @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
+          owned_visualization_count: @user.owned_visualizations_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,

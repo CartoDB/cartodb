@@ -60,6 +60,13 @@ describe Carto::Api::MapsController do
       end
     end
 
+    it 'invalidates VizJSON upon update' do
+      Carto::Map.any_instance.expects(:force_notify_map_change).once
+      put_json create_show_map_url, payload do |response|
+        response.status.should eq 200
+      end
+    end
+
     it 'returns 401 for unauthorized user' do
       put_json map_url(user_domain: @user2.subdomain,
                        api_key: 'wadus',
@@ -95,6 +102,13 @@ describe Carto::Api::MapsController do
       # This avoids connection leaking.
       ::User[@user.id].destroy
       ::User[@user2.id].destroy
+    end
+
+    it 'does not invalidate VizJSON upon show' do
+      Carto::Map.any_instance.expects(:force_notify_map_change).never
+      get_json create_show_map_url, {} do |response|
+        response.status.should eq 200
+      end
     end
 
     it 'returns an existing map' do

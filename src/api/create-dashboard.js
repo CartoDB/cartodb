@@ -104,7 +104,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       vis.centerMapToOrigin();
     }
 
-    vis.instantiateMap({
+    vis.init({
       success: function () {
         callback && callback(null, {
           dashboardView: dashboardView,

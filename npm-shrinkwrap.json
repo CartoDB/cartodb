@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.2.35",
+  "version": "4.2.36",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -364,9 +364,9 @@
                               "resolved": "https://registry.npmjs.org/async/-/async-2.0.1.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.16.2",
+                                  "version": "4.16.3",
                                   "from": "lodash@>=4.8.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.2.tgz"
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.3.tgz"
                                 }
                               }
                             }
@@ -623,9 +623,9 @@
                               }
                             },
                             "is-my-json-valid": {
-                              "version": "2.14.0",
+                              "version": "2.15.0",
                               "from": "is-my-json-valid@>=2.12.4 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.14.0.tgz",
+                              "resolved": "https://registry.npmjs.org/is-my-json-valid/-/is-my-json-valid-2.15.0.tgz",
                               "dependencies": {
                                 "generate-function": {
                                   "version": "2.0.0",
@@ -645,9 +645,9 @@
                                   }
                                 },
                                 "jsonpointer": {
-                                  "version": "2.0.0",
-                                  "from": "jsonpointer@2.0.0",
-                                  "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-2.0.0.tgz"
+                                  "version": "4.0.0",
+                                  "from": "jsonpointer@>=4.0.0 <5.0.0",
+                                  "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.0.tgz"
                                 },
                                 "xtend": {
                                   "version": "4.0.1",
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#4ad0e8d0e8bb79b22782d598e9aa5f41af428e7e",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1447,7 +1447,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#4ad0e8d0e8bb79b22782d598e9aa5f41af428e7e",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

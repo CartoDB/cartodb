@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.5'
+      version: '2.0.6'
     }
   end
 
@@ -18,6 +18,7 @@ describe Carto::VisualizationsExportService2 do
     {
       name: 'the name',
       description: 'the description',
+      version: 3,
       type: 'derived', # derived / remote / table / slide
       tags: ['tag 1', 'tag 2'],
       privacy: 'private', # private / link / public
@@ -569,6 +570,16 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.5 (without version)' do
+          export_2_0_5 = export
+          export_2_0_5[:visualization].delete(:version)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_5.to_json)
+
+          visualization.version.should eq 2
+        end
+
         it '2.0.4 (without Widget.order)' do
           export_2_0_4 = export
           export_2_0_4[:visualization][:layers].each do |layer|

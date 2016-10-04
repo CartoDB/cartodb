@@ -12,6 +12,7 @@
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   overflow: hidden;
   z-index: 4;
+  background: $cBlue;
 }
 .Editor-contextSwitcher.in-table {
   bottom: 39px;
@@ -28,18 +29,20 @@
   @include justify-content(center);
   width: 32px;
   height: 32px;
-  background: $cWhite;
   text-align: center;
   cursor: pointer;
 }
-.Editor-contextSwitcherButton.is-selected {
-  background: $cMainBg;
+.Editor-contextSwitcherItem {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  &:last-child {
+    border-right: 0;
+  }
 }
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
-  fill: $cWhite;
+  fill: rgba(0, 0, 0, 0.16);
 }
 .Editor-contextSwitcherMedia {
-  fill: $cBlue;
+  fill: $cWhite;
 }
 @media (max-width: 1300px) {
   .Editor-contextSwitcher.is-moved {

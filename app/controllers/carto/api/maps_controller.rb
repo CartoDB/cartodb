@@ -50,8 +50,8 @@ module Carto
                                         :zoom)
       end
 
-      def map_presentation(map: @map)
-        Carto::Api::MapPresenter.new(map).to_hash
+      def map_presentation
+        Carto::Api::MapPresenter.new(@map).to_hash
       end
     end
   end

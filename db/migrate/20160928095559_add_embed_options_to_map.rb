@@ -3,9 +3,7 @@ Sequel.migration do
     alter_table :maps do
       add_column :embed_options,
                  :string,
-                 type: 'json',
-                 null: false,
-                 default: '{}'
+                 type: 'json'
     end
   end
 

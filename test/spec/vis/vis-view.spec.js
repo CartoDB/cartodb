@@ -198,26 +198,11 @@ describe('vis/vis-view', function () {
       this.visModel.load(new VizJSON(this.mapConfig));
     });
 
-    it('should show legends if showLegends is true', function () {
-      this.visModel.set('showLegends', true);
-
-      this.visView.render();
-
-      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('');
-    });
-
-    it('should hide legends if showLegends is false', function () {
-      this.visModel.set('showLegends', false);
-
-      this.visView.render();
-
-      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('none');
-    });
-
-    it('should show/hide legends when showLegends changes', function () {
+    it('should hide complete legends view when showLegends and showLayerSelector are false', function () {
       this.visView.render();
 
       this.visModel.set('showLegends', false);
+      this.visModel.set('showLayerSelector', false);
 
       expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('none');
 

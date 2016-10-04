@@ -18,7 +18,9 @@ describe('geo/ui/legends/legends-view', function () {
     this.layersCollection.reset([ this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
 
     this.legendsView = new LegendsView({
-      layersCollection: this.layersCollection
+      layersCollection: this.layersCollection,
+      showLegends: true,
+      showLayerSelector: true
     });
 
     this.legendsView.render();
@@ -47,5 +49,22 @@ describe('geo/ui/legends/legends-view', function () {
 
     expect(this.legendsView.$('.CDB-LayerLegends').length).toEqual(3);
     expect(getLayerLegendTitles(this.legendsView)).toEqual(['Torque Layer #3', 'CartoDB Layer #2', 'CartoDB Layer #1']);
+  });
+
+  it('should show legends if showLegends is true', function () {
+    this.legendsView.renderModel.set('legends', true);
+    expect(this.legendsView.$('.Legends').css('display')).toEqual('');
+  });
+
+  it('should hide legends if showLegends is false', function () {
+    this.legendsView.renderModel.set('legends', false);
+    expect(this.legendsView.$('.Legends').css('display')).toEqual('none');
+  });
+
+  it('should show/hide legends when showLegends changes', function () {
+    this.legendsView.renderModel.set('legends', false);
+    expect(this.legendsView.$('.Legends').css('display')).toEqual('none');
+    this.legendsView.renderModel.set('legends', true);
+    expect(this.legendsView.$('.Legends').css('display')).toEqual('block');
   });
 });

@@ -89,10 +89,6 @@ var Vis = View.extend({
       showLayerSelector: this.model.get('showLayerSelector')
     });
 
-    // if (!this.model.get('showLegends')) {
-    //   this._legendsView.hide();
-    // }
-
     this.$el.append(this._legendsView.render().$el);
   },
 

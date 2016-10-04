@@ -5,14 +5,14 @@ $size: 20px;
 
 .CDB-Attribution {
   @include transition(background, 100ms);
-  position: absolute;
-  left: 130px;
-  bottom: 16px;
   border-radius: 3px;
   box-sizing: border-box;
   font-family: 'Open Sans';
   line-height: $size;
   z-index: 10;
+  order: 2;
+  margin-right: 8px;
+  position: relative;
 }
 .CDB-Attribution.is-active .CDB-Attribution-text {
   pointer-events: initial;
@@ -26,7 +26,7 @@ $size: 20px;
   bottom: 20px;
 }
 .CDB-Attribution-button {
-  color: #666;
+  color: #636D72;
   font-size: 12px;
   line-height: 32px;
   z-index: 1;

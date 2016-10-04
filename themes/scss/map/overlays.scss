@@ -9,6 +9,7 @@ $buttonColor: #636D72;
   bottom: 16px;
   display: flex;
   align-items: center;
+
 }
 
 // zoom overlay
@@ -23,10 +24,10 @@ $buttonColor: #636D72;
   z-index: 20000;
 }
 .CDB-Zoom {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
+  order: 1;
+  margin-right: 8px;
 }
+
 .CDB-Zoom-action {
   display: inline-block;
   vertical-align: middle;
@@ -103,14 +104,15 @@ $buttonColor: #636D72;
 
 // loader search
 .CDB-Search {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
   height: 32px; 
-
-  &.has-zoom {
-    left: 84px;
-  }
+  order: 2;
+  margin-right: 8px;
+}
+.CDB-Search .CDB-Shape-magnify:before {
+  border-color: #636D72;
+}
+.CDB-Search .CDB-Shape-magnify:after {
+  background: #636D72;
 }
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);
@@ -121,6 +123,7 @@ $buttonColor: #636D72;
     width: 152px;
     .CDB-Search-text {
       opacity: 1;
+      display: block;
     }
   }
 }
@@ -151,6 +154,7 @@ $buttonColor: #636D72;
   font: 12px/16px 'Open Sans';
   opacity: 0;
   vertical-align: middle;
+  display: none;
 
   &:focus {
     outline: none;
@@ -159,55 +163,33 @@ $buttonColor: #636D72;
 
 //FullScreen overlay
 .CDB-Fullscreen {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 63px;
-  height: 48px;
   cursor: pointer;
-  z-index: 10;
+  order: 4;
+  width: 32px;
+  height: 32px;
+  .CDB-Shape-Arrow::after,
+  .CDB-Shape-Arrow::before {
+    background: #636D72;
+  }
 
-  &::before {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-top: 48px solid #FFF;
-    border-left: 48px solid transparent;
-    content: '';
-  }
-  &::after {
-    display: block;
-    position: absolute;
-    top: -22px;
-    left: 31px;
-    width: 10px;
-    height: 100px;
-    transform: rotate(-45deg);
-    background-image: linear-gradient(-90deg, #000 0%, rgba(0, 0, 0, 0) 100%);
-    content: '';
-    opacity: 0.2;
-  }
   .CDB-Shape-Arrow.is-down {
-    top: 5px;
-    left: 45px;
+    top: 8px;
+    left: 12px;
   }
   .CDB-Shape-Arrow.is-up {
-    top: 6px;
-    left: 52px;
+    top: 8px;
+    left: 20px;
   }
   &:hover {
     .CDB-Shape-Arrow.is-up {
       @include transition(all, 100ms);
-      top: 3px;
-      left: 55px;
+      top: 4px;
+      left: 22px;
     }
     .CDB-Shape-Arrow.is-down {
       @include transition(all, 100ms);
-      top: 7px;
-      left: 43px;
+      top: 11px;
+      left: 9px;
     }
   }
 }

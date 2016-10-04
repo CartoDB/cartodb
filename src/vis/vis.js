@@ -254,11 +254,27 @@ var VisModel = Backbone.Model.extend({
     }
   },
 
+  init: function (options) {
+    options = options || {};
+    var filters = this._getFilters();
+    var self = this;
+
+    if (_.isEmpty(filters)) {
+      this.instantiateMap(options, false);
+    } else {
+      // request without filters
+      this._windshaftMap.createInstance({
+        success: self.instantiateMap.bind(self, options, true),
+        error: options.error
+      });
+    }
+  },
+
   /**
    * Force a map instantiation.
    * Only expected to be called once if {skipMapInstantiation} flag is set to true when vis is created.
    */
-  instantiateMap: function (options) {
+  instantiateMap: function (options, includeFilters) {
     options = options || {};
     if (!this._instantiateMapWasCalled) {
       this._instantiateMapWasCalled = true;
@@ -267,16 +283,16 @@ var VisModel = Backbone.Model.extend({
         this._initBindsAfterFirstMapInstantiation();
         successCallback && successCallback();
       }.bind(this);
-      this.reload(options);
+      this.reload(options, includeFilters);
     }
   },
 
-  reload: function (options) {
+  reload: function (options, includeFilters) {
     options = options || {};
     options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._windshaftMap.createInstance(options);
+      this._windshaftMap.createInstance(options, includeFilters || true); // this reload method is call from other places
     }
   },
 
@@ -365,6 +381,17 @@ var VisModel = Backbone.Model.extend({
       })
       .flatten()
       .value();
+  },
+
+  _getFilters: function () {
+    return this._dataviewsCollection.reduce(function (filters, dataview) {
+      var filter = dataview.filter;
+      if (filter && !filter.isEmpty()) {
+        filters['dataviews'] = filters['dataviews'] || {};
+        _.extend(filters['dataviews'], filter.toJSON());
+      }
+      return filters;
+    }, {});
   }
 });
 

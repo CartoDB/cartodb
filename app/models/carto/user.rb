@@ -58,7 +58,7 @@ class Carto::User < ActiveRecord::Base
   delegate [
       :database_username, :database_password, :in_database,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
-      :visualization_count, :twitter_imports_count
+      :visualization_count, :owned_visualization_count, :twitter_imports_count
     ] => :service
 
   attr_reader :password

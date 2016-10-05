@@ -91,6 +91,14 @@ module Carto
       end
 
       def vizjson2
+        referer_host = begin
+                        URI.parse(request.referer).host
+                      rescue
+                        nil
+                      end
+        unless referer_host.ends_with?('carto.com') || referer_host.ends_with('cartodb.com')
+          @visualization.mark_as_vizjson2
+        end
         render_vizjson(generate_vizjson2)
       end
 

@@ -80,12 +80,12 @@
 }
 .Mosaic-remove {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  transition: opacity 0.1s;
+  right: 4px;
+  bottom: 4px;
+  width: 0px;
+  height: 12px;
+  padding: 0px 6px 3px 4px;
+  @include transition(opacity, 100ms);
   border-top-left-radius: 2px;
   border-bottom-right-radius: 2px;
   background: rgba(#000, 0.5);
@@ -93,14 +93,4 @@
   opacity: 0;
   z-index: 2;
   pointer-events: auto;
-
-  &::before {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    border-top: 3px solid #FFF;
-    border-right: 3px solid transparent;
-    border-left: 3px solid transparent;
-    content: '';
-  }
 }

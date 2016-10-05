@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'helpers/unique_names_helper'
 
 describe Layer do
 
@@ -302,6 +303,49 @@ describe Layer do
 
       layer.kind = 'torque'
       expect { layer.save }.to raise_error(Sequel::ValidationFailed, "maps Viewer users can't edit layers")
+    end
+  end
+
+  describe '#affected_table_names' do
+    include UniqueNamesHelper
+
+    before(:all) do
+      helper = TestUserFactory.new
+      @organization = FactoryGirl.create(:organization, quota_in_bytes: 1000000000000)
+      @owner = helper.create_owner(@organization)
+      @hyphen_user = helper.create_test_user(unique_name('user-'), @organization)
+      @owner_table = FactoryGirl.create(:user_table, user: @owner, name: unique_name('table'))
+      @subuser_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table'))
+      @hyphen_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table-'))
+    end
+
+    before(:each) do
+      @hyphen_user_layer = Layer.new
+      @hyphen_user_layer.stubs(:user).returns(@hyphen_user)
+
+      @owner_layer = Layer.new
+      @owner_layer.stubs(:user).returns(@owner)
+    end
+
+    it 'returns normal tables' do
+      @owner_layer.send(:affected_table_names, "SELECT * FROM #{@owner_table.name}")
+                  .should eq ["#{@owner.username}.#{@owner_table.name}"]
+    end
+
+    it 'returns tables from users with hyphens' do
+      @hyphen_user_layer.send(:affected_table_names, "SELECT * FROM #{@subuser_table.name}")
+                        .should eq ["\"#{@hyphen_user.username}\".#{@subuser_table.name}"]
+    end
+
+    it 'returns table with hyphens in the name' do
+      @hyphen_user_layer.send(:affected_table_names, "SELECT * FROM \"#{@hyphen_table.name}\"")
+                        .should eq ["\"#{@hyphen_user.username}\".\"#{@hyphen_table.name}\""]
+    end
+
+    it 'returns multiple tables' do
+      @hyphen_user_layer.send(:affected_table_names, "SELECT * FROM \"#{@hyphen_table.name}\", #{@subuser_table.name}")
+                        .should =~ ["\"#{@hyphen_user.username}\".\"#{@hyphen_table.name}\"",
+                                    "\"#{@hyphen_user.username}\".#{@subuser_table.name}"]
     end
   end
 end

@@ -22,7 +22,7 @@ describe CartoDB::Importer2::ConnectorRunner do
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
     @providers = %w(mysql postgres sqlserver hive)
     @fake_log.clear
-    Carto::Connector.providers.keys.each do |provider_name|
+    Carto::Connector.providers(all: true).keys.each do |provider_name|
       Carto::ConnectorProvider.create! name: provider_name
     end
   end
@@ -35,7 +35,7 @@ describe CartoDB::Importer2::ConnectorRunner do
   after(:all) do
     @user.destroy
     @feature_flag.destroy
-    Carto::Connector.providers.keys.each do |provider_name|
+    Carto::Connector.providers(all: true).keys.each do |provider_name|
       Carto::ConnectorProvider.find_by_name(provider_name).destroy
     end
   end

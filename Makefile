@@ -63,7 +63,6 @@ WORKING_SPECS_1 = \
 	spec/models/common_data_spec.rb \
 	spec/lib/api_calls_spec.rb \
 	spec/lib/errors_spec.rb \
-	spec/lib/sql_parser_spec.rb \
 	spec/lib/url_signer_spec.rb \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
@@ -155,6 +154,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/connectors/importer_overviews_spec.rb \
+	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \

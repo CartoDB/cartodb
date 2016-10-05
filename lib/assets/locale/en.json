@@ -275,6 +275,7 @@
           "buckets": "bucket |||| buckets"
         },
         "input-categories": {
+          "null": "Null",
           "others": "Others"
         }
       }
@@ -350,6 +351,11 @@
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
         "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+      },
+      "connector-warning-details": {
+        "continue-btn": "Continue",
+        "too-many-rows": "You may have reached the maximum limit.",
+        "unable-to-import-all-rows": "For a database connector import, the number of rows allowed is %{maxRowsPerConnectorImport}. Some of your data may not be imported."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -1319,6 +1325,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",

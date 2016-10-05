@@ -1,1 +1,3 @@
-<span class="Mosaic-remove js-Mosaic-remove"></span>
+<div class="CDB-Shape-threePointsItem"></div>
+<div class="CDB-Shape-threePointsItem"></div>
+<div class="CDB-Shape-threePointsItem"></div>

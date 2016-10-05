@@ -79,13 +79,13 @@
   line-height: 40px;
 }
 .Mosaic-remove {
+  @include transition(opacity, 100ms);
   position: absolute;
   right: 4px;
   bottom: 4px;
-  width: 0px;
+  width: 0;
   height: 12px;
-  padding: 0px 6px 3px 4px;
-  @include transition(opacity, 100ms);
+  padding: 0 6px 3px 4px;
   border-top-left-radius: 2px;
   border-bottom-right-radius: 2px;
   background: rgba(#000, 0.5);
@@ -94,3 +94,4 @@
   z-index: 2;
   pointer-events: auto;
 }
+

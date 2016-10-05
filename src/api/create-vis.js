@@ -95,7 +95,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
 };
 
 var applyOptionsToVizJSON = function (vizjson, options) {
-  vizjson.scrollwheel = options.scrollwheel || vizjson.scrollwheel;
+  vizjson.embed_options.scrollwheel = options.scrollwheel || vizjson.embed_options.scrollwheel;
 
   if (!options.tiles_loader || !options.loaderControl) {
     vizjson.removeLoaderOverlay();

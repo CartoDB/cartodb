@@ -11,7 +11,8 @@ module Carto
 
     OLD_TYPES_NEW_TYPES = {
       category: 'custom',
-      choropleth: 'choropleth'
+      choropleth: 'choropleth',
+      bubble: 'bubble'
     }.with_indifferent_access.freeze
 
     def new_legend
@@ -48,7 +49,9 @@ module Carto
       when 'category'
         build_custom_definition_from_category
       when 'choropleth'
-        build_custom_definition_from_choropleth
+        build_choropleth_definition_from_choropleth
+      when 'bubble'
+        build_bubble_definition_from_bubble
       end
     end
 
@@ -56,8 +59,8 @@ module Carto
       custom_definition = Hash.new
 
       categories = items.each_with_index.map do |item, index|
-        title = item[:name] || "Category #{index + 1}"
-        color = item[:value]
+        title = item['name'] || "Category #{index + 1}"
+        color = item['value']
 
         category_definition = { title: title }
         category_definition[:color] = color if color
@@ -71,6 +74,10 @@ module Carto
 
     def build_choropleth_definition_from_choropleth
       { prefix: '', suffix: '' }
+    end
+
+    def build_bubble_definition_from_bubble
+      { color: items.last['value'] }
     end
   end
 end

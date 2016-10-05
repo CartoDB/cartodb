@@ -7,6 +7,26 @@ var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 
+var Point = Model.extend({
+  defaults: {
+    type: 'point'
+  },
+
+  initialize: function () {
+    this.on('change:geojson', function () {
+      this.trigger('ready', this);
+    }, this);
+  },
+
+  update: function (latlng) {
+    this.set('latlng', latlng);
+  },
+
+  toGeoJSON: function () {
+    return this.get('geojson');
+  }
+});
+
 var Map = Model.extend({
   defaults: {
     attribution: [config.get('cartodb_attributions')],
@@ -21,6 +41,54 @@ var Map = Model.extend({
     // enforce client-side rendering using GeoJSON vector tiles
     vector: false
   },
+
+  drawPoint: function () {
+    var point = new Point();
+    this._newGeometry = point;
+    this.trigger('enterDrawingMode');
+    return point;
+  },
+
+  stopDrawing: function () {
+    delete this._newGeometry;
+    this.trigger('exitDrawingMode');
+  },
+
+  isDrawing: function () {
+    return !!this._newGeometry;
+  },
+
+  getNewGeometry: function () {
+    return this._newGeometry;
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   initialize: function (attrs, options) {
     options = options || {};

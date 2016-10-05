@@ -2,6 +2,43 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 
+var MyLeafletPointView = View.extend({
+  initialize: function (options) {
+    if (!options.model) throw new Error('model is required');
+    if (!options.mapView) throw new Error('mapView is required');
+
+    this.model = this.model || options.model;
+    this.mapView = options.mapView;
+
+    this.model.on('change:latlng', this._onLatlngChanged, this);
+  
+    this._marker = this._createMarker();
+    this._marker.on('move', this._updateModelsGeoJSON.bind(this));
+  },
+
+  _createMarker: function () {
+    var icon = L.icon({
+      iconUrl: '/themes/img/default-marker-icon.png',
+      iconAnchor: [11, 11]
+    });
+    return L.marker(this.model.get('latlng'), { icon: icon });
+  },
+
+  render: function () {
+    this._marker.addTo(this.mapView._getNativeMap());
+  },
+
+  _onLatlngChanged: function () {
+    this._marker.setLatLng(this.model.get('latlng'));
+  },
+
+  _updateModelsGeoJSON: function () {
+    this.model.set({
+      geojson: this._marker.toGeoJSON()
+    });
+  }
+});
+
 var MapView = View.extend({
   initialize: function () {
     if (this.options.map === undefined) {
@@ -37,7 +74,53 @@ var MapView = View.extend({
     this.add_related_model(this.map.layers);
 
     this.bind('clean', this._removeLayers, this);
+
+
+
+    this.map.on('enterDrawingMode', this._enterDrawingMode, this);
+    this.map.on('exitDrawingMode', this._exitDrawingMode, this);
   },
+
+  _enterDrawingMode: function () {
+    this.on('click', this._onMapClicked, this);
+  },
+
+  _exitDrawingMode: function () {
+    this.off('click', this._onMapClicked, this);
+  },
+
+  _onMapClicked: function (event, latlng) {
+    var geometry = this.map.getNewGeometry();
+    geometry.update(latlng);
+    if (!this._isGeometryDrawn(geometry)) {
+      this._drawGeometry(geometry);
+    }
+  },
+
+  _isGeometryDrawn: function (geometry) {
+    return !!this._newGeometryView;
+  },
+
+  _drawGeometry: function (geometry) {
+    if (geometry.get('type') === 'point') {
+      var geometryView = new MyLeafletPointView({
+        model: geometry,
+        mapView: this
+      });
+      this._newGeometryView = geometryView;
+      geometryView.render();
+    }
+  },
+
+
+
+
+
+
+
+
+
+
 
   render: function () {
     this._addLayers();

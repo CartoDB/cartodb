@@ -20,6 +20,7 @@ module CartoDB
         public_visualization_count: self.public_visualization_count,
         all_visualization_count: self.all_visualization_count,
         visualization_count: self.visualization_count,
+        owned_visualization_count: self.owned_visualizations_count,
         failed_import_count: self.failed_import_count,
         success_import_count: self.success_import_count,
         import_count: self.import_count,

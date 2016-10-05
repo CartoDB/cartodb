@@ -1,5 +1,7 @@
+var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
-var CategoryAutoStyler = AutoStyler.extend({
+
+module.exports = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('initialStyle');
     if (!style) return;
@@ -10,15 +12,29 @@ var CategoryAutoStyler = AutoStyler.extend({
   },
 
   _generateCategoryRamp: function (sym) {
-    var ramp;
-    var cats = this.dataviewModel.get('allCategoryNames');
-    ramp = sym + ': ' + this.colors.getColorByCategory('OTHER') + ';';
-    ramp += cats.map(function (c, i) {
-      var color = this.colors.getColorByCategory(c);
-      return '[' + this.dataviewModel.get('column') + '=\'' + cats[i] + '\']{\n' + sym + ': ' + color + ';\n}';
-    }.bind(this)).join('\n');
-    return ramp;
+    var cats = this.dataviewModel.get('data');
+    var column = this.dataviewModel.get('column');
+    var ramp = ['ramp([' + column + ']'];
+
+    ramp.push(
+      '(' +
+      cats.map(function (cat, i) {
+        return this.colors.getColorByCategory(cat.name);
+      }.bind(this)).join(', ') +
+      ')'
+    );
+
+    ramp.push(
+      '(' +
+      _.reduce(cats, function (memo, cat, i) {
+        if (!cat.agg) {
+          memo.push('\'' + cat.name.replace(/'/g, '\\\'') + '\'');
+        }
+        return memo;
+      }, []).join(', ') +
+      ')'
+    );
+
+    return sym + ': ' + ramp.join(', ') + ');';
   }
 });
-
-module.exports = CategoryAutoStyler;

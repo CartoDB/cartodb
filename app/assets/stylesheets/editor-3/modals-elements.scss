@@ -68,6 +68,7 @@
   border-top-left-radius: $halfBaseSize;
   border-top-right-radius: $halfBaseSize;
   background: $cMainText;
+  overflow: hidden;
 }
 
 .ModalBlockList-item.is-disabled .Analysis-animation {

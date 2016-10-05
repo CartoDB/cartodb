@@ -91,22 +91,6 @@ var Vis = View.extend({
     this.$el.append(this._legendsView.render().$el);
   },
 
-  // _onShowLegendsChanged: function () {
-  //   if (this.settingsModel.get('showLegends') === true) {
-  //     this._legendsView.showLegends();
-  //   } else {
-  //     this._legendsView.hideLegends();
-  //   }
-  // },
-
-  // _onShowLayerSelectorChanged: function () {
-  //   if (this.settingsModel.get('showLayerSelector') === true) {
-  //     this._legendsView.showLayerSelector();
-  //   } else {
-  //     this._legendsView.hideLayerSelector();
-  //   }
-  // },
-
   _bindLayerViewToLoader: function (layerView) {
     layerView.bind('load', function () {
       this.model.untrackLoadingObject(layerView);

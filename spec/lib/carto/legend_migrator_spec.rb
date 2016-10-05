@@ -49,11 +49,11 @@ module Carto
       end
 
       it 'migrates old bubble to new bubble' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_bubble)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_bubble)
       end
 
       after(:each) do
-        new_legend = @validator.migrate
+        new_legend = @migrator.migrate
 
         new_legend.type.should eq 'bubble'
         new_legend.valid?.should be_true
@@ -161,15 +161,15 @@ module Carto
       end
 
       it 'migrates old category to new custom' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_category)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_category)
       end
 
       it 'migrates old custom to new custom' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_custom)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_custom)
       end
 
       after(:each) do
-        new_legend = @validator.migrate
+        new_legend = @migrator.migrate
 
         new_legend.type.should eq 'custom'
         new_legend.valid?.should be_true
@@ -322,22 +322,54 @@ module Carto
       end
 
       it 'migrates old choropleth to new html' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_choropleth)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_choropleth)
       end
 
       it 'migrates old density to new html' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_density)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_density)
+      end
+
+      it 'migrates old density without labels to new html' do
+        truncated = old_density.dup
+        truncated['items'].delete_at(0)
+        truncated['items'].delete_at(0)
+
+        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
       end
 
       it 'migrates old intensity to new html' do
-        @validator = Carto::LegendMigrator.new(@layer.id, old_intensity)
+        @migrator = Carto::LegendMigrator.new(@layer.id, old_intensity)
+      end
+
+      it 'migrates old intensity without labels to new html' do
+        truncated = old_intensity.dup
+        truncated['items'].delete_at(0)
+        truncated['items'].delete_at(0)
+
+        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
       end
 
       after(:each) do
-        new_legend = @validator.migrate
+        new_legend = @migrator.migrate
 
         new_legend.type.should eq 'html'
         new_legend.valid?.should be_true
+      end
+    end
+
+    describe('#bad legends') do
+      let(:bad_legend) do
+        {
+          patata_pochada: 'buena',
+          pero: 'mejor que pochada',
+          frita: 'a que si!'
+        }
+      end
+
+      it 'return invalid legends for invalid definitions' do
+        migrator = Carto::LegendMigrator.new(@layer.id, bad_legend)
+
+        migrator.migrate.should_not be_valid
       end
     end
   end

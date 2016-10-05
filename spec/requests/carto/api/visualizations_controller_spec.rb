@@ -39,7 +39,7 @@ describe Carto::Api::VisualizationsController do
         get(
           api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
           {},
-          {'HTTP_REFERER' => 'http://wadus.com' }
+          'HTTP_REFERER' => 'http://wadus.com'
         )
         visualization.uses_vizjson2?.should be_true
       end

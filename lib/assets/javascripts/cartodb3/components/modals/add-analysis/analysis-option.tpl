@@ -1,4 +1,4 @@
-<div class="Analysis-animation"></div>
+<div class="Analysis-animation <% if (type) { %>is-<%- type %><% } %> js-animation"></div>
 <div class="Analysis-info u-flex">
   <div class="ModalBlockList-itemInput CDB-Size-large">
     <input class="CDB-Radio" type="radio" value="true"
@@ -17,8 +17,7 @@
       <p class="CDB-Text CDB-Size-small u-altTextColor">
         <%- desc %>
       </p>
-      <p class="CDB-Text CDB-Size-small u-tSpace-xl"><a href="#"><%- _t('components.modals.add-analysis.info-analysis') %></a></p>
+      <p class="CDB-Text CDB-Size-small u-tSpace-xl"><button class="js-more"><%- _t('components.modals.add-analysis.info-analysis') %></button></p>
     </div>
-
   </div>
 </div>

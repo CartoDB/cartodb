@@ -15,7 +15,9 @@ describe('geo/leaflet/leaflet-torque-layer-view', function () {
       'width': '200px'
     });
     this.vis = new VisModel();
-    this.map = new Map();
+    this.map = new Map(null, {
+      layersFactory: {}
+    });
     this.mapView = new LeafletMapView({
       el: container,
       map: this.map,

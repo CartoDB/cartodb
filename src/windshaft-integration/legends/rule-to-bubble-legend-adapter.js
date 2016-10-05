@@ -1,25 +1,31 @@
+var _ = require('underscore');
+var Rule = require('./rule');
+
+var VALID_PROPS = ['marker-width'];
+
+var calculateValues = function (buckets) {
+  var lastBucket = _.last(buckets);
+  return _.chain(buckets)
+    .map('filter')
+    .map('start')
+    .concat(lastBucket.filter.end)
+    .value();
+};
+
 module.exports = {
   canAdapt: function (rule) {
-    return rule.prop === 'marker-width';
+    rule = new Rule(rule);
+    return rule.matchesAnyProperty(VALID_PROPS);
   },
 
   adapt: function (rule) {
-    var values = [
-      rule.stats.min_val
-    ].concat(rule.filters)
-    .concat(rule.stats.max_val);
-
-    var sizes = rule.values;
-    if (rule.mapping === '>') {
-      sizes.unshift(rule['default-value']);
-    } else {
-      sizes.push(rule['default-value']);
-    }
+    rule = new Rule(rule);
+    var buckets = rule.getBucketsWithRangeFilter();
 
     return {
-      values: values,
-      sizes: sizes,
-      avg: rule.stats.avg_val
+      values: calculateValues(buckets),
+      sizes: _.map(buckets, 'value'),
+      avg: rule.getFilterAvg()
     };
   }
 };

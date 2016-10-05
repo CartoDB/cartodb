@@ -29,6 +29,10 @@ VizJSON.MAP_PROVIDER_TYPES = {
   LEAFLET: 'leaflet'
 };
 
+VizJSON.prototype.isNamedMap = function () {
+  return !!this.datasource.template_name;
+};
+
 VizJSON.prototype.hasZoomOverlay = function () {
   return this.hasOverlay(VizJSON.OVERLAY_TYPES.ZOOM);
 };

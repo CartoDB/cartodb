@@ -38,9 +38,7 @@ describe('vis/vis-view', function () {
       }
     };
 
-    this.visModel = new VisModel({
-      showLogo: true
-    });
+    this.visModel = new VisModel();
 
     this.createNewVis = function (attrs) {
       attrs.widgets = new Backbone.Collection();

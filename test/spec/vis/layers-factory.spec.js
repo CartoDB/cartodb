@@ -11,43 +11,131 @@ var LayersFactory = require('../../../src/vis/layers-factory');
 describe('vis/layers-factory', function () {
   beforeEach(function () {
     this.vis = new VisModel();
+
+    this.windshaftSettings = {
+      urlTemplate: 'http://{user}.carto.com',
+      userName: 'JUAN',
+      templateName: 'TPL_12345678',
+      statTag: 'STAT_TAG',
+      apiKey: 'API_KEY',
+      authToken: 'AUTH_TOKEN'
+    };
+
+    this.layersFactory = new LayersFactory({
+      visModel: this.vis,
+      windshaftSettings: this.windshaftSettings
+    });
   });
 
-  describe('https/http', function () {
-    it('torque layer should not rewrite to http if https is not present', function () {
-      var layer = LayersFactory.create('torque', {
-        type: 'torque',
-        sql_api_port: 123,
-        sql_api_domain: 'carto.com',
-        sql_api_protocol: 'https'
-      }, { vis: this.vis });
-      expect(layer.get('sql_api_protocol')).toEqual('https');
-      expect(layer.get('sql_api_port')).toEqual(123);
+  describe('tiled', function () {
+    it('should create the layer model', function () {
+      var layerModel = this.layersFactory.createLayer('tiled', {
+        urlTemplate: 'http'
+      });
+
+      expect(layerModel).toBeDefined();
+      expect(layerModel.get('type')).toEqual('Tiled');
     });
 
-    it('torque layer should rewrite to https if the domain is not carto.com and https option is set to true', function () {
-      var layer = LayersFactory.create('torque', {
-        type: 'torque',
-        sql_api_port: 123,
-        sql_api_domain: 'carto.com',
-        sql_api_protocol: 'http'
-      }, {
-        https: true,
-        vis: this.vis
+    _.each({
+      'https://dnv9my2eseobd.cloudfront.net/': 'http://a.tiles.mapbox.com/',
+      'https://maps.nlp.nokia.com/': 'http://maps.nlp.nokia.com/',
+      'https://tile.stamen.com/': 'http://tile.stamen.com/',
+      'https://{s}.maps.nlp.nokia.com/': 'http://{s}.maps.nlp.nokia.com/',
+      'https://cartocdn_{s}.global.ssl.fastly.net/': 'http://{s}.api.cartocdn.com/',
+      'https://cartodb-basemaps-{s}.global.ssl.fastly.net/': 'http://{s}.basemaps.cartocdn.com/'
+    }, function (httpUrlTemplate, httpsUrlTemplate) {
+      describe('when https option is undefined', function () {
+        it("should not convert '" + httpUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
+        });
+
+        it("should not convert '" + httpsUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpsUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        });
       });
-      expect(layer.get('sql_api_protocol')).toEqual('https');
-      expect(layer.get('sql_api_port')).toEqual(443);
+
+      describe('when https option is set to true', function () {
+        beforeEach(function () {
+          this.vis.set('https', true);
+        });
+
+        it("should not convert '" + httpsUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpsUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        });
+
+        it("should convert '" + httpUrlTemplate + "' to '" + httpsUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpsUrlTemplate);
+        });
+      });
+
+      describe('when https option is set to false', function () {
+        beforeEach(function () {
+          this.vis.set('https', false);
+        });
+
+        it("should not convert '" + httpUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
+        });
+
+        it("should convert '" + httpsUrlTemplate + "' to '" + httpUrlTemplate + "'", function () {
+          var layerModel = this.layersFactory.createLayer('tiled', {
+            urlTemplate: httpsUrlTemplate
+          });
+
+          expect(layerModel.get('urlTemplate')).toEqual(httpUrlTemplate);
+        });
+      });
+    });
+  });
+
+  describe('torque', function () {
+    it('should create the layer model', function () {
+      var layerModel = this.layersFactory.createLayer('torque', {
+        sql: 'SELECT * FROM wadus'
+      });
+
+      expect(layerModel).toBeDefined();
+      expect(layerModel.get('type')).toEqual('torque');
     });
 
-    it('basemaps with a true explicit https property should be forced to https', function () {
-      var layer = LayersFactory.create('tiled', {
-        type: 'Tiled',
-        urlTemplate: 'http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
-      }, {
-        https: true,
-        vis: this.vis
+    it('should setup attrs for windshaft provider', function () {
+      var layerModel = this.layersFactory.createLayer('torque', {});
+      expect(layerModel.get('user_name')).toEqual('JUAN');
+      expect(layerModel.get('maps_api_template')).toEqual('http://{user}.carto.com');
+      expect(layerModel.get('stat_tag')).toEqual('STAT_TAG');
+      expect(layerModel.get('named_map')).toEqual({
+        name: 'TPL_12345678'
       });
-      expect(layer.get('urlTemplate').indexOf('https')).not.toBe(-1);
+      expect(layerModel.get('api_key')).toEqual('API_KEY');
+      expect(layerModel.get('auth_token')).toEqual('AUTH_TOKEN');
+    });
+
+    it("should not include a named_map attr if settings don't have one", function () {
+      delete this.windshaftSettings.templateName;
+
+      var layerModel = this.layersFactory.createLayer('torque', {});
+      expect(layerModel.get('named_map')).toBeUndefined();
     });
   });
 });

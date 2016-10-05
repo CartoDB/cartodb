@@ -19,6 +19,26 @@ describe('src/vis/vizjson', function () {
     });
   });
 
+  describe('.isNamedMap', function () {
+    it("should return false if datasource doesn't have a template_name", function () {
+      var vizjson = new VizJSON({
+        datasource: { }
+      });
+
+      expect(vizjson.isNamedMap()).toBeFalsy();
+    });
+
+    it('should return true if datasource has a template_name', function () {
+      var vizjson = new VizJSON({
+        datasource: {
+          template_name: 'tpl0123456789'
+        }
+      });
+
+      expect(vizjson.isNamedMap()).toBeTruthy();
+    });
+  });
+
   describe('.hasZoomOverlay', function () {
     it("should return true if there's a zoom overlay", function () {
       var vizjson = new VizJSON({

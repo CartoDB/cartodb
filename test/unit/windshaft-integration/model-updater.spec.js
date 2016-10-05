@@ -22,7 +22,8 @@ describe('src/vis/model-updater', function () {
       layersCollection: {},
       dataviewsCollection: {},
       analysisCollection: {},
-      modelUpdater: {}
+      modelUpdater: {},
+      windshaftSettings: {}
     });
 
     spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {
@@ -246,26 +247,37 @@ describe('src/vis/model-updater', function () {
                 'cartocss_meta': {
                   rules: [
                     {
-                      selector: '#world_borders',
-                      prop: 'polygon-fill',
-                      mapping: '>',
-                      'default-value': '#edf8e9',
-                      filters: [
-                        152622,
-                        1617029,
-                        6069715,
-                        20532675
+                      'selector': '#layer',
+                      'prop': 'polygon-fill',
+                      'mapping': '>',
+                      'buckets': [
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 0,
+                            'end': 1000
+                          },
+                          'value': '#AAAAAA'
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 1000,
+                            'end': 2000
+                          },
+                          'value': '#BBBBBB'
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 2000,
+                            'end': 3000
+                          },
+                          'value': '#CCCCCC'
+                        }
                       ],
-                      values: [
-                        '#bae4b3',
-                        '#74c476',
-                        '#31a354',
-                        '#006d2c'
-                      ],
-                      stats: {
-                        'min_val': 0,
-                        'max_val': 1312978855,
-                        'avg_val': 25088299.0813008
+                      'stats': {
+                        'filter_avg': 1975
                       }
                     }
                   ]
@@ -282,13 +294,10 @@ describe('src/vis/model-updater', function () {
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
         expect(layer.legends.choropleth.get('colors')).toEqual([
-          { value: '#bae4b3', label: 0 },
-          { value: '#74c476', label: '' },
-          { value: '#31a354', label: '' },
-          { value: '#006d2c', label: 1312978855 }
+          { label: '0', value: '#AAAAAA' },
+          { label: '', value: '#BBBBBB' },
+          { label: '3000', value: '#CCCCCC' }
         ]);
-        expect(layer.legends.choropleth.get('avg')).toEqual(25088299.0813008);
-        expect(layer.legends.choropleth.get('max')).toEqual(1312978855);
         expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
       });
 
@@ -304,31 +313,34 @@ describe('src/vis/model-updater', function () {
                 'cartocss_meta': {
                   'rules': [
                     {
-                      'selector': '#ne_10m_populated_places_simple',
+                      'selector': '#layer',
                       'prop': 'marker-fill',
                       'mapping': '=',
-                      'default-value': '#882255',
-                      'filters': [
-                        'United States of America',
-                        'Russia',
-                        'China',
-                        'Brazil',
-                        'Canada',
-                        'Australia',
-                        'India',
-                        'Mexico'
+                      'buckets': [
+                        {
+                          'filter': {
+                            'type': 'category',
+                            'name': 'Category 1'
+                          },
+                          'value': '#AAAAAA'
+                        },
+                        {
+                          'filter': {
+                            'type': 'category',
+                            'name': 'Category 2'
+                          },
+                          'value': '#BBBBBB'
+                        },
+                        {
+                          'filter': {
+                            'type': 'default'
+                          },
+                          'value': '#CCCCCC'
+                        }
                       ],
-                      'values': [
-                        '#88CCEE',
-                        '#CC6677',
-                        '#DDCC77',
-                        '#117733',
-                        '#332288',
-                        '#AA4499',
-                        '#44AA99',
-                        '#999933'
-                      ],
-                      'stats': {}
+                      'stats': {
+                        'filter_avg': 3500
+                      }
                     }
                   ]
                 }
@@ -344,20 +356,13 @@ describe('src/vis/model-updater', function () {
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
         expect(layer.legends.category.get('categories')).toEqual([
-          { label: 'United States of America', value: '#88CCEE' },
-          { label: 'Russia', value: '#CC6677' },
-          { label: 'China', value: '#DDCC77' },
-          { label: 'Brazil', value: '#117733' },
-          { label: 'Canada', value: '#332288' },
-          { label: 'Australia', value: '#AA4499' },
-          { label: 'India', value: '#44AA99' },
-          { label: 'Mexico', value: '#999933' }
+          { label: 'Category 1', value: '#AAAAAA' },
+          { label: 'Category 2', value: '#BBBBBB' }
         ]);
-        expect(layer.legends.category.get('defaultValue')).toEqual('#882255');
         expect(layer.legends.choropleth.isSuccess()).toBeTruthy();
       });
 
-      it('should update model for bubble legends with > mapping', function () {
+      it('should update model for bubble legends', function () {
         this.windshaftMap.set('metadata', {
           layers: [
             {
@@ -369,26 +374,53 @@ describe('src/vis/model-updater', function () {
                 'cartocss_meta': {
                   'rules': [
                     {
-                      'selector': '#ne_10m_populated_places_simple',
+                      'selector': '#layer',
                       'prop': 'marker-width',
                       'mapping': '>',
-                      'default-value': 8,
-                      'filters': [
-                        41316,
-                        139843,
-                        578470,
-                        2769072
-                      ],
-                      'values': [
-                        14,
-                        20,
-                        26,
-                        32
+                      'buckets': [
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 10,
+                            'end': 1000
+                          },
+                          'value': 10
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 1000,
+                            'end': 2000
+                          },
+                          'value': 14
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 2000,
+                            'end': 3000
+                          },
+                          'value': 20
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 3000,
+                            'end': 4000
+                          },
+                          'value': 26
+                        },
+                        {
+                          'filter': {
+                            'type': 'range',
+                            'start': 4000,
+                            'end': 5000
+                          },
+                          'value': 32
+                        }
                       ],
                       'stats': {
-                        'min_val': -99,
-                        'max_val': 35676000,
-                        'avg_val': 322717.476372576
+                        'filter_avg': 3500
                       }
                     }
                   ]
@@ -405,16 +437,16 @@ describe('src/vis/model-updater', function () {
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
         expect(layer.legends.bubble.get('values')).toEqual([
-          -99, 41316, 139843, 578470, 2769072, 35676000
+          10, 1000, 2000, 3000, 4000, 5000
         ]);
         expect(layer.legends.bubble.get('sizes')).toEqual([
-          8, 14, 20, 26, 32
+          10, 14, 20, 26, 32
         ]);
-        expect(layer.legends.bubble.get('avg')).toEqual(322717.476372576);
+        expect(layer.legends.bubble.get('avg')).toEqual(3500);
         expect(layer.legends.bubble.isSuccess()).toBeTruthy();
       });
 
-      it('should update model for bubble legends with < mapping', function () {
+      it('should set legend state to "error" if adapter fails to generate attrs from rule', function () {
         this.windshaftMap.set('metadata', {
           layers: [
             {
@@ -426,27 +458,8 @@ describe('src/vis/model-updater', function () {
                 'cartocss_meta': {
                   'rules': [
                     {
-                      'selector': '#ne_10m_populated_places_simple',
                       'prop': 'marker-width',
-                      'mapping': '<',
-                      'default-value': 38,
-                      'filters': [
-                        41316,
-                        139843,
-                        578470,
-                        2769072
-                      ],
-                      'values': [
-                        14,
-                        20,
-                        26,
-                        32
-                      ],
-                      'stats': {
-                        'min_val': -99,
-                        'max_val': 35676000,
-                        'avg_val': 322717.476372576
-                      }
+                      'mapping': '>'
                     }
                   ]
                 }
@@ -461,14 +474,7 @@ describe('src/vis/model-updater', function () {
 
         this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
 
-        expect(layer.legends.bubble.get('values')).toEqual([
-          -99, 41316, 139843, 578470, 2769072, 35676000
-        ]);
-        expect(layer.legends.bubble.get('sizes')).toEqual([
-          14, 20, 26, 32, 38
-        ]);
-        expect(layer.legends.bubble.get('avg')).toEqual(322717.476372576);
-        expect(layer.legends.bubble.isSuccess()).toBeTruthy();
+        expect(layer.legends.bubble.isError()).toBeTruthy();
       });
     });
 
@@ -514,7 +520,7 @@ describe('src/vis/model-updater', function () {
     });
 
     describe('analysis models', function () {
-      it('should update analysis models and "mark" them as ok', function () {
+      it('should update analysis models and set analysis state to "ok"', function () {
         var getParamNames = function () { return []; };
         var analysis1 = new Backbone.Model({ id: 'a1' });
         analysis1.setOk = jasmine.createSpy('setOk');
@@ -556,7 +562,7 @@ describe('src/vis/model-updater', function () {
         expect(analysis2.setOk).toHaveBeenCalled();
       });
 
-      it('should update analysis models and "mark" them as failed', function () {
+      it('should update analysis models and set status to "failed"', function () {
         var getParamNames = function () { return []; };
         var analysis1 = new Backbone.Model({ id: 'a1' });
         this.analysisCollection.reset([ analysis1 ]);
@@ -625,7 +631,7 @@ describe('src/vis/model-updater', function () {
       expect(error.context).toBeUndefined();
     });
 
-    it('should "mark" analysis as erroneous', function () {
+    it('should set analysis status to "error"', function () {
       var analysis = new Backbone.Model({
         id: 'ANALYSIS_NODE_ID'
       });

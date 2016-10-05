@@ -18,6 +18,7 @@ describe('geo/ui/layer-selector', function () {
     layer2 = new CartoDBLayer({ layer_name: 'Layer 2' }, { vis: this.vis });
 
     var map = new Map({}, {
+      layersFactory: {},
       layersCollection: new Layers([layer1, layer2])
     });
 

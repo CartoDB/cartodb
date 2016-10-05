@@ -1,0 +1,247 @@
+.Analysis-animation.is-georeference:hover .Dot-01,
+.Analysis-animation.is-georeference:hover .Dot-02 {
+  opacity: 0;
+  transform-origin: 50% 50%;
+  animation-name: fadeOut, fadeIn, scaleIn;
+  animation-duration: 300ms, 500ms, 500ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
+  animation-delay: 100ms, 550ms;
+}
+.Analysis-animation.is-georeference:hover .Dot-02 {
+  animation-delay: 600ms, 550ms;
+}
+
+.Analysis-animation.is-georeference .Georeference-point02-text,
+.Analysis-animation.is-georeference .Georeference-point01-text {
+  opacity: 0;
+}
+
+.Analysis-animation.is-georeference:hover .Georeference-point01-text {
+  animation-name: fadeIn;
+  animation-duration: 300ms;
+  animation-delay: 800ms;
+  animation-fill-mode: forwards;
+}
+.Analysis-animation.is-georeference:hover .Georeference-point02-text {
+  animation-name: fadeIn;
+  animation-duration: 300ms;
+  animation-delay: 500ms;
+  animation-fill-mode: forwards;
+}
+
+.Analysis-animation.is-georeference:hover .Georeference-street00 {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 800ms ease-in forwards;
+}
+
+.Analysis-animation.is-georeference:hover .Georeference-street01 {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 600ms ease-in forwards;
+}
+
+.Analysis-animation.is-georeference:hover .Georeference-street02 {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 600ms ease-in forwards;
+  animation-delay: 100ms;
+}
+
+.Analysis-animation.is-data-observatory-measure:hover .rect-01,
+.Analysis-animation.is-data-observatory-measure:hover .rect-02,
+.Analysis-animation.is-data-observatory-measure:hover .rect-03,
+.Analysis-animation.is-data-observatory-measure:hover .rect-04,
+.Analysis-animation.is-data-observatory-measure:hover .rect-05,
+.Analysis-animation.is-data-observatory-measure:hover .rect-06,
+.Analysis-animation.is-data-observatory-measure:hover .rect-07 {
+  transform-origin: 50% 50%;
+  animation-name: fadeOutRect, fadeInRect;
+  animation-duration: 100ms, 300ms;
+  animation-fill-mode: forwards, forwards;
+  animation-timing-function: ease-in, ease-in;
+  animation-delay: 0ms, 500ms;
+  fill: transparent;
+}
+
+.Analysis-animation.is-data-observatory-measure:hover .rect-01 {
+  animation-delay: 0ms, 500ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-02 {
+  animation-delay: 0ms, 900ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-03 {
+  animation-delay: 0ms, 300ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-04 {
+  animation-delay: 0ms, 600ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-05 {
+  animation-delay: 0ms, 750ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-06 {
+  animation-delay: 0ms, 600ms;
+}
+.Analysis-animation.is-data-observatory-measure:hover .rect-07 {
+  animation-delay: 0ms, 420ms;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dash-dotted {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes shortDash-reverse {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 200;
+  }
+}
+@keyframes shortDash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes dash-dotted {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0% {
+    transform:scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform:scale(1.3);
+    opacity: .8;
+  }
+  100% {
+    transform:scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    transform:scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform:scale(1.4);
+    opacity: .8;
+  }
+  100% {
+    transform:scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes highlightIn {
+  0% {
+    transform:scale(0);
+    opacity: 0;
+    stroke: #9DE0AD;
+  }
+  0% {
+    transform:scale(1);
+    opacity: 1;
+    stroke: #9DE0AD;
+  }
+  100% {
+    transform:scale(5);
+    stroke: #9DE0AD;
+    stroke-width:.5;
+    opacity: 0;
+  }
+}
+
+@keyframes lineGreenIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    stroke: #9DE0AD;
+    opacity: 1;
+  }
+}
+
+@keyframes dotGreenIn {
+  100% {
+    fill: #9DE0AD;
+  }
+}
+
+@keyframes greenIn {
+  0% {
+    transform:scale(1.3);
+    opacity: 0.7;
+    fill: #9DE0AD;
+  }
+  100% {
+    transform:scale(1);
+    fill: #9DE0AD;
+    opacity: 1;
+  }
+}
+
+@keyframes greenOut {
+  0% {
+    fill: #9DE0AD;
+  }
+  50% {
+    fill: #636D72;
+    opacity: 1;
+  }
+  100% {
+    fill: #636D72;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOutRect {
+  0% {
+    fill: #9DE0AD;
+  }
+  100% {
+    fill: transparent;
+  }
+}
+
+@keyframes fadeInRect {
+  0% {
+    fill: transparent;
+  }
+  100% {
+    fill: #9DE0AD;
+  }
+}

@@ -138,26 +138,37 @@ module Carto
           "items" => [
             {
               "name" => "preta",
-              "visible" => true, "value" => "#41006D",
+              "visible" => true,
+              "value" => "#41006D",
               "sync" => true
             },
             {
               "name" => "Untitled",
-              "visible" => true, "value" => "#3E7BB6",
+              "visible" => true,
+              "value" => "#3E7BB6",
               "sync" => true
             },
             {
               "name" => "patata",
-              "visible" => true, "value" => "#cccccc",
+              "visible" => true,
+              "value" => "#cccccc",
               "sync" => true
             },
             {
               "name" => "Untitled",
-              "visible" => true, "value" => "#cccccc",
+              "visible" => true,
+              "value" => "#cccccc",
               "sync" => true
             }
           ]
         }
+      end
+
+      it 'omits badly formatted colors' do
+        truncated = old_category.dup
+        truncated['items'].first['value'] = '#fatal#fatal#fatal'
+
+        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
       end
 
       it 'migrates old category to new custom' do
@@ -321,6 +332,13 @@ module Carto
         }
       end
 
+      it 'omits badly formatted colors' do
+        truncated = old_intensity.dup
+        truncated['items'].last['value'] = '#fatal#fatal#fatal'
+
+        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
+      end
+
       it 'migrates old choropleth to new html' do
         @migrator = Carto::LegendMigrator.new(@layer.id, old_choropleth)
       end
@@ -366,7 +384,29 @@ module Carto
         }
       end
 
-      it 'return invalid legends for invalid definitions' do
+      let(:bad_category) do
+        {
+          "type" => "category",
+          "show_title" => false,
+          "title" => "",
+          "template" => "",
+          "visible" => true,
+          "items" => [
+            {
+              "name" => 0,
+              "visible" => true,
+              "value" => "#A6CEE3"
+            },
+            {
+              "name" => 0,
+              "visible" => true,
+              "value" => "fatal#fatal#fatal!"
+            }
+          ]
+        }
+      end
+
+      it 'returns invalid legends for invalid definitions' do
         migrator = Carto::LegendMigrator.new(@layer.id, bad_legend)
 
         migrator.migrate.should_not be_valid

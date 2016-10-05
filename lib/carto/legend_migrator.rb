@@ -52,6 +52,8 @@ module Carto
       end
     end
 
+    COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/
+
     def build_custom_definition_from_custom_type
       custom_definition = Hash.new
 
@@ -60,7 +62,10 @@ module Carto
         color = item['value']
 
         category_definition = { title: title }
-        category_definition[:color] = color if color
+
+        if color && color =~ COLOR_REGEXP
+          category_definition[:color] = color
+        end
 
         category_definition
       end
@@ -93,7 +98,7 @@ module Carto
       item_colors = items[first_color_index..-1].map do |item|
         color = item['value'].downcase
 
-        color if color =~ /^#(?:[0-9a-fA-F]{3}){1,2}$/
+        color if color =~ COLOR_REGEXP
       end
 
       gradient_stops = item_colors.compact.join(', ')
@@ -106,8 +111,13 @@ module Carto
       first_item = items.first
       second_item = items.second
 
-      left_label = first_item['value'] if first_item['type'] == 'text'
-      right_label = second_item['value'] if second_item['type'] == 'text'
+      if first_item && first_item['type'] == 'text'
+        left_label = first_item['value']
+      end
+
+      if second_item && second_item['type'] == 'text'
+        right_label = second_item['value']
+      end
 
       @labels_for_items = [left_label, right_label]
       @labels_for_items

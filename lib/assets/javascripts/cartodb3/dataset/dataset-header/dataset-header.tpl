@@ -1,7 +1,7 @@
 <div class="Editor-HeaderInfo-inner">
   <div class="Editor-HeaderInfo-title u-bSpace--m u-flex u-alignCenter">
     <% if (isSync && isOwner) { %>
-      <div class="Editor-HeaderInfo-details">
+      <div class="Editor-HeaderInfo-actions">
         <span class="SyncInfo-state SyncInfo-state--<%- syncState %> u-rSpace--m js-syncState"></span>
       </div>
     <% } %>

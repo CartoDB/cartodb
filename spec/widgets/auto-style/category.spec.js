@@ -46,7 +46,7 @@ describe('src/widgets/auto-style/category', function () {
 
     it('should generate proper CartoCSS when Others is included', function () {
       var data = this.dataview.get('data');
-      data.push({ name: "Others", agg: true });
+      data.push({ name: 'Others', agg: true });
       this.dataview.set('data', data);
       this.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
       expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077; marker-fill: ramp([something], (#A5AA99, #A5AA99, #A5AA99, #A5AA99, #A5AA99, #A5AA99), (\'soccer\', \'basketball\', \'baseball\', \'handball\', \'hockey\'));  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');

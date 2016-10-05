@@ -24,9 +24,7 @@ module.exports = {
         standalone: 'cartodb'
       },
       plugin: [
-        ['browserify-resolutions', '*']
-        // To be more specific we could use the following
-        // ['browserify-resolutions', ['backbone']]
+        ['browserify-resolutions', ['backbone', 'cartodb.js', 'd3', 'jquery', 'moment', 'perfect-scrollbar', 'urijs', 'underscore']]
       ]
     }
   },
@@ -45,8 +43,6 @@ module.exports = {
       external: vendorDependencies,
       plugin: [
         ['browserify-resolutions', vendorDependencies]
-        // To be more specific we could use the following
-        // ['browserify-resolutions', ['backbone']]
       ]
     }
   }

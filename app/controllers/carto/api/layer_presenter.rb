@@ -2,6 +2,7 @@
 
 require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'carto/table_utils'
+require_dependency 'carto/legend_migrator'
 
 module Carto
   module Api
@@ -50,8 +51,9 @@ module Carto
         @with_style_properties = options.fetch(:with_style_properties, false)
       end
 
-      def to_poro(migrate_builder_infowindows: false)
+      def to_poro(migrate_builder_infowindows: false, migrate_legends: false)
         poro = base_poro(@layer)
+
         if migrate_builder_infowindows
           if poro['infowindow'].present?
             poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])
@@ -60,6 +62,20 @@ module Carto
             poro['tooltip'] = migrate_builder_infowindow(poro['tooltip'], mustache_dir: 'tooltips')
           end
         end
+
+        if migrate_legends
+          legend = poro['legend']
+          unless poro['legends'].any? && legend.present?
+            migrated_legend = Carto::LegendMigrator.new(@layer.id, legend)
+                                                   .migrate
+
+            if migrated_legend.save
+              poro['legends'] = [Carto::Api::LegendPresenter.new(migrate_legend)
+                                                            .to_hash]
+            end
+          end
+        end
+
         poro
       end
 

@@ -1,5 +1,7 @@
 # coding: UTF-8
 
+require 'carto/configuration'
+
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -22,6 +24,7 @@ CartoDB::Application.configure do
 
   # See everything in the log (default is :info)
   config.log_level = :info
+  config.logger = ActiveSupport::TaggedLogging.new(ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('staging.log')))
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new

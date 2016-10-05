@@ -13,6 +13,7 @@ require 'optparse'
 require 'json'
 require 'tsort'
 require 'securerandom'
+require 'carto/configuration'
 
 require_relative 'config'
 require_relative 'utils'
@@ -69,6 +70,8 @@ module CartoDB
       end
     end
     class ExportJob
+      include Carto::Configuration
+
       attr_reader :logger, :json_file
 
       REDIS_KEYS = {
@@ -432,7 +435,7 @@ module CartoDB
       end
 
       def exportjob_logger
-        @@exportjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+        @@exportjob_logger ||= ::Logger.new(log_file_path("datamover.log"))
       end
 
       def get_db_size(database)

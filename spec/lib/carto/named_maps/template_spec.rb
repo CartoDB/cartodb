@@ -347,8 +347,8 @@ module Carto
               @template_hash[:layergroup][:layers].second[:options][:sql_wrap].should eq 'SELECT manolo FROM (<%= sql %>)'
             end
 
-            it 'should wrap sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql].should =~ /SELECT manolo FROM/
+            it 'should not wrap sql' do
+              @template_hash[:layergroup][:layers].second[:options][:sql].should_not =~ /SELECT manolo FROM/
             end
           end
         end

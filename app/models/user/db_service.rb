@@ -4,6 +4,7 @@ require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
 require 'cartodb/sequel_connection_helper'
+require 'carto/configuration'
 
 # To avoid collisions with User model
 module CartoDB
@@ -11,6 +12,7 @@ module CartoDB
   module UserModule
     class DBService
       include CartoDB::MiniSequel
+      include Carto::Configuration
       extend CartoDB::SequelConnectionHelper
 
       # Also default schema for new users
@@ -21,7 +23,7 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.11.1'.freeze
-      ODBC_FDW_VERSION = '0.0.1'.freeze
+      ODBC_FDW_VERSION = '0.2.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -388,6 +390,7 @@ module CartoDB
             # If user is in an organization should never have public schema, but to be safe (& tests which stub stuff)
             unless @user.database_schema == SCHEMA_PUBLIC
               database.run(%{ DROP FUNCTION IF EXISTS "#{@user.database_schema}"._CDB_UserQuotaInBytes()})
+              drop_analysis_cache
               drop_all_functions_from_schema(@user.database_schema)
               database.run(%{ DROP SCHEMA IF EXISTS "#{@user.database_schema}" })
             end
@@ -813,6 +816,17 @@ module CartoDB
         end
       end
 
+      def drop_analysis_cache
+        list_sql = "SELECT DISTINCT unnest(cache_tables) FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
+        delete_sql = "DELETE FROM cdb_analysis_catalog WHERE username = '#{@user.username}'"
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(list_sql).map(:unnest).each do |cache_table_name|
+            database.run("DROP TABLE #{cache_table_name}")
+          end
+          database.run(delete_sql)
+        end
+      end
+
       # Drops grants and functions in a given schema, avoiding by all means a CASCADE
       # to not affect extensions or other users
       def drop_all_functions_from_schema(schema_name)
@@ -981,7 +995,7 @@ module CartoDB
       end
 
       def monitor_user_notification
-        FileUtils.touch(Rails.root.join('log', 'users_modifications'))
+        FileUtils.touch(log_file_path('users_modifications'))
         if !Cartodb.config[:signups].nil? && !Cartodb.config[:signups]["service"].nil? &&
            !Cartodb.config[:signups]["service"]["port"].nil?
           enable_remote_db_user

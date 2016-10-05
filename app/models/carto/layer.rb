@@ -17,11 +17,13 @@ module Carto
           table_name = source_node.options[:table_name]
           tables_by_name = table_name ? tables_from_names([table_name], user) : []
 
-          tables_by_query + tables_by_name
+          tables_by_query.present? ? tables_by_query : tables_by_name
         end
         dependencies.flatten.compact.uniq
       else
-        (tables_from_query_option + tables_from_table_name_option).compact.uniq
+        tables_by_query = tables_from_query_option
+        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option
+        dependencies.compact.uniq
       end
     end
 
@@ -184,16 +186,6 @@ module Carto
       @user ||= map.nil? ? nil : map.user
     end
 
-    def wrapped_sql(user)
-      query_wrapper = options.symbolize_keys[:query_wrapper]
-      sql = default_query(user)
-      if query_wrapper.present? && torque?
-        query_wrapper.gsub('<%= sql %>', sql)
-      else
-        sql
-      end
-    end
-
     def default_query(user = nil)
       sym_options = options.symbolize_keys
       query = sym_options[:query]
@@ -248,12 +240,8 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
-      query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      query_tables['cdb_querytables'].split(',').map { |table_name|
-        t = table_name.gsub!(/[\{\}]/, '')
-        (t.blank? ? nil : t)
-      }.compact.uniq
+      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTables(#{user.in_database.quote(query)}))")
+      query_tables.column_values(0).uniq
     end
 
     def query

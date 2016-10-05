@@ -11,9 +11,8 @@ var MyLeafletPointView = View.extend({
     this.mapView = options.mapView;
 
     this.model.on('change:latlng', this._onLatlngChanged, this);
-  
+
     this._marker = this._createMarker();
-    this._marker.on('move', this._updateModelsGeoJSON.bind(this));
   },
 
   _createMarker: function () {
@@ -30,11 +29,69 @@ var MyLeafletPointView = View.extend({
 
   _onLatlngChanged: function () {
     this._marker.setLatLng(this.model.get('latlng'));
+    this._updateModelsGeoJSON();
   },
 
   _updateModelsGeoJSON: function () {
     this.model.set({
       geojson: this._marker.toGeoJSON()
+    });
+  }
+});
+
+var MyLeafletLineView = View.extend({
+  initialize: function (options) {
+    if (!options.model) throw new Error('model is required');
+    if (!options.mapView) throw new Error('mapView is required');
+
+    this.model = this.model || options.model;
+    this.mapView = options.mapView;
+
+    this.model.on('change:latlngs', this._onLatlngsChanged, this);
+
+    this._polyline = this._createPolyline();
+    this._markers = [];
+  },
+
+  _createPolyline: function () {
+    return L.polyline([], { color: 'red' });
+  },
+
+  render: function () {
+    this._polyline.addTo(this.mapView._getNativeMap());
+  },
+
+  _onLatlngsChanged: function () {
+    var latlngs = this.model.get('latlngs');
+    this._removeMarkers();
+    this._addMarkers();
+    this._polyline.setLatLngs(latlngs);
+    this._updateModelsGeoJSON();
+  },
+
+  _addMarkers: function () {
+    var latlngs = this.model.get('latlngs');
+    _.each(latlngs, this._addMarker, this);
+  },
+
+  _addMarker: function (latlng) {
+    var icon = L.icon({
+      iconUrl: '/themes/img/default-marker-icon.png',
+      iconAnchor: [11, 11]
+    });
+    var marker = L.marker(latlng, { icon: icon });
+    marker.addTo(this.mapView._getNativeMap());
+  },
+
+  _removeMarkers: function () {
+    _.each(this._markers, function (marker) {
+      marker.remove();
+    });
+  },
+
+  _updateModelsGeoJSON: function () {
+    this.model.set({
+      geojson: this._polyline.toGeoJSON()
     });
   }
 });
@@ -91,10 +148,10 @@ var MapView = View.extend({
 
   _onMapClicked: function (event, latlng) {
     var geometry = this.map.getNewGeometry();
-    geometry.update(latlng);
     if (!this._isGeometryDrawn(geometry)) {
       this._drawGeometry(geometry);
     }
+    geometry.update(latlng);
   },
 
   _isGeometryDrawn: function (geometry) {
@@ -102,19 +159,24 @@ var MapView = View.extend({
   },
 
   _drawGeometry: function (geometry) {
-    if (geometry.get('type') === 'point') {
-      var geometryView = new MyLeafletPointView({
+
+    var GEOMETRY_VIEWS = {
+      'point': MyLeafletPointView,
+      'line': MyLeafletLineView
+    };
+
+    var GeometryView = GEOMETRY_VIEWS[geometry.get('type')];
+    if (GeometryView) {
+      var geometryView = new GeometryView({
         model: geometry,
         mapView: this
       });
       this._newGeometryView = geometryView;
       geometryView.render();
+    } else {
+      throw new Error(geometry.get('type') + ' is not supported yet');
     }
   },
-
-
-
-
 
 
 

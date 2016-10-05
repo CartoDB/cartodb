@@ -27,6 +27,29 @@ var Point = Model.extend({
   }
 });
 
+var Line = Model.extend({
+  defaults: {
+    type: 'line',
+    latlngs: []
+  },
+
+  initialize: function () {
+    this.on('change:geojson', function () {
+      this.trigger('ready', this);
+    }, this);
+  },
+
+  update: function (latlng) {
+    var latlngs = _.clone(this.get('latlngs'));
+    latlngs.push(latlng);
+    this.set('latlngs', latlngs);
+  },
+
+  toGeoJSON: function () {
+    return this.get('geojson');
+  }
+});
+
 var Map = Model.extend({
   defaults: {
     attribution: [config.get('cartodb_attributions')],
@@ -47,6 +70,13 @@ var Map = Model.extend({
     this._newGeometry = point;
     this.trigger('enterDrawingMode');
     return point;
+  },
+
+  drawLine: function () {
+    var line = new Line();
+    this._newGeometry = line;
+    this.trigger('enterDrawingMode');
+    return line;
   },
 
   stopDrawing: function () {

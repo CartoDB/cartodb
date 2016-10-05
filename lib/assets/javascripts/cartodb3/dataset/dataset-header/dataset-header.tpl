@@ -10,12 +10,12 @@
       <h2 class="u-ellipsis CDB-Text CDB-Size-huge is-light"><%- title %></h2>
     </div>
 
-    <div class="Editor-HeaderInfo-details">
+    <div class="Editor-HeaderInfo-details u-lSpace">
       <% if (isCustomQueryApplied) { %>
-        <span class="Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small u-secondaryTextColor"><%- _t('dataset.sql') %></span>
+        <span class="Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small u-secondaryTextColor u-rSpace"><%- _t('dataset.sql') %></span>
       <% } %>
 
-      <button class="CDB-Shape u-lSpace js-options">
+      <button class="CDB-Shape js-options">
         <div class="CDB-Shape-threePoints is-blue is-small">
           <div class="CDB-Shape-threePointsItem"></div>
           <div class="CDB-Shape-threePointsItem"></div>

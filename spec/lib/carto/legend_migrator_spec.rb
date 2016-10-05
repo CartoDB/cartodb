@@ -253,20 +253,30 @@ module Carto
         "title" => "",
         "template" => "",
         "visible" => true,
-        "items" => 
-         [{"name" => "Left label",
-           "visible" => true,
-           "value" => "Less",
-           "legend_type" => "intensity",
-           "type" => "text",
-           "sync" => true},
-          {"name" => "Right label",
-           "visible" => true,
-           "value" => "More",
-           "legend_type" => "intensity",
-           "type" => "text",
-           "sync" => true},
-          {"name" => "Color", "visible" => true, "value" => "#FFCC00", "type" => "color"}]}
+        "items" => [
+          {
+            "name" => "Left label",
+            "visible" => true,
+            "value" => "Less",
+            "legend_type" => "intensity",
+            "type" => "text",
+            "sync" => true
+          },
+          {
+            "name" => "Right label",
+            "visible" => true,
+            "value" => "More",
+            "legend_type" => "intensity",
+            "type" => "text",
+            "sync" => true
+          },
+          {
+            "name" => "Color",
+            "visible" => true, "value" => "#FFCC00",
+            "type" => "color"
+          }
+        ]
+      }
     end
   end
 end

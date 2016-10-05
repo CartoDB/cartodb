@@ -13,17 +13,16 @@ var LayerLegendsView = Backbone.View.extend({
   initialize: function (options) {
     this._legendViews = [];
 
-    this.renderModel = options.renderModel;
+    this.settingsModel = options.settingsModel;
 
     this.model.on('change:visible', this._onLayerVisibilityChanged, this);
     this.model.on('change:layer_name', this.render, this);
-    this.renderModel.on('change:legends', this._onLegendsRenderChanged, this);
-    this.renderModel.on('change:layerSelector', this._onLayerSelectorRenderChanged, this);
+    this.settingsModel.on('change', this.render, this);
   },
 
   render: function () {
-    var showLegends = this.renderModel.get('legends');
-    var showLayerSelector = this.renderModel.get('layerSelector');
+    var showLegends = this.settingsModel.get('showLegends');
+    var showLayerSelector = this.settingsModel.get('showLayerSelector');
 
     this.$el.html(
       template({
@@ -98,16 +97,6 @@ var LayerLegendsView = Backbone.View.extend({
 
   _isLayerVisible: function () {
     return this.model.isVisible();
-  },
-
-  _onLegendsRenderChanged: function () {
-    var areLegendsVisible = this.renderModel.get('legends');
-    this.$('.js-legends').toggle(areLegendsVisible);
-  },
-
-  _onLayerSelectorRenderChanged: function () {
-    var isLayerSelectorVisible = this.renderModel.get('layerSelector');
-    this.$('.js-layer-selector').toggle(isLayerSelectorVisible);
   }
 });
 

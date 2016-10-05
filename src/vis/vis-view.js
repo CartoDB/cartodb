@@ -11,16 +11,18 @@ var LegendsView = require('../geo/ui/legends/legends-view.js');
  * Visualization creation
  */
 var Vis = View.extend({
-  initialize: function () {
+  initialize: function (options) {
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
     this.model.on('change:loading', this._toggleLoader, this);
     this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
 
+    this.settingsModel = options.settingsModel;
+
     this.overlays = [];
 
-    this.model.on('change:showLegends', this._onShowLegendsChanged, this);
-    this.model.on('change:showLayerSelector', this._onShowLayerSelectorChanged, this);
+    // this.settingsModel.on('change:showLegends', this._onShowLegendsChanged, this);
+    // this.settingsModel.on('change:showLayerSelector', this._onShowLayerSelectorChanged, this);
     _.bindAll(this, '_onResize');
   },
 
@@ -85,28 +87,27 @@ var Vis = View.extend({
   _renderLegends: function () {
     this._legendsView = new LegendsView({
       layersCollection: this.model.map.layers,
-      showLegends: this.model.get('showLegends'),
-      showLayerSelector: this.model.get('showLayerSelector')
+      settingsModel: this.settingsModel
     });
 
     this.$el.append(this._legendsView.render().$el);
   },
 
-  _onShowLegendsChanged: function () {
-    if (this.model.get('showLegends') === true) {
-      this._legendsView.showLegends();
-    } else {
-      this._legendsView.hideLegends();
-    }
-  },
+  // _onShowLegendsChanged: function () {
+  //   if (this.settingsModel.get('showLegends') === true) {
+  //     this._legendsView.showLegends();
+  //   } else {
+  //     this._legendsView.hideLegends();
+  //   }
+  // },
 
-  _onShowLayerSelectorChanged: function () {
-    if (this.model.get('showLayerSelector') === true) {
-      this._legendsView.showLayerSelector();
-    } else {
-      this._legendsView.hideLayerSelector();
-    }
-  },
+  // _onShowLayerSelectorChanged: function () {
+  //   if (this.settingsModel.get('showLayerSelector') === true) {
+  //     this._legendsView.showLayerSelector();
+  //   } else {
+  //     this._legendsView.hideLayerSelector();
+  //   }
+  // },
 
   _bindLayerViewToLoader: function (layerView) {
     layerView.bind('load', function () {

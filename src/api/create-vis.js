@@ -3,6 +3,7 @@ var VisView = require('../vis/vis-view');
 var VisModel = require('../vis/vis');
 var Loader = require('../core/loader');
 var VizJSON = require('./vizjson');
+var SettingsModel = require('../vis/ui-settings');
 
 var DEFAULT_OPTIONS = {
   tiles_loader: true,
@@ -46,20 +47,26 @@ var createVis = function (el, vizjson, options) {
     showLayerSelector = vizjson.embed_options.layer_selector;
   }
 
+  var settingsModel = new SettingsModel({
+    showLegends: showLegends,
+    showLayerSelector: showLayerSelector
+  });
+
   var visModel = new VisModel({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: options.authToken,
-    showLegends: showLegends,
-    showLayerSelector: showLayerSelector,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
+  visModel.settingsModel = settingsModel;
+
   new VisView({ // eslint-disable-line
     el: el,
-    model: visModel
+    model: visModel,
+    settingsModel: settingsModel
   });
 
   if (typeof vizjson === 'string') {

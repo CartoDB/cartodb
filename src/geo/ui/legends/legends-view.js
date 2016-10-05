@@ -15,17 +15,13 @@ var LegendsView = Backbone.View.extend({
 
     this._isRendered = false;
 
-    this.renderModel = new Backbone.Model({
-      legends: options.showLegends,
-      layerSelector: options.showLayerSelector
-    });
-
+    this.settingsModel = options.settingsModel;
     this._initBinds();
   },
 
   _initBinds: function () {
     this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
-    this.renderModel.on('change', this._onRenderModelChanged, this);
+    this.settingsModel.on('change', this._onSettingsModelChanged, this);
     this._onRenderModelChanged();
   },
 
@@ -98,7 +94,7 @@ var LegendsView = Backbone.View.extend({
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({
       model: layerModel,
-      renderModel: this.renderModel
+      settingsModel: this.settingsModel
     });
 
     this.$(this._container()).append(layerLegendsView.render().$el);
@@ -121,8 +117,8 @@ var LegendsView = Backbone.View.extend({
   },
 
   _onRenderModelChanged: function () {
-    var showLegends = this.renderModel.get('legends');
-    var showLayerSelector = this.renderModel.get('layerSelector');
+    var showLegends = this.settingsModel.get('showLegends');
+    var showLayerSelector = this.settingsModel.get('showLayerSelector');
     if (!showLegends && !showLayerSelector) {
       this.hide();
     } else {
@@ -139,19 +135,19 @@ var LegendsView = Backbone.View.extend({
   },
 
   showLegends: function () {
-    this.renderModel.set('legends', true);
+    this.settingsModel.set('legends', true);
   },
 
   hideLegends: function () {
-    this.renderModel.set('legends', false);
+    this.settingsModel.set('legends', false);
   },
 
   showLayerSelector: function () {
-    this.renderModel.set('layerSelector', true);
+    this.settingsModel.set('layerSelector', true);
   },
 
   hideLayerSelector: function () {
-    this.renderModel.set('layerSelector', false);
+    this.settingsModel.set('layerSelector', false);
   }
 });
 

@@ -61,11 +61,11 @@ module CartoDB
           hard_limit:  hard_obs_general_limit?
         },
         twitter: {
-          enabled:     organization_user? ? organization.twitter_datasource_enabled         : twitter_datasource_enabled,
-          quota:       organization_user? ? organization.twitter_datasource_quota           :  twitter_datasource_quota,
-          block_price: organization_user? ? organization.twitter_datasource_block_price     : twitter_datasource_block_price,
-          block_size:  organization_user? ? organization.twitter_datasource_block_size      : twitter_datasource_block_size,
-          monthly_use: organization_user? ? organization.get_twitter_imports_count          : get_twitter_imports_count,
+          enabled:     organization_user? ? organization.twitter_datasource_enabled : twitter_datasource_enabled,
+          quota:       organization_user? ? organization.twitter_datasource_quota : twitter_datasource_quota,
+          block_price: organization_user? ? organization.twitter_datasource_block_price : twitter_datasource_block_price,
+          block_size:  organization_user? ? organization.twitter_datasource_block_size : twitter_datasource_block_size,
+          monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
           hard_limit:  hard_twitter_datasource_limit
         },
         salesforce: {

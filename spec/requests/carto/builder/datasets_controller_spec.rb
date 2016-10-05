@@ -1,4 +1,4 @@
-require_relative '../../../spec_helper_min'
+require_relative '../../../spec_helper'
 
 describe Carto::Builder::DatasetsController do
   include Warden::Test::Helpers
@@ -15,6 +15,7 @@ describe Carto::Builder::DatasetsController do
 
     before(:each) do
       @user.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+      @user.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
       login(@user)
     end
 
@@ -24,6 +25,7 @@ describe Carto::Builder::DatasetsController do
       @map.destroy
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       @user.destroy
+      @feature_flag.destroy
     end
 
     it 'redirects to public view non-builder users requests' do

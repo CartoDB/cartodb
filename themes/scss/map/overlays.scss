@@ -14,8 +14,8 @@ $buttonColor: #636D72;
 
 // zoom overlay
 .CDB-Overlay {
-  position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   min-width: 32px;
   height: 32px;
   border-radius: 4px;
@@ -29,8 +29,6 @@ $buttonColor: #636D72;
 }
 
 .CDB-Zoom-action {
-  display: inline-block;
-  vertical-align: middle;
   position: relative;
   width: 32px;
   height: 100%;
@@ -51,7 +49,6 @@ $buttonColor: #636D72;
   }
 
   &:last-child {
-    margin-left: -4px;
     border-left: 1px solid #EEEEEE;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -90,8 +87,6 @@ $buttonColor: #636D72;
   }
 }
 .CDB-Zoom-info {
-  display: inline-block;
-  vertical-align: middle;
   width: 32px;
   color: #979EA1;
   font-family: 'Open Sans';
@@ -99,7 +94,6 @@ $buttonColor: #636D72;
   line-height: 32px;
   text-align: center;
   border-left: 1px solid #EEEEEE;
-  margin-left: -3px;
 }
 
 // loader search
@@ -110,15 +104,22 @@ $buttonColor: #636D72;
 }
 .CDB-Search .CDB-Shape-magnify:before {
   border-color: #636D72;
+  top: 11px;
+  left: 10px;
 }
 .CDB-Search .CDB-Shape-magnify:after {
   background: #636D72;
+  right: 13px;
+  bottom: 10px;
 }
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);
   width: 32px;
-  height: 32px;
+  height: 100%;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+
   &.is-active {
     width: 152px;
     .CDB-Search-text {
@@ -127,38 +128,28 @@ $buttonColor: #636D72;
     }
   }
 }
-.CDB-Search-action {
-  display: block;
-  position: relative;
-  width: 32px;
-  cursor: pointer;
-}
 .CDB-Search-actionButton {
-  position: absolute;
-  top: 8px;
-  left: 8px;
   color: $buttonColor;
+  width: 32px;
+  height: 32px;
+  position: relative;
 }
 .CDB-Search-text {
-  @include transition(opacity, 100ms ease-in);
-  display: inline-block;
-  position: absolute;
-  top: 8px;
-  left: 33px;
+  @include transition(opacity, 150ms ease-in);
   width: 100px;
-  margin-right: 8px;
   padding: 0 0 0 8px;
   border: 0;
   border-left: 1px solid #F8F8F8;
   background: none;
   font: 12px/16px 'Open Sans';
   opacity: 0;
-  vertical-align: middle;
   display: none;
 
   &:focus {
     outline: none;
   }
+}
+.CDB-Search-text {
 }
 
 //FullScreen overlay
@@ -191,6 +182,10 @@ $buttonColor: #636D72;
       top: 11px;
       left: 9px;
     }
+  }
+  .CDB-Fullscreen-link {
+    width: 100%;
+    height: 100%;
   }
 }
 .CDB-Logo {

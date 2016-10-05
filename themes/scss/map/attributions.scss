@@ -38,17 +38,14 @@ $size: 20px;
 .CDB-Attribution-text {
   @include transition(opacity, 150ms);
   border-left: 1px solid transparent;
-  pointer-events: none;
   color: #2E3C43;
   font-size: 10px;
   line-height: 16px;
-  vertical-align: middle;
   width: 0;
   overflow: hidden;
   padding: 0;
   height: 16px;
-  margin-left: -3px;
-  display: inline-block;
+  margin-left: -1px;
 }
 .CDB-Attribution .CDB-Attribution-text a {
   color: #139BFC;

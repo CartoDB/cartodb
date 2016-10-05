@@ -56,7 +56,7 @@ module Carto
       custom_definition = Hash.new
 
       categories = items.each_with_index.map do |item, index|
-        title = item['name'] || "Category #{index + 1}"
+        title = item['name'].to_s || "Category #{index + 1}"
         color = item['value']
 
         category_definition = { title: title }

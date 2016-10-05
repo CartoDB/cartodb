@@ -91,14 +91,7 @@ module Carto
       end
 
       def vizjson2
-        referer_host = begin
-                        URI.parse(request.referer).host
-                      rescue
-                        nil
-                      end
-        unless referer_host.ends_with?('carto.com') || referer_host.ends_with('cartodb.com')
-          @visualization.mark_as_vizjson2
-        end
+        mark_as_vizjson2
         render_vizjson(generate_vizjson2)
       end
 
@@ -212,6 +205,14 @@ module Carto
         VisualizationPresenter.new(visualization, current_viewer, self).to_poro
       end
 
+      def mark_as_vizjson2
+        referer_host = URI.parse(request.referer).host
+        byebug
+        unless referer_host.ends_with?('carto.com') || referer_host.ends_with?('cartodb.com')
+          @visualization.mark_as_vizjson2
+        end
+      rescue
+      end
     end
   end
 end

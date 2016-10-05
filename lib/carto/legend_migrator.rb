@@ -9,15 +9,8 @@ module Carto
       @legend = legend
     end
 
-    OLD_TYPES_NEW_TYPES = {
-      category: 'custom',
-      choropleth: 'choropleth',
-      bubble: 'bubble'
-    }.with_indifferent_access.freeze
-
     def new_legend
-      new_type = OLD_TYPES_NEW_TYPES[type]
-      new_definition = transformed_definition
+      new_type, new_definition = type_and_definition
       title = title if title.present? && show_title
 
       Legend.new(layer_id: layer_id,
@@ -44,14 +37,15 @@ module Carto
       @show_title ||= legend['show_title']
     end
 
-    def transformed_definition
-      case type.to_s
-      when 'category'
-        build_custom_definition_from_category
-      when 'choropleth'
-        build_choropleth_definition_from_choropleth
-      when 'bubble'
-        build_bubble_definition_from_bubble
+    def type_and_definition
+      if type == 'custom'
+        ['custom', build_custom_definition_from_category]
+      elsif type == 'choropleth'
+        ['html', build_html_definition_from_choropleth]
+      elsif type == 'bubble'
+        ['bubble', build_bubble_definition_from_bubble]
+      else
+        [nil, nil]
       end
     end
 
@@ -72,12 +66,32 @@ module Carto
       custom_definition
     end
 
-    def build_choropleth_definition_from_choropleth
-      { prefix: '', suffix: '' }
-    end
-
     def build_bubble_definition_from_bubble
       { color: items.last['value'] }
+    end
+
+    def build_html_definition_from_choropleth
+      left_label = items.first['value']
+      right_label = items.second['value']
+
+      item_colors = items[2..-1].map do |item|
+        color = item['value'].downcase
+
+        color if color =~ /^#(?:[0-9a-fA-F]{3}){1,2}$/
+      end
+
+      gradient_stops = item_colors.compact.join(', ')
+      style = "background: linear-gradient(90deg , #{gradient_stops})"
+
+      html =  %(<div class="CDB-Legend-item" style="">\n)
+      html += %(  <div class="u-flex u-justifySpace u-bSpace--m">\n)
+      html += %(    <p class="CDB-Text CDB-Size-small">#{left_label}</p>\n)
+      html += %(    <p class="CDB-Text CDB-Size-small">#{right_label}</p>\n)
+      html += %(  </div>\n)
+      html += %(  <div class="Legend-choropleth" style="#{style}"></div>\n)
+      html += %(</div>\n)
+
+      { html: html }
     end
   end
 end

@@ -26,7 +26,8 @@ class Carto::User < ActiveRecord::Base
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
-                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password".freeze
+                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
+                   "users.builder_enabled".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -479,5 +480,24 @@ class Carto::User < ActiveRecord::Base
 
   def notifications_for_category(category)
     notifications.notifications[category] || {}
+  end
+
+  # The builder is enabled/disabled based on a feature flag
+  # The builder_enabled is used to allow the user to turn it on/off
+  def builder_enabled?
+    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
+  end
+
+  def force_builder?
+    builder_enabled? && builder_enabled == true
+  end
+
+  def force_editor?
+    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
+    builder_enabled == false || !builder_enabled?
+  end
+
+  def new_visualizations_version
+    force_builder? ? 3 : 2
   end
 end

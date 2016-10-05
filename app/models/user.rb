@@ -1608,6 +1608,10 @@ class User < Sequel::Model
     builder_enabled == false || !builder_enabled?
   end
 
+  def new_visualizations_version
+    force_builder? ? 3 : 2
+  end
+
   private
 
   def common_data_outdated?

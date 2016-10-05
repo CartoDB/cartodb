@@ -34,7 +34,7 @@
         <div class="FormAccount-rowData FormAccount-avatar">
           <div class="FormAccount-avatarPreview">
             <% if @organization.avatar_url.present? %>
-              <img src="<%= @organization.avatar_url %>" title="" alt="" class="FormAccount-avatarPreviewImage" />
+              <img src="<%= @organization.avatar_url %>" title="<%= current_user.username %>" alt="<%= current_user.username %>" class="FormAccount-avatarPreviewImage" />
             <% else %>
               <svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="FormAccount-avatarPreviewImage">
                 <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

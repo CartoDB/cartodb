@@ -9,7 +9,7 @@ module Carto
       @legend = legend
     end
 
-    def new_legend
+    def migrate
       new_type, new_definition = type_and_definition
       title = title if title.present? && show_title
 

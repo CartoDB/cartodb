@@ -84,8 +84,8 @@ module Carto
 
       html =  %(<div class="CDB-Legend-item" style="">\n)
       html += %(  <div class="u-flex u-justifySpace u-bSpace--m">\n)
-      html += %(    <p class="CDB-Text CDB-Size-small">#{left_label}</p>\n)
-      html += %(    <p class="CDB-Text CDB-Size-small">#{right_label}</p>\n)
+      html += %(    <p class="CDB-Text CDB-Size-small">#{left_label}</p>\n) if left_label
+      html += %(    <p class="CDB-Text CDB-Size-small">#{right_label}</p>\n) if right_label
       html += %(  </div>\n)
       html += %(  <div class="Legend-choropleth" style="#{style}"></div>\n)
       html += %(</div>\n)

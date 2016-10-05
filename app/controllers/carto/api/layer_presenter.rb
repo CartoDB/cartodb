@@ -64,14 +64,16 @@ module Carto
         end
 
         if migrate_legends
-          legend = poro['legend']
-          unless poro['legends'].any? && legend.present?
+          legend = poro['options']['legend']
+          if legend.present? && !poro['options']['legends'].present?
             migrated_legend = Carto::LegendMigrator.new(@layer.id, legend)
                                                    .migrate
 
             if migrated_legend.save
-              poro['legends'] = [Carto::Api::LegendPresenter.new(migrate_legend)
-                                                            .to_hash]
+              poro['options']['legends'] = [
+                Carto::Api::LegendPresenter.new(migrated_legend)
+                                           .to_hash
+              ]
             end
           end
         end

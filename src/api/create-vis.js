@@ -79,7 +79,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
-  visModel.settingsModel = settingsModel;
+  visModel.settings = settingsModel;
 
   new VisView({ // eslint-disable-line
     el: el,

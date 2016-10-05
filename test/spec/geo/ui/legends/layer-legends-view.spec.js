@@ -8,9 +8,9 @@ describe('geo/ui/legends/layer-legends-view', function () {
     var vis = new Backbone.Model();
     vis.reload = jasmine.createSpy('reload');
 
-    this.renderModel = new Backbone.Model({
-      legends: true,
-      layerSelector: true
+    this.settingsModel = new Backbone.Model({
+      showLegends: true,
+      showLayerSelector: true
     });
 
     this.cartoDBLayer = new CartoDBLayer({
@@ -23,7 +23,7 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
     this.layerLegendsView = new LayerLegendsView({
       model: this.cartoDBLayer,
-      renderModel: this.renderModel
+      settingsModel: this.settingsModel
     });
 
     this.layerLegendsView.render();

@@ -17,10 +17,14 @@ describe('geo/ui/legends/legends-view', function () {
     this.layersCollection = new LayersCollection([]);
     this.layersCollection.reset([ this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
 
-    this.legendsView = new LegendsView({
-      layersCollection: this.layersCollection,
+    this.settingsModel = new Backbone.Model({
       showLegends: true,
       showLayerSelector: true
+    });
+
+    this.legendsView = new LegendsView({
+      layersCollection: this.layersCollection,
+      settingsModel: this.settingsModel
     });
 
     this.legendsView.render();
@@ -52,19 +56,22 @@ describe('geo/ui/legends/legends-view', function () {
   });
 
   it('should show legends if showLegends is true', function () {
-    this.legendsView.renderModel.set('legends', true);
-    expect(this.legendsView.$('.Legends').css('display')).toEqual('');
+    this.settingsModel.set('showLegends', true);
+    expect(this.legendsView.$('.Legends').length).toBe(3);
   });
 
   it('should hide legends if showLegends is false', function () {
-    this.legendsView.renderModel.set('legends', false);
-    expect(this.legendsView.$('.Legends').css('display')).toEqual('none');
+    this.settingsModel.set('showLegends', false);
+    expect(this.legendsView.$('.Legends').length).toBe(0);
   });
 
-  it('should show/hide legends when showLegends changes', function () {
-    this.legendsView.renderModel.set('legends', false);
-    expect(this.legendsView.$('.Legends').css('display')).toEqual('none');
-    this.legendsView.renderModel.set('legends', true);
-    expect(this.legendsView.$('.Legends').css('display')).toEqual('block');
+  it('should show layer selector if showLayerSelector is true', function () {
+    this.settingsModel.set('showLayerSelector', true);
+    expect(this.legendsView.$('input').length).toBe(3);
+  });
+
+  it('should hide layer selector if showLayerSelector is false', function () {
+    this.settingsModel.set('showLayerSelector', false);
+    expect(this.legendsView.$('input').length).toBe(0);
   });
 });

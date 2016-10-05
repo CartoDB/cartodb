@@ -39,10 +39,15 @@ describe('vis/vis-view', function () {
     };
 
     this.visModel = new VisModel();
+    this.settingsModel = new Backbone.Model({
+      showLegends: true,
+      showLayerSelector: true
+    });
 
     this.createNewVis = function (attrs) {
       attrs.widgets = new Backbone.Collection();
       attrs.model = this.visModel;
+      attrs.settingsModel = this.settingsModel;
       this.visView = new VisView(attrs);
       return this.visView;
     };
@@ -194,19 +199,6 @@ describe('vis/vis-view', function () {
         }
       ];
       this.visModel.load(new VizJSON(this.mapConfig));
-    });
-
-    it('should hide complete legends view when showLegends and showLayerSelector are false', function () {
-      this.visView.render();
-
-      this.visModel.set('showLegends', false);
-      this.visModel.set('showLayerSelector', false);
-
-      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('none');
-
-      this.visModel.set('showLegends', true);
-
-      expect(this.visView.$('.CDB-Legends-canvas').css('display')).toEqual('block');
     });
   });
 

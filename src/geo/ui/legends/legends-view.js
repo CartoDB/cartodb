@@ -22,7 +22,6 @@ var LegendsView = Backbone.View.extend({
   _initBinds: function () {
     this._layersCollection.on('add remove', this._onLayerAddedOrRemoved, this);
     this.settingsModel.on('change', this._onSettingsModelChanged, this);
-    this._onRenderModelChanged();
   },
 
   render: function () {
@@ -116,38 +115,12 @@ var LegendsView = Backbone.View.extend({
     this.$el.html('');
   },
 
-  _onRenderModelChanged: function () {
-    var showLegends = this.settingsModel.get('showLegends');
-    var showLayerSelector = this.settingsModel.get('showLayerSelector');
-    if (!showLegends && !showLayerSelector) {
-      this.hide();
-    } else {
-      this.show();
-    }
-  },
-
   show: function () {
     this.$el.show();
   },
 
   hide: function () {
     this.$el.hide();
-  },
-
-  showLegends: function () {
-    this.settingsModel.set('legends', true);
-  },
-
-  hideLegends: function () {
-    this.settingsModel.set('legends', false);
-  },
-
-  showLayerSelector: function () {
-    this.settingsModel.set('layerSelector', true);
-  },
-
-  hideLayerSelector: function () {
-    this.settingsModel.set('layerSelector', false);
   }
 });
 

@@ -21,8 +21,6 @@ var Vis = View.extend({
 
     this.overlays = [];
 
-    // this.settingsModel.on('change:showLegends', this._onShowLegendsChanged, this);
-    // this.settingsModel.on('change:showLayerSelector', this._onShowLayerSelectorChanged, this);
     _.bindAll(this, '_onResize');
   },
 

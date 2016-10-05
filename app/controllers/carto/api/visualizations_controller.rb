@@ -207,7 +207,6 @@ module Carto
 
       def mark_as_vizjson2
         referer_host = URI.parse(request.referer).host
-        byebug
         unless referer_host.ends_with?('carto.com') || referer_host.ends_with?('cartodb.com')
           @visualization.mark_as_vizjson2
         end

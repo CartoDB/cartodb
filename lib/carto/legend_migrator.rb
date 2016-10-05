@@ -44,7 +44,7 @@ module Carto
       if HTML_TYPES.include?(type)
         ['html', build_html_definition_from_ramp_type]
       elsif CUSTOM_TYPES.include?(type)
-        ['custom', build_custom_definition_from_category_type]
+        ['custom', build_custom_definition_from_custom_type]
       elsif type == 'bubble'
         ['bubble', build_bubble_definition_from_bubble]
       else
@@ -52,7 +52,7 @@ module Carto
       end
     end
 
-    def build_custom_definition_from_category_type
+    def build_custom_definition_from_custom_type
       custom_definition = Hash.new
 
       categories = items.each_with_index.map do |item, index|

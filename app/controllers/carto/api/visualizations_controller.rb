@@ -153,30 +153,17 @@ module Carto
       def search
         username = current_user.username
         query = params[:q]
-        query.downcase!
-        queryLike = '%' + query + '%'
-        queryPrefix = query + ':*'
-        queryPrefix.tr!(' ', '+')
 
         layers = Sequel::Model.db.fetch("
-            SELECT id, username, type, name, description, tags, (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 100000 ELSE pos_tags END)) AS rank FROM (
-              SELECT v.id, u.username, v.type, v.name, v.description, v.tags,
-                COALESCE(position(? in lower(v.name)), 0) AS pos_name,
-                COALESCE(position(? in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
+            SELECT type, name FROM (
+              SELECT v.type, v.name, v.user_id, v.id
               FROM visualizations AS v
                   INNER JOIN users AS u ON u.id=v.user_id
                   LEFT JOIN external_sources AS es ON es.visualization_id = v.id
                   LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
-              WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
-              (
-                to_tsvector(coalesce(v.name, '')) @@ to_tsquery(?)
-                OR to_tsvector(array_to_string(v.tags, ' ')) @@ to_tsquery(?)
-                OR v.name ILIKE ?
-                OR array_to_string(v.tags, ' ') ILIKE ?
-              )
-            ) AS results
-            ORDER BY rank DESC, type DESC LIMIT 50",
-            query, query, username, queryPrefix, queryPrefix, queryLike, queryLike, query
+              WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type = 'table' AND v.name = ?
+            ) AS results",
+            username, query
           ).all
 
         if !current_user.has_feature_flag?('bbg_disabled_shared_empty_dataset') then
@@ -190,7 +177,7 @@ module Carto
           end
         end
 
-        render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
+        render :json => layers[0].to_json
       end
 
       private

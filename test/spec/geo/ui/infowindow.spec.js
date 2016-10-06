@@ -93,6 +93,38 @@ describe('geo/ui/infowindow-view', function() {
     expect(view.render().$el.html().length).not.toBe(0);
   });
 
+  it("should render with alternative_name set", function() {
+    model.set({
+      content: {
+        fields: [
+          { name: 'jamon1', title: 'jamon1_', value: 'jamon1' }
+        ]
+      }
+    }, { silent: true });
+
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('jamon1');
+    expect(item1.find('.CDB-infowindow-subtitle').text()).toEqual('jamon1_');
+  });
+
+  it("should render without title", function() {
+    model.set({
+      content: {
+        fields: [
+          { name: 'jamon1', title: null, value: 'jamon1' }
+        ]
+      }
+    }, { silent: true });
+
+    view.render();
+
+    var item1 = view.$el.find('.CDB-infowindow-listItem:nth-child(1)');
+    expect(item1.find('.CDB-infowindow-title').text()).toEqual('jamon1');
+    expect(item1.find('.CDB-infowindow-subtitle').length).toBe(0);
+  });
+
   it("should convert value to string when it is a number", function() {
     model.set({
       content: {
@@ -208,8 +240,8 @@ describe('geo/ui/infowindow-view', function() {
     model.set({
       content: {
         fields: [
-          { title: 'jamon1', value: [{ jamon2: 'jamon2', istrue: true, isempty: '', isnum: 9 }] },
-          { title: 'jamon3', value: ['jamon4', 'jamon5'] }
+          { name: 'jamon1', title: 'jamon1', value: [{ jamon2: 'jamon2', istrue: true, isempty: '', isnum: 9 }] },
+          { name: 'jamon3', title: 'jamon3', value: ['jamon4', 'jamon5'] }
         ]
       },
       template: template,
@@ -288,7 +320,7 @@ describe('geo/ui/infowindow-view', function() {
         ],
         content: {
           fields: [
-            { title: 'test1', position: 0, value: 'jamon' },
+            { name: 'test1', title: 'test1', position: 0, value: 'jamon' },
           ]
         }
       });

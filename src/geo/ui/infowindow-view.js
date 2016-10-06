@@ -115,7 +115,7 @@ var Infowindow = View.extend({
       var values = {};
 
       _.each(fields, function (pair) {
-        values[pair.title] = pair.value;
+        values[pair.name] = pair.value;
       });
 
       var obj = _.extend({
@@ -260,16 +260,9 @@ var Infowindow = View.extend({
       attr.value = '';
     }
 
-    // Get the alternative title
-    var alternative_name = this.model.getAlternativeName(attr.title);
-
-    if (attr.title && alternative_name) {
-      // Alternative title
-      attr.title = alternative_name;
-    } else if (attr.title) {
-      // Remove '_' character from titles
-      attr.title = attr.title.replace(/_/g, ' ');
-    }
+    // Get the alternative name
+    var alternative_name = this.model.getAlternativeName(attr.name);
+    attr.title = (attr.title && alternative_name) ? alternative_name : attr.title;
 
     // Save new sanitized value
     attr.value = JSON.parse(JSON.stringify(attr.value), this._sanitizeValue);

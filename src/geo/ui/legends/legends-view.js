@@ -93,7 +93,8 @@ var LegendsView = Backbone.View.extend({
   _renderLayerLegends: function (layerModel) {
     var layerLegendsView = new LayerLegendsView({
       model: layerModel,
-      settingsModel: this.settingsModel
+      settingsModel: this.settingsModel,
+      tryContainerVisibility: this._tryVisibility.bind(this)
     });
 
     this.$(this._container()).append(layerLegendsView.render().$el);
@@ -105,6 +106,14 @@ var LegendsView = Backbone.View.extend({
       this._clear();
       this.render();
     }
+  },
+
+  _tryVisibility: function () {
+    var shouldHide = !_.every(this.$('.js-layer-legends'), function (el) {
+      return $(el).is(':empty');
+    });
+
+    this.$el.toggle(shouldHide);
   },
 
   _hasLegends: function (layerModel) {

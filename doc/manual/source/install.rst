@@ -389,8 +389,14 @@ Editor
         export C_INCLUDE_PATH=/usr/include/gdal
         export PATH=$PATH:/usr/include/gdal
 
-  After this, re-run the pip install command, and it should work. If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
-  
+    After this, re-run the pip install command. Variables can be passed to sudo if exporting them and re-running ``pip install`` doesn't work:
+
+    .. code-block:: bash
+
+       sudo CPLUS_INCLUDE_PATH=/usr/include/gdal C_INCLUDE_PATH=/usr/include/gdal PATH=$PATH:/usr/include/gdal pip install --no-use-wheel -r python_requirements.txt
+
+    If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
+
 * Add the grunt command to the PATH
 
   .. code-block:: bash

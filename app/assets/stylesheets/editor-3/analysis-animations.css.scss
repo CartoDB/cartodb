@@ -1,7 +1,8 @@
+/* GEOREFERENCE */
 .Analysis-animation.is-georeference:hover .Dot-01,
 .Analysis-animation.is-georeference:hover .Dot-02 {
-  opacity: 0;
   transform-origin: 50% 50%;
+  opacity: 0;
   animation-name: fadeOut, fadeIn, scaleIn;
   animation-duration: 300ms, 500ms, 500ms;
   animation-fill-mode: forwards;
@@ -49,6 +50,8 @@
   animation-delay: 100ms;
 }
 
+
+/* DATA OBSERVATORY */
 .Analysis-animation.is-data-observatory-measure:hover .rect-01,
 .Analysis-animation.is-data-observatory-measure:hover .rect-02,
 .Analysis-animation.is-data-observatory-measure:hover .rect-03,
@@ -86,6 +89,486 @@
 .Analysis-animation.is-data-observatory-measure:hover .rect-07 {
   animation-delay: 0ms, 420ms;
 }
+
+
+/* FILTER BY LAYER */
+.Analysis-animation.is-filter-layer {
+  .Line {
+    fill-opacity: 0;
+  }
+}
+.Analysis-animation.is-filter-layer:hover {
+  .Line {
+    opacity: 1;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation-name: dash;
+    animation-duration: 800ms;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+    animation-delay: 500ms;
+  }
+
+  .Line--withFade {
+    opacity: 1;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation-name: dash,fadeOut;
+    animation-duration: 800ms,800ms;
+    animation-timing-function: ease-in,ease-in;
+    animation-fill-mode: forwards,forwards;
+    animation-delay: 500ms,900ms;
+  }
+
+  .Line--withHighlight {
+    opacity: 0;
+    stroke-width: 1;
+    fill: none;
+    transform-origin: 50% 50%;
+    animation-name: lineGreenIn;
+    animation-duration: 100ms;
+    animation-fill-mode: forwards;
+    animation-delay: 850ms;
+  }
+
+  .Dot--withHighlight {
+    opacity: 0;
+    transform-origin: 50% 50%;
+    animation-name: fadeIn,scaleIn,dotGreenIn;
+    animation-duration: 200ms,600ms,500ms;
+    animation-fill-mode: forwards,forwards,forwards;
+  }
+  .Dot-01 {
+    animation-delay: 100ms,100ms,900ms;
+  }
+  .Dot-02 {
+    animation-delay: 500ms,500ms,900ms;
+  }
+  .Dot-03 {
+    animation-delay: 50ms,50ms,900ms;
+  }
+  .Dot-04 {
+    animation-delay: 200ms,200ms,900ms;
+  }
+
+  .Dot {
+    opacity: 0;
+    transform-origin: 50% 50%;
+    animation-name: fadeIn, scaleIn;
+    animation-duration: 200ms, 600ms;
+    animation-fill-mode: forwards, forwards;
+  }
+
+  .Dot:nth-child(0) {
+    animation-delay: 400ms
+  }
+  .Dot:nth-child(1) {
+    animation-delay: 300ms
+  }
+  .Dot:nth-child(2) {
+    animation-delay: 50ms
+  }
+  .Dot:nth-child(3) {
+    animation-delay: 100ms
+  }
+  .Dot:nth-child(4) {
+    animation-delay: 150ms
+  }
+  .Dot:nth-child(5) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(6) {
+    animation-delay: 300ms
+  }
+  .Dot:nth-child(7) {
+    animation-delay: 350ms
+  }
+  .Dot:nth-child(8) {
+    animation-delay: 400ms
+  }
+  .Dot:nth-child(9) {
+    animation-delay: 150ms
+  }
+  .Dot:nth-child(10) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(11) {
+    animation-delay: 300ms
+  }
+  .Dot:nth-child(12) {
+    animation-delay: 150ms
+  }
+  .Dot:nth-child(13) {
+    animation-delay: 200ms
+  }
+  .Dot:nth-child(14) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(15) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(16) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(17) {
+    animation-delay: 350ms
+  }
+  .Dot:nth-child(18) {
+    animation-delay: 150ms
+  }
+  .Dot:nth-child(19) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(20) {
+    animation-delay: 250ms
+  }
+  .Dot:nth-child(21) {
+    animation-delay: 350ms
+  }
+  .Dot:nth-child(22) {
+    animation-delay: 150ms
+  }
+}
+
+/* CENTROID */
+
+.Analysis-animation.is-centroid {
+  .Centroid-points {
+    opacity: 1;
+  }
+  .Centroid-pointsHighlight {
+    transform-origin: 50% 50%;
+    opacity: 0;
+  }
+  &:hover {
+    .Centroid-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation-name: dash, fadeOut;
+      animation-duration: 500ms, 300ms;
+      animation-fill-mode: forwards, forwards;
+      animation-timing-function: ease-in, ease-in;
+      animation-delay: 300ms, 800ms;
+    }
+
+    .Centroid-pointsHighlight {
+      animation-name: scale;
+      animation-duration: 300ms;
+      animation-delay: 600ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+    }
+
+    .Centroid-points01,
+    .Centroid-points02,
+    .Centroid-points03,
+    .Centroid-points04,
+    .Centroid-points05,
+    .Centroid-points06,
+    .Centroid-points07,
+    .Centroid-points08,
+    .Centroid-points09,
+    .Centroid-points10  {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 200ms;
+      animation-timing-function: ease-in-out;
+      animation-fill-mode: forwards;
+    }
+
+    .Centroid-points02 {
+      animation-delay: 400ms
+    }
+    .Centroid-points03 {
+      animation-delay: 300ms
+    }
+    .Centroid-points04 {
+      animation-delay: 150ms
+    }
+    .Centroid-points05 {
+      animation-delay: 100ms
+    }
+    .Centroid-points06 {
+      animation-delay: 350ms
+    }
+    .Centroid-points07 {
+      animation-delay: 250ms
+    }
+    .Centroid-points08 {
+      animation-delay: 100ms
+    }
+    .Centroid-points09 {
+      animation-delay: 250ms
+    }
+    .Centroid-points10 {
+      animation-delay: 400ms
+    }
+  }
+}
+
+/* GROUP POINTS INTO POLYGONS */
+.Analysis-animation.is-group-points {
+  .Group-line {
+    opacity: 0;
+  }
+  &:hover {
+    .Group-line {
+      opacity: 1;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 800ms ease-in forwards;
+      animation-delay: 600ms;
+    }
+
+    .Group-point01,
+    .Group-point02,
+    .Group-point03,
+    .Group-point04,
+    .Group-point05,
+    .Group-point06,
+    .Group-point07,
+    .Group-point08,
+    .Group-point09,
+    .Group-point10,
+    .Group-point11,
+    .Group-point12,
+    .Group-point13,
+    .Group-point14,
+    .Group-point15 {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeOut, fadeIn, scaleIn;
+      animation-duration: 300ms, 500ms, 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+
+    .Group-point01 {
+      animation-delay: 0ms, 350ms, 350ms;
+    }
+    .Group-point02 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point03 {
+      animation-delay: 0ms, 450ms, 450ms;
+    }
+    .Group-point04 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point05 {
+      animation-delay: 0ms, 500ms, 500ms;
+    }
+    .Group-point06 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point07 {
+      animation-delay: 0ms, 550ms, 550ms;
+    }
+    .Group-point08 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point09 {
+      animation-delay: 0ms, 500ms, 500ms;
+    }
+    .Group-point10 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point11 {
+      animation-delay: 0ms, 450ms, 450ms;
+    }
+    .Group-point12 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point13 {
+      animation-delay: 0ms, 400ms, 400ms;
+    }
+    .Group-point14 {
+      animation-delay: 0ms, 600ms, 650ms;
+    }
+    .Group-point15 {
+      animation-delay: 0ms, 700ms, 750ms;
+    }
+  }
+}
+
+/* AREAS OF INFLUENCE */
+.Analysis-animation.is-area-of-influence {
+  .aoi-area {
+    opacity: 0;
+    transform-origin: 50% 50%;
+    opacity: 0;
+  }
+  
+  &:hover {
+    .area-point01,
+    .area-point02,
+    .area-point03,
+    .area-point04,
+    .area-point05,
+    .area-point06 {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 200ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+    }
+    .area-point01 {
+      animation-delay: 400ms
+    }
+    .area-point02 {
+      animation-delay: 300ms
+    }
+    .area-point03 {
+      animation-delay: 50ms
+    }
+    .area-point04 {
+      animation-delay: 100ms
+    }
+    .area-point05 {
+      animation-delay: 150ms
+    }
+    .area-point06 {
+      animation-delay: 200ms
+    }
+
+
+    .area01,
+    .area02,
+    .area03,
+    .area04,
+    .area05,
+    .area06 {
+      animation-name: scale;
+      animation-duration: 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in;
+    }
+
+    .area01 {
+      animation-delay: 1000ms;
+    }
+    .area02 {
+      animation-delay: 900ms;
+    }
+    .area03 {
+      animation-delay: 650ms;
+    }
+    .area04 {
+      animation-delay: 700ms;
+    }
+    .area05 {
+      animation-delay: 750ms;
+    }
+    .area06 {
+      animation-delay: 800ms;
+    }
+
+  }
+}
+
+.Analysis-animation.is-intersect {
+  .intersect-layer {
+    fill-opacity: 0;
+  }
+
+  &:hover {
+    .intersect-layer {
+      opacity: 1;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation-name: dash, fill;
+      animation-duration: 800ms, 400ms;
+      animation-timing-function: ease-in, linear;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 600ms, 1100ms;
+    }
+
+    .intersect-circle1,
+    .intersect-circle2,
+    .intersect-circle3,
+    .intersect-circle4,
+    .intersect-circle5,
+    .intersect-circle6,
+    .intersect-circle7,
+    .intersect-circle8,
+    .intersect-circle9 {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 200ms;
+      animation-fill-mode: forwards;
+    }
+
+    .intersect-circle1 {
+      animation-delay: 400ms
+    }
+    .intersect-circle2 {
+      animation-delay: 300ms
+    }
+    .intersect-circle3 {
+      animation-delay: 50ms
+    }
+    .intersect-circle4 {
+      animation-delay: 100ms
+    }
+    .intersect-circle5 {
+      animation-delay: 150ms
+    }
+    .intersect-circle6 {
+      animation-delay: 250ms
+    }
+    .intersect-circle7 {
+      animation-delay: 300ms
+    }
+    .intersect-circle8 {
+      animation-delay: 350ms
+    }
+    .intersect-circle9 {
+      animation-delay: 400ms
+    }
+
+    .intersect-circle4Highlight {
+      opacity: 0;
+      animation-name: fadeIn, changeColor;
+      animation-duration: 200ms, 400ms;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 300ms, 600ms;
+    }
+
+    .intersect-circle2Highlight {
+      opacity: 0;
+      animation-name: fadeIn, changeColor;
+      animation-duration: 200ms, 400ms;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 150ms, 650ms;
+    }
+
+    .intersect-circle1Highlight {
+      opacity: 0;
+      animation-name: fadeIn, changeColor;
+      animation-duration: 200ms, 400ms;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 100ms, 700ms;
+    }
+
+    .intersect-circle3Highlight {
+      opacity: 0;
+      animation-name: fadeIn, changeColor;
+      animation-duration: 200ms, 400ms;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 250ms, 800ms;
+    }
+    .intersect-circle5Highlight {
+      opacity: 0;
+      animation-name: fadeIn, changeColor;
+      animation-duration: 200ms, 400ms;
+      animation-fill-mode: forwards, forwards;
+      animation-delay: 350ms, 820ms;
+    }
+  }
+}
+
+
 
 @keyframes fadeOut {
   from {
@@ -242,6 +725,26 @@
     fill: transparent;
   }
   100% {
+    fill: #9DE0AD;
+  }
+}
+
+@keyframes fill {
+  from {
+    stroke-opacity: 1;
+    fill-opacity: 0;
+  }
+  to {
+    stroke-opacity: 0;
+    fill-opacity: 1;
+  }
+}
+
+@keyframes changeColor {
+  from {
+    fill: #636D72;
+  }
+  to {
     fill: #9DE0AD;
   }
 }

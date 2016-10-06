@@ -8,7 +8,7 @@ module.exports = {
   'legends': true,
   'url': null,
   'map_provider': 'leaflet',
-  'embed_options': {
+  'options': {
     'scrollwheel': false,
     'legends': true,
     'layer_selector': true

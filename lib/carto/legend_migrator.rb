@@ -101,6 +101,12 @@ module Carto
         color if color =~ COLOR_REGEXP
       end
 
+      if item_colors.count == 1
+        item_colors << generate_end_color(item_colors.first)
+      end
+
+      byebug
+
       gradient_stops = item_colors.compact.join(', ')
       "background: linear-gradient(90deg , #{gradient_stops})"
     end
@@ -121,6 +127,36 @@ module Carto
 
       @labels_for_items = [left_label, right_label]
       @labels_for_items
+    end
+
+    def generate_end_color(start_color, brighten_steps: 4)
+      start_red, start_green, start_blue = html_color_to_rgb(start_color)
+
+      brightened_red = start_red
+      brightened_green = start_green
+      brightened_blue = start_blue
+      brighten_steps.times do
+        brightened_red = (brightened_red * start_red / 255)
+        brightened_green = (brightened_green * start_green / 255)
+        brightened_blue = (brightened_blue * start_blue / 255)
+      end
+
+      hex_red = brightened_red.to_s(16)
+      hex_green = brightened_green.to_s(16)
+      hex_blue = brightened_blue.to_s(16)
+
+      "##{hex_red}#{hex_green}#{hex_blue}"
+    end
+
+    def html_color_to_rgb(html_color)
+      stripped = html_color.delete('#')
+
+      if stripped.length == 3
+        characters = stripped.map { |character| [character, character] }
+        stripped = characters.flatten.join
+      end
+
+      [stripped[0..1].hex, stripped[2..3].hex, stripped[4..5].hex]
     end
   end
 end

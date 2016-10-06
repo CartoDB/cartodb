@@ -65,9 +65,9 @@ module Carto
 
         if migrate_legends
           legend = poro['options']['legend']
-          if legend.present? && !poro['options']['legends'].present?
+          if legend.present? && @layer.legends.empty?
             migrated_legend = Carto::LegendMigrator.new(@layer.id, legend)
-                                                   .migrate
+                                                   .build
 
             if migrated_legend.save
               poro['options']['legends'] = [

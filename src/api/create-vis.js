@@ -73,7 +73,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
-  visModel.settings.set({
+  visModel.setSettings({
     showLegends: showLegends,
     showLayerSelector: showLayerSelector
   });

@@ -207,8 +207,8 @@ module Carto
 
       def carto_referer?
         referer_host = URI.parse(request.referer).host
-        referer_host.ends_with?('carto.com') || referer_host.ends_with?('cartodb.com')
-      rescue
+        referer_host && (referer_host.ends_with?('carto.com') || referer_host.ends_with?('cartodb.com'))
+      rescue URI::InvalidURIError
         false
       end
     end

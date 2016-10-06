@@ -65,7 +65,6 @@ describe('src/api/create-vis', function () {
     var vizJSON = _.extend(fakeVizJSON, {
       title: 'TITLE',
       description: 'DESCRIPTION',
-      legends: true,
       https: true
     });
     var visModel = createVis(this.containerId, vizJSON, {
@@ -78,7 +77,6 @@ describe('src/api/create-vis', function () {
     expect(visModel.get('title')).toEqual('TITLE');
     expect(visModel.get('description')).toEqual('DESCRIPTION');
     expect(visModel.get('authToken')).toEqual('AUTH_TOKEN');
-    expect(visModel.get('showLegends')).toEqual(true);
     expect(visModel.get('showEmptyInfowindowFields')).toEqual(true);
     expect(visModel.get('https')).toEqual(true);
   });

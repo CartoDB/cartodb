@@ -53,8 +53,15 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
   var showLegends = true;
   if (_.isBoolean(options.legends)) {
     showLegends = options.legends;
-  } else if (_.isBoolean(vizjson.legends)) {
-    showLegends = vizjson.legends;
+  } else if (vizjson.options && _.isBoolean(vizjson.options.legends)) {
+    showLegends = vizjson.options.legends;
+  }
+
+  var showLayerSelector = true;
+  if (_.isBoolean(options.layer_selector)) {
+    showLayerSelector = options.layer_selector;
+  } else if (vizjson.options && _.isBoolean(vizjson.options.layer_selector)) {
+    showLayerSelector = vizjson.options.layer_selector;
   }
 
   visModel.set({
@@ -62,14 +69,19 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: options.authToken,
-    showLegends: showLegends,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
     https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
+  visModel.setSettings({
+    showLegends: showLegends,
+    showLayerSelector: showLayerSelector
+  });
+
   new VisView({ // eslint-disable-line
     el: el,
-    model: visModel
+    model: visModel,
+    settingsModel: visModel.settings
   });
 
   visModel.load(vizjson);
@@ -80,7 +92,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
 };
 
 var applyOptionsToVizJSON = function (vizjson, options) {
-  vizjson.scrollwheel = options.scrollwheel || vizjson.scrollwheel;
+  vizjson.options.scrollwheel = options.scrollwheel || vizjson.options.scrollwheel;
 
   if (!options.tiles_loader || !options.loaderControl) {
     vizjson.removeLoaderOverlay();

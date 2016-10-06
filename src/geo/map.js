@@ -26,6 +26,8 @@ var Map = Model.extend({
     vector: false
   },
 
+  // GEOMETRY MANAGEMENT
+
   drawPoint: function () {
     return this._drawGeometry(Point);
   },
@@ -41,6 +43,7 @@ var Map = Model.extend({
   _drawGeometry: function (GeometryClass) {
     var geometry = new GeometryClass();
     this._newGeometry = geometry;
+    this.disableInteractiviy();
     this.trigger('enterDrawingMode');
     return geometry;
   },
@@ -50,6 +53,7 @@ var Map = Model.extend({
       this._newGeometry.remove();
       delete this._newGeometry;
     }
+    this.enableInteractivity();
     this.trigger('exitDrawingMode');
   },
 
@@ -61,33 +65,21 @@ var Map = Model.extend({
     return this._newGeometry;
   },
 
+  // INTERACTIVITY MANAGEMENT
 
+  enableInteractivity: function () {
+    this.set('interactivity', true);
+  },
 
+  disableInteractiviy: function () {
+    this.set('interactivity', false);
+  },
 
+  isInteractivityEnabled: function () {
+    return !!this.get('interactivity');
+  },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // ...
 
   initialize: function (attrs, options) {
     options = options || {};

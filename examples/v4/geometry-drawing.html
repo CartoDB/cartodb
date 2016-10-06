@@ -434,18 +434,34 @@
         $('.js-drawing-control').click(function () {
           var clickedControl = this;
           $('.js-drawing-control').each(function (index) {
-            $(this).toggleClass('is-enabled', clickedControl === this);
+            var isEnabled = false;
+            if (clickedControl === this) {
+              isEnabled = !($(this).hasClass('is-enabled'));
+            }
+            $(this).toggleClass('is-enabled', isEnabled);
           });
         });
 
         document.querySelector('.js-draw-point').addEventListener('click', function () {
-          drawPoint(vis);
+          if ($(this).hasClass('is-enabled')) {
+            drawPoint(vis);
+          } else {
+            vis.map.stopDrawing();
+          }
         });
         document.querySelector('.js-draw-line').addEventListener('click', function () {
-          drawPolyline(vis);
+          if ($(this).hasClass('is-enabled')) {
+            drawPolyline(vis);
+          } else {
+            vis.map.stopDrawing();
+          }
         });
         document.querySelector('.js-draw-polygon').addEventListener('click', function () {
-          drawPolygon(vis);
+          if ($(this).hasClass('is-enabled')) {
+            drawPolygon(vis);
+          } else {
+            vis.map.stopDrawing();
+          }
         });
       }
 

@@ -99,9 +99,19 @@ var LeafletCartoDBLayerGroupView = L.TileLayer.extend({
 
     this.addProfiling();
 
+    layerModel.on('change:interactivity', this._onInteractivityChanged, this);
+
     CartoDBLayerGroupViewBase.call(this, layerModel);
     L.TileLayer.prototype.initialize.call(this);
     LeafletLayerView.call(this, layerModel, this, leafletMap);
+  },
+
+  _onInteractivityChanged: function (layerModel) {
+    if (layerModel.isInteractivityEnabled()) {
+      this._reloadInteraction();
+    } else {
+      this._clearInteraction();
+    }
   },
 
   featureOver: function (e, latlon, pixelPos, data, layer) {

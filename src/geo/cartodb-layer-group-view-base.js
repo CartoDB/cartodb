@@ -1,6 +1,5 @@
 function CartoDBLayerGroupViewBase (layerGroupModel) {
   this.visible = true;
-  this.interactionEnabled = [];
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
@@ -24,12 +23,9 @@ CartoDBLayerGroupViewBase.prototype = {
   },
 
   _clearInteraction: function () {
-    for (var layerIndex in this.interactionEnabled) {
-      if (this.interactionEnabled.hasOwnProperty(layerIndex) &&
-        this.interactionEnabled[layerIndex]) {
-        this._disableInteraction(layerIndex);
-      }
-    }
+    this.model.each(function (layer, layerIndex) {
+      this._disableInteraction(layerIndex);
+    }, this);
   },
 
   _enableInteraction: function (layerIndexInLayerGroup) {

@@ -34,9 +34,10 @@ var MapView = View.extend({
 
     this.map.on('enterDrawingMode', this._enterDrawingMode, this);
     this.map.on('exitDrawingMode', this._exitDrawingMode, this);
-
-    // TODO: Extract drawingController
+    this.map.on('change:interactivity', this._onMapInteractiviyChanged, this);
   },
+
+  // TODO: Extract drawingController
 
   _supportsDrawing: function () {
     return !!this._geometryViewFactory;
@@ -67,6 +68,16 @@ var MapView = View.extend({
 
   _drawGeometry: function (geometry) {
     return this._geometryViewFactory.createGeometryView(geometry, this);
+  },
+
+  // INTERACTIVITY
+
+  _onMapInteractiviyChanged: function () {
+    if (this.map.isInteractivityEnabled()) {
+      this._cartoDBLayerGroup.enableInteractivity();
+    } else {
+      this._cartoDBLayerGroup.disableInteractivity();
+    }
   },
 
   render: function () {

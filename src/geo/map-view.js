@@ -67,7 +67,11 @@ var MapView = View.extend({
   },
 
   _drawGeometry: function (geometry) {
-    return this._geometryViewFactory.createGeometryView(geometry, this);
+    var geometryView = this._geometryViewFactory.createGeometryView(geometry, this);
+    this._newGeometryView = geometryView;
+    geometryView.render();
+
+    return geometryView;
   },
 
   // INTERACTIVITY

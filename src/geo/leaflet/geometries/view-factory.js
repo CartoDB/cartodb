@@ -12,12 +12,10 @@ var GeometryViewFactory = {
   createGeometryView: function (geometry, mapView) {
     var GeometryView = GEOMETRY_VIEWS[geometry.get('type')];
     if (GeometryView) {
-      var geometryView = new GeometryView({
+      return new GeometryView({
         model: geometry,
         mapView: mapView
       });
-      this._newGeometryView = geometryView;
-      geometryView.render();
     } else {
       throw new Error(geometry.get('type') + ' is not supported yet');
     }

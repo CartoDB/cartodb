@@ -24,9 +24,8 @@ module Carto
       before_filter :optional_api_authorization, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
 
       before_filter :id_and_schema_from_params
-      before_filter :load_by_name_or_id, only: [:vizjson2, :vizjson3]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
-                                                :static_map]
+                                                :static_map, :vizjson2, :vizjson3]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -135,18 +134,6 @@ module Carto
       rescue => exception
         CartoDB.notify_exception(exception)
         raise exception
-      end
-
-      def load_by_name_or_id
-        @table =  is_uuid?(@id) ? Carto::UserTable.where(id: @id).first  : nil
-
-        # INFO: id should _really_ contain either an id of a user_table or a visualization, but for legacy reasons...
-        if @table
-          @visualization = @table.visualization
-        else
-          load_visualization
-          @table = @visualization
-        end
       end
 
       def load_visualization

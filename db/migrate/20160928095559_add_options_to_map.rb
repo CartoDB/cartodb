@@ -1,7 +1,7 @@
 Sequel.migration do
   up do
     alter_table :maps do
-      add_column :embed_options,
+      add_column :options,
                  :string,
                  type: 'json'
     end
@@ -9,7 +9,7 @@ Sequel.migration do
 
   down do
     alter_table :maps do
-      drop_column :embed_options
+      drop_column :options
     end
   end
 end

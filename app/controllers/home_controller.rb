@@ -18,12 +18,12 @@ class HomeController < ApplicationController
   GEOS_VERSION = '3.5.0'
   GDAL_VERSION = '1.11'
 
-  WINDSHAFT_VALID_VERSION = '2.63'
-  WINDSHAFT_LATEST_VERSION = '2.63.1'
+  WINDSHAFT_VALID_VERSION = '2.78'
+  WINDSHAFT_LATEST_VERSION = '2.78.2'
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
     '</span>'
-  SQL_API_VALID_VERSION = '1.34'
-  SQL_API_LATEST_VERSION = '1.34.2'
+  SQL_API_VALID_VERSION = '1.36'
+  SQL_API_LATEST_VERSION = '1.36.3'
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API: <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque: <span class="code">bundle exec script/resque</span>'
 

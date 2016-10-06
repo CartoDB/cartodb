@@ -22,6 +22,10 @@ var Point = Model.extend({
     this.set('latlng', latlng);
   },
 
+  remove: function () {
+    this.trigger('remove');
+  },
+
   toGeoJSON: function () {
     return this.get('geojson');
   }
@@ -37,12 +41,24 @@ var Line = Model.extend({
     this.on('change:geojson', function () {
       this.trigger('ready', this);
     }, this);
+
+    this.points = new Backbone.Collection();
+  },
+
+  getLatLngs: function () {
+    return this.points.map(function (point) {
+      return point.get('latlng');
+    });
   },
 
   update: function (latlng) {
-    var latlngs = _.clone(this.get('latlngs'));
-    latlngs.push(latlng);
-    this.set('latlngs', latlngs);
+    this.points.add(new Point({
+      latlng: latlng
+    }));
+  },
+
+  remove: function () {
+    this.trigger('remove');
   },
 
   toGeoJSON: function () {

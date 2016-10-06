@@ -339,7 +339,7 @@
         vis.map.stopDrawing();
         var point = vis.map.drawPoint();
         point.on('ready', function (point) {
-          alert(JSON.stringify(point.toGeoJSON()));
+          console.log(point.toGeoJSON());
         });
       }
 
@@ -347,7 +347,7 @@
         vis.map.stopDrawing();
         var line = vis.map.drawLine();
         line.on('ready', function (point) {
-          alert(JSON.stringify(line.toGeoJSON()));
+          console.log(line.toGeoJSON());
         });
       }
 

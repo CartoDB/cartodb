@@ -9,7 +9,9 @@ var MyLeafletPointView = View.extend({
 
     this.model = this.model || options.model;
     this.mapView = options.mapView;
+    this.leafletMap = this.mapView._getNativeMap();
 
+    this.model.on('remove', this._onRemoveTriggered, this);
     this.model.on('change:latlng', this._onLatlngChanged, this);
 
     this._marker = this._createMarker();
@@ -20,11 +22,11 @@ var MyLeafletPointView = View.extend({
       iconUrl: '/themes/img/default-marker-icon.png',
       iconAnchor: [11, 11]
     });
-    return L.marker(this.model.get('latlng'), { icon: icon });
+    return L.marker(this.model.get('latlng') || [0,0], { icon: icon });
   },
 
   render: function () {
-    this._marker.addTo(this.mapView._getNativeMap());
+    this._marker.addTo(this.leafletMap);
   },
 
   _onLatlngChanged: function () {
@@ -36,6 +38,11 @@ var MyLeafletPointView = View.extend({
     this.model.set({
       geojson: this._marker.toGeoJSON()
     });
+  },
+
+  _onRemoveTriggered: function () {
+    this.leafletMap.removeLayer(this._marker);
+    this.remove();
   }
 });
 
@@ -47,7 +54,9 @@ var MyLeafletLineView = View.extend({
     this.model = this.model || options.model;
     this.mapView = options.mapView;
 
-    this.model.on('change:latlngs', this._onLatlngsChanged, this);
+    this.model.on('remove', this._onRemoveTriggered, this);
+    this.model.points.on('change', this._onPointsChanged, this);
+    this.model.points.on('add', this._onPointsChanged, this);
 
     this._polyline = this._createPolyline();
     this._markers = [];
@@ -61,38 +70,41 @@ var MyLeafletLineView = View.extend({
     this._polyline.addTo(this.mapView._getNativeMap());
   },
 
-  _onLatlngsChanged: function () {
-    var latlngs = this.model.get('latlngs');
+  _onPointsChanged: function () {
     this._removeMarkers();
     this._addMarkers();
-    this._polyline.setLatLngs(latlngs);
+    this._polyline.setLatLngs(this.model.getLatLngs());
     this._updateModelsGeoJSON();
   },
 
-  _addMarkers: function () {
-    var latlngs = this.model.get('latlngs');
-    _.each(latlngs, this._addMarker, this);
-  },
-
-  _addMarker: function (latlng) {
-    var icon = L.icon({
-      iconUrl: '/themes/img/default-marker-icon.png',
-      iconAnchor: [11, 11]
-    });
-    var marker = L.marker(latlng, { icon: icon });
-    marker.addTo(this.mapView._getNativeMap());
-  },
-
   _removeMarkers: function () {
-    _.each(this._markers, function (marker) {
-      marker.remove();
+    this.model.points.each(function (point) {
+      point.remove();
+    }, this);
+  },
+
+  _addMarkers: function () {
+    this.model.points.each(this._addMarker, this);
+  },
+
+  _addMarker: function (point) {
+    var pointView = new MyLeafletPointView({
+      model: point,
+      mapView: this.mapView
     });
+    pointView.render();
   },
 
   _updateModelsGeoJSON: function () {
     this.model.set({
       geojson: this._polyline.toGeoJSON()
     });
+  },
+
+  _onRemoveTriggered: function () {
+    this._removeMarkers();
+    this._polyline.remove();
+    this.remove();
   }
 });
 

@@ -12,6 +12,7 @@ var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
+var SettingsModel = require('./settings');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -32,6 +33,7 @@ var VisModel = Backbone.Model.extend({
     this._dataviewsCollection = new Backbone.Collection();
 
     this.overlaysCollection = new Backbone.Collection();
+    this.settings = new SettingsModel();
     this._instantiateMapWasCalled = false;
   },
 
@@ -204,6 +206,11 @@ var VisModel = Backbone.Model.extend({
     _.defer(function () {
       this.trigger('load', this);
     }.bind(this));
+  },
+
+  // we provide a method to set some new settings
+  setSettings: function (settings) {
+    this.settings.set(settings);
   },
 
   _onMapInstanceCreated: function () {

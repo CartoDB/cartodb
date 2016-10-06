@@ -23,12 +23,14 @@
         {{#content.fields}}
           {{#index}}
             <li class="CDB-infowindow-listItem">
-              {{#alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
-              {{/alternative_name}}
-              {{^alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
-              {{/alternative_name}}
+              {{#title}}
+                {{#alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
+                {{/alternative_name}}
+                {{^alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
+                {{/alternative_name}}
+              {{/title}}
               <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
             </li>
           {{/index}}

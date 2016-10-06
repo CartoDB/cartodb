@@ -374,10 +374,6 @@ class Carto::Visualization < ActiveRecord::Base
     mapcaps.first
   end
 
-  def uses_builder_features?
-    analyses.any? || widgets.any? || mapcapped?
-  end
-
   def add_source_analyses
     return unless analyses.empty?
 

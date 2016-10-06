@@ -9,7 +9,7 @@ module Carto
       @legend = legend
     end
 
-    def migrate
+    def build
       new_type, new_definition = type_and_definition
       title = title if title.present? && show_title
 
@@ -105,10 +105,8 @@ module Carto
         item_colors << generate_end_color(item_colors.first)
       end
 
-      byebug
-
       gradient_stops = item_colors.compact.join(', ')
-      "background: linear-gradient(90deg , #{gradient_stops})"
+      "background: linear-gradient(90deg, #{gradient_stops})"
     end
 
     def labels_for_items

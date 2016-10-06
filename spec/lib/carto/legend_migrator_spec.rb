@@ -53,7 +53,7 @@ module Carto
       end
 
       after(:each) do
-        new_legend = @migrator.migrate
+        new_legend = @migrator.build
 
         new_legend.type.should eq 'bubble'
         new_legend.valid?.should be_true
@@ -180,7 +180,7 @@ module Carto
       end
 
       after(:each) do
-        new_legend = @migrator.migrate
+        new_legend = @migrator.build
 
         new_legend.type.should eq 'custom'
         new_legend.valid?.should be_true
@@ -368,7 +368,7 @@ module Carto
       end
 
       after(:each) do
-        new_legend = @migrator.migrate
+        new_legend = @migrator.build
 
         new_legend.type.should eq 'html'
         new_legend.valid?.should be_true
@@ -409,7 +409,7 @@ module Carto
       it 'returns invalid legends for invalid definitions' do
         migrator = Carto::LegendMigrator.new(@layer.id, bad_legend)
 
-        migrator.migrate.should_not be_valid
+        migrator.build.should_not be_valid
       end
     end
   end

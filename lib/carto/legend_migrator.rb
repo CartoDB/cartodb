@@ -143,6 +143,18 @@ module Carto
       hex_green = brightened_green.to_s(16)
       hex_blue = brightened_blue.to_s(16)
 
+      if hex_red.length == 1
+        hex_red = [hex_red, hex_red].join
+      end
+
+      if hex_green.length == 1
+        hex_green = [hex_green, hex_green].join
+      end
+
+      if hex_blue.length == 1
+        hex_blue = [hex_blue, hex_blue].join
+      end
+
       "##{hex_red}#{hex_green}#{hex_blue}"
     end
 

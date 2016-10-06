@@ -69,10 +69,12 @@ Dashboard.prototype = {
   },
 
   onStateChanged: function (callback) {
-    /*
-     * TODO: Disabled widget states until issues are fixed.
-     * See https://github.com/CartoDB/deep-insights.js/issues/416
-     */
+    this._dashboard.vis.once('dataviewsFetched', function () {
+      this._bindChange(callback);
+    }, this);
+  },
+
+  _bindChange: function (callback) {
     this._dashboard.widgets._widgetsCollection.bind('change', function () {
       callback(this.getState(), this.getDashboardURL());
     }, this);

@@ -86,7 +86,7 @@
       <p class="sidebar-title">Drawing tools</p>
       <div id="controls">
         <button class="js-drawing-control js-draw-point">Point</button>
-        <button class="js-drawing-control js-draw-line">Line</button>
+        <button class="js-drawing-control js-draw-line">Polyline</button>
         <button class="js-drawing-control js-draw-polygon">Polygon</button>
       </div>
       <p class="sidebar-title sidebar-title-dark">GeoJSON Viewer</p>
@@ -410,10 +410,10 @@
         });
       }
 
-      function drawLine (vis) {
+      function drawPolyline (vis) {
         vis.map.stopDrawing();
         clearGeoJSON();
-        var line = vis.map.drawLine();
+        var line = vis.map.drawPolyline();
         line.on('ready', function (point) {
           displayGeoJSON(line.toGeoJSON());
         });
@@ -440,7 +440,7 @@
           drawPoint(vis);
         });
         document.querySelector('.js-draw-line').addEventListener('click', function () {
-          drawLine(vis);
+          drawPolyline(vis);
         });
         document.querySelector('.js-draw-polygon').addEventListener('click', function () {
           drawPolygon(vis);

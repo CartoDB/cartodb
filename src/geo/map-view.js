@@ -2,166 +2,9 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 
-var MyLeafletPointView = View.extend({
-  initialize: function (options) {
-    if (!options.model) throw new Error('model is required');
-    if (!options.mapView) throw new Error('mapView is required');
-
-    this.model = this.model || options.model;
-    this.mapView = options.mapView;
-    this.leafletMap = this.mapView._getNativeMap();
-
-    this.model.on('remove', this._onRemoveTriggered, this);
-    this.model.on('change:latlng', this._onLatlngChanged, this);
-
-    this._marker = this._createMarker();
-    this._marker.on('dragstart', this._onDragStart.bind(this));
-    this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
-    this._marker.on('dragend', this._onDragEnd.bind(this));
-  },
-
-  _onDragStart: function () {
-    this._isDragging = true;
-  },
-
-  _onDrag: function (event) {
-    this.model.set('latlng', this._marker.getLatLng());
-  },
-
-  _onDragEnd: function () {
-    this._isDragging = false;
-  },
-
-  isDragging: function () {
-    return !!this._isDragging;
-  },
-
-  _createMarker: function () {
-    var markerOptions = {
-      icon: L.icon({
-        iconUrl: '/themes/img/default-marker-icon.png',
-        iconAnchor: [11, 11]
-      })
-    };
-
-    var isDraggable = this.model.get('draggable');
-    if (isDraggable) {
-      markerOptions.draggable = isDraggable;
-    }
-    return L.marker(this.model.get('latlng') || [0,0], markerOptions);
-  },
-
-  render: function () {
-    this._marker.addTo(this.leafletMap);
-  },
-
-  _onLatlngChanged: function () {
-    if (!this.isDragging()) {
-      this._marker.setLatLng(this.model.get('latlng'));
-    }
-    this._updateModelsGeoJSON();
-  },
-
-  _updateModelsGeoJSON: function () {
-    this.model.set({
-      geojson: this._marker.toGeoJSON()
-    });
-  },
-
-  _onRemoveTriggered: function () {
-    this.leafletMap.removeLayer(this._marker);
-    this.remove();
-  }
-});
-
-var MyLeafletPathViewBase = View.extend({
-  initialize: function (options) {
-    if (!options.model) throw new Error('model is required');
-    if (!options.mapView) throw new Error('mapView is required');
-
-    this.model = this.model || options.model;
-    this.mapView = options.mapView;
-    this.leafletMap = this.mapView._getNativeMap();
-
-    this.model.on('remove', this._onRemoveTriggered, this);
-    this.model.points.on('change', this._onPointsChanged, this);
-    this.model.points.on('add', this._onPointsAdded, this);
-
-    this._geometry = this._createGeometry();
-    this._markers = [];
-    this._pointViews = {};
-  },
-
-  _createGeometry: function () {
-    throw new Error('Subclasses of MyLeafletPathViewBase must implement _createGeometry');
-  },
-
-  render: function () {
-    this._renderPoints();
-    this._geometry.addTo(this.mapView._getNativeMap());
-  },
-
-  _renderPoints: function () {
-    this.model.points.each(this._renderPoint, this);
-  },
-
-  _renderPoint: function (point) {
-    var pointView = new MyLeafletPointView({
-      model: point,
-      mapView: this.mapView
-    });
-    this._pointViews[point.cid] = pointView;
-    pointView.render();
-  },
-
-  _onPointsChanged: function () {
-    this._updateGeometry();
-    this._updateModelsGeoJSON();
-  },
-
-  _onPointsAdded: function () {
-    var newPoints = this.model.points.select(function (point) {
-      return !this._pointViews[point.cid];
-    }, this);
-    _.each(newPoints, this._renderPoint, this);
-    this._updateGeometry();
-    this._updateModelsGeoJSON();
-  },
-
-  _updateGeometry: function () {
-    this._geometry.setLatLngs(this.model.getLatLngs());
-  },
-
-  _updateModelsGeoJSON: function () {
-    this.model.set({
-      geojson: this._geometry.toGeoJSON()
-    });
-  },
-
-  _onRemoveTriggered: function () {
-    this._removePoints();
-    this.leafletMap.removeLayer(this._geometry);
-    this.remove();
-  },
-
-  _removePoints: function () {
-    this.model.points.each(function (point) {
-      point.remove();
-    }, this);
-  }
-});
-
-var MyLeafletLineView = MyLeafletPathViewBase.extend({
-  _createGeometry: function () {
-    return L.polyline([], { color: 'red' });
-  }
-});
-
-var MyLeafletPolygonView = MyLeafletPathViewBase.extend({
-  _createGeometry: function () {
-    return L.polygon([], { color: 'red' });
-  }
-});
+var MyLeafletPointView = require('./leaflet/geometries/point-view');
+var MyLeafletPolylineView = require('./leaflet/geometries/polyline-view');
+var MyLeafletPolygonView = require('./leaflet/geometries/polygon-view');
 
 var MapView = View.extend({
   initialize: function () {
@@ -201,6 +44,8 @@ var MapView = View.extend({
 
     this.map.on('enterDrawingMode', this._enterDrawingMode, this);
     this.map.on('exitDrawingMode', this._exitDrawingMode, this);
+
+    // TODO: Extract drawingController
   },
 
   _enterDrawingMode: function () {
@@ -226,9 +71,10 @@ var MapView = View.extend({
 
   _drawGeometry: function (geometry) {
 
+    // TODO: "Delegate" this to concreate implementation of the core view
     var GEOMETRY_VIEWS = {
       'point': MyLeafletPointView,
-      'line': MyLeafletLineView,
+      'polyline': MyLeafletPolylineView,
       'polygon': MyLeafletPolygonView
     };
 

@@ -7,67 +7,9 @@ var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 
-var Point = Model.extend({
-  defaults: {
-    type: 'point',
-    draggable: true
-  },
-
-  initialize: function () {
-    this.on('change:geojson', function () {
-      this.trigger('ready', this);
-    }, this);
-  },
-
-  update: function (latlng) {
-    if (!this.get('latlng')) {
-      this.set('latlng', latlng);
-    }
-  },
-
-  remove: function () {
-    this.trigger('remove');
-  },
-
-  toGeoJSON: function () {
-    return this.get('geojson');
-  }
-});
-
-var Line = Model.extend({
-  defaults: {
-    type: 'line',
-    latlngs: []
-  },
-
-  initialize: function () {
-    this.on('change:geojson', function () {
-      this.trigger('ready', this);
-    }, this);
-
-    this.points = new Backbone.Collection();
-  },
-
-  getLatLngs: function () {
-    return this.points.map(function (point) {
-      return point.get('latlng');
-    });
-  },
-
-  update: function (latlng) {
-    this.points.add(new Point({
-      latlng: latlng
-    }));
-  },
-
-  remove: function () {
-    this.trigger('remove');
-  },
-
-  toGeoJSON: function () {
-    return this.get('geojson');
-  }
-});
+var Point = require('./geometry-models/point');
+var Polyline = require('./geometry-models/polyline');
+var Polygon = require('./geometry-models/polygon');
 
 var Map = Model.extend({
   defaults: {
@@ -91,20 +33,18 @@ var Map = Model.extend({
     return point;
   },
 
-  drawLine: function () {
-    var line = new Line();
+  drawPolyline: function () {
+    var line = new Polyline();
     this._newGeometry = line;
     this.trigger('enterDrawingMode');
     return line;
   },
 
   drawPolygon: function () {
-    var line = new Line({
-      type: 'polygon'
-    });
-    this._newGeometry = line;
+    var polygon = new Polygon();
+    this._newGeometry = polygon;
     this.trigger('enterDrawingMode');
-    return line;
+    return polygon;
   },
 
   stopDrawing: function () {

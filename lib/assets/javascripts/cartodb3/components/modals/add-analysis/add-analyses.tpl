@@ -6,20 +6,8 @@
     </div>
   </div>
   <div class="Modal-container">
-    <div class="Modal-navigation">
-      <ul class="Modal-navigationInner CDB-Text is-semibold CDB-Size-medium js-menu">
-        <li class="CDB-NavMenu-item is-selected">
-          <button class="CDB-NavMenu-link u-upperCase">Create and clean</button>
-        </li>
-        <li class="CDB-NavMenu-item">
-          <button class="CDB-NavMenu-link u-upperCase">Transform</button>
-        </li>
-        <li class="CDB-NavMenu-item">
-          <button class="CDB-NavMenu-link u-upperCase">Analyze and predict</button>
-        </li>
-      </ul>
+    <div class="Modal-inner js-body">
     </div>
-    <div class="Modal-inner Modal-inner--with-navigation js-body"></div>
   </div>
   <div class="Modal-footer">
     <div class="Modal-footerContainer u-flex u-justifyEnd">

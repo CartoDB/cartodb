@@ -94,7 +94,7 @@ module Carto
           if layer.data_layer?
             layer_index += 1
 
-            layers.push(type: 'cartodb', options: options_for_cartodb_layers(layer, layer_index))
+            layers.push(type: 'cartodb', options: options_for_carto_and_torque_layers(layer, layer_index))
           elsif layer.base?
             layer_options = layer.options
 
@@ -108,7 +108,7 @@ module Carto
 
         @visualization.torque_layers.each do |layer|
           layer_index += 1
-          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
+          layers.push(type: 'torque', options: options_for_carto_and_torque_layers(layer, layer_index))
         end
 
         layers
@@ -127,24 +127,13 @@ module Carto
         options
       end
 
-      def options_for_cartodb_layers(layer, index)
-        options = common_options_for_carto_and_torque_layers(layer, index)
-
-        layer_options = layer.options
-        layer_options_sql_wrap = layer_options[:sql_wrap]
-        layer_options_query_wrapper = layer_options[:query_wrapper]
-
-        options[:sql_wrap] = layer_options_sql_wrap || layer_options_query_wrapper
-
-        options
-      end
-
-      def common_options_for_carto_and_torque_layers(layer, index)
-        layer_options = layer.options
+      def options_for_carto_and_torque_layers(layer, index)
+        layer_options = layer.options.with_indifferent_access
+        tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
         options = {
           id: layer.id,
-          cartocss: layer_options.fetch('tile_style').strip.empty? ? EMPTY_CSS : layer_options.fetch('tile_style'),
+          cartocss: tile_style.present? ? tile_style : EMPTY_CSS,
           cartocss_version: layer_options.fetch('style_version')
         }
 
@@ -152,8 +141,10 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
+          options[:sql] = visibility_wrapped_sql(layer.default_query(@visualization.user), index)
         end
+
+        options[:sql_wrap] = layer_options[:sql_wrap] || layer_options[:query_wrapper]
 
         attributes, interactivity = attributes_and_interactivity(layer.infowindow, layer.tooltip)
 
@@ -201,7 +192,7 @@ module Carto
       end
 
       def analyses_definitions
-        @visualization.analyses.map(&:analysis_definition)
+        @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
       def stats_aggregator
@@ -223,15 +214,12 @@ module Carto
       end
 
       def auth
-        method, valid_tokens = if @visualization.password_protected?
-                                 [AUTH_TYPE_SIGNED, @visualization.user.get_auth_tokens]
-                               elsif @visualization.organization?
-                                 auth_tokens = @visualization.all_users_with_read_permission
-                                                             .map(&:get_auth_tokens)
-                                                             .flatten
-                                                             .uniq
+        visualization_for_auth = @visualization.non_mapcapped
 
-                                 [AUTH_TYPE_SIGNED, auth_tokens]
+        method, valid_tokens = if visualization_for_auth.password_protected?
+                                 [AUTH_TYPE_SIGNED, [visualization_for_auth.get_auth_token]]
+                               elsif visualization_for_auth.is_privacy_private?
+                                 [AUTH_TYPE_SIGNED, visualization_for_auth.allowed_auth_tokens]
                                else
                                  [AUTH_TYPE_OPEN, nil]
                                end

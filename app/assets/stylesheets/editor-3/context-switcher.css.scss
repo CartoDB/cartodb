@@ -19,6 +19,9 @@
 .Editor-contextSwitcher.is-moved {
   left: calc(50% - 216px);
 }
+.Editor-contextSwitcher.has-timeSeries {
+  bottom: 190px;
+}
 .Editor-contextSwitcherButton {
   @include display-flex();
   @include align-items(center);

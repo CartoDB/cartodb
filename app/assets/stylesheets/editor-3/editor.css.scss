@@ -47,6 +47,9 @@
   position: relative;
   min-height: 0;
 }
+.Editor-content.is-disabled {
+  opacity: 0.24;
+}
 .Editor-panelWrapper {
   position: relative;
   width: 344px;

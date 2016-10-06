@@ -5,11 +5,15 @@ require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
+require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/helpers/has_connector_configuration'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
+  include Carto::HasConnectorConfiguration
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -22,9 +26,8 @@ class Carto::User < ActiveRecord::Base
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
-                   "users.viewer".freeze
-
-  SELECT_WITH_DATABASE = "#{DEFAULT_SELECT}, users.quota_in_bytes, users.database_host".freeze
+                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
+                   "users.builder_enabled".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -34,6 +37,7 @@ class Carto::User < ActiveRecord::Base
 
   belongs_to :organization, inverse_of: :users
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
+  has_one :notifications, class_name: Carto::UserNotification, inverse_of: :user
 
   has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
   has_many :feature_flags, through: :feature_flags_user
@@ -55,7 +59,7 @@ class Carto::User < ActiveRecord::Base
   delegate [
       :database_username, :database_password, :in_database,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
-      :visualization_count, :twitter_imports_count
+      :visualization_count, :owned_visualization_count, :twitter_imports_count
     ] => :service
 
   attr_reader :password
@@ -66,6 +70,12 @@ class Carto::User < ActiveRecord::Base
   alias_method :assets_dataset, :assets
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
+
+  # Auto creates notifications on first access
+  def notifications_with_creation
+    notifications_without_creation || build_notifications(user: self, notifications: {})
+  end
+  alias_method_chain :notifications, :creation
 
   def self.columns
     super.reject { |c| c.name == "arcgis_datasource_enabled" }
@@ -453,7 +463,10 @@ class Carto::User < ActiveRecord::Base
   def get_auth_tokens
     tokens = [get_auth_token]
 
-    tokens << organization.get_auth_token if has_organization?
+    if has_organization?
+      tokens << organization.get_auth_token
+      tokens += groups.map(&:get_auth_token)
+    end
 
     tokens
   end
@@ -462,14 +475,29 @@ class Carto::User < ActiveRecord::Base
     # Circumvent DEFAULT_SELECT, didn't add auth_token there for sercurity (presenters, etc)
     auth_token = Carto::User.select(:auth_token).find(id).auth_token
 
-    auth_token.present? ? auth_token : generate_auth_token
+    auth_token || generate_auth_token
   end
 
-  private
+  def notifications_for_category(category)
+    notifications.notifications[category] || {}
+  end
 
-  def generate_auth_token
-    update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
+  # The builder is enabled/disabled based on a feature flag
+  # The builder_enabled is used to allow the user to turn it on/off
+  def builder_enabled?
+    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
+  end
 
-    auth_token
+  def force_builder?
+    builder_enabled? && builder_enabled == true
+  end
+
+  def force_editor?
+    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
+    builder_enabled == false || !builder_enabled?
+  end
+
+  def new_visualizations_version
+    force_builder? ? 3 : 2
   end
 end

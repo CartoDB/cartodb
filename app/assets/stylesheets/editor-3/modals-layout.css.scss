@@ -1,0 +1,81 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Modal {
+  @include display-flex();
+  @include flex-direction(column);
+  height: 100%;
+  background: $cThirdBackground;
+  overflow: hidden;
+}
+.Modal-header {
+  border-bottom: 1px solid $cSecondaryLine;
+  background: $cWhite;
+}
+.Modal-container {
+  @include display-flex();
+  @include justify-content(center);
+  @include flex(1 1 auto);
+  padding: 32px 0 0;
+  overflow: hidden;
+}
+.Modal-container .ScrollView {
+  @include align-items(center);
+}
+.Modal-container .ScrollView-shadow--top {
+  top: -14px;
+}
+.Modal-footer,
+.Modal-header {
+  @include display-flex();
+  @include justify-content(center);
+  @include flex(0 0 auto);
+}
+.Modal-footer.is-disabled {
+  display: none;
+}
+.Modal-navigation {
+  position: fixed;
+  width: 100%;
+  margin-top: -33px;
+  border-bottom: 1px solid $cMainLine;
+  background: $cWhite;
+  z-index: 2;
+}
+.Modal-inner .ScrollView-wrapper,
+.Modal-navigationInner,
+.Modal-headerContainer,
+.Modal-footerContainer {
+  @include flex(0 0 auto);
+  width: 940px;
+  margin: 0 auto;
+}
+.Modal-footerContainer,
+.Modal-header {
+  padding: $baseSize * 3 0;
+}
+.Modal-inner--with-navigation {
+  padding: 24px 0 0;
+}
+.Modal-inner--with-navigation .ScrollView-shadow--top {
+  top: -6px;
+}
+
+.Modal-inner {
+  @include display-flex();
+  @include flex(1);
+}
+.Modal-inner--grid {
+  @include flex(0 503px);
+}
+.Modal-inner--full {
+  @include flex(0 944px);
+}
+.Modal-footerContainer {
+  border-top: 1px solid $cSecondaryLine;
+}
+
+.Modal-basemapContainer {
+  @include flex-direction(column);
+}

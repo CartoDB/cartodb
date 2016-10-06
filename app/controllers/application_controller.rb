@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
       authenticator = Carto::HttpHeaderAuthentication.new
       if authenticator.autocreation_enabled?
         if authenticator.creation_in_progress?(request)
-          render_http_code(409, 500, 'Creation already in progress')
+          redirect_to CartoDB.path(self, 'signup_http_authentication_in_progress')
         else
           redirect_to CartoDB.path(self, 'signup_http_authentication')
         end

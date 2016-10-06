@@ -63,7 +63,6 @@ WORKING_SPECS_1 = \
 	spec/models/common_data_spec.rb \
 	spec/lib/api_calls_spec.rb \
 	spec/lib/errors_spec.rb \
-	spec/lib/sql_parser_spec.rb \
 	spec/lib/url_signer_spec.rb \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
@@ -75,6 +74,7 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
+	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/bi_dataset_spec.rb \
@@ -133,6 +133,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
+	services/importer/spec/unit/connector_spec.rb \
+	services/importer/spec/unit/connector_runner_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \
@@ -152,6 +154,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/connectors/importer_overviews_spec.rb \
+	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \
@@ -258,8 +261,11 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/builder/datasets_controller_spec.rb \
 	spec/requests/carto/api/analyses_controller_spec.rb \
 	spec/requests/carto/api/maps_controller_spec.rb \
+	spec/requests/carto/api/user_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/superadmin/organizations_controller_spec.rb \
+	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
@@ -271,6 +277,20 @@ SPEC_HELPER_MIN_SPECS = \
 	services/dataservices-metrics/spec/unit/service_usage_metrics_spec.rb \
 	spec/models/carto/mapcap_spec.rb \
 	spec/requests/carto/api/mapcaps_controller_spec.rb \
+	spec/requests/carto/api/states_controller_spec.rb \
+	spec/requests/carto/api/metrics_controller_spec.rb \
+	spec/lib/carto/tracking/events_spec.rb \
+	spec/lib/carto/definition_spec.rb \
+	spec/lib/carto/styles/cartography_spec.rb \
+	spec/lib/carto/styles/point_spec.rb \
+	spec/lib/carto/styles/polygon_spec.rb \
+	spec/lib/carto/styles/line_spec.rb \
+	spec/lib/carto/styles/presenters/cartocss_spec.rb \
+	spec/lib/carto/forms_definition_spec.rb \
+	spec/lib/carto/form_spec.rb \
+	spec/models/carto/legend_spec.rb \
+	spec/requests/carto/api/legends_controller_spec.rb \
+	spec/lib/carto/legend_definition_validator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

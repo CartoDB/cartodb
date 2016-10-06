@@ -3,11 +3,14 @@
 require_relative 'layer/presenter'
 require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'
+require_dependency 'carto/table_utils'
+require_dependency 'carto/query_rewriter'
 require_relative 'carto/layer'
 
-
 class Layer < Sequel::Model
+  include Carto::TableUtils
   include Carto::LayerTableDependencies
+  include Carto::QueryRewriter
 
   plugin :serialization, :json, :options, :infowindow, :tooltip
 
@@ -178,11 +181,15 @@ class Layer < Sequel::Model
   end
 
   def qualified_table_name(viewer_user)
-    "#{viewer_user.sql_safe_database_schema}.#{options['table_name']}"
+    "#{viewer_user.sql_safe_database_schema}.#{safe_table_name_quoting(options['table_name'])}"
   end
 
   def user
     map.user if map
+  end
+
+  def qualify_for_organization(owner_username)
+    options['query'] = qualify_query(query, options['table_name'], owner_username) if query
   end
 
   private
@@ -208,7 +215,8 @@ class Layer < Sequel::Model
   end
 
   def affected_table_names(query)
-    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+    query_tables = user.in_database["SELECT unnest(CDB_QueryTables(?))", query]
+    query_tables.map(:unnest)
   end
 
   def map

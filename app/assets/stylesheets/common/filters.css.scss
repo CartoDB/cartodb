@@ -85,7 +85,8 @@
     margin-left: 10px;
   }
 }
-.Filters-group.is-hidden {
+.Filters-group.is-hidden,
+.Filters-addLayer.is-hidden {
   display: none;
 }
 .Filters-group.is-searching {
@@ -274,8 +275,9 @@ a.Filters-cleanSearch { line-height:32px }
 .Filters-searchItem {
   display: inherit;
 }
-.Filters-typeItem--searchEnabler {
+.Filters-typeItem.Filters-typeItem--searchEnabler {
   padding-right: 32px;
+  margin-right: 32px;
 }
 .Filters-typeItem.is-searching {
   display: none;

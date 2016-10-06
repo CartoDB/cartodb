@@ -11,27 +11,32 @@
   color: $cAltText;
   box-sizing: border-box;
   line-height: 14px;
+}
 
-  // TODO backgrounds
-  &.is-blue {
-    color: $cBlue;
-  }
-
-  &.is-green {
-    color: $cPublic;
-  }
-
-  &.is-orange {
-    color: $cAlert;
-  }
-
-  &.is-orange-dark {
-    color: $cPassword;
-  }
-
-  &.is-red {
-    color: $cError;
-  }
+.Tag-fill {
+  height: auto;
+  padding: 5px 12px;
+  border-radius: $halfBaseSize;
+  background-color: $cThirdBackground;
+  color: $cWhite;
+}
+.Tag-fill--yellow {
+  background: #FFB927;
+}
+.Tag-fill--orange {
+  background: $cAlert;
+}
+.Tag-fill--orange-dark {
+  background: $cPassword;
+}
+.Tag-fill--red {
+  background: $cError;
+}
+.Tag-fill--blue {
+  background: $cBlue;
+}
+.Tag-fill--green {
+  background: $cPublic;
 }
 
 .Tag--big {
@@ -41,9 +46,18 @@
 }
 
 .Tag--outline {
-  border: 1px solid;
   background-color: transparent;
 }
+
+.Tag-outline--dark {
+  border: 1px solid $cSecondaryDark;
+  color: $cSecondaryDark;
+}
+.Tag-outline--grey {
+  border: 1px solid $cAltText;
+  color: $cAltText;
+}
+
 
 .Tag--Builder {
   color: $cMainText;

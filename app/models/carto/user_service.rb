@@ -22,6 +22,14 @@ module Carto
                                       .count
     end
 
+    def owned_visualization_count
+      Carto::VisualizationQueryBuilder.new
+                                      .with_user_id(@user.id)
+                                      .with_type(Carto::Visualization::TYPE_DERIVED)
+                                      .build
+                                      .count
+    end
+
     def visualization_count
       Carto::VisualizationQueryBuilder.new
                                       .with_owned_by_or_shared_with_user_id(@user.id)

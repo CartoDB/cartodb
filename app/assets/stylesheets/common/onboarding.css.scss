@@ -23,11 +23,16 @@
 .Onboarding-fake {
   @include flex(0 0 415px);
   height: 100%;
+
+  .is-editing & {
+    @include flex(0 0 560px);
+  }
 }
 
 .Onboarding-body {
   width: 466px;
 }
+
 .Onboarding-contentWrapper {
   @include flex(1);
   @include opacity(0.88);
@@ -121,4 +126,42 @@
 
 .Onboarding-readMore:hover {
   text-decoration: none;
+}
+
+.Onboarding.is-closing { /* "forwards" to keep the last keyframe's styles after animation ended */
+  @include animation(fade-and-scale-out 80ms ease-in forwards);
+}
+
+.Onboarding.is-opening {
+  @include animation(fade-and-scale-in 100ms ease-out);
+}
+
+@include keyframes(fade-and-scale-out) {
+  0% {
+    @include opacity(1);
+    @include transform(scale(1));
+  }
+  80% {
+    @include opacity(0.05);
+    @include transform(scale(1.4));
+  }
+  100% {
+    @include opacity(0);
+    @include transform(scale(2));
+  }
+}
+
+@include keyframes(fade-and-scale-in) {
+  0% {
+    @include opacity(0);
+    @include transform(scale(2));
+  }
+  10% {
+    @include opacity(0.9);
+    @include transform(scale(1.1));
+  }
+  100% {
+    @include opacity(1);
+    @include transform(scale(1));
+  }
 }

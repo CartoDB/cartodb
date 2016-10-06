@@ -11,7 +11,7 @@
   <%- tableName %>
 </p>
 <% if (customQueryApplied) { %>
-  <span class="Editor-ListAnalysis-itemSQL CDB-Tag CDB-Tag--opaque CDB-Text CDB-Size-small u-secondaryTextColor">
+  <span class="Editor-ListAnalysis-itemSQL Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small">
     SQL
   </span>
 <% } %>

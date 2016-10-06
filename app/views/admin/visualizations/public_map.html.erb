@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:title) do %><%= @visualization.name %><% end %>
 
 <%= content_for(:description) do %><%= @visualization.description_clean ? "#{@visualization.description_clean} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
@@ -97,7 +99,7 @@
 
                 <ul class="u-valign">
                   <li class="Navmenu-subItem">
-                    <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=cartoDB">
+                    <a href="https://twitter.com/intent/tweet?text=<%= url_encode(@visualization.name) %>&url=<%= url_encode(request.original_url) %>&via=CARTO">
                       <i class="CDB-IconFont CDB-IconFont-twitter Navmenu-icon Navmenu-icon--twitter"></i>
                     </a>
                   </li>
@@ -369,7 +371,7 @@
       'legends':          bool_fn
     });
 
-    <% if (@visualization.password_protected? or @visualization.organization?) and @protected_map_tokens %>
+    <% if (@visualization.password_protected? or @visualization.is_privacy_private?) and @protected_map_tokens %>
       map_options.auth_token = [];
       <% @protected_map_tokens.each do |token| %>
           map_options.auth_token.push('<%= token %>');

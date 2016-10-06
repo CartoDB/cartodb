@@ -1,22 +1,22 @@
 {
   "name": "cartodb-ui",
-  "version": "4.0.80",
-  "description": "CartoDB UI frontend",
+  "version": "4.3.08",
+  "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
     "url": "git://github.com/CartoDB/cartodb.git"
   },
   "author": {
-    "name": "CartoDB",
-    "url": "https://cartodb.com/",
-    "email": "wadus@cartodb.com"
+    "name": "CARTO",
+    "url": "https://carto.com/",
+    "email": "wadus@carto.com"
   },
   "contributors": [],
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
     "backbone-forms": "0.14.0",
-    "backbone-model-file-upload": "1.0.0",
+    "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.0",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.3.3",
     "browserify-shim": "3.8.12",
@@ -33,7 +33,7 @@
     "node-polyglot": "1.0.0",
     "perfect-scrollbar": "0.6.7",
     "queue-async": "1.2.1",
-    "torque.js": "~2.15.1",
+    "torque.js": "CartoDB/torque#master",
     "underscore": "1.8.3"
   },
   "devDependencies": {
@@ -65,7 +65,8 @@
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
     "grunt-timer": "0.3.3",
-    "jasmine": "^2.4.1",
+    "jasmine": "2.5.2",
+    "jasmine-ajax": "git://github.com/nobuti/jasmine-ajax.git#master",
     "jstify": "0.13.0",
     "load-grunt-tasks": "3.2.0",
     "open": "0.0.5",
@@ -156,7 +157,7 @@
     "test": "jasmine",
     "test-debug": "node-debug --no-preload ./node_modules/.bin/jasmine --",
     "test-watch": "watch 'npm test' $npm_package_config_npmJsDir",
-    "preupdate-internal-deps": "rm -rf node_modules/camshaft-reference node_modules/cartoassets node_modules/cartodb-deep-insights.js node_modules/cartodb.js",
-    "update-internal-deps": "npm update camshaft-reference cartoassets cartodb-deep-insights.js cartodb.js && npm shrinkwrap"
+    "preupdate-internal-deps": "echo 'DEPRECATED TASK, use `npm run-script update-internal-deps` instead'",
+    "update-internal-deps": "rm -rf node_modules && npm install --no-shrinkwrap && npm shrinkwrap"
   }
 }

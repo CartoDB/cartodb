@@ -42,4 +42,3 @@ describe Carto::Organization do
   end
 
 end
-

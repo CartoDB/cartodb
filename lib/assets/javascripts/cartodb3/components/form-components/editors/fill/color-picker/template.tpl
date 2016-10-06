@@ -6,15 +6,15 @@
       <span class="ColorPicker-inputLabel u-upperCase">HEX</span>
     </div>
     <div class="ColorPicker-inputWrapper">
-      <input type="text" class="CDB-InputText ColorPicker-input js-r" value="<%- r %>"/>
+      <input type="text" class="CDB-InputText ColorPicker-input js-inputColor js-r" value="<%- r %>"/>
       <span class="ColorPicker-inputLabel u-upperCase">R</span>
     </div>
     <div class="ColorPicker-inputWrapper">
-      <input type="text" class="CDB-InputText ColorPicker-input js-g" value="<%- g %>" />
+      <input type="text" class="CDB-InputText ColorPicker-input js-inputColor js-g" value="<%- g %>" />
       <span class="ColorPicker-inputLabel u-upperCase">G</span>
     </div>
     <div class="ColorPicker-inputWrapper">
-      <input type="text" class="CDB-InputText ColorPicker-input js-b" value="<%- b %>" />
+      <input type="text" class="CDB-InputText ColorPicker-input js-inputColor js-b" value="<%- b %>" />
       <span class="ColorPicker-inputLabel u-upperCase">B</span>
     </div>
     <div class="ColorPicker-inputWrapper">

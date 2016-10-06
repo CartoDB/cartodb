@@ -19,6 +19,7 @@ module CartoDB
     PARAM_SOFT_OBS_GENERAL_LIMIT = :soft_obs_general_limit
     PARAM_SOFT_TWITTER_DATASOURCE_LIMIT = :soft_twitter_datasource_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
+    PARAM_VIEWER = :viewer
 
     def initialize(created_via)
       @built = false
@@ -66,6 +67,10 @@ module CartoDB
       with_param(PARAM_QUOTA_IN_BYTES, value)
     end
 
+    def with_viewer(value)
+      with_param(PARAM_VIEWER, value)
+    end
+
     def with_organization(organization)
       @built = false
       @organization = organization
@@ -93,6 +98,12 @@ module CartoDB
       @built = false
       # get_user_data can return nil
       @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
+      self
+    end
+
+    def with_github_oauth_api(github_api)
+      @built = false
+      @github_api = github_api
       self
     end
 
@@ -150,6 +161,13 @@ module CartoDB
 
       if @google_user_data
         @google_user_data.set_values(@user)
+      elsif @github_api
+        @user.github_user_id = @github_api.id
+        @user.username = @github_api.username
+        @user.email = @user_params[PARAM_EMAIL] || @github_api.email
+        dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+        @user.password = dummy_password
+        @user.password_confirmation = dummy_password
       else
         @user.email = @user_params[PARAM_EMAIL]
         @user.password = @user_params[PARAM_PASSWORD]
@@ -165,6 +183,7 @@ module CartoDB
       @user.soft_obs_general_limit = @user_params[PARAM_SOFT_OBS_GENERAL_LIMIT] == 'true'
       @user.soft_twitter_datasource_limit = @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
+      @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
 
       @built = true
       @user

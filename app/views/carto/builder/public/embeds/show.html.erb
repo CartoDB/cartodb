@@ -1,3 +1,5 @@
+<% require_dependency 'static_maps_url_helper' %>
+
 <%= content_for(:title) do %><%= @vizjson[:title].nil? ? 'Untitled map' : @vizjson[:title] %><% end %>
 
 <%= content_for(:description) do %><%= @vizjson[:description] ? "#{@vizjson[:description].strip_tags}. " : "" %>Map created by <%= @vizjson[:user][:fullname] %> in CARTO<% end %>
@@ -25,6 +27,8 @@
 <%= content_for(:js) do %>
   <script>
     var vizJSON = <%= safe_js_object @vizjson.to_hash.to_json %>;
+    var stateJSON = <%= safe_js_object @state.to_json %>;
+    var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
   </script>
   <%= javascript_include_tag 'vendor_editor3.js' %>
   <%= javascript_include_tag 'common_editor3.js' %>

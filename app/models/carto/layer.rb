@@ -1,5 +1,7 @@
 require 'active_record'
 require_relative './carto_json_serializer'
+require_dependency 'carto/table_utils'
+require_dependency 'carto/query_rewriter'
 
 module Carto
   module LayerTableDependencies
@@ -15,11 +17,13 @@ module Carto
           table_name = source_node.options[:table_name]
           tables_by_name = table_name ? tables_from_names([table_name], user) : []
 
-          tables_by_query + tables_by_name
+          tables_by_query.present? ? tables_by_query : tables_by_name
         end
         dependencies.flatten.compact.uniq
       else
-        (tables_from_query_option + tables_from_table_name_option).compact.uniq
+        tables_by_query = tables_from_query_option
+        dependencies = tables_by_query.present? ? tables_by_query : tables_from_table_name_option
+        dependencies.compact.uniq
       end
     end
 
@@ -47,7 +51,9 @@ module Carto
   end
 
   class Layer < ActiveRecord::Base
+    include Carto::TableUtils
     include LayerTableDependencies
+    include Carto::QueryRewriter
 
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
@@ -63,6 +69,10 @@ module Carto
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
 
     has_many :widgets, class_name: Carto::Widget, order: '"order"'
+    has_many :legends,
+             class_name: Carto::Legend,
+             dependent: :destroy,
+             order: :created_at
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -92,7 +102,7 @@ module Carto
         table_name
       else
         schema_prefix = schema_owner_user.nil? ? '' : "#{schema_owner_user.sql_safe_database_schema}."
-        "#{schema_prefix}#{options['table_name']}"
+        "#{schema_prefix}#{safe_table_name_quoting(options['table_name'])}"
       end
     end
 
@@ -176,16 +186,6 @@ module Carto
       @user ||= map.nil? ? nil : map.user
     end
 
-    def wrapped_sql(user)
-      query_wrapper = options.symbolize_keys[:query_wrapper]
-      sql = default_query(user)
-      if query_wrapper.present? && torque?
-        query_wrapper.gsub('<%= sql %>', sql)
-      else
-        sql
-      end
-    end
-
     def default_query(user = nil)
       sym_options = options.symbolize_keys
       query = sym_options[:query]
@@ -198,15 +198,37 @@ module Carto
         table_name = sym_options[:table_name]
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && user_username != user_name
-          %{ select * from "#{user_name}".#{table_name} }
+          %{ select * from "#{user_name}".#{safe_table_name_quoting(table_name)} }
         else
-          "SELECT * FROM #{qualified_table_name(user)}"
+          "SELECT * FROM #{qualified_table_name}"
         end
       end
     end
 
     def register_table_dependencies
       self.user_tables = affected_tables if data_layer?
+    end
+
+    def fix_layer_user_information(old_username, new_user, renamed_tables)
+      new_username = new_user.username
+
+      if options.key?(:user_name)
+        old_username ||= options[:user_name]
+        options[:user_name] = new_username
+      end
+
+      if options.key?(:table_name)
+        old_table_name = options[:table_name]
+        options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
+      end
+
+      # query_history is not modified as a safety measure for cases where this naive replacement doesn't work
+      query = options[:query]
+      options[:query] = rewrite_query(query, old_username, new_user, renamed_tables) if query.present?
+    end
+
+    def force_notify_change
+      map.force_notify_map_change if map
     end
 
     private
@@ -218,12 +240,8 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      # TODO: This is the same that CartoDB::SqlParser().affected_tables does. Maybe remove that class?
-      query_tables = user.in_database.execute("SELECT CDB_QueryTables(#{user.in_database.quote(query)})").first
-      query_tables['cdb_querytables'].split(',').map { |table_name|
-        t = table_name.gsub!(/[\{\}]/, '')
-        (t.blank? ? nil : t)
-      }.compact.uniq
+      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTables(#{user.in_database.quote(query)}))")
+      query_tables.column_values(0).uniq
     end
 
     def query

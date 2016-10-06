@@ -4,9 +4,6 @@
       <input class="CDB-Checkbox js-input" type="checkbox" name="" value="" <% if (checked) { %>checked<% } %> <% if (disabled) { %>disabled<% } %>>
       <span class="u-iBlock CDB-Checkbox-face"></span>
     </div>
-    <%- title %>
-    <% if (help) { %>
-      <span class="js-help is-underlined u-lSpace" data-tooltip="<%- help %>">?</span>
-    <% } %>
+    <span class="<% if (help) { %> js-help is-underlined<% } %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %> ><%- title %></span>
   </div>
 </div>

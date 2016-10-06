@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'helpers/metrics_helper'
+
 require_relative '../../../spec_helper'
 require_relative 'visualizations_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/visualizations_controller'
@@ -12,6 +14,7 @@ describe Api::Json::VisualizationsController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include MetricsHelper
 
   before(:all) do
     @user = create_user(username: 'test')
@@ -26,6 +29,8 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     bypass_named_maps
+    bypass_metrics
+
     host! "#{@user.username}.localhost.lan"
   end
 
@@ -147,6 +152,117 @@ describe Api::Json::VisualizationsController do
 
           v.user.should eq @org_user_2
           v.map.user.should eq @org_user_2
+        end
+      end
+
+      it 'copies the styles for editor users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(false)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          original_layer = table1.map.data_layers.first
+          layer = v.map.data_layers.first
+          layer.options['tile_style'].should eq original_layer.options['tile_style']
+        end
+      end
+
+      it 'resets the styles for builder users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(true)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+          original_layer = table1.map.data_layers.first
+          layer = v.map.data_layers.first
+          layer.options['tile_style'].should_not eq original_layer.options['tile_style']
+        end
+      end
+
+      it 'doen\'t add style properites for editor users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(false)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+          layer = v.map.data_layers.first
+          layer.options['style_properties'].should be_nil
+        end
+      end
+
+      it 'adds style properites for builder users' do
+        table1 = create_table(user_id: @org_user_1.id)
+        Table.any_instance.stubs(:geometry_types).returns(['ST_Point'])
+        payload = {
+          tables: [table1.name]
+        }
+        User.any_instance.stubs(:force_builder?).returns(true)
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+
+          layer = v.map.data_layers.first
+          layer.options['style_properties'].should_not be_nil
+        end
+      end
+
+      it 'rewrites queries for other user datasets' do
+        table1 = create_table(user_id: @org_user_1.id)
+        layer = table1.map.data_layers.first
+        layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+        layer.save
+        share_table_with_user(table1, @org_user_2)
+        payload = {
+          type: 'derived',
+          tables: ["#{@org_user_1.username}.#{table1.name}"]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          layer = v.map.data_layers.first
+          layer.options['query'].should eq "SELECT * FROM #{@org_user_1.username}.#{table1.name} LIMIT 1"
+        end
+      end
+
+      it 'does not rewrite queries for same user datasets' do
+        table1 = create_table(user_id: @org_user_1.id)
+        layer = table1.map.data_layers.first
+        layer.options['query'] = "SELECT * FROM #{table1.name} LIMIT 1"
+        layer.save
+        share_table_with_user(table1, @org_user_1)
+        payload = {
+          type: 'derived',
+          tables: ["#{@org_user_1.username}.#{table1.name}"]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          new_layer = v.map.data_layers.first
+          new_layer.options['query'].should eq layer.options['query']
         end
       end
     end

@@ -9,7 +9,7 @@
       <div class="Filters-typeItem Filters-typeItem--searchField">
         <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- q %>" placeholder="<%- _t('components.pagination-search.filter.placeholder') %>" />
         <% if (q !== '') { %>
-        <button type="button" class="CDB-Shape Filters-cleanSearch js-clean-search">
+        <button type="button" class="CDB-Shape Filters-cleanSearch js-clean-search u-actionTextColor">
           <div class="CDB-Shape-close is-blue is-large"></div>
         </button>
         <% } %>

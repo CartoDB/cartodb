@@ -3,7 +3,7 @@
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
-require_relative '../../services/dataservices-metrics/lib/here_isolines_usage_metrics'
+require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_snapshot_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/observatory_general_usage_metrics'
 require 'factories/organizations_contexts'
@@ -24,6 +24,10 @@ describe 'refactored behaviour' do
 
     def get_user_by_id(user_id)
       ::User.where(id: user_id).first
+    end
+
+    def create_user
+      FactoryGirl.create(:valid_user)
     end
   end
 
@@ -720,8 +724,8 @@ describe User do
     before do
       delete_user_data @user
       @mock_redis = MockRedis.new
-      @usage_metrics = CartoDB::HereIsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
-      CartoDB::HereIsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
+      @usage_metrics = CartoDB::IsolinesUsageMetrics.new(@user.username, nil, @mock_redis)
+      CartoDB::IsolinesUsageMetrics.stubs(:new).returns(@usage_metrics)
       @user.stubs(:last_billing_cycle).returns(Date.today)
       @user.period_end_date = (DateTime.current + 1) << 1
       @user.save.reload
@@ -1139,12 +1143,6 @@ describe User do
     expect { @user.save }.to_not change { @user.api_key }
   end
 
-  it "should not try to update mobile api_keys if the user has it disabled" do
-    @user.stubs(:mobile_sdk_enabled?).returns(false)
-    @user.stubs(:cartodb_central_client).never
-    @user.regenerate_api_key
-  end
-
   it "should remove its metadata from redis after deletion" do
     doomed_user = create_user :email => 'doomed@example.com', :username => 'doomed', :password => 'doomed123'
     $users_metadata.HGET(doomed_user.key, 'id').should == doomed_user.id.to_s
@@ -1180,7 +1178,7 @@ describe User do
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
     data_import = DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/clubbing.csv').run_import!
+                      :data_source => fake_data_path('clubbing.csv')).run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
     uuid      = UserTable.where(id: table_id).first.table_visualization.id
@@ -1519,6 +1517,17 @@ describe User do
           db_service.role_exists?(db, role).should == false
         end.to raise_error(/role "#{role}" does not exist/)
         db.disconnect
+      end
+
+      it 'deletes temporary analysis tables' do
+        db = @org_user_2.in_database
+        db.run('CREATE TABLE analysis_123 (a int)')
+        db.run(%{INSERT INTO cdb_analysis_catalog (username, cache_tables, node_id, analysis_def)
+                 VALUES ('#{@org_user_2.username}', '{analysis_123}', 'a0', '{}')})
+        @org_user_2.destroy
+
+        db = @org_user_owner.in_database
+        db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
       end
     end
   end
@@ -2101,11 +2110,22 @@ describe User do
 
       disk_quota = 1234567890
       user_timeout_secs = 666
+      max_import_file_size = 6666666666
+      max_import_table_row_count = 55555555
+      max_concurrent_import_count = 44
+      max_layers = 11
 
       # create an owner
       organization = create_org('org-user-creation-db-checks-organization', disk_quota * 10, 10)
       user1 = create_user email: 'user1@whatever.com', username: 'creation-db-checks-org-owner', password: 'user11'
       user1.organization = organization
+
+      user1.max_import_file_size = max_import_file_size
+      user1.max_import_table_row_count = max_import_table_row_count
+      user1.max_concurrent_import_count = max_concurrent_import_count
+
+      user1.max_layers = 11
+
       user1.save
       organization.owner_id = user1.id
       organization.save
@@ -2142,6 +2162,12 @@ describe User do
       CartoDB::UserModule::DBService.terminate_database_connections(user.database_name, user.database_host)
 
       user.reload
+
+      user.max_import_file_size.should eq max_import_file_size
+      user.max_import_table_row_count.should eq max_import_table_row_count
+      user.max_concurrent_import_count.should eq max_concurrent_import_count
+
+      user.max_layers.should eq max_layers
 
       # Just to be sure all following checks will not falsely report ok using wrong schema
       user.database_schema.should_not eq CartoDB::UserModule::DBService::SCHEMA_PUBLIC

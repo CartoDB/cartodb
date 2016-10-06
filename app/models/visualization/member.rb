@@ -77,6 +77,8 @@ module CartoDB
       attribute :prev_id,             String, default: nil
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
+      attribute :auth_token,          String, default: nil
+      attribute :version,             Integer
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil
@@ -426,11 +428,6 @@ module CartoDB
         permission.users_with_permissions(permission_types)
       end
 
-      def all_users_with_read_permission
-        users_with_permissions([CartoDB::Visualization::Member::PERMISSION_READONLY,
-                                CartoDB::Visualization::Member::PERMISSION_READWRITE]) + [user]
-      end
-
       def varnish_key
         sorted_table_names = related_tables.map{ |table|
           "#{user.database_schema}.#{table.name}"
@@ -521,13 +518,16 @@ module CartoDB
         digest
       end
 
-      def get_auth_tokens
-        named_map = get_named_map
-        raise CartoDB::InvalidMember unless named_map
+      def get_auth_token
+        if auth_token.nil?
+          auth_token = make_auth_token
+          store
+        end
+        auth_token
+      end
 
-        tokens = named_map.template[:template][:auth][:valid_tokens]
-        raise CartoDB::InvalidMember if tokens.size == 0
-        tokens
+      def get_auth_tokens
+        [get_auth_token]
       end
 
       def supports_private_maps?
@@ -649,7 +649,7 @@ module CartoDB
 
       def save_named_map
         return if type == TYPE_REMOTE
-        return true if mapcapped?
+        return true if named_map_updates_disabled?
 
         unless @updating_named_maps
           Rails::Sequel.connection.after_commit do
@@ -698,6 +698,10 @@ module CartoDB
       attr_reader   :repository, :name_checker, :validator
       attr_accessor :privacy_changed, :name_changed, :old_name, :permission_change_valid, :dirty, :attributions_changed
 
+      def named_map_updates_disabled?
+        mapcapped? && !privacy_changed
+      end
+
       def embed_redis_cache
         @embed_redis_cache ||= EmbedRedisCache.new($tables_metadata)
       end
@@ -745,6 +749,8 @@ module CartoDB
       end
 
       def do_store(propagate_changes = true, table_privacy_changed = false)
+        self.version = user.new_visualizations_version if version.nil?
+
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -810,7 +816,16 @@ module CartoDB
       end
 
       def update_named_map
-        Carto::NamedMaps::Api.new(carto_visualization).update unless mapcapped?
+        return if named_map_updates_disabled?
+
+        # On visualization destroy, an update will be performed after every
+        # layer in the vis is destroyed until the template has no layers
+        # and the update fails. This is a hacky way to fix that. A better way
+        # would be to fix callbacks.
+        visualization_for_presentation = carto_visualization.for_presentation
+        unless visualization_for_presentation.layers.empty?
+          Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        end
       end
 
       def propagate_privacy_and_name_to(table)
@@ -830,9 +845,9 @@ module CartoDB
 
       # @param table Table
       def propagate_name_to(table)
-        table.name = self.name
-        table.register_table_only = self.register_table_only
-        table.update(name: self.name)
+        table.register_table_only = register_table_only
+        table.name = name
+        table.update(name: name)
         if name_changed
           support_tables.rename(old_name, name, recreate_constraints=true, seek_parent_name=old_name)
         end

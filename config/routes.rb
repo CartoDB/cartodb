@@ -16,12 +16,13 @@ CartoDB::Application.routes.draw do
   get   '/signup'           => 'signup#signup',     as: :signup
   post  '/signup'           => 'signup#create',  as: :signup_organization_user
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
+  get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication_in_progress' => 'signup#create_http_authentication_in_progress', as: :signup_http_authentication_in_progress
 
   get   '(/user/:user_domain)(/u/:user_domain)/enable_account_token/:id' => 'account_tokens#enable',     as: :enable_account_token_show
   get   '(/user/:user_domain)(/u/:user_domain)/resend_validation_mail/:user_id' => 'account_tokens#resend',     as: :resend_validation_mail
   get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error
 
-  get   '/login'           => 'sessions#new',     as: :login
+  get   '(/user/:user_domain)/login' => 'sessions#new',     as: :login
   get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session
 
@@ -53,6 +54,7 @@ CartoDB::Application.routes.draw do
         namespace :public, path: '/' do
           match 'embed', to: 'embeds#show', via: :get
           match 'embed_protected', to: 'embeds#show_protected', via: :post
+          match 'embed_protected', to: 'embeds#show', via: :get
         end
       end
 
@@ -64,6 +66,8 @@ CartoDB::Application.routes.draw do
         CartoDB.base_url_from_request(request) + '/builder/' + params[:path].to_s
       }
     end
+
+    get '/github' => 'github#github', as: :github
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -490,15 +494,32 @@ CartoDB::Application.routes.draw do
         match 'viz' => 'visualizations#vizjson3', as: :api_v3_visualizations_vizjson
       end
 
+      resource :metrics, only: [:create]
+
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resource :state, only: [:update]
+
+        scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
+          resources :legends,
+                    only: [:index, :show, :create, :update, :destroy],
+                    constraints: { id: /[^\/]+/ }
+        end
       end
 
       resources :visualization_exports, only: [:create, :show], constraints: { id: /[^\/]+/ } do
         get 'download' => 'visualization_exports#download', as: :download
       end
+
+      put 'notifications/:category', to: 'user_notifications#update', as: :api_v3_user_notifications_update
     end
+
+    # Connectors
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors' => 'connectors#index', as: :api_v1_connectors_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
   end
 
   scope :module => 'api/json', :format => :json do
@@ -601,6 +622,13 @@ CartoDB::Application.routes.draw do
     namespace :superadmin do
       resources :user_migration_exports, only: [:show, :create]
       resources :user_migration_imports, only: [:show, :create]
+      resources :users, only: [] do
+        get '/usage' => 'users#usage', on: :member
+      end
+
+      resources :organizations, only: [] do
+        get '/usage' => 'organizations#usage', on: :member
+      end
     end
   end
 

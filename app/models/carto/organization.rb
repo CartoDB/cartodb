@@ -1,9 +1,11 @@
 require 'active_record'
 require_relative '../../helpers/data_services_metrics_helper'
+require_dependency 'carto/helpers/auth_token_generator'
 
 module Carto
   class Organization < ActiveRecord::Base
     include DataServicesMetricsHelper
+    include AuthTokenGenerator
 
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
@@ -119,10 +121,6 @@ module Carto
       self.quota_in_bytes - assigned_quota
     end
 
-    def get_auth_token
-      auth_token.present? ? auth_token : generate_auth_token
-    end
-
     def require_organization_owner_presence!
       if owner.nil?
         raise ::Organization::OrganizationWithoutOwner.new(self)
@@ -130,12 +128,6 @@ module Carto
     end
 
     private
-
-    def generate_auth_token
-      update_attribute(:auth_token, SecureRandom.urlsafe_base64(nil, false))
-
-      auth_token
-    end
 
     def destroy_groups_with_extension
       return unless groups

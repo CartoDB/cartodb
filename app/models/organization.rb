@@ -4,6 +4,7 @@ require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'
 require_relative './permission'
+require_dependency 'carto/helpers/auth_token_generator'
 
 class Organization < Sequel::Model
 
@@ -19,6 +20,7 @@ class Organization < Sequel::Model
   include CartoDB::OrganizationDecorator
   include Concerns::CartodbCentralSynchronizable
   include DataServicesMetricsHelper
+  include Carto::AuthTokenGenerator
 
   Organization.raise_on_save_failure = true
   self.strict_param_setting = false
@@ -134,17 +136,18 @@ class Organization < Sequel::Model
   def destroy_cascade
     destroy_groups
     destroy_non_owner_users
-    if self.owner
-      self.owner.destroy
+    if owner
+      owner.destroy
     else
-      self.destroy
+      destroy
     end
   end
 
   def destroy_non_owner_users
-    non_owner_users.each { |u|
-      u.destroy
-    }
+    non_owner_users.each do |user|
+      user.shared_entities.map(&:entity).each(&:delete)
+      user.destroy
+    end
   end
 
   def non_owner_users
@@ -263,42 +266,43 @@ class Organization < Sequel::Model
 
   def to_poro
     {
-      :created_at       => self.created_at,
-      :description      => self.description,
-      :discus_shortname => self.discus_shortname,
-      :display_name     => self.display_name,
-      :id               => self.id,
-      :name             => self.name,
-      :owner            => {
-        :id         => self.owner ? self.owner.id : nil,
-        :username   => self.owner ? self.owner.username : nil,
-        :avatar_url => self.owner ? self.owner.avatar_url : nil,
-        :email      => self.owner ? self.owner.email : nil,
-        :groups     => self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+      created_at:       created_at,
+      description:      description,
+      discus_shortname: discus_shortname,
+      display_name:     display_name,
+      id:               id,
+      name:             name,
+      owner: {
+        id:         owner ? owner.id : nil,
+        username:   owner ? owner.username : nil,
+        avatar_url: owner ? owner.avatar_url : nil,
+        email:      owner ? owner.email : nil,
+        groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
       },
-      :quota_in_bytes           => self.quota_in_bytes,
-      :unassigned_quota         => self.unassigned_quota,
-      :geocoding_quota          => self.geocoding_quota,
-      :map_view_quota           => self.map_view_quota,
-      :twitter_datasource_quota => self.twitter_datasource_quota,
-      :map_view_block_price     => self.map_view_block_price,
-      :geocoding_block_price    => self.geocoding_block_price,
-      :here_isolines_quota      => self.here_isolines_quota,
-      :here_isolines_block_price => self.here_isolines_block_price,
-      :obs_snapshot_quota       => self.obs_snapshot_quota,
-      :obs_snapshot_block_price => self.obs_snapshot_block_price,
-      :obs_general_quota        => self.obs_general_quota,
-      :obs_general_block_price  => self.obs_general_block_price,
-      :geocoder_provider => self.geocoder_provider,
-      :isolines_provider => self.isolines_provider,
-      :routing_provider => self.routing_provider,
-      :seats                    => self.seats,
-      :twitter_username         => self.twitter_username,
-      :location                 => self.twitter_username,
-      :updated_at               => self.updated_at,
-      :website          => self.website,
-      :admin_email      => self.admin_email,
-      :avatar_url       => self.avatar_url
+      quota_in_bytes:            quota_in_bytes,
+      unassigned_quota:          unassigned_quota,
+      geocoding_quota:           geocoding_quota,
+      map_view_quota:            map_view_quota,
+      twitter_datasource_quota:  twitter_datasource_quota,
+      map_view_block_price:      map_view_block_price,
+      geocoding_block_price:     geocoding_block_price,
+      here_isolines_quota:       here_isolines_quota,
+      here_isolines_block_price: here_isolines_block_price,
+      obs_snapshot_quota:        obs_snapshot_quota,
+      obs_snapshot_block_price:  obs_snapshot_block_price,
+      obs_general_quota:         obs_general_quota,
+      obs_general_block_price:   obs_general_block_price,
+      geocoder_provider:         geocoder_provider,
+      isolines_provider:         isolines_provider,
+      routing_provider:          routing_provider,
+      seats:                     seats,
+      twitter_username:          twitter_username,
+      location:                  twitter_username,
+      updated_at:                updated_at,
+      website:                   website,
+      admin_email:               admin_email,
+      avatar_url:                avatar_url,
+      user_count:                users.count
     }
   end
 
@@ -320,14 +324,6 @@ class Organization < Sequel::Model
 
   def tags(type, exclude_shared=true)
     users.map { |u| u.tags(exclude_shared, type) }.flatten
-  end
-
-  def get_auth_token
-    if self.auth_token.nil?
-      self.auth_token = make_auth_token
-      self.save
-    end
-    self.auth_token
   end
 
   def public_vis_by_type(type, page_num, items_per_page, tags, order = 'updated_at')
@@ -424,6 +420,22 @@ class Organization < Sequel::Model
     end
   end
 
+  def max_import_file_size
+    owner ? owner.max_import_file_size : ::User::DEFAULT_MAX_IMPORT_FILE_SIZE
+  end
+
+  def max_import_table_row_count
+    owner ? owner.max_import_table_row_count : ::User::DEFAULT_MAX_IMPORT_TABLE_ROW_COUNT
+  end
+
+  def max_concurrent_import_count
+    owner ? owner.max_concurrent_import_count : ::User::DEFAULT_MAX_CONCURRENT_IMPORT_COUNT
+  end
+
+  def max_layers
+    owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
+  end
+
   private
 
   def destroy_groups
@@ -469,17 +481,5 @@ class Organization < Sequel::Model
 
   def name_exists_in_users?
     !::User.where(username: self.name).first.nil?
-  end
-
-  def make_auth_token
-    digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-    10.times do
-      digest = secure_digest(digest, CartoDB::Visualization::Member::TOKEN_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 end

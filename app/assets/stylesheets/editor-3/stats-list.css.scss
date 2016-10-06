@@ -17,11 +17,15 @@
   @include transform(rotate(90deg));
 }
 .StatsList-tag {
-  padding: 1px $baseSize / 2;
-  border-radius: $baseSize / 2;
-  background-color: $cThirdBackground;
-  color: $cAltText;
+  margin-top: 1px;
 }
+
 .StatsList-style.is-hidden {
   display: none;
 }
+.Data-loaderContainer {
+  position: relative;
+  margin-top: -18px;
+  margin-bottom: 18px;
+}
+

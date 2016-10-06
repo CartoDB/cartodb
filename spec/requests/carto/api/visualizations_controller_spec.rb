@@ -43,6 +43,28 @@ describe Carto::Api::VisualizationsController do
         )
         visualization.uses_vizjson2?.should be_true
       end
+
+      it 'marks visualizations as using vizjson2 with invalid url' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get(
+          api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
+          {},
+          'HTTP_REFERER' => 'invalid'
+        )
+        visualization.uses_vizjson2?.should be_true
+      end
+
+      it 'does not mark visualizations as using vizjson2 with carto url' do
+        visualization = FactoryGirl.create(:carto_visualization)
+        Carto::Api::VisualizationsController.any_instance.stubs(:generate_vizjson2).returns({})
+        get(
+          api_v2_visualizations_vizjson_url(user_domain: visualization.user.username, id: visualization.id),
+          {},
+          'HTTP_REFERER' => 'https://carto.com/wadus'
+        )
+        visualization.uses_vizjson2?.should be_false
+      end
     end
   end
 

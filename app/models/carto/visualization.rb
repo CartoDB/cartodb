@@ -24,6 +24,8 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
 
+  V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -437,6 +439,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   def state
     super ? super : build_state
+  end
+
+  def mark_as_vizjson2
+    $tables_metadata.SADD(V2_VISUALIZATIONS_REDIS_KEY, id)
+  end
+
+  def uses_vizjson2?
+    $tables_metadata.SISMEMBER(V2_VISUALIZATIONS_REDIS_KEY, id) > 0
   end
 
   private

@@ -24,6 +24,13 @@ InfowindowManager.prototype.manage = function (mapView, map) {
   }, this);
   this._map.layers.each(this._addInfowindowForLayer, this);
   this._map.layers.bind('add', this._addInfowindowForLayer, this);
+  this._map.on('change:interactivity', this._onMapInteractivityChanged, this);
+};
+
+InfowindowManager.prototype._onMapInteractivityChanged = function (layerModel) {
+  if (this._infowindowModel && !this._map.isInteractivityEnabled()) {
+    this._infowindowModel.set('visibility', false);
+  }
 };
 
 InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {

@@ -95,8 +95,20 @@ var Map = Model.extend({
     return line;
   },
 
+  drawPolygon: function () {
+    var line = new Line({
+      type: 'polygon'
+    });
+    this._newGeometry = line;
+    this.trigger('enterDrawingMode');
+    return line;
+  },
+
   stopDrawing: function () {
-    delete this._newGeometry;
+    if (this._newGeometry) {
+      this._newGeometry.remove();
+      delete this._newGeometry;
+    }
     this.trigger('exitDrawingMode');
   },
 

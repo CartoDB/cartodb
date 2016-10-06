@@ -351,6 +351,14 @@
         });
       }
 
+      function drawPolygon (vis) {
+        vis.map.stopDrawing();
+        var polygon = vis.map.drawPolygon();
+        polygon.on('ready', function (point) {
+          console.log(polygon.toGeoJSON());
+        });
+      }
+
       function enableControls (vis) {
         $('.js-drawing-control').click(function () {
           var clickedControl = this;
@@ -364,6 +372,9 @@
         });
         document.querySelector('.js-draw-line').addEventListener('click', function () {
           drawLine(vis);
+        });
+        document.querySelector('.js-draw-polygon').addEventListener('click', function () {
+          drawPolygon(vis);
         });
       }
 

@@ -19,7 +19,6 @@ function PathView(geometryModel) {
   this.model = geometryModel;
   this.points = [];
 
-
   this.geom = L.GeoJSON.geometryToLayer(geometryModel.get('geojson'));
   this.geom.setStyle(geometryModel.get('style'));
 }

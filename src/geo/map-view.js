@@ -53,6 +53,7 @@ var MyLeafletLineView = View.extend({
 
     this.model = this.model || options.model;
     this.mapView = options.mapView;
+    this.leafletMap = this.mapView._getNativeMap();
 
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.points.on('change', this._onPointsChanged, this);
@@ -103,7 +104,70 @@ var MyLeafletLineView = View.extend({
 
   _onRemoveTriggered: function () {
     this._removeMarkers();
-    this._polyline.remove();
+    this.leafletMap.removeLayer(this._polyline);
+    this.remove();
+  }
+});
+
+var MyLeafletPolygonView = View.extend({
+  initialize: function (options) {
+    if (!options.model) throw new Error('model is required');
+    if (!options.mapView) throw new Error('mapView is required');
+
+    this.model = this.model || options.model;
+    this.mapView = options.mapView;
+    this.leafletMap = this.mapView._getNativeMap();
+
+    this.model.on('remove', this._onRemoveTriggered, this);
+    this.model.points.on('change', this._onPointsChanged, this);
+    this.model.points.on('add', this._onPointsChanged, this);
+
+    this._polyline = this._createPolyline();
+    this._markers = [];
+  },
+
+  _createPolyline: function () {
+    return L.polygon([], { color: 'red' });
+  },
+
+  render: function () {
+    this._polyline.addTo(this.mapView._getNativeMap());
+  },
+
+  _onPointsChanged: function () {
+    this._removeMarkers();
+    this._addMarkers();
+    this._polyline.setLatLngs(this.model.getLatLngs());
+    this._updateModelsGeoJSON();
+  },
+
+  _removeMarkers: function () {
+    this.model.points.each(function (point) {
+      point.remove();
+    }, this);
+  },
+
+  _addMarkers: function () {
+    this.model.points.each(this._addMarker, this);
+  },
+
+  _addMarker: function (point) {
+    var pointView = new MyLeafletPointView({
+      model: point,
+      mapView: this.mapView
+    });
+    pointView.render();
+  },
+
+  _updateModelsGeoJSON: function () {
+    this.model.set({
+      geojson: this._polyline.toGeoJSON()
+    });
+  },
+
+  _onRemoveTriggered: function () {
+    this._removeMarkers();
+    this.leafletMap.removeLayer(this._polyline);
     this.remove();
   }
 });
@@ -144,8 +208,6 @@ var MapView = View.extend({
 
     this.bind('clean', this._removeLayers, this);
 
-
-
     this.map.on('enterDrawingMode', this._enterDrawingMode, this);
     this.map.on('exitDrawingMode', this._exitDrawingMode, this);
   },
@@ -156,6 +218,7 @@ var MapView = View.extend({
 
   _exitDrawingMode: function () {
     this.off('click', this._onMapClicked, this);
+    delete this._newGeometryView;
   },
 
   _onMapClicked: function (event, latlng) {
@@ -174,7 +237,8 @@ var MapView = View.extend({
 
     var GEOMETRY_VIEWS = {
       'point': MyLeafletPointView,
-      'line': MyLeafletLineView
+      'line': MyLeafletLineView,
+      'polygon': MyLeafletPolygonView
     };
 
     var GeometryView = GEOMETRY_VIEWS[geometry.get('type')];

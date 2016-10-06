@@ -1,0 +1,1 @@
+<p class="u-whiteTextColor">pending</p>

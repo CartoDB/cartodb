@@ -7,37 +7,94 @@
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
     <link rel="stylesheet" href="../../dist/themes/css/cartodb.css" />
     <style>
-      html, body, #map {
+      html, body {
         height: 100%;
         padding: 0;
         margin: 0;
       }
 
+      body {
+        font-family: 'Open Sans';
+        display: flex;
+        flex-direction: row;
+      }
+
+      .sidebar-title {
+        line-height: 2em;
+        padding: 0 10px;
+      }
+      .sidebar-title-dark {
+        background: black;
+        color: white;
+      }
+
+      #sidebar {
+        width: 300px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      #map {
+        height: 100%;
+        flex: 1;
+        position: relative;
+      }
+
       #controls {
-        position: absolute;
-        top: 40px;
-        right: 40px;
+        padding: 10px;
       }
 
       #controls button {
-        background: #FABADA;
+        font-size: 14px;
+        color: blue;
+        text-decoration: underline;
         display: block;
         margin-bottom: 10px; 
-        padding: 10px;
       }
       #controls button.is-enabled {
-        background: red;
+        color: red;
+        text-decoration: none;
+      }
+
+      #geojsonViewer {
+        flex:1;
+        padding: 10px;
+        background: black;
+      }
+
+      #geojsonViewer textarea {
+        background: black;
+        font-family: "Lucida Console", Monaco, monospace;
+        font-size: 12px;
+        border: none;
+        color: #CDCDCD;
+        width: 100%;
+        height: 100%;
+      }
+
+      h1 {
+        font-size: 2em;
+        line-height: 1em;
+        margin: 10px;
       }
     </style>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   </head>
   <body>
-    <div id="map"></div>
-    <div id="controls">
-      <button class="js-drawing-control js-draw-point">Draw a point</button>
-      <button class="js-drawing-control js-draw-line">Draw a line</button>
-      <button class="js-drawing-control js-draw-polygon">Draw a polygon</button>
+    <div id="sidebar">
+      <h1>Geometry Editor</h1>
+      <p class="sidebar-title">Drawing tools</p>
+      <div id="controls">
+        <button class="js-drawing-control js-draw-point">Point</button>
+        <button class="js-drawing-control js-draw-line">Line</button>
+        <button class="js-drawing-control js-draw-polygon">Polygon</button>
+      </div>
+      <p class="sidebar-title sidebar-title-dark">GeoJSON Viewer</p>
+      <div id="geojsonViewer">
+        <textarea class="js-geojson-textarea"></textarea>
+      </div>
     </div>
+    <div id="map"></div>
 
     <!-- include cartodb.js library -->
     <script src="../../dist/cartodb.uncompressed.js"></script>
@@ -335,27 +392,39 @@
         "transition_options":{}
       };
 
+      function displayGeoJSON(geojson) {
+        $('.js-geojson-textarea').val(JSON.stringify(geojson, null, 2));
+      }
+
+      function clearGeoJSON() {
+        $('.js-geojson-textarea').val('');
+      }
+
+
       function drawPoint (vis) {
         vis.map.stopDrawing();
+        clearGeoJSON();
         var point = vis.map.drawPoint();
         point.on('ready', function (point) {
-          console.log(point.toGeoJSON());
+          displayGeoJSON(point.toGeoJSON());
         });
       }
 
       function drawLine (vis) {
         vis.map.stopDrawing();
+        clearGeoJSON();
         var line = vis.map.drawLine();
         line.on('ready', function (point) {
-          console.log(line.toGeoJSON());
+          displayGeoJSON(line.toGeoJSON());
         });
       }
 
       function drawPolygon (vis) {
         vis.map.stopDrawing();
+        clearGeoJSON();
         var polygon = vis.map.drawPolygon();
         polygon.on('ready', function (point) {
-          console.log(polygon.toGeoJSON());
+          displayGeoJSON(polygon.toGeoJSON());
         });
       }
 
@@ -379,7 +448,9 @@
       }
 
       function main () {
-        cartodb.createVis('map', vizjson, {})
+        cartodb.createVis('map', vizjson, {
+          legends: false
+        })
         .done(function (vis, layers) {
           enableControls(vis);
         })

@@ -9,7 +9,8 @@ var sanitize = require('../core/sanitize');
 
 var Point = Model.extend({
   defaults: {
-    type: 'point'
+    type: 'point',
+    draggable: true
   },
 
   initialize: function () {
@@ -19,7 +20,9 @@ var Point = Model.extend({
   },
 
   update: function (latlng) {
-    this.set('latlng', latlng);
+    if (!this.get('latlng')) {
+      this.set('latlng', latlng);
+    }
   },
 
   remove: function () {

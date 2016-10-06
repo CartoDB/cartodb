@@ -22,6 +22,8 @@
 }
 .Modal-container .ScrollView {
   @include align-items(center);
+  margin-right: 0;
+  margin-left: 0;
 }
 .Modal-container .ScrollView-shadow--top {
   top: -14px;
@@ -43,7 +45,10 @@
   background: $cWhite;
   z-index: 2;
 }
-.Modal-inner .ScrollView-wrapper,
+.Modal-container .ScrollView-wrapper {
+  width: 100%;
+}
+.Modal-inner .ScrollView-content,
 .Modal-navigationInner,
 .Modal-headerContainer,
 .Modal-footerContainer {
@@ -60,6 +65,12 @@
 }
 .Modal-inner--with-navigation .ScrollView-shadow--top {
   top: -6px;
+}
+.Modal-inner .ps-scrollbar-y-rail {
+  width: 4px;
+}
+.Modal-inner .ps-scrollbar-y-rail>.ps-scrollbar-y {
+  width: 4px;
 }
 
 .Modal-inner {

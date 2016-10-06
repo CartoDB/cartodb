@@ -55,7 +55,7 @@ describe Map do
         @map_user.destroy
       end
 
-      describe '#embed_options' do
+      describe '#options' do
         it 'sets dashboard_menu true by default' do
           @map.dashboard_menu.should eq true
         end
@@ -84,68 +84,68 @@ describe Map do
           @map.dashboard_menu = 'patata'
 
           @map.valid?.should be_false
-          @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
         end
 
         it 'rejects a non-boolean layer_selector value' do
           @map.layer_selector = 'patata'
 
           @map.valid?.should be_false
-          @map.errors[:embed_options][0].should include('String did not match the following type: boolean')
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
         end
 
         it 'requires a dashboard_menu value' do
           @map.dashboard_menu = nil
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
         end
 
         it 'requires a layer_selector value' do
           @map.layer_selector = nil
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('NilClass did not match the following type: boolean')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
         end
 
         it 'requires dashboard_menu to be present' do
-          old_options = @map.embed_options.dup
-          @map.embed_options = Hash.new
+          old_options = @map.options.dup
+          @map.options = Hash.new
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('did not contain a required property of \'dashboard_menu\'')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'dashboard_menu\'')
 
-          @map.embed_options = old_options
+          @map.options = old_options
         end
 
         it 'requires layer_selector to be present' do
-          old_options = @map.embed_options.dup
-          @map.embed_options = Hash.new
+          old_options = @map.options.dup
+          @map.options = Hash.new
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('did not contain a required property of \'layer_selector\'')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'layer_selector\'')
 
-          @map.embed_options = old_options
+          @map.options = old_options
         end
 
-        it 'rejects spammy embed_options' do
-          @map.embed_options[:spam] = 'hell'
+        it 'rejects spammy options' do
+          @map.options[:spam] = 'hell'
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('spam')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('spam')
         end
 
-        it 'rejects incomplete embed_options' do
-          @map.embed_options.delete(:dashboard_menu)
+        it 'rejects incomplete options' do
+          @map.options.delete(:dashboard_menu)
 
           @map.valid?.should be_false
-          @map.errors[:embed_options].should_not be_empty
-          @map.errors[:embed_options][0].should include('dashboard_menu')
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('dashboard_menu')
         end
       end
     end

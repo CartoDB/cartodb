@@ -82,7 +82,7 @@ module Carto
           center:         map.center,
           datasource:     datasource_vizjson(options, forced_privacy_version),
           description:    html_safe(@visualization.description),
-          embed_options:  map.embed_options,
+          options:        map.options,
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
           likes:          @visualization.likes.count,

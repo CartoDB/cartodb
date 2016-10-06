@@ -28,12 +28,12 @@ class Carto::Map < ActiveRecord::Base
     center:          [30, 0]
   }.freeze
 
-  serialize :embed_options, ::Carto::CartoJsonSerializer
-  validates :embed_options, carto_json_symbolizer: true
+  serialize :options, ::Carto::CartoJsonSerializer
+  validates :options, carto_json_symbolizer: true
 
-  validate :validate_embed_options
+  validate :validate_options
 
-  after_initialize :ensure_embed_options
+  after_initialize :ensure_options
   after_commit :force_notify_map_change
 
   def data_layers
@@ -132,25 +132,25 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def dashboard_menu=(value)
-    embed_options[:dashboard_menu] = value
+    options[:dashboard_menu] = value
   end
 
   def dashboard_menu
-    embed_options[:dashboard_menu]
+    options[:dashboard_menu]
   end
 
   def layer_selector=(value)
-    embed_options[:layer_selector] = value
+    options[:layer_selector] = value
   end
 
   def layer_selector
-    embed_options[:layer_selector]
+    options[:layer_selector]
   end
 
   private
 
-  def ensure_embed_options
-    self.embed_options ||= {
+  def ensure_options
+    self.options ||= {
       dashboard_menu: true,
       layer_selector: true,
       legends: legends,
@@ -158,13 +158,13 @@ class Carto::Map < ActiveRecord::Base
     }
   end
 
-  def validate_embed_options
-    location = "#{Rails.root}/lib/formats/map/embed_options.json"
+  def validate_options
+    location = "#{Rails.root}/lib/formats/map/options.json"
     schema = Carto::Definition.instance.load_from_file(location)
 
-    embed_options_wia = embed_options.with_indifferent_access
-    json_errors = JSON::Validator.fully_validate(schema, embed_options_wia)
-    errors.add(:embed_options, json_errors.join(', ')) if json_errors.any?
+    options_wia = options.with_indifferent_access
+    json_errors = JSON::Validator.fully_validate(schema, options_wia)
+    errors.add(:options, json_errors.join(', ')) if json_errors.any?
   end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons

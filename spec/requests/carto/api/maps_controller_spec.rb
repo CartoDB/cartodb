@@ -38,7 +38,7 @@ describe Carto::Api::MapsController do
         view_bounds_ne: "[32.30570601389429, -76.32202148437499]",
         view_bounds_sw: "[24.51713945052515, -89.329833984375]",
         zoom: 7,
-        embed_options: {
+        options: {
           dashboard_menu: false,
           legends: true,
           scrollwheel: true,
@@ -54,7 +54,7 @@ describe Carto::Api::MapsController do
     end
 
     it 'validates on update' do
-      payload[:embed_options] = { spammy: 'hell', dashboard_menu: true }
+      payload[:options] = { spammy: 'hell', dashboard_menu: true }
       put_json create_show_map_url, payload do |response|
         response.status.should eq 422
       end
@@ -124,11 +124,11 @@ describe Carto::Api::MapsController do
         response.body[:view_bounds_sw].should eq @map.view_bounds_sw
         response.body[:view_bounds_ne].should eq @map.view_bounds_ne
 
-        response_embed_options = response.body[:embed_options]
-        response_embed_options[:dashboard_menu].should eq @map.dashboard_menu
-        response_embed_options[:layer_selector].should eq @map.layer_selector
-        response_embed_options[:legends].should eq @map.embed_options[:legends]
-        response_embed_options[:scrollwheel].should eq @map.embed_options[:scrollwheel]
+        response_options = response.body[:options]
+        response_options[:dashboard_menu].should eq @map.dashboard_menu
+        response_options[:layer_selector].should eq @map.layer_selector
+        response_options[:legends].should eq @map.options[:legends]
+        response_options[:scrollwheel].should eq @map.options[:scrollwheel]
       end
     end
 

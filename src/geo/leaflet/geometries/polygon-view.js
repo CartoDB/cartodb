@@ -3,7 +3,7 @@ var PathViewBase = require('./path-view-base');
 
 var PolygonView = PathViewBase.extend({
   _createGeometry: function () {
-    return L.polygon([], { color: 'red' });
+    return L.polygon([], { color: this.model.get('color') });
   }
 });
 

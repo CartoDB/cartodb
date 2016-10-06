@@ -2,30 +2,20 @@ var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 
-var MyLeafletPointView = require('./leaflet/geometries/point-view');
-var MyLeafletPolylineView = require('./leaflet/geometries/polyline-view');
-var MyLeafletPolygonView = require('./leaflet/geometries/polygon-view');
-
 var MapView = View.extend({
   initialize: function () {
-    if (this.options.map === undefined) {
-      throw new Error('you should specify a map model');
-    }
+    if (this.options.map === undefined) throw new Error('map is required');
+    if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
+    if (this.options.layerViewFactory === undefined) throw new Error('layerViewFactory is required');
+    if (this.options.geometryViewFactory === undefined) throw new Error('geometryViewFactory is required');
 
-    if (this.options.layerGroupModel === undefined) {
-      throw new Error('layerGroupModel is required');
-    }
     this._cartoDBLayerGroup = this.options.layerGroupModel;
-
-    if (this.options.layerViewFactory === undefined) {
-      throw new Error('you should specify a layerViewFactory');
-    }
-
-    this._cartoDBLayerGroupView = null;
     this.map = this.options.map;
     this.add_related_model(this.map);
-
     this._layerViewFactory = this.options.layerViewFactory;
+    this._geometryViewFactory = this.options.geometryViewFactory;
+
+    this._cartoDBLayerGroupView = null;
     this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
@@ -48,8 +38,14 @@ var MapView = View.extend({
     // TODO: Extract drawingController
   },
 
+  _supportsDrawing: function () {
+    return !!this._geometryViewFactory;
+  },
+
   _enterDrawingMode: function () {
-    this.on('click', this._onMapClicked, this);
+    if (this._supportsDrawing()) {
+      this.on('click', this._onMapClicked, this);
+    }
   },
 
   _exitDrawingMode: function () {
@@ -70,32 +66,8 @@ var MapView = View.extend({
   },
 
   _drawGeometry: function (geometry) {
-
-    // TODO: "Delegate" this to concreate implementation of the core view
-    var GEOMETRY_VIEWS = {
-      'point': MyLeafletPointView,
-      'polyline': MyLeafletPolylineView,
-      'polygon': MyLeafletPolygonView
-    };
-
-    var GeometryView = GEOMETRY_VIEWS[geometry.get('type')];
-    if (GeometryView) {
-      var geometryView = new GeometryView({
-        model: geometry,
-        mapView: this
-      });
-      this._newGeometryView = geometryView;
-      geometryView.render();
-    } else {
-      throw new Error(geometry.get('type') + ' is not supported yet');
-    }
+    return this._geometryViewFactory.createGeometryView(geometry, this);
   },
-
-
-
-
-
-
 
   render: function () {
     this._addLayers();

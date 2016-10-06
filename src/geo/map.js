@@ -27,24 +27,22 @@ var Map = Model.extend({
   },
 
   drawPoint: function () {
-    var point = new Point();
-    this._newGeometry = point;
-    this.trigger('enterDrawingMode');
-    return point;
+    return this._drawGeometry(Point);
   },
 
   drawPolyline: function () {
-    var line = new Polyline();
-    this._newGeometry = line;
-    this.trigger('enterDrawingMode');
-    return line;
+    return this._drawGeometry(Polyline);
   },
 
   drawPolygon: function () {
-    var polygon = new Polygon();
-    this._newGeometry = polygon;
+    return this._drawGeometry(Polygon);
+  },
+
+  _drawGeometry: function (GeometryClass) {
+    var geometry = new GeometryClass();
+    this._newGeometry = geometry;
     this.trigger('enterDrawingMode');
-    return polygon;
+    return geometry;
   },
 
   stopDrawing: function () {

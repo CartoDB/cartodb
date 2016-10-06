@@ -22,6 +22,7 @@
       .sidebar-title {
         line-height: 2em;
         padding: 0 10px;
+        text-transform: uppercase;
       }
       .sidebar-title-dark {
         background: black;
@@ -70,6 +71,7 @@
         color: #CDCDCD;
         width: 100%;
         height: 100%;
+        outline: none;
       }
 
       h1 {
@@ -83,15 +85,15 @@
   <body>
     <div id="sidebar">
       <h1>Geometry Editor</h1>
-      <p class="sidebar-title">Drawing tools</p>
+      <p class="sidebar-title">Tools</p>
       <div id="controls">
         <button class="js-drawing-control js-draw-point">Point</button>
         <button class="js-drawing-control js-draw-line">Polyline</button>
         <button class="js-drawing-control js-draw-polygon">Polygon</button>
       </div>
-      <p class="sidebar-title sidebar-title-dark">GeoJSON Viewer</p>
+      <p class="sidebar-title sidebar-title-dark">GeoJSON</p>
       <div id="geojsonViewer">
-        <textarea class="js-geojson-textarea"></textarea>
+        <textarea class="js-geojson-textarea" readonly></textarea>
       </div>
     </div>
     <div id="map"></div>

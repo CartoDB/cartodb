@@ -13,6 +13,7 @@ var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
+var DataviewsTracker = require('./dataviews-tracker');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -36,6 +37,10 @@ var VisModel = Backbone.Model.extend({
 
     this.overlaysCollection = new Backbone.Collection();
     this._instantiateMapWasCalled = false;
+
+    this._dataviewsTracker = new DataviewsTracker(null, {
+      vis: this
+    });
   },
 
   done: function (callback) {
@@ -127,7 +132,8 @@ var VisModel = Backbone.Model.extend({
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection
+      analysisCollection: this._analysisCollection,
+      dataviewsTracker: this._dataviewsTracker
     });
 
     // Create the WindshaftMap
@@ -280,6 +286,7 @@ var VisModel = Backbone.Model.extend({
       this._instantiateMapWasCalled = true;
       var successCallback = options.success;
       options.success = function () {
+        this._dataviewsTracker.track();
         this._initBindsAfterFirstMapInstantiation();
         successCallback && successCallback();
       }.bind(this);

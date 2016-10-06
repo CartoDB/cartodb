@@ -61,6 +61,14 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :state, class_name: Carto::State
   after_save :save_state_if_needed
 
+  validates :version, presence: true
+
+  before_validation :set_default_version
+
+  def set_default_version
+    self.version ||= user.try(:new_visualizations_version)
+  end
+
   def self.columns
     super.reject { |c| c.name == 'url_options' }
   end

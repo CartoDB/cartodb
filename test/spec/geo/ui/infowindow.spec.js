@@ -314,23 +314,43 @@ describe('geo/ui/infowindow-view', function() {
     });
 
     it("should render properly when there is only a field without title", function() {
-      model.set({
-        fields: [
-          { name: 'test1', position: 0, title: false },
-        ],
+      view.model.set({
+        template: ['{{#content.fields}}',
+          '<li class="CDB-infowindow-listItem">',
+            '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}',
+            '{{#value}}<h4 class="CDB-infowindow-title">{{{ value }}}</h4>{{/value}}',
+            '{{^value}}<h4 class="CDB-infowindow-title">null</h4>{{/value}}',
+          '</li>',
+          '{{/content.fields}}'].join(' '),
         content: {
           fields: [
-            { name: 'test1', title: 'test1', position: 0, value: 'jamon' },
+            { name: 'test1', title: null, position: 0, value: 'jamon' },
           ]
         }
       });
 
-      var new_view = new Infowindow({
-        model: model,
-        mapView: mapView
+      view.render();
+      expect(view.$el.html()).toContain('<li class="CDB-infowindow-listItem">  <h4 class="CDB-infowindow-title">jamon</h4>  </li>');
+    });
+
+    it("should render with alternative_name set", function() {
+      view.model.set({
+        template: ['{{#content.fields}}',
+          '<li class="CDB-infowindow-listItem">',
+            '{{#title}}<h5 class="CDB-infowindow-subtitle">{{title}}</h5>{{/title}}',
+            '{{#value}}<h4 class="CDB-infowindow-title">{{{ value }}}</h4>{{/value}}',
+            '{{^value}}<h4 class="CDB-infowindow-title">null</h4>{{/value}}',
+          '</li>',
+          '{{/content.fields}}'].join(' '),
+        content: {
+          fields: [
+            { name: 'test1', title: 'test1_', value: 'test1' }
+          ]
+        }
       });
 
-      expect(new_view.render().$el.html()).toBe('<div>jamon</div>');
+      view.render();
+      expect(view.$el.html()).toContain('<h5 class="CDB-infowindow-subtitle">test1_</h5> <h4 class="CDB-infowindow-title">test1</h4>');
     });
 
     it("shouldn't sanitize the fields", function() {

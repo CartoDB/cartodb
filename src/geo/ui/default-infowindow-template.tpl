@@ -12,7 +12,6 @@
               <li class="CDB-infowindow-listItem">
                 <% if (field.title) { %><h5 class="CDB-infowindow-subtitle"><%- field.title %></h5><% } %>
                 <% if (field.value) { %><h4 class="CDB-infowindow-title"><%- field.value %></h4><% } %>
-                <% if (!field.title) { %><h4 class="CDB-infowindow-title">null</h4><% } %>
               </li>
               <% }) %>
           <% } %>

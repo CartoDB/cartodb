@@ -381,7 +381,7 @@ Editor
     sudo pip install --no-use-wheel -r python_requirements.txt
 
 .. warning::
-    If this fails due to the installation of the gdal package not finding Python.h, you'll need to do this:
+    If this fails due to the installation of the gdal package not finding Python.h or any other header file, you'll need to do this:
 
     ::
 

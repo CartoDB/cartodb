@@ -22,7 +22,8 @@ describe('src/vis/model-updater', function () {
       layersCollection: {},
       dataviewsCollection: {},
       analysisCollection: {},
-      modelUpdater: {}
+      modelUpdater: {},
+      windshaftSettings: {}
     });
 
     spyOn(this.windshaftMap, 'getBaseURL').and.callFake(function (subdomain) {
@@ -444,6 +445,37 @@ describe('src/vis/model-updater', function () {
         expect(layer.legends.bubble.get('avg')).toEqual(3500);
         expect(layer.legends.bubble.isSuccess()).toBeTruthy();
       });
+
+      it('should set legend state to "error" if adapter fails to generate attrs from rule', function () {
+        this.windshaftMap.set('metadata', {
+          layers: [
+            {
+              'type': 'mapnik',
+              'id': '923b7812-2d56-41c6-ac15-b090f3ce430d',
+              'meta': {
+                'stats': [],
+                'cartocss': 'cartocss',
+                'cartocss_meta': {
+                  'rules': [
+                    {
+                      'prop': 'marker-width',
+                      'mapping': '>'
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        });
+
+        var layer = new CartoDBLayer({}, { vis: this.visModel });
+
+        this.layersCollection.reset([ layer ]);
+
+        this.modelUpdater.updateModels(this.windshaftMap, 'sourceId', 'forceFetch');
+
+        expect(layer.legends.bubble.isError()).toBeTruthy();
+      });
     });
 
     describe('dataview models', function () {
@@ -488,7 +520,7 @@ describe('src/vis/model-updater', function () {
     });
 
     describe('analysis models', function () {
-      it('should update analysis models and "mark" them as ok', function () {
+      it('should update analysis models and set analysis state to "ok"', function () {
         var getParamNames = function () { return []; };
         var analysis1 = new Backbone.Model({ id: 'a1' });
         analysis1.setOk = jasmine.createSpy('setOk');
@@ -530,7 +562,7 @@ describe('src/vis/model-updater', function () {
         expect(analysis2.setOk).toHaveBeenCalled();
       });
 
-      it('should update analysis models and "mark" them as failed', function () {
+      it('should update analysis models and set status to "failed"', function () {
         var getParamNames = function () { return []; };
         var analysis1 = new Backbone.Model({ id: 'a1' });
         this.analysisCollection.reset([ analysis1 ]);
@@ -599,7 +631,7 @@ describe('src/vis/model-updater', function () {
       expect(error.context).toBeUndefined();
     });
 
-    it('should "mark" analysis as erroneous', function () {
+    it('should set analysis status to "error"', function () {
       var analysis = new Backbone.Model({
         id: 'ANALYSIS_NODE_ID'
       });

@@ -169,10 +169,6 @@ var MapView = View.extend({
   },
 
   _addIndividualLayer: function (layerModel) {
-    layerModel.attributes.extra_params = layerModel.attributes.extra_params || {};
-    layerModel.attributes.extra_params.map_key = this._cartoDBLayerGroup.get('apiKey');
-    layerModel.attributes.extra_params.auth_token = this._cartoDBLayerGroup.get('authToken');
-
     var layerView = this._createLayerView(layerModel);
     if (layerView) {
       this._layerViews[layerModel.cid] = layerView;

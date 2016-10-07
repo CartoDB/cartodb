@@ -12,7 +12,9 @@ describe('geo/gmaps/gmaps-torque-layer-view', function () {
   beforeEach(function () {
     var container = $('<div>').css('height', '200px');
     this.vis = new VisModel();
-    var map = new Map();
+    var map = new Map(null, {
+      layersFactory: {}
+    });
     var mapView = new GoogleMapsMapView({
       el: container,
       map: map,

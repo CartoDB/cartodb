@@ -9,7 +9,6 @@ var DEFAULT_OPTIONS = {
   loaderControl: true,
   infowindow: true,
   tooltip: true,
-  time_slider: true,
   logo: true,
   show_empty_infowindow_fields: false
 };
@@ -27,60 +26,73 @@ var createVis = function (el, vizjson, options) {
 
   options = _.defaults(options || {}, DEFAULT_OPTIONS);
 
-  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
-
-  // TODO: We can check if all required options are present here! eg: if viz.json has some analyses
-  // apiKey or authToken will be required (otherwise we know requests to Windshaft will fail)...
-
-  var showLegends = true;
-  if (_.isBoolean(options.legends)) {
-    showLegends = options.legends;
-  } else if (_.isBoolean(vizjson.legends)) {
-    showLegends = vizjson.legends;
-  }
-
-  var visModel = new VisModel({
-    title: options.title || vizjson.title,
-    description: options.description || vizjson.description,
-    apiKey: options.apiKey,
-    authToken: options.authToken,
-    showLegends: showLegends,
-    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true
-  });
-
-  new VisView({ // eslint-disable-line
-    el: el,
-    model: visModel
-  });
+  var visModel = new VisModel();
 
   if (typeof vizjson === 'string') {
     var url = vizjson;
     Loader.get(url, function (vizjson) {
       if (vizjson) {
-        loadVizJSON(visModel, vizjson, options);
+        loadVizJSON(el, visModel, vizjson, options);
       } else {
         throw new Error('error fetching viz.json file');
       }
     });
   } else {
-    loadVizJSON(visModel, vizjson, options);
+    loadVizJSON(el, visModel, vizjson, options);
   }
 
   return visModel;
 };
 
-var loadVizJSON = function (visModel, vizjsonData, options) {
+var loadVizJSON = function (el, visModel, vizjsonData, options) {
   var vizjson = new VizJSON(vizjsonData);
   applyOptionsToVizJSON(vizjson, options);
+
+  var isProtocolHTTPs = window && window.location.protocol && window.location.protocol === 'https:';
+
+  var showLegends = true;
+  if (_.isBoolean(options.legends)) {
+    showLegends = options.legends;
+  } else if (vizjson.options && _.isBoolean(vizjson.options.legends)) {
+    showLegends = vizjson.options.legends;
+  }
+
+  var showLayerSelector = true;
+  if (_.isBoolean(options.layer_selector)) {
+    showLayerSelector = options.layer_selector;
+  } else if (vizjson.options && _.isBoolean(vizjson.options.layer_selector)) {
+    showLayerSelector = vizjson.options.layer_selector;
+  }
+
+  visModel.set({
+    title: options.title || vizjson.title,
+    description: options.description || vizjson.description,
+    apiKey: options.apiKey,
+    authToken: options.authToken,
+    showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true
+  });
+
+  visModel.setSettings({
+    showLegends: showLegends,
+    showLayerSelector: showLayerSelector
+  });
+
+  new VisView({ // eslint-disable-line
+    el: el,
+    model: visModel,
+    settingsModel: visModel.settings
+  });
+
   visModel.load(vizjson);
+
   if (!options.skipMapInstantiation) {
     visModel.instantiateMap();
   }
 };
 
 var applyOptionsToVizJSON = function (vizjson, options) {
-  vizjson.scrollwheel = options.scrollwheel || vizjson.scrollwheel;
+  vizjson.options.scrollwheel = options.scrollwheel || vizjson.options.scrollwheel;
 
   if (!options.tiles_loader || !options.loaderControl) {
     vizjson.removeLoaderOverlay();

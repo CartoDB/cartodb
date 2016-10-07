@@ -8,6 +8,11 @@ module.exports = {
   'legends': true,
   'url': null,
   'map_provider': 'leaflet',
+  'options': {
+    'scrollwheel': false,
+    'legends': true,
+    'layer_selector': true
+  },
   'bounds': [
     [
       41.340989240001214,

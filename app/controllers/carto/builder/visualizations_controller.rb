@@ -13,7 +13,8 @@ module Carto
       ssl_required :show
 
       before_filter :redirect_to_editor_if_forced,
-                    :load_derived_visualization, only: :show
+                    :load_derived_visualization,
+                    :auto_migrate_visualization_if_possible, only: :show
       before_filter :authors_only
       before_filter :editable_visualizations_only, only: :show
 
@@ -83,6 +84,13 @@ module Carto
         Carto::Tracking::Events::VisitedPrivatePage.new(current_viewer_id,
                                                         user_id: current_viewer_id,
                                                         page: 'builder').report
+      end
+
+      def auto_migrate_visualization_if_possible
+        if @visualization.can_be_automatically_migrated?
+          @visualization.version = 3
+          @visualization.save
+        end
       end
     end
   end

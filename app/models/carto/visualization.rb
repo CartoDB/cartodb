@@ -449,6 +449,10 @@ class Carto::Visualization < ActiveRecord::Base
     $tables_metadata.SISMEMBER(V2_VISUALIZATIONS_REDIS_KEY, id) > 0
   end
 
+  def can_be_automatically_migrated?
+    overlays.builder_incompatible.none?
+  end
+
   private
 
   def build_state

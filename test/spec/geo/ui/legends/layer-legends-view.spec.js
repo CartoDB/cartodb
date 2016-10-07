@@ -21,9 +21,12 @@ describe('geo/ui/legends/layer-legends-view', function () {
       ]
     }, { vis: vis });
 
+    this.tryContainerVisibility = jasmine.createSpy('tryContainerVisibility');
+
     this.layerLegendsView = new LayerLegendsView({
       model: this.cartoDBLayer,
-      settingsModel: this.settingsModel
+      settingsModel: this.settingsModel,
+      tryContainerVisibility: this.tryContainerVisibility
     });
 
     this.layerLegendsView.render();
@@ -89,5 +92,12 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
     expect(this.layerLegendsView.$el.hasClass('is-disabled')).toBeFalsy();
     expect(this.layerLegendsView.$('.is-disabled').length).toEqual(0);
+  });
+
+  it('should be hidden if no legends are rendered', function () {
+    spyOn(this.cartoDBLayer.legends, 'hasAnyLegend').and.returnValue(false);
+    this.settingsModel.set('showLayerSelector', false);
+    this.layerLegendsView.render();
+    expect(this.layerLegendsView.$el.is(':empty')).toBe(true);
   });
 });

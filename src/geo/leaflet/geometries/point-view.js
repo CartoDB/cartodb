@@ -12,11 +12,43 @@ var PointView = View.extend({
 
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.on('change:latlng', this._onLatlngChanged, this);
+  },
 
-    this._marker = this._createMarker();
-    this._marker.on('dragstart', this._onDragStart.bind(this));
-    this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
-    this._marker.on('dragend', this._onDragEnd.bind(this));
+  _onLatlngChanged: function () {
+    this._renderMarkerIfNotRendered();
+
+    if (!this.isDragging()) {
+      this._marker.setLatLng(this.model.get('latlng'));
+    }
+    this._updateModelsGeoJSON();
+  },
+
+  render: function () {
+    if (this.model.get('latlng')) {
+      this._renderMarkerIfNotRendered();
+    }
+  },
+
+  _renderMarkerIfNotRendered: function () {
+    if (!this._marker) {
+      var markerOptions = {
+        icon: L.icon({
+          iconUrl: '/themes/img/default-marker-icon.png',
+          iconAnchor: [11, 11]
+        })
+      };
+
+      var isDraggable = this.model.get('draggable');
+      if (isDraggable) {
+        markerOptions.draggable = isDraggable;
+      }
+
+      this._marker = L.marker(this.model.get('latlng'), markerOptions);
+      this._marker.on('dragstart', this._onDragStart.bind(this));
+      this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
+      this._marker.on('dragend', this._onDragEnd.bind(this));
+      this._marker.addTo(this.leafletMap);
+    }
   },
 
   _onDragStart: function () {
@@ -33,32 +65,6 @@ var PointView = View.extend({
 
   isDragging: function () {
     return !!this._isDragging;
-  },
-
-  _createMarker: function () {
-    var markerOptions = {
-      icon: L.icon({
-        iconUrl: '/themes/img/default-marker-icon.png',
-        iconAnchor: [11, 11]
-      })
-    };
-
-    var isDraggable = this.model.get('draggable');
-    if (isDraggable) {
-      markerOptions.draggable = isDraggable;
-    }
-    return L.marker(this.model.get('latlng') || [0,0], markerOptions);
-  },
-
-  render: function () {
-    this._marker.addTo(this.leafletMap);
-  },
-
-  _onLatlngChanged: function () {
-    if (!this.isDragging()) {
-      this._marker.setLatLng(this.model.get('latlng'));
-    }
-    this._updateModelsGeoJSON();
   },
 
   _updateModelsGeoJSON: function () {

@@ -44,6 +44,112 @@ describe Map do
       end
     end
 
+    describe '#validations' do
+      before(:all) do
+        @map_user = FactoryGirl.create(:carto_user)
+        @map = Carto::Map.create(user_id: @map_user.id)
+      end
+
+      after(:all) do
+        @map.destroy
+        @map_user.destroy
+      end
+
+      describe '#options' do
+        it 'sets dashboard_menu true by default' do
+          @map.dashboard_menu.should eq true
+        end
+
+        it 'sets layer_selector true by default' do
+          @map.layer_selector.should eq true
+        end
+
+        it 'allows to change dashboard_menu' do
+          @map.dashboard_menu = false
+          @map.dashboard_menu.should be_false
+
+          @map.dashboard_menu = true
+          @map.dashboard_menu.should be_true
+        end
+
+        it 'allows to change layer_selector' do
+          @map.layer_selector = false
+          @map.layer_selector.should be_false
+
+          @map.layer_selector = true
+          @map.layer_selector.should be_true
+        end
+
+        it 'rejects a non-boolean dashboard_menu value' do
+          @map.dashboard_menu = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'rejects a non-boolean layer_selector value' do
+          @map.layer_selector = 'patata'
+
+          @map.valid?.should be_false
+          @map.errors[:options][0].should include('String did not match the following type: boolean')
+        end
+
+        it 'requires a dashboard_menu value' do
+          @map.dashboard_menu = nil
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+        end
+
+        it 'requires a layer_selector value' do
+          @map.layer_selector = nil
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('NilClass did not match the following type: boolean')
+        end
+
+        it 'requires dashboard_menu to be present' do
+          old_options = @map.options.dup
+          @map.options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'dashboard_menu\'')
+
+          @map.options = old_options
+        end
+
+        it 'requires layer_selector to be present' do
+          old_options = @map.options.dup
+          @map.options = Hash.new
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('did not contain a required property of \'layer_selector\'')
+
+          @map.options = old_options
+        end
+
+        it 'rejects spammy options' do
+          @map.options[:spam] = 'hell'
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('spam')
+        end
+
+        it 'rejects incomplete options' do
+          @map.options.delete(:dashboard_menu)
+
+          @map.valid?.should be_false
+          @map.errors[:options].should_not be_empty
+          @map.errors[:options][0].should include('dashboard_menu')
+        end
+      end
+    end
+
     describe '#destroy' do
       it 'should fail for existing maps and viewer users' do
         new_map = Map.create(user_id: @user.id, table_id: @table.id)

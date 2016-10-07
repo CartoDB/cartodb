@@ -37,16 +37,16 @@ module Carto
       @show_title ||= legend['show_title']
     end
 
-    HTML_TYPES = %w(choropleth intensity density).freeze
+    HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
     CUSTOM_TYPES = %w(category custom).freeze
 
     def type_and_definition
-      if HTML_TYPES.include?(type)
+      if HTML_RAMP_TYPES.include?(type)
         ['html', build_html_definition_from_ramp_type]
       elsif CUSTOM_TYPES.include?(type)
         ['custom', build_custom_definition_from_custom_type]
       elsif type == 'bubble'
-        ['bubble', build_bubble_definition_from_bubble]
+        ['html', build_html_definition_from_bubble]
       else
         [nil, nil]
       end
@@ -74,21 +74,15 @@ module Carto
       custom_definition
     end
 
-    def build_bubble_definition_from_bubble
-      { color: items.last['value'] }
-    end
-
     def build_html_definition_from_ramp_type
       left_label, right_label = labels_for_items
       style = style_for_gradient
 
-      html =  %(<div class="CDB-Legend-item" style="">\n)
-      html += %(  <div class="u-flex u-justifySpace u-bSpace--m">\n)
-      html += %(    <p class="CDB-Text CDB-Size-small">#{left_label}</p>\n)
-      html += %(    <p class="CDB-Text CDB-Size-small">#{right_label}</p>\n)
-      html += %(  </div>\n)
-      html += %(  <div class="Legend-choropleth" style="#{style}"></div>\n)
+      html =  %(<div class="u-flex u-justifySpace u-bSpace--m">\n)
+      html += %(  <p class="CDB-Text CDB-Size-small">#{left_label}</p>\n)
+      html += %(  <p class="CDB-Text CDB-Size-small">#{right_label}</p>\n)
       html += %(</div>\n)
+      html += %(<div class="Legend-choropleth" style="#{style}"></div>\n)
 
       { html: html }
     end
@@ -107,6 +101,59 @@ module Carto
 
       gradient_stops = item_colors.compact.join(', ')
       "background: linear-gradient(90deg, #{gradient_stops})"
+    end
+
+    def build_html_definition_from_bubble
+      byebug
+      left, right = labels_for_items
+
+      range = right - left
+      step = range / 5
+
+      first = formmated_string_number(left)
+      second = formmated_string_number(left + (4 * step))
+      third = formmated_string_number(left + (3 * step))
+      fourth = formmated_string_number(left + (2 * step))
+      fifth = formmated_string_number(right + step)
+
+      average = formmated_string_number(range / 2)
+
+      fifth_mark = 100
+      fourth_mark = 75
+      third_mark = 50
+      second_mark = 25
+      first_mark = 0
+
+      color = items.last['value']
+
+      html =  %(<div class="Bubble-container u-flex u-justifySpace">\n)
+      html += %(  <ul class="Bubble-numbers u-flex u-justifySpace">\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fifth_mark}%">#{fifth}</li></li>\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fourth_mark}%">#{fourth}</li></li>\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{third_mark}%">#{third}</li></li>\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{second_mark}%">#{second}</li></li>\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{first_mark}%">#{first}</li></li>\n)
+      html += %(  </ul>\n)
+      html += %(  <div class="Bubble-inner">\n)
+      html += %(    <ul class="Bubble-list">\n)
+      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{fifth_mark}%; width: #{fifth_mark}%">\n)
+      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
+      html += %(      </li>\n)
+      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{fourth_mark}%; width: #{fourth_mark}%">\n)
+      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
+      html += %(      </li>\n)
+      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{third_mark}%; width: #{third_mark}%">\n)
+      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
+      html += %(      </li>\n)
+      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{second_mark}%; width: #{second_mark}%">\n)
+      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
+      html += %(      </li>\n)
+      html += %(    </ul>\n)
+      html += %(    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: 50%">AVG: #{average}</p>\n)
+      html += %(  </div>\n)
+      html += %(</div>\n)
+
+      { html: html }
     end
 
     def labels_for_items
@@ -167,6 +214,16 @@ module Carto
       end
 
       [stripped[0..1].hex, stripped[2..3].hex, stripped[4..5].hex]
+    end
+
+    def formmated_string_number(number)
+      if number < 1_000
+        number.round(2).to_s
+      elsif number < 1_000_000
+        "#{(number / 1_000).round(2)}K"
+      else
+        "#{(number / 1_000_000).round(2)}M"
+      end
     end
   end
 end

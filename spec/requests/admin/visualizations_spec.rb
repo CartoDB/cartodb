@@ -161,6 +161,16 @@ describe Admin::VisualizationsController do
           get "/viz/#{@id}", {}, @headers
           last_response.status.should eq 200
         end
+
+        it 'never for vizjson2 visualizations' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+          Carto::Visualization::any_instance.stubs(:uses_vizjson2?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}", {}, @headers
+          last_response.status.should eq 200
+        end
       end
     end
   end # GET /viz/:id

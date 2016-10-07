@@ -151,6 +151,7 @@ describe('src/vis/infowindow-manager.js', function () {
       'content': {
         'fields': [
           {
+            'name': 'name',
             'title': 'name',
             'value': 'juan',
             'index': 0

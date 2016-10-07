@@ -1,7 +1,8 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
-var overlayTemplate = require('./ui/overlay.tpl')
+var overlayTemplate = require('./ui/overlay.tpl');
+var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom'];
 
 var MapView = View.extend({
   initialize: function () {
@@ -54,8 +55,14 @@ var MapView = View.extend({
   },
 
   addOverlay: function (overlay) {
+    var type;
     if (overlay) {
-      this._overlayContainer().append(overlay.render().el);
+      type = overlay.type;
+      if (type && CONTAINED_OVERLAYS.indexOf(type) >= 0) {
+        this._overlayContainer().append(overlay.render().el);
+      } else {
+        this.$el.append(overlay.render().el);
+      }
       this.addView(overlay);
     }
   },

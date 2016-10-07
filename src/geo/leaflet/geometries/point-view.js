@@ -5,11 +5,10 @@ var View = require('../../../core/view');
 var PointView = View.extend({
   initialize: function (options) {
     if (!options.model) throw new Error('model is required');
-    if (!options.mapView) throw new Error('mapView is required');
+    if (!options.nativeMap) throw new Error('nativeMap is required');
 
     this.model = this.model || options.model;
-    this.mapView = options.mapView;
-    this.leafletMap = this.mapView._getNativeMap();
+    this.leafletMap = options.nativeMap;
 
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.on('change:latlng', this._onLatlngChanged, this);

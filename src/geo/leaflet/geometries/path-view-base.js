@@ -5,11 +5,10 @@ var PointView = require('./point-view');
 var PathViewBase = View.extend({
   initialize: function (options) {
     if (!options.model) throw new Error('model is required');
-    if (!options.mapView) throw new Error('mapView is required');
+    if (!options.nativeMap) throw new Error('nativeMap is required');
 
     this.model = this.model || options.model;
-    this.mapView = options.mapView;
-    this.leafletMap = this.mapView._getNativeMap();
+    this.leafletMap = options.nativeMap;
 
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.points.on('change', this._onPointsChanged, this);
@@ -27,7 +26,7 @@ var PathViewBase = View.extend({
 
   render: function () {
     this._renderPoints();
-    this._geometry.addTo(this.mapView._getNativeMap());
+    this._geometry.addTo(this.leafletMap);
   },
 
   _renderPoints: function () {
@@ -37,7 +36,7 @@ var PathViewBase = View.extend({
   _renderPoint: function (point) {
     var pointView = new PointView({
       model: point,
-      mapView: this.mapView
+      nativeMap: this.leafletMap
     });
     this._pointViews[point.cid] = pointView;
     pointView.render();

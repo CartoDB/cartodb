@@ -14,7 +14,7 @@ var GeometryViewFactory = {
     if (GeometryView) {
       return new GeometryView({
         model: geometry,
-        mapView: mapView
+        nativeMap: mapView.getNativeMap()
       });
     } else {
       throw new Error(geometry.get('type') + ' is not supported yet');

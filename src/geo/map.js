@@ -115,8 +115,8 @@ var Map = Model.extend({
   },
 
   _getLatLngsFromCoords: function (coords) {
-    var coords = L.GeoJSON.coordsToLatLngs(coords);
-    var latlngs = _.chain(coords)
+    var latlngs = L.GeoJSON.coordsToLatLngs(coords);
+    var latlngs = _.chain(latlngs)
       .map(function (latlng) {
         return [latlng.lat, latlng.lng];
       })

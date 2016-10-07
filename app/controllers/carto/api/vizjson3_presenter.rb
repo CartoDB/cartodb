@@ -78,23 +78,22 @@ module Carto
         map = @visualization.map
 
         vizjson = {
-          id:             @visualization.id,
-          version:        VIZJSON_VERSION,
-          title:          @visualization.qualified_name(user),
-          likes:          @visualization.likes.count,
-          description:    html_safe(@visualization.description),
-          scrollwheel:    map.scrollwheel,
-          legends:        map.legends,
-          map_provider:   map.provider,
           bounds:         bounds_from(map),
           center:         map.center,
-          zoom:           map.zoom,
-          updated_at:     map.viz_updated_at,
-          layers:         layers_vizjson(forced_privacy_version),
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
-          widgets:        widgets_vizjson,
           datasource:     datasource_vizjson(options, forced_privacy_version),
-          user:           user_info_vizjson(user)
+          description:    html_safe(@visualization.description),
+          options:        map.options,
+          id:             @visualization.id,
+          layers:         layers_vizjson(forced_privacy_version),
+          likes:          @visualization.likes.count,
+          map_provider:   map.provider,
+          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
+          title:          @visualization.qualified_name(user),
+          updated_at:     map.viz_updated_at,
+          user:           user_info_vizjson(user),
+          version:        VIZJSON_VERSION,
+          widgets:        widgets_vizjson,
+          zoom:           map.zoom
         }
 
         visualization_analyses = @visualization.analyses

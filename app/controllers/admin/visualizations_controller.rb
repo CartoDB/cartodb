@@ -36,6 +36,9 @@ class Admin::VisualizationsController < Admin::AdminController
                                                          :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
+                                                         :show_organization_embed_map, :show_protected_public_map,
+                                                         :show_protected_embed_map]
 
   after_filter :update_user_last_activity, only: [:index, :show]
   after_filter :track_dashboard_visit, only: :index
@@ -692,5 +695,13 @@ class Admin::VisualizationsController < Admin::AdminController
     Carto::Tracking::Events::VisitedPrivatePage.new(current_user_id,
                                                     user_id: current_user_id,
                                                     page: 'dashboard').report
+  end
+
+  def redirect_to_builder_embed_if_v3
+    # @visualization is not loaded if the embed is cached
+    # Changing version invalidates the embed cache
+    if @visualization && @visualization.version == 3
+      redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
+    end
   end
 end

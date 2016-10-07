@@ -82,7 +82,7 @@ class Admin::VisualizationsController < Admin::AdminController
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
                                      id: request.params[:id], redirected: true)
-    elsif current_user.force_builder?
+    elsif current_user.force_builder? && !@visualization.open_in_editor?
       return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
     end
 

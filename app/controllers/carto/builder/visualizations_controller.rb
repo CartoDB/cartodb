@@ -50,7 +50,7 @@ module Carto
       end
 
       def redirect_to_editor_if_forced
-        if current_user.force_editor? || @visualization.uses_vizjson2?
+        if current_user.force_editor? || @visualization.open_in_editor?
           redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id])
         end
       end

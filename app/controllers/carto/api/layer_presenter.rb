@@ -63,7 +63,7 @@ module Carto
           end
         end
 
-        if migrate_legends
+        if @layer.data_layer? && migrate_legends
           legend = poro['options']['legend']
           if legend.present? && @layer.legends.empty?
             migrated_legend = Carto::LegendMigrator.new(@layer.id, legend)

@@ -35,6 +35,10 @@ module Carto
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
         @builder_notifications = builder_notifications
+        @overlays_data = @visualization.overlays.map do |overlay|
+          Carto::Api::OverlayPresenter.new(overlay).to_poro
+        end
+        @mapcaps_data = Carto::Api::MapcapPresenter.new(@visualization.latest_mapcap).to_poro
       end
 
       private

@@ -3,37 +3,56 @@
 module Carto
   module Api
     class MapsController < ::Api::ApplicationController
+      include Carto::ControllerHelper
 
-      ssl_required :show
+      ssl_required :show, :update
 
-      before_filter :load_map
+      before_filter :load_map, :owners_only
+
+      rescue_from Carto::LoadError,
+                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def show
-        render_jsonp(Carto::Api::MapPresenter.new(@map).to_poro)
+        render_jsonp(map_presentation)
       end
 
-      protected
+      def update
+        @map.update_attributes!(update_params)
+
+        render_jsonp(map_presentation)
+      rescue ActiveRecord::RecordInvalid
+        validation_errors = @map.errors.full_messages.join(', ')
+        raise Carto::UnprocesableEntityError.new(validation_errors)
+      end
+
+      private
 
       def load_map
-        raise RecordNotFound unless is_uuid?(params[:id])
-
-        # User must be owner or have permissions for the map's visualization
-        vis = Carto::Visualization.where({
-            user_id: current_user.id,
-            map_id: params[:id],
-            kind: Carto::Visualization::KIND_GEOM
-          }).first
-        raise RecordNotFound if vis.nil?
-
-        @map = Carto::Map.where(id: params[:id]).first
-        raise RecordNotFound if @map.nil?
+        @map = Carto::Map.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        raise Carto::LoadError.new('Map not found')
       end
 
-      # TODO: remove this method and use  app/helpers/carto/uuidhelper.rb. Not used yet because this changed was pushed before
-      def is_uuid?(text)
-        !(Regexp.new(%r{\A#{UUIDTools::UUID_REGEXP}\Z}) =~ text).nil?
+      def owners_only
+        unless @map.writable_by_user?(current_viewer)
+          raise Carto::LoadError.new('Map not found')
+        end
       end
 
+      def update_params
+        params.slice(:bounding_box_ne,
+                     :bounding_box_sw,
+                     :center,
+                     :options,
+                     :provider,
+                     :view_bounds_ne,
+                     :view_bounds_sw,
+                     :zoom)
+      end
+
+      def map_presentation
+        Carto::Api::MapPresenter.new(@map).to_hash
+      end
     end
   end
 end

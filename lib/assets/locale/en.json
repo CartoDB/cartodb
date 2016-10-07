@@ -1217,7 +1217,9 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CARTO Logo",
-            "widgets": "Widgets column"
+            "widgets": "Widgets column",
+            "legends": "Legends",
+            "dashboard_menu": "Render dashboard menu"
           }
         }
       }
@@ -1333,6 +1335,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",

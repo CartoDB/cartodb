@@ -12,8 +12,8 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced,
-                    :load_derived_visualization,
+      before_filter :load_derived_visualization,
+                    :redirect_to_editor_if_forced,
                     :auto_migrate_visualization_if_possible, only: :show
       before_filter :authors_only
       before_filter :editable_visualizations_only, only: :show
@@ -50,7 +50,9 @@ module Carto
       end
 
       def redirect_to_editor_if_forced
-        redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id]) if current_user.force_editor?
+        if current_user.force_editor? || @visualization.uses_vizjson2?
+          redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id])
+        end
       end
 
       def load_derived_visualization

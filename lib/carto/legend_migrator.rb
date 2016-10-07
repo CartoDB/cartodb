@@ -104,7 +104,6 @@ module Carto
     end
 
     def build_html_definition_from_bubble
-      byebug
       left, right = labels_for_items
 
       range = right - left

@@ -1326,6 +1326,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",

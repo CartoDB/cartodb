@@ -40,7 +40,13 @@ describe Carto::VisualizationsExportService2 do
         view_bounds_sw: '[15.775376695, -18.1672257149999]',
         view_bounds_ne: '[53.569444479, 153.985606316]',
         scrollwheel: false,
-        legends: true
+        legends: true,
+        options: {
+          legends: false,
+          scrollwheel: true,
+          layer_selector: false,
+          dashboard_menu: false
+        }
       },
       layers: [
         {
@@ -254,6 +260,9 @@ describe Carto::VisualizationsExportService2 do
     map.view_bounds_ne.should eq map_export[:view_bounds_ne]
     map.scrollwheel.should eq map_export[:scrollwheel]
     map.legends.should eq map_export[:legends]
+
+    map_options = map.options.with_indifferent_access
+    map_options.should eq map_export[:options].with_indifferent_access
   end
 
   def verify_state_vs_export(state, state_export)
@@ -571,6 +580,16 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.6 (without map options)' do
+          export_2_0_6 = export.dup
+          export_2_0_6[:visualization][:map].delete(:options)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+
+          visualization.map.options.should be
+        end
+
         it '2.0.5 (without version)' do
           export_2_0_5 = export
           export_2_0_5[:visualization].delete(:version)

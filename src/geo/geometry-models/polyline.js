@@ -5,6 +5,10 @@ var Polyline = PathBase.extend({
     type: 'polyline',
     color: '#397dba',
     latlngs: []
+  },
+
+  isComplete: function () {
+    return this.get('geojson') && this.points.length > 1;
   }
 });
 

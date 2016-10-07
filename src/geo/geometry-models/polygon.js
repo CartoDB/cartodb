@@ -5,6 +5,10 @@ var Polygon = PathBase.extend({
     type: 'polygon',
     color: '#397dba',
     latlngs: []
+  },
+
+  isComplete: function () {
+    return this.get('geojson') && this.points.length > 2;
   }
 });
 

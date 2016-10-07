@@ -404,29 +404,24 @@
 
 
       function drawPoint (vis) {
-        vis.map.stopDrawing();
-        clearGeoJSON();
         var point = vis.map.drawPoint();
-        point.on('ready', function (point) {
-          displayGeoJSON(point.toGeoJSON());
-        });
+        drawGeometry(vis, point);
       }
 
       function drawPolyline (vis) {
-        vis.map.stopDrawing();
-        clearGeoJSON();
-        var line = vis.map.drawPolyline();
-        line.on('ready', function (point) {
-          displayGeoJSON(line.toGeoJSON());
-        });
+        drawGeometry(vis, vis.map.drawPolyline());
       }
 
       function drawPolygon (vis) {
-        vis.map.stopDrawing();
+        drawGeometry(vis, vis.map.drawPolygon());
+      }
+
+      function drawGeometry (vis, geometry) {
         clearGeoJSON();
-        var polygon = vis.map.drawPolygon();
-        polygon.on('ready', function (point) {
-          displayGeoJSON(polygon.toGeoJSON());
+        geometry.on('change', function (geometry) {
+          if (geometry.isComplete()) {
+            displayGeoJSON(geometry.toGeoJSON());
+          }
         });
       }
 
@@ -443,24 +438,21 @@
         });
 
         document.querySelector('.js-draw-point').addEventListener('click', function () {
+          vis.map.stopDrawing();
           if ($(this).hasClass('is-enabled')) {
             drawPoint(vis);
-          } else {
-            vis.map.stopDrawing();
           }
         });
         document.querySelector('.js-draw-line').addEventListener('click', function () {
+          vis.map.stopDrawing();
           if ($(this).hasClass('is-enabled')) {
             drawPolyline(vis);
-          } else {
-            vis.map.stopDrawing();
           }
         });
         document.querySelector('.js-draw-polygon').addEventListener('click', function () {
+          vis.map.stopDrawing();
           if ($(this).hasClass('is-enabled')) {
             drawPolygon(vis);
-          } else {
-            vis.map.stopDrawing();
           }
         });
       }

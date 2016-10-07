@@ -1,14 +1,12 @@
 var Model = require('../../core/model');
 
 var GeometryBase = Model.extend({
-  initialize: function () {
-    this.on('change:geojson', function () {
-      this.trigger('ready', this);
-    }, this);
-  },
-
   update: function () {
     throw new Error('subclasses of GeometryBase must implement update');
+  },
+
+  isComplete: function () {
+    throw new Error('subclasses of GeometryBase must implement isComplete');
   },
 
   remove: function () {

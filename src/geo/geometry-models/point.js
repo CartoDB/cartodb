@@ -10,6 +10,10 @@ var Point = GeometryBase.extend({
     if (!this.get('latlng')) {
       this.set('latlng', latlng);
     }
+  },
+
+  isComplete: function () {
+    return this.get('geojson') && this.get('latlng');
   }
 });
 

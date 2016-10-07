@@ -581,7 +581,7 @@ describe Carto::VisualizationsExportService2 do
 
       describe 'maintains backwards compatibility with' do
         it '2.0.6 (without map options)' do
-          export_2_0_6 = export.dup
+          export_2_0_6 = export
           export_2_0_6[:visualization][:map].delete(:options)
 
           service = Carto::VisualizationsExportService2.new

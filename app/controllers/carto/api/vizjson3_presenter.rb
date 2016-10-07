@@ -2,6 +2,7 @@ require_dependency 'carto/api/layer_vizjson_adapter'
 require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/template'
+require_dependency 'carto/legend_migrator'
 
 module Carto
   module Api
@@ -321,6 +322,11 @@ module Carto
       end
 
       def as_data
+        old_legend = @layer.legend
+        legends = @layer.legends
+
+        migrate_legends(old_legend) if old_legend && legends.empty?
+
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash
         end
@@ -329,6 +335,11 @@ module Carto
           legend: @layer.legend,
           legends: legends_presentation
         }
+      end
+
+      def migrate_legends(old_legend)
+        Carto::LegendMigrator.new(@layer.id, old_legend).build.save
+        @layer.reload
       end
 
       def as_torque

@@ -1056,6 +1056,10 @@ describe Carto::VisualizationsExportService2 do
       imported_map.view_bounds_ne.should eq original_map.view_bounds_ne
       imported_map.scrollwheel.should eq original_map.scrollwheel
       imported_map.legends.should eq original_map.legends
+
+      map_options = imported_map.options.with_indifferent_access
+      original_map_options = original_map.options.with_indifferent_access
+      map_options.should eq original_map_options
     end
 
     def verify_layers_match(imported_layers, original_layers, importing_user: nil)

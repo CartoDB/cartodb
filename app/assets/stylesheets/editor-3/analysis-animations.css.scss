@@ -568,7 +568,454 @@
   }
 }
 
+/* JOIN COLUMNS */
 
+.Analysis-animation.is-join-columns {
+  &:hover {
+    .Path {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation-name: dash;
+      animation-duration: 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in;
+    }
+    .Dot {
+      opacity: 0;
+      animation-name: scale;
+      animation-duration: 200ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in;
+      transform-origin: 50% 50%;
+    }
+    .Dot-01 {
+      animation-delay: 150ms;
+    }
+    .Dot-02 {
+      animation-delay: 200ms;
+    }
+    .Dot-03 {
+      animation-delay: 300ms;
+    }
+  }
+
+  .Path-01 {
+    animation-delay: 300ms;
+  }
+  .Path-02 {
+    animation-delay: 400ms;
+  }
+  .Path-03 {
+    animation-delay: 500ms;
+  }
+
+  .Path-01Green {
+    animation-delay: 350ms;
+  }
+  .Path-02Green {
+    animation-delay: 450ms;
+  }
+  .Path-03Green {
+    animation-delay: 550ms;
+  }
+}
+
+
+/* SUBSAMPLE */
+.Analysis-animation.is-sampling {
+  &:hover {
+    .Dot--withFadeOut {
+      transform-origin: 50% 50%;
+      animation-name: greenOut;
+      animation-duration: 500ms;
+      animation-fill-mode: forwards;
+      amation-timing-function: ease-in;
+      animation-delay: 300ms;
+    }
+
+    .Dot-01 {
+      animation-delay: 50ms;
+    }
+    .Dot-02 {
+      animation-delay: 500ms;
+    }
+    .Dot-03 {
+      animation-delay: 150ms;
+    }
+    .Dot-04 {
+      animation-delay: 450ms;
+    }
+    .Dot-05 {
+      animation-delay: 250ms;
+    }
+    .Dot-06 {
+      animation-delay: 350ms;
+    }
+  }
+}
+
+
+/* FILTER BY COLUMN VALUE */
+.Analysis-animation.is-filter {
+  .Dot,
+  .Dot--green {
+   fill: #636D72;
+  }  
+  &:hover {
+    .Dot--withSplash {
+      opacity: 0;
+      stroke-width: 1;
+      fill: none;
+      transform-origin: 50% 50%;
+      animation-name: highlightIn;
+      animation-duration: 400ms;
+      animation-fill-mode: forwards;
+      animation-delay: 300ms;
+      stroke-dasharray: 1;
+    }
+
+    .Dot--green {
+      opacity: 0;
+      fill: #9DE0AD;
+      transform-origin: 50% 50%;
+      animation-name: fadeOut, fadeIn, scaleIn;
+      animation-duration: 300ms, 500ms, 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+      animation-delay: 500ms, 550ms;
+    }
+    .Dot--green.Dot-02 {
+      animation-delay: 600ms, 750ms;
+    }
+    .Dot--green.Dot-03 {
+      animation-delay: 700ms, 750ms;
+    }
+    .Dot--green.Dot-04 {
+      animation-delay: 800ms, 850ms;
+    }
+  }
+}
+
+/* FILTER POINTS IN POLYGONS */
+.Analysis-animation.is-intersection {
+  &:hover {
+    .Filter-line {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation-name: dash;
+      animation-duration: 800ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 600ms;
+    }
+
+    .Filter-dot {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeIn, scaleIn;
+      animation-duration: 200ms, 600ms;
+      animation-fill-mode: forwards, forwards;
+    }
+
+    .circle01 {
+      animation-delay: 400ms
+    }
+    .circle02 {
+      animation-delay: 300ms
+    }
+    .circle03 {
+      animation-delay: 50ms
+    }
+    .circle04 {
+      animation-delay: 100ms
+    }
+    .circle05 {
+      animation-delay: 150ms
+    }
+    .circle06 {
+      animation-delay: 250ms
+    }
+    .circle07 {
+      animation-delay: 300ms
+    }
+    .circle08 {
+      animation-delay: 350ms
+    }
+    .Filter-dotHighlight {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeIn, scaleIn, greenIn;
+      animation-duration: 200ms, 400ms, 300ms;
+      animation-fill-mode: forwards, forwards, forwards;
+    }
+
+    .Filter-dotHighlight--01 {
+      animation-delay: 200ms, 200ms, 800ms;
+    }
+    .Filter-dotHighlight--02 {
+      animation-delay: 250ms, 250ms, 850ms;
+    }
+    .Filter-dotHighlight--03 {
+      animation-delay: 300ms, 300ms, 900ms;
+    }
+    .Filter-dotHighlight--04 {
+      animation-delay: 400ms, 400ms, 1000ms;
+    }
+    .Filter-dotHighlight--05 {
+      animation-delay: 500ms, 500ms, 1050ms;
+    }
+    .Filter-dotHighlight--06 {
+      animation-delay: 600ms, 600ms, 1060ms;
+    }
+  }
+}
+
+/* CONNECT WITH LINES */
+.Analysis-animation.is-connect-with-lines {
+  .Line {
+    fill: none;
+  }
+  &:hover {
+    .Line {
+      opacity: 1;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation-name: dash;
+      animation-duration: 800ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 1s;
+    }
+    .Dot {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeIn, greenIn;
+      animation-duration: 200ms, 300ms;
+      animation-fill-mode: forwards, forwards;
+    }
+
+    .Dot-01 {
+      animation-delay: 400ms, 950ms;
+    }
+    .Dot-02 {
+      animation-delay: 300ms, 1200ms;
+    }
+    .Dot-03 {
+      animation-delay: 50ms, 1250ms;
+    }
+    .Dot-04 {
+      animation-delay: 100ms, 1280ms
+    }
+    .Dot-05 {
+      animation-delay: 150ms, 1300ms
+    }
+    .Dot-06 {
+      animation-delay: 250ms, 1320ms
+    }
+    .Dot-07 {
+      animation-delay: 300ms, 1340ms
+    }
+    .Dot-08 {
+      animation-delay: 350ms, 1360ms
+    }
+    .Dot-09 {
+      animation-delay: 400ms, 1380ms
+    }
+    .Dot-10 {
+      animation-delay: 50ms, 1400ms
+    }
+    .Dot-11 {
+      animation-delay: 100ms, 1420ms
+    }
+  }
+}
+
+
+/* MORAN */
+.Analysis-animation.is-moran {
+  &:hover {
+    .Line-horizontal {
+      transform: translateX(-100%);
+      animation-name: lineH;
+      animation-duration: 500ms;
+    }
+
+    .Line-vertical {
+      transform: translateY(-100%);
+      animation-name: lineV;
+      animation-delay: 200ms;
+    }
+
+    .Line {
+      animation-duration: 400ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+    }
+
+    .Text {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-delay: 200ms;
+      animation-duration: 400ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+    }
+
+    .Text-LH {
+      animation-delay: 800ms;
+    }
+
+    .Text-HH {
+      animation-delay: 1400ms;
+    }
+
+    .Text-HL {
+      animation-delay: 1000ms;
+    }
+
+    .Text-LL {
+      animation-delay: 1200ms;
+    }
+
+    .Dot {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+    }
+
+    .Dot-08 {
+      animation-delay: 800ms;
+    }
+
+    .Dot-04 {
+      animation-delay: 1000ms;
+    }
+
+    .Dot-06 {
+      animation-delay: 1200ms;
+    }
+    .Dot-1 {
+      animation-delay: 1400ms;
+    }
+  }
+}
+
+
+/* PREDICT TRENDS */
+.Analysis-animation.is-spatial-markov-trend {
+  &:hover {
+    .Line {
+      animation-duration: 400ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+    }
+
+    .Line-horizontal {
+      transform: translateX(-100%);
+      animation-name: lineH;
+      animation-duration: 500ms;
+    }
+
+    .Line-vertical {
+      transform: translateY(-100%);
+      animation-name: lineV;
+      animation-delay: 250ms;
+    }
+
+    .Line-01,
+    .Arrow-01 {
+      opacity: 1;
+      stroke-dasharray: 400;
+      stroke-dashoffset: 400;
+      animation-name: shortDash;
+      animation-duration: 500ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 500ms;
+    }
+    .Arrow-01 {
+      animation-delay: 700ms;
+    }
+
+    .Line-02,
+    .Arrow-02 {
+      opacity: 1;
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation-name: shortDash;
+      animation-duration: 500ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 100ms;
+    }
+
+    .Arrow-02 {
+      animation-delay: 200ms;
+    }
+
+    .Line-03 {
+      opacity: 1;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation-name: shortDash-reverse;
+      animation-duration: 500ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 800ms;
+    }
+
+    .Line-04,
+    .Arrow-04 {
+      opacity: 1;
+      stroke-dasharray: 200;
+      stroke-dashoffset: 200;
+      animation-name: shortDash;
+      animation-duration: 500ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 800ms;
+    }
+
+    .Arrow-04 {
+      animation-delay: 1s;
+    }
+
+    .Dot--center {
+      opacity: 0;
+      animation-name: fadeIn;
+      animation-duration: 400ms;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      animation-delay: 350ms;
+    }
+
+    .Dot {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeIn, scaleIn;
+      animation-duration: 200ms, 600ms;
+      animation-fill-mode: forwards, forwards;
+    }
+    .Dot.Dot-02 {
+      opacity: 0;
+      transform-origin: 50% 50%;
+      animation-name: fadeIn;
+      animation-duration: 200ms;
+      animation-fill-mode: forwards;
+      animation-delay: 100ms;
+    }
+    .Dot.Dot-01 {
+      animation-delay: 600ms,600ms;
+    }
+    .Dot-03 {
+      animation-delay: 1200ms,1200ms;
+    }
+    .Dot-04 {
+      animation-delay: 900ms,900ms;
+    }
+  }
+}
 
 @keyframes fadeOut {
   from {
@@ -748,3 +1195,23 @@
     fill: #9DE0AD;
   }
 }
+
+
+@keyframes lineH {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes lineV {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+

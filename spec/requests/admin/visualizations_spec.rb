@@ -171,6 +171,26 @@ describe Admin::VisualizationsController do
           get "/viz/#{@id}", {}, @headers
           last_response.status.should eq 200
         end
+
+        it 'embed redirects to builder for v3 when needed' do
+          # These two tests are in the same testcase to test proper embed cache invalidation
+          @user.stubs(:builder_enabled).returns(false)
+          @user.stubs(:builder_enabled?).returns(false)
+          visualization = CartoDB::Visualization::Member.new(id: @id).fetch
+          visualization.version = 2
+          visualization.store
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}/embed_map", {}, @headers
+          last_response.status.should eq 200
+
+          visualization.version = 3
+          visualization.store
+
+          login_as(@user, scope: @user.username)
+          get "/viz/#{@id}/embed_map", {}, @headers
+          last_response.status.should eq 302
+        end
       end
     end
   end # GET /viz/:id

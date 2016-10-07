@@ -29,6 +29,14 @@ describe Carto::Builder::Public::EmbedsController do
       response.body.include?(@visualization.name).should be true
     end
 
+    it 'redirects to builder for v2 visualizations' do
+      @visualization.version = 2
+      @visualization.save
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 302
+    end
+
     it 'defaults to generate vizjson with vector=false' do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 

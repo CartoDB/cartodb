@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.2",
+  "version": "4.3.13",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -9,7 +9,8 @@
     },
     "backbone-forms": {
       "version": "0.14.0",
-      "from": "backbone-forms@0.14.0"
+      "from": "backbone-forms@0.14.0",
+      "resolved": "https://registry.npmjs.org/backbone-forms/-/backbone-forms-0.14.0.tgz"
     },
     "backbone-model-file-upload": {
       "version": "1.0.0",
@@ -119,15 +120,18 @@
                         },
                         "debug": {
                           "version": "0.7.4",
-                          "from": "debug@0.7.4"
+                          "from": "debug@0.7.4",
+                          "resolved": "https://registry.npmjs.org/debug/-/debug-0.7.4.tgz"
                         },
                         "mkdirp": {
                           "version": "0.5.0",
                           "from": "mkdirp@0.5.0",
+                          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.5.0.tgz",
                           "dependencies": {
                             "minimist": {
                               "version": "0.0.8",
-                              "from": "minimist@0.0.8"
+                              "from": "minimist@0.0.8",
+                              "resolved": "https://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz"
                             }
                           }
                         },
@@ -422,7 +426,8 @@
                               "dependencies": {
                                 "extsprintf": {
                                   "version": "1.0.2",
-                                  "from": "extsprintf@1.0.2"
+                                  "from": "extsprintf@1.0.2",
+                                  "resolved": "https://registry.npmjs.org/extsprintf/-/extsprintf-1.0.2.tgz"
                                 },
                                 "json-schema": {
                                   "version": "0.2.3",
@@ -743,7 +748,8 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3"
+          "from": "grunt-run-node@0.1.3",
+          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",
@@ -764,11 +770,13 @@
     },
     "bootstrap-colorpicker": {
       "version": "2.3.3",
-      "from": "bootstrap-colorpicker@2.3.3"
+      "from": "bootstrap-colorpicker@2.3.3",
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
       "from": "browserify-shim@3.8.12",
+      "resolved": "https://registry.npmjs.org/browserify-shim/-/browserify-shim-3.8.12.tgz",
       "dependencies": {
         "exposify": {
           "version": "0.4.3",
@@ -958,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1004,7 +1012,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1127,10 +1135,12 @@
     "cartocolor": {
       "version": "3.0.0",
       "from": "cartocolor@3.0.0",
+      "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-3.0.0.tgz",
       "dependencies": {
         "colorbrewer": {
           "version": "1.0.0",
-          "from": "colorbrewer@1.0.0"
+          "from": "colorbrewer@1.0.0",
+          "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
         }
       }
     },
@@ -1142,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#85ee25769b716acbe0e8371b29bb37cce2ebace5",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#69960933793fb99acd286e54b11763124c643f91",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1191,10 +1201,12 @@
                 "turbo-carto": {
                   "version": "0.16.0",
                   "from": "turbo-carto@0.16.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
-                      "from": "colorbrewer@1.0.0"
+                      "from": "colorbrewer@1.0.0",
+                      "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                     },
                     "debug": {
                       "version": "2.2.0",
@@ -1310,10 +1322,12 @@
                 "turbo-carto": {
                   "version": "0.16.0",
                   "from": "turbo-carto@0.16.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
-                      "from": "colorbrewer@1.0.0"
+                      "from": "colorbrewer@1.0.0",
+                      "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                     },
                     "debug": {
                       "version": "2.2.0",
@@ -1433,7 +1447,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#85ee25769b716acbe0e8371b29bb37cce2ebace5",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#69960933793fb99acd286e54b11763124c643f91",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1487,10 +1501,12 @@
             "turbo-carto": {
               "version": "0.16.0",
               "from": "turbo-carto@0.16.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
-                  "from": "colorbrewer@1.0.0"
+                  "from": "colorbrewer@1.0.0",
+                  "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1606,10 +1622,12 @@
             "turbo-carto": {
               "version": "0.16.0",
               "from": "turbo-carto@0.16.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
-                  "from": "colorbrewer@1.0.0"
+                  "from": "colorbrewer@1.0.0",
+                  "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1831,10 +1849,12 @@
         "turbo-carto": {
           "version": "0.16.0",
           "from": "turbo-carto@0.16.0",
+          "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
           "dependencies": {
             "colorbrewer": {
               "version": "1.0.0",
-              "from": "colorbrewer@1.0.0"
+              "from": "colorbrewer@1.0.0",
+              "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
             },
             "debug": {
               "version": "2.2.0",

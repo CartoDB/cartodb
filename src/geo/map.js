@@ -43,8 +43,8 @@ var Map = Model.extend({
   _drawGeometry: function (GeometryClass) {
     var geometry = new GeometryClass();
     this._newGeometry = geometry;
-    this.disableInteractiviy();
-    this.trigger('enterDrawingMode');
+    this.disableInteractivity();
+    this.trigger('enterDrawingMode', geometry);
     return geometry;
   },
 
@@ -61,10 +61,6 @@ var Map = Model.extend({
     return !!this._newGeometry;
   },
 
-  getNewGeometry: function () {
-    return this._newGeometry;
-  },
-
   // GEOMETRY EDITON
 
   editGeoJSONGeometry: function (geoJSON) {
@@ -79,7 +75,7 @@ var Map = Model.extend({
     var geometryType = geoJSON.geometry.type;
     var editMethodName = GEOJSON_TYPE_TO_EDIT_METHOD_NAME[geometryType];
     if (editMethodName) {
-      this.disableInteractiviy();
+      this.disableInteractivity();
       var geometry = this[editMethodName](geoJSON);
       this._editingGeometry = geometry;
       return geometry;
@@ -94,7 +90,7 @@ var Map = Model.extend({
       latlng: latlngs[0],
       geojson: geoJSON
     });
-    this.trigger('enterEditMode', point);
+    this.addGeometry(point);
     return point;
   },
 
@@ -102,7 +98,7 @@ var Map = Model.extend({
     var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates);
     var polyline = new Polyline({ geojson: geoJSON });
     polyline.setLatLngs(latlngs);
-    this.trigger('enterEditMode', polyline);
+    this.addGeometry(polyline);
     return polyline;
   },
 
@@ -110,7 +106,7 @@ var Map = Model.extend({
     var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates[0]);
     var polygon = new Polygon({ geojson: geoJSON });
     polygon.setLatLngs(latlngs);
-    this.trigger('enterEditMode', polygon);
+    this.addGeometry(polygon);
     return polygon;
   },
 
@@ -140,7 +136,7 @@ var Map = Model.extend({
     this.set('interactivity', true);
   },
 
-  disableInteractiviy: function () {
+  disableInteractivity: function () {
     this.set('interactivity', false);
   },
 

@@ -6,7 +6,9 @@ var MapViewFactory = require('../geo/map-view-factory');
 var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
+var DrawingController = require('./drawing-controller');
 var LegendsView = require('../geo/ui/legends/legends-view.js');
+
 /**
  * Visualization creation
  */
@@ -55,6 +57,15 @@ var Vis = View.extend({
     // Bind events before the view is rendered and layer views are added to the map
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();
+
+    // Drawing capabilities
+    var drawingController = new DrawingController(this.mapView, this.model.map);
+    this.model.map.on('enterDrawingMode', function (geometry) {
+      drawingController.enableDrawing(geometry);
+    }, this);
+    this.model.map.on('exitDrawingMode', function (geometry) {
+      drawingController.disableDrawing(geometry);
+    }, this);
 
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this.model, {

@@ -92,9 +92,6 @@ var GoogleMapsMapView = MapView.extend({
       self.trigger('dblclick', e);
     });
 
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
-
     this._bindModel();
     this.setAttribution();
 
@@ -213,28 +210,6 @@ var GoogleMapsMapView = MapView.extend({
     this._gmapsMap.setOptions({ draggableCursor: cursor });
   },
 
-  _addGeomToMap: function(geom) {
-    var geo = GoogleMapsMapView.createGeometry(geom);
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this._gmapsMap);
-      }
-    } else {
-        geo.geom.setMap(this._gmapsMap);
-    }
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(null);
-      }
-    } else {
-      geo.geom.setMap(null);
-    }
-  },
-
   getNativeMap: function() {
     return this._gmapsMap;
   },
@@ -243,16 +218,6 @@ var GoogleMapsMapView = MapView.extend({
     google.maps.event.trigger(this._gmapsMap, 'resize');
   }
 
-}, {
-  /**
-   * create the view for the geometry model
-   */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
-      return new PointView(geometryModel);
-    }
-    return new PathView(geometryModel);
-  }
 });
 
 module.exports = GoogleMapsMapView;

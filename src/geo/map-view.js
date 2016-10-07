@@ -32,60 +32,13 @@ var MapView = View.extend({
 
     this.bind('clean', this._removeLayers, this);
 
-    this.map.on('enterDrawingMode', this._enterDrawingMode, this);
-    this.map.on('exitDrawingMode', this._exitDrawingMode, this);
-
-    this.map.on('enterEditMode', this._enterEditMode, this);
-    this.map.on('exitEditMode', this._exitEditMode, this);
-
     this.map.on('change:interactivity', this._onMapInteractiviyChanged, this);
+    this.map.geometries.on('add', this._onGeometryAdded, this);
   },
 
-  // TODO: Extract drawingController
-
-  _supportsDrawing: function () {
-    return !!this._geometryViewFactory;
-  },
-
-  _enterDrawingMode: function () {
-    if (this._supportsDrawing()) {
-      this.on('click', this._onMapClicked, this);
-    }
-  },
-
-  _exitDrawingMode: function () {
-    this.off('click', this._onMapClicked, this);
-    delete this._newGeometryView;
-  },
-
-  _onMapClicked: function (event, latlng) {
-    var geometry = this.map.getNewGeometry();
-    if (!this._isGeometryDrawn(geometry)) {
-      this._drawGeometry(geometry);
-    }
-    geometry.update(latlng);
-  },
-
-  _isGeometryDrawn: function (geometry) {
-    return !!this._newGeometryView;
-  },
-
-  _drawGeometry: function (geometry) {
+  _onGeometryAdded: function (geometry) {
     var geometryView = this._geometryViewFactory.createGeometryView(geometry, this);
-    this._newGeometryView = geometryView;
     geometryView.render();
-
-    return geometryView;
-  },
-
-  // GEOMETRY EDITION
-
-  _enterEditMode: function (geometry) {
-    this._drawGeometry(geometry);
-  },
-
-  _exitEditMode: function () {
-
   },
 
   // INTERACTIVITY

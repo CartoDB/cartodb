@@ -27,12 +27,9 @@ module Carto
 
       def show
         @visualization_data = Carto::Api::VisualizationPresenter.new(@visualization, current_viewer, self).to_poro
-        @layers_data = @visualization.layers.map do |layer|
-          Carto::Api::LayerPresenter.new(layer, with_style_properties: true)
-                                    .to_poro(migrate_builder_infowindows: true,
-                                             migrate_legends: true)
+        @layers_data = @visualization.layers.map do |l|
+          Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
-
         @vizjson = generate_anonymous_map_vizjson3(@visualization, params)
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }

@@ -14,6 +14,7 @@ var PathViewBase = View.extend({
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.points.on('change', this._onPointsChanged, this);
     this.model.points.on('add', this._onPointsAdded, this);
+    this.model.points.on('reset', this._onPointsResetted, this);
 
     this._geometry = this._createGeometry();
     this._markers = [];
@@ -48,6 +49,16 @@ var PathViewBase = View.extend({
   },
 
   _onPointsAdded: function () {
+    var newPoints = this.model.points.select(function (point) {
+      return !this._pointViews[point.cid];
+    }, this);
+    _.each(newPoints, this._renderPoint, this);
+    this._updateGeometry();
+    this._updateModelsGeoJSON();
+  },
+
+  _onPointsResetted: function () {
+    this._removePoints();
     var newPoints = this.model.points.select(function (point) {
       return !this._pointViews[point.cid];
     }, this);

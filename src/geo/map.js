@@ -65,6 +65,75 @@ var Map = Model.extend({
     return this._newGeometry;
   },
 
+  // GEOMETRY EDITON
+
+  editGeoJSONGeometry: function (geoJSON) {
+
+    // MultiPoint, MultiLineString, MultiPolygon
+    var GEOJSON_TYPE_TO_EDIT_METHOD_NAME = {
+      Point: '_editPoint',
+      LineString: '_editPolyline',
+      Polygon: '_editPolygon'
+    };
+
+    var geometryType = geoJSON.geometry.type;
+    var editMethodName = GEOJSON_TYPE_TO_EDIT_METHOD_NAME[geometryType];
+    if (editMethodName) {
+      this.disableInteractiviy();
+      var geometry = this[editMethodName](geoJSON);
+      this._editingGeometry = geometry;
+      return geometry;
+    } else {
+      throw new Error('Edition of geometries of type ' + geometryType + ' is not supported');
+    }
+  },
+
+  _editPoint: function (geoJSON) {
+    var latlngs = this._getLatLngsFromCoords([ geoJSON.geometry.coordinates ]);
+    var point = new Point({
+      latlng: latlngs[0],
+      geojson: geoJSON
+    });
+    this.trigger('enterEditMode', point);
+    return point;
+  },
+
+  _editPolyline: function (geoJSON) {
+    var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates);
+    var polyline = new Polyline({ geojson: geoJSON });
+    polyline.setLatLngs(latlngs);
+    this.trigger('enterEditMode', polyline);
+    return polyline;
+  },
+
+  _editPolygon: function (geoJSON) {
+    var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates[0]);
+    var polygon = new Polygon({ geojson: geoJSON });
+    polygon.setLatLngs(latlngs);
+    this.trigger('enterEditMode', polygon);
+    return polygon;
+  },
+
+  _getLatLngsFromCoords: function (coords) {
+    var coords = L.GeoJSON.coordsToLatLngs(coords);
+    var latlngs = _.chain(coords)
+      .map(function (latlng) {
+        return [latlng.lat, latlng.lng];
+      })
+      .uniq()
+      .value();
+    return latlngs;
+  },
+
+  stopEditingGeoJSONGeometry: function (geoJSON) {
+    if (this._editingGeometry) {
+      this._editingGeometry.remove();
+      delete this._editingGeometry;
+    }
+    this.trigger('exitEditMode');
+    this.enableInteractivity();
+  },
+
   // INTERACTIVITY MANAGEMENT
 
   enableInteractivity: function () {

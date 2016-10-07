@@ -34,6 +34,10 @@ var MapView = View.extend({
 
     this.map.on('enterDrawingMode', this._enterDrawingMode, this);
     this.map.on('exitDrawingMode', this._exitDrawingMode, this);
+
+    this.map.on('enterEditMode', this._enterEditMode, this);
+    this.map.on('exitEditMode', this._exitEditMode, this);
+
     this.map.on('change:interactivity', this._onMapInteractiviyChanged, this);
   },
 
@@ -74,6 +78,16 @@ var MapView = View.extend({
     return geometryView;
   },
 
+  // GEOMETRY EDITION
+
+  _enterEditMode: function (geometry) {
+    this._drawGeometry(geometry);
+  },
+
+  _exitEditMode: function () {
+
+  },
+
   // INTERACTIVITY
 
   _onMapInteractiviyChanged: function () {
@@ -83,6 +97,8 @@ var MapView = View.extend({
       this._cartoDBLayerGroup.disableInteractivity();
     }
   },
+
+  // 
 
   render: function () {
     this._addLayers();

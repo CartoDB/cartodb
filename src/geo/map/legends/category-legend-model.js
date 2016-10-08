@@ -9,6 +9,10 @@ var CategoryLegendModel = LegendModelBase.extend({
     });
   },
 
+  _avoidResetTheseAttributes: function () {
+    return ['categories'];
+  },
+
   isAvailable: function () {
     return this.get('categories') && this.get('categories').length > 0;
   }

@@ -54,9 +54,14 @@ var LegendModelBase = Backbone.Model.extend({
 
   reset: function () {
     var defaults = _.omit(this.defaults(),
-      NON_RESETEABLE_DEFAULT_ATTRS
+      NON_RESETEABLE_DEFAULT_ATTRS,
+      this._avoidResetTheseAttributes()
     );
     this.set(defaults);
+  },
+
+  _avoidResetTheseAttributes: function () {
+    return [];
   },
 
   isAvailable: function () {

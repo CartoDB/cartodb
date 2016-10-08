@@ -11,6 +11,10 @@ var ChoroplethLegendModel = LegendModelBase.extend({
     });
   },
 
+  _avoidResetTheseAttributes: function () {
+    return ['colors'];
+  },
+
   isAvailable: function () {
     return this.get('colors') && this.get('colors').length > 0;
   }

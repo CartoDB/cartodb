@@ -71,7 +71,8 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
   });
 
   var legendModel = new ModelClass(modelAttrs, {
-    visModel: this._visModel
+    visModel: this._visModel,
+    parse: true
   });
 
   if (data) {

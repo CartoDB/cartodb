@@ -15,7 +15,8 @@ var calculateValues = function (buckets) {
 module.exports = {
   canAdapt: function (rule) {
     rule = new Rule(rule);
-    return rule.matchesAnyProperty(VALID_PROPS);
+    return rule.matchesAnyProperty(VALID_PROPS) &&
+      rule.validatesRangeFilter();
   },
 
   adapt: function (rule) {

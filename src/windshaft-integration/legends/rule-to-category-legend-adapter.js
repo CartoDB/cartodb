@@ -14,7 +14,8 @@ module.exports = {
   canAdapt: function (rule) {
     rule = new Rule(rule);
     return rule.matchesAnyProperty(VALID_PROPS) &&
-      rule.matchesAnyMapping(VALID_MAPPINGS);
+      rule.matchesAnyMapping(VALID_MAPPINGS) &&
+      rule.validatesCategoryFilter();
   },
 
   adapt: function (rule) {

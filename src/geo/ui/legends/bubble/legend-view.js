@@ -39,8 +39,18 @@ var BubbleLegendView = LegendViewBase.extend({
     return labelPositions;
   },
 
+  _reverseSizes: function (sizes) {
+    var first = _.first(sizes);
+    var last = _.last(sizes);
+    if (first < last) {
+      sizes = sizes.reverse();
+    }
+    return sizes;
+  },
+
   _calculateBubbleSizes: function () {
-    var sizes = this.model.get('sizes').slice(0).reverse();
+    var sizes = this.model.get('sizes').slice(0);
+    sizes = this._reverseSizes(sizes);
     var maxSize = sizes[0];
     return _.map(sizes, function (size, index) {
       if (index === 0) {

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.2",
+  "version": "4.3.13",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -364,9 +364,9 @@
                               "resolved": "https://registry.npmjs.org/async/-/async-2.0.1.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.16.3",
+                                  "version": "4.16.4",
                                   "from": "lodash@>=4.8.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.3.tgz"
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.4.tgz"
                                 }
                               }
                             }
@@ -1012,7 +1012,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#69960933793fb99acd286e54b11763124c643f91",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1447,7 +1447,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#69960933793fb99acd286e54b11763124c643f91",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

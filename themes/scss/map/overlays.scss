@@ -171,18 +171,6 @@ $buttonColor: #636D72;
     top: 8px;
     left: 20px;
   }
-  &:hover {
-    .CDB-Shape-Arrow.is-up {
-      @include transition(all, 100ms);
-      top: 4px;
-      left: 22px;
-    }
-    .CDB-Shape-Arrow.is-down {
-      @include transition(all, 100ms);
-      top: 11px;
-      left: 9px;
-    }
-  }
   .CDB-Fullscreen-link {
     width: 100%;
     height: 100%;

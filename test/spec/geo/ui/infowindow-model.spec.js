@@ -27,14 +27,14 @@ describe('geo/ui/infowindow-model', function () {
       var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }] });
       infowindowModel.updateContent({ NAME: 'CartoDB' }, { showEmptyFields: false });
 
-      expect(infowindowModel.get('content').fields).toEqual([{ title: 'NAME', value: 'CartoDB', index: 0 }]);
+      expect(infowindowModel.get('content').fields).toEqual([{ name: 'NAME', title: 'NAME', value: 'CartoDB', index: 0 }]);
     });
 
     it('should include empty fields', function () {
       var infowindowModel = new InfowindowModel({ fields: [{ name: 'NAME', title: true }, { name: 'SOMETHING', title: true }] });
       infowindowModel.updateContent({ NAME: 'CartoDB' }, { showEmptyFields: true });
 
-      expect(infowindowModel.get('content').fields).toEqual([{ title: 'NAME', value: 'CartoDB', index: 0 }, { title: 'SOMETHING', value: 'null', index: 1 }]);
+      expect(infowindowModel.get('content').fields).toEqual([{ name: 'NAME', title: 'NAME', value: 'CartoDB', index: 0 }, { name: 'SOMETHING', title: 'SOMETHING', value: 'null', index: 1 }]);
     });
   });
 
@@ -76,11 +76,13 @@ describe('geo/ui/infowindow-model', function () {
 
       expect(content.fields.length).toEqual(2);
       expect(content.fields[0]).toEqual({
+        name: 'field1',
         title: null,
         value: 'value1',
         index: 0
       });
       expect(content.fields[1]).toEqual({
+        name: 'field2',
         title: null,
         value: 'null',
         index: 1
@@ -95,6 +97,7 @@ describe('geo/ui/infowindow-model', function () {
 
       expect(content.fields.length).toEqual(1);
       expect(content.fields[0]).toEqual({
+        name: 'field1',
         title: null,
         value: 'value1',
         index: 0
@@ -108,6 +111,7 @@ describe('geo/ui/infowindow-model', function () {
 
       expect(content.fields.length).toEqual(1);
       expect(content.fields[0]).toEqual({
+        name: 'field1',
         title: null,
         value: 'wadus',
         index: 0

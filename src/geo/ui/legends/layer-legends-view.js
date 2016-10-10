@@ -2,9 +2,10 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 var template = require('./layer-legends-template.tpl');
 var LegendViewFactory = require('./legend-view-factory');
+
 var LayerLegendsView = Backbone.View.extend({
 
-  className: 'CDB-LayerLegends',
+  className: 'CDB-LayerLegends js-layer-legends',
 
   events: {
     'click .js-toggle-layer': '_onToggleLayerCheckboxClicked'
@@ -14,26 +15,40 @@ var LayerLegendsView = Backbone.View.extend({
     this._legendViews = [];
 
     this.settingsModel = options.settingsModel;
+    this.tryContainerVisibility = options.tryContainerVisibility;
 
     this.model.on('change:visible', this._onLayerVisibilityChanged, this);
     this.model.on('change:layer_name', this.render, this);
+
+    this._getLegendModels().forEach(function (model) {
+      model.on('change:state', _.debounce(this.render, 150), this);
+      model.on('change:visible', _.debounce(this.render, 150), this);
+    }, this);
+
     this.settingsModel.on('change', this.render, this);
   },
 
   render: function () {
     var showLegends = this.settingsModel.get('showLegends');
     var showLayerSelector = this.settingsModel.get('showLayerSelector');
+    var shouldVisible = showLayerSelector || this.model.legends.hasAnyLegend() && showLegends;
 
-    this.$el.html(
-      template({
-        layerName: this.model.getName(),
-        isLayerVisible: this._isLayerVisible(),
-        showLegends: showLegends,
-        showLayerSelector: showLayerSelector
-      })
-    );
+    if (shouldVisible) {
+      this.$el.html(
+        template({
+          layerName: this.model.getName(),
+          isLayerVisible: this._isLayerVisible(),
+          showLegends: showLegends,
+          showLayerSelector: showLayerSelector
+        })
+      );
 
-    this._renderLegends();
+      this._renderLegends();
+    } else {
+      this.$el.empty();
+    }
+
+    this.tryContainerVisibility();
     return this;
   },
 

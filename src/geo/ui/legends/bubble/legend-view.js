@@ -40,7 +40,7 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateLabels: function () {
-    var labels = this.model.get('values').slice(0).reverse();
+    var labels = this.model.get('values').slice(0);
     if (this._areSizesInAscendingOrder()) {
       labels = labels.reverse();
     }
@@ -48,10 +48,11 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateValues: function () {
-    var sizes = this.model.get('sizes').slice(0).reverse();
+    var sizes = this.model.get('sizes').slice(0);
     if (this._areSizesInAscendingOrder()) {
       sizes = sizes.reverse();
     }
+    return sizes;
   },
 
   _areSizesInAscendingOrder: function () {

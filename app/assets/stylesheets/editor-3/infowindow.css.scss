@@ -2,6 +2,10 @@
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
 
+.Infowindow-listFields {
+  position: relative;
+}
+
 .Infowindow-listFieldsOrder {
   @include opacity(0);
   position: absolute;

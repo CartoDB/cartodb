@@ -324,7 +324,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @protected_map_tokens = current_user.get_auth_tokens
 
     respond_to do |format|
-      format.html { render 'embed_map' }
+      format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
   end
 

@@ -336,7 +336,7 @@ module Carto
 
       def migrate_legends(old_legend)
         Carto::LegendMigrator.new(@layer.id, old_legend).build.save
-        @layer.reload
+        @layer.legends.reload
       end
 
       def as_torque

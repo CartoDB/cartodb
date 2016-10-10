@@ -331,10 +331,7 @@ module Carto
           Carto::Api::LegendPresenter.new(legend).to_hash
         end
 
-        {
-          legend: @layer.legend,
-          legends: legends_presentation
-        }
+        { legends: legends_presentation }
       end
 
       def migrate_legends(old_legend)

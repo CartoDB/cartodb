@@ -103,28 +103,31 @@ module Carto
       left, right = labels_for_items
 
       range = right - left
-      step = range / 5
+      step = range / 6
 
       first = formmated_string_number(left)
       second = formmated_string_number(left + (2 * step))
       third = formmated_string_number(left + (3 * step))
       fourth = formmated_string_number(left + (4 * step))
-      fifth = formmated_string_number(right + step)
+      fifth = formmated_string_number(left + (5 * step))
+      sixth = formmated_string_number(right + step)
 
       average = right / 2
-      avergae_percent = average * 100 / right
+      avergae_percent = (average * 100 / right).to_i
       average_str = formmated_string_number(right / 2)
 
-      fifth_mark = 100
-      fourth_mark = 75
-      third_mark = 50
-      second_mark = 25
+      sixth_mark = 100
+      fifth_mark = 80
+      fourth_mark = 60
+      third_mark = 40
+      second_mark = 20
       first_mark = 0
 
       color = items.last['value']
 
       html =  %(<div class="Bubble-container u-flex u-justifySpace">\n)
       html += %(  <ul class="Bubble-numbers u-flex u-justifySpace">\n)
+      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{sixth_mark}%">#{sixth}</li></li>\n)
       html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fifth_mark}%">#{fifth}</li></li>\n)
       html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fourth_mark}%">#{fourth}</li></li>\n)
       html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{third_mark}%">#{third}</li></li>\n)
@@ -133,6 +136,9 @@ module Carto
       html += %(  </ul>\n)
       html += %(  <div class="Bubble-inner">\n)
       html += %(    <ul class="Bubble-list">\n)
+      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{sixth_mark}%; width: #{sixth_mark}%">\n)
+      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
+      html += %(      </li>\n)
       html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{fifth_mark}%; width: #{fifth_mark}%">\n)
       html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
       html += %(      </li>\n)
@@ -146,7 +152,7 @@ module Carto
       html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
       html += %(      </li>\n)
       html += %(    </ul>\n)
-      html += %(    <p class="Bubble-average_strr CDB-Text CDB-Size-small u-altTextColor" style="bottom: #{avergae_percent}%">AVG: #{average_str}</p>\n)
+      html += %(    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: #{avergae_percent}%">AVG: #{average_str}</p>\n)
       html += %(  </div>\n)
       html += %(</div>\n)
 
@@ -215,11 +221,11 @@ module Carto
 
     def formmated_string_number(number)
       if number < 1_000
-        number.to_i.to_s
+        number.round(1).to_s
       elsif number < 1_000_000
-        "#{(number / 1_000).to_i}K"
+        "#{(number / 1_000).round(1)}K"
       else
-        "#{(number / 1_000_000).to_i}M"
+        "#{(number / 1_000_000).round(1)}M"
       end
     end
   end

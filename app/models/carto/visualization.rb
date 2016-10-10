@@ -450,7 +450,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    version < 3 && uses_vizjson2?
+    version != 3 && uses_vizjson2?
   end
 
   def can_be_automatically_migrated?

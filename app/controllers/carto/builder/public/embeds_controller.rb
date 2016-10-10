@@ -67,7 +67,7 @@ module Carto
         end
 
         def redirect_to_old_embed_if_v2
-          if @visualization.version == 2
+          if @visualization.version != 3
             redirect_to CartoDB.url(self, 'public_visualizations_embed_map', id: @visualization.id)
           end
         end

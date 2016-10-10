@@ -107,11 +107,11 @@ module Carto
       step = range / 6
 
       first = formmated_string_number(left)
-      second = formmated_string_number(left + (2 * step))
-      third = formmated_string_number(left + (3 * step))
-      fourth = formmated_string_number(left + (4 * step))
-      fifth = formmated_string_number(left + (5 * step))
-      sixth = formmated_string_number(right + step)
+      second = formmated_string_number(left + step)
+      third = formmated_string_number(left + (2 * step))
+      fourth = formmated_string_number(left + (3 * step))
+      fifth = formmated_string_number(left + (4 * step))
+      sixth = formmated_string_number(right)
 
       sixth_mark = 100
       fifth_mark = 80
@@ -226,7 +226,10 @@ module Carto
     end
 
     def pretty_round(number)
-      number == number.to_i ? number : number.round(1)
+      integer = number.to_i
+      rounded = number.round(1)
+
+      integer == rounded ? integer : rounded
     end
   end
 end

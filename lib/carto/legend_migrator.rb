@@ -11,7 +11,7 @@ module Carto
 
     def build
       new_type, new_definition = type_and_definition
-      title = title if title.present? && show_title
+      title = title if title.present? && legend['show_title']
 
       Legend.new(layer_id: layer_id,
                  title: title,
@@ -31,10 +31,6 @@ module Carto
 
     def title
       legend['title']
-    end
-
-    def show_title
-      @show_title ||= legend['show_title']
     end
 
     HTML_RAMP_TYPES = %w(choropleth intensity density).freeze

@@ -100,59 +100,41 @@ module Carto
       "background: linear-gradient(90deg, #{gradient_stops})"
     end
 
-    def build_html_definition_from_bubble
+    def build_html_definition_from_bubble(steps: 6)
       left, right = labels_for_items
-
-      range = right - left
-      step = range / 6
-
-      first = formatted_string_number(left)
-      second = formatted_string_number(left + step)
-      third = formatted_string_number(left + (2 * step))
-      fourth = formatted_string_number(left + (3 * step))
-      fifth = formatted_string_number(left + (4 * step))
-      sixth = formatted_string_number(right)
-
-      sixth_mark = 100
-      fifth_mark = 80
-      fourth_mark = 60
-      third_mark = 40
-      second_mark = 20
-      first_mark = 0
-
-      color = items.last['value']
+      heights, values = heights_and_values(left, right, steps)
 
       html =  %(<div class="Bubble-container u-flex u-justifySpace">\n)
       html += %(  <ul class="Bubble-numbers u-flex u-justifySpace">\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{sixth_mark}%">#{sixth}</li></li>\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fifth_mark}%">#{fifth}</li></li>\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{fourth_mark}%">#{fourth}</li></li>\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{third_mark}%">#{third}</li></li>\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{second_mark}%">#{second}</li></li>\n)
-      html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{first_mark}%">#{first}</li></li>\n)
+      values.reverse.each_with_index do |value, index|
+        html += %(    <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: #{heights[index]}%">#{value}</li></li>\n)
+      end
       html += %(  </ul>\n)
       html += %(  <div class="Bubble-inner">\n)
       html += %(    <ul class="Bubble-list">\n)
-      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{sixth_mark}%; width: #{sixth_mark}%">\n)
-      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
-      html += %(      </li>\n)
-      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{fifth_mark}%; width: #{fifth_mark}%">\n)
-      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
-      html += %(      </li>\n)
-      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{fourth_mark}%; width: #{fourth_mark}%">\n)
-      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
-      html += %(      </li>\n)
-      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{third_mark}%; width: #{third_mark}%">\n)
-      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
-      html += %(      </li>\n)
-      html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{second_mark}%; width: #{second_mark}%">\n)
-      html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
-      html += %(      </li>\n)
+      heights[0..-2].each do |height|
+        html += %(      <li class="js-bubbleItem Bubble-item Bubble-item—-01" style="height: #{height}%; width: #{height}%">\n)
+        html += %(        <span class="Bubble-itemCircle" style="background-color: #{items.last['value']}"></span>\n)
+        html += %(      </li>\n)
+      end
       html += %(    </ul>\n)
       html += %(  </div>\n)
       html += %(</div>\n)
 
       { html: html }
+    end
+
+    def heights_and_values(min, max, steps)
+      step = (max - min) / (steps - 1)
+      values = Array.new(steps) do |index|
+        formatted_string_number(min + (index  * step))
+      end
+
+      heights = Array.new(steps) do |index|
+        100 - (index * 100 / (steps - 1))
+      end
+
+      [heights, values]
     end
 
     def labels_for_items

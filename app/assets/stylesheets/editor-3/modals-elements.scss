@@ -70,6 +70,9 @@
   background: $cMainText;
   overflow: hidden;
 }
+.Analysis-animation.is-rounded {
+  border-radius: $halfBaseSize;
+}
 
 .ModalBlockList-item.is-disabled .Analysis-animation {
   background-color: transparent;

@@ -30,7 +30,7 @@ module Carto
     end
 
     def title
-      @title ||= legend['title']
+      legend['title']
     end
 
     def show_title

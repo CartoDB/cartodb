@@ -106,12 +106,12 @@ module Carto
       range = right - left
       step = range / 6
 
-      first = formmated_string_number(left)
-      second = formmated_string_number(left + step)
-      third = formmated_string_number(left + (2 * step))
-      fourth = formmated_string_number(left + (3 * step))
-      fifth = formmated_string_number(left + (4 * step))
-      sixth = formmated_string_number(right)
+      first = formatted_string_number(left)
+      second = formatted_string_number(left + step)
+      third = formatted_string_number(left + (2 * step))
+      fourth = formatted_string_number(left + (3 * step))
+      fifth = formatted_string_number(left + (4 * step))
+      sixth = formatted_string_number(right)
 
       sixth_mark = 100
       fifth_mark = 80
@@ -215,7 +215,7 @@ module Carto
       [stripped[0..1].hex, stripped[2..3].hex, stripped[4..5].hex]
     end
 
-    def formmated_string_number(number)
+    def formatted_string_number(number)
       if number < 1_000
         pretty_round(number).to_s
       elsif number < 1_000_000

@@ -3,6 +3,8 @@
     <span class="u-upperCase CDB-Button-Text CDB-Text CDB-Size-small"><%- _t('dataset.preview-map.preview') %></span>
   </button>
 <% } %>
-<button class="CDB-Button CDB-Button--primary u-upperCase js-createMap">
-  <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%- _t('dataset.create-map.title') %></span>
-</button>
+<% if (createMapEnabled) { %>
+  <button class="CDB-Button CDB-Button--primary u-upperCase js-createMap">
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small"><%- _t('dataset.create-map.title') %></span>
+  </button>
+<% } %>

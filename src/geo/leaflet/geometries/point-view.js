@@ -48,6 +48,7 @@ var PointView = View.extend({
       this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
       this._marker.on('dragend', this._onDragEnd.bind(this));
       this._marker.addTo(this.leafletMap);
+      this._updateModelsGeoJSON();
     }
   },
 

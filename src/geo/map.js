@@ -10,6 +10,7 @@ var sanitize = require('../core/sanitize');
 var Point = require('./geometry-models/point');
 var Polyline = require('./geometry-models/polyline');
 var Polygon = require('./geometry-models/polygon');
+var MultiPolygon = require('./geometry-models/multi-polygon');
 
 var Map = Model.extend({
   defaults: {
@@ -115,10 +116,11 @@ var Map = Model.extend({
   },
 
   _editMultiPolygon: function (geoJSON) {
-    var coords =  geoJSON.geometry && geoJSON.geometry.coordinates && geoJSON.geometry.coordinates[0] || geoJSON.coordinates && geoJSON.coordinates[0];
-    var latlngs = this._getLatLngsFromCoords(coords[0]);
-    var polygon = new Polygon({ geojson: geoJSON });
-    polygon.setLatLngs(latlngs);
+    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
+    var latlngs = _.map(coords, function (coords) {
+      return this._getLatLngsFromCoords(coords[0]);
+    }, this);
+    var polygon = new MultiPolygon({ geojson: geoJSON }, { latlngs: latlngs });
     this.addGeometry(polygon);
     return polygon;
   },

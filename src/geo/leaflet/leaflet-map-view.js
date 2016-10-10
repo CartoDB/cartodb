@@ -4,8 +4,6 @@ var L = require('leaflet');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
-var LeafletPointView = require('./leaflet-point-view');
-var LeafletPathView = require('./leaflet-path-view');
 
 var LeafletMapView = MapView.extend({
 

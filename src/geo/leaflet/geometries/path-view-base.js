@@ -27,6 +27,7 @@ var PathViewBase = View.extend({
   render: function () {
     this._renderPoints();
     this._geometry.addTo(this.leafletMap);
+    this._updateModelsGeoJSON();
   },
 
   _renderPoints: function () {

@@ -4,9 +4,17 @@ var Point = require('./point');
 var GeometryBase = require('./geometry-base');
 
 var PathBase = GeometryBase.extend({
-  initialize: function () {
+  initialize: function (attrs, options) {
     GeometryBase.prototype.initialize.apply(this, arguments);
-    this.points = new Backbone.Collection(null, { model: Point });
+    options = options || {};
+
+    var latlngs = [];
+    if (options.latlngs) {
+      latlngs = _.map(options.latlngs, function (latlng) {
+        return { latlng: latlng };
+      });
+    }
+    this.points = new Backbone.Collection(latlngs, { model: Point });
   },
 
   getLatLngs: function () {

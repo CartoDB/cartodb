@@ -20,6 +20,7 @@ describe('geo/ui/layer-selector (torque)', function () {
     var l3 = new TorqueLayer({ layer_name: 'Layer 3' }, { vis: this.vis });
 
     var map = new Map({}, {
+      layersFactory: {},
       layersCollection: new Layers([l1, l2, l3])
     });
 

@@ -46,8 +46,6 @@ var Legends = function (legendsData, deps) {
   _.each(LEGENDS_METADATA, function (legendMetadata, legendType) {
     this[legendType] = this._createLegendModel(legendType, legendMetadata);
   }, this);
-
-  this._visModel.on('reload', this._onVisReloading, this);
 };
 
 Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
@@ -72,7 +70,9 @@ Legends.prototype._createLegendModel = function (legendType, legendMetadata) {
     modelAttrs[attrNameForModel] = data && data[attrNameInData];
   });
 
-  var legendModel = new ModelClass(modelAttrs);
+  var legendModel = new ModelClass(modelAttrs, {
+    visModel: this._visModel
+  });
 
   if (data) {
     legendModel.show();
@@ -84,21 +84,12 @@ Legends.prototype._findDataForLegend = function (legendType) {
   return _.find(this._legendsData, { type: legendType });
 };
 
-Legends.prototype._onVisReloading = function () {
-  _.each(this._getModelsForDynamicLegends(), function (legendModel) {
-    legendModel.set('state', 'loading');
-  });
-};
-
-Legends.prototype._getModelsForDynamicLegends = function () {
-  return _.chain(LEGENDS_METADATA)
-    .map(function (legendMetadata, legendType) {
-      if (legendMetadata.dynamic === true) {
-        return this[legendType];
-      }
-    }.bind(this))
-    .compact()
-    .value();
+Legends.prototype.hasAnyLegend = function () {
+  var legendTypes = _.keys(LEGENDS_METADATA);
+  return _.some(legendTypes, function (legendType) {
+    var legend = this[legendType];
+    return legend && legend.isVisible();
+  }, this);
 };
 
 module.exports = Legends;

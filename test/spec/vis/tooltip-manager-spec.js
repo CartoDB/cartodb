@@ -10,7 +10,7 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
-    this.map = new Map();
+    this.map = new Map(null, { layersFactory: {} });
     this.layerView = new Backbone.Model();
     var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     layerViewFactory.createLayerView.and.returnValue(this.layerView);

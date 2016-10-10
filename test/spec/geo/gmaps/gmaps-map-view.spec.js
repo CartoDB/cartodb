@@ -20,7 +20,9 @@ describe('geo/gmaps/gmaps-map-view', function () {
   var layer;
   beforeEach(function () {
     container = $('<div>').css('height', '200px');
-    map = new Map();
+    map = new Map(null, {
+      layersFactory: {}
+    });
     mapView = new GoogleMapsMapView({
       el: container,
       map: map,
@@ -195,6 +197,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var map = new Map({
       drag: false
+    }, {
+      layersFactory: {}
     });
     var mapView = new GoogleMapsMapView({
       el: container,
@@ -214,6 +218,8 @@ describe('geo/gmaps/gmaps-map-view', function () {
     });
     var map = new Map({
       drag: false
+    }, {
+      layersFactory: {}
     });
     var mapView = new GoogleMapsMapView({
       el: container,

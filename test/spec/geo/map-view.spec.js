@@ -16,7 +16,9 @@ describe('core/geo/map-view', function () {
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
 
-    this.map = new Map();
+    this.map = new Map(null, {
+      layersFactory: {}
+    });
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
     this.mapView = new MapView({

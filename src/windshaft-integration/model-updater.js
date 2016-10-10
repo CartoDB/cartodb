@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var log = require('../cdb.log');
 var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
@@ -139,21 +140,29 @@ ModelUpdater.prototype._generateTorqueTileURLTemplate = function (windshaftMap, 
 
 ModelUpdater.prototype._updateLegendModels = function (layerModel, remoteLayerIndex, windshaftMap) {
   var layerMetadata = windshaftMap.getLayerMetadata(remoteLayerIndex);
-  var cartoCSSRules = layerMetadata && layerMetadata.cartocss_meta && layerMetadata.cartocss_meta.rules;
   _.each(this._getLayerLegends(layerModel), function (legendModel) {
+    this._updateLegendModel(legendModel, layerMetadata);
+  }, this);
+};
+
+ModelUpdater.prototype._updateLegendModel = function (legendModel, layerMetadata) {
+  var cartoCSSRules = layerMetadata && layerMetadata.cartocss_meta && layerMetadata.cartocss_meta.rules;
+  try {
     var newLegendAttrs = {
       state: 'success'
     };
     if (cartoCSSRules) {
-      _.each(cartoCSSRules, function (rule) {
-        var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
-        if (adapter.canAdapt(rule)) {
-          newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(rule));
-        }
-      });
+      var adapter = RuleToLegendModelAdapters.getAdapterForLegend(legendModel);
+      var ruleForLegend = _.find(cartoCSSRules, adapter.canAdapt);
+      if (ruleForLegend) {
+        newLegendAttrs = _.extend(newLegendAttrs, adapter.adapt(ruleForLegend));
+      }
     }
     legendModel.set(newLegendAttrs);
-  });
+  } catch (error) {
+    legendModel.set({ state: 'error' });
+    log.error("legend of type '" + legendModel.get('type') + "' couldn't be updated: " + error.message);
+  }
 };
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {

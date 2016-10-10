@@ -1,13 +1,12 @@
 var _ = require('underscore');
-var LegendModelBase = require('./legend-model-base');
+var StaticLegendModelBase = require('./static-legend-model-base');
 
-var CustomLegendModel = LegendModelBase.extend({
-  TYPE: 'custom',
-
+var CustomLegendModel = StaticLegendModelBase.extend({
   defaults: function () {
-    return _.extend({
+    return _.extend(StaticLegendModelBase.prototype.defaults.apply(this), {
+      type: 'custom',
       items: []
-    }, LegendModelBase.prototype.defaults.apply(this));
+    });
   }
 });
 

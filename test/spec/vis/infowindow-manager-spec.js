@@ -22,7 +22,9 @@ var createCartoDBLayer = function (vis, infowindowAttrs) {
 
 describe('src/vis/infowindow-manager.js', function () {
   beforeEach(function () {
-    this.map = new Map({}, {});
+    this.map = new Map({}, {
+      layersFactory: {}
+    });
 
     var cartoDBLayerGroup = new CartoDBLayerGroup({}, {
       layersCollection: this.map.layers
@@ -149,6 +151,7 @@ describe('src/vis/infowindow-manager.js', function () {
       'content': {
         'fields': [
           {
+            'name': 'name',
             'title': 'name',
             'value': 'juan',
             'index': 0

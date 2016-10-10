@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var PlainLayer = require('../../../src/geo/map/plain-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
@@ -6,6 +7,12 @@ var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
+var LayersFactory = require('../../../src/vis/layers-factory');
+
+var fakeLayersFactory = new LayersFactory({
+  visModel: new Backbone.Model(),
+  windshaftSettings: {}
+});
 
 var Map = require('../../../src/geo/map');
 
@@ -14,7 +21,8 @@ describe('core/geo/map', function () {
 
   beforeEach(function () {
     this.vis = new VisModel();
-    map = new Map(null, { vis: this.vis });
+
+    map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 
   describe('.initialize', function () {
@@ -22,7 +30,7 @@ describe('core/geo/map', function () {
       var map = new Map({
         bounds: [[0, 1], [2, 3]]
       }, {
-        vis: this.vis
+        layersFactory: fakeLayersFactory
       });
 
       expect(map.get('view_bounds_sw')).toEqual([0, 1]);
@@ -37,7 +45,7 @@ describe('core/geo/map', function () {
         center: [41.40282319070747, 2.3435211181640625],
         zoom: 10
       }, {
-        vis: this.vis
+        layersFactory: fakeLayersFactory
       });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
@@ -47,7 +55,7 @@ describe('core/geo/map', function () {
 
     it('should set the default center and zoom if no center and bounds are given', function () {
       var map = new Map(null, {
-        vis: this.vis
+        layersFactory: fakeLayersFactory
       });
 
       expect(map.get('center')).toEqual(map.defaults.center);
@@ -58,7 +66,7 @@ describe('core/geo/map', function () {
     it('should parse the center when given a string', function () {
       var map = new Map({
         center: '[41.40282319070747, 2.3435211181640625]'
-      }, { vis: this.vis });
+      }, { layersFactory: fakeLayersFactory });
 
       expect(map.get('center')).toEqual([41.40282319070747, 2.3435211181640625]);
     });
@@ -115,7 +123,7 @@ describe('core/geo/map', function () {
   });
 
   it('should update the attributions of the map when layers are reset/added/removed', function () {
-    map = new Map(null, { vis: this.vis });
+    map = new Map(null, { layersFactory: fakeLayersFactory });
 
     // Map has the default CartoDB attribution
     expect(map.get('attribution')).toEqual([
@@ -182,7 +190,7 @@ describe('core/geo/map', function () {
   describe('API methods', function () {
     beforeEach(function () {
       this.map = new Map({}, {
-        vis: this.vis
+        layersFactory: fakeLayersFactory
       });
     });
 
@@ -320,7 +328,7 @@ describe('core/geo/map', function () {
         var map = new Map({
           bounds: [[1, 2], [3, 4]],
           center: '[41.40282319070747, 2.3435211181640625]'
-        }, { vis: this.vis });
+        }, { layersFactory: fakeLayersFactory });
 
         // Change internal attributes
         map.set({
@@ -338,7 +346,7 @@ describe('core/geo/map', function () {
       it('should set the original center if bounds are not present', function () {
         var map = new Map({
           center: [41.40282319070747, 2.3435211181640625]
-        }, { vis: this.vis });
+        }, { layersFactory: fakeLayersFactory });
 
         map.set({
           center: 'different'

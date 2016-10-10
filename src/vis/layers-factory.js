@@ -41,10 +41,12 @@ function transformToHTTPS (tilesTemplate) {
 
 var LAYER_CONSTRUCTORS = {
   tiled: function (data, options) {
+    var visModel = options.vis;
+
     var url = data.urlTemplate;
-    if (options.https === true) {
+    if (visModel.get('https') === true) {
       url = transformToHTTPS(url);
-    } else if (options.https === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
+    } else if (visModel.get('https') === false) { // Checking for an explicit false value. If it's undefined the url is left as is.
       url = transformToHTTP(url);
     }
 
@@ -74,33 +76,52 @@ var LAYER_CONSTRUCTORS = {
     });
   },
 
-  torque: function (data, options) {
-    // default is https
-    if (options.https) {
-      if (data.sql_api_domain && data.sql_api_domain.indexOf('carto.com') !== -1) {
-        data.sql_api_protocol = 'https';
-        data.sql_api_port = 443;
-        data.tiler_protocol = 'https';
-        data.tiler_port = 443;
-      }
+  torque: function (attrs, options) {
+    var windshaftSettings = options.windshaftSettings;
+
+    attrs = _.extend(attrs, {
+      user_name: windshaftSettings.userName,
+      maps_api_template: windshaftSettings.urlTemplate,
+      stat_tag: windshaftSettings.statTag,
+      api_key: windshaftSettings.apiKey,
+      auth_token: windshaftSettings.authToken
+    });
+
+    if (windshaftSettings.templateName) {
+      attrs = _.extend(attrs, {
+        named_map: {
+          name: windshaftSettings.templateName
+        }
+      });
     }
-    return new TorqueLayer(data, {
+
+    return new TorqueLayer(attrs, {
       vis: options.vis
     });
   }
 };
 
-var LayersFactory = {
-  create: function (type, data, options) {
-    var LayerClass = LAYER_CONSTRUCTORS[type.toLowerCase()];
-    if (!LayerClass) {
-      log.error("error creating layer of type '" + type + "'");
-      return null;
-    }
-    // Flatten "options"
-    var layerAttributes = _.extend({}, _.omit(data, 'options'), data.options);
-    return new LayerClass(layerAttributes, options);
+var LayersFactory = function (deps) {
+  if (!deps.visModel) throw new Error('visModel is required');
+  if (!deps.windshaftSettings) throw new Error('windshaftSettings is required');
+
+  this._visModel = deps.visModel;
+  this._windshaftSettings = deps.windshaftSettings;
+};
+
+LayersFactory.prototype.createLayer = function (type, attrs) {
+  var LayerConstructor = LAYER_CONSTRUCTORS[type.toLowerCase()];
+  if (!LayerConstructor) {
+    log.error("error creating layer of type '" + type + "'");
+    return null;
   }
+  // Flatten "options"
+  var layerAttributes = _.extend({}, _.omit(attrs, 'options'), attrs.options);
+
+  return LayerConstructor(layerAttributes, {
+    windshaftSettings: this._windshaftSettings,
+    vis: this._visModel
+  });
 };
 
 module.exports = LayersFactory;

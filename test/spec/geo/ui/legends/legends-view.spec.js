@@ -17,8 +17,14 @@ describe('geo/ui/legends/legends-view', function () {
     this.layersCollection = new LayersCollection([]);
     this.layersCollection.reset([ this.tileLayer, this.cartoDBLayer1, this.cartoDBLayer2, this.torqueLayer ]);
 
+    this.settingsModel = new Backbone.Model({
+      showLegends: true,
+      showLayerSelector: true
+    });
+
     this.legendsView = new LegendsView({
-      layersCollection: this.layersCollection
+      layersCollection: this.layersCollection,
+      settingsModel: this.settingsModel
     });
 
     this.legendsView.render();
@@ -47,5 +53,32 @@ describe('geo/ui/legends/legends-view', function () {
 
     expect(this.legendsView.$('.CDB-LayerLegends').length).toEqual(3);
     expect(getLayerLegendTitles(this.legendsView)).toEqual(['Torque Layer #3', 'CartoDB Layer #2', 'CartoDB Layer #1']);
+  });
+
+  it('should show legends if showLegends is true', function () {
+    this.settingsModel.set('showLegends', true);
+    expect(this.legendsView.$('.Legends').length).toBe(3);
+  });
+
+  it('should hide legends if showLegends is false', function () {
+    this.settingsModel.set('showLegends', false);
+    expect(this.legendsView.$('.Legends').length).toBe(0);
+  });
+
+  it('should show layer selector if showLayerSelector is true', function () {
+    this.settingsModel.set('showLayerSelector', true);
+    expect(this.legendsView.$('input').length).toBe(3);
+  });
+
+  it('should hide layer selector if showLayerSelector is false', function () {
+    this.settingsModel.set('showLayerSelector', false);
+    expect(this.legendsView.$('input').length).toBe(0);
+  });
+
+  it('should hide element if showLayerSelector is false and no legends are visible', function () {
+    spyOn(this.cartoDBLayer1.legends, 'hasAnyLegend').and.returnValue(false);
+    spyOn(this.cartoDBLayer2.legends, 'hasAnyLegend').and.returnValue(false);
+    this.settingsModel.set('showLayerSelector', false);
+    expect(this.legendsView.el.style.display).toEqual('none');
   });
 });

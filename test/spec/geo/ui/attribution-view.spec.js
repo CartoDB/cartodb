@@ -14,7 +14,9 @@ describe('geo/ui/attribution', function () {
       $(document).trigger(e);
     };
 
-    this.map = new Map();
+    this.map = new Map(null, {
+      layersFactory: {}
+    });
     spyOn(this.map, 'bind').and.callThrough();
     spyOn(AttributionView.prototype, 'render').and.callThrough();
 

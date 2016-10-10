@@ -30,7 +30,9 @@ describe('geo/leaflet/leaflet-map-view', function () {
       'width': '200px'
     });
 
-    map = new Map(null);
+    map = new Map(null, {
+      layersFactory: {}
+    });
 
     this.layerGroupModel = new CartoDBLayerGroup({}, { layersCollection: new Backbone.Collection() });
     spyOn(this.layerGroupModel, 'hasTileURLTemplates').and.returnValue(true);
@@ -434,6 +436,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var map = new Map({
       drag: false
+    }, {
+      layersFactory: {}
     });
     var mapView = new LeafletMapView({
       el: container,
@@ -453,6 +457,8 @@ describe('geo/leaflet/leaflet-map-view', function () {
     });
     var map = new Map({
       drag: false
+    }, {
+      layersFactory: {}
     });
     var mapView = new LeafletMapView({
       el: container,

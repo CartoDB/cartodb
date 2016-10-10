@@ -27,17 +27,17 @@ var WindshaftMap = Backbone.Model.extend({
     if (!options.modelUpdater) {
       throw new Error('modelUpdater option is required');
     }
+    if (!options.windshaftSettings) {
+      throw new Error('windshaftSettings option is required');
+    }
 
     this.client = options.client;
-    this.set({
-      urlTemplate: this.client.urlTemplate,
-      userName: this.client.userName
-    });
 
     this._layersCollection = options.layersCollection;
     this._dataviewsCollection = options.dataviewsCollection;
     this._analysisCollection = options.analysisCollection;
     this._modelUpdater = options.modelUpdater;
+    this._windshaftSettings = options.windshaftSettings;
 
     this._requestTracker = new RequestTracker(MAP_INSTANTIATION_LIMIT);
   },
@@ -160,10 +160,11 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _getHost: function (subhost) {
-    var userName = this.get('userName');
+    var urlTemplate = this._windshaftSettings.urlTemplate;
+    var userName = this._windshaftSettings.userName;
+    var host = urlTemplate.replace('{user}', userName);
     var protocol = this._useHTTPS() ? 'https' : 'http';
     subhost = subhost ? subhost + '.' : '';
-    var host = this.get('urlTemplate').replace('{user}', userName);
     var cdnHost = this.get('cdn_url') && this.get('cdn_url')[protocol];
     if (cdnHost) {
       host = [protocol, '://', subhost, cdnHost, '/', userName].join('');
@@ -173,7 +174,7 @@ var WindshaftMap = Backbone.Model.extend({
   },
 
   _useHTTPS: function () {
-    return this.get('urlTemplate').indexOf('https') === 0;
+    return this._windshaftSettings.urlTemplate.indexOf('https') === 0;
   },
 
   /**

@@ -6,7 +6,6 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
-var LayersFactory = require('../vis/layers-factory');
 
 var Map = Model.extend({
   defaults: {
@@ -25,11 +24,14 @@ var Map = Model.extend({
 
   initialize: function (attrs, options) {
     options = options || {};
+
+    if (!options.layersFactory) throw new Error('layersFactory is required');
+    this._layersFactory = options.layersFactory;
+
     attrs = attrs || {};
 
     this.layers = options.layersCollection || new Layers();
     this.geometries = new Backbone.Collection();
-    this._vis = options.vis;
 
     var center = attrs.center || this.defaults.center;
     if (typeof center === 'string') {
@@ -129,10 +131,7 @@ var Map = Model.extend({
 
   _addNewLayerModel: function (type, attrs, options) {
     options = options || {};
-    var layerModel = LayersFactory.create(type, attrs, {
-      map: this,
-      vis: this._vis
-    });
+    var layerModel = this._layersFactory.createLayer(type, attrs);
     this.listenTo(layerModel, 'destroy', this._removeLayerModelFromCollection);
     this.layers.add(layerModel, {
       silent: options.silent,

@@ -129,7 +129,7 @@ describe('windshaft/map-base', function () {
             this.client.instantiateMap.calls.reset();
           }
 
-          this.windshaftMap.createInstance(this.options);
+          this.windshaftMap.createInstance(this.options, true);
 
           expect(this.client.instantiateMap).not.toHaveBeenCalled();
 
@@ -148,7 +148,7 @@ describe('windshaft/map-base', function () {
           });
 
           for (var i = 0; i < MAX_NUMBER_OF_EQUAL_REQUESTS; i++) {
-            this.windshaftMap.createInstance(this.options);
+            this.windshaftMap.createInstance(this.options, true);
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
             this.client.instantiateMap.calls.reset();
@@ -180,7 +180,7 @@ describe('windshaft/map-base', function () {
           });
 
           it('should make a request if options are different', function () {
-            this.windshaftMap.createInstance({ different: 'options' });
+            this.windshaftMap.createInstance({ different: 'options' }, true);
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
           });
@@ -188,7 +188,7 @@ describe('windshaft/map-base', function () {
           it('should make a request if filters have changed', function () {
             this.filter.accept('something');
 
-            this.windshaftMap.createInstance(this.options);
+            this.windshaftMap.createInstance(this.options, true);
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
           });
@@ -234,7 +234,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        });
+        }, true);
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.mapDefinition).toEqual({ foo: 'bar' });
@@ -247,7 +247,7 @@ describe('windshaft/map-base', function () {
         var successCallback = jasmine.createSpy('success');
         this.windshaftMap.createInstance({
           success: successCallback
-        });
+        }, true);
 
         expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
       });
@@ -266,7 +266,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        });
+        }, true);
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         // Filters are empty because no filter is active yet
@@ -313,7 +313,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        });
+        }, true);
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
@@ -340,7 +340,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        });
+        }, true);
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
@@ -363,7 +363,7 @@ describe('windshaft/map-base', function () {
         this.windshaftMap.createInstance({
           sourceId: 'sourceId',
           forceFetch: 'forceFetch'
-        });
+        }, true);
 
         expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceId', 'forceFetch');
       });
@@ -381,7 +381,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           error: this.errorCallback
-        });
+        }, true);
       });
 
       it('should invoke a given error callback', function () {

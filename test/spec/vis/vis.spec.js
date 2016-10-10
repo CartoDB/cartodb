@@ -241,7 +241,7 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()), {});
-      this.vis.instantiateMap();
+      this.vis.init();
 
       this.vis.reload.calls.reset();
     });
@@ -287,7 +287,7 @@ describe('vis/vis', function () {
 
     describe('when vis has been instantiated once', function () {
       beforeEach(function () {
-        this.vis.instantiateMap();
+        this.vis.init();
         this.vis._windshaftMap.createInstance.calls.reset();
       });
 
@@ -304,7 +304,7 @@ describe('vis/vis', function () {
           sourceId: 'sourceId',
           forceFetch: 'forceFetch',
           success: 'success'
-        });
+        }, true);
       });
     });
   });
@@ -616,7 +616,7 @@ describe('vis/vis', function () {
         spyOn(this.vis, 'trackLoadingObject');
 
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
+        this.vis.init();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -677,7 +677,7 @@ describe('vis/vis', function () {
 
       it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
+        this.vis.init();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -736,7 +736,7 @@ describe('vis/vis', function () {
 
       it("should NOT start polling for analyses that don't have a URL yet", function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
+        this.vis.init();
 
         // Analysis node is created using analyse but node is not associated to any layer or dataview
         this.vis.analysis.analyse({
@@ -798,7 +798,7 @@ describe('vis/vis', function () {
 
       it('should reload the map when analysis is done', function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.instantiateMap();
+        this.vis.init();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -931,7 +931,7 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(fakeVizJSON()));
       this.vis.on('reload', reloadCallback);
 
-      this.vis.instantiateMap();
+      this.vis.init();
 
       expect(reloadCallback).toHaveBeenCalled();
     });

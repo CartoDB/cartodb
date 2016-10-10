@@ -13,53 +13,6 @@ module Carto
       @layer.destroy
     end
 
-    describe '#old_bubble' do
-      let(:old_bubble) do
-        {
-          "type" => "bubble",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true,
-              "value" => 787.5,
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Right Label",
-              "visible" => true,
-              "value" => 6273765,
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Color",
-              "visible" => true,
-              "value" => "#FF5C00",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      it 'migrates old bubble to new bubble' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_bubble)
-      end
-
-      after(:each) do
-        new_legend = @migrator.build
-
-        new_legend.type.should eq 'bubble'
-        new_legend.valid?.should be_true
-      end
-    end
-
     describe('#custom types') do
       let(:old_category) do
         {
@@ -168,19 +121,19 @@ module Carto
         truncated = old_category.dup
         truncated['items'].first['value'] = '#fatal#fatal#fatal'
 
-        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
+        @old_legend = truncated
       end
 
       it 'migrates old category to new custom' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_category)
+        @old_legend = old_category
       end
 
       it 'migrates old custom to new custom' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_custom)
+        @old_legend = old_custom
       end
 
       after(:each) do
-        new_legend = @migrator.build
+        new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
 
         new_legend.type.should eq 'custom'
         new_legend.valid?.should be_true
@@ -188,6 +141,40 @@ module Carto
     end
 
     describe('#html types') do
+      let(:old_bubble) do
+        {
+          "type" => "bubble",
+          "show_title" => false,
+          "title" => "",
+          "template" => "",
+          "visible" => true,
+          "items" => [
+            {
+              "name" => "Left label",
+              "visible" => true,
+              "value" => 787.5,
+              "legend_type" => "bubble",
+              "type" => "text",
+              "sync" => false
+            },
+            {
+              "name" => "Right Label",
+              "visible" => true,
+              "value" => 6273765,
+              "legend_type" => "bubble",
+              "type" => "text",
+              "sync" => false
+            },
+            {
+              "name" => "Color",
+              "visible" => true,
+              "value" => "#FF5C00",
+              "type" => "color"
+            }
+          ]
+        }
+      end
+
       let(:old_choropleth) do
         {
           "type" => "choropleth",
@@ -336,15 +323,19 @@ module Carto
         truncated = old_intensity.dup
         truncated['items'].last['value'] = '#fatal#fatal#fatal'
 
-        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
+        @old_legend = truncated
+      end
+
+      it 'migrates old bubble to new html' do
+        @old_legend = old_bubble
       end
 
       it 'migrates old choropleth to new html' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_choropleth)
+        @old_legend = old_choropleth
       end
 
       it 'migrates old density to new html' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_density)
+        @old_legend = old_density
       end
 
       it 'migrates old density without labels to new html' do
@@ -352,11 +343,11 @@ module Carto
         truncated['items'].delete_at(0)
         truncated['items'].delete_at(0)
 
-        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
+        @old_legend = truncated
       end
 
       it 'migrates old intensity to new html' do
-        @migrator = Carto::LegendMigrator.new(@layer.id, old_intensity)
+        @old_legend = old_intensity
       end
 
       it 'migrates old intensity without labels to new html' do
@@ -364,11 +355,12 @@ module Carto
         truncated['items'].delete_at(0)
         truncated['items'].delete_at(0)
 
-        @migrator = Carto::LegendMigrator.new(@layer.id, truncated)
+        @old_legend = truncated
       end
 
       after(:each) do
-        new_legend = @migrator.build
+        new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
+        @old_legend = nil
 
         new_legend.type.should eq 'html'
         new_legend.valid?.should be_true

@@ -381,7 +381,7 @@ Editor
     sudo pip install --no-use-wheel -r python_requirements.txt
 
 .. warning::
-    If this fails due to the installation of the gdal package not finding Python.h, you'll need to do this:
+    If this fails due to the installation of the gdal package not finding Python.h or any other header file, you'll need to do this:
 
     ::
 
@@ -389,8 +389,14 @@ Editor
         export C_INCLUDE_PATH=/usr/include/gdal
         export PATH=$PATH:/usr/include/gdal
 
-  After this, re-run the pip install command, and it should work. If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
-  
+    After this, re-run the pip install command. Variables can be passed to sudo if exporting them and re-running ``pip install`` doesn't work:
+
+    .. code-block:: bash
+
+       sudo CPLUS_INCLUDE_PATH=/usr/include/gdal C_INCLUDE_PATH=/usr/include/gdal PATH=$PATH:/usr/include/gdal pip install --no-use-wheel -r python_requirements.txt
+
+    If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
+
 * Add the grunt command to the PATH
 
   .. code-block:: bash
@@ -424,12 +430,6 @@ Editor
 
     RAILS_ENV=development bundle exec rake db:create
     RAILS_ENV=development bundle exec rake db:migrate
-
-* Create an admin user
-
-  .. code-block:: bash
-
-    RAILS_ENV=development bundle exec rake cartodb:db:setup_user
 
 * Start the redis-server that allows access to the SQL and Maps APIs:
 

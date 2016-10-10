@@ -23,7 +23,7 @@ var BubbleLegendView = LegendViewBase.extend({
 
   _getCompiledTemplate: function () {
     return template({
-      labels: this._reverseIfNeeded(this.model).values,
+      labels: this._calculateLabels(),
       bubbleSizes: this._calculateBubbleSizes(),
       labelPositions: this._calculateLabelPositions(),
       avgSize: this._calculateAverageSize(),
@@ -39,33 +39,28 @@ var BubbleLegendView = LegendViewBase.extend({
     return labelPositions;
   },
 
-  _reverseIfNeeded: function (model) {
-    var sizes = this.model.get('sizes').slice(0);
-    var values = this.model.get('values').slice(0);
-    var first = _.first(sizes);
-    var last = _.last(sizes);
-    if (first < last) {
-      sizes = sizes.reverse();
-      values = values.reverse();
+  _calculateLabels: function () {
+    var labels = this.model.get('values').slice(0).reverse();
+    if (this._areSizesInAscendingOrder()) {
+      labels = labels.reverse();
     }
-
-    return {
-      sizes: sizes,
-      values: values
-    };
+    return labels;
   },
 
-  _reverseSizes: function (sizes) {
-    var first = _.first(sizes);
-    var last = _.last(sizes);
-    if (first < last) {
-      sizes = sizes.reverse();
+  _calculateValues: function () {
+    var sizes = this.model.get('sizes').slice(0).reverse();
+    if (this._areSizesInAscendingOrder()) {
+      sizes = sizes.revers();
     }
-    return sizes;
+  },
+
+  _areSizesInAscendingOrder: function () {
+    var sizes = this.model.get('sizes').slice(0);
+    return _.first(sizes) < _.last(sizes);
   },
 
   _calculateBubbleSizes: function () {
-    var sizes = this._reverseIfNeeded(this.model).sizes;
+    var sizes = this._calculateValues();
     var maxSize = sizes[0];
     return _.map(sizes, function (size, index) {
       if (index === 0) {
@@ -76,7 +71,7 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateAverageSize: function () {
-    var values = this._reverseIfNeeded(this.model).values;
+    var values = this._calculateValues();
     var maxValue = values[0];
     return this.model.get('avg') * 100 / maxValue;
   }

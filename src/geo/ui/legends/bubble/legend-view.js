@@ -50,7 +50,7 @@ var BubbleLegendView = LegendViewBase.extend({
   _calculateValues: function () {
     var sizes = this.model.get('sizes').slice(0).reverse();
     if (this._areSizesInAscendingOrder()) {
-      sizes = sizes.revers();
+      sizes = sizes.reverse();
     }
   },
 

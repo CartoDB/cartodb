@@ -45,9 +45,14 @@ describe('src/widgets/auto-style/category', function () {
       expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  line-width: 0.5; line-color: ramp([something], (#7F3C8D, #11A579, #3969AC, #F2B701, #E73F74), (\'soccer\', \'basketball\', \'baseball\', \'handball\', \'hockey\'));  line-opacity: 1; }');
     });
 
+    it('should generate unique attr style when layer has multiple attrs', function () {
+      this.dataview.layer.set('initialStyle', '#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1;  polygon-fill: #e49115;  polygon-fill-opacity: 0.9; [random > 0.5] { polygon-fill: #adadad; } }');
+      expect(this.categoryAutoStyler.getStyle()).toBe('#layer {  polygon-line-width: 0.5;  polygon-line-color: #fcfafa;  polygon-line-opacity: 1; polygon-fill: ramp([something], (#7F3C8D, #11A579, #3969AC, #F2B701, #E73F74), (\'soccer\', \'basketball\', \'baseball\', \'handball\', \'hockey\'));  polygon-fill-opacity: 0.9; }');
+    });
+
     it('should escape single quotes correctly', function () {
       var data = this.dataview.get('data');
-      data.push({ name: "Oh'Yeah" }); // eslint-disable-line 
+      data.push({ name: "Oh'Yeah" }); // eslint-disable-line
       this.dataview.set('data', data);
       this.layer.set('initialStyle', '#layer {  marker-line-width: 0.5;  marker-line-color: #fcfafa;  marker-line-opacity: 1;  marker-width: 6.076923076923077;  marker-fill: #e49115;  marker-fill-opacity: 0.9;  marker-allow-overlap: true;}');
       this.updateColorsByData();

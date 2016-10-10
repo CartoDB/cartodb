@@ -736,7 +736,7 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-                    .at_least_once
+                    .times(6)
                     .with(".*#{id}:vizjson")
                     .returns(true)
 

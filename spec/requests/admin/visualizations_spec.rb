@@ -168,7 +168,7 @@ describe Admin::VisualizationsController do
           Carto::Visualization::any_instance.stubs(:uses_vizjson2?).returns(true)
 
           login_as(@user, scope: @user.username)
-          get "/viz/#{@id}", {}, @headers
+          get public_visualizations_show_path(id: @id), {}, @headers
           last_response.status.should eq 200
         end
 
@@ -181,14 +181,14 @@ describe Admin::VisualizationsController do
           visualization.store
 
           login_as(@user, scope: @user.username)
-          get "/viz/#{@id}/embed_map", {}, @headers
+          get public_visualizations_embed_map_path(id: @id), {}, @headers
           last_response.status.should eq 200
 
           visualization.version = 3
           visualization.store
 
           login_as(@user, scope: @user.username)
-          get "/viz/#{@id}/embed_map", {}, @headers
+          get public_visualizations_embed_map_path(id: @id), {}, @headers
           last_response.status.should eq 302
         end
       end

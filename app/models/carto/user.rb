@@ -500,4 +500,8 @@ class Carto::User < ActiveRecord::Base
   def new_visualizations_version
     force_builder? ? 3 : 2
   end
+
+  def engine_enabled?
+    has_organization? ? organization.engine_enabled : engine_enabled
+  end
 end

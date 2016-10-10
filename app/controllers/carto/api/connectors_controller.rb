@@ -6,7 +6,7 @@ module Carto
 
       MAX_LISTED_TABLES = 500
 
-      ssl_required :index, :show, :tables
+      ssl_required :index, :show, :tables, :connect
 
       before_filter :check_availability
 

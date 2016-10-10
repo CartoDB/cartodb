@@ -112,10 +112,6 @@ module Carto
       fifth = formmated_string_number(left + (5 * step))
       sixth = formmated_string_number(right + step)
 
-      average = right / 2
-      avergae_percent = (average * 100 / right).to_i
-      average_str = formmated_string_number(right / 2)
-
       sixth_mark = 100
       fifth_mark = 80
       fourth_mark = 60
@@ -152,7 +148,6 @@ module Carto
       html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
       html += %(      </li>\n)
       html += %(    </ul>\n)
-      html += %(    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: #{avergae_percent}%">AVG: #{average_str}</p>\n)
       html += %(  </div>\n)
       html += %(</div>\n)
 
@@ -221,12 +216,16 @@ module Carto
 
     def formmated_string_number(number)
       if number < 1_000
-        number.round(1).to_s
+        pretty_round(number).to_s
       elsif number < 1_000_000
-        "#{(number / 1_000).round(1)}K"
+        "#{pretty_round(number / 1_000)}K"
       else
-        "#{(number / 1_000_000).round(1)}M"
+        "#{pretty_round(number / 1_000_000)}M"
       end
+    end
+
+    def pretty_round(number)
+      number == number.to_i ? number : number.round(1)
     end
   end
 end

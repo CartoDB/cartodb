@@ -7,24 +7,6 @@ var CustomLegendModel = StaticLegendModelBase.extend({
       type: 'custom',
       items: []
     });
-  },
-
-  parse: function (r, opts) {
-    var attrs = _.extend({},
-      _.omit(r, 'items')
-    );
-    attrs.items = [];
-
-    if (r.items) {
-      attrs.items = r.items.map(function (item) {
-        return {
-          name: item.title,
-          color: item.color
-        };
-      });
-    }
-
-    return attrs;
   }
 });
 

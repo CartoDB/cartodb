@@ -23,7 +23,7 @@ var BubbleLegendView = LegendViewBase.extend({
 
   _getCompiledTemplate: function () {
     return template({
-      labels: this.model.get('values').slice(0).reverse(),
+      labels: this._reverseIfNeeded(this.model).values,
       bubbleSizes: this._calculateBubbleSizes(),
       labelPositions: this._calculateLabelPositions(),
       avgSize: this._calculateAverageSize(),
@@ -39,6 +39,22 @@ var BubbleLegendView = LegendViewBase.extend({
     return labelPositions;
   },
 
+  _reverseIfNeeded: function (model) {
+    var sizes = this.model.get('sizes').slice(0);
+    var values = this.model.get('values').slice(0);
+    var first = _.first(sizes);
+    var last = _.last(sizes);
+    if (first < last) {
+      sizes = sizes.reverse();
+      values = values.reverse();
+    }
+
+    return {
+      sizes: sizes,
+      values: values
+    };
+  },
+
   _reverseSizes: function (sizes) {
     var first = _.first(sizes);
     var last = _.last(sizes);
@@ -49,8 +65,7 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateBubbleSizes: function () {
-    var sizes = this.model.get('sizes').slice(0);
-    sizes = this._reverseSizes(sizes);
+    var sizes = this._reverseIfNeeded(this.model).sizes;
     var maxSize = sizes[0];
     return _.map(sizes, function (size, index) {
       if (index === 0) {
@@ -61,7 +76,7 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateAverageSize: function () {
-    var values = this.model.get('values').slice(0).reverse();
+    var values = this._reverseIfNeeded(this.model).values;
     var maxValue = values[0];
     return this.model.get('avg') * 100 / maxValue;
   }

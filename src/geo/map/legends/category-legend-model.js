@@ -9,8 +9,11 @@ var CategoryLegendModel = LegendModelBase.extend({
     });
   },
 
-  _avoidResetTheseAttributes: function () {
-    return ['categories'];
+  getNonResettableAttrs: function () {
+    return _.union(
+      LegendModelBase.prototype.getNonResettableAttrs.apply(this),
+      ['categories']
+    );
   },
 
   isAvailable: function () {

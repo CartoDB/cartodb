@@ -19,20 +19,6 @@ Rule.prototype.matchesAnyMapping = function (mappings) {
   return this._matches(this._rule[MAPPING_KEY], mappings);
 };
 
-Rule.prototype.validatesRangeFilter = function () {
-  var buckets = this.getBucketsWithRangeFilter();
-  return _.every(buckets, function (bucket) {
-    return bucket.filter.start != null && bucket.filter.end != null;
-  });
-};
-
-Rule.prototype.validatesCategoryFilter = function () {
-  var buckets = this.getBucketsWithCategoryFilter();
-  return _.every(buckets, function (bucket) {
-    return bucket.filter.name != null && bucket.value != null;
-  });
-};
-
 Rule.prototype._matches = function (value, acceptedValues) {
   if (_.isString(acceptedValues)) {
     acceptedValues = [ acceptedValues ];

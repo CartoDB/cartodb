@@ -736,9 +736,9 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-                                 .times(4)
-                                 .with(".*#{id}:vizjson")
-                                 .returns(true)
+                    .at_least_once
+                    .with(".*#{id}:vizjson")
+                    .returns(true)
 
     CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
     table.privacy = UserTable::PRIVACY_PUBLIC
@@ -2298,7 +2298,7 @@ describe Table do
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once
+      derived.expects(:invalidate_cache).at_least_once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save

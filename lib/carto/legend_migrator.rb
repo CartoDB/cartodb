@@ -111,7 +111,9 @@ module Carto
       fourth = formmated_string_number(left + (4 * step))
       fifth = formmated_string_number(right + step)
 
-      average = formmated_string_number(right / 2)
+      average = right / 2
+      avergae_percent = average * 100 / right
+      average_str = formmated_string_number(right / 2)
 
       fifth_mark = 100
       fourth_mark = 75
@@ -144,7 +146,7 @@ module Carto
       html += %(        <span class="Bubble-itemCircle" style="background-color: #{color}"></span>\n)
       html += %(      </li>\n)
       html += %(    </ul>\n)
-      html += %(    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: 50%">AVG: #{average}</p>\n)
+      html += %(    <p class="Bubble-average_strr CDB-Text CDB-Size-small u-altTextColor" style="bottom: #{avergae_percent}%">AVG: #{average_str}</p>\n)
       html += %(  </div>\n)
       html += %(</div>\n)
 

@@ -75,7 +75,7 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if table_action
       if current_user.force_builder? && @visualization.has_read_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'builder_dataset', id: request.params[:id])
+        return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
       elsif !@visualization.has_write_permission?(current_user)
         return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
@@ -83,7 +83,7 @@ class Admin::VisualizationsController < Admin::AdminController
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
                                      id: request.params[:id], redirected: true)
     elsif current_user.force_builder?
-      return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
+      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
     end
 
     respond_to { |format| format.html }

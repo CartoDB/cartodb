@@ -36,7 +36,9 @@ module Carto
       private
 
       def redirect_to_editor_if_forced
-        redirect_to CartoDB.url(self, 'public_tables_show', id: params[:id]) if current_user.force_editor?
+        if current_user.force_editor?
+          redirect_to CartoDB.url(self, 'public_tables_show', { id: params[:id] }, current_user)
+        end
       end
 
       def load_canonical_visualization

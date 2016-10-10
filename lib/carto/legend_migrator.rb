@@ -91,11 +91,12 @@ module Carto
         color if color =~ COLOR_REGEXP
       end
 
-      if item_colors.count == 1
+      compact_item_colors = item_colors.compact
+      if compact_item_colors.count == 1
         item_colors << generate_end_color(item_colors.first)
       end
 
-      gradient_stops = item_colors.compact.join(', ')
+      gradient_stops = compact_item_colors.join(', ')
       "background: linear-gradient(90deg, #{gradient_stops})"
     end
 

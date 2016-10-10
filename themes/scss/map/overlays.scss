@@ -4,10 +4,10 @@
 $buttonColor: #636D72;
 
 .CDB-OverlayContainer {
-  position: absolute;
-  left: 16px;
-  bottom: 16px;
   display: flex;
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
   align-items: center;
 
 }
@@ -49,7 +49,7 @@ $buttonColor: #636D72;
   }
 
   &:last-child {
-    border-left: 1px solid #EEEEEE;
+    border-left: 1px solid #EEE;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
   }
@@ -88,54 +88,55 @@ $buttonColor: #636D72;
 }
 .CDB-Zoom-info {
   width: 32px;
+  border-left: 1px solid #EEE;
   color: #979EA1;
   font-family: 'Open Sans';
   font-size: $sFontSize-small;
   line-height: 32px;
   text-align: center;
-  border-left: 1px solid #EEEEEE;
 }
 
 // loader search
 .CDB-Search {
-  height: 32px; 
   order: 2;
+  height: 32px;
   margin-right: 8px;
 }
-.CDB-Search .CDB-Shape-magnify:before {
-  border-color: #636D72;
+.CDB-Search .CDB-Shape-magnify::before {
   top: 11px;
   left: 10px;
+  border-color: #636D72;
 }
-.CDB-Search .CDB-Shape-magnify:after {
-  background: #636D72;
+.CDB-Search .CDB-Shape-magnify::after {
   right: 13px;
   bottom: 10px;
+  background: #636D72;
 }
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);
+  display: flex;
+  align-items: center;
   width: 32px;
   height: 100%;
   overflow: hidden;
-  display: flex;
-  align-items: center;
 
   &.is-active {
     width: 152px;
     .CDB-Search-text {
-      opacity: 1;
       display: block;
+      opacity: 1;
     }
   }
 }
 .CDB-Search-actionButton {
-  color: $buttonColor;
+  position: relative;
   width: 32px;
   height: 32px;
-  position: relative;
+  color: $buttonColor;
 }
 .CDB-Search-text {
   @include transition(opacity, 150ms ease-in);
+  display: none;
   width: 100px;
   padding: 0 0 0 8px;
   border: 0;
@@ -143,21 +144,18 @@ $buttonColor: #636D72;
   background: none;
   font: 12px/16px 'Open Sans';
   opacity: 0;
-  display: none;
 
   &:focus {
     outline: none;
   }
 }
-.CDB-Search-text {
-}
 
 //FullScreen overlay
 .CDB-Fullscreen {
-  cursor: pointer;
   order: 4;
   width: 32px;
   height: 32px;
+  cursor: pointer;
   .CDB-Shape-Arrow::after,
   .CDB-Shape-Arrow::before {
     background: #636D72;
@@ -202,20 +200,20 @@ $maxLegendContainerHeight: 300px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
-  z-index: 20000;
   overflow: hidden;
+  z-index: 20000;
 }
 .CDB-Legends-canvasInner {
-  overflow: hidden;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: calc(100vh - 20px);
   padding: 24px;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
-  position: relative;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  max-height: calc(100vh - 20px);
+  overflow: hidden;
 }
 .CDB-Legends-canvasShadow {
   display: none;

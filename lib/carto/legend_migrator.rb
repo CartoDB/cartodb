@@ -124,7 +124,7 @@ module Carto
     def heights_and_values(min, max, steps)
       step = (max - min) / (steps - 1)
       values = Array.new(steps) do |index|
-        formatted_string_number(min + (index  * step))
+        formatted_string_number(min + (index * step))
       end
 
       heights = Array.new(steps) do |index|

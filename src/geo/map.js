@@ -69,10 +69,11 @@ var Map = Model.extend({
     var GEOJSON_TYPE_TO_EDIT_METHOD_NAME = {
       Point: '_editPoint',
       LineString: '_editPolyline',
-      Polygon: '_editPolygon'
+      Polygon: '_editPolygon',
+      MultiPolygon: '_editMultiPolygon'
     };
 
-    var geometryType = geoJSON.geometry.type;
+    var geometryType = geoJSON.geometry && geoJSON.geometry.type || geoJSON.type;
     var editMethodName = GEOJSON_TYPE_TO_EDIT_METHOD_NAME[geometryType];
     if (editMethodName) {
       this.disableInteractivity();
@@ -85,7 +86,8 @@ var Map = Model.extend({
   },
 
   _editPoint: function (geoJSON) {
-    var latlngs = this._getLatLngsFromCoords([ geoJSON.geometry.coordinates ]);
+    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
+    var latlngs = this._getLatLngsFromCoords([ coords ]);
     var point = new Point({
       latlng: latlngs[0],
       geojson: geoJSON
@@ -95,7 +97,8 @@ var Map = Model.extend({
   },
 
   _editPolyline: function (geoJSON) {
-    var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates);
+    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
+    var latlngs = this._getLatLngsFromCoords(coords);
     var polyline = new Polyline({ geojson: geoJSON });
     polyline.setLatLngs(latlngs);
     this.addGeometry(polyline);
@@ -103,7 +106,17 @@ var Map = Model.extend({
   },
 
   _editPolygon: function (geoJSON) {
-    var latlngs = this._getLatLngsFromCoords(geoJSON.geometry.coordinates[0]);
+    var coords = geoJSON.geometry && geoJSON.geometry.coordinates && geoJSON.geometry.coordinates[0] || geoJSON.coordinates && geoJSON.coordinates[0];
+    var latlngs = this._getLatLngsFromCoords(coords);
+    var polygon = new Polygon({ geojson: geoJSON });
+    polygon.setLatLngs(latlngs);
+    this.addGeometry(polygon);
+    return polygon;
+  },
+
+  _editMultiPolygon: function (geoJSON) {
+    var coords =  geoJSON.geometry && geoJSON.geometry.coordinates && geoJSON.geometry.coordinates[0] || geoJSON.coordinates && geoJSON.coordinates[0];
+    var latlngs = this._getLatLngsFromCoords(coords[0]);
     var polygon = new Polygon({ geojson: geoJSON });
     polygon.setLatLngs(latlngs);
     this.addGeometry(polygon);
@@ -112,13 +125,12 @@ var Map = Model.extend({
 
   _getLatLngsFromCoords: function (coords) {
     var latlngs = L.GeoJSON.coordsToLatLngs(coords);
-    var latlngs = _.chain(latlngs)
+    return _.chain(latlngs)
       .map(function (latlng) {
         return [latlng.lat, latlng.lng];
       })
       .uniq()
       .value();
-    return latlngs;
   },
 
   stopEditingGeoJSONGeometry: function (geoJSON) {

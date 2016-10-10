@@ -165,6 +165,15 @@ var MapView = View.extend({
     }
 
     var layerView = this._createLayerView(this._cartoDBLayerGroup);
+
+    layerView.on('featureClick', function (event, latlng, point, attributes, layerIndex) {
+      event.layer = this._cartoDBLayerGroup.getLayerAt(layerIndex);
+      event.attributes = attributes;
+      event.latlng = latlng;
+
+      this.map.trigger('featureClick', event);
+    }, this);
+
     this._cartoDBLayerGroupView = layerView;
     this._layerViews[layerModel.cid] = layerView;
     return layerView;

@@ -1,11 +1,13 @@
 var PointView = require('./point-view');
 var PolygonView = require('./polygon-view');
 var PolylineView = require('./polyline-view');
+var MultiPolygonView = require('./multi-polygon-view');
 
 var GEOMETRY_VIEWS = {
   'point': PointView,
   'polyline': PolylineView,
-  'polygon': PolygonView
+  'polygon': PolygonView,
+  'multiPolygon': MultiPolygonView
 };
 
 var GeometryViewFactory = {

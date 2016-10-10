@@ -91,9 +91,12 @@
         <button class="js-drawing-control js-draw-point">Draw Point</button>
         <button class="js-drawing-control js-draw-line">Draw Polyline</button>
         <button class="js-drawing-control js-draw-polygon">Draw Polygon</button>
+        <br/>
         <button class="js-drawing-control js-edit-geometry-point">Edit Point</button>
         <button class="js-drawing-control js-edit-geometry-polyline">Edit Polyline</button>
         <button class="js-drawing-control js-edit-geometry-polygon">Edit Polygon</button>
+        <br/>
+        <button class="js-drawing-control js-edit-features">Click & Edit</button>
       </div>
       <p class="sidebar-title sidebar-title-dark">GeoJSON</p>
       <div id="geojsonViewer">
@@ -512,6 +515,35 @@
         displayGeoJSON(geometry);
       }
 
+      function enableClickToEdit (vis) {
+        vis.map.on('featureClick', fetchFeatureAndEditGeometry, this);
+      }
+
+      function disableClickToEdit (vis) {
+        vis.map.stopDrawing();
+        vis.map.off('featureClick', fetchFeatureAndEditGeometry, this);
+      }
+
+      function fetchFeatureAndEditGeometry (event) {
+        var featureID = event.attributes.cartodb_id;
+        var tableName = 'european_countries_e';
+
+        var sql = new cartodb.SQL({
+          protocol: 'https',
+          user: 'documentation',
+          host: 'cartodb.com'
+        });
+        sql.execute("SELECT ST_AsGeoJSON(the_geom) AS geojson FROM {{tableName }} WHERE cartodb_id = {{id}}", { tableName: tableName, id: featureID })
+          .done(function(data) {
+            var geoJSON = JSON.parse(data.rows[0].geojson);
+            editGeometry(vis, geoJSON)
+          })
+          .error(function(errors) {
+            // errors contains a list of errors
+            console.log("errors:" + errors);
+          });
+      }
+
       function drawGeometry (vis, geometry) {
         window.geometry = geometry;
         clearGeoJSON();
@@ -563,6 +595,13 @@
         document.querySelector('.js-edit-geometry-polygon').addEventListener('click', function () {
           if ($(this).hasClass('is-enabled')) {
             editGeometry(vis, spain);
+          }
+        });
+        document.querySelector('.js-edit-features').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            enableClickToEdit(vis);
+          } else {
+            disableClickToEdit(vis);
           }
         });
       }

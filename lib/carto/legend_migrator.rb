@@ -51,8 +51,6 @@ module Carto
     COLOR_REGEXP = /^#(?:[0-9a-fA-F]{3}){1,2}$/
 
     def build_custom_definition_from_custom_type
-      custom_definition = Hash.new
-
       categories = items.each_with_index.map do |item, index|
         title = item['name'].to_s || "Category #{index + 1}"
         color = item['value']
@@ -66,8 +64,7 @@ module Carto
         category_definition
       end
 
-      custom_definition[:categories] = categories
-      custom_definition
+      { categories: categories }
     end
 
     def build_html_definition_from_ramp_type

@@ -14,9 +14,11 @@
       <button class="u-upperCase CDB-Text CDB-Size-small u-lSpace--xl u-actionTextColor js-back">
         <%- _t('dataset.preview-map.back') %>
       </button>
-      <button class="CDB-Button CDB-Button--primary CDB-Button--small u-upperCase u-lSpace--xl js-createMap">
-        <span class="CDB-Text is-semibold CDB-Size-small"><%- _t('dataset.create-map.title') %></span>
-      </button>
+      <% if (createMapEnabled) { %>
+        <button class="CDB-Button CDB-Button--primary CDB-Button--small u-upperCase u-lSpace--xl js-createMap">
+          <span class="CDB-Text is-semibold CDB-Size-small"><%- _t('dataset.create-map.title') %></span>
+        </button>
+      <% } %>
     </div>
   </div>
 </div>

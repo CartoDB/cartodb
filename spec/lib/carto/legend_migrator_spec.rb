@@ -376,28 +376,6 @@ module Carto
         }
       end
 
-      let(:bad_category) do
-        {
-          "type" => "category",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => 0,
-              "visible" => true,
-              "value" => "#A6CEE3"
-            },
-            {
-              "name" => 0,
-              "visible" => true,
-              "value" => "fatal#fatal#fatal!"
-            }
-          ]
-        }
-      end
-
       it 'returns invalid legends for invalid definitions' do
         migrator = Carto::LegendMigrator.new(@layer.id, bad_legend)
 

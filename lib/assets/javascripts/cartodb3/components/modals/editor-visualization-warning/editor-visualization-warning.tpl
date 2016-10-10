@@ -62,14 +62,9 @@
             </span>
           </button>
         </li>
-        <li class="Modal-listActionsitem">
-          <button class="CDB-Button CDB-Button--primary CDB-Button--big js-duplicate">
-            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">
-              <%- _t('components.modals.editor-vis-warning.duplicate') %>
-            </span>
-          </button>
-        </li>
       </ul>
+
+      <p class="CDB-Text CDB-Size-medium u-secondaryTextColor u-tSpace-xl">or <button class="CDB-Text is-semibold u-actionTextColor js-duplicate"><%- _t('components.modals.editor-vis-warning.duplicate') %></button>.</p>
     </div>
   </div>
 </div>

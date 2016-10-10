@@ -469,7 +469,8 @@
         "question": "Opening your map would cause the lost of any feature not supported that you added before, are you sure you want to continue?",
         "go-back": "No, go back to dashboard",
         "open": "Yes, open with the Builder",
-        "duplicate": "Duplicate and open with the Builder"
+        "duplicate": "duplicate and open with the Builder",
+        "opening-title": "Opening %{name} with the Builder"
       },
       "add-basemap": {
         "modal-title": "Add a custom basemap",

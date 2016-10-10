@@ -85,7 +85,8 @@ module CartoDB
           remove_logo: remove_logo?,
           sync_tables: sync_tables_enabled,
           google_maps_geocoder_enabled: google_maps_geocoder_enabled?,
-          google_maps_enabled: google_maps_enabled?
+          google_maps_enabled: google_maps_enabled?,
+          engine_enabled: engine_enabled?
         },
         limits: {
           concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

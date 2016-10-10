@@ -11,10 +11,10 @@ module Carto
 
     def build
       new_type, new_definition = type_and_definition
-      title = title if title.present? && legend['show_title']
+      legend_title = title if title.present? && legend['show_title']
 
       Legend.new(layer_id: layer_id,
-                 title: title,
+                 title: legend_title,
                  type: new_type,
                  definition: new_definition)
     end

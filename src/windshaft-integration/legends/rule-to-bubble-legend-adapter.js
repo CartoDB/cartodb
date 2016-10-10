@@ -3,6 +3,13 @@ var Rule = require('./rule');
 
 var VALID_PROPS = ['marker-width'];
 
+var isEveryBucketValid = function (rule) {
+  var buckets = rule.getBucketsWithRangeFilter();
+  return _.every(buckets, function (bucket) {
+    return bucket.filter.start != null && bucket.filter.end != null;
+  });
+};
+
 var calculateValues = function (buckets) {
   var lastBucket = _.last(buckets);
   return _.chain(buckets)
@@ -15,7 +22,7 @@ var calculateValues = function (buckets) {
 module.exports = {
   canAdapt: function (rule) {
     rule = new Rule(rule);
-    return rule.matchesAnyProperty(VALID_PROPS);
+    return rule.matchesAnyProperty(VALID_PROPS) && isEveryBucketValid(rule);
   },
 
   adapt: function (rule) {

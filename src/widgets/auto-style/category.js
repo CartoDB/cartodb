@@ -1,25 +1,6 @@
 var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
-
-function getAttrRegex (attr, multi) {
-  return new RegExp('\\' + 's' + attr + ':.*?(;|\n)', multi ? 'g' : '');
-}
-
-function removeEmptyLayer (cartocss) {
-  return cartocss.replace(/[^;}{]*{((\s|\n)*?)}/g, '');
-}
-
-function setFlagInCartocss (cartocss, attr, flag) {
-  return cartocss.replace(getAttrRegex(attr, false), flag);
-}
-
-function removeAttr (cartocss, attr) {
-  return cartocss.replace(getAttrRegex(attr, true), '');
-}
-
-function insertCartoCSSAttribute (cartocss, attrib, flag) {
-  return cartocss.replace(flag, attrib);
-}
+var StyleUtils = require('./style-utils');
 
 module.exports = AutoStyler.extend({
   getStyle: function () {
@@ -27,20 +8,7 @@ module.exports = AutoStyler.extend({
     if (!style) return;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      var flag = '##' + item + '##;';
-
-      style = insertCartoCSSAttribute(
-                removeEmptyLayer(
-                  removeAttr(
-                    setFlagInCartocss(style, item, flag),
-                    item
-                  )
-                ),
-
-                this._generateCategoryRamp(item),
-                flag
-              );
-      // style = style.replace( new RegExp( '\\' + 's' + item + ':.*?(;|\n)', 'g' ), this._generateCategoryRamp( item ) );
+      style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp(item));
     }.bind(this));
 
     return style;

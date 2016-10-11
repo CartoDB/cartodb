@@ -553,7 +553,7 @@ module Carto
         end
 
         color_attribute = if wpp['property_cat']
-                           wpp['property_cat']
+                            wpp['property_cat']
                           elsif @source_type == 'density'
                             'agg_value'
                           end

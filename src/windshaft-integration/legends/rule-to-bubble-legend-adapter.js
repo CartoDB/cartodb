@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var Rule = require('./rule');
 
-var VALID_PROPS = ['marker-width'];
+var VALID_PROPS = ['marker-width', 'line-width'];
 
 var isEveryBucketValid = function (rule) {
   var buckets = rule.getBucketsWithRangeFilter();

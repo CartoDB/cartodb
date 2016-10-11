@@ -57,6 +57,10 @@ describe('src/windshaft-integration/legends/rule-to-bubble-legend-adapter', func
   describe('.canAdapt', function () {
     it('should return true if prop is valid', function () {
       expect(adapter.canAdapt(this.rule)).toBeTruthy();
+
+      // lines
+      this.rule.prop = 'line-width';
+      expect(adapter.canAdapt(this.rule)).toBeTruthy();
     });
 
     it('should return false if prop is not valid', function () {

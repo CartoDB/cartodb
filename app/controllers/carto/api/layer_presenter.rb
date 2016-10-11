@@ -349,7 +349,7 @@ module Carto
           'properties' => wizard_properties_properties_to_style_properties_properties(wpp, type)
         }
 
-        merge_into_if_present(options['style_properties'], 'aggregation', generate_aggregation(wpp))
+        merge_into_if_present(options['style_properties']['properties'], 'aggregation', generate_aggregation(wpp))
 
         if SOURCE_TYPES_WITH_SQL_WRAP.include?(@source_type)
           options['sql_wrap'] = options['query_wrapper']

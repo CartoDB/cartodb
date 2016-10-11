@@ -358,6 +358,10 @@ module Carto
         if @source_type == 'cluster'
           options['cartocss_custom'] = true
         end
+
+        if type == 'animation' && @layer.widgets.where(type: 'time-series').none?
+          create_time_series_widget(wpp)
+        end
       end
 
       private
@@ -806,6 +810,23 @@ module Carto
         apply_default_opacity(color)
 
         color
+      end
+
+      def create_time_series_widget(wpp)
+        if wpp['property'] && @layer.options[:source]
+          @layer.widgets.create(
+            type: 'time-series',
+            order: 0,
+            title: 'time_date__t',
+            options: {
+              column: wpp['property'],
+              bins: 256,
+              sync_on_data_change: true,
+              sync_on_bbox_change: true
+            },
+            source_id: @layer.options[:source]
+          )
+        end
       end
     end
   end

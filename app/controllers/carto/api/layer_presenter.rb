@@ -514,7 +514,11 @@ module Carto
       }.freeze
 
       def generate_stroke(wpp)
-        stroke_mapping = wpp['geometry_type'] == 'point' ? STROKE_FROM_POINT_MAPPING : STROKE_FROM_NON_POINT_MAPPING
+        stroke_mapping = if wpp['geometry_type'] == 'point' && @source_type != 'density'
+                           STROKE_FROM_POINT_MAPPING
+                         else
+                           STROKE_FROM_NON_POINT_MAPPING
+                         end
 
         stroke = {}
 

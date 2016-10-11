@@ -18,6 +18,13 @@ function insertCartoCSSAttribute (cartocss, attrib, flag) {
   return cartocss.replace(flag, attrib);
 }
 
+/**
+ * Change attr style and remove all the duplicates
+ * @param  {String} cartocss cartocss original String
+ * @param  {String} attr     CSS Attribute ex, polygon-fill
+ * @param  {String} newStyle New attribute style ex, polygon-fill: red;
+ * @return {String}          Cartocss modified String
+ */
 function changeStyle (cartocss, attr, newStyle) {
   var flag = '##' + attr + '##;';
 
@@ -35,17 +42,5 @@ function changeStyle (cartocss, attr, newStyle) {
 }
 
 module.exports = {
-
-  getAttrRegex: getAttrRegex,
-
-  removeEmptyLayer: removeEmptyLayer,
-
-  setFlagInCartocss: setFlagInCartocss,
-
-  removeAttr: removeAttr,
-
-  insertCartoCSSAttribute: insertCartoCSSAttribute,
-
   changeStyle: changeStyle
-
 };

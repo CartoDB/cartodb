@@ -697,6 +697,10 @@ describe Carto::Api::LayerPresenter do
         it 'type is animated' do
           expect(@style).to include('type' => 'animation')
         end
+
+        it 'generates a timeseries widget' do
+          @layer.widgets.where(type: 'time-series').any?
+        end
       end
 
       describe 'torque' do
@@ -738,8 +742,8 @@ describe Carto::Api::LayerPresenter do
         end
 
         before(:each) do
-          layer = build_layer_with_wizard_properties(torque_wizard_properties)
-          options = presenter_with_style_properties(layer).to_poro['options']
+          @layer = build_layer_with_wizard_properties(torque_wizard_properties)
+          options = presenter_with_style_properties(@layer).to_poro['options']
           @style = options['style_properties']
           @properties = @style['properties']
           @animated = @properties['animated']
@@ -820,8 +824,8 @@ describe Carto::Api::LayerPresenter do
       end
 
       before(:each) do
-        layer = build_layer_with_wizard_properties(torque_cat_wizard_properties)
-        options = presenter_with_style_properties(layer).to_poro['options']
+        @layer = build_layer_with_wizard_properties(torque_cat_wizard_properties)
+        options = presenter_with_style_properties(@layer).to_poro['options']
         @style = options['style_properties']
         @properties = @style['properties']
         @animated = @properties['animated']
@@ -993,8 +997,8 @@ describe Carto::Api::LayerPresenter do
       end
 
       before(:each) do
-        layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
-        options = presenter_with_style_properties(layer).to_poro['options']
+        @layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
+        options = presenter_with_style_properties(@layer).to_poro['options']
 
         @style = options['style_properties']
         @properties = @style['properties']

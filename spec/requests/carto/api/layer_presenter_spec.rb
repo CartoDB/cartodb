@@ -833,6 +833,10 @@ describe Carto::Api::LayerPresenter do
       it 'generates color range from categories colors' do
         expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
       end
+
+      it 'generates color range based on attribute' do
+        expect(@fill_color).to include('attribute' => 'aforo')
+      end
     end
 
     describe 'density' do

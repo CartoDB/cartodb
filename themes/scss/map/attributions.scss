@@ -5,47 +5,46 @@ $size: 20px;
 
 .CDB-Attribution {
   @include transition(background, 100ms);
+  position: relative;
+  order: 2;
+  margin-right: 8px;
   border-radius: 3px;
   box-sizing: border-box;
   font-family: 'Open Sans';
   line-height: $size;
   z-index: 10;
-  order: 2;
-  margin-right: 8px;
-  position: relative;
 }
 .CDB-Attribution.is-active .CDB-Attribution-text {
-  pointer-events: initial;
   width: auto;
-  opacity: 1;
   padding: 0 12px;
-  width: auto;
-  border-left: 1px solid #EEEEEE;
+  border-left: 1px solid #EEE;
+  pointer-events: initial;
+  opacity: 1;
 }
 .CDB-Attribution--gmaps {
   bottom: 20px;
 }
 .CDB-Attribution-button {
+  display: inline-block;
+  width: 32px;
+  height: 100%;
   color: #636D72;
   font-size: 12px;
   line-height: 32px;
-  z-index: 1;
-  width: 32px;
-  height: 100%;
-  display: inline-block;
   vertical-align: middle;
+  z-index: 1;
 }
 .CDB-Attribution-text {
   @include transition(opacity, 150ms);
+  width: 0;
+  height: 16px;
+  margin-left: -1px;
+  padding: 0;
   border-left: 1px solid transparent;
   color: #2E3C43;
   font-size: 10px;
   line-height: 16px;
-  width: 0;
   overflow: hidden;
-  padding: 0;
-  height: 16px;
-  margin-left: -1px;
 }
 .CDB-Attribution .CDB-Attribution-text a {
   color: #139BFC;

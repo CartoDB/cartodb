@@ -372,7 +372,7 @@ module Carto
         'cluster' => 'simple'
       }.freeze
 
-      SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density'].freeze
+      SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density', 'torque_cat'].freeze
 
       def set_if_present(hash, key, value)
         # Dirty check because `false` is a valid `value`

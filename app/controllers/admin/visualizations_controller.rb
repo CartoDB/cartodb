@@ -39,8 +39,7 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
-                                                         :public_map, :show_protected_public_map
-                                                        ]
+                                                         :public_map, :show_protected_public_map]
 
   after_filter :update_user_last_activity, only: [:index, :show]
   after_filter :track_dashboard_visit, only: :index

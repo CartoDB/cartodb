@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
-var overlayTemplate = require('./ui/overlay.tpl');
+var overlayTemplate = require('./ui/overlays-container.tpl');
 var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom'];
 
 var MapView = View.extend({

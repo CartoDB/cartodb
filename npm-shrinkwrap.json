@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.16-legends",
+  "version": "4.3.16-legends2",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -766,7 +766,8 @@
     },
     "bootstrap-colorpicker": {
       "version": "2.3.3",
-      "from": "bootstrap-colorpicker@2.3.3"
+      "from": "bootstrap-colorpicker@2.3.3",
+      "resolved": "https://registry.npmjs.org/bootstrap-colorpicker/-/bootstrap-colorpicker-2.3.3.tgz"
     },
     "browserify-shim": {
       "version": "3.8.12",
@@ -1139,12 +1140,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#58851bbcc405b9680f0bffd3f6b00d89b0f8633a",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#e034a1450da92616f3d57b1441c0e71462b977e7",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#eab6745974630cbae5e31d4873b3d9ea8bddfa0b",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#d45a245d9d7e7371558470a5b657786de6fbf711",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1193,6 +1194,7 @@
                 "turbo-carto": {
                   "version": "0.16.0",
                   "from": "turbo-carto@0.16.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
@@ -1312,6 +1314,7 @@
                 "turbo-carto": {
                   "version": "0.16.0",
                   "from": "turbo-carto@0.16.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
@@ -1435,7 +1438,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#eab6745974630cbae5e31d4873b3d9ea8bddfa0b",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#d45a245d9d7e7371558470a5b657786de6fbf711",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1489,6 +1492,7 @@
             "turbo-carto": {
               "version": "0.16.0",
               "from": "turbo-carto@0.16.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
@@ -1608,6 +1612,7 @@
             "turbo-carto": {
               "version": "0.16.0",
               "from": "turbo-carto@0.16.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
@@ -1833,6 +1838,7 @@
         "turbo-carto": {
           "version": "0.16.0",
           "from": "turbo-carto@0.16.0",
+          "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
           "dependencies": {
             "colorbrewer": {
               "version": "1.0.0",

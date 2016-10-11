@@ -868,9 +868,10 @@ describe Carto::Api::LayerPresenter do
         @options = presenter_with_style_properties(layer).to_poro['options']
 
         @style = @options['style_properties']
-        @aggregation = @style['aggregation']
         @properties = @style['properties']
+        @aggregation = @properties['aggregation']
         @fill_color = @properties['fill']['color']
+        @stroke = @properties['stroke']
       end
 
       it 'sets query_wrapper at sql_wrap' do
@@ -909,13 +910,27 @@ describe Carto::Api::LayerPresenter do
           expect(@fill_color).to include('range' => color_ramp)
         end
       end
+
+      describe 'stroke' do
+        it 'takes width from line-width' do
+          expect(@stroke['size']).to include('fixed' => 0.5)
+        end
+
+        it 'takes color from line-color' do
+          expect(@stroke['color']).to include('fixed' => '#FFF')
+        end
+
+        it 'takes opacity from line-opacity' do
+          expect(@stroke['color']).to include('opacity' => 1)
+        end
+      end
     end
 
     describe 'heatmap' do
       shared_examples_for 'heatmap' do
         describe 'aggregation' do
           before(:each) do
-            @aggregation = @style['aggregation']
+            @aggregation = @style['properties']['aggregation']
           end
 
           it 'takes size from torque-resolution' do

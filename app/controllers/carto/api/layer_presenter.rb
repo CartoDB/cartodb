@@ -546,8 +546,13 @@ module Carto
         if wpp['categories'].present?
           color['range'] = wpp['categories'].map { |c| c['color'] }
           color['domain'] = wpp['categories'].map { |c| c['title'] }
-          color['attribute'] = wpp['property_cat'] if wpp['property_cat']
         end
+
+        color['attribute'] = if wpp['property_cat']
+                               wpp['property_cat']
+                             elsif @source_type == 'density'
+                               'agg_value'
+                             end
 
         color.merge!(TORQUE_HEAT_COLOR_DEFAULTS) if @source_type == 'torque_heat'
 

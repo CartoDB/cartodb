@@ -7,7 +7,9 @@ function removeEmptyLayer (cartocss) {
 }
 
 function setFlagInCartocss (cartocss, attr, flag) {
-  return cartocss.replace(getAttrRegex(attr, false), flag);
+  var exist = cartocss.search(getAttrRegex(attr, false)) >= 0;
+
+  return exist ? cartocss.replace('{', '{ ' + flag) : cartocss;
 }
 
 function removeAttr (cartocss, attr) {

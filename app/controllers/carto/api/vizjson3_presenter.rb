@@ -349,7 +349,7 @@ module Carto
 
         torque[:cartocss] = layer_options[:tile_style]
         torque[:cartocss_version] = layer_options[:style_version]
-        torque[:sql] = wrap(sql_from(@layer), @layer.options)
+        torque[:sql] = sql_from(@layer)
 
         if @layer.options['source'].present?
           torque[:source] = @layer.options['source']
@@ -390,7 +390,7 @@ module Carto
           data[:source] = source
           data.delete(:sql)
         else
-          data[:sql] = wrap(sql_from(@layer), @layer.options)
+          data[:sql] = sql_from(@layer)
         end
 
         sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
@@ -414,12 +414,6 @@ module Carto
       def css_from(options)
         style = options.include?('tile_style') ? options['tile_style'] : nil
         (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
-      end
-
-      def wrap(query, options)
-        wrapper = options.fetch('query_wrapper', nil)
-        return query if wrapper.nil? || wrapper.empty?
-        EJS.evaluate(wrapper, sql: query)
       end
 
       def public_options

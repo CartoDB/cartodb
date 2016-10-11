@@ -13,7 +13,7 @@
   <div class="Modal-container">
     <div class="Modal-analysisContainer">
       <div class="Modal-inner">
-        <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> js-animation u-flex u-alignCenter u-justifyCenter"></div>
+        <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> js-animation is-rounded u-flex u-alignCenter u-justifyCenter"></div>
 
         <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace"><%- title %></h2>
 
@@ -23,4 +23,12 @@
       </div>
     </div>
   </div>
+  <div class="Modal-footer">
+    <div class="Modal-footerContainer u-flex u-justifyEnd">
+      <button class="CDB-Button CDB-Button--primary js-add">
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.add-analysis.add-btn') %></span>
+      </button>
+    </div>
+  </div>
 </div>
+

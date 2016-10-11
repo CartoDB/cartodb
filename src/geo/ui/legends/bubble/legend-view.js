@@ -69,7 +69,7 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateAverageSize: function () {
-    var values = this._calculateBubbleSizes();
+    var values = this.model.get('values').slice(0);
     var maxValue = _.max(values);
     return this.model.get('avg') * 100 / maxValue;
   }

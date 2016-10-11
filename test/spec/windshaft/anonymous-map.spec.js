@@ -99,7 +99,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
-              'interactivity': [],
+              'interactivity': [ 'cartodb_id' ],
               'sql': 'sql1'
             }
           },
@@ -109,7 +109,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
-              'interactivity': [],
+              'interactivity': [ 'cartodb_id' ],
               'sql': 'sql2'
             }
           },
@@ -119,7 +119,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
-              'interactivity': [],
+              'interactivity': [ 'cartodb_id' ],
               'sql': 'sql3'
             }
           }
@@ -138,7 +138,7 @@ describe('windshaft/anonymous-map', function () {
         'options': {
           'cartocss': 'cartoCSS1',
           'cartocss_version': '2.0',
-          'interactivity': [],
+          'interactivity': [ 'cartodb_id' ],
           'sql': 'sql1',
           'sql_wrap': 'sql_wrap_1'
         }
@@ -156,10 +156,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS1',
               'cartocss_version': '2.0',
-              'interactivity': [
-                'cartodb_id',
-                'something'
-              ],
+              'interactivity': [ 'cartodb_id', 'something' ],
               'attributes': {
                 id: 'cartodb_id',
                 columns: [ 'something' ]
@@ -173,7 +170,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS2',
               'cartocss_version': '2.0',
-              'interactivity': [],
+              'interactivity': [ 'cartodb_id' ],
               'sql': 'sql2'
             }
           },
@@ -183,7 +180,7 @@ describe('windshaft/anonymous-map', function () {
             'options': {
               'cartocss': 'cartoCSS3',
               'cartocss_version': '2.0',
-              'interactivity': [],
+              'interactivity': [ 'cartodb_id' ],
               'sql': 'sql3'
             }
           }

@@ -1,6 +1,5 @@
 function CartoDBLayerGroupViewBase (layerGroupModel) {
   this.visible = true;
-  this.interactionEnabled = [];
 
   layerGroupModel.on('change:urls', this._reload, this);
   layerGroupModel.onLayerVisibilityChanged(this._reload.bind(this));
@@ -14,22 +13,17 @@ CartoDBLayerGroupViewBase.prototype = {
   _reloadInteraction: function () {
     this._clearInteraction();
 
-    // Enable interaction for the layers that have interaction
-    // (are visible AND have tooltips OR infowindows)
     this.model.each(function (layer, layerIndex) {
-      if (layer.hasInteraction()) {
+      if (layer.isVisible()) {
         this._enableInteraction(layerIndex);
       }
     }, this);
   },
 
   _clearInteraction: function () {
-    for (var layerIndex in this.interactionEnabled) {
-      if (this.interactionEnabled.hasOwnProperty(layerIndex) &&
-        this.interactionEnabled[layerIndex]) {
-        this._disableInteraction(layerIndex);
-      }
-    }
+    this.model.each(function (layer, layerIndex) {
+      this._disableInteraction(layerIndex);
+    }, this);
   },
 
   _enableInteraction: function (layerIndexInLayerGroup) {

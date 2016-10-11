@@ -91,14 +91,10 @@ var CartoDBLayer = LayerModelBase.extend({
   },
 
   getInteractiveColumnNames: function () {
-    var fieldNames = _.union(
-      this.infowindow.getFieldNames(),
-      this.tooltip.getFieldNames()
-    );
-    if (fieldNames.length) {
-      fieldNames.unshift('cartodb_id');
-    }
-    return _.uniq(fieldNames);
+    return _.chain(['cartodb_id'])
+      .concat(this.infowindow.getFieldNames())
+      .concat(this.tooltip.getFieldNames())
+      .uniq().value();
   },
 
   getName: function () {

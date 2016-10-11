@@ -60,8 +60,8 @@ describe Map do
           @map.dashboard_menu.should eq true
         end
 
-        it 'sets layer_selector true by default' do
-          @map.layer_selector.should eq true
+        it 'sets layer_selector false by default' do
+          @map.layer_selector.should eq false
         end
 
         it 'allows to change dashboard_menu' do

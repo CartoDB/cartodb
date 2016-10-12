@@ -64,7 +64,6 @@ module Carto
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
-          uses_builder_features: @visualization.uses_builder_features?,
           auth_tokens: auth_tokens
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)

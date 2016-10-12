@@ -56,10 +56,9 @@ module CartoDB
       def run_create_schema
         execute_as_superuser %{ CREATE SCHEMA IF NOT EXISTS "#{@schema}" }
         execute_as_superuser %{ GRANT CREATE,USAGE ON SCHEMA "#{@schema}" TO postgres }
-        execute_as_superuser %{ GRANT CREATE,USAGE ON SCHEMA "#{@schema}" TO "#{@user.database_username}" }
         execute_as_superuser %{ GRANT USAGE ON SCHEMA "#{@schema}" TO publicuser }
         org_role = @user.in_database(as: :superuser).select{ CDB_Organization_Member_Group_Role_Member_Name{} }.first[:cdb_organization_member_group_role_member_name]
-        execute_as_superuser %{ GRANT USAGE ON SCHEMA "#{@schema}" to "#{org_role}" }
+        execute_as_superuser %{ GRANT USAGE,USAGE ON SCHEMA "#{@schema}" to "#{org_role}" }
       end
 
       def create_server_command

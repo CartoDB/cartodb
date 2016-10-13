@@ -12,7 +12,9 @@ CartoDBLayerGroupViewBase.prototype = {
     this._clearInteraction();
 
     this.model.each(function (layer, layerIndex) {
-      this._enableInteraction(layerIndex);
+      if (layer.isVisible()) {
+        this._enableInteraction(layerIndex);
+      }
     }, this);
   },
 

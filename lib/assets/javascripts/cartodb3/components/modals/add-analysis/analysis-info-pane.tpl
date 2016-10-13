@@ -11,25 +11,31 @@
     </div>
   </div>
 </div>
-<div class="Modal-container">
-  <div class="Modal-analysisContainer">
-    <ul class="CDB-NavMenu-inner CDB-Text is-semibold CDB-Size-small">
-      <li class="CDB-NavMenu-item u-upperCase">
-        <%= _t('analysis-category.' + category) %>
-      </li>
-      <li class="CDB-NavMenu-item u-upperCase">
-        >
-      </li>
-      <li class="CDB-NavMenu-item u-upperCase">
-        <%- title %>
-      </li>
-    </ul>
-    <div class="Modal-inner">
-      <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> has-autoplay js-animation is-rounded"></div>
-      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace"><%- title %></h2>
-      <p class="CDB-Text Onboarding-description">
-        <%- _t('analyses-onboarding.' + genericType + '.description') %>
-      </p>
+
+<div class="Modal-inner Modal-inner--with-navigation js-content">
+  <div class="Dialog-content Dialog-content--expanded">
+    <div class="ScrollView">
+      <div class="ScrollView-content">
+        <div class="Modal-analysisContainer">
+          <ul class="CDB-NavMenu-inner CDB-Text is-semibold CDB-Size-small SubmenuModal u-flex u-alignCenter">
+            <li class="CDB-NavMenu-item u-upperCase u-secondaryTextColor SubmenuModal-item u-flex u-alignCenter">
+              <%= _t('analysis-category.' + category) %>
+            </li>
+            <li class="CDB-NavMenu-item u-upperCase SubmenuModal-item u-flex u-alignCenter">
+              <%- title %>
+            </li>
+          </ul>
+          <div class="Modal-inner u-justifyCenter">
+            <div class="Analysis-moreInfo">
+              <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> has-autoplay js-animation is-rounded"></div>
+              <h2 class="CDB-Text CDB-Size-huge is-light Analysis-moreInfoTitle"><%- title %></h2>
+              <p class="CDB-Text CDB-Size-medium u-secondaryTextColor">
+                <%- _t('analyses-onboarding.' + genericType + '.description') %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

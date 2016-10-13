@@ -37,7 +37,7 @@
           <mask id="mask-2" fill="white">
             <use xlink:href="#path-1"></use>
           </mask>
-          <use id="Rectangle-10" fill="#2E3C43" xlink:href="#path-1"></use>
+          <use id="Rectangle-10" xlink:href="#path-1"></use>
         </g>
         <g transform="translate(64, 16)" stroke="#282C2F" stroke-width="2" fill="#9DE0AD">
           <use class="rect-01" mask="url(#mask-4)" fill-opacity="0.32" xlink:href="#path-3"></use>

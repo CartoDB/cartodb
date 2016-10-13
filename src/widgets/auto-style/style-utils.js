@@ -20,6 +20,9 @@ function insertCartoCSSAttribute (cartocss, attrib, flag) {
   return cartocss.replace(flag, attrib);
 }
 
+function replaceWrongSpaceChar (cartocss) {
+  return cartocss.replace(String.fromCharCode(160), ' ');
+}
 /**
  * Change attr style and remove all the duplicates
  * @param  {String} cartocss cartocss original String
@@ -44,5 +47,6 @@ function changeStyle (cartocss, attr, newStyle) {
 }
 
 module.exports = {
-  changeStyle: changeStyle
+  changeStyle: changeStyle,
+  replaceWrongSpaceChar: replaceWrongSpaceChar
 };

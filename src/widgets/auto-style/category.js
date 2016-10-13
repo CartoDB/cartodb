@@ -11,7 +11,7 @@ module.exports = AutoStyler.extend({
       style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp(item));
     }.bind(this));
 
-    return style;
+    return StyleUtils.replaceWrongSpaceChar(style);
   },
 
   _generateCategoryRamp: function (sym) {

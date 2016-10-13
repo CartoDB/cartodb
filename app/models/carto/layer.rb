@@ -213,7 +213,7 @@ module Carto
       new_username = new_user.username
 
       if options.key?(:user_name)
-        old_username ||= options[:user_name]
+        old_username = options[:user_name] || old_username
         options[:user_name] = new_username
       end
 

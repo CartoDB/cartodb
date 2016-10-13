@@ -65,7 +65,8 @@ module Carto
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
-          auth_tokens: auth_tokens
+          auth_tokens: auth_tokens,
+          version: @visualization.version || 2
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
         poro

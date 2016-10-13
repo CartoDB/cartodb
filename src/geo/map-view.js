@@ -45,19 +45,23 @@ var MapView = View.extend({
     layerView.on('featureOver', function () {
       if (this.map.isInteractive()) {
         this.setCursor('pointer');
-        this._triggerMouseEvent('featureOver', arguments);
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this._triggerMouseEvent('featureOver', arguments);
+        }
       }
     }, this);
 
     layerView.on('featureOut', function () {
       if (this.map.isInteractive()) {
         this.setCursor('auto');
-        this.map.trigger('featureOut');
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this.map.trigger('featureOut');
+        }
       }
     }, this);
 
     layerView.on('featureClick', function (e, latlng, pos, data, layerIndex) {
-      if (this.map.isInteractive()) {
+      if (this.map.isFeatureInteractivityEnabled()) {
         this._triggerMouseEvent('featureClick', arguments);
       }
     }, this);

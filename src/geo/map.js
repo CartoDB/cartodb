@@ -19,7 +19,9 @@ var Map = Model.extend({
     keyboard: true,
     provider: 'leaflet',
     // enforce client-side rendering using GeoJSON vector tiles
-    vector: false
+    vector: false,
+    popupsEnabled: true,
+    isFeatureInteractivityEnabled: false
   },
 
   initialize: function (attrs, options) {
@@ -147,16 +149,11 @@ var Map = Model.extend({
 
   isInteractive: function () {
     return this.isFeatureInteractivityEnabled() ||
-      this.arePopupsEnabled() && this._wadus();
+      this.arePopupsEnabled() && this._isAnyCartoDBLayerInteractive();
   },
 
-  _wadus: function () {
-    var layers = _.union(
-      this.layers.getCartoDBLayers(),
-      this.layers.getTorqueLayers()
-    );
-
-    return _.all(layers, function (layerModel) {
+  _isAnyCartoDBLayerInteractive: function () {
+    return _.any(this.layers.getCartoDBLayers(), function (layerModel) {
       return layerModel.hasInteraction();
     });
   },

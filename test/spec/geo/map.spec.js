@@ -375,9 +375,11 @@ describe('core/geo/map', function () {
 
   describe('.isInteractive', function () {
     beforeEach(function () {
-      this.layer = new CartoDBLayer(null, { vis: new Backbone.Model() });
-      spyOn(this.layer, 'hasInteraction').and.returnValue(true);
-      this.layersCollection = new LayersCollection([ this.layer ]);
+      this.layer1 = new CartoDBLayer(null, { vis: new Backbone.Model() });
+      this.layer2 = new CartoDBLayer(null, { vis: new Backbone.Model() });
+      spyOn(this.layer1, 'hasInteraction').and.returnValue(false);
+      spyOn(this.layer2, 'hasInteraction').and.returnValue(false);
+      this.layersCollection = new LayersCollection([ this.layer1, this.layer2 ]);
       this.map = new Map(null, {
         layersCollection: this.layersCollection,
         layersFactory: fakeLayersFactory
@@ -397,10 +399,12 @@ describe('core/geo/map', function () {
     describe('if feature interactivity is disabled', function () {
       beforeEach(function () {
         this.map.disableFeatureInteractivity();
+        this.layer1.hasInteraction.and.returnValue(true);
+        this.layer2.hasInteraction.and.returnValue(true);
         this.map.enablePopups();
       });
 
-      it('should be true', function () {
+      it('should be true if popups are enabled', function () {
         expect(this.map.isInteractive()).toBeTruthy();
       });
 
@@ -409,8 +413,9 @@ describe('core/geo/map', function () {
         expect(this.map.isInteractive()).toBeFalsy();
       });
 
-      it("should be false if layer doesn't have interaction", function () {
-        this.layer.hasInteraction.and.returnValue(false);
+      it('should be false if none of the CartoDB layers have interaction', function () {
+        this.layer1.hasInteraction.and.returnValue(false);
+        this.layer2.hasInteraction.and.returnValue(false);
         expect(this.map.isInteractive()).toBeFalsy();
       });
     });

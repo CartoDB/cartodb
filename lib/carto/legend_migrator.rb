@@ -23,7 +23,7 @@ module Carto
                             legend: @legend,
                             layer_id: @layer_id)
 
-      Legend.new
+      Legend.new(layer_id: @layer_id)
     end
 
     private

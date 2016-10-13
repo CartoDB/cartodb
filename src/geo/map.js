@@ -182,6 +182,10 @@ var Map = Model.extend({
     return !!this.get('popupsEnabled');
   },
 
+  arePopupsDisabled: function () {
+    return !this.arePopupsEnabled();
+  },
+
   // INTERNAL CartoDB.js METHODS
 
   setView: function (latlng, zoom) {

@@ -246,10 +246,10 @@ module Carto
     private
 
     def public_values
-      Hash[ ::Layer::PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+      Hash[::Layer::PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] }]
     end
 
-    CUSTOM_CATEGORIES = %w{ Custom NASA TileJSON Mapbox WMS }
+    CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 
     def tables_from_names(table_names, user)
       ::Table.get_all_user_tables_by_names(table_names, user)

@@ -364,6 +364,11 @@ module CartoDB
         super(tags)
       end
 
+      def version=(version)
+        self.dirty = true
+        super(version)
+      end
+
       def public?
         privacy == PRIVACY_PUBLIC
       end

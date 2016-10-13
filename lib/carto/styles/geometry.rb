@@ -1,6 +1,7 @@
 # encoding utf-8
 
 require_relative './style.rb'
+require_relative '../definition.rb'
 
 module Carto::Styles
   class Geometry < Style
@@ -27,6 +28,14 @@ module Carto::Styles
       end
 
       cartocss_classes.join
+    end
+
+    def default_definition
+      definition_instance = Carto::Definition.instance
+      definition = definition_instance
+                   .load_from_file(CARTOGRAPHY_DEFINITION_LOCATION)
+
+      definition[:simple][:point]
     end
   end
 end

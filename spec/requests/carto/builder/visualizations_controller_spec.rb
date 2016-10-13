@@ -34,6 +34,38 @@ describe Carto::Builder::VisualizationsController do
       response.location.should include '/viz/' + @visualization.id
     end
 
+    it 'redirects to editor for vizjson2 visualizations' do
+      @visualization.version = 2
+      @visualization.save
+      Carto::Visualization.any_instance.stubs(:uses_vizjson2?).returns(true)
+
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 302
+      response.location.should include '/viz/' + @visualization.id
+    end
+
+    it 'automatically migrates visualizations' do
+      @visualization.version = 2
+      @visualization.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 200
+      @visualization.reload
+      @visualization.version.should eq 3
+    end
+
+    it 'does not automatically migrates visualization with custom overlays' do
+      @visualization.version = 2
+      @visualization.save
+      @visualization.overlays.create(type: 'header')
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 200
+      @visualization.reload
+      @visualization.version.should eq 2
+    end
+
     it 'returns 404 for non-existent visualizations' do
       get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)
 

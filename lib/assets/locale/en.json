@@ -463,6 +463,15 @@
       }
     },
     "modals": {
+      "editor-vis-warning": {
+        "title": "You are about to open an Editor map with the new Builder",
+        "explanation": "Builder offers an easy to use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
+        "question": "Opening your map in Builder may cause the loss of any feature not supported yet. Are you sure you want to continue?",
+        "go-back": "No, go back to dashboard",
+        "open": "Yes, open with Builder",
+        "duplicate": "duplicate and open with Builder",
+        "opening-title": "Opening %{name} with Builder"
+      },
       "add-basemap": {
         "modal-title": "Add a custom basemap",
         "modal-desc": "Select from these great resources",

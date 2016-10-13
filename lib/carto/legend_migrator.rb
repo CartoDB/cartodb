@@ -17,6 +17,13 @@ module Carto
                  title: legend_title,
                  type: new_type,
                  definition: new_definition)
+    rescue => exception
+      CartoDB::Logger.debug(message: 'Carto::LegendMigrator: couldn\'t migrate',
+                            exception: exception,
+                            legend: @legend,
+                            layer_id: @layer_id)
+
+      Legend.new(layer_id: @layer_id)
     end
 
     private

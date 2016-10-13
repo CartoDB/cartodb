@@ -12,17 +12,15 @@
       </h2>
     </div>
     <div class="u-flex">
-      <% if (isTableSource) { %>
-        <div class="CDB-Shape CDB-Size-medium u-rSpace">
-          <ul class="CDB-Shape-Dataset is-small is-grey">
-            <li class="CDB-Shape-DatasetItem"></li>
-            <li class="CDB-Shape-DatasetItem"></li>
-          </ul>
-        </div>
-        <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
-          <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
-        </p>
-      <% } %>
+      <div class="CDB-Shape CDB-Size-medium u-rSpace">
+        <ul class="CDB-Shape-Dataset is-small is-grey">
+          <li class="CDB-Shape-DatasetItem"></li>
+          <li class="CDB-Shape-DatasetItem"></li>
+        </ul>
+      </div>
+      <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
+        <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
+      </p>
     </div>
   </div>
 

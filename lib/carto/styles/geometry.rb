@@ -27,10 +27,10 @@ module Carto::Styles
         cartocss_array = NAMES_CLASSES_MAP[class_name].new.to_cartocss_array
         Carto::Styles::Presenters::CartoCSS.new(cartocss_array: cartocss_array,
                                                 class_name: class_name)
-                                           .to_s + "\n"
+                                           .to_s
       end
 
-      cartocss_classes.join
+      cartocss_classes.join("\n")
     end
 
     def default_definition

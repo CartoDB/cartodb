@@ -1,7 +1,10 @@
 # encoding utf-8
 
-require_relative './style.rb'
-require_relative '../definition.rb'
+require_relative './point'
+require_relative './line'
+require_relative './polygon'
+require_relative './style'
+require_relative '../definition'
 
 module Carto::Styles
   class Geometry < Style

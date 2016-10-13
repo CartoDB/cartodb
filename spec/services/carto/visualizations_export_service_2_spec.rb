@@ -403,6 +403,8 @@ describe Carto::VisualizationsExportService2 do
 
   describe 'importing' do
     describe '#build_visualization_from_json_export' do
+      include Carto::Factories::Visualizations
+
       it 'fails if version is not 2' do
         expect {
           Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.merge(version: 1).to_json)
@@ -1230,7 +1232,8 @@ describe Carto::VisualizationsExportService2 do
     describe 'basemaps' do
       describe 'custom' do
         before(:each) do
-          @user2.layers.map(&:delete)
+          @user2.reload
+          @user2.layers.clear
 
           carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
           carto_layer.options[:user_name] = @user.username

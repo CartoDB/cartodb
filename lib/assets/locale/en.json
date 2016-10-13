@@ -276,6 +276,7 @@
         },
         "input-categories": {
           "null": "Null",
+          "false": '"false"',
           "others": "Others"
         }
       }

@@ -151,18 +151,6 @@ var CartoDBLayerGroup = Backbone.Model.extend({
         callback(layerModel, this.getIndexOf(layerModel));
       }
     }, this);
-  },
-
-  enableInteractivity: function () {
-    this.set('interactivity', true);
-  },
-
-  disableInteractivity: function () {
-    this.set('interactivity', false);
-  },
-
-  isInteractivityEnabled: function () {
-    return !!this.get('interactivity');
   }
 });
 

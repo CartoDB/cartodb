@@ -7,21 +7,23 @@ var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var DrawingController = require('./drawing-controller');
+var EditionController = require('./edition-controller');
 var LegendsView = require('../geo/ui/legends/legends-view.js');
 
 /**
  * Visualization creation
  */
 var Vis = View.extend({
-  initialize: function () {
+  initialize: function (options) {
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
     this.model.on('change:loading', this._toggleLoader, this);
     this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
 
+    this.settingsModel = options.settingsModel;
+
     this.overlays = [];
 
-    this.model.on('change:showLegends', this._onShowLegendsChanged, this);
     _.bindAll(this, '_onResize');
   },
 
@@ -67,6 +69,15 @@ var Vis = View.extend({
       drawingController.disableDrawing(geometry);
     }, this);
 
+    // Edition capabilities
+    var editionController = new EditionController(this.mapView, this.model.map);
+    this.model.map.on('enterEditMode', function (geometry) {
+      editionController.enableEdition(geometry);
+    }, this);
+    this.model.map.on('exitEditMode', function () {
+      editionController.disableEdition();
+    }, this);
+
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this.model, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
@@ -94,20 +105,11 @@ var Vis = View.extend({
 
   _renderLegends: function () {
     this._legendsView = new LegendsView({
-      layersCollection: this.model.map.layers
+      layersCollection: this.model.map.layers,
+      settingsModel: this.settingsModel
     });
-    if (!this.model.get('showLegends')) {
-      this._legendsView.hide();
-    }
-    this.$el.append(this._legendsView.render().$el);
-  },
 
-  _onShowLegendsChanged: function () {
-    if (this.model.get('showLegends') === true) {
-      this._legendsView.show();
-    } else {
-      this._legendsView.hide();
-    }
+    this.$el.append(this._legendsView.render().$el);
   },
 
   _bindLayerViewToLoader: function (layerView) {

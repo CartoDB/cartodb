@@ -9,6 +9,13 @@ var CategoryLegendModel = LegendModelBase.extend({
     });
   },
 
+  getNonResettableAttrs: function () {
+    return _.union(
+      LegendModelBase.prototype.getNonResettableAttrs.apply(this),
+      ['categories']
+    );
+  },
+
   isAvailable: function () {
     return this.get('categories') && this.get('categories').length > 0;
   }

@@ -506,3 +506,8 @@ $index-items: 7 6 5 4 3 2 1;
 }
 
 
+@media (max-width: 759px) {
+  .CDB-Legends-canvas {
+    display: none !important;
+  }
+}

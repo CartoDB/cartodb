@@ -6,17 +6,19 @@ var DrawingController = function (mapView, map) {
 DrawingController.prototype.enableDrawing = function (geometry) {
   this._geometry = geometry;
   this._map.addGeometry(this._geometry);
+
   this._map.disableInteractivity();
   this._mapView.on('click', this._onMapClicked, this);
 };
 
 DrawingController.prototype.disableDrawing = function () {
   if (this._isDrawingEnabled()) {
+    this._geometry.remove();
     this._map.removeGeometry(this._geometry);
+    delete this._geometry;
+
     this._map.enableInteractivity();
     this._mapView.off('click', this._onMapClicked, this);
-
-    delete this._geometry;
   }
 };
 

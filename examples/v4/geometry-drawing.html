@@ -516,16 +516,18 @@
       }
 
       function enableClickToEdit (vis) {
+        vis.map.enableFeatureInteractivity();
         vis.map.on('featureClick', fetchFeatureAndEditGeometry, this);
       }
 
       function disableClickToEdit (vis) {
+        vis.map.disableFeatureInteractivity();
         vis.map.stopDrawing();
         vis.map.off('featureClick', fetchFeatureAndEditGeometry, this);
       }
 
       function fetchFeatureAndEditGeometry (event) {
-        var featureID = event.attributes.cartodb_id;
+        var featureID = event.feature.cartodb_id;
         var tableName = 'european_countries_e';
 
         var sql = new cartodb.SQL({
@@ -536,7 +538,7 @@
         sql.execute("SELECT ST_AsGeoJSON(the_geom) AS geojson FROM {{tableName }} WHERE cartodb_id = {{id}}", { tableName: tableName, id: featureID })
           .done(function(data) {
             var geoJSON = JSON.parse(data.rows[0].geojson);
-            editGeometry(vis, geoJSON)
+            editGeometry(vis, geoJSON);
           })
           .error(function(errors) {
             // errors contains a list of errors
@@ -561,10 +563,9 @@
               isEnabled = !($(this).hasClass('is-enabled'));
             }
             $(this).toggleClass('is-enabled', isEnabled);
-
-            vis.map.stopDrawing();
-            vis.map.stopEditingGeoJSONGeometry();
           });
+          vis.map.stopDrawing();
+          vis.map.stopEditingGeoJSONGeometry();
         });
 
         document.querySelector('.js-draw-point').addEventListener('click', function () {

@@ -4,6 +4,13 @@ var Rule = require('./rule');
 var VALID_PROPS = ['line-color', 'marker-fill', 'polygon-fill'];
 var VALID_MAPPINGS = ['>', '>=', '<', '<='];
 
+var isEveryBucketValid = function (rule) {
+  var buckets = rule.getBucketsWithRangeFilter();
+  return _.every(buckets, function (bucket) {
+    return bucket.filter.start != null && bucket.filter.end != null;
+  });
+};
+
 var generateColors = function (buckets) {
   return _.map(buckets, function (bucket, i) {
     var label = '';
@@ -20,7 +27,8 @@ module.exports = {
   canAdapt: function (rule) {
     rule = new Rule(rule);
     return rule.matchesAnyProperty(VALID_PROPS) &&
-      rule.matchesAnyMapping(VALID_MAPPINGS);
+      rule.matchesAnyMapping(VALID_MAPPINGS) &&
+      isEveryBucketValid(rule);
   },
 
   adapt: function (rule) {

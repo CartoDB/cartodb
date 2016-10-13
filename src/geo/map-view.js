@@ -32,23 +32,60 @@ var MapView = View.extend({
 
     this.bind('clean', this._removeLayers, this);
 
-    this.map.on('change:interactivity', this._onMapInteractiviyChanged, this);
     this.map.geometries.on('add', this._onGeometryAdded, this);
+    this.on('newLayerView', this._onNewLayerViewAdded, this);
+  },
+
+  _onNewLayerViewAdded: function (layerView, layerModel) {
+    layerView.on('featureOver', function () {
+      if (this.map.isInteractive()) {
+        this.setCursor('pointer');
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this._triggerMouseEvent('featureOver', arguments);
+        }
+      }
+    }, this);
+
+    layerView.on('featureOut', function () {
+      if (this.map.isInteractive()) {
+        this.setCursor('auto');
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this.map.trigger('featureOut');
+        }
+      }
+    }, this);
+
+    layerView.on('featureClick', function (e, latlng, pos, data, layerIndex) {
+      if (this.map.isFeatureInteractivityEnabled()) {
+        this._triggerMouseEvent('featureClick', arguments);
+      }
+    }, this);
+  },
+
+  setCursor: function () {
+    throw new Error('subclasses of MapView must implement setCursor');
+  },
+
+  _triggerMouseEvent: function (eventName, originalEventArguments) {
+    var latlng = originalEventArguments[1];
+    var position = originalEventArguments[2];
+    var featureData = originalEventArguments[3];
+    var layerIndex = originalEventArguments[4];
+
+    this.map.trigger(eventName, {
+      layer: this.map.layers.getCartoDBLayers()[layerIndex],
+      latlng: latlng,
+      position: {
+        x: position.x,
+        y: position.y
+      },
+      feature: featureData
+    });
   },
 
   _onGeometryAdded: function (geometry) {
     var geometryView = this._geometryViewFactory.createGeometryView(geometry, this);
     geometryView.render();
-  },
-
-  // INTERACTIVITY
-
-  _onMapInteractiviyChanged: function () {
-    if (this.map.isInteractivityEnabled()) {
-      this._cartoDBLayerGroup.enableInteractivity();
-    } else {
-      this._cartoDBLayerGroup.disableInteractivity();
-    }
   },
 
   // 
@@ -165,15 +202,6 @@ var MapView = View.extend({
     }
 
     var layerView = this._createLayerView(this._cartoDBLayerGroup);
-
-    layerView.on('featureClick', function (event, latlng, point, attributes, layerIndex) {
-      event.layer = this._cartoDBLayerGroup.getLayerAt(layerIndex);
-      event.attributes = attributes;
-      event.latlng = latlng;
-
-      this.map.trigger('featureClick', event);
-    }, this);
-
     this._cartoDBLayerGroupView = layerView;
     this._layerViews[layerModel.cid] = layerView;
     return layerView;

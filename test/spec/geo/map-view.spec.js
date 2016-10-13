@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var Backbone = require('backbone');
 var VisModel = require('../../../src/vis/vis');
 var Map = require('../../../src/geo/map');
@@ -29,6 +30,7 @@ describe('core/geo/map-view', function () {
         layersCollection: this.map.layers
       })
     });
+    spyOn(this.mapView, 'setCursor');
 
     spyOn(this.mapView, 'getNativeMap');
     spyOn(this.mapView, '_addLayerToMap');
@@ -230,6 +232,109 @@ describe('core/geo/map-view', function () {
         this.map.layers.add(cartoDBLayer);
         expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid)).toBeDefined();
         expect(this.layerViewFactory.createLayerView.calls.count()).toBe(2);
+      });
+    });
+  });
+
+  describe('triggering of featureOver, featureOut and featureClick events', function () {
+    beforeEach(function () {
+      spyOn(this.map, 'isInteractive').and.returnValue(true);
+      this.map.enableFeatureInteractivity();
+
+      this.layerViewFactory.createLayerView.and.callFake(function () {
+        var newLayerView = new Backbone.View();
+        newLayerView.setCursor = jasmine.createSpy('setCursor');
+        this.mapView.trigger('newLayerView', newLayerView);
+        return newLayerView;
+      }.bind(this));
+
+      this.cartoDBLayer = new CartoDBLayer({}, { vis: this.vis });
+      this.map.layers.reset([ this.cartoDBLayer ]);
+      this.layerView = this.mapView.getLayerViewByLayerCid(this.cartoDBLayer.cid);
+    });
+
+    _.each(['featureOver', 'featureClick'], function (eventName) {
+      describe(eventName, function () {
+        it('map model should trigger a ' + eventName + ' event', function () {
+          var callback = jasmine.createSpy('callback');
+          this.map.on(eventName, callback);
+
+          this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+          expect(callback).toHaveBeenCalledWith({
+            layer: this.cartoDBLayer,
+            latlng: [10, 20],
+            position: {
+              x: 15,
+              y: 30
+            },
+            feature: { cartodb_id: 30 }
+          });
+        });
+
+        it('map model should NOT trigger an event if feature interactivity is disabled', function () {
+          this.map.disableFeatureInteractivity();
+          var callback = jasmine.createSpy('callback');
+          this.map.on(eventName, callback);
+
+          this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+          expect(callback).not.toHaveBeenCalled();
+        });
+
+        if (eventName === 'featureOver') {
+          it('should change the mouse pointer', function () {
+            this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+            expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
+          });
+
+          it('should NOT change the mouse pointer if map is not interactive', function () {
+            this.map.isInteractive.and.returnValue(false);
+
+            this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+            expect(this.mapView.setCursor).not.toHaveBeenCalled();
+          });
+        }
+      });
+    }, this);
+
+    describe('featureOut', function () {
+      it('map model should trigger a featureOut event', function () {
+        var callback = jasmine.createSpy('callback');
+        this.map.on('featureOut', callback);
+
+        this.layerView.trigger('featureOut', {});
+
+        expect(callback).toHaveBeenCalledWith();
+      });
+
+      it('map model should NOT trigger an event if feature interactivity is disabled', function () {
+        this.map.disableFeatureInteractivity();
+        var callback = jasmine.createSpy('callback');
+        this.map.on('featureOver', callback);
+
+        this.layerView.trigger('featureOver', {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      it('should change the mouse pointer', function () {
+        this.layerView.trigger('featureOut', {});
+
+        expect(this.mapView.setCursor).toHaveBeenCalledWith('auto');
+      });
+
+      it('should NOT change the mouse pointer if feature interactivity is disabled', function () {
+        this.map.disableFeatureInteractivity();
+
+        var callback = jasmine.createSpy('callback');
+        this.map.on('featureOver', callback);
+
+        this.layerView.trigger('featureOver', {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
+
+        expect(callback).not.toHaveBeenCalled();
       });
     });
   });

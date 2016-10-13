@@ -96,6 +96,7 @@ var InfowindowModel = Backbone.Model.extend({
       var value = attributes[field.name];
       if (options.showEmptyFields || (value !== undefined && value !== null)) {
         render_fields.push({
+          name: field.name,
           title: field.title ? field.name : null,
           value: (value !== undefined && value !== null) ? value : 'null',
           index: j

@@ -84,4 +84,12 @@ Legends.prototype._findDataForLegend = function (legendType) {
   return _.find(this._legendsData, { type: legendType });
 };
 
+Legends.prototype.hasAnyLegend = function () {
+  var legendTypes = _.keys(LEGENDS_METADATA);
+  return _.some(legendTypes, function (legendType) {
+    var legend = this[legendType];
+    return legend && legend.isVisible();
+  }, this);
+};
+
 module.exports = Legends;

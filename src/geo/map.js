@@ -24,7 +24,9 @@ var Map = Model.extend({
     keyboard: true,
     provider: 'leaflet',
     // enforce client-side rendering using GeoJSON vector tiles
-    vector: false
+    vector: false,
+    popupsEnabled: true,
+    isFeatureInteractivityEnabled: false
   },
 
   // GEOMETRY MANAGEMENT
@@ -43,23 +45,12 @@ var Map = Model.extend({
 
   _drawGeometry: function (GeometryClass) {
     var geometry = new GeometryClass();
-    this._newGeometry = geometry;
-    this.disableInteractivity();
     this.trigger('enterDrawingMode', geometry);
     return geometry;
   },
 
   stopDrawing: function () {
-    if (this._newGeometry) {
-      this._newGeometry.remove();
-      delete this._newGeometry;
-    }
-    this.enableInteractivity();
     this.trigger('exitDrawingMode');
-  },
-
-  isDrawing: function () {
-    return !!this._newGeometry;
   },
 
   // GEOMETRY EDITON
@@ -77,9 +68,9 @@ var Map = Model.extend({
     var geometryType = geoJSON.geometry && geoJSON.geometry.type || geoJSON.type;
     var editMethodName = GEOJSON_TYPE_TO_EDIT_METHOD_NAME[geometryType];
     if (editMethodName) {
-      this.disableInteractivity();
+      // this.disableInteractivity();
       var geometry = this[editMethodName](geoJSON);
-      this._editingGeometry = geometry;
+      this.trigger('enterEditMode', geometry);
       return geometry;
     } else {
       throw new Error('Edition of geometries of type ' + geometryType + ' is not supported');
@@ -102,7 +93,6 @@ var Map = Model.extend({
     var latlngs = this._getLatLngsFromCoords(coords);
     var polyline = new Polyline({ geojson: geoJSON });
     polyline.setLatLngs(latlngs);
-    this.addGeometry(polyline);
     return polyline;
   },
 
@@ -111,7 +101,6 @@ var Map = Model.extend({
     var latlngs = this._getLatLngsFromCoords(coords);
     var polygon = new Polygon({ geojson: geoJSON });
     polygon.setLatLngs(latlngs);
-    this.addGeometry(polygon);
     return polygon;
   },
 
@@ -121,7 +110,6 @@ var Map = Model.extend({
       return this._getLatLngsFromCoords(coords[0]);
     }, this);
     var polygon = new MultiPolygon({ geojson: geoJSON }, { latlngs: latlngs });
-    this.addGeometry(polygon);
     return polygon;
   },
 
@@ -136,26 +124,7 @@ var Map = Model.extend({
   },
 
   stopEditingGeoJSONGeometry: function (geoJSON) {
-    if (this._editingGeometry) {
-      this._editingGeometry.remove();
-      delete this._editingGeometry;
-    }
     this.trigger('exitEditMode');
-    this.enableInteractivity();
-  },
-
-  // INTERACTIVITY MANAGEMENT
-
-  enableInteractivity: function () {
-    this.set('interactivity', true);
-  },
-
-  disableInteractivity: function () {
-    this.set('interactivity', false);
-  },
-
-  isInteractivityEnabled: function () {
-    return !!this.get('interactivity');
   },
 
   // ...
@@ -281,6 +250,61 @@ var Map = Model.extend({
 
   _removeLayerModelFromCollection: function (layerModel) {
     return this.layers.remove(layerModel);
+  },
+
+  disableInteractivity: function () {
+    this._werePopupsEnabled = this.arePopupsEnabled();
+    this.disablePopups();
+    this._wasFeatureInteractivityEnabled = this.isFeatureInteractivityEnabled();
+    this.disableFeatureInteractivity();
+  },
+
+  enableInteractivity: function () {
+    if (this._werePopupsEnabled) {
+      this.enablePopups();
+    }
+    if (this._wasFeatureInteractivityEnabled) {
+      this.enableFeatureInteractivity();
+    }
+  },
+
+  isInteractive: function () {
+    return this.isFeatureInteractivityEnabled() ||
+      this.arePopupsEnabled() && this._isAnyCartoDBLayerInteractive();
+  },
+
+  _isAnyCartoDBLayerInteractive: function () {
+    return _.any(this.layers.getCartoDBLayers(), function (layerModel) {
+      return layerModel.hasInteraction();
+    });
+  },
+
+  enableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', true);
+  },
+
+  disableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', false);
+  },
+
+  isFeatureInteractivityEnabled: function () {
+    return !!this.get('isFeatureInteractivityEnabled');
+  },
+
+  enablePopups: function () {
+    this.set('popupsEnabled', true);
+  },
+
+  disablePopups: function () {
+    this.set('popupsEnabled', false);
+  },
+
+  arePopupsEnabled: function () {
+    return !!this.get('popupsEnabled');
+  },
+
+  arePopupsDisabled: function () {
+    return !this.arePopupsEnabled();
   },
 
   // INTERNAL CartoDB.js METHODS

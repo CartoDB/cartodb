@@ -42,4 +42,16 @@ describe('src/widgets/auto-style/style-utils', function () {
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
   });
+
+  describe('.replaceWrongSpaceChar', function () {
+    it('should has 12 wrong spaces', function () {
+      var cartocss = '#layer { marker-line-color: white; marker-fill #adadad [me>gasol { marker-fill: #fafafa; marker-line-color: green; }}';
+      expect(cartocss.match(new RegExp(String.fromCharCode(160), 'g')).length).toBe(12);
+    });
+
+    it('should has 0 wrong spaces', function () {
+      var cartocss = '#layer { marker-line-color: white; marker-fill #adadad [me>gasol { marker-fill: #fafafa; marker-line-color: green; }}';
+      expect(StyleUtils.replaceWrongSpaceChar(cartocss).match(new RegExp(String.fromCharCode(160), 'g'))).toBe(null);
+    });
+  });
 });

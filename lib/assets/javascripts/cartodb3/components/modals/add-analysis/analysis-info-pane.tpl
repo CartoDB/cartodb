@@ -25,7 +25,7 @@
       </li>
     </ul>
     <div class="Modal-inner">
-      <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> js-animation is-rounded"></div>
+      <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> has-autoplay js-animation is-rounded"></div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace"><%- title %></h2>
       <p class="CDB-Text Onboarding-description">
         <%- _t('analyses-onboarding.' + genericType + '.description') %>

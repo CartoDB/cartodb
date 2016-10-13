@@ -78,7 +78,7 @@ describe('geo/map/cartodb-layer', function () {
       expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id', 'a', 'b', 'c' ]);
     });
 
-    it("should return 'cartodb_id' when no fields are present", function () {
+    it('should return an empty array if no fields are present', function () {
       this.layer = new CartoDBLayer({
         infowindow: {
           fields: []
@@ -88,7 +88,7 @@ describe('geo/map/cartodb-layer', function () {
         }
       }, { vis: this.vis });
 
-      expect(this.layer.getInteractiveColumnNames()).toEqual([ 'cartodb_id']);
+      expect(this.layer.getInteractiveColumnNames()).toEqual([]);
     });
   });
 });

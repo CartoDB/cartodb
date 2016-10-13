@@ -12,6 +12,13 @@ var BubbleLegendModel = LegendModelBase.extend({
     });
   },
 
+  getNonResettableAttrs: function () {
+    return _.union(
+      LegendModelBase.prototype.getNonResettableAttrs.apply(this),
+      ['values']
+    );
+  },
+
   isAvailable: function () {
     return this.get('values') && this.get('values').length > 0;
   }

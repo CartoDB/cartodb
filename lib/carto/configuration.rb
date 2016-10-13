@@ -5,7 +5,7 @@ module Carto
     end
 
     def app_config
-      @@app_config = YAML.load_file(app_config_file)
+      @@app_config ||= YAML.load_file(app_config_file)
     end
 
     def env_app_config

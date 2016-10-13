@@ -145,6 +145,46 @@ var Map = Model.extend({
     return this.layers.remove(layerModel);
   },
 
+  isInteractive: function () {
+    return this.isFeatureInteractivityEnabled() ||
+      this.arePopupsEnabled() && this._wadus();
+  },
+
+  _wadus: function () {
+    var layers = _.union(
+      this.layers.getCartoDBLayers(),
+      this.layers.getTorqueLayers()
+    );
+
+    return _.all(layers, function (layerModel) {
+      return layerModel.hasInteraction();
+    });
+  },
+
+  enableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', true);
+  },
+
+  disableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', false);
+  },
+
+  isFeatureInteractivityEnabled: function () {
+    return !!this.get('isFeatureInteractivityEnabled');
+  },
+
+  enablePopups: function () {
+    this.set('popupsEnabled', true);
+  },
+
+  disablePopups: function () {
+    this.set('popupsEnabled', false);
+  },
+
+  arePopupsEnabled: function () {
+    return !!this.get('popupsEnabled');
+  },
+
   // INTERNAL CartoDB.js METHODS
 
   setView: function (latlng, zoom) {

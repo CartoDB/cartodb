@@ -7,6 +7,7 @@ var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
+var LayersCollection = require('../../../src/geo/map/layers');
 var LayersFactory = require('../../../src/vis/layers-factory');
 
 var fakeLayersFactory = new LayersFactory({
@@ -369,6 +370,49 @@ describe('core/geo/map', function () {
     it('should return the corresponding model for given id', function () {
       expect(map.getLayerById('xyz-123')).toBeDefined();
       expect(map.getLayerById('meh')).toBeUndefined();
+    });
+  });
+
+  describe('.isInteractive', function () {
+    beforeEach(function () {
+      this.layer = new CartoDBLayer(null, { vis: new Backbone.Model() });
+      spyOn(this.layer, 'hasInteraction').and.returnValue(true);
+      this.layersCollection = new LayersCollection([ this.layer ]);
+      this.map = new Map(null, {
+        layersCollection: this.layersCollection,
+        layersFactory: fakeLayersFactory
+      });
+    });
+
+    it('should be false', function () {
+      expect(this.map.isInteractive()).toBeFalsy();
+    });
+
+    it('should be true if feature interactivity is enabled', function () {
+      this.map.enableFeatureInteractivity();
+
+      expect(this.map.isInteractive()).toBeTruthy();
+    });
+
+    describe('if feature interactivity is disabled', function () {
+      beforeEach(function () {
+        this.map.disableFeatureInteractivity();
+        this.map.enablePopups();
+      });
+
+      it('should be true', function () {
+        expect(this.map.isInteractive()).toBeTruthy();
+      });
+
+      it('should be false if popups are disabled', function () {
+        this.map.disablePopups();
+        expect(this.map.isInteractive()).toBeFalsy();
+      });
+
+      it("should be false if layer doesn't have interaction", function () {
+        this.layer.hasInteraction.and.returnValue(false);
+        expect(this.map.isInteractive()).toBeFalsy();
+      });
     });
   });
 });

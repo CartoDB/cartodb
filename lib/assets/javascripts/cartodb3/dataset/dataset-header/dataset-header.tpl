@@ -12,7 +12,7 @@
 
     <div class="Editor-HeaderInfo-details u-lSpace">
       <% if (!hasWriteAccess) { %>
-        <span class="Tag CDB-Text CDB-Size-small u-rSpace u-upperCase"><%- _t('dataset.read') %></span>
+        <span class="Tag CDB-Text CDB-Size-small u-rSpace u-upperCase js-readPermissionTag"><%- _t('dataset.read') %></span>
       <% } %>
 
       <% if (isCustomQueryApplied) { %>

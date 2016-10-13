@@ -1,95 +1,104 @@
 /* GEOREFERENCE */
-.Analysis-animation.is-georeference:hover .Dot-01,
-.Analysis-animation.is-georeference:hover .Dot-02 {
-  transform-origin: 50% 50%;
-  opacity: 0;
-  animation-name: fadeOut, fadeIn, scaleIn;
-  animation-duration: 300ms, 500ms, 500ms;
-  animation-fill-mode: forwards;
-  animation-timing-function: ease-in-out;
-  animation-delay: 100ms, 550ms;
-}
-.Analysis-animation.is-georeference:hover .Dot-02 {
-  animation-delay: 600ms, 550ms;
-}
-
 .Analysis-animation.is-georeference .Georeference-point02-text,
 .Analysis-animation.is-georeference .Georeference-point01-text {
   opacity: 0;
 }
 
-.Analysis-animation.is-georeference:hover .Georeference-point01-text {
-  animation-name: fadeIn;
-  animation-duration: 300ms;
-  animation-delay: 800ms;
-  animation-fill-mode: forwards;
-}
-.Analysis-animation.is-georeference:hover .Georeference-point02-text {
-  animation-name: fadeIn;
-  animation-duration: 300ms;
-  animation-delay: 500ms;
-  animation-fill-mode: forwards;
-}
+.Analysis-animation.is-georeference {
+  &.has-autoplay,
+  &:hover {
+    .Dot-01,
+    .Dot-02 {
+      transform-origin: 50% 50%;
+      opacity: 0;
+      animation-name: fadeOut, fadeIn, scaleIn;
+      animation-duration: 300ms, 500ms, 500ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+      animation-delay: 100ms, 550ms;
+    }
+    .Dot-02 {
+      animation-delay: 600ms, 550ms;
+    }
 
-.Analysis-animation.is-georeference:hover .Georeference-street00 {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: dash 800ms ease-in forwards;
-}
+    .Georeference-point01-text {
+      animation-name: fadeIn;
+      animation-duration: 300ms;
+      animation-delay: 800ms;
+      animation-fill-mode: forwards;
+    }
+    .Georeference-point02-text {
+      animation-name: fadeIn;
+      animation-duration: 300ms;
+      animation-delay: 500ms;
+      animation-fill-mode: forwards;
+    }
 
-.Analysis-animation.is-georeference:hover .Georeference-street01 {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: dash 600ms ease-in forwards;
-}
+    .Georeference-street00 {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 800ms ease-in forwards;
+    }
 
-.Analysis-animation.is-georeference:hover .Georeference-street02 {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: dash 600ms ease-in forwards;
-  animation-delay: 100ms;
-}
+    .Georeference-street01 {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 600ms ease-in forwards;
+    }
 
+    .Georeference-street02 {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: dash 600ms ease-in forwards;
+      animation-delay: 100ms;
+    }
+  }
+}
 
 /* DATA OBSERVATORY */
-.Analysis-animation.is-data-observatory-measure:hover .rect-01,
-.Analysis-animation.is-data-observatory-measure:hover .rect-02,
-.Analysis-animation.is-data-observatory-measure:hover .rect-03,
-.Analysis-animation.is-data-observatory-measure:hover .rect-04,
-.Analysis-animation.is-data-observatory-measure:hover .rect-05,
-.Analysis-animation.is-data-observatory-measure:hover .rect-06,
-.Analysis-animation.is-data-observatory-measure:hover .rect-07 {
-  transform-origin: 50% 50%;
-  animation-name: fadeOutRect, fadeInRect;
-  animation-duration: 100ms, 300ms;
-  animation-fill-mode: forwards, forwards;
-  animation-timing-function: ease-in, ease-in;
-  animation-delay: 0ms, 500ms;
-  fill: transparent;
-}
+.Analysis-animation.is-data-observatory-measure {
+  &.has-autoplay,
+  &:hover {
+    .rect-01,
+    .rect-01,
+    .rect-02,
+    .rect-03,
+    .rect-04,
+    .rect-05,
+    .rect-06,
+    .rect-07 {
+      transform-origin: 50% 50%;
+      animation-name: fadeOutRect, fadeInRect;
+      animation-duration: 100ms, 300ms;
+      animation-fill-mode: forwards, forwards;
+      animation-timing-function: ease-in, ease-in;
+      animation-delay: 0ms, 500ms;
+      fill: transparent;
+    }
 
-.Analysis-animation.is-data-observatory-measure:hover .rect-01 {
-  animation-delay: 0ms, 500ms;
+    .rect-01 {
+      animation-delay: 0ms, 500ms;
+    }
+    .rect-02 {
+      animation-delay: 0ms, 900ms;
+    }
+    .rect-03 {
+      animation-delay: 0ms, 300ms;
+    }
+    .rect-04 {
+      animation-delay: 0ms, 600ms;
+    }
+    .rect-05 {
+      animation-delay: 0ms, 750ms;
+    }
+    .rect-06 {
+      animation-delay: 0ms, 600ms;
+    }
+    .rect-07 {
+      animation-delay: 0ms, 420ms;
+    }
+  }
 }
-.Analysis-animation.is-data-observatory-measure:hover .rect-02 {
-  animation-delay: 0ms, 900ms;
-}
-.Analysis-animation.is-data-observatory-measure:hover .rect-03 {
-  animation-delay: 0ms, 300ms;
-}
-.Analysis-animation.is-data-observatory-measure:hover .rect-04 {
-  animation-delay: 0ms, 600ms;
-}
-.Analysis-animation.is-data-observatory-measure:hover .rect-05 {
-  animation-delay: 0ms, 750ms;
-}
-.Analysis-animation.is-data-observatory-measure:hover .rect-06 {
-  animation-delay: 0ms, 600ms;
-}
-.Analysis-animation.is-data-observatory-measure:hover .rect-07 {
-  animation-delay: 0ms, 420ms;
-}
-
 
 /* FILTER BY LAYER */
 .Analysis-animation.is-filter-layer {

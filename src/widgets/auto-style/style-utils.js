@@ -21,7 +21,7 @@ function insertCartoCSSAttribute (cartocss, attrib, flag) {
 }
 
 function replaceWrongSpaceChar (cartocss) {
-  return cartocss.replace(String.fromCharCode(160), ' ');
+  return cartocss.replace(new RegExp(String.fromCharCode(160), 'g'), ' ');
 }
 /**
  * Change attr style and remove all the duplicates

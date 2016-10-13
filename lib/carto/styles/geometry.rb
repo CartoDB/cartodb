@@ -17,9 +17,9 @@ module Carto::Styles
     end
 
     NAMES_CLASSES_MAP = {
-      "layer['mapnik::geometry_type' = 1]" => Carto::Styles::Point,
-      "layer['mapnik::geometry_type' = 2]" => Carto::Styles::Line,
-      "layer['mapnik::geometry_type' = 3]" => Carto::Styles::Polygon
+      "layer['mapnik::geometry_type'=1]" => Carto::Styles::Point,
+      "layer['mapnik::geometry_type'=2]" => Carto::Styles::Line,
+      "layer['mapnik::geometry_type'=3]" => Carto::Styles::Polygon
     }.freeze
 
     def to_cartocss

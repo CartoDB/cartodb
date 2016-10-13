@@ -35,14 +35,6 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
       this._bindFeatureClickEvent(layerView);
     }
     this._bindInfowindowModel(layerView, layerModel);
-
-    layerView.bind('mouseover', function () {
-      this._mapView.setCursor('pointer');
-    }, this);
-
-    layerView.bind('mouseout', function (m, layer) {
-      this._mapView.setCursor('auto');
-    }, this);
   }
 };
 

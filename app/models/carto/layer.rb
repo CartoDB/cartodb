@@ -231,7 +231,25 @@ module Carto
       map.force_notify_map_change if map
     end
 
+    def custom?
+      CUSTOM_CATEGORIES.include?(category)
+    end
+
+    def category
+      options && options['category']
+    end
+
+    def copy(override_attributes={})
+      Carto::Layer.new(public_values.select { |k, v| k != 'id' }.merge(override_attributes))
+    end
+
     private
+
+    def public_values
+      Hash[ ::Layer::PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+    end
+
+    CUSTOM_CATEGORIES = %w{ Custom NASA TileJSON Mapbox WMS }
 
     def tables_from_names(table_names, user)
       ::Table.get_all_user_tables_by_names(table_names, user)

@@ -59,6 +59,9 @@ module Carto
         end
 
         map.data_layers.each(&:register_table_dependencies)
+
+        new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
+        new_user_layers.map(&:copy).map { |l| user.layers << l }
       end
 
       # Propagate changes (named maps, default permissions and so on)
@@ -69,6 +72,14 @@ module Carto
     end
 
     private
+
+    def contains_equivalent_base_layer?(layers, layer)
+      layers.any? { |l| equivalent_base_layer?(l, layer) }
+    end
+
+    def equivalent_base_layer?(layer_a, layer_b)
+      layer_a.kind == 'tiled' && layer_a.kind == layer_b.kind && layer_a.options == layer_b.options
+    end
 
     def ensure_unique_name(user, visualization)
       existing_names = Carto::Visualization.uniq

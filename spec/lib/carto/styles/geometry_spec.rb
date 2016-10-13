@@ -31,7 +31,7 @@ module Carto
           "  line-color: #FFF;\n"\
           "  line-opacity: 0.5;\n"\
           "  line-comp-op: soft-light;\n"\
-          "}\n"
+          "}"
         end
 
         it 'has stayed the same' do

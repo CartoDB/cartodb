@@ -1332,9 +1332,6 @@
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"
       },
-      "notifier": {
-        "layer-added": "Layer added successfully."
-      },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
@@ -1975,6 +1972,10 @@
       "updating": "Updating widget…",
       "restoring": "Restoring widgets…",
       "restored": "Widgets restored"
+    },
+    "layer": {
+      "error": "Layer error: %{error}",
+      "added": "Layer added successfully."
     },
     "cartocss": {
         "error": {

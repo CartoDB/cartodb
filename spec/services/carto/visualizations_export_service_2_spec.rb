@@ -1243,7 +1243,7 @@ describe Carto::VisualizationsExportService2 do
             attribution: nil,
             maxZoom: 21,
             minZoom: 0,
-            name:'',
+            name: '',
             category: 'Mapbox',
             type: 'Tiled',
             className: 'httpsapimapboxcomstylesv1wadusiu4g7i1500t62iqgcgt9xweztiles256zxy2xaccess_tokenpkeyj1iaoianvhbmlnbmfjaw9zbcisimeioijjaxu1zzzmcxmwmdj0mnpwywdiy284dtfiin0uzuarrtgwtv20mdncq856a'

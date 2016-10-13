@@ -239,8 +239,8 @@ module Carto
       options && options['category']
     end
 
-    def copy(override_attributes={})
-      Carto::Layer.new(public_values.select { |k, v| k != 'id' }.merge(override_attributes))
+    def copy(override_attributes = {})
+      Carto::Layer.new(public_values.select { |k, _| k != 'id' }.merge(override_attributes))
     end
 
     private

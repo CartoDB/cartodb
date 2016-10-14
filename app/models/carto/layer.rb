@@ -231,7 +231,17 @@ module Carto
       map.force_notify_map_change if map
     end
 
+    def custom?
+      CUSTOM_CATEGORIES.include?(category)
+    end
+
+    def category
+      options && options['category']
+    end
+
     private
+
+    CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 
     def tables_from_names(table_names, user)
       ::Table.get_all_user_tables_by_names(table_names, user)

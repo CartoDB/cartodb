@@ -1104,6 +1104,7 @@
     "sql": "SQL",
     "data": "Metadata",
     "updated": "Updated %{ago}",
+    "read": "Read",
     "options": {
       "add-row": "Add row",
       "add-column": "Add column",

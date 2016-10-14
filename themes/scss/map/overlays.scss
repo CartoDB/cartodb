@@ -236,7 +236,7 @@ $maxLegendContainerHeight: 300px;
 }
 .CDB-Legends-canvasInner {
   overflow: hidden;
-  padding: 24px;
+  padding: 12px 24px;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
   position: relative;
@@ -293,14 +293,9 @@ $maxLegendContainerHeight: 300px;
 .CDB-LayerLegends {
   margin-top: 12px;
 }
-.CDB-LayerLegends:first-child {
-  margin-top: 0;
-}
+
 .CDB-Legend-item {
   margin-bottom: 16px;
-  &:last-child {
-    margin-bottom: 32px;
-  }
 }
 
 .CDB-Legend-item.is-disabled {

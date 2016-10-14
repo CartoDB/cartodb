@@ -635,7 +635,7 @@
           },
           "upgrade": {
             "title": "Interested on sharing within your organization?",
-            "desc": "%{contact} for try one of our Enterprise plans",
+            "desc": "%{contact} to try one of our Enterprise plans",
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },

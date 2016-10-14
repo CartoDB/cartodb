@@ -33,20 +33,22 @@ var PointView = View.extend({
     if (!this._marker) {
       var markerOptions = {
         icon: L.icon({
-          iconUrl: '/themes/img/default-marker-icon.png',
-          iconAnchor: [11, 11]
+          iconUrl: this.model.get('iconUrl'),
+          iconAnchor: this.model.get('iconAnchor')
         })
       };
 
-      var isDraggable = this.model.get('draggable');
+      var isDraggable = this.model.isEditable();
       if (isDraggable) {
         markerOptions.draggable = isDraggable;
       }
 
       this._marker = L.marker(this.model.get('latlng'), markerOptions);
-      this._marker.on('dragstart', this._onDragStart.bind(this));
-      this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
-      this._marker.on('dragend', this._onDragEnd.bind(this));
+      if (isDraggable) {
+        this._marker.on('dragstart', this._onDragStart.bind(this));
+        this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
+        this._marker.on('dragend', this._onDragEnd.bind(this));
+      }
       this._marker.addTo(this.leafletMap);
       this._updateModelsGeoJSON();
     }

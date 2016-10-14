@@ -4,17 +4,19 @@ var Point = require('./point');
 var GeometryBase = require('./geometry-base');
 
 var PathBase = GeometryBase.extend({
+  defaults: {
+    editable: false
+  },
+
   initialize: function (attrs, options) {
     GeometryBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
-    var latlngs = [];
+    var points = [];
     if (options.latlngs) {
-      latlngs = _.map(options.latlngs, function (latlng) {
-        return { latlng: latlng };
-      });
+      points = _.map(options.latlngs, this._createPoint, this);
     }
-    this.points = new Backbone.Collection(latlngs, { model: Point });
+    this.points = new Backbone.Collection(points);
   },
 
   getLatLngs: function () {
@@ -24,17 +26,22 @@ var PathBase = GeometryBase.extend({
   },
 
   setLatLngs: function (latlngs) {
-    this.points.reset(_.map(latlngs, function (latlng) {
-      return {
-        latlng: latlng
-      };
-    }));
+    this.points.reset(_.map(latlngs, this._createPoint, this));
   },
 
   update: function (latlng) {
-    this.points.add(new Point({
-      latlng: latlng
-    }));
+    this.points.add(this._createPoint(latlng));
+  },
+
+  isEditable: function () {
+    return !!this.get('editable');
+  },
+
+  _createPoint: function (latlng) {
+    return new Point({
+      latlng: latlng,
+      editable: this.isEditable()
+    });
   }
 });
 

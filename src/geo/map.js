@@ -32,19 +32,24 @@ var Map = Model.extend({
   // GEOMETRY MANAGEMENT
 
   drawPoint: function () {
-    return this._drawGeometry(Point);
+    return this._drawGeometry(new Point({
+      editable: true
+    }));
   },
 
   drawPolyline: function () {
-    return this._drawGeometry(Polyline);
+    return this._drawGeometry(new Polyline({
+      editable: true
+    }));
   },
 
   drawPolygon: function () {
-    return this._drawGeometry(Polygon);
+    return this._drawGeometry(new Polygon({
+      editable: true
+    }));
   },
 
-  _drawGeometry: function (GeometryClass) {
-    var geometry = new GeometryClass();
+  _drawGeometry: function (geometry) {
     this.trigger('enterDrawingMode', geometry);
     return geometry;
   },
@@ -82,7 +87,8 @@ var Map = Model.extend({
     var latlngs = this._getLatLngsFromCoords([ coords ]);
     var point = new Point({
       latlng: latlngs[0],
-      geojson: geoJSON
+      geojson: geoJSON,
+      editable: true
     });
     this.addGeometry(point);
     return point;
@@ -91,7 +97,10 @@ var Map = Model.extend({
   _editPolyline: function (geoJSON) {
     var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
     var latlngs = this._getLatLngsFromCoords(coords);
-    var polyline = new Polyline({ geojson: geoJSON });
+    var polyline = new Polyline({
+      geojson: geoJSON,
+      editable: true
+    });
     polyline.setLatLngs(latlngs);
     return polyline;
   },
@@ -99,7 +108,10 @@ var Map = Model.extend({
   _editPolygon: function (geoJSON) {
     var coords = geoJSON.geometry && geoJSON.geometry.coordinates && geoJSON.geometry.coordinates[0] || geoJSON.coordinates && geoJSON.coordinates[0];
     var latlngs = this._getLatLngsFromCoords(coords);
-    var polygon = new Polygon({ geojson: geoJSON });
+    var polygon = new Polygon({
+      geojson: geoJSON,
+      editable: true
+    });
     polygon.setLatLngs(latlngs);
     return polygon;
   },
@@ -109,7 +121,12 @@ var Map = Model.extend({
     var latlngs = _.map(coords, function (coords) {
       return this._getLatLngsFromCoords(coords[0]);
     }, this);
-    var polygon = new MultiPolygon({ geojson: geoJSON }, { latlngs: latlngs });
+    var polygon = new MultiPolygon({
+      geojson: geoJSON,
+      editable: true
+    }, {
+      latlngs: latlngs
+    });
     return polygon;
   },
 

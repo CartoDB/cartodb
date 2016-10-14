@@ -3,7 +3,9 @@ var GeometryBase = require('./geometry-base');
 var Point = GeometryBase.extend({
   defaults: {
     type: 'point',
-    draggable: true
+    editable: false,
+    iconUrl: '/themes/img/default-marker-icon.png',
+    iconAnchor: [ 11, 11 ]
   },
 
   update: function (latlng) {
@@ -14,6 +16,10 @@ var Point = GeometryBase.extend({
 
   isComplete: function () {
     return this.get('geojson') && this.get('latlng');
+  },
+
+  isEditable: function () {
+    return !!this.get('editable');
   }
 });
 

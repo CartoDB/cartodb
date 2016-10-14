@@ -1,19 +1,19 @@
 /* global google */
 var _ = require('underscore');
+var Backbone = require('backbone');
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var Projector = require('./projector');
-var PointView = require('./gmaps-point-view');
-var PathView = require('./gmaps-path-view');
+var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 
 var GoogleMapsMapView = MapView.extend({
 
   initialize: function() {
+    MapView.prototype.initialize.call(this);
+
     _.bindAll(this, '_ready');
     this._isReady = false;
     var self = this;
-
-    MapView.prototype.initialize.call(this);
 
     var bounds = this.map.getViewBounds();
 
@@ -98,6 +98,24 @@ var GoogleMapsMapView = MapView.extend({
     this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;
+  },
+
+  _getLayerViewFactory: function () {
+    this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory({
+      vector: this.map.get('vector')
+    });
+
+    return this._layerViewFactory;
+  },
+
+  _getGeometryViewFactory: function () {
+    // TODO: We'll need to return a real factory when we add support
+    // for geometry management on Google Maps.
+    return {
+      createGeometryView: function () {
+        return new Backbone.View();
+      }
+    };
   },
 
   _ready: function() {

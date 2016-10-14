@@ -5,7 +5,8 @@ var GeometryBase = require('./geometry-base');
 
 var MultiPolygon = GeometryBase.extend({
   defaults: {
-    type: 'multiPolygon'
+    type: 'multiPolygon',
+    editable: false
   },
 
   initialize: function (attrs, options) {
@@ -14,9 +15,7 @@ var MultiPolygon = GeometryBase.extend({
 
     var polygons = [];
     if (options.latlngs) {
-      polygons = _.map(options.latlngs, function (latlngs) {
-        return new Polygon(null, { latlngs: latlngs });
-      });
+      polygons = _.map(options.latlngs, this._createPolygon, this);
     }
     this.polygons = new Backbone.Collection(polygons);
   },
@@ -32,6 +31,20 @@ var MultiPolygon = GeometryBase.extend({
 
   update: function (latlng) {
     // TODO: ????
+  },
+
+  isEditable: function () {
+    return !!this.get('editable');
+  },
+
+  _createPolygon: function (latlngs) {
+    var polygonAttrs = {};
+    if (this.isEditable()) {
+      polygonAttrs = {
+        editable: true
+      };
+    }
+    return new Polygon(polygonAttrs, { latlngs: latlngs });
   }
 });
 

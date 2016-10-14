@@ -1,7 +1,7 @@
 <div class="Card-icon u-bSpace--xl js-icon"></div>
 
 <div class="Card-body u-bSpace--xl">
-  <% if (isPrivate) { %>
+  <% if (isPrivate || isDisabled) { %>
     <h3 class="CDB-Text CDB-Size-large u-altTextColor u-bSpace--m"><%- title %></h3>
   <% } else { %>
     <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m"><%- title %></h3>

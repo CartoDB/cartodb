@@ -220,9 +220,7 @@ describe('geo/ui/search', function () {
           lat: 43.0,
           lon: -3.0
         };
-        var center = this.view._searchPin.model.get('geojson').coordinates;
-        expect(center[0]).toBe(-3.0);
-        expect(center[1]).toBe(43.0);
+        expect(this.view._searchPin.get('latlng')).toEqual([ 43, -3 ]);
       });
 
       it('should place pin in the middle of the bbox if lat,lon is not provided', function () {
@@ -235,9 +233,7 @@ describe('geo/ui/search', function () {
           }
         };
         this.view.$('.js-form').submit();
-        var center = this.view._searchPin.model.get('geojson').coordinates;
-        expect(center[0]).toBe(5.0);
-        expect(center[1]).toBe(5.0);
+        expect(this.view._searchPin.get('latlng')).toEqual([ 5.0, 5.0 ]);
       });
 
       it('should display address in the search infowindow', function () {

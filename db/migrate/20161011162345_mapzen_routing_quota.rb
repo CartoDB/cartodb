@@ -9,11 +9,11 @@ Sequel.migration do
   end
 
   down do
-    drop_column :users, :mapzen_routing_quota, :integer, null: false, default: 0
-    drop_column :users, :mapzen_routing_block_price, :integer
-    drop_column :users, :soft_mapzen_routing_limit, :boolean
-    drop_column :organizations, :mapzen_routing_quota, :integer, null: false, default: 0
-    drop_column :organizations, :mapzen_routing_block_price, :integer
-    drop_column :user_creations, :soft_mapzen_routing_limit, :boolean
+    drop_column :users, :mapzen_routing_quota
+    drop_column :users, :mapzen_routing_block_price
+    drop_column :users, :soft_mapzen_routing_limit
+    drop_column :organizations, :mapzen_routing_quota
+    drop_column :organizations, :mapzen_routing_block_price
+    drop_column :user_creations, :soft_mapzen_routing_limit
   end
 end

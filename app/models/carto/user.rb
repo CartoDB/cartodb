@@ -487,7 +487,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def new_visualizations_version
-    force_builder? ? 3 : 2
+    builder_enabled? ? 3 : 2
   end
 
   def engine_enabled?

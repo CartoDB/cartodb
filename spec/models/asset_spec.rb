@@ -110,7 +110,7 @@ describe Asset do
       Asset.any_instance.stubs("use_s3?").returns(false)
       asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png').to_s
       local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'')
-      path = "#{Rails.root}/public#{local_url}"
+      path = Carto::Conf.new.public_uploads_path + local_url
       File.exists?(path).should be_true
       asset.destroy
       File.exists?(path).should be_false

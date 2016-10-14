@@ -64,13 +64,19 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     showLayerSelector = vizjson.options.layer_selector;
   }
 
+  var isEmbed = false;
+  if (_.isBoolean(options.embedMode)) {
+    isEmbed = options.embedMode;
+  }
+
   visModel.set({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
     apiKey: options.apiKey,
     authToken: options.authToken,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true,
+    isEmbed: isEmbed
   });
 
   visModel.setSettings({

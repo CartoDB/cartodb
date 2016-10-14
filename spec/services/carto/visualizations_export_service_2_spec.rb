@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.5'
+      version: '2.0.6'
     }
   end
 
@@ -18,6 +18,7 @@ describe Carto::VisualizationsExportService2 do
     {
       name: 'the name',
       description: 'the description',
+      version: 3,
       type: 'derived', # derived / remote / table / slide
       tags: ['tag 1', 'tag 2'],
       privacy: 'private', # private / link / public
@@ -39,7 +40,13 @@ describe Carto::VisualizationsExportService2 do
         view_bounds_sw: '[15.775376695, -18.1672257149999]',
         view_bounds_ne: '[53.569444479, 153.985606316]',
         scrollwheel: false,
-        legends: true
+        legends: true,
+        options: {
+          legends: false,
+          scrollwheel: true,
+          layer_selector: false,
+          dashboard_menu: false
+        }
       },
       layers: [
         {
@@ -219,6 +226,7 @@ describe Carto::VisualizationsExportService2 do
     visualization.attributions.should eq visualization_export[:attributions]
     visualization.bbox.should eq visualization_export[:bbox]
     visualization.display_name.should eq visualization_export[:display_name]
+    visualization.version.should eq visualization_export[:version]
 
     verify_state_vs_export(visualization.state, visualization_export[:state])
 
@@ -252,6 +260,9 @@ describe Carto::VisualizationsExportService2 do
     map.view_bounds_ne.should eq map_export[:view_bounds_ne]
     map.scrollwheel.should eq map_export[:scrollwheel]
     map.legends.should eq map_export[:legends]
+
+    map_options = map.options.with_indifferent_access
+    map_options.should eq map_export[:options].with_indifferent_access
   end
 
   def verify_state_vs_export(state, state_export)
@@ -569,6 +580,26 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.6 (without map options)' do
+          export_2_0_6 = export
+          export_2_0_6[:visualization][:map].delete(:options)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+
+          visualization.map.options.should be
+        end
+
+        it '2.0.5 (without version)' do
+          export_2_0_5 = export
+          export_2_0_5[:visualization].delete(:version)
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_5.to_json)
+
+          visualization.version.should eq 2
+        end
+
         it '2.0.4 (without Widget.order)' do
           export_2_0_4 = export
           export_2_0_4[:visualization][:layers].each do |layer|
@@ -995,6 +1026,7 @@ describe Carto::VisualizationsExportService2 do
       imported_visualization.attributions.should eq original_visualization.attributions
       imported_visualization.bbox.should eq original_visualization.bbox
       imported_visualization.display_name.should eq original_visualization.display_name
+      imported_visualization.version.should eq original_visualization.version
 
       verify_maps_match(imported_visualization.map, original_visualization.map)
 
@@ -1024,6 +1056,10 @@ describe Carto::VisualizationsExportService2 do
       imported_map.view_bounds_ne.should eq original_map.view_bounds_ne
       imported_map.scrollwheel.should eq original_map.scrollwheel
       imported_map.legends.should eq original_map.legends
+
+      map_options = imported_map.options.with_indifferent_access
+      original_map_options = original_map.options.with_indifferent_access
+      map_options.should eq original_map_options
     end
 
     def verify_layers_match(imported_layers, original_layers, importing_user: nil)

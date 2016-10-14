@@ -11,7 +11,7 @@
       <% if (!isSimple) { %>
       <div class="js-share-users"></div>
       <% } %>
-      <div class="Editor-HeaderInfo-publishDate u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><%- published %></div>
+      <p class="Editor-HeaderInfo-publishDate u-ellipsis CDB-Text CDB-Size-medium u-altTextColor"><%- published %></p>
     </div>
   </div>
 </div>

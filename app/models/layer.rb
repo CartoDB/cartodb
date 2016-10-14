@@ -215,7 +215,8 @@ class Layer < Sequel::Model
   end
 
   def affected_table_names(query)
-    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+    query_tables = user.in_database["SELECT unnest(CDB_QueryTables(?))", query]
+    query_tables.map(:unnest)
   end
 
   def map

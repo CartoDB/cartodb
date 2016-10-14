@@ -880,6 +880,10 @@ class User < Sequel::Model
     return false
   end
 
+  def engine_enabled?
+    has_organization? ? organization.engine_enabled : engine_enabled
+  end
+
   def viewable_by?(user)
     self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
   end
@@ -1606,6 +1610,10 @@ class User < Sequel::Model
   def force_editor?
     # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
     builder_enabled == false || !builder_enabled?
+  end
+
+  def new_visualizations_version
+    force_builder? ? 3 : 2
   end
 
   private

@@ -275,6 +275,7 @@
           "buckets": "bucket |||| buckets"
         },
         "input-categories": {
+          "null": "Null",
           "others": "Others"
         }
       }
@@ -350,6 +351,11 @@
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
         "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+      },
+      "connector-warning-details": {
+        "continue-btn": "Continue",
+        "too-many-rows": "You may have reached the maximum limit.",
+        "unable-to-import-all-rows": "For a database connector import, the number of rows allowed is %{maxRowsPerConnectorImport}. Some of your data may not be imported."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -457,6 +463,15 @@
       }
     },
     "modals": {
+      "editor-vis-warning": {
+        "title": "You are about to open an Editor map with the new Builder",
+        "explanation": "Builder offers an easy to use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
+        "question": "Opening your map in Builder may cause the loss of any feature not supported yet. Are you sure you want to continue?",
+        "go-back": "No, go back to dashboard",
+        "open": "Yes, open with Builder",
+        "duplicate": "duplicate and open with Builder",
+        "opening-title": "Opening %{name} with Builder"
+      },
       "add-basemap": {
         "modal-title": "Add a custom basemap",
         "modal-desc": "Select from these great resources",
@@ -600,7 +615,7 @@
           },
           "link": {
             "type": "LINK",
-            "title": "People with Link",
+            "title": "Only accessible with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
@@ -620,7 +635,7 @@
           },
           "upgrade": {
             "title": "Interested on sharing within your organization?",
-            "desc": "%{contact} for try one of our Enterprise plans",
+            "desc": "%{contact} to try one of our Enterprise plans",
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },
@@ -1203,7 +1218,9 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CARTO Logo",
-            "widgets": "Widgets column"
+            "widgets": "Widgets column",
+            "legends": "Legends",
+            "dashboard_menu": "Render dashboard menu"
           }
         }
       }
@@ -1319,6 +1336,7 @@
         "layer-added": "Layer added successfully."
       },
       "basemap": {
+        "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",

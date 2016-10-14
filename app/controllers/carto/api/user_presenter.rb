@@ -87,6 +87,7 @@ module Carto
           table_count: @user.table_count,
           viewer: @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
+          owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
@@ -155,7 +156,8 @@ module Carto
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
-            google_maps_enabled: @user.google_maps_enabled?
+            google_maps_enabled: @user.google_maps_enabled?,
+            engine_enabled: @user.engine_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

@@ -122,7 +122,10 @@ class DataImport < Sequel::Model
   end
 
   def before_save
-    self.logger = self.log.id unless self.logger.present?
+    unless logger.present?
+      log.save
+      self.logger = log.id
+    end
     self.updated_at = Time.now
   end
 
@@ -437,16 +440,15 @@ class DataImport < Sequel::Model
   end
 
   def instantiate_log
-    uuid = self.logger
+    uuid = logger
 
     if valid_uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(
-          type:     CartoDB::Log::TYPE_DATA_IMPORT,
-          user_id:  current_user.id
+        type:     CartoDB::Log::TYPE_DATA_IMPORT,
+        user_id:  current_user.id
       )
-      self.log.store
     end
   end
 

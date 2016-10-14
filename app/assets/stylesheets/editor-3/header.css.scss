@@ -56,7 +56,16 @@
   @include flex(1);
   display: block;
   width: 0;
-  padding-right: 16px;
+  margin-right: 20px;
+
+  &.is-larger {
+    width: auto;
+  }
+}
+.Editor-HeaderInfo-details {
+  @include display-flex();
+  @include align-items(center);
+  @include flex(0 1 100%);
 }
 .Editor-HeaderInfo-actions {
   @include display-flex();
@@ -103,5 +112,5 @@
   }
 }
 .Editor-HeaderInfo-publishDate {
-  max-width: 160px;
+  @include flex(1);
 }

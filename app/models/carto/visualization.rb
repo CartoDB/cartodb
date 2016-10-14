@@ -24,6 +24,8 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
 
+  V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -60,6 +62,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :state, class_name: Carto::State
   after_save :save_state_if_needed
+
+  validates :version, presence: true
+
+  before_validation :set_default_version
+
+  def set_default_version
+    self.version ||= user.try(:new_visualizations_version)
+  end
 
   def self.columns
     super.reject { |c| c.name == 'url_options' }
@@ -429,6 +439,22 @@ class Carto::Visualization < ActiveRecord::Base
 
   def state
     super ? super : build_state
+  end
+
+  def mark_as_vizjson2
+    $tables_metadata.SADD(V2_VISUALIZATIONS_REDIS_KEY, id)
+  end
+
+  def uses_vizjson2?
+    $tables_metadata.SISMEMBER(V2_VISUALIZATIONS_REDIS_KEY, id) > 0
+  end
+
+  def open_in_editor?
+    version != 3 && uses_vizjson2?
+  end
+
+  def can_be_automatically_migrated?
+    overlays.builder_incompatible.none?
   end
 
   private

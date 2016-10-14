@@ -40,6 +40,7 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 * Fixes for organization invitations
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
+* Fixed an issue registering table dependencies for users with hyphens in the username
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.

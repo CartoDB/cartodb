@@ -1,11 +1,11 @@
 module Carto
   module Configuration
     def db_config
-      @@db_config ||= YAML.load(File.read(db_config_file))
+      @@db_config ||= YAML.load(File.read(db_config_file)).freeze
     end
 
     def app_config
-      @@app_config ||= YAML.load_file(app_config_file)
+      @@app_config ||= YAML.load_file(app_config_file).freeze
     end
 
     def env_app_config

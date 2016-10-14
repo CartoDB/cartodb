@@ -19,7 +19,7 @@ var LayerLegendsView = Backbone.View.extend({
 
     this.tryContainerVisibility = options.tryContainerVisibility;
 
-    this.model.on('change:visible', this._onLayerVisibilityChanged, this);
+    this.model.on('change:visible', this.render, this);
     this.model.on('change:layer_name', this.render, this);
 
     this._getLegendModels().forEach(function (model) {
@@ -31,27 +31,52 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   render: function () {
-    var showLegends = this.settingsModel.get('showLegends');
+    var showLegends = this._shouldLegendsBeVisible();
     var showLayerSelector = this._shouldLayerSelectorBeVisible();
-    var shouldVisible = showLayerSelector || this.model.legends.hasAnyLegend() && showLegends;
+    var shouldVisible = this._shouldLayerLegendsBeVisible();
+
+    this.$el.html(
+      template({
+        shouldVisible: shouldVisible,
+        layerName: this.model.getName(),
+        isLayerVisible: this._isLayerVisible(),
+        showLegends: showLegends,
+        showLayerSelector: showLayerSelector
+      })
+    );
 
     if (shouldVisible) {
-      this.$el.html(
-        template({
-          layerName: this.model.getName(),
-          isLayerVisible: this._isLayerVisible(),
-          showLegends: showLegends,
-          showLayerSelector: showLayerSelector
-        })
-      );
-
       this._renderLegends();
-    } else {
-      this.$el.empty();
     }
 
     this.tryContainerVisibility();
     return this;
+  },
+
+  _shouldLegendsBeVisible: function () {
+    var showLegends = this.settingsModel.get('showLegends');
+    return showLegends && this._isLayerVisible();
+  },
+
+  _shouldLayerLegendsBeVisible: function () {
+    var isEmbed = this._isEmbed;
+    var showLayerSelector = this.settingsModel.get('showLayerSelector');
+    var showLegends = this.settingsModel.get('showLegends');
+    var isSettingsView = !!this.settingsModel.get('settingsView');
+    var hasLegends = this.model.legends.hasAnyLegend();
+    var shouldVisible;
+
+    if (!isEmbed) {
+      if (!isSettingsView) {
+        shouldVisible = this._isLayerVisible() && showLegends && hasLegends;
+      } else {
+        shouldVisible = showLayerSelector || this._isLayerVisible() && showLegends && hasLegends;
+      }
+    } else {
+      shouldVisible = showLayerSelector || this._isLayerVisible() && showLegends && hasLegends;
+    }
+
+    return shouldVisible;
   },
 
   _shouldLayerSelectorBeVisible: function () {
@@ -88,27 +113,6 @@ var LayerLegendsView = Backbone.View.extend({
     } else {
       this.model.hide();
     }
-  },
-
-  _onLayerVisibilityChanged: function () {
-    var toggleLayerCheckbox = this.$('.js-toggle-layer');
-    if (this._isLayerVisible()) {
-      toggleLayerCheckbox.prop('checked', true);
-      this._enable();
-    } else {
-      toggleLayerCheckbox.prop('checked', false);
-      this._disable();
-    }
-  },
-
-  _enable: function () {
-    this.$el.removeClass('is-disabled');
-    _.invoke(this._getLegendViews(), 'enable');
-  },
-
-  _disable: function () {
-    this.$el.addClass('is-disabled');
-    _.invoke(this._getLegendViews(), 'disable');
   },
 
   _getLegendViews: function () {

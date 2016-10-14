@@ -1,6 +1,6 @@
 require 'pg'
 require 'carto/configuration'
-require_dependency 'redis_factory'
+require 'redis_factory'
 
 module CartoDB
   module DataMover

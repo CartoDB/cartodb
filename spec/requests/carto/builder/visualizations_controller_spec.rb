@@ -6,6 +6,11 @@ describe Carto::Builder::VisualizationsController do
 
   include_context 'users helper'
 
+  before(:all) do
+    @user1.builder_enabled = true
+    @user1.save
+  end
+
   describe '#show' do
     before(:each) do
       map = FactoryGirl.create(:map, user_id: @user1.id)

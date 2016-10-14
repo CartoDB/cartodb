@@ -11,6 +11,10 @@
     </div>
 
     <div class="Editor-HeaderInfo-details u-lSpace">
+      <% if (!hasWriteAccess) { %>
+        <span class="Tag CDB-Text CDB-Size-small u-rSpace u-upperCase js-readPermissionTag"><%- _t('dataset.read') %></span>
+      <% } %>
+
       <% if (isCustomQueryApplied) { %>
         <span class="Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small u-secondaryTextColor u-rSpace"><%- _t('dataset.sql') %></span>
       <% } %>

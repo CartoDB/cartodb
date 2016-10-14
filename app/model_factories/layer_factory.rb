@@ -4,6 +4,7 @@ require_relative '../../lib/carto/styles/style'
 require_relative '../../lib/carto/styles/point'
 require_relative '../../lib/carto/styles/line'
 require_relative '../../lib/carto/styles/polygon'
+require_relative '../../lib/carto/styles/geometry'
 require_relative '../../lib/carto/form'
 
 module ModelFactories

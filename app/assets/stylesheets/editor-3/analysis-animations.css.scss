@@ -1025,6 +1025,38 @@
   }
 }
 
+/* CALCULATE CLUSTERS OF POINTS */
+.Analysis-animation.is-kmeans {
+  .Dot {
+    fill: #636D72;
+  }
+  &.has-autoplay,
+  &:hover {
+    .Dot {
+      transform-origin: 50% 50%;
+      animation-duration: 300ms;
+      animation-fill-mode: forwards;
+      animation-timing-function: ease-in-out;
+    }
+    .Dot.Dot--gray {
+      animation-name: Analysis-toColorGray;
+      animation-delay: 200ms;
+    }
+    .Dot.Dot--green {
+      animation-name: Analysis-toColorGreen;
+      animation-delay: 500ms;
+    }
+    .Dot.Dot--darkGray {
+      animation-name: Analysis-toColorDarkGray;
+      animation-delay: 800ms;
+    }
+    .Dot.Dot--white {
+      animation-name: Analysis-toColorWhite;
+      animation-delay: 1000ms;
+    }
+  }
+}
+
 @keyframes Analysis-fadeOut {
   from {
     opacity: 1;
@@ -1204,6 +1236,45 @@
   }
 }
 
+@keyframes Analysis-toColorGreen {
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+    fill: #9DE0AD;
+  }
+}
+
+@keyframes Analysis-toColorGray {
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+    fill: #979EA1;
+  }
+}
+
+@keyframes Analysis-toColorDarkGray {
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+    fill: #636D72;
+  }
+}
+
+@keyframes Analysis-toColorWhite {
+  50% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+    fill: #FFF;
+  }
+}
 
 @keyframes Analysis-lineH {
   from {

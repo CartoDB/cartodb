@@ -3,7 +3,7 @@ var View = require('../../../core/view');
 var MAPZEN = require('../../../geo/geocoder/mapzen-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
-var Geometry = require('../../../geo/geometry');
+var Point = require('../../../geo/geometry-models/point.js');
 var template = require('./search_template.tpl');
 var infowindowTemplate = require('./search_infowindow_template.tpl');
 
@@ -45,6 +45,7 @@ var Search = View.extend({
   },
 
   initialize: function () {
+    this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
   },
@@ -189,13 +190,13 @@ var Search = View.extend({
   },
 
   _createPin: function (position, address) {
-    this._searchPin = this.mapView._addGeomToMap(
-      new Geometry({
-        geojson: { type: 'Point', 'coordinates': [position[1], position[0]] },
-        iconUrl: this.options.iconUrl,
-        iconAnchor: this.options.iconAnchor
-      })
-    );
+    this._searchPin = new Point({
+      latlng: [position[0], position[1]],
+      iconUrl: this.options.iconUrl,
+      iconAnchor: this.options.iconAnchor
+    });
+
+    this.map.addGeometry(this._searchPin);
   },
 
   _toggleSearchInfowindow: function () {
@@ -205,7 +206,7 @@ var Search = View.extend({
 
   _destroyPin: function () {
     if (this._searchPin) {
-      this.mapView._removeGeomFromMap(this._searchPin);
+      this.map.removeGeometry(this._searchPin);
       delete this._searchPin;
     }
   },

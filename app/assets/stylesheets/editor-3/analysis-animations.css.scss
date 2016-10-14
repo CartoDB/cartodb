@@ -101,7 +101,7 @@
 }
 
 /* FILTER BY LAYER */
-.Analysis-animation.is-filter-layer {
+.Analysis-animation.is-filter-by-node-column {
   .Line {
     fill-opacity: 0;
   }
@@ -477,7 +477,7 @@
   }
 }
 
-.Analysis-animation.is-intersect {
+.Analysis-animation.is-aggregate-intersection {
   .intersect-layer {
     fill-opacity: 0;
   }
@@ -579,9 +579,9 @@
   }
 }
 
-/* JOIN COLUMNS */
+/* JOIN COLUMNS FROM SECOND LAYER */
 
-.Analysis-animation.is-join-columns {
+.Analysis-animation.is-merge {
   &.has-autoplay,
   &:hover {
     .Path {
@@ -786,7 +786,7 @@
 }
 
 /* CONNECT WITH LINES */
-.Analysis-animation.is-connect-with-lines {
+.Analysis-animation.is-line-to-single-point {
   .Line {
     fill: none;
   }

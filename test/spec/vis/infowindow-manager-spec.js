@@ -30,18 +30,25 @@ describe('src/vis/infowindow-manager.js', function () {
       layersCollection: this.map.layers
     });
 
-    this.layerView = new Backbone.Model();
+    var layerView = this.layerView = new Backbone.Model();
+
+    var MyMapView = MapView.extend({
+      _getLayerViewFactory: function () {
+        return {
+          createLayerView: function () {
+            return layerView;
+          }
+        };
+      }
+    });
+
     this.layerView.model = cartoDBLayerGroup;
     spyOn(cartoDBLayerGroup, 'fetchAttributes').and.callFake(function (layerIndex, featureId, callback) {
       callback({ name: 'juan' });
     });
 
-    var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
-    layerViewFactory.createLayerView.and.returnValue(this.layerView);
-
-    this.mapView = new MapView({
+    this.mapView = new MyMapView({
       map: this.map,
-      layerViewFactory: layerViewFactory,
       layerGroupModel: new Backbone.Model()
     });
 

@@ -6,14 +6,10 @@ var MapView = View.extend({
   initialize: function () {
     if (this.options.map === undefined) throw new Error('map is required');
     if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
-    if (this.options.layerViewFactory === undefined) throw new Error('layerViewFactory is required');
-    if (this.options.geometryViewFactory === undefined) throw new Error('geometryViewFactory is required');
 
     this._cartoDBLayerGroup = this.options.layerGroupModel;
     this.map = this.options.map;
     this.add_related_model(this.map);
-    this._layerViewFactory = this.options.layerViewFactory;
-    this._geometryViewFactory = this.options.geometryViewFactory;
 
     this._cartoDBLayerGroupView = null;
     this.autoSaveBounds = false;
@@ -34,6 +30,14 @@ var MapView = View.extend({
 
     this.map.geometries.on('add', this._onGeometryAdded, this);
     this.on('newLayerView', this._onNewLayerViewAdded, this);
+  },
+
+  _getLayerViewFactory: function () {
+    throw new Error('subclasses of MapView must implement _getLayerViewFactory');
+  },
+
+  _getGeometryViewFactory: function () {
+    throw new Error('subclasses of MapView must implement _getGeometryViewFactory');
   },
 
   _onNewLayerViewAdded: function (layerView, layerModel) {
@@ -84,7 +88,7 @@ var MapView = View.extend({
   },
 
   _onGeometryAdded: function (geometry) {
-    var geometryView = this._geometryViewFactory.createGeometryView(geometry, this);
+    var geometryView = this._getGeometryViewFactory().createGeometryView(geometry, this);
     geometryView.render();
   },
 
@@ -216,7 +220,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap());
   },
 
   _removeLayers: function () {

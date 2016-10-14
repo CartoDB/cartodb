@@ -4,17 +4,16 @@ var L = require('leaflet');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
+var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
+var LeafletGeometryViewFactory = require('./geometries/view-factory');
 
 var LeafletMapView = MapView.extend({
 
   initialize: function() {
-
-    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
-
     MapView.prototype.initialize.call(this);
 
     var self = this;
-
+    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
     var center = this.map.get('center');
 
     var mapConfig = {
@@ -115,6 +114,18 @@ var LeafletMapView = MapView.extend({
     if (bounds) {
       this.showBounds(bounds);
     }
+  },
+
+  _getLayerViewFactory: function () {
+    this._layerViewFactory = this._layerViewFactory || new LeafletLayerViewFactory({
+      vector: this.map.get('vector')
+    });
+
+    return this._layerViewFactory;
+  },
+
+  _getGeometryViewFactory: function () {
+    return LeafletGeometryViewFactory;
   },
 
   // this replaces the default functionality to search for

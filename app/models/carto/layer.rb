@@ -239,15 +239,7 @@ module Carto
       options && options['category']
     end
 
-    def copy(override_attributes = {})
-      Carto::Layer.new(public_values.select { |k, _| k != 'id' }.merge(override_attributes))
-    end
-
     private
-
-    def public_values
-      Hash[::Layer::PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] }]
-    end
 
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 

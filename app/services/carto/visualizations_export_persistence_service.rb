@@ -61,7 +61,7 @@ module Carto
         map.data_layers.each(&:register_table_dependencies)
 
         new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
-        new_user_layers.map(&:copy).map { |l| user.layers << l }
+        new_user_layers.map(&:dup).map { |l| user.layers << l }
       end
 
       # Propagate changes (named maps, default permissions and so on)

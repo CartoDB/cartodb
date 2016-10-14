@@ -637,7 +637,7 @@
 .Analysis-animation.is-sampling {
   &.has-autoplay,
   &:hover {
-    .Dot--withAnalysis-fadeOut {
+    .Dot--withFadeOut {
       transform-origin: 50% 50%;
       animation-name: Analysis-greenOut;
       animation-duration: 500ms;

@@ -19,7 +19,9 @@ var Map = Model.extend({
     keyboard: true,
     provider: 'leaflet',
     // enforce client-side rendering using GeoJSON vector tiles
-    vector: false
+    vector: false,
+    popupsEnabled: true,
+    isFeatureInteractivityEnabled: false
   },
 
   initialize: function (attrs, options) {
@@ -143,6 +145,45 @@ var Map = Model.extend({
 
   _removeLayerModelFromCollection: function (layerModel) {
     return this.layers.remove(layerModel);
+  },
+
+  isInteractive: function () {
+    return this.isFeatureInteractivityEnabled() ||
+      this.arePopupsEnabled() && this._isAnyCartoDBLayerInteractive();
+  },
+
+  _isAnyCartoDBLayerInteractive: function () {
+    return _.any(this.layers.getCartoDBLayers(), function (layerModel) {
+      return layerModel.hasInteraction();
+    });
+  },
+
+  enableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', true);
+  },
+
+  disableFeatureInteractivity: function () {
+    this.set('isFeatureInteractivityEnabled', false);
+  },
+
+  isFeatureInteractivityEnabled: function () {
+    return !!this.get('isFeatureInteractivityEnabled');
+  },
+
+  enablePopups: function () {
+    this.set('popupsEnabled', true);
+  },
+
+  disablePopups: function () {
+    this.set('popupsEnabled', false);
+  },
+
+  arePopupsEnabled: function () {
+    return !!this.get('popupsEnabled');
+  },
+
+  arePopupsDisabled: function () {
+    return !this.arePopupsEnabled();
   },
 
   // INTERNAL CartoDB.js METHODS

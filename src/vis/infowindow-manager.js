@@ -24,6 +24,7 @@ InfowindowManager.prototype.manage = function (mapView, map) {
   }, this);
   this._map.layers.each(this._addInfowindowForLayer, this);
   this._map.layers.bind('add', this._addInfowindowForLayer, this);
+  this._map.on('change:popupsEnabled', this._onPopupsEnabledChanged, this);
 };
 
 InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
@@ -35,14 +36,6 @@ InfowindowManager.prototype._addInfowindowForLayer = function (layerModel) {
       this._bindFeatureClickEvent(layerView);
     }
     this._bindInfowindowModel(layerView, layerModel);
-
-    layerView.bind('mouseover', function () {
-      this._mapView.setCursor('pointer');
-    }, this);
-
-    layerView.bind('mouseout', function (m, layer) {
-      this._mapView.setCursor('auto');
-    }, this);
   }
 };
 
@@ -61,38 +54,40 @@ InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerMo
 
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
-    var layerModel = layerView.model.getLayerAt(layerIndex);
-    if (!layerModel) {
-      throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
-    }
-
-    if (!layerModel.infowindow.hasFields()) {
-      return;
-    }
-
-    this._updateInfowindowModel(layerModel.infowindow);
-
-    this._infowindowModel.set({
-      latlng: latlng,
-      visibility: true
-    });
-
-    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
-
-    if (layerView.tooltipView) {
-      layerView.tooltipView.setFilter(function (feature) {
-        return feature.cartodb_id !== data.cartodb_id;
-      }).hide();
-    }
-
-    var clearFilter = function (infowindowModel) {
-      if (!infowindowModel.get('visibility')) {
-        layerView.tooltipView && layerView.tooltipView.setFilter(null);
+    if (this._map.arePopupsEnabled()) {
+      var layerModel = layerView.model.getLayerAt(layerIndex);
+      if (!layerModel) {
+        throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
       }
-    };
 
-    this._infowindowModel.unbind('change:visibility', clearFilter);
-    this._infowindowModel.once('change:visibility', clearFilter);
+      if (!layerModel.infowindow.hasFields()) {
+        return;
+      }
+
+      this._updateInfowindowModel(layerModel.infowindow);
+
+      this._infowindowModel.set({
+        latlng: latlng,
+        visibility: true
+      });
+
+      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+
+      if (layerView.tooltipView) {
+        layerView.tooltipView.setFilter(function (feature) {
+          return feature.cartodb_id !== data.cartodb_id;
+        }).hide();
+      }
+
+      var clearFilter = function (infowindowModel) {
+        if (!infowindowModel.get('visibility')) {
+          layerView.tooltipView && layerView.tooltipView.setFilter(null);
+        }
+      };
+
+      this._infowindowModel.unbind('change:visibility', clearFilter);
+      this._infowindowModel.once('change:visibility', clearFilter);
+    }
   }, this);
 };
 
@@ -132,14 +127,14 @@ InfowindowManager.prototype._bindInfowindowModel = function (layerView, layerMod
       this._reloadVis();
     } else {
       if (this._isLayerInfowindowActiveAndVisible(layerModel)) {
-        this._infowindowModel.set('visibility', false);
+        this._hideInfowindow();
       }
     }
   }, this);
 
   layerModel.bind('change:visible', function () {
     if (this._isLayerInfowindowActiveAndVisible(layerModel)) {
-      this._infowindowModel.set('visibility', false);
+      this._hideInfowindow();
     }
   }, this);
 };
@@ -160,6 +155,16 @@ InfowindowManager.prototype._reloadVisAndFetchAttributes = function (layerView, 
       this._fetchAttributes(layerView, layerModel);
     }.bind(this)
   });
+};
+
+InfowindowManager.prototype._onPopupsEnabledChanged = function () {
+  if (this._map.arePopupsDisabled()) {
+    this._hideInfowindow();
+  }
+};
+
+InfowindowManager.prototype._hideInfowindow = function () {
+  this._infowindowModel && this._infowindowModel.set('visibility', false);
 };
 
 module.exports = InfowindowManager;

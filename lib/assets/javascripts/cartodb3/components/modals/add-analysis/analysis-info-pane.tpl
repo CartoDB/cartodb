@@ -30,7 +30,7 @@
               <div class="Analysis-animation <% if (genericType) { %>is-<%- genericType %><% } %> has-autoplay js-animation is-rounded"></div>
               <h2 class="CDB-Text CDB-Size-huge is-light Analysis-moreInfoTitle"><%- title %></h2>
               <p class="CDB-Text CDB-Size-medium u-secondaryTextColor">
-                <%- _t('analyses-onboarding.' + genericType + '.description') %>
+                <%- _t('analyses-onboarding.' + genericType + '.description', analysisParams) %>
               </p>
             </div>
           </div>

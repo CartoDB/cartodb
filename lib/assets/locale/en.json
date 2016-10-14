@@ -49,6 +49,12 @@
     "next": "next",
   },
   "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE",
+    },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",

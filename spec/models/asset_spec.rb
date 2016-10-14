@@ -69,7 +69,8 @@ describe Asset do
       it 'should save the file when passing a full path as an argument' do
         asset = Asset.create user_id: @user.id, asset_file: (Rails.root + 'spec/support/data/cartofante_blue.png').to_s
         local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'')
-        File.exists?("#{Rails.root}/public#{local_url}").should be_true
+        path = Carto::Conf.new.public_uploads_path + local_url
+        File.exists?(path).should be_true
         asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/\d+cartofante_blue\.png.*/
       end
 
@@ -80,7 +81,8 @@ describe Asset do
           user_id: @user.id,
           asset_file: Rack::Test::UploadedFile.new(file_path, 'image/png'))
         local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '')
-        File.exists?("#{Rails.root}/public#{local_url}").should be_true
+        path = Carto::Conf.new.public_uploads_path + local_url
+        File.exists?(path).should be_true
         asset.public_url.should =~ /.*test\/#{@user.username}\/assets\/\d+cartofante_blue.png.*/
       end
 
@@ -97,7 +99,8 @@ describe Asset do
         serve_file file do |url|
           asset = Asset.create(user_id: @user.id, url: url)
           local_url = asset.public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'')
-          File.exists?("#{Rails.root}/public#{local_url}").should be_true
+          path = Carto::Conf.new.public_uploads_path + local_url
+          File.exists?(path).should be_true
           asset.public_url.should =~ /\/test\/test\/assets\/\d+cartofante_blue\.png/
         end
       end

@@ -55,6 +55,10 @@ module Carto
 
       private
 
+      def unauthorized
+        raise Carto::UnauthorizedError
+      end
+
       def analysis_definition_from_request
         analysis_json = json_post(request.raw_post)
 

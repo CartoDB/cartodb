@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Asset do
-
   before(:all) do
     @user = create_user username: 'test'
   end

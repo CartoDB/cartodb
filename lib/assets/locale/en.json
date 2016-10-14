@@ -676,7 +676,10 @@
             "body": "Add your map to your applications using this URL.",
             "link": "Read more.",
             "copy": "COPY",
-            "select": "SELECT"
+            "select": "SELECT",
+            "disabled": {
+              "body": "This sharing option is currently unavailable."
+            }
           },
           "mobile-sdk": {
             "title": "CARTO Mobile SDK",

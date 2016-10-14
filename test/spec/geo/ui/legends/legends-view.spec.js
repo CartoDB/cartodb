@@ -24,7 +24,8 @@ describe('geo/ui/legends/legends-view', function () {
 
     this.legendsView = new LegendsView({
       layersCollection: this.layersCollection,
-      settingsModel: this.settingsModel
+      settingsModel: this.settingsModel,
+      isEmbed: true
     });
 
     this.legendsView.render();

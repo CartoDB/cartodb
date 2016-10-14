@@ -64,7 +64,7 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     showLayerSelector = vizjson.options.layer_selector;
   }
 
-  var isEmbed = false;
+  var isEmbed = true;
   if (_.isBoolean(options.embedMode)) {
     isEmbed = options.embedMode;
   }

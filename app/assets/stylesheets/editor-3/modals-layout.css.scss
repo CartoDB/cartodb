@@ -76,6 +76,7 @@
 .Modal-inner {
   @include display-flex();
   @include flex(1);
+  overflow: hidden;
 }
 .Modal-inner--grid {
   @include flex(0 503px);

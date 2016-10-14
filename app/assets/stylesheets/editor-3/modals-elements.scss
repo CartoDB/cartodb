@@ -81,6 +81,8 @@
 .ModalBlockList-item.is-disabled .Analysis-animation {
   background-color: transparent;
   pointer-events: none;
+  filter: grayscale(100);
+  opacity: 0.6;
 }
 .ModalBlockList-item.is-disabled .u-actionTextColor {
   display: none;

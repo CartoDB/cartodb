@@ -1598,7 +1598,7 @@ class User < Sequel::Model
   end
 
   def builder_enabled?
-    has_organization? ? organization.builder_enabled : user.builder_enabled
+    has_organization? ? organization.builder_enabled : builder_enabled
   end
 
   def new_visualizations_version

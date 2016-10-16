@@ -10,9 +10,7 @@
     <text class="Georeference-point01-text" font-family="Open Sans" font-size="10" font-weight="300" fill="#FFFFFF">
       <tspan x="198" y="54">IP 214.80.33.47</tspan>
     </text>
-    <g>
-      <circle class="Dot Dot-01" fill="#9DE0AD" cx="43" cy="40" r="8"></circle>
-      <circle class="Dot Dot-02" fill="#9DE0AD" cx="183" cy="32" r="8"></circle>
-    </g>
+    <circle class="Dot Dot-01" fill="#9DE0AD" cx="43" cy="40" r="8"></circle>
+    <circle class="Dot Dot-02" fill="#9DE0AD" cx="183" cy="32" r="8"></circle>
   </g>
 </svg>

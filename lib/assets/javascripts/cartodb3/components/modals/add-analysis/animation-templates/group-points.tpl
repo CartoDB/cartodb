@@ -1,5 +1,5 @@
-<svg width="308px" height="98px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g fill="#9DE0AD" fill-rule="evenodd" transform="translate(70, 17)">
+<svg width="176" height="64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g fill="#9DE0AD">
     <polygon fill="none" class="Group-line" stroke="#9EE0AD" points="88.4493047 0.0859375 175.58896 0.0859375 175.58896 23.2574383 135.581141 32.7431641 135.581141 54.9504597 117.092373 54.9504597 101.982508 63.6816406 59.4503976 63.6816406 44.9366094 55.6914063 1 55.6914063 1 24.8914834 44.6201536 24.8914834 56.9346563 0"></polygon>
     <circle class="Group-point Group-point01" cx="60" cy="60" r="4"></circle>
     <circle class="Group-point Group-point02" cx="100" cy="4" r="4"></circle>

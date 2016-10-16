@@ -17,7 +17,11 @@
       animation-timing-function: ease-in-out;
       animation-delay: 100ms, 550ms;
     }
+    .Dot-01 {
+      transform-origin: 43px 40px;
+    }
     .Dot-02 {
+      transform-origin: 183px 32px;
       animation-delay: 600ms, 550ms;
     }
 
@@ -140,102 +144,75 @@
       opacity: 0;
     }
 
-    .Dot--withHighlight {
-      transform-origin: 50% 50%;
-      animation-name: Analysis-fadeIn,Animation-scaleIn,Analysis-dotAnalysisGreenIn;
-      animation-duration: 200ms,600ms,500ms;
-      animation-fill-mode: forwards,forwards,forwards;
-      opacity: 0;
-    }
-    .Dot-01 {
-      animation-delay: 100ms,100ms,900ms;
-    }
-    .Dot-02 {
-      animation-delay: 500ms,500ms,900ms;
-    }
-    .Dot-03 {
-      animation-delay: 50ms,50ms,900ms;
-    }
-    .Dot-04 {
-      animation-delay: 200ms,200ms,900ms;
-    }
-
     .Dot {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeIn, Animation-scaleIn;
       animation-duration: 200ms, 600ms;
       animation-fill-mode: forwards, forwards;
       opacity: 0;
     }
 
-    .Dot:nth-child(0) {
+    .Dot--withHighlight {
+      animation-name: Analysis-fadeIn,Animation-scaleIn,Analysis-dotAnalysisGreenIn;
+      animation-duration: 200ms,600ms,500ms;
+      animation-fill-mode: forwards,forwards,forwards;
+      opacity: 0;
+    }
+
+    .Dot-01 {
+      transform-origin: 129px 30px;
       animation-delay: 400ms;
     }
-    .Dot:nth-child(1) {
+    .Dot-02 {
+      transform-origin: 85px 24px;
       animation-delay: 300ms;
     }
-    .Dot:nth-child(2) {
+    .Dot-03 {
+      transform-origin: 235px 36px;
       animation-delay: 50ms;
     }
-    .Dot:nth-child(3) {
+    .Dot-04 {
+      transform-origin: 163px 68px;
       animation-delay: 100ms;
     }
-    .Dot:nth-child(4) {
+    .Dot-05 {
+      transform-origin: 217px 72px;
       animation-delay: 150ms;
     }
-    .Dot:nth-child(5) {
+    .Dot-06 {
+      transform-origin: 145px 40px;
       animation-delay: 250ms;
     }
-    .Dot:nth-child(6) {
+    .Dot-07 {
+      transform-origin: 201px 43px;
       animation-delay: 300ms;
     }
-    .Dot:nth-child(7) {
+    .Dot-08 {
+      transform-origin: 254px 42px;
       animation-delay: 350ms;
     }
-    .Dot:nth-child(8) {
+    .Dot-09 {
+      transform-origin: 167px 36px;
       animation-delay: 400ms;
     }
-    .Dot:nth-child(9) {
+    .Dot-10 {
+      transform-origin: 207px 20px;
       animation-delay: 150ms;
     }
-    .Dot:nth-child(10) {
-      animation-delay: 250ms;
+    .Dot-11 {
+      transform-origin: 103px 54px;
+      animation-delay: 100ms,100ms,900ms;
     }
-    .Dot:nth-child(11) {
-      animation-delay: 300ms;
+    .Dot-12 {
+      transform-origin: 137px 66px;
+      animation-delay: 500ms,500ms,900ms;
     }
-    .Dot:nth-child(12) {
-      animation-delay: 150ms;
+    .Dot-13 {
+      transform-origin: 76px 62px;
+      animation-delay: 50ms,50ms,900ms;
     }
-    .Dot:nth-child(13) {
-      animation-delay: 200ms;
-    }
-    .Dot:nth-child(14) {
-      animation-delay: 250ms;
-    }
-    .Dot:nth-child(15) {
-      animation-delay: 250ms;
-    }
-    .Dot:nth-child(16) {
-      animation-delay: 250ms;
-    }
-    .Dot:nth-child(17) {
-      animation-delay: 350ms;
-    }
-    .Dot:nth-child(18) {
-      animation-delay: 150ms;
-    }
-    .Dot:nth-child(19) {
-      animation-delay: 250ms;
-    }
-    .Dot:nth-child(20) {
-      animation-delay: 250ms;
-    }
-    .Dot:nth-child(21) {
-      animation-delay: 350ms;
-    }
-    .Dot:nth-child(22) {
-      animation-delay: 150ms;
+    .Dot-14 {
+      transform-origin: 175px 58px;
+      animation-delay: 200ms,200ms,900ms;
     }
   }
 }
@@ -347,7 +324,6 @@
     .Group-point13,
     .Group-point14,
     .Group-point15 {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeOut, Analysis-fadeIn, Animation-scaleIn;
       animation-duration: 300ms, 500ms, 500ms;
       animation-fill-mode: forwards;
@@ -357,48 +333,63 @@
     }
 
     .Group-point01 {
+      transform-origin: 60px 60px;
       animation-delay: 0ms, 350ms, 350ms;
     }
     .Group-point02 {
+      transform-origin: 100px 4px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point03 {
+      transform-origin: 132px 52px;
       animation-delay: 0ms, 450ms, 450ms;
     }
     .Group-point04 {
+      transform-origin: 116px 52px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point05 {
+      transform-origin: 116px 36px;
       animation-delay: 0ms, 500ms, 500ms;
     }
     .Group-point06 {
+      transform-origin: 116px 20px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point07 {
+      transform-origin: 172px 20px;
       animation-delay: 0ms, 550ms, 550ms;
     }
     .Group-point08 {
+      transform-origin: 172px 4px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point09 {
+      transform-origin: 44px 28px;
       animation-delay: 0ms, 500ms, 500ms;
     }
     .Group-point10 {
+      transform-origin: 4px 28px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point11 {
+      transform-origin: 4px 52px;
       animation-delay: 0ms, 450ms, 450ms;
     }
     .Group-point12 {
+      transform-origin: 44px 52px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point13 {
+      transform-origin: 100px 60px;
       animation-delay: 0ms, 400ms, 400ms;
     }
     .Group-point14 {
+      transform-origin: 132px 36px;
       animation-delay: 0ms, 600ms, 650ms;
     }
     .Group-point15 {
+      transform-origin: 60px 4px;
       animation-delay: 0ms, 700ms, 750ms;
     }
   }
@@ -407,7 +398,6 @@
 /* AREAS OF INFLUENCE */
 .Analysis-animation.is-area-of-influence {
   .aoi-area {
-    transform-origin: 50% 50%;
     opacity: 0;
   }
   &.has-autoplay,
@@ -454,23 +444,28 @@
       animation-fill-mode: forwards;
       animation-timing-function: ease-in;
     }
-
     .area01 {
+      transform-origin: 20px 36px;
       animation-delay: 1000ms;
     }
     .area02 {
+      transform-origin: 56px 28px;
       animation-delay: 900ms;
     }
     .area03 {
+      transform-origin: 76px 44px;
       animation-delay: 650ms;
     }
     .area04 {
+      transform-origin: 188px 28px;
       animation-delay: 700ms;
     }
     .area05 {
+      transform-origin: 156px 20px;
       animation-delay: 750ms;
     }
     .area06 {
+      transform-origin: 138px 60px;
       animation-delay: 800ms;
     }
 
@@ -597,16 +592,19 @@
       animation-duration: 200ms;
       animation-fill-mode: forwards;
       animation-timing-function: ease-in;
-      transform-origin: 50% 50%;
       opacity: 0;
     }
+
     .Dot-01 {
+      transform-origin: 7px 55px;
       animation-delay: 150ms;
     }
     .Dot-02 {
+      transform-origin: 99px 11px;
       animation-delay: 200ms;
     }
     .Dot-03 {
+      transform-origin: 171px 31px;
       animation-delay: 300ms;
     }
   }
@@ -679,7 +677,6 @@
     .Dot--withSplash {
       stroke-width: 1;
       fill: none;
-      transform-origin: 50% 50%;
       animation-name: Animation-highlightIn;
       animation-duration: 400ms;
       animation-fill-mode: forwards;
@@ -687,10 +684,21 @@
       stroke-dasharray: 1;
       opacity: 0;
     }
+    .Dot--withSplash--01 {
+      transform-origin: 91px 57px;
+    }
+    .Dot--withSplash--02 {
+      transform-origin: 223px 39px;
+    }
+    .Dot--withSplash--03 {
+      transform-origin: 151px 71px;
+    }
+    .Dot--withSplash--04 {
+      transform-origin: 189px 46px;
+    }
 
     .Dot--green {
       fill: #9DE0AD;
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeOut, Analysis-fadeIn, Animation-scaleIn;
       animation-duration: 300ms, 500ms, 500ms;
       animation-fill-mode: forwards;
@@ -698,13 +706,20 @@
       animation-delay: 500ms, 550ms;
       opacity: 0;
     }
+    .Dot--green.Dot-01 {
+      transform-origin: 91px 57px;
+      animation-delay: 600ms, 750ms;
+    }
     .Dot--green.Dot-02 {
+      transform-origin: 223px 39px;
       animation-delay: 600ms, 750ms;
     }
     .Dot--green.Dot-03 {
+      transform-origin: 151px 71px;
       animation-delay: 700ms, 750ms;
     }
     .Dot--green.Dot-04 {
+      transform-origin: 189px 46px;
       animation-delay: 800ms, 850ms;
     }
   }
@@ -725,7 +740,6 @@
     }
 
     .Filter-dot {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeIn, Animation-scaleIn;
       animation-duration: 200ms, 600ms;
       animation-fill-mode: forwards, forwards;
@@ -733,53 +747,67 @@
     }
 
     .circle01 {
+      transform-origin: 135px 4px;
       animation-delay: 400ms;
     }
     .circle02 {
+      transform-origin: 182px 26px;
       animation-delay: 300ms;
     }
     .circle03 {
+      transform-origin: 129px 27px;
       animation-delay: 50ms;
     }
     .circle04 {
+      transform-origin: 145px 56px;
       animation-delay: 100ms;
     }
     .circle05 {
+      transform-origin: 4px 46px;
       animation-delay: 150ms;
     }
     .circle06 {
+      transform-origin: 13px 8px;
       animation-delay: 250ms;
     }
     .circle07 {
+      transform-origin: 31px 38px;
       animation-delay: 300ms;
     }
     .circle08 {
+      transform-origin: 163px 20px;
       animation-delay: 350ms;
     }
     .Filter-dotHighlight {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeIn, Animation-scaleIn, Analysis-greenIn;
       animation-duration: 200ms, 400ms, 300ms;
       animation-fill-mode: forwards, forwards, forwards;
       opacity: 0;
     }
 
+
     .Filter-dotHighlight--01 {
+      transform-origin: 95px 20px;
       animation-delay: 200ms, 200ms, 800ms;
     }
     .Filter-dotHighlight--02 {
+      transform-origin: 103px 42px;
       animation-delay: 250ms, 250ms, 850ms;
     }
     .Filter-dotHighlight--03 {
+      transform-origin: 91px 52px;
       animation-delay: 300ms, 300ms, 900ms;
     }
     .Filter-dotHighlight--04 {
+      transform-origin: 65px 50px;
       animation-delay: 400ms, 400ms, 1000ms;
     }
     .Filter-dotHighlight--05 {
+      transform-origin: 57px 14px;
       animation-delay: 500ms, 500ms, 1050ms;
     }
     .Filter-dotHighlight--06 {
+      transform-origin: 73px 24px;
       animation-delay: 600ms, 600ms, 1060ms;
     }
   }
@@ -991,6 +1019,7 @@
       animation-delay: 1s;
     }
     .Dot--center {
+      transform-origin: 80px 38px;
       opacity: 0;
       animation-name: Analysis-fadeIn;
       animation-duration: 400ms;
@@ -999,14 +1028,13 @@
       animation-delay: 350ms;
     }
     .Dot {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeIn, Animation-scaleIn;
       animation-duration: 200ms, 600ms;
       animation-fill-mode: forwards, forwards;
       opacity: 0;
     }
     .Dot.Dot-02 {
-      transform-origin: 50% 50%;
+      transform-origin: 24px 4px;
       animation-name: Analysis-fadeIn;
       animation-duration: 200ms;
       animation-fill-mode: forwards;
@@ -1014,12 +1042,15 @@
       opacity: 0;
     }
     .Dot.Dot-01 {
+      transform-origin: 133px 10px;
       animation-delay: 600ms,600ms;
     }
     .Dot-03 {
+      transform-origin: 4px 57px;
       animation-delay: 1200ms,1200ms;
     }
     .Dot-04 {
+      transform-origin: 122px 61px;
       animation-delay: 900ms,900ms;
     }
   }

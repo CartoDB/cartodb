@@ -1,5 +1,5 @@
-<svg width="308px" height="98px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g fill="#636D72" fill-rule="evenodd" transform="translate(80, -21)">
+<svg width="148px" height="191px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g fill="#636D72" fill-rule="evenodd">
     <circle class="Centroid-pointsHighlight" fill="#9DE0AD" cx="74" cy="70" r="4"></circle>
     <circle class="Centroid-line" fill="none" stroke="#9DE0AD" cx="74.5" cy="70" r="70"></circle>
     <circle class="Centroid-points Centroid-points01" cx="4" cy="65" r="4"></circle>

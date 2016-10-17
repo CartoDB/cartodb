@@ -49,6 +49,15 @@
   overflow: hidden;
   z-index: 1;
 }
+
+.CDB-Widget-list--nodynamic button:hover {
+  cursor: default;
+}
+
+.CDB-Widget-list--nodynamic button {
+  cursor: default;
+}
+
 .CDB-Widget-list.is-hidden {
   display: none;
 }
@@ -73,6 +82,7 @@
 .CDB-Widget-listItem {
   display: block;
 }
+
 .CDB-Widget-listItemInner {
   margin: 0 $sMargin-section;
   padding: 4px 0;

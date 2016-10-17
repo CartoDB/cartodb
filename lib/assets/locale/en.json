@@ -759,7 +759,11 @@
           },
           "moran-cluster": {
             "title": "Detect outliers and clusters",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "high-low": "High-Low (HL)",
+            "high-high": "High-High (HH)",
+            "low-high": "Low-High (LH)",
+            "low-low": "Low-Low (LL)"
           },
           "kmeans": {
             "title": "Calculate clusters of points",

@@ -10,8 +10,8 @@ describe('src/util/formatter', function () {
     expect(formatter.formatNumber(5)).toBe('5');
     expect(formatter.formatNumber(5.0)).toBe('5');
     expect(formatter.formatNumber(5.00)).toBe('5');
-    expect(formatter.formatNumber(5.71)).toBe('5.71');
-    expect(formatter.formatNumber(-5.71)).toBe('-5.71');
+    expect(formatter.formatNumber(5.71)).toBe('5.7');
+    expect(formatter.formatNumber(-5.71)).toBe('-5.7');
     expect(formatter.formatNumber(186.7)).toBe('187');
     expect(formatter.formatNumber(96.7)).toBe('96.7');
     expect(formatter.formatNumber(500)).toBe('500');

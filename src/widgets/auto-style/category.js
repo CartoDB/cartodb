@@ -1,14 +1,17 @@
 var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
+var StyleUtils = require('./style-utils');
 
 module.exports = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('initialStyle');
     if (!style) return;
+
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      style = style.replace(new RegExp('\\' + 's' + item + ':.*?;', 'g'), this._generateCategoryRamp(item));
+      style = StyleUtils.changeStyle(style, item, this._generateCategoryRamp(item));
     }.bind(this));
-    return style;
+
+    return StyleUtils.replaceWrongSpaceChar(style);
   },
 
   _generateCategoryRamp: function (sym) {

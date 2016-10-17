@@ -1,12 +1,14 @@
 var AutoStyler = require('./auto-styler');
+var StyleUtils = require('./style-utils');
+
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('initialStyle');
     if (!style) return;
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      style = style.replace(new RegExp('\\' + 's' + item + ':.*?;', 'g'), this.getColorLine(item));
+      style = StyleUtils.changeStyle(style, item, this.getColorLine(item));
     }.bind(this));
-    return style;
+    return StyleUtils.replaceWrongSpaceChar(style);
   },
 
   getColorLine: function (sym) {

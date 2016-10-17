@@ -47,10 +47,6 @@ module Carto
 
       private
 
-      def unauthorized
-        raise Carto::UnauthorizedError
-      end
-
       def load_visualization
         visualization_id = uuid_parameter(:visualization_id)
 

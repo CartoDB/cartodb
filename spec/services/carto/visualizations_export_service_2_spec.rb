@@ -403,6 +403,8 @@ describe Carto::VisualizationsExportService2 do
 
   describe 'importing' do
     describe '#build_visualization_from_json_export' do
+      include Carto::Factories::Visualizations
+
       it 'fails if version is not 2' do
         expect {
           Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.merge(version: 1).to_json)
@@ -554,7 +556,7 @@ describe Carto::VisualizationsExportService2 do
           visualization.layers.select { |l| ['tiled'].include?(l.kind) }.count.should eq tiled_layers_count
           visualization.layers.select { |l| ['carto', 'torque'].include?(l.kind) }.count.should eq @user.max_layers
 
-          visualization.destroy
+          destroy_visualization(visualization.id)
         ensure
           @user.max_layers = old_max_layers
           @user.save
@@ -1198,7 +1200,7 @@ describe Carto::VisualizationsExportService2 do
                                   importing_user: @user,
                                   imported_name: "#{@visualization.name} Import")
 
-      imported_viz.destroy
+      destroy_visualization(imported_viz.id)
     end
 
     it 'importing an exported visualization several times should change imported name' do
@@ -1212,8 +1214,8 @@ describe Carto::VisualizationsExportService2 do
       imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user, built_viz)
       imported_viz2.name.should eq "#{@visualization.name} Import 2"
 
-      imported_viz.destroy
-      imported_viz2.destroy
+      destroy_visualization(imported_viz.id)
+      destroy_visualization(imported_viz2.id)
     end
 
     it 'importing an exported visualization into another account should change layer user_name option' do
@@ -1224,7 +1226,84 @@ describe Carto::VisualizationsExportService2 do
       imported_viz = Carto::Visualization.find(imported_viz.id)
       verify_visualizations_match(imported_viz, @visualization, importing_user: @user2)
 
-      imported_viz.destroy
+      destroy_visualization(imported_viz.id)
+    end
+
+    describe 'basemaps' do
+      describe 'custom' do
+        before(:each) do
+          @user2.reload
+          @user2.layers.clear
+
+          carto_layer = @visualization.layers.find { |l| l.kind == 'carto' }
+          carto_layer.options[:user_name] = @user.username
+          carto_layer.save
+        end
+
+        let(:mapbox_layer) do
+          {
+            urlTemplate: 'https://api.mapbox.com/styles/v1/wadus/ciu4g7i1500t62iqgcgt9xwez/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IaoianVhcmlnbmFjaW9zbCIsImEiOiJjaXU1ZzZmcXMwMDJ0MnpwYWdiY284dTFiIn0.uZuarRtgWTv20MdNCq856A',
+            attribution: nil,
+            maxZoom: 21,
+            minZoom: 0,
+            name: '',
+            category: 'Mapbox',
+            type: 'Tiled',
+            className: 'httpsapimapboxcomstylesv1wadusiu4g7i1500t62iqgcgt9xweztiles256zxy2xaccess_tokenpkeyj1iaoianvhbmlnbmfjaw9zbcisimeioijjaxu1zzzmcxmwmdj0mnpwywdiy284dtfiin0uzuarrtgwtv20mdncq856a'
+          }
+        end
+
+        it 'importing an exported visualization with a custom basemap should add the layer to user layers' do
+          base_layer = @visualization.base_layers.first
+          base_layer.options = mapbox_layer
+          base_layer.save
+
+          user_layers = @user2.layers
+          user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
+          user_layers_count = user_layers.count
+
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+          @user2.reload
+          new_user_layers = @user2.layers
+
+          new_user_layers.count.should eq user_layers_count + 1
+          new_user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should_not be_nil
+
+          destroy_visualization(imported_viz.id)
+
+          # Layer should not be the map one
+          @user2.reload
+          new_user_layers = @user2.layers
+
+          new_user_layers.count.should eq user_layers_count + 1
+        end
+
+        it 'importing an exported visualization with a custom basemap twice should add the layer to user layers only once' do
+          base_layer = @visualization.base_layers.first
+          base_layer.options = mapbox_layer
+          base_layer.save
+
+          user_layers = @user2.layers
+          user_layers.find { |l| l.options['urlTemplate'] == base_layer.options['urlTemplate'] }.should be_nil
+          user_layers_count = user_layers.count
+
+          exported_string = export_service.export_visualization_json_string(@visualization.id, @user)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+          built_viz = export_service.build_visualization_from_json_export(exported_string)
+          imported_viz2 = Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
+
+          @user2.reload
+          new_user_layers = @user2.layers
+
+          new_user_layers.count.should eq user_layers_count + 1
+          destroy_visualization(imported_viz2.id)
+          destroy_visualization(imported_viz.id)
+        end
+      end
     end
   end
 end

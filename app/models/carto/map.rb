@@ -152,7 +152,7 @@ class Carto::Map < ActiveRecord::Base
   def ensure_options
     self.options ||= {
       dashboard_menu: true,
-      layer_selector: true,
+      layer_selector: false,
       legends: legends,
       scrollwheel: scrollwheel
     }

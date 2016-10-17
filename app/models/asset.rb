@@ -139,9 +139,9 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/, '')
+      local_url = public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, '')
       begin
-        FileUtils.rm("#{public_uploads_path}#{local_url}")
+        FileUtils.rm((public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/'))
       rescue => e
         CartoDB::Logger.error(message: "Error removing asset", asset: self, exception: e)
       end

@@ -36,6 +36,10 @@ class Admin::VisualizationsController < Admin::AdminController
                                                          :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
+                                                         :show_organization_embed_map, :show_protected_public_map,
+                                                         :show_protected_embed_map,
+                                                         :public_map, :show_protected_public_map]
 
   after_filter :update_user_last_activity, only: [:index, :show]
   after_filter :track_dashboard_visit, only: :index
@@ -75,15 +79,15 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if table_action
       if current_user.force_builder? && @visualization.has_read_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'builder_dataset', id: request.params[:id])
+        return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
       elsif !@visualization.has_write_permission?(current_user)
         return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
       end
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
                                      id: request.params[:id], redirected: true)
-    elsif current_user.force_builder?
-      return redirect_to CartoDB.url(self, 'builder_visualization', id: request.params[:id])
+    elsif current_user.force_builder? && !@visualization.open_in_editor?
+      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
     end
 
     respond_to { |format| format.html }
@@ -692,5 +696,13 @@ class Admin::VisualizationsController < Admin::AdminController
     Carto::Tracking::Events::VisitedPrivatePage.new(current_user_id,
                                                     user_id: current_user_id,
                                                     page: 'dashboard').report
+  end
+
+  def redirect_to_builder_embed_if_v3
+    # @visualization is not loaded if the embed is cached
+    # Changing version invalidates the embed cache
+    if @visualization && @visualization.version == 3
+      redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
+    end
   end
 end

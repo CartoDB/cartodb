@@ -8,6 +8,14 @@ var Point = GeometryBase.extend({
     iconAnchor: [ 11, 11 ]
   },
 
+  getLatLng: function () {
+    return this.get('latlng');
+  },
+
+  setLatLng: function (latlng) {
+    return this.set('latlng', latlng);
+  },
+
   update: function (latlng) {
     if (!this.get('latlng')) {
       this.set('latlng', latlng);

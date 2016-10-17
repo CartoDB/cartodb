@@ -483,7 +483,11 @@ class Carto::User < ActiveRecord::Base
   end
 
   def builder_enabled?
-    has_organization? ? organization.builder_enabled : builder_enabled
+    if has_organization? && builder_enabled.nil?
+      organization.builder_enabled
+    else
+      builder_enabled
+    end
   end
 
   def new_visualizations_version

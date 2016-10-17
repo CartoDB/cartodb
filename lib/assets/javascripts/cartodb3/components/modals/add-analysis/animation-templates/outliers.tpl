@@ -2,16 +2,16 @@
   <g id="Mod-Analysis" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
     <g fill="#9DE0AD">
       <text x="8" y="19" class="Text Text-LH" font-family="OpenSans, Open Sans" font-size="10" font-weight="normal">
-        Low-High (LH)
+        <%- _t('components.modals.add-analysis.option-types.moran-cluster.low-high') %>
       </text>
       <text x="227" y="19" class="Text Text-HH" font-family="OpenSans, Open Sans" font-size="10" font-weight="normal">
-        High-High (HH)
+        <%- _t('components.modals.add-analysis.option-types.moran-cluster.high-high') %>
       </text>
       <text x="233" y="85" class="Text Text-HL" font-family="OpenSans, Open Sans" font-size="10" font-weight="normal">
-        Low-High (HL)
+        <%- _t('components.modals.add-analysis.option-types.moran-cluster.high-low') %>
       </text>
       <text x="10" y="85" class="Text Text-LL" font-family="OpenSans, Open Sans" font-size="10" font-weight="normal">
-        Low-Low (LL)
+        <%- _t('components.modals.add-analysis.option-types.moran-cluster.low-low') %>
       </text>
     </g>
     <g fill="#FFF">

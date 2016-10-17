@@ -39,7 +39,8 @@ module Carto
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
-        @mapcaps_data = Carto::Api::MapcapPresenter.new(@visualization.latest_mapcap).to_poro
+        latest_mapcap = @visualization.latest_mapcap
+        @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
       end
 
       private
@@ -50,8 +51,8 @@ module Carto
       end
 
       def redirect_to_editor_if_forced
-        if current_user.force_editor? || @visualization.open_in_editor?
-          redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id])
+        if !current_user.builder_enabled? || @visualization.open_in_editor?
+          redirect_to CartoDB.url(self, 'public_visualizations_show_map', { id: params[:id] }, current_user)
         end
       end
 

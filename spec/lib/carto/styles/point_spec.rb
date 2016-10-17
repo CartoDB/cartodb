@@ -11,8 +11,8 @@ module Carto
           "  marker-width: 7;\n"\
           "  marker-fill: #FFB927;\n"\
           "  marker-fill-opacity: 0.9;\n"\
-          "  marker-line-width: 1;\n"\
           "  marker-line-color: #FFF;\n"\
+          "  marker-line-width: 1;\n"\
           "  marker-line-opacity: 1;\n"\
           "  marker-placement: point;\n"\
           "  marker-type: ellipse;\n"\

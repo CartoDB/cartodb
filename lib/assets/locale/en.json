@@ -49,6 +49,12 @@
     "next": "next",
   },
   "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE",
+    },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",
@@ -244,9 +250,10 @@
   },
 
   "analysis-category": {
+    "all": "All",
+    "analyze-predict": "Analyze and predict",
     "create-clean": "Create and clean",
-    "data-transformation": "Transform",
-    "analyze-predict": "Analyze and predict"
+    "data-transformation": "Transform"
   },
   "form-components": {
     "editors": {
@@ -635,7 +642,7 @@
           },
           "upgrade": {
             "title": "Interested on sharing within your organization?",
-            "desc": "%{contact} for try one of our Enterprise plans",
+            "desc": "%{contact} to try one of our Enterprise plans",
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },
@@ -716,6 +723,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
+        "info-analysis": "Info about analysis",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -751,7 +759,11 @@
           },
           "moran-cluster": {
             "title": "Detect outliers and clusters",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "high-low": "High-Low (HL)",
+            "high-high": "High-High (HH)",
+            "low-high": "Low-High (LH)",
+            "low-low": "Low-Low (LL)"
           },
           "kmeans": {
             "title": "Calculate clusters of points",
@@ -1104,6 +1116,7 @@
     "sql": "SQL",
     "data": "Metadata",
     "updated": "Updated %{ago}",
+    "read": "Read",
     "options": {
       "add-row": "Add row",
       "add-column": "Add column",
@@ -1331,9 +1344,6 @@
         "add-layer": "Add layer",
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"
-      },
-      "notifier": {
-        "layer-added": "Layer added successfully."
       },
       "basemap": {
         "remove-baselayer": "Remove baselayer",
@@ -1953,8 +1963,8 @@
   "notifications": {
     "vis": {
       "failed": {
-        "title": "This map couldn't be rendered.",
-        "body": "Please refresh the page and contact us if the error persists."
+        "title": "This map couldn't be rendered",
+        "body": "Please refresh the page and contact us if the error persists"
       }
     },
     "analysis": {
@@ -1966,30 +1976,36 @@
     },
     "widgets": {
       "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added.",
+      "success": "Widget successfully added",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"
       },
       "loading": "Adding widget…",
-      "updating": "Updating widget…"
+      "updating": "Updating widget…",
+      "restoring": "Restoring widgets…",
+      "restored": "Widgets restored"
+    },
+    "layer": {
+      "error": "Layer error: %{error}",
+      "added": "Layer added successfully."
     },
     "cartocss": {
         "error": {
           "body": "%{body} %{error}",
           "title": "Error in CartoCSS styles:"
         },
-        "success": "CartoCSS applied."
+        "success": "CartoCSS applied"
     },
     "sql": {
       "alter-loading": "Modifying table…",
-      "alter-success": "Modifying applied.",
+      "alter-success": "Modifying applied",
       "applying": "Applying query…",
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"
       },
-      "success": "SQL query applied."
+      "success": "SQL query applied"
     }
   }
 }

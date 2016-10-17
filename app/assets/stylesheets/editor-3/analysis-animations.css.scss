@@ -831,7 +831,6 @@
       animation-delay: 1s;
     }
     .Dot {
-      transform-origin: 50% 50%;
       animation-name: Analysis-fadeIn, Analysis-greenIn;
       animation-duration: 200ms, 300ms;
       animation-fill-mode: forwards, forwards;
@@ -839,36 +838,47 @@
     }
 
     .Dot-01 {
+      transform-origin: 4px 29px;
       animation-delay: 400ms, 950ms;
     }
     .Dot-02 {
+      transform-origin: 34px 49px;
       animation-delay: 300ms, 1200ms;
     }
     .Dot-03 {
+      transform-origin: 24px 9px;
       animation-delay: 50ms, 1250ms;
     }
     .Dot-04 {
+      transform-origin: 44px 19px;
       animation-delay: 100ms, 1280ms;
     }
     .Dot-05 {
+      transform-origin: 63px 54px;
       animation-delay: 150ms, 1300ms;
     }
     .Dot-06 {
+      transform-origin: 74px 32px;
       animation-delay: 250ms, 1320ms;
     }
     .Dot-07 {
+      transform-origin: 93px 60px;
       animation-delay: 300ms, 1340ms;
     }
     .Dot-08 {
+      transform-origin: 83px 4px;
       animation-delay: 350ms, 1360ms;
     }
     .Dot-09 {
+      transform-origin: 103px 14px;
       animation-delay: 400ms, 1380ms;
     }
     .Dot-10 {
+      transform-origin: 112px 47px;
       animation-delay: 50ms, 1400ms;
     }
     .Dot-11 {
+      transform-origin: 144px 29px;
       animation-delay: 100ms, 1420ms;
     }
   }
@@ -1064,7 +1074,6 @@
   &.has-autoplay,
   &:hover {
     .Dot {
-      transform-origin: 50% 50%;
       animation-duration: 300ms;
       animation-fill-mode: forwards;
       animation-timing-function: ease-in-out;
@@ -1084,6 +1093,48 @@
     .Dot.Dot--white {
       animation-name: Analysis-toColorWhite;
       animation-delay: 1000ms;
+    }
+    .Dot--01 {
+      transform-origin: 4px 46px;
+    }
+    .Dot--02 {
+      transform-origin: 31px 38px;
+    }
+    .Dot--03 {
+      transform-origin: 13px 8px;
+    }
+    .Dot--04 {
+      transform-origin: 57px 14px;
+    }
+    .Dot--05 {
+      transform-origin: 65px 50px;
+    }
+    .Dot--06 {
+      transform-origin: 91px 52px;
+    }
+    .Dot--07 {
+      transform-origin: 103px 42px;
+    }
+    .Dot--08 {
+      transform-origin: 73px 24px;
+    }
+    .Dot--09 {
+      transform-origin: 95px 20px;
+    }
+    .Dot--10 {
+      transform-origin: 145px 56px;
+    }
+    .Dot--11 {
+      transform-origin: 129px 27px;
+    }
+    .Dot--12 {
+      transform-origin: 135px 4px;
+    }
+    .Dot--13 {
+      transform-origin: 163px 20px;
+    }
+    .Dot--14 {
+      transform-origin: 182px 26px;
     }
   }
 }

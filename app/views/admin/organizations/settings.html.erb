@@ -161,17 +161,19 @@
         </div>
       </div>
 
-      <div class="FormAccount-row">
-        <p class="CDB-Text CDB-Size-large u-bSpace--xl">Users API key</p>
-        <div class="FormAccount-rowData">
-          <button class="CDB-Button CDB-Button--secondary js-regenerateOrgUsersApiKey"  data-current_username="<%= current_user.username %>">
-            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Regenerate all API keys</span>
-          </button>
-          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="CDB-Text CDB-Size-small u-altTextColor">This involves all your organization users API keys</p>
+      <% if @organization.engine_enabled? %>
+        <div class="FormAccount-row">
+          <p class="CDB-Text CDB-Size-large u-bSpace--xl">Users API key</p>
+          <div class="FormAccount-rowData">
+            <button class="CDB-Button CDB-Button--secondary js-regenerateOrgUsersApiKey"  data-current_username="<%= current_user.username %>">
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Regenerate all API keys</span>
+            </button>
+            <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+              <p class="CDB-Text CDB-Size-small u-altTextColor">This involves all your organization users API keys</p>
+            </div>
           </div>
         </div>
-      </div>
+      <% end %>
 
       <% if current_user.google_maps_geocoder_enabled? && current_user.organization_owner? %>
 

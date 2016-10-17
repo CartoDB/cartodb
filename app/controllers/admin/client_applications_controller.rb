@@ -4,7 +4,8 @@ class Admin::ClientApplicationsController < Admin::AdminController
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
   before_filter :invalidate_browser_cache
-  before_filter :login_required, :engine_enabled?
+  before_filter :login_required
+  before_filter :engine_enabled?, only: :regenerate_api_key
 
   layout 'application'
 

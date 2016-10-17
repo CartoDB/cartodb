@@ -151,6 +151,26 @@ namespace :cartodb do
       end
     end
 
+    desc "Have all Builder visualizations mapcapped. Dry mode: `bundle exec rake cartodb:vizs:mapcap_builder_visualizations['--dry']`"
+    task :mapcap_builder_visualizations, [:dry] => :environment do |_, args|
+      dry = args[:dry] == '--dry'
+
+      condition = "version = 3 and type = 'derived'"
+      count = Carto::Visualization.where(condition).count
+      puts "Mapcapping up to #{count} v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
+
+      Carto::Visualization.find_each(conditions: condition) do |visualization|
+        begin
+          if !visualization.mapcapped?
+            puts "Mapcapping #{visualization.id}"
+            Carto::Mapcap.create!(visualization_id: visualization.id) unless dry
+          end
+        rescue => e
+          puts "ERROR mapcapping #{visualization}: #{e.inspect}"
+        end
+      end
+    end
+
     private
 
     def inconsistent?(viz)

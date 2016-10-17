@@ -56,6 +56,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @first_time    = !current_user.dashboard_viewed?
     @just_logged_in = !!flash['logged']
     @google_maps_query_string = current_user.google_maps_query_string
+    @main_message = Carto::UserNotification.where(user_id: current_viewer.id).first.notifications.include?(:main_message)
     current_user.view_dashboard
 
     respond_to do |format|

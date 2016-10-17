@@ -9,6 +9,16 @@
     <%= csrf_meta_tag -%>
   </head>
   <body>
+    <% if current_user.builder_enabled? && !@main_message %>
+      <div class="onboardingNotification Color-MainDark CDB-Text CDB-Size-medium">
+        <p>CARTO Builder has been activated in your account. Learn more about it and let us know what you think or contact us. Happy mapping!</p>
+
+        <button class="CDB-Shape js-close onboardingNotification-closeButton">
+          <div class="CDB-Shape-close is-medium is-white"></div>
+        </button>
+      </div>
+    <% end %>
+
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
       <%= render 'admin/shared/private_header' %>
 

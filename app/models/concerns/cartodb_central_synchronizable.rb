@@ -132,7 +132,7 @@ module Concerns
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
-          :viewer, :geocoder_provider, :isolines_provider, :routing_provider
+          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled
         )
         case action
         when :create

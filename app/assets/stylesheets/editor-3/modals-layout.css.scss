@@ -82,6 +82,9 @@
 .Modal-inner--grid {
   @include flex(0 503px);
 }
+.Modal-inner--medium {
+  @include flex(0 780px);
+}
 .Modal-inner--full {
   @include flex(0 944px);
 }

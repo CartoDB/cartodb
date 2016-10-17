@@ -458,6 +458,8 @@ describe Organization do
       Organization.any_instance.stubs(:geocoding_quota).returns 10
       Organization.any_instance.stubs(:get_here_isolines_calls).returns 30
       Organization.any_instance.stubs(:here_isolines_quota).returns 10
+      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns 30
+      Organization.any_instance.stubs(:mapzen_routing_quota).returns 10
       Organization.overquota.map(&:id).should include(@organization.id)
       Organization.overquota.size.should == Organization.count
     end
@@ -514,6 +516,8 @@ describe Organization do
       Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
       Organization.any_instance.stubs(:get_obs_general_calls).returns(0)
       Organization.any_instance.stubs(:obs_general_quota).returns(100)
+      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns(81)
+      Organization.any_instance.stubs(:mapzen_routing_quota).returns(100)
       Organization.overquota.should be_empty
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count
@@ -532,6 +536,8 @@ describe Organization do
       Organization.any_instance.stubs(:obs_general_quota).returns(100)
       Organization.any_instance.stubs(:get_obs_snapshot_calls).returns(81)
       Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
+      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns(0)
+      Organization.any_instance.stubs(:mapzen_routing_quota).returns(100)
       Organization.overquota.should be_empty
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count
@@ -550,6 +556,8 @@ describe Organization do
       Organization.any_instance.stubs(:obs_snapshot_quota).returns(100)
       Organization.any_instance.stubs(:get_obs_general_calls).returns(81)
       Organization.any_instance.stubs(:obs_general_quota).returns(100)
+      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns(0)
+      Organization.any_instance.stubs(:mapzen_routing_quota).returns(100)
       Organization.overquota.should be_empty
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count

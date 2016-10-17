@@ -4,7 +4,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
   before_filter :invalidate_browser_cache
-  before_filter :login_required
+  before_filter :login_required, :engine_enabled?
 
   layout 'application'
 
@@ -54,5 +54,12 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
     redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
                 :flash => {:success => "Your OAuth credentials have been updated successfully"}
+  end
+
+  private
+  def engine_enabled?
+    unless current_user.engine_enabled?
+      render_404
+    end
   end
 end

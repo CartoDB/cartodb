@@ -39,7 +39,8 @@ module Carto
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
-        @mapcaps_data = Carto::Api::MapcapPresenter.new(@visualization.latest_mapcap).to_poro
+        latest_mapcap = @visualization.latest_mapcap
+        @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
       end
 
       private

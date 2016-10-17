@@ -59,6 +59,8 @@ module CartoDB
     # Enable the asset pipeline
     config.assets.enabled = false
 
+    FileUtils.mkdir_p(log_dir_path) unless File.directory?(log_dir_path)
+
     config.paths['public'] = [public_uploads_path]
 
     config.assets.paths << Rails.root.join('bower_components')

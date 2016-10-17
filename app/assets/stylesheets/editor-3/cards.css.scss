@@ -6,12 +6,15 @@
   @include display-flex();
   @include flex(1 0 0);
   @include align-items(center);
+  @include justify-content(center);
   @include flex-direction(column);
+  min-height: 205px;
   margin-right: $baseSize * 2;
   padding: 20px;
   border: 1px solid $cWhite;
   border-radius: $halfBaseSize;
   background-color: $cWhite;
+  box-sizing: border-box;
 
   &:last-child {
     margin-right: 0;

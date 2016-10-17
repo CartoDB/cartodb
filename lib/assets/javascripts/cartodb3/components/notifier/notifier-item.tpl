@@ -1,4 +1,5 @@
-<li class="Notifier-item <%- (status === 'loading') ? 'is-working' : ''%>">
+<!--<div class="Notifier-item <%- (status === 'loading') ? 'is-working' : ''%> Notifier-item--<%- status %>">-->
+<div class="Notifier-item Notifier-item--<%- status %>">
 
   <% if (status === 'loading') { %>
   <div class="Notifier-icon CDB-LoaderIcon is-blue js-theme u-rSpace--m">
@@ -25,14 +26,10 @@
   <% } %>
 
   <div class="Notifier-info">
-    <p class="CDB-Text CDB-Size-medium"><%= info %></p>
+    <p class="CDB-Text CDB-Size-medium"><%= info %>. <% if (isActionable) { %> <span class="js-actionButton"></span> <% } %></p>
   </div>
-
-  <% if (isActionable) { %>
-    <div class="Notifier-actions js-actionButton"></div>
-  <% } %>
 
   <% if (isClosable) { %>
     <div class="Notifier-actions js-closeButton"></div>
   <% } %>
-</li>
+</div>

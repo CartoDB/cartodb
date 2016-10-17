@@ -5,7 +5,6 @@
 .Notifier {
   @include css3-prefix(hyphens, auto);
   margin: 0 -25px;
-  padding: 0 $baseSize * 3;
   border-top: 1px solid $cSecondaryLine;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -23,7 +22,6 @@
 
 .Notifier-inner {
   position: relative;
-  padding: $baseSize + 4 0;
   border-top: 1px solid $cSecondaryLine;
 
   .is-dark & {
@@ -37,9 +35,26 @@
 
 .Notifier-item {
   @include display-flex();
-  padding: $baseSize 0;
+  padding: 20px $baseSize * 3;
   color: $cSecondaryText;
 }
+
+.Notifier-item--success {
+  border-top: 1px solid #9DE0AD;
+  background: rgba(#9DE0AD, 0.12);
+  margin-top: -1px;
+}
+.Notifier-item--error {
+  border-top: 1px solid #F15743;
+  background: rgba(#F15743, 0.12);
+  margin-top: -1px;
+}
+.Notifier-item--warning {
+  border-top: 1px solid #F5A623;
+  background: #FEFEDD;
+  margin-top: -1px;
+}
+
 
 .Notifier-info {
   @include flex(1);

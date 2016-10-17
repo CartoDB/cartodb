@@ -36,11 +36,13 @@ module.exports = {
 
     var rangeBuckets = rule.getBucketsWithRangeFilter();
     var lastBucket = _.last(rangeBuckets);
+    var firstBucket = _.first(rangeBuckets);
 
     return {
       colors: generateColors(rangeBuckets),
       avg: rule.getFilterAvg(),
-      max: lastBucket.filter.end
+      max: lastBucket.filter.end,
+      min: firstBucket.filter.start
     };
   }
 };

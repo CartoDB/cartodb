@@ -368,6 +368,10 @@ class Carto::Visualization < ActiveRecord::Base
     entities.map(&:get_auth_token)
   end
 
+  def published?
+    version.nil? || version < 3 || mapcapped?
+  end
+
   def mapcapped?
     mapcaps.exists?
   end

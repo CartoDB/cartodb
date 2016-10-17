@@ -344,17 +344,40 @@ module.exports = cdb.core.View.extend({
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
+  _calculateBars: function () {
+    var data = this._dataviewModel.getData();
+    var min = this.model.get('min');
+    var max = this.model.get('max');
+    var loBarIndex = this.model.get('lo_index');
+    var hiBarIndex = this.model.get('hi_index');
+
+    if (!loBarIndex || !hiBarIndex) {
+      if (min && max && data.length > 0) {
+        loBarIndex = _.findWhere(data, {start: min}).bin;
+        hiBarIndex = _.findWhere(data, {start: max}).bin;
+      } else {
+        loBarIndex = 0;
+        hiBarIndex = data.length;
+      }
+    }
+
+    return {
+      loBarIndex: loBarIndex,
+      hiBarIndex: hiBarIndex
+    };
+  },
+
   _updateStats: function () {
     var data = this._dataviewModel.getData();
     var nulls = this._dataviewModel.get('nulls');
-    var min, max;
+    var bars = this._calculateBars();
+    var loBarIndex = bars.loBarIndex;
+    var hiBarIndex = bars.hiBarIndex;
+    var sum, avg, min, max;
 
     if (data && data.length) {
-      var loBarIndex = this.model.get('lo_index') || 0;
-      var hiBarIndex = this.model.get('hi_index') || data.length;
-
-      var sum = this._calcSum(data, loBarIndex, hiBarIndex);
-      var avg = this._calcAvg(data, loBarIndex, hiBarIndex);
+      sum = this._calcSum(data, loBarIndex, hiBarIndex);
+      avg = this._calcAvg(data, loBarIndex, hiBarIndex);
 
       if (loBarIndex >= 0 && loBarIndex < data.length) {
         min = data[loBarIndex].start;

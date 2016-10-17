@@ -58,6 +58,7 @@ module Carto
           {
             username: @user.username,
             email: @user.email,
+            event_origin: @user.force_builder? ? 'Builder' : 'Editor',
             plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
@@ -105,7 +106,7 @@ module Carto
         end
 
         def event_properties
-          { event_origin: 'Editor', creation_time: now }
+          { creation_time: now }
         end
 
         def days_with_decimals(time_object)

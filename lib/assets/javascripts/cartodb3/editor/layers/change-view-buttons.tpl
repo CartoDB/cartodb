@@ -1,4 +1,4 @@
-<ul class="u-flex u-alignCenter Editor-contextSwitcher u-flex u-alignCenter js-mapTableView
+<ul class="u-flex u-alignCenter Editor-contextSwitcher js-mapTableView
   <% if (isThereOtherWidgets) { %>is-moved<% } %>
   <% if (isThereTimeSeries) { %>has-timeSeries<% } %>
   ">
@@ -22,20 +22,25 @@
   </li>
 </ul>
 
-<ul class="u-flex u-alignCenter Editor-contextSwitcher u-flex u-alignCenter js-mapTableView">
+<ul class="u-flex u-alignRight Editor-contextSwitcher js-mapTableView" style="left: calc(50% - 216px)">
   <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='point' style='width: 70px;'>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point' style='width: 70px;'>
       Point
     </div>
   </li>
   <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='2' data-feature-type='line' style='width: 70px;'>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line' style='width: 70px;'>
       Polyline
     </div>
   </li>
   <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='3' data-feature-type='polygon' style='width: 70px;'>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon' style='width: 70px;'>
       Polygon
+    </div>
+  </li>
+  <li class="Editor-contextSwitcherItem">
+    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='point' style='width: 70px;'>
+      Edit point
     </div>
   </li>
 </ul>

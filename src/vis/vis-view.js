@@ -85,8 +85,7 @@ var Vis = View.extend({
   _renderLegends: function () {
     this._legendsView = new LegendsView({
       layersCollection: this.model.map.layers,
-      settingsModel: this.settingsModel,
-      isEmbed: this.model.get('isEmbed')
+      settingsModel: this.settingsModel
     });
 
     this.$el.append(this._legendsView.render().$el);

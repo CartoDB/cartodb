@@ -15,8 +15,6 @@ var LayerLegendsView = Backbone.View.extend({
     this._legendViews = [];
 
     this.settingsModel = options.settingsModel;
-    this._isEmbed = options.isEmbed;
-
     this.tryContainerVisibility = options.tryContainerVisibility;
 
     this.model.on('change:visible', this.render, this);
@@ -59,19 +57,14 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _shouldLayerLegendsBeVisible: function () {
-    var isEmbed = this._isEmbed;
+    var isLayerSelectorEnabled = this.settingsModel.get('layerSelectorEnabled');
     var showLayerSelector = this.settingsModel.get('showLayerSelector');
     var showLegends = this.settingsModel.get('showLegends');
-    var isSettingsView = !!this.settingsModel.get('settingsView');
     var hasLegends = this.model.legends.hasAnyLegend();
     var shouldVisible;
 
-    if (!isEmbed) {
-      if (!isSettingsView) {
-        shouldVisible = this._isLayerVisible() && showLegends && hasLegends;
-      } else {
-        shouldVisible = showLayerSelector || this._isLayerVisible() && showLegends && hasLegends;
-      }
+    if (!isLayerSelectorEnabled) {
+      shouldVisible = this._isLayerVisible() && showLegends && hasLegends;
     } else {
       shouldVisible = showLayerSelector || this._isLayerVisible() && showLegends && hasLegends;
     }
@@ -80,14 +73,9 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _shouldLayerSelectorBeVisible: function () {
-    var isEmbed = this._isEmbed;
-    var isSettingsView = !!this.settingsModel.get('settingsView');
+    var isLayerSelectorEnabled = this.settingsModel.get('layerSelectorEnabled');
     var showLayerSelector = this.settingsModel.get('showLayerSelector');
-    var shouldVisible = showLayerSelector;
-
-    if (!isEmbed) {
-      shouldVisible = isSettingsView && showLayerSelector;
-    }
+    var shouldVisible = showLayerSelector && isLayerSelectorEnabled;
 
     return shouldVisible;
   },

@@ -64,9 +64,9 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     showLayerSelector = vizjson.options.layer_selector;
   }
 
-  var isEmbed = true;
-  if (_.isBoolean(options.embedMode)) {
-    isEmbed = options.embedMode;
+  var layerSelectorEnabled = true;
+  if (_.isBoolean(options.layerSelectorEnabled)) {
+    layerSelectorEnabled = options.layerSelectorEnabled;
   }
 
   visModel.set({
@@ -75,13 +75,13 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     apiKey: options.apiKey,
     authToken: options.authToken,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true,
-    isEmbed: isEmbed
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true
   });
 
   visModel.setSettings({
     showLegends: showLegends,
-    showLayerSelector: showLayerSelector
+    showLayerSelector: showLayerSelector,
+    layerSelectorEnabled: layerSelectorEnabled
   });
 
   new VisView({ // eslint-disable-line

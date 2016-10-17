@@ -14,7 +14,6 @@ var LegendsView = Backbone.View.extend({
     this._layersCollection = options.layersCollection;
 
     this._isRendered = false;
-    this._isEmbed = options.isEmbed;
     this.settingsModel = options.settingsModel;
     this._initBinds();
   },
@@ -94,7 +93,6 @@ var LegendsView = Backbone.View.extend({
     var layerLegendsView = new LayerLegendsView({
       model: layerModel,
       settingsModel: this.settingsModel,
-      isEmbed: this._isEmbed,
       tryContainerVisibility: this._tryVisibility.bind(this)
     });
 

@@ -10,7 +10,8 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
     this.settingsModel = new Backbone.Model({
       showLegends: true,
-      showLayerSelector: true
+      showLayerSelector: true,
+      layerSelectorEnabled: true
     });
 
     this.cartoDBLayer = new CartoDBLayer({
@@ -24,7 +25,6 @@ describe('geo/ui/legends/layer-legends-view', function () {
     this.tryContainerVisibility = jasmine.createSpy('tryContainerVisibility');
 
     this.layerLegendsView = new LayerLegendsView({
-      isEmbed: true,
       model: this.cartoDBLayer,
       settingsModel: this.settingsModel,
       tryContainerVisibility: this.tryContainerVisibility
@@ -93,7 +93,7 @@ describe('geo/ui/legends/layer-legends-view', function () {
   });
 
   it('should not render layer selector checkbox if not embed', function () {
-    this.layerLegendsView._isEmbed = false;
+    this.settingsModel.set('layerSelectorEnabled', false);
     this.layerLegendsView.render();
     expect(this.layerLegendsView.$('.js-toggle-layer').length).toBe(0);
   });

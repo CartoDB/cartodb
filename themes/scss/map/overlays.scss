@@ -235,15 +235,15 @@ $maxLegendContainerHeight: 300px;
   z-index: 20000;
 }
 .CDB-Legends-canvasInner {
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: calc(100vh - 20px);
   padding: 12px 24px;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
-  position: relative;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  max-height: calc(100vh - 20px);
   overflow: hidden;
 }
 .CDB-Legends-canvasShadow {

@@ -155,11 +155,9 @@ namespace :cartodb do
     task :mapcap_builder_visualizations, [:dry] => :environment do |_, args|
       dry = args[:dry] == '--dry'
 
-      condition = "version = 3 and type = 'derived'"
-      count = Carto::Visualization.where(condition).count
-      puts "Mapcapping up to #{count} v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
+      puts "Mapcapping v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
 
-      Carto::Visualization.find_each(conditions: condition) do |visualization|
+      Carto::Visualization.find_each(conditions: "version = 3 and type = 'derived'") do |visualization|
         begin
           if !visualization.mapcapped?
             puts "Mapcapping #{visualization.id}"

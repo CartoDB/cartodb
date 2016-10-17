@@ -17,7 +17,7 @@ module Carto
       include VisualizationsControllerHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search
+      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search, :locality
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
@@ -153,6 +153,49 @@ module Carto
       def search
         username = current_user.username
         query = params[:q]
+        query.downcase!
+        queryLike = '%' + query + '%'
+        queryPrefix = query + ':*'
+        queryPrefix.tr!(' ', '+')
+
+        layers = Sequel::Model.db.fetch("
+            SELECT id, username, type, name, description, tags, (1.0 / (CASE WHEN pos_name = 0 THEN 10000 ELSE pos_name END) + 1.0 / (CASE WHEN pos_tags = 0 THEN 100000 ELSE pos_tags END)) AS rank FROM (
+              SELECT v.id, u.username, v.type, v.name, v.description, v.tags,
+                COALESCE(position(? in lower(v.name)), 0) AS pos_name,
+                COALESCE(position(? in lower(array_to_string(v.tags, ' '))), 0) * 1000 AS pos_tags
+              FROM visualizations AS v
+                  INNER JOIN users AS u ON u.id=v.user_id
+                  LEFT JOIN external_sources AS es ON es.visualization_id = v.id
+                  LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
+              WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type IN ('table', 'remote') AND
+              (
+                to_tsvector(coalesce(v.name, '')) @@ to_tsquery(?)
+                OR to_tsvector(array_to_string(v.tags, ' ')) @@ to_tsquery(?)
+                OR v.name ILIKE ?
+                OR array_to_string(v.tags, ' ') ILIKE ?
+              )
+            ) AS results
+            ORDER BY rank DESC, type DESC LIMIT 50",
+            query, query, username, queryPrefix, queryPrefix, queryLike, queryLike, query
+          ).all
+
+        if !current_user.has_feature_flag?('bbg_disabled_shared_empty_dataset') then
+          emptyDatasetName = Cartodb.config[:shared_empty_dataset_name]
+
+          layers.each_with_index do |layer, index|
+            if layer[:name] == emptyDatasetName then
+              layers.delete_at(index)
+              break
+            end
+          end
+        end
+
+        render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
+      end
+
+      def locality
+        username = current_user.username
+        query = params[:table]
 
         layers = Sequel::Model.db.fetch("
             SELECT type, name FROM (

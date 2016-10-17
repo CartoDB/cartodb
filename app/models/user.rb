@@ -1602,7 +1602,7 @@ class User < Sequel::Model
     if has_organization? && builder_enabled.nil?
       organization.builder_enabled
     else
-      builder_enabled
+      !!builder_enabled
     end
   end
 

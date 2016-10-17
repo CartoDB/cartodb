@@ -49,6 +49,7 @@ body.is-inDialog {
   position: fixed;
   top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
+  z-index: 2;
 }
 .Dialog-backBtn {
   position: fixed;

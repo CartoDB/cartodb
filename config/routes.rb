@@ -327,6 +327,7 @@ CartoDB::Application.routes.draw do
     # Visualizations
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/search'                         => 'visualizations#search',          as: :api_v1_visualizations_search
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/locality'                       => 'visualizations#locality',        as: :api_v1_visualizations_locality
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }

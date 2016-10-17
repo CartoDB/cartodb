@@ -8,6 +8,7 @@
   <% } %>
   <div class="CDB-Text CDB-Size-medium u-altTextColor">
     <%= body %>
+    <br/>
     <% if (url && !isPrivate) { %>
     <a href="<%- url %>" class="Share-link js-link"><%- link %></a>
     <% } %>

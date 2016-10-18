@@ -1,0 +1,75 @@
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel">
+    <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label">Your API Key</label>
+  </div>
+  <div class="FormAccount-rowData">
+    <input type="text" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long" placeholder="No API key" value="<%= current_user.api_key %>" readonly />
+    <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+      <a class="CDB-Size-medium js-regenerateApiKey" href="#">Request a new API key</a>
+    </div>
+  </div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel">
+    <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop">Example write</label>
+  </div>
+  <div class="FormAccount-rowPreview">
+    <% if CartoDB.subdomainless_urls? %>
+    <p class="CDB-Size-small FormAccount-text FormAccount-text--preview">https://<%= CartoDB.account_host %>/user/<%= current_user.username %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+    <% else %>
+    <p class="CDB-Size-small FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=INSERT INTO table_name (the_geom, observation) VALUES (ST_GeomFromText(’POINT(-71.2 42.5)’, 4326),'rare bird spotted')&api_key=<%= current_user.api_key %></p>
+    <% end%>
+  </div>
+</div>
+
+<div class="FormAccount-row">
+  <div class="FormAccount-rowLabel">
+    <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop">Example read private</label>
+  </div>
+  <div class="FormAccount-rowPreview">
+    <% if CartoDB.subdomainless_urls? %>
+    <p class="CDB-Size-small FormAccount-text FormAccount-text--preview">https://<%= CartoDB.account_host %>/user/<%= current_user.username %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+    <% else %>
+    <p class="CDB-Size-small FormAccount-text FormAccount-text--preview">https://<%= current_user.username %>.<%= CartoDB.account_host %>/api/v2/sql?q=SELECT * FROM private_table&api_key=<%= current_user.api_key %></p>
+    <% end %>
+  </div>
+</div>
+
+<% if current_user.google_maps_geocoder_enabled? %>
+  <div class="FormAccount-title">
+    <p class="FormAccount-titleText">Configure API keys from external providers</p>
+  </div>
+
+  <span class="FormAccount-separator"></span>
+
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label">Google Maps</label>
+    </div>
+    <div class="FormAccount-rowData">
+      <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_private_key : current_user.google_maps_private_key %>" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long is-disabled" readonly />
+    </div>
+    <div class="FormAccount-rowInfo">
+      <% if !current_user.organization.present? %>
+        <p class="CDB-Text CDB-Size-small u-altTextColor">
+          This is your Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
+        </p>
+      <% elsif current_user.organization.present? && current_user.organization_owner? %>
+        <p class="CDB-Text CDB-Size-small u-altTextColor">
+          This is the <%= current_user.organization.name %> Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
+        </p>
+      <% else %>
+        <p class="CDB-Text CDB-Size-small u-altTextColor">This is the organization Google Maps API key</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="FormAccount-footer">
+  <p class="FormAccount-footerText">
+    <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
+    <span>Learn more about <%= link_to "using your simple app key", Cartodb.config[:developers_host] + "/carto-editor/your-account/#api-key" %> in CARTO</span>
+  </p>
+</div>

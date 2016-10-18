@@ -2,6 +2,7 @@
 
 require 'ostruct'
 require_relative '../../acceptance_helper'
+require_relative '../../factories/organizations_contexts'
 
 feature "Superadmin's users API" do
   background do
@@ -175,7 +176,8 @@ feature "Superadmin's users API" do
                      obs_general_block_price: 10,
                      notification: 'Test',
                      available_for_hire: true,
-                     disqus_shortname: 'abc' }
+                     disqus_shortname: 'abc',
+                     builder_enabled: true }
 
     # test to true
     put_json superadmin_user_path(user), { user: @update_atts }, superadmin_headers do |response|
@@ -203,9 +205,13 @@ feature "Superadmin's users API" do
     user.notification.should == 'Test'
     user.disqus_shortname.should == 'abc'
     user.available_for_hire.should == true
+    user.builder_enabled.should == true
 
     # then test back to false
-    put_json superadmin_user_path(user), { user: { private_tables_enabled: false } }, superadmin_headers do |response|
+    put_json superadmin_user_path(user), { user: {
+      private_tables_enabled: false,
+      builder_enabled: false }
+    }, superadmin_headers do |response|
       response.status.should == 204
     end
     user = ::User[user.id]
@@ -220,6 +226,7 @@ feature "Superadmin's users API" do
     user.obs_general_quota.should == 250
     user.obs_general_block_price.should == 10
     user.notification.should == 'Test'
+    user.builder_enabled.should == false
 
     user.destroy
   end
@@ -486,6 +493,49 @@ feature "Superadmin's users API" do
       expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
       end.to change(FeatureFlagsUser, :count).by(-1)
+    end
+  end
+
+  describe 'with organization' do
+    include_context 'organization with users helper'
+
+    def update_and_verify(update_attrs)
+      put_json superadmin_user_path(@org_user_1), { user: update_attrs }, superadmin_headers do |response|
+        response.status.should eq 204
+      end
+      @org_user_1.reload
+      update_attrs.keys.each do |att|
+        @org_user_1.send(att).should eq update_attrs[att]
+      end
+    end
+
+    it 'should update users' do
+      update_attrs = {
+        quota_in_bytes: 2000,
+        table_quota: 20,
+        max_layers: 10,
+        user_timeout: 100000,
+        database_timeout: 200000,
+        private_tables_enabled: true,
+        sync_tables_enabled: true,
+        map_view_block_price: 200,
+        geocoding_quota: 230,
+        geocoding_block_price: 5,
+        here_isolines_quota: 250,
+        here_isolines_block_price: 10,
+        obs_snapshot_quota: 250,
+        obs_snapshot_block_price: 10,
+        obs_general_quota: 250,
+        obs_general_block_price: 10,
+        notification: 'Test',
+        available_for_hire: true,
+        disqus_shortname: 'abc',
+        builder_enabled: true
+      }
+
+      update_and_verify(update_attrs)
+      update_and_verify(builder_enabled: false)
+      update_and_verify(builder_enabled: nil)
     end
   end
 

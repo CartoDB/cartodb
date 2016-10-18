@@ -1,1 +1,1 @@
-<span data-action="<%- button %>" class="CDB-Text is-semibold u-lSpace u-actionTextColor"><%- button %></span>
+<span data-action="<%- button %>" class="CDB-Text is-semibold u-lSpace u-actionTextColor u-upperCase"><%- button %></span>

@@ -33,18 +33,20 @@ var LayerLegendsView = Backbone.View.extend({
     var showLayerSelector = this._shouldLayerSelectorBeVisible();
     var shouldVisible = this._shouldLayerLegendsBeVisible();
 
-    this.$el.html(
-      template({
-        shouldVisible: shouldVisible,
-        layerName: this.model.getName(),
-        isLayerVisible: this._isLayerVisible(),
-        showLegends: showLegends,
-        showLayerSelector: showLayerSelector
-      })
-    );
-
     if (shouldVisible) {
+      this.$el.html(
+        template({
+          shouldVisible: shouldVisible,
+          layerName: this.model.getName(),
+          isLayerVisible: this._isLayerVisible(),
+          showLegends: showLegends,
+          showLayerSelector: showLayerSelector
+        })
+      );
+
       this._renderLegends();
+    } else {
+      this.$el.html('');
     }
 
     this.tryContainerVisibility();
@@ -57,19 +59,9 @@ var LayerLegendsView = Backbone.View.extend({
   },
 
   _shouldLayerLegendsBeVisible: function () {
-    var isLayerSelectorEnabled = this.settingsModel.get('layerSelectorEnabled');
-    var showLayerSelector = this.settingsModel.get('showLayerSelector');
     var showLegends = this.settingsModel.get('showLegends');
     var hasLegends = this.model.legends.hasAnyLegend();
-    var shouldVisible;
-
-    if (!isLayerSelectorEnabled) {
-      shouldVisible = this._isLayerVisible() && showLegends && hasLegends;
-    } else {
-      shouldVisible = showLayerSelector || this._isLayerVisible() && showLegends && hasLegends;
-    }
-
-    return shouldVisible;
+    return this._shouldLayerSelectorBeVisible() || (this._isLayerVisible() && showLegends && hasLegends);
   },
 
   _shouldLayerSelectorBeVisible: function () {

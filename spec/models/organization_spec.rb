@@ -458,8 +458,6 @@ describe Organization do
       Organization.any_instance.stubs(:geocoding_quota).returns 10
       Organization.any_instance.stubs(:get_here_isolines_calls).returns 30
       Organization.any_instance.stubs(:here_isolines_quota).returns 10
-      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns 30
-      Organization.any_instance.stubs(:mapzen_routing_quota).returns 10
       Organization.overquota.map(&:id).should include(@organization.id)
       Organization.overquota.size.should == Organization.count
     end
@@ -562,6 +560,21 @@ describe Organization do
       Organization.overquota(0.20).map(&:id).should include(@organization.id)
       Organization.overquota(0.20).size.should == Organization.count
       Organization.overquota(0.10).should be_empty
+    end
+
+    it "should return organizations over their mapzen routing quota" do
+      Organization.any_instance.stubs(:owner).returns(@owner)
+      Organization.overquota.should be_empty
+      Organization.any_instance.stubs(:get_api_calls).returns(0)
+      Organization.any_instance.stubs(:map_view_quota).returns(10)
+      Organization.any_instance.stubs(:get_geocoding_calls).returns 0
+      Organization.any_instance.stubs(:geocoding_quota).returns 10
+      Organization.any_instance.stubs(:get_here_isolines_calls).returns(0)
+      Organization.any_instance.stubs(:here_isolines_quota).returns(100)
+      Organization.any_instance.stubs(:get_mapzen_routing_calls).returns 30
+      Organization.any_instance.stubs(:mapzen_routing_quota).returns 10
+      Organization.overquota.map(&:id).should include(@organization.id)
+      Organization.overquota.size.should == Organization.count
     end
   end
 

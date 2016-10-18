@@ -176,9 +176,9 @@ class Organization < Sequel::Model
         over_obs_general = o.get_obs_general_calls > limit
         limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
         limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
         over_mapzen_routing = o.get_mapzen_routing_calls > limit
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
       rescue OrganizationWithoutOwner => error
         # Avoid aborting because of inconistent organizations; just omit them
         CartoDB::Logger.error(

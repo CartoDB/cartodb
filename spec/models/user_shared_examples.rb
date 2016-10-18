@@ -507,10 +507,10 @@ shared_examples_for "user models" do
     it 'calculates the used mapzen routing quota in the current billing cycle' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
-      usage_metrics.incr(:here_isolines, :total_requests, 10, DateTime.current)
-      usage_metrics.incr(:here_isolines, :total_requests, 100, (DateTime.current - 2))
-      usage_metrics.incr(:here_isolines, :success_responses, 10, DateTime.current)
-      usage_metrics.incr(:here_isolines, :success_responses, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapzen, :total_requests, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapzen, :total_requests, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapzen, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapzen, :success_responses, 100, (DateTime.current - 2))
 
       @user1.get_mapzen_routing_calls.should == 110
     end
@@ -521,10 +521,10 @@ shared_examples_for "user models" do
       CartoDB::RoutingUsageMetrics.stubs(:new).
         with(@organization.owner.username, @organization.name).
         returns(usage_metrics_1)
-      usage_metrics_1.incr(:here_isolines, :total_requests, 100, DateTime.current)
-      usage_metrics_2.incr(:here_isolines, :total_requests, 120, DateTime.current - 1)
-      usage_metrics_1.incr(:here_isolines, :success_responses, 100, DateTime.current)
-      usage_metrics_2.incr(:here_isolines, :success_responses, 120, DateTime.current - 1)
+      usage_metrics_1.incr(:routing_mapzen, :total_requests, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapzen, :total_requests, 120, DateTime.current - 1)
+      usage_metrics_1.incr(:routing_mapzen, :success_responses, 100, DateTime.current)
+      usage_metrics_2.incr(:routing_mapzen, :success_responses, 120, DateTime.current - 1)
 
       @organization.get_mapzen_routing_calls.should == 220
     end
@@ -532,11 +532,11 @@ shared_examples_for "user models" do
     it 'calculates the used mapzen routing quota in the current billing cycle including empty requests' do
       usage_metrics = CartoDB::RoutingUsageMetrics.new(@user1.username, nil, @mock_redis)
       CartoDB::RoutingUsageMetrics.stubs(:new).returns(usage_metrics)
-      usage_metrics.incr(:here_isolines, :total_requests, 10, DateTime.current)
-      usage_metrics.incr(:here_isolines, :total_requests, 100, (DateTime.current - 2))
-      usage_metrics.incr(:here_isolines, :success_responses, 10, DateTime.current)
-      usage_metrics.incr(:here_isolines, :success_responses, 100, (DateTime.current - 2))
-      usage_metrics.incr(:here_isolines, :empty_responses, 10, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapzen, :total_requests, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapzen, :total_requests, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapzen, :success_responses, 10, DateTime.current)
+      usage_metrics.incr(:routing_mapzen, :success_responses, 100, (DateTime.current - 2))
+      usage_metrics.incr(:routing_mapzen, :empty_responses, 10, (DateTime.current - 2))
 
       @user1.get_mapzen_routing_calls.should == 120
     end

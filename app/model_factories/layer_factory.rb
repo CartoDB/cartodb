@@ -34,7 +34,7 @@ module ModelFactories
       data_layer.tooltip ||= {}
       data_layer.tooltip['fields'] = []
 
-      if user.force_builder?
+      if user.builder_enabled?
         data_layer.options['style_properties'] = style_properties(geometry_type)
       end
 
@@ -64,7 +64,7 @@ module ModelFactories
     end
 
     def self.tile_style(user, geometry_type)
-      user.force_builder? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
+      user.builder_enabled? ? builder_tile_style(geometry_type) : legacy_tile_style(geometry_type)
     end
 
     def self.builder_tile_style(geometry_type)

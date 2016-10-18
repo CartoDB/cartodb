@@ -86,6 +86,10 @@
   box-sizing: border-box;
   cursor: pointer;
 }
+.DatasetsList .ModalBlockList-item {
+  @include flex-direction(row);
+  padding: 12px;
+}
 
 .ModalBlockList-itemInput {
   margin-right: $baseSize;

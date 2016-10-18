@@ -12,7 +12,7 @@ CartoDB uses PostgreSQL for two purposes:
 Both metadata database and users databases can be hosted either in the same PostgreSQL cluster or different ones. Having both the in the same cluster is the recommended approach for small environments.
 The editor only knows how to connect to metadata database. However, within every request it checks the connection info of the user database which is stored in metadata database, as described before.
 
-At this moment CartoDB requires PostgreSQL 9.3.x version.
+At this moment CartoDB requires PostgreSQL 9.5.x version.
 
 .. _postgis_label:
 
@@ -22,4 +22,4 @@ PostGIS
 It allows working with geospatial types or running geospatial functions in PostgreSQL.
 Is is required both on the user data clusters and the metadata cluster.
 
-At this moment CartoDB requires PostGIS 2.1.x version.
+At this moment CartoDB requires PostGIS 2.2.x version.

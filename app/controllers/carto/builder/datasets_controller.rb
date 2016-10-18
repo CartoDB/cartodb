@@ -36,7 +36,7 @@ module Carto
       private
 
       def redirect_to_editor_if_forced
-        if current_user.force_editor?
+        unless current_user.builder_enabled?
           redirect_to CartoDB.url(self, 'public_tables_show', { id: params[:id] }, current_user)
         end
       end

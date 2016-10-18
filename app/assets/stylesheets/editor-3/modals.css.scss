@@ -87,6 +87,10 @@
   cursor: pointer;
   overflow: hidden;
 }
+.DatasetsList .ModalBlockList-item {
+  @include flex-direction(row);
+  padding: 12px;
+}
 
 
 .ModalBlockList-itemInput {

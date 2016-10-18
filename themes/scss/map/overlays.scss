@@ -231,20 +231,20 @@ $maxLegendContainerHeight: 300px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
-  z-index: 20000;
   overflow: hidden;
+  z-index: 20000;
 }
 .CDB-Legends-canvasInner {
-  overflow: hidden;
-  padding: 24px;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: calc(100vh - 20px);
+  padding: 12px 24px;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
-  position: relative;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  max-height: calc(100vh - 20px);
+  overflow: hidden;
 }
 .CDB-Legends-canvasShadow {
   display: none;
@@ -291,16 +291,15 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-LayerLegends {
-  margin-top: 12px;
+  margin-bottom: 12px;
 }
-.CDB-LayerLegends:first-child {
-  margin-top: 0;
+
+.CDB-LayerLegends:empty {
+  margin-bottom: 0;
 }
+
 .CDB-Legend-item {
   margin-bottom: 16px;
-  &:last-child {
-    margin-bottom: 32px;
-  }
 }
 
 .CDB-Legend-item.is-disabled {

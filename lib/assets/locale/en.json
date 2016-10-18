@@ -49,6 +49,12 @@
     "next": "next",
   },
   "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE",
+    },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",
@@ -244,9 +250,10 @@
   },
 
   "analysis-category": {
+    "all": "All",
+    "analyze-predict": "Analyze and predict",
     "create-clean": "Create and clean",
-    "data-transformation": "Transform",
-    "analyze-predict": "Analyze and predict"
+    "data-transformation": "Transform"
   },
   "form-components": {
     "editors": {
@@ -716,6 +723,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
+        "info-analysis": "Info about analysis",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -751,7 +759,11 @@
           },
           "moran-cluster": {
             "title": "Detect outliers and clusters",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "high-low": "High-Low (HL)",
+            "high-high": "High-High (HH)",
+            "low-high": "Low-High (LH)",
+            "low-low": "Low-Low (LL)"
           },
           "kmeans": {
             "title": "Calculate clusters of points",

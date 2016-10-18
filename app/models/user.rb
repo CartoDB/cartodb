@@ -224,6 +224,7 @@ class User < Sequel::Model
       self.private_tables_enabled ||= true
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
+      self.builder_enabled ||= nil
     end
 
     if viewer
@@ -1597,23 +1598,16 @@ class User < Sequel::Model
     viewer
   end
 
-  # The builder is enabled/disabled based on a feature flag
-  # The builder_enabled is used to allow the user to turn it on/off
   def builder_enabled?
-    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
-  end
-
-  def force_builder?
-    builder_enabled? && builder_enabled == true
-  end
-
-  def force_editor?
-    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
-    builder_enabled == false || !builder_enabled?
+    if has_organization? && builder_enabled.nil?
+      organization.builder_enabled
+    else
+      !!builder_enabled
+    end
   end
 
   def new_visualizations_version
-    force_builder? ? 3 : 2
+    builder_enabled? ? 3 : 2
   end
 
   private

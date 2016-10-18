@@ -13,6 +13,9 @@ ghost tables, importing common data and automatic index creation.
 This release changes the way visualization tokens are stored, so am igration task has to be run for password
 protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_auth_tokens`
 
+### NOTICE
+PostgreSQL 9.5 is needed.
+
 ### Features
 * Automatic creation of indexes on columns affected by a widget
 * Viewer users for organizations.

@@ -43,4 +43,9 @@
       Edit point
     </div>
   </li>
+  <li class="Editor-contextSwitcherItem">
+    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='line' style='width: 70px;'>
+      Edit line
+    </div>
+  </li>
 </ul>

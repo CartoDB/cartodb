@@ -2,4 +2,5 @@
 <div class="Editor-content">
   <div class="js-editFeatureGeometryContent"></div>
   <div class="js-editFeatureAttributesContent"></div>
+  <div class="js-editFeatureControlsContent"></div>
 </div>

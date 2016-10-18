@@ -49,6 +49,7 @@ describe Admin::OrganizationUsersController do
 
     describe '#create' do
       it 'creates users' do
+        ::User.any_instance.stubs(:create_in_central).returns(true)
         User.any_instance.expects(:load_common_data).once.returns(true)
 
         post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params

@@ -24,28 +24,11 @@
 
 <ul class="u-flex u-alignRight Editor-contextSwitcher js-mapTableView" style="left: calc(50% - 216px)">
   <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point' style='width: 70px;'>
-      Point
-    </div>
+    <!-- replace data-feature-type with point/line/polygon -->
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point' style='width: 70px;'>new point</div>
   </li>
   <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line' style='width: 70px;'>
-      Polyline
-    </div>
-  </li>
-  <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon' style='width: 70px;'>
-      Polygon
-    </div>
-  </li>
-  <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='point' style='width: 70px;'>
-      Edit point
-    </div>
-  </li>
-  <li class="Editor-contextSwitcherItem">
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='line' style='width: 70px;'>
-      Edit line
-    </div>
+    <!-- replace data-cdbid with cartodb_id and data-feature-type with point/line/polygon -->
+    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='point' style='width: 70px;'>edit point</div>
   </li>
 </ul>

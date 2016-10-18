@@ -12,7 +12,9 @@ var HistogramAutoStyler = AutoStyler.extend({
   },
 
   getColorLine: function (sym) {
-    var shape = this.dataviewModel.getDistributionType();
+    var shape = this.dataviewModel.getDistributionType(
+      this.dataviewModel.getUnfilteredDataModel().get('data')
+    );
     var scales = HistogramAutoStyler.SCALES_MAP[sym][shape];
     return sym + ': ramp([' + this.dataviewModel.get('column') +
                  '], cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') +

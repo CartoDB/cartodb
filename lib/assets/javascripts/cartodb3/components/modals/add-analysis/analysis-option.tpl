@@ -1,4 +1,4 @@
-<div class="Analysis-animation <% if (type) { %>is-<%- type %><% } %> js-animation u-flex u-alignCenter u-justifyCenter"></div>
+<div class="Analysis-animation <% if (enabled) { %>is-enabled<% } %> <% if (type) { %>is-<%- type %><% } %> js-animation u-flex u-alignCenter u-justifyCenter"></div>
 <div class="Analysis-info u-flex">
   <div class="ModalBlockList-itemInput CDB-Size-large">
     <input class="CDB-Radio" type="radio" value="true"

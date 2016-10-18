@@ -18,8 +18,11 @@
       <div class="ScrollView-content">
         <div class="Modal-analysisContainer">
           <ul class="CDB-NavMenu-inner CDB-Text is-semibold CDB-Size-small SubmenuModal u-flex u-alignCenter">
-            <li class="CDB-NavMenu-item u-upperCase u-secondaryTextColor SubmenuModal-item u-flex u-alignCenter">
-              <%= _t('analysis-category.' + category) %>
+            <li class="CDB-NavMenu-item SubmenuModal-item u-flex u-alignCenter">
+              <button class="js-back u-mainTextColor u-upperCase"><%- _t('analysis-category.all') %></button>
+            </li>
+            <li class="CDB-NavMenu-item SubmenuModal-item u-flex u-alignCenter">
+              <button class="js-backToCategory u-mainTextColor u-upperCase"><%- _t('analysis-category.' + category) %></button>
             </li>
             <li class="CDB-NavMenu-item u-upperCase SubmenuModal-item u-flex u-alignCenter">
               <%- title %>

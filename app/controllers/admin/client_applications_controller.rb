@@ -5,7 +5,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
-  before_filter :engine_enabled?, only: :regenerate_api_key
+  before_filter :enforce_engine_enabled, only: :regenerate_api_key
 
   layout 'application'
 
@@ -58,9 +58,9 @@ class Admin::ClientApplicationsController < Admin::AdminController
   end
 
   private
-  def engine_enabled?
+  def enforce_engine_enabled
     unless current_user.engine_enabled?
-      render_404
+      render_403
     end
   end
 end

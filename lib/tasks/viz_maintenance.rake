@@ -157,7 +157,7 @@ namespace :cartodb do
 
       puts "Mapcapping v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
 
-      Carto::Visualization.find_each(conditions: "version = 3 and type = 'derived'") do |visualization|
+      Carto::Visualization.find_each(conditions: "version = 3 and type = 'derived' and privacy != 'private'") do |visualization|
         begin
           if !visualization.mapcapped?
             puts "Mapcapping #{visualization.id}"

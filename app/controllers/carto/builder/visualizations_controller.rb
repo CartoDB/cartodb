@@ -46,7 +46,7 @@ module Carto
 
       def builder_notifications
         carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
-        carto_viewer ? carto_viewer.notifications_for_category(:builder) : {}
+        carto_viewer ? carto_viewer.notifications.notifications : {}
       end
 
       def redirect_to_editor_if_forced

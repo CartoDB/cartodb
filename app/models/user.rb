@@ -224,7 +224,10 @@ class User < Sequel::Model
       self.private_tables_enabled ||= true
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
-      self.builder_enabled ||= nil
+
+      # Make the default of new organization users nil (inherit from organization) instead of the DB default
+      # but only if not explicitly set otherwise
+      self.builder_enabled = nil if new? && !changed_columns.include?(:builder_enabled)
     end
 
     if viewer

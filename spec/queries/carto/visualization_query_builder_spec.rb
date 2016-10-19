@@ -333,8 +333,14 @@ describe Carto::VisualizationQueryBuilder do
 
   it 'select mapcapped with with_published' do
     map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
+
     visualizations = @vqb.with_published.build
     visualizations.map(&:id).should_not include visualization.id
+
+    Carto::Mapcap.create!(visualization_id: visualization.id)
+    visualizations = @vqb.with_published.build
+    visualizations.map(&:id).should include visualization.id
+
     destroy_full_visualization(map, table, table_visualization, visualization)
   end
 end

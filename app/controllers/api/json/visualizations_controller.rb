@@ -158,7 +158,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             vis.store.fetch
           end
 
-          if version_needs_migration?(old_version, 3)
+          if version_needs_migration?(old_version, vis.version)
             migrate_visualization_to_v3(vis)
           end
         end

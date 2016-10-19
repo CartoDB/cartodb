@@ -11,6 +11,7 @@ describe Carto::Widget do
       loaded_widget.title.should == widget.title
       loaded_widget.layer.should == widget.layer
       loaded_widget.options.should == widget.options
+      loaded_widget.style.should == widget.style
       widget.destroy
     end
 

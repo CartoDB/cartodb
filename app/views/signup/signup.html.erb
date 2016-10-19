@@ -97,26 +97,25 @@
                     </button>
                   </p>
                 </div>
-                <% unless @user.google_sign_in || @user.github_user_id %>
-                  <div class="Sessions-field Sessions-oauthContainer">
-                    <% if @google_plus_config.present? %>
-                      <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
-                    <% end %>
-
-                    <% if @github_config.present? %>
-                      <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
-                    <% end %>
-                  </div>
-                <% end %>
               </div>
               </div>
-
-              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
 
               <div style="display:none">
                 <%= f.check_box :terms, { checked: true } %>
               </div>
             <% end %>
+            <% unless @user.google_sign_in || @user.github_user_id %>
+              <div class="Sessions-field Sessions-oauthContainer">
+                <% if @google_plus_config.present? %>
+                  <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
+                <% end %>
+
+                <% if @github_config.present? %>
+                  <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
+                <% end %>
+              </div>
+            <% end %>
+                          <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
           </div>
         </div>
       </div>

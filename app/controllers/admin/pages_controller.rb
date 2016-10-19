@@ -193,8 +193,7 @@ class Admin::PagesController < Admin::AdminController
 
   def maps_for_organization(org)
     set_layout_vars_for_organization(org, 'maps')
-    vis_query_builder = default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, tag_or_nil: tag_or_nil, organization_id: org.id)
-    render_maps(vis_query_builder)
+    render_maps(default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, tag_or_nil: tag_or_nil, organization_id: org.id))
   end
 
   def render_not_found

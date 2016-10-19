@@ -239,21 +239,23 @@
       </div>
 
       <%# DISQUS %>
-      <div class="u-inner">
-        <div class="PublicMap-block PublicMap-info">
-          <div id="disqus_thread"></div>
-          <script type="text/javascript">
-            var disqus_shortname  = '<%= @disqus_shortname %>';
-            var disqus_identifier = '<%= @visualization.id %>';
+      <% if @visualization.user.disqus_shortname.present? %>
+        <div class="u-inner">
+          <div class="PublicMap-block PublicMap-info">
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+              var disqus_shortname  = '<%= @disqus_shortname %>';
+              var disqus_identifier = '<%= @visualization.id %>';
 
-            (function() {
-              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-            })();
-          </script>
+              (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+              })();
+            </script>
+          </div>
         </div>
-      </div>
+      <% end %>
 
       <%# Related %>
       <% if @more_visualizations && @more_visualizations.count > 0 %>

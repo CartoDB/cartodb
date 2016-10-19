@@ -1716,6 +1716,11 @@
           "title": "LAYER HIDDEN",
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
+        },
+        "legends-disabled": {
+          "title": "LEGENDS DISABLED",
+          "body": "Legends setting is disabled, changes won't be shown until you make enabled.",
+          "show": "ENABLE"
         }
       },
       "types": {

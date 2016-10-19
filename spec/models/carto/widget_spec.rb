@@ -63,12 +63,12 @@ describe Carto::Widget do
   end
 
   describe '#from_visualization_id' do
-    before(:each) do
+    before(:all) do
       @map = FactoryGirl.create(:carto_map_with_layers)
       @visualization = FactoryGirl.create(:carto_visualization, map: @map)
     end
 
-    after(:each) do
+    after(:all) do
       @visualization.destroy
       @map.destroy
     end
@@ -91,44 +91,34 @@ describe Carto::Widget do
   end
 
   context 'viewer users' do
-    before(:each) do
+    before(:all) do
       Map.any_instance.stubs(:update_related_named_maps)
       @user = FactoryGirl.create(:carto_user)
       @map = FactoryGirl.create(:carto_map_with_layers, user: @user)
       @visualization = FactoryGirl.create(:carto_visualization, map: @map, user: @user)
       @layer = @visualization.data_layers.first
+      @widget = FactoryGirl.create(:widget, layer: @layer)
+
+      @user.update_attribute(:viewer, true)
+      @layer.user.reload
     end
 
-    after(:each) do
+    after(:all) do
       @visualization.destroy
       @map.destroy
       @user.destroy
     end
 
     it "can't create a new widget" do
-      user = @visualization.user
-      user.viewer = true
-      user.save
-      @visualization.reload
-      @layer.reload
-
       widget = FactoryGirl.build(:widget, layer: @layer)
       widget.save.should be_false
       widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
     end
 
     it "can't delete widgets" do
-      widget = FactoryGirl.create(:widget, layer: @layer)
-
-      user = @visualization.user
-      user.viewer = true
-      user.save
-      @visualization.reload
-      widget = Carto::Widget.find(widget.id)
-
-      widget.destroy.should eq false
-      Carto::Widget.exists?(widget.id).should eq true
-      widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
+      @widget.destroy.should eq false
+      Carto::Widget.exists?(@widget.id).should eq true
+      @widget.errors[:layer].should eq(["Viewer users can't edit widgets"])
     end
   end
 end

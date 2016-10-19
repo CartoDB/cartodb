@@ -46,7 +46,11 @@ shared_context 'layer hierarchy' do
     response_widget[:type].should == payload[:type]
     response_widget[:title].should == payload[:title]
     response_widget[:options].should == payload[:options].symbolize_keys
-    response_widget[:style].should == payload[:style].symbolize_keys
+    if payload[:style].present?
+      response_widget[:style].should == payload[:style].symbolize_keys
+    else
+      response_widget[:style].blank?.should be_true
+    end
     if payload[:source].present?
       response_widget[:source][:id].should == payload[:source][:id]
     else
@@ -155,6 +159,18 @@ describe Carto::Api::WidgetsController do
 
     it 'creates a new widget with order' do
       payload = widget_payload(order: 7)
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
+        response.status.should == 201
+        response_widget = response.body
+        response_widget_should_match_payload(response_widget, payload)
+        widget = Carto::Widget.find(response_widget[:id])
+        response_widget_should_match_widget(response_widget, widget)
+        widget.destroy
+      end
+    end
+
+    it 'creates a new widget without style' do
+      payload = widget_payload.reject { |p| p == :style }
       post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), payload, http_json_headers do |response|
         response.status.should == 201
         response_widget = response.body

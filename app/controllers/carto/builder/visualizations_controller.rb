@@ -4,16 +4,19 @@ require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
+require_dependency 'carto/visualization_migrator'
 
 module Carto
   module Builder
     class VisualizationsController < BuilderController
       include VisualizationsControllerHelper
+      include Carto::VisualizationMigrator
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced,
-                    :load_derived_visualization, only: :show
+      before_filter :load_derived_visualization,
+                    :redirect_to_editor_if_forced,
+                    :auto_migrate_visualization_if_possible, only: :show
       before_filter :authors_only
       before_filter :editable_visualizations_only, only: :show
 
@@ -38,7 +41,8 @@ module Carto
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
-        @mapcaps_data = Carto::Api::MapcapPresenter.new(@visualization.latest_mapcap).to_poro
+        latest_mapcap = @visualization.latest_mapcap
+        @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
       end
 
       private
@@ -49,7 +53,9 @@ module Carto
       end
 
       def redirect_to_editor_if_forced
-        redirect_to CartoDB.url(self, 'public_visualizations_show_map', id: params[:id]) if current_user.force_editor?
+        if !current_user.builder_enabled? || @visualization.open_in_editor?
+          redirect_to CartoDB.url(self, 'public_visualizations_show_map', { id: params[:id] }, current_user)
+        end
       end
 
       def load_derived_visualization
@@ -83,6 +89,14 @@ module Carto
         Carto::Tracking::Events::VisitedPrivatePage.new(current_viewer_id,
                                                         user_id: current_viewer_id,
                                                         page: 'builder').report
+      end
+
+      def auto_migrate_visualization_if_possible
+        if version_needs_migration?(@visualization.version, 3) && @visualization.can_be_automatically_migrated_to_v3?
+          @visualization.version = 3
+          @visualization.save
+          migrate_visualization_to_v3(@visualization)
+        end
       end
     end
   end

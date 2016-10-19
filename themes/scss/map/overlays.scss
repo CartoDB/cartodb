@@ -489,7 +489,9 @@ $index-items: 7 6 5 4 3 2 1;
   border-radius: 50%;
   content: '';
 }
-
+.Legend-categoryTitle {
+  max-width: 90%;
+}
 .Legend-placeholder {
   position: relative;
   margin: 0 -24px;

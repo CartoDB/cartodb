@@ -193,6 +193,12 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  # Published: see `Carto::Visualization#published?`
+  def with_published
+    @only_published = true
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -311,6 +317,10 @@ class Carto::VisualizationQueryBuilder
 
     if @organization_id
       query = query.joins(:user).where(users: { organization_id: @organization_id })
+    end
+
+    if @only_published
+      query = query.where('exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id)')
     end
 
     @include_associations.each { |association|

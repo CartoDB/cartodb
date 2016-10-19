@@ -368,6 +368,8 @@ class Carto::Visualization < ActiveRecord::Base
     entities.map(&:get_auth_token)
   end
 
+  # - v2 (Editor): not private
+  # - v3 (Builder): not private, mapcapped
   def published?
     version.nil? || version < 3 || mapcapped?
   end

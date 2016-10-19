@@ -8,7 +8,7 @@
     <ul class="MapsList">
       <% @datasets.each do |vis| %>
         <li class="MapsList-item">
-          <div class="MapCard MapCard--squared MapCard--borderless" data-vis-id="<%= vis[:id] %>" data-vis-owner-name="<%= vis[:owner][:username] %>">
+          <div class="MapCard MapCard--squared MapCard--borderless" data-vis-id="<%= vis[:id] %>" data-vis-owner-name="<%= vis[:owner].username %>">
             <a href="<%= CartoDB.url(self, 'public_table', { id: vis[:title] }, vis[:owner]) %>" class="MapCard-header js-header">
               <div class="MapCard-loader"></div>
             </a>

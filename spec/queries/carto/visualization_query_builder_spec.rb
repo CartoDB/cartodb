@@ -7,6 +7,7 @@ describe Carto::VisualizationQueryBuilder do
   include UniqueNamesHelper
   include Rack::Test::Methods
   include Warden::Test::Helpers
+  include Carto::Factories::Visualizations
   include_context 'visualization creation helpers'
   include_context 'users helper'
 
@@ -328,5 +329,12 @@ describe Carto::VisualizationQueryBuilder do
 
   it 'will not accept nil id or name' do
     expect { @vqb.with_id_or_name(nil) }.to raise_error
+  end
+
+  it 'select mapcapped with with_published' do
+    map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
+    visualizations = @vqb.with_published.build
+    visualizations.map(&:id).should_not include visualization.id
+    destroy_full_visualization(map, table, table_visualization, visualization)
   end
 end

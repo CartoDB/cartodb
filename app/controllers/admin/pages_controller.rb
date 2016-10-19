@@ -169,33 +169,32 @@ class Admin::PagesController < Admin::AdminController
   def datasets_for_user(user)
     set_layout_vars_for_user(user, 'datasets')
     render_datasets(
-      user_public_vis_list({
+      user_default_builder({
         user:  user,
-        vis_type: Visualization::Member::TYPE_CANONICAL,
-        per_page: DATASETS_PER_PAGE
+        vis_type: Visualization::Member::TYPE_CANONICAL
       }), user
     )
   end
 
   def datasets_for_organization(org)
     set_layout_vars_for_organization(org, 'datasets')
-    render_datasets(org.public_datasets(current_page, DATASETS_PER_PAGE, tag_or_nil))
+    render_datasets(default_builder(vis_type: Carto::Visualization::TYPE_CANONICAL, tag_or_nil: tag_or_nil, organization_id: org.id))
   end
 
   def maps_for_user(user)
     set_layout_vars_for_user(user, 'maps')
     render_maps(
-      user_public_vis_list({
+      user_default_builder({
         user:     user,
-        vis_type: Visualization::Member::TYPE_DERIVED,
-        per_page: MAPS_PER_PAGE,
+        vis_type: Visualization::Member::TYPE_DERIVED
       }), user
     )
   end
 
   def maps_for_organization(org)
     set_layout_vars_for_organization(org, 'maps')
-    render_maps(org.public_visualizations(current_page, MAPS_PER_PAGE, tag_or_nil))
+    vis_query_builder = default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, tag_or_nil: tag_or_nil, organization_id: org.id)
+    render_maps(vis_query_builder)
   end
 
   def render_not_found
@@ -235,15 +234,19 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
-  def render_datasets(vis_list, user=nil)
+  def render_datasets(vis_query_builder, user=nil)
     set_pagination_vars({
-        total_count: vis_list.total_entries,
+        total_count: vis_query_builder.build.count,
         per_page:    DATASETS_PER_PAGE,
         first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
         numbered_page_url: CartoDB.url(self, 'public_datasets_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
 
     @datasets = []
+
+    vis_list = vis_query_builder.build_paged(current_page, DATASETS_PER_PAGE).map do |v|
+      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
+    end
 
     vis_list.each do |vis|
       @datasets << process_dataset_render(vis)
@@ -269,13 +272,17 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
-  def render_maps(vis_list, user=nil)
+  def render_maps(vis_query_builder, user=nil)
     set_pagination_vars({
-        total_count: vis_list.total_entries,
+        total_count: vis_query_builder.build.count,
         per_page:    MAPS_PER_PAGE,
         first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
         numbered_page_url: CartoDB.url(self, 'public_maps_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
       })
+
+    vis_list = vis_query_builder.build_paged(current_page, MAPS_PER_PAGE).map do |v|
+      Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
+    end
 
     @visualizations = []
     vis_list.each do |vis|
@@ -391,19 +398,26 @@ class Admin::PagesController < Admin::AdminController
     @maps_count         = @is_org ? model.public_visualizations_count : model.public_visualization_count
   end
 
-  def user_public_vis_list(required)
-    Visualization::Collection.new.fetch({
-      user_id:  required.fetch(:user).id,
-      type:     required.fetch(:vis_type),
-      per_page: required.fetch(:per_page),
-      privacy:  Visualization::Member::PRIVACY_PUBLIC,
-      page:     current_page,
-      order:    'updated_at',
-      o:        {updated_at: :desc},
-      tags:     tag_or_nil,
-      exclude_shared: true,
-      exclude_raster: true,
-    })
+  def user_default_builder(required)
+    default_builder(user_id: required[:user].id, vis_type: required[:vis_type], tag_or_nil: tag_or_nil)
+  end
+
+  def default_builder(user_id: nil, vis_type: nil, tag_or_nil: nil, organization_id: nil)
+    tags = tag_or_nil.nil? ? nil : [tag_or_nil]
+
+    builder = Carto::VisualizationQueryBuilder.
+      new.
+      with_privacy(Carto::Visualization::PRIVACY_PUBLIC).
+      without_raster.
+      with_order(:updated_at, :desc)
+
+    builder.with_user_id(user_id) if user_id
+    builder.with_type(vis_type) if vis_type
+    builder.with_tags(tags) if tags
+    builder.with_organization_id(organization_id) if organization_id
+    builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
+
+    builder
   end
 
   def get_organization_if_exists(name)

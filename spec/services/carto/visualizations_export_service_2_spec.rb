@@ -606,7 +606,7 @@ describe Carto::VisualizationsExportService2 do
           visualization.widgets.first.style.blank?.should be_true
 
           imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, visualization)
-          imported_viz.widgets.first.style.should eq {}
+          imported_viz.widgets.first.style.should == {}
         end
 
         it '2.0.6 (without map options)' do

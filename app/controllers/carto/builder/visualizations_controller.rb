@@ -4,11 +4,13 @@ require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
+require_dependency 'carto/visualization_migrator'
 
 module Carto
   module Builder
     class VisualizationsController < BuilderController
       include VisualizationsControllerHelper
+      include Carto::VisualizationMigrator
 
       ssl_required :show
 
@@ -90,9 +92,10 @@ module Carto
       end
 
       def auto_migrate_visualization_if_possible
-        if @visualization.can_be_automatically_migrated?
+        if version_needs_migration?(@visualization.version, 3) && @visualization.can_be_automatically_migrated_to_v3?
           @visualization.version = 3
           @visualization.save
+          migrate_visualization_to_v3(@visualization)
         end
       end
     end

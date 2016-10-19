@@ -22,13 +22,10 @@
   </li>
 </ul>
 
-<ul class="u-flex u-alignRight Editor-contextSwitcher js-mapTableView" style="left: calc(50% - 216px)">
+<ul class="u-flex u-alignRight Editor-contextSwitcher js-mapTableView" style="left: calc(50% + 42px)">
   <li class="Editor-contextSwitcherItem">
-    <!-- replace data-feature-type with point/line/polygon -->
-    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point' style='width: 70px;'>new point</div>
-  </li>
-  <li class="Editor-contextSwitcherItem">
-    <!-- replace data-cdbid with cartodb_id and data-feature-type with point/line/polygon -->
-    <div class="Editor-contextSwitcherButton js-editGeometry" data-cdbid='1' data-feature-type='point' style='width: 70px;'>edit point</div>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point' style='width: 100px;'>point</div>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line' style='width: 100px;'>line</div>
+    <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon' style='width: 100px;'>polygon</div>
   </li>
 </ul>

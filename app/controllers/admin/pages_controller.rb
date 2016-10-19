@@ -168,32 +168,22 @@ class Admin::PagesController < Admin::AdminController
 
   def datasets_for_user(user)
     set_layout_vars_for_user(user, 'datasets')
-    render_datasets(
-      user_default_builder({
-        user:  user,
-        vis_type: Visualization::Member::TYPE_CANONICAL
-      }), user
-    )
+    render_datasets(user_datasets_builder(user), user)
   end
 
   def datasets_for_organization(org)
     set_layout_vars_for_organization(org, 'datasets')
-    render_datasets(default_builder(vis_type: Carto::Visualization::TYPE_CANONICAL, tag_or_nil: tag_or_nil, organization_id: org.id))
+    render_datasets(org_datasets_builder(org))
   end
 
   def maps_for_user(user)
     set_layout_vars_for_user(user, 'maps')
-    render_maps(
-      user_default_builder({
-        user:     user,
-        vis_type: Visualization::Member::TYPE_DERIVED
-      }), user
-    )
+    render_maps(user_maps_builder(user), user)
   end
 
   def maps_for_organization(org)
     set_layout_vars_for_organization(org, 'maps')
-    render_maps(default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, tag_or_nil: tag_or_nil, organization_id: org.id))
+    render_maps(org_maps_builder(org))
   end
 
   def render_not_found
@@ -393,15 +383,27 @@ class Admin::PagesController < Admin::AdminController
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user               = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
-    @tables_num         = @is_org ? model.public_datasets_count : model.public_table_count
-    @maps_count         = @is_org ? model.public_visualizations_count : model.public_visualization_count
+    @tables_num = (@is_org ? org_datasets_builder(model) : user_datasets_builder(model)).build.count
+    @maps_count = (@is_org ? org_maps_builder(model) : user_maps_builder(model)).build.count
   end
 
-  def user_default_builder(required)
-    default_builder(user_id: required[:user].id, vis_type: required[:vis_type], tag_or_nil: tag_or_nil)
+  def user_datasets_builder(user)
+    default_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_CANONICAL)
   end
 
-  def default_builder(user_id: nil, vis_type: nil, tag_or_nil: nil, organization_id: nil)
+  def user_maps_builder(user)
+    default_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_DERIVED)
+  end
+
+  def org_datasets_builder(org)
+    default_builder(vis_type: Carto::Visualization::TYPE_CANONICAL, organization_id: org.id)
+  end
+
+  def org_maps_builder(org)
+    default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
+  end
+
+  def default_builder(user_id: nil, vis_type: nil, organization_id: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
     builder = Carto::VisualizationQueryBuilder.

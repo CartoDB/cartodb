@@ -282,8 +282,7 @@
           "buckets": "bucket |||| buckets"
         },
         "input-categories": {
-          "null": "Null",
-          "false": '"false"',
+          "null": "null",
           "others": "Others"
         }
       }

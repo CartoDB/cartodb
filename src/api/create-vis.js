@@ -65,6 +65,11 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     showLayerSelector = vizjson.options.layer_selector;
   }
 
+  var layerSelectorEnabled = true;
+  if (_.isBoolean(options.layerSelectorEnabled)) {
+    layerSelectorEnabled = options.layerSelectorEnabled;
+  }
+
   visModel.set({
     title: options.title || vizjson.title,
     description: options.description || vizjson.description,
@@ -77,7 +82,8 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
 
   visModel.setSettings({
     showLegends: showLegends,
-    showLayerSelector: showLayerSelector
+    showLayerSelector: showLayerSelector,
+    layerSelectorEnabled: layerSelectorEnabled
   });
 
   new VisView({ // eslint-disable-line

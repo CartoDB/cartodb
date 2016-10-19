@@ -11,6 +11,7 @@ describe('src/widgets/auto-style/histogram', function () {
     });
 
     this.dataview.getDistributionType = jasmine.createSpy('disttype').and.returnValue('F');
+    this.dataview.getUnfilteredDataModel = jasmine.createSpy('disttype').and.returnValue(this.dataview);
     this.layer = this.dataview.layer = layer;
     this.histogramAutoStyler = new HistogramAutoStyler(this.dataview);
   });

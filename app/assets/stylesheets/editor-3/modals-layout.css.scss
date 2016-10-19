@@ -24,6 +24,7 @@
   @include align-items(center);
   margin-right: 0;
   margin-left: 0;
+  padding-bottom: 250px;
 }
 .Modal-container .ScrollView-shadow--top {
   top: -14px;
@@ -94,4 +95,8 @@
 
 .Modal-basemapContainer {
   @include flex-direction(column);
+}
+
+.Dialog-content--expanded {
+  height: 100vh;
 }

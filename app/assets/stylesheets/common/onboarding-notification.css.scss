@@ -6,9 +6,16 @@
   padding: 12px;
   text-align: center;
   color: #FFF;
+  box-sizing: border-box;
+}
+.onboardingNotification-link {
+  color: #FFF;
+  text-decoration: underline;
+  cursor: pointer;
 }
 .onboardingNotification-closeButton {
-  width: 13px;
-  height: 13px;
-
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 12px;
 }

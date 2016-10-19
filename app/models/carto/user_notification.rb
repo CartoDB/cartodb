@@ -10,7 +10,7 @@ module Carto
     validates :user, presence: true
     validate  :only_valid_categories
 
-    VALID_CATEGORIES = [:builder, :main_message].freeze
+    VALID_CATEGORIES = [:builder, :dashboard_notification].freeze
 
     private
 

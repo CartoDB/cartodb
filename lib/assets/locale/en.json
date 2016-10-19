@@ -1742,7 +1742,8 @@
         "by-size": "By Size",
         "by-color": "By Color",
         "untitled": "Untitled"
-      }
+      },
+      "pixel-title": "Amount"
     },
     "style": {
       "types": {

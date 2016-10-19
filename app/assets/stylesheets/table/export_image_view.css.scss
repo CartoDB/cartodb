@@ -205,6 +205,7 @@ $resizeHandlerSize: 8px;
 .CanvasExport {
   position: absolute;
   border: 1px dashed #FFF;
+  box-sizing: content-box; // important, do not remove
   &.draggable {
     cursor: move;
     z-index: 1000000000;

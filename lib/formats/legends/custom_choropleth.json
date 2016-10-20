@@ -7,14 +7,11 @@
     "suffix": { "type": "string" },
     "colors": {
       "type": "array",
-      "required": [
-        "title"
-      ],
       "additionalProperties": false,
       "items": {
         "type": "object",
         "required": [
-          "title"
+          "color"
         ],
         "additionalProperties": false,
         "properties": {

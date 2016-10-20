@@ -24,6 +24,10 @@ module Carto
 
       def lock_safe_migration(&block)
         run "SET lock_timeout TO #{LOCK_TIMEOUT_MS}"
+
+        # As the external transaction is controlled by Sequel, we cannot ROLLBACK and BEGIN a new one
+        # Instead, we use SAVEPOINTs (https://www.postgresql.org/docs/current/static/sql-savepoint.html)
+        # to start a "sub-transaction" that we can rollback without affecting Sequel
         run 'SAVEPOINT before_migration'
         (1..MAX_RETRIES).each do
           begin
@@ -31,6 +35,7 @@ module Carto
             return
           rescue Sequel::DatabaseError => e
             if e.message.include?('lock timeout')
+              # In case of timeout, we retry by reexecuting the code since the SAVEPOINT
               run 'ROLLBACK TO SAVEPOINT before_migration'
               sleep WAIT_BETWEEN_RETRIES_S
             else

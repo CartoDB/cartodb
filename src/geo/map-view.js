@@ -39,6 +39,55 @@ var MapView = View.extend({
     this.add_related_model(this.map.layers);
 
     this.bind('clean', this._removeLayers, this);
+
+    this.on('newLayerView', this._onNewLayerViewAdded, this);
+  },
+
+  _onNewLayerViewAdded: function (layerView, layerModel) {
+    layerView.on('featureOver', function () {
+      if (this.map.isInteractive()) {
+        this.setCursor('pointer');
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this._triggerMouseEvent('featureOver', arguments);
+        }
+      }
+    }, this);
+
+    layerView.on('featureOut', function () {
+      if (this.map.isInteractive()) {
+        this.setCursor('auto');
+        if (this.map.isFeatureInteractivityEnabled()) {
+          this.map.trigger('featureOut');
+        }
+      }
+    }, this);
+
+    layerView.on('featureClick', function (e, latlng, pos, data, layerIndex) {
+      if (this.map.isFeatureInteractivityEnabled()) {
+        this._triggerMouseEvent('featureClick', arguments);
+      }
+    }, this);
+  },
+
+  setCursor: function () {
+    throw new Error('subclasses of MapView must implement setCursor');
+  },
+
+  _triggerMouseEvent: function (eventName, originalEventArguments) {
+    var latlng = originalEventArguments[1];
+    var position = originalEventArguments[2];
+    var featureData = originalEventArguments[3];
+    var layerIndex = originalEventArguments[4];
+
+    this.map.trigger(eventName, {
+      layer: this.map.layers.getCartoDBLayers()[layerIndex],
+      latlng: latlng,
+      position: {
+        x: position.x,
+        y: position.y
+      },
+      feature: featureData
+    });
   },
 
   render: function () {

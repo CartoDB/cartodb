@@ -10,7 +10,8 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
     this.settingsModel = new Backbone.Model({
       showLegends: true,
-      showLayerSelector: true
+      showLayerSelector: true,
+      layerSelectorEnabled: true
     });
 
     this.cartoDBLayer = new CartoDBLayer({
@@ -30,7 +31,6 @@ describe('geo/ui/legends/layer-legends-view', function () {
     });
 
     this.layerLegendsView.render();
-    this.toggleLayerCheck = this.layerLegendsView.$('.js-toggle-layer');
 
     $('body').append(this.layerLegendsView.$el);
   });
@@ -41,7 +41,7 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
   it('should render all legends', function () {
     // Legends of all types have been rendered
-    expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
+    expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(6);
   });
 
   it('should update the name of the layer when it changes', function () {
@@ -56,42 +56,33 @@ describe('geo/ui/legends/layer-legends-view', function () {
   it('should hide/show the layer if check next to title is clicked', function () {
     expect(this.cartoDBLayer.isVisible()).toBeTruthy();
 
-    this.toggleLayerCheck.trigger('click');
+    this.layerLegendsView.$('.js-toggle-layer').trigger('click');
 
     expect(this.cartoDBLayer.isVisible()).toBeFalsy();
 
-    this.toggleLayerCheck.trigger('click');
+    this.layerLegendsView.$('.js-toggle-layer').trigger('click');
 
     expect(this.cartoDBLayer.isVisible()).toBeTruthy();
   });
 
   it('should uncheck/check the check if layer is hidden/shown', function () {
-    expect(this.toggleLayerCheck.is(':checked')).toBe(true);
+    expect(this.layerLegendsView.$('.js-toggle-layer').is(':checked')).toBe(true);
 
     this.cartoDBLayer.hide();
 
-    expect(this.toggleLayerCheck.is(':checked')).toBe(false);
+    expect(this.layerLegendsView.$('.js-toggle-layer').is(':checked')).toBe(false);
 
     this.cartoDBLayer.show();
 
-    expect(this.toggleLayerCheck.is(':checked')).toBe(true);
+    expect(this.layerLegendsView.$('.js-toggle-layer').is(':checked')).toBe(true);
   });
 
-  it('should disable/enable itself and legend views when layer is hidden/shown', function () {
-    expect(this.layerLegendsView.$el.hasClass('is-disabled')).toBeFalsy();
-    expect(this.layerLegendsView.$('.is-disabled').length).toEqual(0);
-
+  it('should hide/show legend views when layer is hidden/shown', function () {
     this.cartoDBLayer.hide();
-
-    // View is disabled
-    expect(this.layerLegendsView.$el.hasClass('is-disabled')).toBeTruthy();
-    // Legend views are also disabled
-    expect(this.layerLegendsView.$('.is-disabled').length).toEqual(5);
+    expect(this.layerLegendsView.$('.js-legends').length).toBe(0);
 
     this.cartoDBLayer.show();
-
-    expect(this.layerLegendsView.$el.hasClass('is-disabled')).toBeFalsy();
-    expect(this.layerLegendsView.$('.is-disabled').length).toEqual(0);
+    expect(this.layerLegendsView.$('.js-legends').length).toBe(1);
   });
 
   it('should be hidden if no legends are rendered', function () {
@@ -99,5 +90,11 @@ describe('geo/ui/legends/layer-legends-view', function () {
     this.settingsModel.set('showLayerSelector', false);
     this.layerLegendsView.render();
     expect(this.layerLegendsView.$el.is(':empty')).toBe(true);
+  });
+
+  it('should not render layer selector checkbox if not embed', function () {
+    this.settingsModel.set('layerSelectorEnabled', false);
+    this.layerLegendsView.render();
+    expect(this.layerLegendsView.$('.js-toggle-layer').length).toBe(0);
   });
 });

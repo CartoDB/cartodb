@@ -210,7 +210,11 @@ $maxLegendContainerHeight: 300px;
   bottom: 0;
   left: 0;
   max-height: calc(100vh - 20px);
+<<<<<<< HEAD
   padding: 24px;
+=======
+  padding: 12px 24px;
+>>>>>>> eb47c6ecbecb870ddaade2b9590dd3c2e93cfdf5
   border-radius: $baseSize / 2;
   box-sizing: border-box;
   overflow: hidden;
@@ -260,16 +264,15 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-LayerLegends {
-  margin-top: 12px;
+  margin-bottom: 12px;
 }
-.CDB-LayerLegends:first-child {
-  margin-top: 0;
+
+.CDB-LayerLegends:empty {
+  margin-bottom: 0;
 }
+
 .CDB-Legend-item {
   margin-bottom: 16px;
-  &:last-child {
-    margin-bottom: 32px;
-  }
 }
 
 .CDB-LayerLegends:last-child .CDB-Legend-item:last-child {
@@ -300,8 +303,10 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-item {
   @include opacity(0.5);
+  @include transform(translateX(-50%));
   position: absolute;
   bottom: 0;
+  left: 50%;
   cursor: pointer;
 }
 
@@ -463,7 +468,9 @@ $index-items: 7 6 5 4 3 2 1;
   border-radius: 50%;
   content: '';
 }
-
+.Legend-categoryTitle {
+  max-width: 90%;
+}
 .Legend-placeholder {
   position: relative;
   margin: 0 -24px;
@@ -479,9 +486,15 @@ $index-items: 7 6 5 4 3 2 1;
 }
 
 
+@media (max-width: 759px) {
+  .CDB-Legends-canvas {
+    display: none !important;
+  }
+}
+
 @media (max-width: 600px) {
   .CDB-Zoom-info,
   .CDB-Fullscreen {
-    display: none !important;
+    display: none;
   }
 }

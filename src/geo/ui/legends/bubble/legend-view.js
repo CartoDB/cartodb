@@ -23,7 +23,7 @@ var BubbleLegendView = LegendViewBase.extend({
 
   _getCompiledTemplate: function () {
     return template({
-      labels: this.model.get('values').slice(0).reverse(),
+      labels: this._calculateLabels(),
       bubbleSizes: this._calculateBubbleSizes(),
       labelPositions: this._calculateLabelPositions(),
       avgSize: this._calculateAverageSize(),
@@ -39,21 +39,40 @@ var BubbleLegendView = LegendViewBase.extend({
     return labelPositions;
   },
 
+  _calculateLabels: function () {
+    var labels = this.model.get('values').slice(0);
+    if (this._areSizesInAscendingOrder()) {
+      labels = labels.reverse();
+    }
+    return labels;
+  },
+
+  _calculateValues: function () {
+    var sizes = this.model.get('sizes').slice(0);
+    if (this._areSizesInAscendingOrder()) {
+      sizes = sizes.reverse();
+    }
+    return sizes;
+  },
+
+  _areSizesInAscendingOrder: function () {
+    var sizes = this.model.get('sizes').slice(0);
+    return _.first(sizes) < _.last(sizes);
+  },
+
   _calculateBubbleSizes: function () {
-    var sizes = this.model.get('sizes').slice(0).reverse();
-    var maxSize = sizes[0];
+    var sizes = this._calculateValues();
+    var maxSize = _.max(sizes);
     return _.map(sizes, function (size, index) {
-      if (index === 0) {
-        return '100';
-      }
       return size * 100 / maxSize;
     });
   },
 
   _calculateAverageSize: function () {
-    var values = this.model.get('values').slice(0).reverse();
-    var maxValue = values[0];
-    return this.model.get('avg') * 100 / maxValue;
+    var values = this.model.get('values').slice(0);
+    var maxValue = _.max(values);
+    var minValue = _.min(values);
+    return (this.model.get('avg') - minValue) * 100 / (maxValue - minValue);
   }
 });
 

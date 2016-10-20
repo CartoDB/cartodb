@@ -19,12 +19,10 @@ format.formatNumber = function (value, unit) {
 
   if (abs_v > 100) {
     p = 0;
-  } else if (abs_v > 10) {
-    p = 1;
   } else if (abs_v > 1) {
-    p = 2;
+    p = 1;
   } else if (abs_v > 0) {
-    p = Math.max(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 3);
+    p = Math.min(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 2);
   }
 
   value = value.toFixed(p);

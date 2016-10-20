@@ -10,6 +10,7 @@ $buttonColor: #636D72;
   bottom: 16px;
   left: 16px;
   align-items: center;
+  z-index: 11;
 }
 
 // zoom overlay
@@ -481,14 +482,10 @@ $index-items: 7 6 5 4 3 2 1;
   padding: 16px 24px 0;
 }
 
-
-@media (max-width: 759px) {
+@media (max-width: 600px) {
   .CDB-Legends-canvas {
     display: none !important;
   }
-}
-
-@media (max-width: 600px) {
   .CDB-Zoom-info,
   .CDB-Fullscreen {
     display: none;

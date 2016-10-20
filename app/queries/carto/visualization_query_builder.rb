@@ -319,12 +319,14 @@ class Carto::VisualizationQueryBuilder
       query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
-    if @only_published
-      # TODO: compare to parallel?
+    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+      # "Published" is only required for builder maps
       query = query.where(%{
-            privacy != '#{Carto::Visualization::PRIVACY_PRIVATE}'
+            visualizations.privacy <> '#{Carto::Visualization::PRIVACY_PRIVATE}'
         and (
-               version != #{Carto::Visualization::VERSION_BUILDER}
+               visualizations.version <> #{Carto::Visualization::VERSION_BUILDER}
+            or
+               visualizations.type <> '#{Carto::Visualization::TYPE_DERIVED}'
             or
                (exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id limit 1))
             )

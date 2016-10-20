@@ -332,6 +332,13 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   describe '#with_published' do
+    it 'is implied by public search, so querying public filters public, unpublished' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+
+      visualizations = @vqb.with_privacy(Carto::Visualization::PRIVACY_PUBLIC).build
+      visualizations.map(&:id).should_not include visualization.id
+    end
+
     it 'selects public v2' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
@@ -339,14 +346,21 @@ describe Carto::VisualizationQueryBuilder do
       visualizations.map(&:id).should include visualization.id
     end
 
-    it 'does not select private v2' do
+    it 'selects public v3 datasets' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC, type: Carto::Visualization::TYPE_CANONICAL })
+
+      visualizations = @vqb.with_published.build
+      visualizations.map(&:id).should include visualization.id
+    end
+
+    it 'does not select private v2 maps' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
       visualizations = @vqb.with_published.build
       visualizations.map(&:id).should_not include visualization.id
     end
 
-    it 'selects v3 mapcapped' do
+    it 'selects v3 mapcapped mapcapped' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3 })
 
       visualizations = @vqb.with_published.build

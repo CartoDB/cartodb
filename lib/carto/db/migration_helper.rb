@@ -43,6 +43,8 @@ module Carto
             end
           end
         end
+
+        # Raising an exception forces Sequel to rollback the entire transaction
         raise 'Retries exceeded during database migration'
       ensure
         run "SET lock_timeout TO DEFAULT"

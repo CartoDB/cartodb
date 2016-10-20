@@ -354,7 +354,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_paged(page = 1, per_page = 20)
-    self.build.offset((page - 1) * per_page).limit(per_page)
+    self.build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
 
   private

@@ -36,7 +36,7 @@ module Carto
             end
           end
         end
-        raise PG::Error.new('Retries exceeded')
+        raise 'Retries exceeded during database migration'
       ensure
         run "SET statement_timeout TO DEFAULT"
       end

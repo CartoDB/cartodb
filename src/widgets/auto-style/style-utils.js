@@ -44,5 +44,7 @@ function changeStyle (cartocss, attr, newStyle) {
 }
 
 module.exports = {
-  changeStyle: changeStyle
+  changeStyle: _.memoize(changeStyle, function (css, attr, style) {
+    return css + attr + style;
+  })
 };

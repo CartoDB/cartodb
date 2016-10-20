@@ -15,17 +15,23 @@ module.exports = AutoStyler.extend({
   },
 
   _generateCategoryRamp: function (sym) {
-    var cats = this.dataviewModel.get('data');
-    var column = this.dataviewModel.get('column');
+    let model = this.dataviewModel,
+        categories = model.get('data'),
+        column = model.get('column');
+
+    return sym + ': ' + this._getCategoryRamp(categories, column);
+  },
+
+  _getCategoryRamp: _.memoize(function (categories, column) {
     var ramp = 'ramp([' + column + '],';
 
     var catListColors = '';
     var catListValues = '';
 
-    for (var i = cats.length; i >= 0; i--) {
-      var cat = cats[i],
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i],
           start = "'",
-          end = i > 0 ? "', " : "'";
+          end = i !== categories.length - 1 ? "', " : "'";
 
       catListColors += start + this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {
@@ -33,6 +39,8 @@ module.exports = AutoStyler.extend({
       }
     }
 
-    return sym + ': ' + ramp + '(' + catListColors + '), (' + catListValues + '));'
-  }
+    return ramp + '(' + catListColors + '), (' + catListValues + '));'
+  }, function (cat, col) {
+    return JSON.stringify(cat) + col;
+  })
 });

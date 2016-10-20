@@ -53,6 +53,14 @@ module.exports = WidgetModel.extend({
     return styles && styles.auto_style && styles.auto_style.allowed;
   },
 
+  getWidgetColor: function () {
+    var styles = this.get('styles');
+
+    return styles && styles.widget_style && styles.widget_style.definition
+          && styles.widget_style.definition.fill && styles.widget_style.definition.fill.color
+          && styles.widget_style.definition.fill.color.fixed;
+  },
+
   setupSearch: function () {
     this.dataviewModel.setupSearch();
     this.lockedCategories.addItems(this._acceptedCategories().toJSON());
@@ -78,6 +86,15 @@ module.exports = WidgetModel.extend({
   cleanSearch: function () {
     this.dataviewModel.cleanSearch();
     this.lockedCategories.reset([]);
+  },
+
+  getColor: function (name) {
+    if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
+      return this.autoStyler.colors.getColorByCategory(name);
+    }
+    else {
+      return this.getWidgetColor();
+    }
   },
 
   autoStyle: function () {

@@ -60,7 +60,7 @@ CategoryColors.prototype.getNextAvailableColor = function () {
 };
 
 CategoryColors.prototype.getColorByCategory = function (category) {
-  console.trace('Get color by cat');
+  // console.trace('Get color by cat');
   for (var i in this.colors) {
     if (this.colors[i] === category) {
       return i;

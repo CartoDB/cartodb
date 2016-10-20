@@ -52,6 +52,13 @@ module Carto
       get_organization_here_isolines_data(self, date_from, date_to)
     end
 
+    def get_mapzen_routing_calls(options = {})
+      require_organization_owner_presence!
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      get_organization_mapzen_routing_data(self, date_from, date_to)
+    end
+
     def get_obs_snapshot_calls(options = {})
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
@@ -84,6 +91,11 @@ module Carto
 
     def remaining_here_isolines_quota(options = {})
       remaining = here_isolines_quota.to_i - get_here_isolines_calls(options)
+      (remaining > 0 ? remaining : 0)
+    end
+
+    def remaining_mapzen_routing_quota(options = {})
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
       (remaining > 0 ? remaining : 0)
     end
 

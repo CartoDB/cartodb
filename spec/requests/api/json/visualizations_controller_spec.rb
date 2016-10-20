@@ -160,7 +160,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(false)
+        User.any_instance.stubs(:builder_enabled?).returns(false)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -178,7 +178,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(true)
+        User.any_instance.stubs(:builder_enabled?).returns(true)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -196,7 +196,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(false)
+        User.any_instance.stubs(:builder_enabled?).returns(false)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -214,7 +214,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(true)
+        User.any_instance.stubs(:builder_enabled?).returns(true)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200

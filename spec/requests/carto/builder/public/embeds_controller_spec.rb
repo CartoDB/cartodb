@@ -7,7 +7,9 @@ describe Carto::Builder::Public::EmbedsController do
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
     @map = FactoryGirl.create(:map, user_id: @user.id)
-    @visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id)
+    @visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
+    # Only mapcapped visualizations are presented by default
+    Carto::Mapcap.create!(visualization_id: @visualization.id)
   end
 
   before(:each) do
@@ -22,11 +24,27 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   describe '#show' do
+    it 'does not display visualizations without mapcaps' do
+      unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
+      get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
+
+      response.status.should == 404
+
+      unpublished_visualization.destroy
+    end
+
     it 'embeds visualizations' do
       get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
       response.status.should == 200
       response.body.include?(@visualization.name).should be true
+    end
+
+    it 'redirects to builder for v2 visualizations' do
+      Carto::Visualization.any_instance.stubs(:version).returns(2)
+      get builder_visualization_public_embed_url(visualization_id: @visualization.id)
+
+      response.status.should == 302
     end
 
     it 'defaults to generate vizjson with vector=false' do
@@ -109,9 +127,12 @@ describe Carto::Builder::Public::EmbedsController do
 
       before(:each) do
         @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
-        @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id)
+        @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id, version: 3)
         @org_visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
         @org_visualization.save
+
+        # Only mapcapped visualizations are presented by default
+        Carto::Mapcap.create!(visualization_id: @org_visualization.id)
 
         share_visualization(@org_visualization, @org_user_1)
         Carto::Visualization.any_instance.unstub(:organization?)

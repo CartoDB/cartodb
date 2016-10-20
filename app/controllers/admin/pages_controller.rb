@@ -412,10 +412,10 @@ class Admin::PagesController < Admin::AdminController
       without_raster.
       with_order(:updated_at, :desc)
 
-    builder.with_user_id(user_id) if user_id
-    builder.with_type(vis_type) if vis_type
-    builder.with_tags(tags) if tags
-    builder.with_organization_id(organization_id) if organization_id
+    builder.with_user_id(user_id)
+    builder.with_type(vis_type)
+    builder.with_tags(tags)
+    builder.with_organization_id(organization_id)
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder

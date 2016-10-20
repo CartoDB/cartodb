@@ -328,8 +328,8 @@ $maxLegendContainerHeight: 300px;
   @include opacity(0.5);
   @include transform(translateX(-50%));
   position: absolute;
-  left: 50%;
   bottom: 0;
+  left: 50%;
   cursor: pointer;
 }
 

@@ -466,6 +466,9 @@ $index-items: 7 6 5 4 3 2 1;
   border-left: 1px dotted rgba(#000, 0.4);
   content: '';
 }
+.Legend-choroplethSup {
+  font-size: 80%;
+}
 
 .Legend-categoryListItem {
   margin-bottom: 6px;

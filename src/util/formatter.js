@@ -3,12 +3,27 @@ var d3 = require('d3');
 
 var format = {};
 
+var formatExponential = function (value) {
+  if (!_.isNumber(value)) {
+    value = value * 1;
+  }
+
+  var template = _.template('<%= mantissa %><span class="Legend-choroplethSup">x</span>10<sup class="Legend-choroplethSup"><%= decimals %></sup>');
+  var exp = value.toExponential(10);
+  var parts = exp.split('e');
+  return template({
+    mantissa: (parts[0] * 1).toFixed(1),
+    decimals: parts[1] || 0
+  });
+};
+
 format.formatNumber = function (value, unit) {
   if (!_.isNumber(value) || value === 0) {
     return value;
   }
 
   var format = d3.format('.2s');
+
   var p = 0;
   var abs_v = Math.abs(value);
 
@@ -17,9 +32,19 @@ format.formatNumber = function (value, unit) {
     return value;
   }
 
+  if (value < 0 && value <= 0.1) {
+    value = value + (unit ? ' ' + unit : '');
+    return value;
+  }
+
+  if (value < 0.1) {
+    value = formatExponential(value) + (unit ? ' ' + unit : '');
+    return value;
+  }
+
   if (abs_v > 100) {
     p = 0;
-  } else if (abs_v > 1) {
+  } else if (abs_v > 10) {
     p = 1;
   } else if (abs_v > 0) {
     p = Math.min(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 2);

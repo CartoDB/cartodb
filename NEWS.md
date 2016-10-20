@@ -16,8 +16,32 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 ### NOTICE
 PostgreSQL 9.5 is needed.
 
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.18.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 ### Features
 * Automatic creation of indexes on columns affected by a widget
+* Update CartoDB PostgreSQL extension to 0.18.1:
+  * Change CDB_ZoomFromScale() to use a formula and raise
+    maximum overview level from 23 to 29. (0.16.4)
+    [#259](https://github.com/CartoDB/cartodb-postgresql/pull/259)
+  * Fix bug in overview creating causing it to fail when `x` or
+    `y` columns exist with non-integer type. Prevent also
+    potential integer overflows limiting maximum overview level
+    to 23.
+    [#258](https://github.com/CartoDB/cartodb-postgresql/pull/258) (0.16.4)
+  * Add export config for cdb_analysis_catalog table (0.17.0)
+  * Add some extra fields to cdb_analysis_catalog table. Track user, error_message for failures, and last entity modifying the node (0.17.0)
+  * Exclude overviews from user data size (0.17.0)
+  * Add cache_tables column to cdb_analysis_catalog table (0.17.1)
+  * Fix: exclude NULL geometries when creating Overviews (0.18.0)
+  * Function to check analysis tables limits (0.18.0)
+  * Exclude analysis cache tables from the quota (0.18.0)
+  * Increase analysis limit factor to 2 [#284](https://github.com/CartoDB/cartodb-postgresql/pull/284) (0.18.1)
 * Viewer users for organizations.
 * Oauth integration with GitHub
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).

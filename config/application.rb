@@ -156,6 +156,7 @@ module CartoDB
       user_feed.css
       explore.css
       mobile_apps.css
+      api_keys.css
 
       plugins/tipsy.css
 

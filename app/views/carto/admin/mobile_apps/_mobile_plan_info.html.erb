@@ -8,6 +8,8 @@
       <div class="MobilePlan-subtitle"><%= 'Xamarin features enabled. ' if current_user.mobile_xamarin %><%= 'Custom watermark. ' if current_user.mobile_custom_watermark %><%= 'Offline maps. ' if current_user.mobile_offline_maps %><%= 'GIS extension.' if current_user.mobile_gis_extension %></div>
     </div>
   </div>
+
+  <a href="<%= current_user.upgrade_url(request.protocol) %>" class="CDB-Text CDB-Size-small is-semibold CDB-Button CDB-Button--secondary u-upperCase">Expand quota</a>
 </div>
 
 <div class="ProgressBars">

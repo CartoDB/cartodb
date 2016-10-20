@@ -29,7 +29,11 @@ module.exports = WidgetModel.extend({
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();
-    this.autoStyler = AutoStylerFactory.get(this.dataviewModel);
+
+    if (this.isAutoStyleEnabled()) {
+      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('styles'));
+    }
+
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
@@ -41,6 +45,12 @@ module.exports = WidgetModel.extend({
         this.autoStyle();
       }
     }, this);
+  },
+
+  isAutoStyleEnabled: function (autoStyle) {
+    var styles = this.get('styles');
+
+    return styles && styles.auto_style && styles.auto_style.allowed;
   },
 
   setupSearch: function () {
@@ -71,6 +81,8 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
+    if (!this.isAutoStyleEnabled()) return;
+
     var layer = this.dataviewModel.layer;
     if (!layer.get('initialStyle')) {
       var initialStyle = layer.get('cartocss');
@@ -140,8 +152,10 @@ module.exports = WidgetModel.extend({
   },
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
-    if (!this.isAutoStyle()) {
-      this.autoStyler.colors.updateData(names);
+    if (this.isAutoStyleEnabled()) {
+      if (!this.isAutoStyle()) {
+        this.autoStyler.colors.updateData(names);
+      }
     }
   },
 

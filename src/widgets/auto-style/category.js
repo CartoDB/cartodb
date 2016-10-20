@@ -17,20 +17,22 @@ module.exports = AutoStyler.extend({
   _generateCategoryRamp: function (sym) {
     var cats = this.dataviewModel.get('data');
     var column = this.dataviewModel.get('column');
-    var ramp = ['ramp([' + column + ']'];
-    var catListColors = cats.map(function (cat, i) {
-      return this.colors.getColorByCategory(cat.name);
-    }.bind(this)).join(', ');
-    var catListValues = _.reduce(cats, function (memo, cat, i) {
+    var ramp = 'ramp([' + column + '],';
+
+    var catListColors = '';
+    var catListValues = '';
+
+    for (var i = cats.length; i >= 0; i--) {
+      var cat = cats[i],
+          start = "'",
+          end = i > 0 ? "', " : "'";
+
+      catListColors += start + this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {
-        memo.push('\'' + cat.name.replace(/'/g, '\\\'') + '\'');
+        catListValues += start + cat.name.replace(/'/g, '\\\'') + end;
       }
-      return memo;
-    }, []).join(', ');
+    }
 
-    ramp.push('(' + catListColors + ')');
-    ramp.push('(' + catListValues + ')');
-
-    return sym + ': ' + ramp.join(', ') + ');';
+    return sym + ': ' + ramp + '(' + catListColors + '), (' + catListValues + '));'
   }
 });

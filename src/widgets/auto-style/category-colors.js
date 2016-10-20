@@ -7,6 +7,14 @@ var colorScales = [[
   '#E73F74'
 ]]; // Demo colors
 
+function getColorRange (styles) {
+  var colorRange = styles && styles.definition
+    && styles.definition.fill && styles.definition.fill.color
+    && styles.definition.fill.color.range;
+
+  return colorRange || colorScales;
+};
+
 /**
  *  Class to set categories to each color
  *  - Right now, there is a relation 1 color to 1 category.
@@ -15,9 +23,10 @@ var colorScales = [[
  *
  */
 
-function CategoryColors () {
+function CategoryColors (styles) {
+  var colorRange = styles && styles.definition && styles.definition.fill && styles.definition.fill.color && styles.definition.fill.color.range;
   this.colors = {};
-  _.each(colorScales[0], function (c) {
+  _.each(colorRange || colorScales, function (c) {
     this.colors[c] = null;
   }, this);
 }
@@ -51,6 +60,7 @@ CategoryColors.prototype.getNextAvailableColor = function () {
 };
 
 CategoryColors.prototype.getColorByCategory = function (category) {
+  console.trace('Get color by cat');
   for (var i in this.colors) {
     if (this.colors[i] === category) {
       return i;

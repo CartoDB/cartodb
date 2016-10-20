@@ -35,7 +35,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
   attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'styles'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.attrsNames = attrsNames;
 
@@ -61,7 +61,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
   var dataAttrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'styles'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;

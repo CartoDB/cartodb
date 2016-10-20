@@ -7,7 +7,9 @@ module Carto
 
       def migration(up_block, down_block)
         Sequel.migration do
+          # Forces this migration to run under a transaction (controlled by Sequel)
           transaction
+
           up do
             lock_safe_migration(&up_block)
           end
@@ -38,7 +40,7 @@ module Carto
         end
         raise 'Retries exceeded during database migration'
       ensure
-        run "SET statement_timeout TO DEFAULT"
+        run "SET lock_timeout TO DEFAULT"
       end
     end
   end

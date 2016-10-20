@@ -24,8 +24,11 @@
   @include align-items(center);
   margin-right: 0;
   margin-left: 0;
+}
+.Modal-container--analysis .ScrollView {
   padding-bottom: 250px;
 }
+
 .Modal-container .ScrollView-shadow--top {
   top: -14px;
 }

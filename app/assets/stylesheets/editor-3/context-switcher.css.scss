@@ -6,19 +6,16 @@
 
 .Editor-contextSwitcher {
   position: absolute;
+  right: 32px;
   bottom: 32px;
-  left: calc(50% - 32px);
   border-radius: 4px;
+  background: $cBlue;
   box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
   overflow: hidden;
   z-index: 4;
-  background: $cBlue;
-}
-.Editor-contextSwitcher.in-table {
-  bottom: 39px;
 }
 .Editor-contextSwitcher.is-moved {
-  left: calc(50% - 216px);
+  right: calc(50% - 170px);
 }
 .Editor-contextSwitcher.has-timeSeries {
   bottom: 190px;

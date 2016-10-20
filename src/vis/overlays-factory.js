@@ -228,5 +228,10 @@ OverlaysFactory.register('search', function (data, visView, map) {
   return search.render();
 });
 
+OverlaysFactory.register('custom', function (data, visView, map) {
+  var customOverlayView = data;
+  return customOverlayView.render();
+});
+
 module.exports = OverlaysFactory;
 

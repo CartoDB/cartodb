@@ -10,9 +10,11 @@ require 'json'
 # 2.0.3: export state (Carto::State)
 # 2.0.4: export legends (Carto::Legend)
 # 2.0.5: export explicit widget order
+# 2.0.6: export version
+# 2.0.7: export map options
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.5'.freeze
+    CURRENT_VERSION = '2.0.7'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -47,6 +49,7 @@ module Carto
       visualization = Carto::Visualization.new(
         name: exported_visualization[:name],
         description: exported_visualization[:description],
+        version: exported_visualization[:version] || 2,
         type: exported_visualization[:type],
         tags: exported_visualization[:tags],
         privacy: exported_visualization[:privacy],
@@ -92,7 +95,8 @@ module Carto
         view_bounds_ne: exported_map[:view_bounds_ne],
         scrollwheel: exported_map[:scrollwheel],
         legends: exported_map[:legends],
-        layers: layers
+        layers: layers,
+        options: exported_map[:options]
       )
     end
 
@@ -225,6 +229,7 @@ module Carto
       {
         name: visualization.name,
         description: visualization.description,
+        version: visualization.version,
         type: visualization.type,
         tags: visualization.tags,
         privacy: visualization.privacy,
@@ -260,7 +265,8 @@ module Carto
         view_bounds_sw: map.view_bounds_sw,
         view_bounds_ne: map.view_bounds_ne,
         scrollwheel: map.scrollwheel,
-        legends: map.legends
+        legends: map.legends,
+        options: map.options
       }
     end
 

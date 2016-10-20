@@ -6,6 +6,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update
   before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
+  before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
   helper_method :show_billing
 
   layout 'application'
@@ -119,6 +120,12 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def load_ldap_configuration
     @ldap_configuration = Carto::Ldap::Configuration.where(organization_id: @organization.id).first
+  end
+
+  def enforce_engine_enabled
+    unless @organization.engine_enabled?
+      render_403
+    end
   end
 
 end

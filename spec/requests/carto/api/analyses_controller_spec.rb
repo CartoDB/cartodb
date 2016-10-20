@@ -9,8 +9,8 @@ describe Carto::Api::AnalysesController do
 
   before(:all) do
     FactoryGirl.create(:carto_feature_flag, name: 'editor-3', restricted: false)
-    @user = FactoryGirl.create(:carto_user)
-    @user2 = FactoryGirl.create(:carto_user)
+    @user = FactoryGirl.create(:carto_user, builder_enabled: true)
+    @user2 = FactoryGirl.create(:carto_user, builder_enabled: true)
     @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
     bypass_named_maps
     @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)

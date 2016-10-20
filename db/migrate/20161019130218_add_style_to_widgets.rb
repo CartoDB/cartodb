@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     alter_table :widgets do
-      add_column :style, :json, null: false, default: '{}'
+      add_column :style, :json, null: true
     end
   end,
   Proc.new do

@@ -24,6 +24,8 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
 
+  VERSION_BUILDER = 3
+
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
 
   # INFO: disable ActiveRecord inheritance column
@@ -371,7 +373,7 @@ class Carto::Visualization < ActiveRecord::Base
   # - v2 (Editor): not private
   # - v3 (Builder): not private, mapcapped
   def published?
-    version.nil? || version < 3 || mapcapped?
+    version.nil? || version < VERSION_BUILDER || mapcapped?
   end
 
   def mapcapped?
@@ -456,7 +458,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    version != 3 && uses_vizjson2?
+    version != VERSION_BUILDER && uses_vizjson2?
   end
 
   def can_be_automatically_migrated_to_v3?

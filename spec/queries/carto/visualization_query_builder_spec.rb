@@ -331,16 +331,32 @@ describe Carto::VisualizationQueryBuilder do
     expect { @vqb.with_id_or_name(nil) }.to raise_error
   end
 
-  it 'select mapcapped with with_published' do
-    map, table, table_visualization, visualization = create_full_visualization(@carto_user1)
+  describe '#with_published' do
+    it 'selects public v2' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
-    visualizations = @vqb.with_published.build
-    visualizations.map(&:id).should_not include visualization.id
+      visualizations = @vqb.with_published.build
+      visualizations.map(&:id).should include visualization.id
+    end
 
-    Carto::Mapcap.create!(visualization_id: visualization.id)
-    visualizations = @vqb.with_published.build
-    visualizations.map(&:id).should include visualization.id
+    it 'does not select private v2' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
-    destroy_full_visualization(map, table, table_visualization, visualization)
+      visualizations = @vqb.with_published.build
+      visualizations.map(&:id).should_not include visualization.id
+    end
+
+    it 'selects v3 mapcapped' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3 })
+
+      visualizations = @vqb.with_published.build
+      visualizations.map(&:id).should_not include visualization.id
+
+      Carto::Mapcap.create!(visualization_id: visualization.id)
+      visualizations = @vqb.with_published.build
+      visualizations.map(&:id).should include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
   end
 end

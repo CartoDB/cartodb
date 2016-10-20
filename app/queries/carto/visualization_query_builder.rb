@@ -320,7 +320,15 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @only_published
-      query = query.where('exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id)')
+      # TODO: compare to parallel?
+      query = query.where(%{
+            privacy != '#{Carto::Visualization::PRIVACY_PRIVATE}'
+        and (
+               version != #{Carto::Visualization::VERSION_BUILDER}
+            or
+               (exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id limit 1))
+            )
+      })
     end
 
     @include_associations.each { |association|

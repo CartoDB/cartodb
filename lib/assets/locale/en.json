@@ -1376,7 +1376,7 @@
       },
       "menu-tab-pane-labels": {
         "data": "Data",
-        "analyses": "Analyses",
+        "analyses": "Analysis",
         "style": "Style",
         "infowindow": "Pop-up",
         "legends": "Legend"
@@ -1719,6 +1719,11 @@
           "title": "LAYER HIDDEN",
           "body": "This layer is hidden, changes won't be shown until you make it visible.",
           "show": "SHOW"
+        },
+        "legends-disabled": {
+          "title": "LEGENDS DISABLED",
+          "body": "The legends setting is disabled. Changes made will not be shown until you enable legends.",
+          "show": "ENABLE"
         }
       },
       "types": {

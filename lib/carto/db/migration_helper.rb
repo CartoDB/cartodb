@@ -21,14 +21,14 @@ module Carto
       private
 
       def protected_migration(&block)
-        run "SET statement_timeout TO #{LOCK_TIMEOUT_MS}"
+        run "SET lock_timeout TO #{LOCK_TIMEOUT_MS}"
+        run 'SAVEPOINT before_migration'
         (1..MAX_RETRIES).each do
           begin
-            run 'SAVEPOINT before_migration'
             instance_eval &block
             return
           rescue Sequel::DatabaseError => e
-            if e.message.include?('statement timeout')
+            if e.message.include?('lock timeout')
               run 'ROLLBACK TO SAVEPOINT before_migration'
               sleep WAIT_BETWEEN_RETRIES_S
             else
@@ -38,7 +38,7 @@ module Carto
         end
         raise PG::Error.new('Retries exceeded')
       ensure
-        run "SET statement_timeout TO 0"
+        run "SET statement_timeout TO DEFAULT"
       end
     end
   end

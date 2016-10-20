@@ -5,6 +5,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
+  before_filter :enforce_engine_enabled, only: :regenerate_api_key
 
   layout 'application'
 
@@ -54,5 +55,12 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
     redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
                 :flash => {:success => "Your OAuth credentials have been updated successfully"}
+  end
+
+  private
+  def enforce_engine_enabled
+    unless current_user.engine_enabled?
+      render_403
+    end
   end
 end

@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
+var AutoStylerFactory = require('./auto-style/factory');
 
 /**
  * Default widget model
@@ -18,8 +19,23 @@ module.exports = cdb.core.Model.extend({
     'collapsed': false
   },
 
+  super: function () {
+    // NOTE: add this to backbone himself?
+    var returned = this.__proto__ &&
+      this.__proto__.__proto__ &&
+      this.__proto__.__proto__[arguments.callee.caller.name] &&
+      this.__proto__.__proto__[arguments.callee.caller.name].call(this);
+
+    return returned;
+  },
+
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
+
+    if (this.isAutoStyleEnabled()) {
+      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
+    }
+
   },
 
   /**
@@ -42,6 +58,53 @@ module.exports = cdb.core.Model.extend({
     this.dataviewModel.remove();
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  isAutoStyleEnabled: function (autoStyle) {
+    var styles = this.get('style');
+
+    return styles && styles.auto_style && styles.auto_style.allowed;
+  },
+
+  getWidgetColor: function () {
+    var styles = this.get('style');
+
+    return styles && styles.widget_style
+          && styles.widget_style.definition
+          && styles.widget_style.definition.fill
+          && styles.widget_style.definition.fill.color
+          && styles.widget_style.definition.fill.color.fixed;
+  },
+
+  getColor: function (name) {
+    if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
+      return this.autoStyler.colors.getColorByCategory(name);
+    }
+    else {
+      return this.getWidgetColor();
+    }
+  },
+
+  isAutoStyle: function () {
+    return this.get('autoStyle');
+  },
+
+  autoStyle: function () {
+    if (!this.isAutoStyleEnabled()) return;
+
+    var layer = this.dataviewModel.layer;
+
+    if (!layer.get('initialStyle')) {
+      var initialStyle = layer.get('cartocss');
+      if (!initialStyle && layer.get('meta')) {
+        initialStyle = layer.get('meta').cartocss;
+      }
+      layer.set('initialStyle', initialStyle);
+    }
+
+    var style = this.autoStyler.getStyle();
+    layer.set('cartocss', style);
+    this.set('autoStyle', true);
   },
 
   setState: function (state) {

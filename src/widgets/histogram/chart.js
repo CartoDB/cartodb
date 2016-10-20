@@ -10,7 +10,7 @@ module.exports = cdb.core.View.extend({
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-    chartBarColorClass: '',
+    chartBarColor: '#9DE0AD',
     labelsMargin: 16, // px
     hasAxisTip: false,
     minimumBarHeight: 2,
@@ -941,7 +941,8 @@ module.exports = cdb.core.View.extend({
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
+      .attr('class', 'CDB-Chart-bar')
+      .attr('fill', this.options.chartBarColor)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -1006,7 +1007,8 @@ module.exports = cdb.core.View.extend({
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
+      .attr('class', 'CDB-Chart-bar')
+      .attr('fill', this.options.chartBarColor)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';

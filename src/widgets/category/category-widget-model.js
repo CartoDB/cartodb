@@ -30,10 +30,6 @@ module.exports = WidgetModel.extend({
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();
 
-    if (this.isAutoStyleEnabled()) {
-      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('styles'));
-    }
-
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
@@ -45,20 +41,6 @@ module.exports = WidgetModel.extend({
         this.autoStyle();
       }
     }, this);
-  },
-
-  isAutoStyleEnabled: function (autoStyle) {
-    var styles = this.get('styles');
-
-    return styles && styles.auto_style && styles.auto_style.allowed;
-  },
-
-  getWidgetColor: function () {
-    var styles = this.get('styles');
-
-    return styles && styles.widget_style && styles.widget_style.definition
-          && styles.widget_style.definition.fill && styles.widget_style.definition.fill.color
-          && styles.widget_style.definition.fill.color.fixed;
   },
 
   setupSearch: function () {
@@ -88,39 +70,15 @@ module.exports = WidgetModel.extend({
     this.lockedCategories.reset([]);
   },
 
-  getColor: function (name) {
-    if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
-      return this.autoStyler.colors.getColorByCategory(name);
-    }
-    else {
-      return this.getWidgetColor();
-    }
-  },
-
   autoStyle: function () {
-    if (!this.isAutoStyleEnabled()) return;
-
-    var layer = this.dataviewModel.layer;
-    if (!layer.get('initialStyle')) {
-      var initialStyle = layer.get('cartocss');
-      if (!initialStyle && layer.get('meta')) {
-        initialStyle = layer.get('meta').cartocss;
-      }
-      layer.set('initialStyle', initialStyle);
-    }
+    // NOTE: maybe not pre-assing colors to categories?
     this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
-    var style = this.autoStyler.getStyle();
-    layer.set('cartocss', style);
-    this.set('autoStyle', true);
+    this.super();
   },
 
   cancelAutoStyle: function () {
     this.dataviewModel.layer.restoreCartoCSS();
     this.set('autoStyle', false);
-  },
-
-  isAutoStyle: function () {
-    return this.get('autoStyle');
   },
 
   isLocked: function () {

@@ -122,10 +122,13 @@ class Admin::PagesController < Admin::AdminController
 
       set_layout_vars_for_user(@viewed_user, 'feed')
 
+      dataset_builder = user_datasets_builder(@viewed_user)
+      maps_builder = user_maps_builder(@viewed_user)
+
       @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
       @avatar_url         = @viewed_user.avatar
-      @tables_num         = @viewed_user.public_table_count
-      @maps_count         = @viewed_user.public_visualization_count
+      @tables_num         = dataset_builder.build.count
+      @maps_count         = maps_builder.build.count
       @website            = website_url(@viewed_user.website)
       @website_clean      = @website ? @website.gsub(/https?:\/\//, "") : ""
 
@@ -311,17 +314,11 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_user(user, content_type)
+    builder = user_maps_builder(user)
+    most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
+
     set_layout_vars({
-        most_viewed_vis_map: Visualization::Collection.new.fetch({
-            user_id:        user.id,
-            type:           Visualization::Member::TYPE_DERIVED,
-            privacy:        Visualization::Member::PRIVACY_PUBLIC,
-            order:          'mapviews',
-            page:           1,
-            per_page:       1,
-            exclude_shared: true,
-            exclude_raster: true
-          }).first,
+        most_viewed_vis_map: most_viewed ? Carto::Admin::VisualizationPublicMapAdapter.new(most_viewed, current_user, self) : nil,
         content_type: content_type,
         default_fallback_basemap: user.default_basemap,
         user: user,

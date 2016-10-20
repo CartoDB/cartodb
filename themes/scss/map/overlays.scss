@@ -326,7 +326,9 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-item {
   @include opacity(0.5);
+  @include transform(translateX(-50%));
   position: absolute;
+  left: 50%;
   bottom: 0;
   cursor: pointer;
 }

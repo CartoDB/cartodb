@@ -19,7 +19,8 @@ describe('geo/ui/legends/legends-view', function () {
 
     this.settingsModel = new Backbone.Model({
       showLegends: true,
-      showLayerSelector: true
+      showLayerSelector: true,
+      layerSelectorEnabled: true
     });
 
     this.legendsView = new LegendsView({

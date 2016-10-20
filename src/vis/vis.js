@@ -352,6 +352,11 @@ var VisModel = Backbone.Model.extend({
       })
       .flatten()
       .value();
+  },
+
+  addCustomOverlay: function (overlayView) {
+    this.overlaysCollection.add(overlayView);
+    return overlayView;
   }
 });
 

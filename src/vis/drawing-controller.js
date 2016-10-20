@@ -4,6 +4,8 @@ var DrawingController = function (mapView, map) {
 };
 
 DrawingController.prototype.enableDrawing = function (geometry) {
+  this.disableDrawing();
+
   this._geometry = geometry;
   this._map.addGeometry(this._geometry);
 

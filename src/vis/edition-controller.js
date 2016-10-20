@@ -4,10 +4,13 @@ var EditionController = function (mapView, map) {
 };
 
 EditionController.prototype.enableEdition = function (geometry) {
+  this.disableEdition();
+
   this._geometry = geometry;
   this._map.addGeometry(this._geometry);
 
-  this._map.disableInteractivity();
+  this._werePopupsEnabled = this._map.arePopupsEnabled();
+  this._map.disablePopups();
 };
 
 EditionController.prototype.disableEdition = function () {
@@ -16,12 +19,21 @@ EditionController.prototype.disableEdition = function () {
     this._map.removeGeometry(this._geometry);
     delete this._geometry;
 
-    this._map.enableInteractivity();
+    // TODO: What if they were disabled?
+    this._map.enablePopups();
   }
 };
 
 EditionController.prototype._isEditionEnabled = function () {
   return !!this._geometry;
+};
+
+EditionController.prototype._reEnableOrDisablePopups = function () {
+  if (this._werePopupsEnabled) {
+    this._map.enablePopups();
+  } else {
+    this._map.disablePopups();
+  }
 };
 
 module.exports = EditionController;

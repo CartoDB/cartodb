@@ -9,18 +9,18 @@ module Carto
         Sequel.migration do
           transaction
           up do
-            protected_migration(&up_block)
+            lock_safe_migration(&up_block)
           end
 
           down do
-            protected_migration(&down_block)
+            lock_safe_migration(&down_block)
           end
         end
       end
 
       private
 
-      def protected_migration(&block)
+      def lock_safe_migration(&block)
         run "SET lock_timeout TO #{LOCK_TIMEOUT_MS}"
         run 'SAVEPOINT before_migration'
         (1..MAX_RETRIES).each do

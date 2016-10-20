@@ -6,10 +6,10 @@ $buttonColor: #636D72;
 .CDB-OverlayContainer {
   display: flex;
   position: absolute;
+  right: 16px;
   bottom: 16px;
   left: 16px;
   align-items: center;
-
 }
 
 // zoom overlay
@@ -476,4 +476,12 @@ $index-items: 7 6 5 4 3 2 1;
 }
 .Legend-placeholderInner {
   padding: 16px 24px 0;
+}
+
+
+@media (max-width: 600px) {
+  .CDB-Zoom-info,
+  .CDB-Fullscreen {
+    display: none !important;
+  }
 }

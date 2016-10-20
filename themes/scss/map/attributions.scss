@@ -7,6 +7,7 @@ $size: 20px;
   @include transition(background, 100ms);
   position: relative;
   order: 2;
+  width: 32px;
   margin-right: 8px;
   border-radius: 3px;
   box-sizing: border-box;
@@ -14,7 +15,11 @@ $size: 20px;
   line-height: $size;
   z-index: 10;
 }
+.CDB-Attribution.is-active {
+  width: auto;
+}
 .CDB-Attribution.is-active .CDB-Attribution-text {
+  @include flex(1);
   width: auto;
   padding: 0 12px;
   border-left: 1px solid #EEE;
@@ -27,6 +32,7 @@ $size: 20px;
 .CDB-Attribution-button {
   display: inline-block;
   width: 32px;
+  min-width: 32px;
   height: 100%;
   color: #636D72;
   font-size: 12px;
@@ -53,13 +59,15 @@ $size: 20px;
 
 @include media-query-mobile() {
   .CDB-Attribution {
-    width: 90%;
-    max-width: 90%;
-    border-radius: 2px;
+    margin-right: 0;
   }
-
+  .CDB-Attribution.is-active {
+    @include flex(1);
+    width: 0;
+  }
+  /*
   .CDB-Attribution-text {
     height: auto;
     min-height: $size;
-  }
+  }*/
 }

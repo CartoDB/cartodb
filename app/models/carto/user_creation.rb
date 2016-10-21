@@ -37,10 +37,12 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.soft_obs_snapshot_limit = user.soft_obs_snapshot_limit
     user_creation.soft_obs_general_limit = user.soft_obs_general_limit
     user_creation.soft_twitter_datasource_limit = user.soft_twitter_datasource_limit.nil? ? false : user.soft_twitter_datasource_limit
+    user_creation.soft_mapzen_routing_limit = user.soft_mapzen_routing_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.github_user_id = user.github_user_id
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
+    user_creation.viewer = user.viewer || false
 
     user_creation
   end
@@ -210,6 +212,8 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_obs_snapshot_limit = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     @cartodb_user.soft_obs_general_limit = soft_obs_general_limit unless soft_obs_general_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+    @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
+    @cartodb_user.viewer = viewer if viewer
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer

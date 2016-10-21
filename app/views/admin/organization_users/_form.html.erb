@@ -182,6 +182,25 @@
       </div>
     </div>
 
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra Here Isolines</label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :soft_mapzen_routing_limit, id: "soft_mapzen_routing_limit", disabled: !current_user.soft_mapzen_routing_limit %>
+          <%= label_tag(:soft_mapzen_routing_limit, '') %>
+        </div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <% if current_user.soft_mapzen_routing_limit %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">User has permission to exceed organization's routing quota from Mapzen provider</p>
+          <% else %>
+            <p class="CDB-Text CDB-Size-small u-altTextColor">You can't enable extra quota. Contact support for more information.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
     <% if current_user && current_user.organization && current_user.organization.twitter_datasource_enabled %>
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">

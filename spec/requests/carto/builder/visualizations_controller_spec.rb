@@ -6,18 +6,22 @@ describe Carto::Builder::VisualizationsController do
 
   include_context 'users helper'
 
+  before(:all) do
+    @user1.builder_enabled = true
+    @user1.save
+  end
+
   describe '#show' do
     before(:each) do
       map = FactoryGirl.create(:map, user_id: @user1.id)
       @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
-      @user1.stubs(:has_feature_flag?).with('editor-3').returns(true)
       @user1.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
 
       login(@user1)
     end
 
     it 'redirects to embed for non-editor users requests' do
-      @user1.stubs(:has_feature_flag?).with('editor-3').returns(false)
+      @user1.stubs(:builder_enabled).returns(false)
 
       get builder_visualization_url(id: @visualization.id)
 
@@ -25,13 +29,36 @@ describe Carto::Builder::VisualizationsController do
       response.location.should end_with builder_visualization_public_embed_path(visualization_id: @visualization.id)
     end
 
-    it 'redirects to editor if disabled' do
-      @user1.stubs(:builder_enabled).returns(false)
+    it 'redirects to editor for vizjson2 visualizations' do
+      @visualization.version = 2
+      @visualization.save
+      Carto::Visualization.any_instance.stubs(:uses_vizjson2?).returns(true)
 
       get builder_visualization_url(id: @visualization.id)
 
       response.status.should eq 302
       response.location.should include '/viz/' + @visualization.id
+    end
+
+    it 'automatically migrates visualizations' do
+      @visualization.version = 2
+      @visualization.save
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 200
+      @visualization.reload
+      @visualization.version.should eq 3
+    end
+
+    it 'does not automatically migrates visualization with custom overlays' do
+      @visualization.version = 2
+      @visualization.save
+      @visualization.overlays.create(type: 'header')
+      get builder_visualization_url(id: @visualization.id)
+
+      response.status.should eq 200
+      @visualization.reload
+      @visualization.version.should eq 2
     end
 
     it 'returns 404 for non-existent visualizations' do
@@ -49,7 +76,8 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'redirects to embed for visualizations not writable by user' do
-      @other_visualization = FactoryGirl.create(:carto_visualization)
+      map = FactoryGirl.create(:map)
+      @other_visualization = FactoryGirl.create(:carto_visualization, map_id: map.id)
 
       get builder_visualization_url(id: @other_visualization.id)
 

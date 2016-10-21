@@ -736,9 +736,9 @@ describe Table do
 
     id = table.table_visualization.id
     CartoDB::Varnish.any_instance.expects(:purge)
-                                 .times(4)
-                                 .with(".*#{id}:vizjson")
-                                 .returns(true)
+                    .times(6)
+                    .with(".*#{id}:vizjson")
+                    .returns(true)
 
     CartoDB::TablePrivacyManager.any_instance.expects(:update_cdb_tablemetadata)
     table.privacy = UserTable::PRIVACY_PUBLIC
@@ -1080,7 +1080,7 @@ describe Table do
 
       data_import = DataImport.create( :user_id       => @user.id,
                                     :table_name    => 'rescol',
-                                    :data_source   => '/../db/fake_data/reserved_columns.csv' )
+                                    :data_source   => fake_data_path('reserved_columns.csv') )
       data_import.run_import!
       table.run_query("select name from table1 where cartodb_id = '#{pk}'")[:rows].first[:name].should == "name #1"
     end
@@ -1280,7 +1280,7 @@ describe Table do
     it "should be able to update data in rows with column names with multiple underscores" do
       data_import = DataImport.create( :user_id       => @user.id,
                                        :table_name    => 'elecciones2008',
-                                       :data_source   => '/../spec/support/data/elecciones2008.csv')
+                                       :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
       data_import.run_import!
 
       table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
@@ -1298,7 +1298,7 @@ describe Table do
 
     it "should be able to insert data in rows with column names with multiple underscores" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../spec/support/data/elecciones2008.csv')
+                                       :data_source   => Rails.root.join('spec/support/data/elecciones2008.csv').to_s)
       data_import.run_import!
 
       table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
@@ -1383,20 +1383,20 @@ describe Table do
 
   context "post import processing tests" do
     it "should optimize the table" do
-      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       Table.any_instance.expects(:optimize).once
       data_import = create_import(@user, fixture)
     end
 
     it "should assign table_id" do
-      fixture     =  "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       data_import = create_import(@user, fixture)
       data_import.table.table_id.should_not be_nil
     end
 
     it "should add a the_geom column after importing a CSV" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/twitters.csv' )
+                                       :data_source   => fake_data_path('twitters.csv') )
       data_import.run_import!
 
       table = Table.new(user_table: UserTable[data_import.table_id])
@@ -1414,7 +1414,7 @@ describe Table do
       table.save.reload
       table.name.should == 'empty_file'
 
-      fixture     = "#{Rails.root}/db/fake_data/empty_file.csv"
+      fixture = fake_data_path("empty_file.csv")
       data_import = create_import(@user, fixture, table.name)
 
       @user.in_database do |user_database|
@@ -1429,7 +1429,7 @@ describe Table do
       table.name.should == 'empty_file'
 
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/csv_no_quotes.csv' )
+                                       :data_source   => fake_data_path('csv_no_quotes.csv') )
       data_import.run_import!
 
       table2 = Table.new(user_table: UserTable[data_import.table_id])
@@ -1457,7 +1457,7 @@ describe Table do
 
     it "should add a cartodb_id serial column as primary key when importing a
     file without a column with name cartodb_id" do
-      fixture       = "#{Rails.root}/db/fake_data/gadm4_export.csv"
+      fixture       = fake_data_path("gadm4_export.csv")
       data_import   = create_import(@user, fixture)
       table         = data_import.table
       table.should_not be_nil, "Import failure: #{data_import.log.inspect}"
@@ -1498,7 +1498,7 @@ describe Table do
 
     it "should return geometry types when guessing is enabled" do
       data_import = DataImport.create( :user_id       => @user.id,
-                                       :data_source   => '/../db/fake_data/gadm4_export.csv',
+                                       :data_source   => fake_data_path('gadm4_export.csv'),
                                        :type_guessing  => true )
       data_import.run_import!
 
@@ -1535,7 +1535,7 @@ describe Table do
     end
 
     it "should normalize strings if there is a non-convertible entry when converting string to number" do
-      fixture     = "#{Rails.root}/db/fake_data/short_clubbing.csv"
+      fixture = fake_data_path("short_clubbing.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1549,7 +1549,7 @@ describe Table do
     end
 
     it "should normalize string if there is a non-convertible entry when converting string to boolean" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1581,7 +1581,7 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to string" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1592,7 +1592,7 @@ describe Table do
     end
 
     it "should normalize boolean if there is a non-convertible entry when converting boolean to number" do
-      fixture     = "#{Rails.root}/db/fake_data/column_string_to_boolean.csv"
+      fixture = fake_data_path("column_string_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
       table.modify_column! :name=>"f1", :type=>"boolean"
@@ -1604,7 +1604,7 @@ describe Table do
 
     it "should normalize number if there is a non-convertible entry when
     converting number to boolean" do
-      fixture     = "#{Rails.root}/db/fake_data/column_number_to_boolean.csv"
+      fixture = fake_data_path("column_number_to_boolean.csv")
       data_import = create_import(@user, fixture)
       table       = data_import.table
 
@@ -1814,7 +1814,7 @@ describe Table do
 
   context "imports" do
     it "file twitters.csv" do
-      fixture     =  "#{Rails.root}/db/fake_data/twitters.csv"
+      fixture = fake_data_path("twitters.csv")
       data_import = create_import(@user, fixture)
 
       data_import.table.name.should match(/^twitters/)
@@ -1822,7 +1822,7 @@ describe Table do
     end
 
     it "file SHP1.zip" do
-      fixture     = "#{Rails.root}/db/fake_data/SHP1.zip"
+      fixture = fake_data_path("SHP1.zip")
       data_import = create_import(@user, fixture)
 
       data_import.table.name.should == "esp_adm1"
@@ -2298,7 +2298,7 @@ describe Table do
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(id: derived.id)).returns(derived)
       CartoDB::Visualization::Member.stubs(:new).with(has_entry(type: 'table')).returns(table.table_visualization)
 
-      derived.expects(:invalidate_cache).once
+      derived.expects(:invalidate_cache).at_least_once
 
       table.privacy = UserTable::PRIVACY_PUBLIC
       table.save

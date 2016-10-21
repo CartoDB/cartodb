@@ -447,8 +447,7 @@ module CartoDB
         end
       end
 
-      e.invalidate_cache
-      e.save_named_map
+      e.invalidate_for_permissions_change
     end
 
     def users_with_permissions(access)

@@ -6,12 +6,14 @@ require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/helpers/has_connector_configuration'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
   extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include Carto::HasConnectorConfiguration
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -19,12 +21,14 @@ class Carto::User < ActiveRecord::Base
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
   OBS_GENERAL_BLOCK_SIZE = 1000
+  MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
                    "users.disqus_shortname, users.account_type, users.twitter_username, users.google_maps_key, " \
-                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password".freeze
+                   "users.viewer, users.quota_in_bytes, users.database_host, users.crypted_password, " \
+                   "users.builder_enabled".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -56,7 +60,7 @@ class Carto::User < ActiveRecord::Base
   delegate [
       :database_username, :database_password, :in_database,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
-      :visualization_count, :twitter_imports_count
+      :visualization_count, :owned_visualization_count, :twitter_imports_count
     ] => :service
 
   attr_reader :password
@@ -281,6 +285,15 @@ class Carto::User < ActiveRecord::Base
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_mapzen_routing_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_mapzen_routing_quota(options)
+    else
+      remaining = mapzen_routing_quota - get_mapzen_routing_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   def oauth_for_service(service)
     synchronization_oauths.where(service: service).first
   end
@@ -348,6 +361,12 @@ class Carto::User < ActiveRecord::Base
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     get_user_obs_general_data(self, date_from, date_to)
+  end
+
+  def get_mapzen_routing_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_mapzen_routing_data(self, date_from, date_to)
   end
 
   #TODO: Remove unused param `use_total`
@@ -420,6 +439,15 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
 
+  def soft_mapzen_routing_limit?
+    Carto::AccountType.new.soft_mapzen_routing_limit?(self)
+  end
+  alias_method :soft_mapzen_routing_limit, :soft_mapzen_routing_limit?
+
+  def hard_mapzen_routing_limit?
+    !self.soft_mapzen_routing_limit?
+  end
+  alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
   def trial_ends_at
     if self.account_type.to_s.downcase == 'magellan' && self.upgraded_at && self.upgraded_at + 15.days > Date.today
       self.upgraded_at + 15.days
@@ -477,5 +505,21 @@ class Carto::User < ActiveRecord::Base
 
   def notifications_for_category(category)
     notifications.notifications[category] || {}
+  end
+
+  def builder_enabled?
+    if has_organization? && builder_enabled.nil?
+      organization.builder_enabled
+    else
+      !!builder_enabled
+    end
+  end
+
+  def new_visualizations_version
+    builder_enabled? ? 3 : 2
+  end
+
+  def engine_enabled?
+    has_organization? ? organization.engine_enabled : engine_enabled
   end
 end

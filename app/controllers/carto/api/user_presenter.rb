@@ -87,6 +87,7 @@ module Carto
           table_count: @user.table_count,
           viewer: @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
+          owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
@@ -112,6 +113,12 @@ module Carto
             block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
+          },
+          mapzen_routing: {
+            quota:       @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
+            block_price: @user.organization_user? ? @user.organization.mapzen_routing_block_price : @user.mapzen_routing_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_mapzen_routing_calls : @user.get_mapzen_routing_calls,
+            hard_limit:  @user.hard_mapzen_routing_limit?
           },
           geocoder_provider: @user.geocoder_provider,
           isolines_provider: @user.isolines_provider,
@@ -155,7 +162,8 @@ module Carto
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
-            google_maps_enabled: @user.google_maps_enabled?
+            google_maps_enabled: @user.google_maps_enabled?,
+            engine_enabled: @user.engine_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

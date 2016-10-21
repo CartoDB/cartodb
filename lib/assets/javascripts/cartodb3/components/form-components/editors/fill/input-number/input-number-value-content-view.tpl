@@ -1,12 +1,24 @@
 <div class="CDB-Box-modalHeader">
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
+    <li class="InputColor-modalHeader CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
+      <div class="u-flex u-alignStart">
+        <button class="u-rSpace u-actionTextColor js-back">
+          <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+        </button>
+        <%- attribute %>
+      </div>
+    </li>
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="u-flex u-justifySpace">
         <li class="u-flex">
-          <button class="u-actionTextColor js-back">
-            <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+          <%- bins %> <%- _t('form-components.editors.fill.input-ramp.buckets', { smart_count: bins }) %>
+          <button class="CDB-Shape u-lSpace js-bins">
+            <div class="CDB-Shape-threePoints is-horizontal is-blue is-small">
+              <div class="CDB-Shape-threePointsItem"></div>
+              <div class="CDB-Shape-threePointsItem"></div>
+              <div class="CDB-Shape-threePointsItem"></div>
+            </div>
           </button>
-          <%- attribute %>
         </li>
         <li class="u-flex">
           <%- _t('form-components.editors.fill.quantification.methods.' + quantification) %>

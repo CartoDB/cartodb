@@ -2,34 +2,40 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Protected map</title>
+    <title>Protected map — CARTO</title>
     <%= stylesheet_link_tag 'password_protected.css' %>
-    <style type="text/css">
-      html, body {
-        position:relative;
-        height: 100%;
-        padding: 0;
-        margin: 0;
-      }
-    </style>
   </head>
-  <body class='protected'>
-    <div class="bkg"></div>
-    <div class="CDB-Text block modal creation">
-      <div class="head">
-        <h3>This map is protected by password</h3>
-      </div>
-      <div class="content">
-        <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
-          <input type="password" name="password" placeholder="Insert your password"/>
-          <span class="icon"></span>
 
-          <% if (flash[:error]) %>
-            <span class="icon error" original-title="The password is not ok"></span>
+  <body class='PublicPage-body PublicPage-background--navyBlue'>
+    <div class='PublicPage-centerContainer'>
+      <div class='PublicPage-container'>
+
+        <div class='PublicPage-header'>
+          <a href="<%= cartodb_com_hosted? ? CartoDB.url(self, 'root') : "https://carto.com" %>">
+            <img src="<%= image_path "layout/carto-logo.svg" %>" alt="CARTO">
+          </a>
+        </div>
+
+        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'>This map is protected with password</p>
+
+        <div class='PublicPage-form'>
+          <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
+
+            <div class='PublicPage-field-withTooltip'>
+              <%= password_field_tag 'password', params[:password], class: "PublicPage-form--inputText RoundBorders-all CDB-Text CDB-Size-medium is-light u-whiteTextColor #{ flash[:error].present? ? 'is-alert' : ''}", placeholder: 'Insert your password'%>
+
+              <%- if flash[:error].present? %>
+                <div class="PublicPage-inputTooltip CDB-InfoTooltip CDB-InfoTooltip--left u-lSpace--xl is-error">
+                  <p class='CDB-Text CDB-Size-medium CDB-InfoTooltip-text'><%= flash[:error] %></p>
+                </div>
+              <% end %>
+            </div>
+
           <% end %>
-        <% end %>
+        </div>
+
+        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'>Contact with the owner in case you want access to it.</p>
       </div>
-      <div class="foot">Contact with the owner in case you want access to it.</div>
     </div>
   </body>
 </html>

@@ -135,4 +135,31 @@ describe Carto::Visualization do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
   end
+
+  describe '#published?' do
+    before(:each) do
+      @visualization = FactoryGirl.build(:carto_visualization)
+    end
+
+    it 'returns true for visualizations without version' do
+      @visualization.version = nil
+      @visualization.published?.should eq true
+    end
+
+    it 'returns true for v2 visualizations' do
+      @visualization.version = 2
+      @visualization.published?.should eq true
+    end
+
+    it 'returns false for v3 visualizations' do
+      @visualization.version = 3
+      @visualization.published?.should eq false
+    end
+
+    it 'returns true for mapcapped v3 visualizations' do
+      @visualization.version = 3
+      @visualization.stubs(:mapcapped?).returns(true)
+      @visualization.published?.should eq true
+    end
+  end
 end

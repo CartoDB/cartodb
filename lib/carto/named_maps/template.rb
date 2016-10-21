@@ -94,7 +94,7 @@ module Carto
           if layer.data_layer?
             layer_index += 1
 
-            layers.push(type: 'cartodb', options: options_for_cartodb_layers(layer, layer_index))
+            layers.push(type: 'cartodb', options: options_for_carto_and_torque_layers(layer, layer_index))
           elsif layer.base?
             layer_options = layer.options
 
@@ -108,7 +108,7 @@ module Carto
 
         @visualization.torque_layers.each do |layer|
           layer_index += 1
-          layers.push(type: 'torque', options: common_options_for_carto_and_torque_layers(layer, layer_index))
+          layers.push(type: 'torque', options: options_for_carto_and_torque_layers(layer, layer_index))
         end
 
         layers
@@ -127,19 +127,7 @@ module Carto
         options
       end
 
-      def options_for_cartodb_layers(layer, index)
-        options = common_options_for_carto_and_torque_layers(layer, index)
-
-        layer_options = layer.options
-        layer_options_sql_wrap = layer_options[:sql_wrap]
-        layer_options_query_wrapper = layer_options[:query_wrapper]
-
-        options[:sql_wrap] = layer_options_sql_wrap || layer_options_query_wrapper
-
-        options
-      end
-
-      def common_options_for_carto_and_torque_layers(layer, index)
+      def options_for_carto_and_torque_layers(layer, index)
         layer_options = layer.options.with_indifferent_access
         tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
@@ -153,8 +141,10 @@ module Carto
         if layer_options_source
           options[:source] = { id: layer_options_source }
         else
-          options[:sql] = visibility_wrapped_sql(layer.wrapped_sql(@visualization.user), index)
+          options[:sql] = visibility_wrapped_sql(layer.default_query(@visualization.user), index)
         end
+
+        options[:sql_wrap] = layer_options[:sql_wrap] || layer_options[:query_wrapper]
 
         attributes, interactivity = attributes_and_interactivity(layer.infowindow, layer.tooltip)
 

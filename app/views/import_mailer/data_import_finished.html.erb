@@ -1,8 +1,8 @@
 <% if @total_tables == 1 %>
   <% if @errors.nil? %>
-    <%- message = "<p>Your dataset <strong>#{@first_table[:name]}</strong> was successfully imported</p>" %>
+    <%- message = "<p>Your dataset <strong>#{@first_table['name']}</strong> was successfully imported</p>" %>
   <% else %>
-     <%- message = "<p>There was some error while importing your dataset <strong>#{@first_table[:name]}</strong></p>" %>
+     <%- message = "<p>There was some error while importing your dataset <strong>#{@files.first}</strong></p>" %>
   <% end %>
 <% else %>
   <% if @errors.nil? %>
@@ -21,8 +21,8 @@
 <% if @errors.present? %>
   <tr>
     <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-      <p><strong><%= @errors[:title] %></strong></p>
-      <p><%= @errors[:what_about].html_safe %></p>
+      <p><strong><%= @errors['title'] %></strong></p>
+      <p><%= @errors['what_about'].html_safe %></p>
     </td>
   </tr>
 
@@ -39,4 +39,6 @@
   </tr>
 <% end %>
 
-<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "View your #{@total_tables == 1 ? 'dataset' : 'datasets'}" } %>
+<% if @imported_tables > 0 %>
+  <%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "View your #{@imported_tables == 1 ? 'dataset' : 'datasets'}" } %>
+<% end %>

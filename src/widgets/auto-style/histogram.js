@@ -4,7 +4,6 @@ var StyleUtils = require('./style-utils');
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
     var style = this.layer.get('initialStyle');
-    var custom = null;
     if (!style) return;
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       style = StyleUtils.changeStyle(style, item, this.getColorLine(item, this.getCustomStyle()));
@@ -13,10 +12,10 @@ var HistogramAutoStyler = AutoStyler.extend({
   },
 
   getCustomStyle: function () {
-    return this.styles
-      && this.styles.definition
-      && this.styles.definition.fill
-      && this.styles.definition.fill.color;
+    return this.styles &&
+      this.styles.definition &&
+      this.styles.definition.fill &&
+      this.styles.definition.fill.color;
   },
 
   getColorLine: function (sym, custom) {
@@ -30,10 +29,10 @@ var HistogramAutoStyler = AutoStyler.extend({
       scales = HistogramAutoStyler.SCALES_MAP[sym][shape];
     }
 
-    var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ',
-        colors = custom ? "('" + scales.range.join("', '") + "'), "
-          : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ',
-        cuantification = scales.quantification + ');';
+    var ramp = 'ramp([' + this.dataviewModel.get('column') + '], ';
+    var colors = custom ? "('" + scales.range.join("', '") + "'), "
+      : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ';
+    var cuantification = scales.quantification + ');';
 
     return sym + ': ' + ramp + colors + cuantification;
   }

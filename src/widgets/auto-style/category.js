@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
 
@@ -15,9 +14,9 @@ module.exports = AutoStyler.extend({
   },
 
   _generateCategoryRamp: function (sym) {
-    var model = this.dataviewModel,
-      categories = model.get('data'),
-      column = model.get('column');
+    var model = this.dataviewModel;
+    var categories = model.get('data');
+    var column = model.get('column');
 
     return sym + ': ' + this._getCategoryRamp(categories, column);
   },
@@ -29,9 +28,9 @@ module.exports = AutoStyler.extend({
     var catListValues = '';
 
     for (var i = 0; i < categories.length; i++) {
-      var cat = categories[i],
-          start = "'",
-          end = i !== categories.length - 1 ? "', " : "'";
+      var cat = categories[i];
+      var start = "'";
+      var end = i !== categories.length - 1 ? "', " : "'";
 
       catListColors += start + this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {
@@ -39,6 +38,6 @@ module.exports = AutoStyler.extend({
       }
     }
 
-    return ramp + '(' + catListColors + '), (' + catListValues + '));'
+    return ramp + '(' + catListColors + '), (' + catListValues + '));';
   }
 });

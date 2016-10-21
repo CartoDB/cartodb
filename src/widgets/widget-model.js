@@ -21,10 +21,10 @@ module.exports = cdb.core.Model.extend({
 
   super: function () {
     // NOTE: add this to backbone himself?
-    var returned = this.__proto__ &&
-      this.__proto__.__proto__ &&
-      this.__proto__.__proto__[arguments.callee.caller.name] &&
-      this.__proto__.__proto__[arguments.callee.caller.name].call(this);
+    var returned = this.prototype &&
+      this.prototype.prototype &&
+      this.prototype.prototype[this.super.caller.name] &&
+      this.prototype.prototype[this.super.caller.name].call(this);
 
     return returned;
   },
@@ -35,7 +35,6 @@ module.exports = cdb.core.Model.extend({
     if (this.isAutoStyleEnabled()) {
       this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
     }
-
   },
 
   /**
@@ -80,8 +79,7 @@ module.exports = cdb.core.Model.extend({
   getColor: function (name) {
     if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
       return this.autoStyler.colors.getColorByCategory(name);
-    }
-    else {
+    } else {
       return this.getWidgetColor();
     }
   },

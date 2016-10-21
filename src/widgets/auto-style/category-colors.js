@@ -27,7 +27,7 @@ function CategoryColors (styles) {
   this.updateColors(styles);
 }
 
-CategoryColors.prototype.updateColors = function updateColors(styles) {
+CategoryColors.prototype.updateColors = function updateColors (styles) {
   var colorRange = getColorRange(styles);
   this.colors = {};
   _.each(colorRange, function (c) {

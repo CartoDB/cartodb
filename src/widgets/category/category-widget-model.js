@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var WidgetModel = require('../widget-model');
 var LockedCategoriesCollection = require('./locked-categories-collection');
-var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  * Model for a category widget

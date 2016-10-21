@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 function getAttrRegex (attr, multi) {
   return new RegExp('\\' + 's' + attr + ':.*?(;|\n)', multi ? 'g' : '');
 }

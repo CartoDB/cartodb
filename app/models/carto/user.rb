@@ -21,6 +21,7 @@ class Carto::User < ActiveRecord::Base
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
   OBS_GENERAL_BLOCK_SIZE = 1000
+  MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -284,6 +285,15 @@ class Carto::User < ActiveRecord::Base
     (remaining > 0 ? remaining : 0)
   end
 
+  def remaining_mapzen_routing_quota(options = {})
+    if organization.present?
+      remaining = organization.remaining_mapzen_routing_quota(options)
+    else
+      remaining = mapzen_routing_quota - get_mapzen_routing_calls(options)
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
   def oauth_for_service(service)
     synchronization_oauths.where(service: service).first
   end
@@ -351,6 +361,12 @@ class Carto::User < ActiveRecord::Base
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     get_user_obs_general_data(self, date_from, date_to)
+  end
+
+  def get_mapzen_routing_calls(options = {})
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    get_user_mapzen_routing_data(self, date_from, date_to)
   end
 
   #TODO: Remove unused param `use_total`
@@ -423,6 +439,15 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method :hard_twitter_datasource_limit, :hard_twitter_datasource_limit?
 
+  def soft_mapzen_routing_limit?
+    Carto::AccountType.new.soft_mapzen_routing_limit?(self)
+  end
+  alias_method :soft_mapzen_routing_limit, :soft_mapzen_routing_limit?
+
+  def hard_mapzen_routing_limit?
+    !self.soft_mapzen_routing_limit?
+  end
+  alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
   def trial_ends_at
     if self.account_type.to_s.downcase == 'magellan' && self.upgraded_at && self.upgraded_at + 15.days > Date.today
       self.upgraded_at + 15.days
@@ -482,23 +507,16 @@ class Carto::User < ActiveRecord::Base
     notifications.notifications[category] || {}
   end
 
-  # The builder is enabled/disabled based on a feature flag
-  # The builder_enabled is used to allow the user to turn it on/off
   def builder_enabled?
-    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
-  end
-
-  def force_builder?
-    builder_enabled? && builder_enabled == true
-  end
-
-  def force_editor?
-    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
-    builder_enabled == false || !builder_enabled?
+    if has_organization? && builder_enabled.nil?
+      organization.builder_enabled
+    else
+      !!builder_enabled
+    end
   end
 
   def new_visualizations_version
-    force_builder? ? 3 : 2
+    builder_enabled? ? 3 : 2
   end
 
   def engine_enabled?

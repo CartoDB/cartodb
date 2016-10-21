@@ -5,7 +5,7 @@
 .Modal {
   @include display-flex();
   @include flex-direction(column);
-  height: 100%;
+  height: 100vh;
   background: $cThirdBackground;
   overflow: hidden;
 }
@@ -22,7 +22,13 @@
 }
 .Modal-container .ScrollView {
   @include align-items(center);
+  margin-right: 0;
+  margin-left: 0;
 }
+.Modal-container--analysis .ScrollView {
+  padding-bottom: 250px;
+}
+
 .Modal-container .ScrollView-shadow--top {
   top: -14px;
 }
@@ -39,11 +45,15 @@
   position: fixed;
   width: 100%;
   margin-top: -33px;
+  padding-top: 1px;
   border-bottom: 1px solid $cMainLine;
   background: $cWhite;
   z-index: 2;
 }
-.Modal-inner .ScrollView-wrapper,
+.Modal-container .ScrollView-wrapper {
+  width: 100%;
+}
+.Modal-inner .ScrollView-content,
 .Modal-navigationInner,
 .Modal-headerContainer,
 .Modal-footerContainer {
@@ -61,10 +71,17 @@
 .Modal-inner--with-navigation .ScrollView-shadow--top {
   top: -6px;
 }
+.Modal-inner .ps-scrollbar-y-rail {
+  width: 4px;
+}
+.Modal-inner .ps-scrollbar-y-rail>.ps-scrollbar-y {
+  width: 4px;
+}
 
 .Modal-inner {
   @include display-flex();
   @include flex(1);
+  overflow: hidden;
 }
 .Modal-inner--grid {
   @include flex(0 503px);
@@ -81,4 +98,8 @@
 
 .Modal-basemapContainer {
   @include flex-direction(column);
+}
+
+.Dialog-content--expanded {
+  height: 100vh;
 }

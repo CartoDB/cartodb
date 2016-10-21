@@ -212,14 +212,14 @@ module CartoDB
           models_ordered.reverse_each do |model|
             data[model].each do |rows|
               keys = rows.keys.select { |k| !rows[k].nil? }
-              f.write generate_pg_delete_query(model.table_name, rows)
+              f.write generate_pg_delete_query(model, rows)
             end
           end
         end
       end
 
-      def generate_pg_delete_query(table_name, rows)
-        "DELETE FROM #{table_name} WHERE id = '#{rows['id']}';\n"
+      def generate_pg_delete_query(model, rows)
+        "DELETE FROM #{model.table_name} WHERE #{model.primary_key} = '#{rows[model.primary_key]}';\n"
       end
 
       # This could be more solid by avoiding to generate SQL queries manually. There are
@@ -237,7 +237,7 @@ module CartoDB
         id = [id] if id.is_a?(Integer) || id.is_a?(String)
 
         # first dump this model
-        query = "SELECT * FROM #{model.table_name} WHERE id IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
+        query = "SELECT * FROM #{model.table_name} WHERE #{model.primary_key} IN (#{id.map { |i| "'#{i}'" }.join(', ')});"
         result = pg_conn.exec(query)
         data[model] = (0..result.cmd_tuples - 1).map do |tuple_number|
           result[tuple_number]
@@ -245,7 +245,6 @@ module CartoDB
 
         model.reflections.each do |_name, reflection|
           unless exclude.include?(reflection.klass) || !reflection.through_reflection.nil?
-
             if reflection.belongs_to?
               ids = data[model].map { |t| t[reflection.association_foreign_key.to_s] }.reject { |t| t == nil }
               next if ids.empty?
@@ -260,19 +259,19 @@ module CartoDB
             end
 
             ids = data[reflection.klass].map do |data_for_related_key|
-              data_for_related_key["id"]
+              data_for_related_key[reflection.klass.primary_key]
             end
-            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y) } if !ids.empty?
+            data.merge!(dump_related_data(reflection.klass, ids, exclude + [model])) { |_, x, y| merge_without_duplicated_ids(x, y, reflection.klass.primary_key) } if !ids.empty?
           end
         end
 
         data
       end
 
-      def merge_without_duplicated_ids(x, y)
+      def merge_without_duplicated_ids(x, y, primary_key)
         # this gets called when we try to merge >1 table.
         # it will remove duplicates by ida
-        (x + y).uniq { |s| s['id'] }
+        (x + y).uniq { |s| s[primary_key] }
       end
 
       # This is not very solid since we are definining the protocol

@@ -212,6 +212,7 @@ module CartoDB
             database.execute(%(DROP VIEW #{table_name}))
         else
             database.execute(%(DROP TABLE #{table_name}))
+        end
       rescue => exception
         runner.log.append("Couldn't drop table #{table_name}: #{exception}. Backtrace: #{exception.backtrace} ")
         self

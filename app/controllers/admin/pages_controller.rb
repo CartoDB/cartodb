@@ -226,13 +226,12 @@ class Admin::PagesController < Admin::AdminController
     end
   end
 
-  def render_datasets(vis_query_builder, user=nil)
-    set_pagination_vars({
-        total_count: vis_query_builder.build.count,
-        per_page:    DATASETS_PER_PAGE,
-        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
-        numbered_page_url: CartoDB.url(self, 'public_datasets_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
-      })
+  def render_datasets(vis_query_builder, user = nil)
+    home = CartoDB.url(self, 'public_datasets_home', { page: PAGE_NUMBER_PLACEHOLDER }, user)
+    set_pagination_vars(total_count: vis_query_builder.build.count,
+                        per_page: DATASETS_PER_PAGE,
+                        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
+                        numbered_page_url: home)
 
     @datasets = []
 
@@ -403,11 +402,10 @@ class Admin::PagesController < Admin::AdminController
   def default_builder(user_id: nil, vis_type: nil, organization_id: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
-    builder = Carto::VisualizationQueryBuilder.
-      new.
-      with_privacy(Carto::Visualization::PRIVACY_PUBLIC).
-      without_raster.
-      with_order(:updated_at, :desc)
+    builder = Carto::VisualizationQueryBuilder.new
+                                              .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                              .without_raster
+                                              .with_order(:updated_at, :desc)
 
     builder.with_user_id(user_id)
     builder.with_type(vis_type)

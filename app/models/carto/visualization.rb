@@ -372,6 +372,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   # - v2 (Editor): not private
   # - v3 (Builder): not derived or not private, mapcapped
+  # This Ruby code should match the SQL code at Carto::VisualizationQueryBuilder#build section for @only_published.
   def published?
     !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
   end

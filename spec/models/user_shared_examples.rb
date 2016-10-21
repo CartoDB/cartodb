@@ -559,4 +559,90 @@ shared_examples_for "user models" do
       @user.get_auth_token.should eq token
     end
   end
+
+  describe '#needs_password_confirmation?' do
+    it 'is true for a normal user' do
+      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
+      user.needs_password_confirmation?.should == true
+
+      user = FactoryGirl.build(:carto_user, :google_sign_in => false)
+      user.needs_password_confirmation?.should == true
+    end
+
+    it 'is false for users that signed in with Google' do
+      user = FactoryGirl.build(:carto_user, :google_sign_in => true)
+      user.needs_password_confirmation?.should == false
+    end
+
+    it 'is true for users that signed in with Google but changed the password' do
+      user = FactoryGirl.build(:carto_user, :google_sign_in => true, :last_password_change_date => Time.now)
+      user.needs_password_confirmation?.should == true
+    end
+  end
+
+  describe 'defaults and email and password changes checks' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      User[@user.id].destroy
+    end
+
+    it "Should properly report ability to change (or not) email & password when proceeds" do
+      @user.google_sign_in = false
+      password_change_date = @user.last_password_change_date
+      Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
+
+      @user.can_change_email?.should eq true
+      @user.can_change_password?.should eq true
+
+      @user.google_sign_in = true
+      @user.can_change_email?.should eq false
+
+      @user.last_password_change_date = nil
+      @user.can_change_email?.should eq false
+
+      Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(true)
+      @user.can_change_email?.should eq false
+
+      @user.last_password_change_date = password_change_date
+      @user.google_sign_in = false
+      @user.can_change_email?.should eq false
+
+      @user.can_change_password?.should eq false
+    end
+
+    it "should set a default database_host" do
+      @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    end
+
+    it "should set a default api_key" do
+      @user.reload.api_key.should_not be_blank
+    end
+
+    it "should set created_at" do
+      @user.created_at.should_not be_nil
+    end
+
+    it "should update updated_at" do
+      expect { @user.save }.to change(@user, :updated_at)
+    end
+
+    it "should set up a user after create" do
+      @new_user = new_user
+      @new_user.save
+      @new_user.reload
+      @new_user.should_not be_new
+      @new_user.database_name.should_not be_nil
+      @new_user.in_database.test_connection.should == true
+      @new_user.destroy
+    end
+
+    it "should have a crypted password" do
+      @user.crypted_password.should_not be_blank
+      @user.crypted_password.should_not == 'admin123'
+    end
+
+  end
 end

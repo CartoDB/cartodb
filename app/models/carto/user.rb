@@ -72,6 +72,15 @@ class Carto::User < ActiveRecord::Base
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
 
+  before_save do |users|
+    self.updated_at = Time.now
+  end
+
+  before_create do |user|
+    user.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+    user.api_key ||= user.service.class.make_token
+  end
+
   # Auto creates notifications on first access
   def notifications_with_creation
     notifications_without_creation || build_notifications(user: self, notifications: {})
@@ -522,4 +531,15 @@ class Carto::User < ActiveRecord::Base
   def engine_enabled?
     has_organization? ? organization.engine_enabled : engine_enabled
   end
+
+  def can_change_email?
+    (!self.google_sign_in || self.last_password_change_date.present?) &&
+      !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def can_change_password?
+    !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  private
 end

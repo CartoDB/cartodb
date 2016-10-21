@@ -336,6 +336,7 @@ describe Carto::VisualizationQueryBuilder do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
       visualizations = @vqb.with_privacy(Carto::Visualization::PRIVACY_PUBLIC).build
+      visualization.published?.should be false
       visualizations.map(&:id).should_not include visualization.id
     end
 
@@ -343,6 +344,7 @@ describe Carto::VisualizationQueryBuilder do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
       visualizations = @vqb.with_published.build
+      visualization.published?.should be true
       visualizations.map(&:id).should include visualization.id
     end
 
@@ -350,6 +352,7 @@ describe Carto::VisualizationQueryBuilder do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC, type: Carto::Visualization::TYPE_CANONICAL })
 
       visualizations = @vqb.with_published.build
+      visualization.published?.should be true
       visualizations.map(&:id).should include visualization.id
     end
 
@@ -357,6 +360,7 @@ describe Carto::VisualizationQueryBuilder do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
       visualizations = @vqb.with_published.build
+      visualization.published?.should be false
       visualizations.map(&:id).should_not include visualization.id
     end
 
@@ -364,10 +368,12 @@ describe Carto::VisualizationQueryBuilder do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3 })
 
       visualizations = @vqb.with_published.build
+      visualization.published?.should be false
       visualizations.map(&:id).should_not include visualization.id
 
       Carto::Mapcap.create!(visualization_id: visualization.id)
       visualizations = @vqb.with_published.build
+      visualization.published?.should be true
       visualizations.map(&:id).should include visualization.id
 
       destroy_full_visualization(map, table, table_visualization, visualization)

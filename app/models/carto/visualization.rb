@@ -371,9 +371,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # - v2 (Editor): not private
-  # - v3 (Builder): not private, mapcapped
+  # - v3 (Builder): not derived or not private, mapcapped
   def published?
-    version.nil? || version < VERSION_BUILDER || mapcapped?
+    !is_privacy_private? && (version.to_i != VERSION_BUILDER || !derived? || mapcapped?)
   end
 
   def mapcapped?

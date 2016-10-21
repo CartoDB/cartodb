@@ -122,8 +122,8 @@ class Admin::PagesController < Admin::AdminController
 
       set_layout_vars_for_user(@viewed_user, 'feed')
 
-      dataset_builder = user_datasets_builder(@viewed_user)
-      maps_builder = user_maps_builder(@viewed_user)
+      dataset_builder = user_datasets_public_builder(@viewed_user)
+      maps_builder = user_maps_public_builder(@viewed_user)
 
       @name               = @viewed_user.name.blank? ? @viewed_user.username : @viewed_user.name
       @avatar_url         = @viewed_user.avatar
@@ -171,22 +171,22 @@ class Admin::PagesController < Admin::AdminController
 
   def datasets_for_user(user)
     set_layout_vars_for_user(user, 'datasets')
-    render_datasets(user_datasets_builder(user), user)
+    render_datasets(user_datasets_public_builder(user), user)
   end
 
   def datasets_for_organization(org)
     set_layout_vars_for_organization(org, 'datasets')
-    render_datasets(org_datasets_builder(org))
+    render_datasets(org_datasets_public_builder(org))
   end
 
   def maps_for_user(user)
     set_layout_vars_for_user(user, 'maps')
-    render_maps(user_maps_builder(user), user)
+    render_maps(user_maps_public_builder(user), user)
   end
 
   def maps_for_organization(org)
     set_layout_vars_for_organization(org, 'maps')
-    render_maps(org_maps_builder(org))
+    render_maps(org_maps_public_builder(org))
   end
 
   def render_not_found
@@ -313,7 +313,7 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def set_layout_vars_for_user(user, content_type)
-    builder = user_maps_builder(user)
+    builder = user_maps_public_builder(user)
     most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
 
     set_layout_vars({
@@ -379,27 +379,27 @@ class Admin::PagesController < Admin::AdminController
     @available_for_hire = optional.fetch(:available_for_hire, false)
     @user               = optional.fetch(:user, nil)
     @is_org             = model.is_a? Organization
-    @tables_num = (@is_org ? org_datasets_builder(model) : user_datasets_builder(model)).build.count
-    @maps_count = (@is_org ? org_maps_builder(model) : user_maps_builder(model)).build.count
+    @tables_num = (@is_org ? org_datasets_public_builder(model) : user_datasets_public_builder(model)).build.count
+    @maps_count = (@is_org ? org_maps_public_builder(model) : user_maps_public_builder(model)).build.count
   end
 
-  def user_datasets_builder(user)
-    default_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_CANONICAL)
+  def user_datasets_public_builder(user)
+    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_CANONICAL)
   end
 
-  def user_maps_builder(user)
-    default_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_DERIVED)
+  def user_maps_public_builder(user)
+    public_builder(user_id: user.id, vis_type: Visualization::Member::TYPE_DERIVED)
   end
 
-  def org_datasets_builder(org)
-    default_builder(vis_type: Carto::Visualization::TYPE_CANONICAL, organization_id: org.id)
+  def org_datasets_public_builder(org)
+    public_builder(vis_type: Carto::Visualization::TYPE_CANONICAL, organization_id: org.id)
   end
 
-  def org_maps_builder(org)
-    default_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
+  def org_maps_public_builder(org)
+    public_builder(vis_type: Carto::Visualization::TYPE_DERIVED, organization_id: org.id)
   end
 
-  def default_builder(user_id: nil, vis_type: nil, organization_id: nil)
+  def public_builder(user_id: nil, vis_type: nil, organization_id: nil)
     tags = tag_or_nil.nil? ? nil : [tag_or_nil]
 
     builder = Carto::VisualizationQueryBuilder.new

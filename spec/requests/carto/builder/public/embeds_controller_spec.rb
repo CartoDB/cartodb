@@ -24,6 +24,22 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   describe '#show' do
+    it 'does not display public visualizations without mapcaps' do
+      unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
+      response.status.should == 404
+
+      unpublished_visualization.destroy
+    end
+
+    it 'does not display link visualizations without mapcaps' do
+      unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_LINK)
+      get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
+      response.status.should == 404
+
+      unpublished_visualization.destroy
+    end
+
     it 'does not display visualizations without mapcaps' do
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)

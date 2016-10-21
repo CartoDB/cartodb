@@ -70,11 +70,11 @@ module.exports = cdb.core.Model.extend({
   getWidgetColor: function () {
     var styles = this.get('style');
 
-    return styles && styles.widget_style
-          && styles.widget_style.definition
-          && styles.widget_style.definition.fill
-          && styles.widget_style.definition.fill.color
-          && styles.widget_style.definition.fill.color.fixed;
+    return styles && styles.widget_style &&
+          styles.widget_style.definition &&
+          styles.widget_style.definition.fill &&
+          styles.widget_style.definition.fill.color &&
+          styles.widget_style.definition.fill.color.fixed;
   },
 
   getColor: function (name) {

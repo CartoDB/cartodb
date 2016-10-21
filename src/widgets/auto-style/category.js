@@ -15,14 +15,14 @@ module.exports = AutoStyler.extend({
   },
 
   _generateCategoryRamp: function (sym) {
-    let model = this.dataviewModel,
-        categories = model.get('data'),
-        column = model.get('column');
+    var model = this.dataviewModel,
+      categories = model.get('data'),
+      column = model.get('column');
 
     return sym + ': ' + this._getCategoryRamp(categories, column);
   },
 
-  _getCategoryRamp: _.memoize(function (categories, column) {
+  _getCategoryRamp: function (categories, column) {
     var ramp = 'ramp([' + column + '],';
 
     var catListColors = '';
@@ -40,7 +40,5 @@ module.exports = AutoStyler.extend({
     }
 
     return ramp + '(' + catListColors + '), (' + catListValues + '));'
-  }, function (cat, col) {
-    return JSON.stringify(cat) + col;
-  })
+  }
 });

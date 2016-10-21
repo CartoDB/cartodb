@@ -8,12 +8,12 @@ var colorScales = [
 ]; // Demo colors
 
 function getColorRange (styles) {
-  var colorRange = styles && styles.definition
-    && styles.definition.fill && styles.definition.fill.color
-    && styles.definition.fill.color.range;
+  var colorRange = styles && styles.definition &&
+      styles.definition.fill && styles.definition.fill.color &&
+      styles.definition.fill.color.range;
 
   return colorRange || colorScales;
-};
+}
 
 /**
  *  Class to set categories to each color
@@ -24,12 +24,16 @@ function getColorRange (styles) {
  */
 
 function CategoryColors (styles) {
-  var colorRange = styles && styles.definition && styles.definition.fill && styles.definition.fill.color && styles.definition.fill.color.range;
+  this.updateColors(styles);
+}
+
+CategoryColors.prototype.updateColors = function updateColors(styles) {
+  var colorRange = getColorRange(styles);
   this.colors = {};
-  _.each(colorRange || colorScales, function (c) {
+  _.each(colorRange, function (c) {
     this.colors[c] = null;
   }, this);
-}
+};
 
 CategoryColors.prototype.updateData = function (d) {
   // Remove categories from colors where they are not present anymore

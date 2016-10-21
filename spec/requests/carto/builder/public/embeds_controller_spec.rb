@@ -175,14 +175,49 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   describe '#show_protected' do
+    def stub_passwords(password)
+      Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
+      Carto::Visualization.any_instance.stubs(:password_valid?).returns(false)
+      Carto::Visualization.any_instance.stubs(:password_valid?).with(password).returns(true)
+    end
+
+    TEST_PASSWORD = 'manolo'.freeze
+
+    it 'does not display visualizations without mapcaps' do
+      unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+      unpublished_visualization.published?.should be_false
+
+      stub_passwords(TEST_PASSWORD)
+
+      post builder_visualization_public_embed_protected_url(visualization_id: unpublished_visualization.id, password: TEST_PASSWORD)
+
+      response.body.include?('Invalid password').should be false
+      response.status.should == 404
+
+      unpublished_visualization.destroy
+    end
+
+    it 'does display published visualizations' do
+      published_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+      Carto::Mapcap.create!(visualization_id: published_visualization.id)
+      published_visualization.published?.should be_true
+
+      stub_passwords(TEST_PASSWORD)
+
+      post builder_visualization_public_embed_protected_url(visualization_id: published_visualization.id, password: TEST_PASSWORD)
+
+      response.status.should == 200
+
+      published_visualization.destroy
+    end
+
     it 'rejects incorrect passwords' do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(false)
+      stub_passwords(TEST_PASSWORD)
 
-      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: "${TEST_PASSWORD}NO!")
 
       response.body.include?('Invalid password').should be true
       response.status.should == 403
@@ -192,12 +227,11 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(true)
+      stub_passwords(TEST_PASSWORD)
 
-      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 
-      response.body.include?('The password is not ok').should_not be true
+      response.body.include?('Invalid password').should_not be true
       response.body.include?(@visualization.name).should be true
       response.status.should == 200
     end
@@ -206,10 +240,9 @@ describe Carto::Builder::Public::EmbedsController do
       @visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
       @visualization.save
 
-      Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with('manolo').returns(true)
+      stub_passwords(TEST_PASSWORD)
 
-      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: 'manolo')
+      post builder_visualization_public_embed_protected_url(visualization_id: @visualization.id, password: TEST_PASSWORD)
 
       response.status.should == 200
       @visualization.get_auth_tokens.each { |token| response.body.should include token }

@@ -160,7 +160,8 @@ module.exports = cdb.core.View.extend({
       data: this._dataviewModel.getData(),
       originalData: this._originalData,
       displayShadowBars: !this.model.get('normalized'),
-      normalized: this.model.get('normalized')
+      normalized: this.model.get('normalized'),
+      widgetModel: this.model
     }));
 
     this.$('.js-content').append(this.histogramChartView.el);

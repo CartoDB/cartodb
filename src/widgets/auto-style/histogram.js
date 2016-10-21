@@ -35,8 +35,6 @@ var HistogramAutoStyler = AutoStyler.extend({
           : 'cartocolor(' + scales.palette + ', ' + this.dataviewModel.get('bins') + '), ',
         cuantification = scales.quantification + ');';
 
-    console.log(sym + ': ' + ramp + colors + cuantification);
-
     return sym + ': ' + ramp + colors + cuantification;
   }
 

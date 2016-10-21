@@ -61,7 +61,8 @@ module.exports = cdb.core.View.extend({
       height: this.defaults.histogramChartHeight,
       data: this.model.getData(),
       originalData: this._originalData,
-      displayShadowBars: true
+      displayShadowBars: true,
+      widgetModel: this.widgetModel
     });
     this.addView(this._chartView);
     this.$el.append(this._chartView.render().el);

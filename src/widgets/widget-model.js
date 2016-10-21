@@ -63,6 +63,7 @@ module.exports = cdb.core.Model.extend({
   isAutoStyleEnabled: function (autoStyle) {
     var styles = this.get('style');
 
+    if (!styles) return true;
     return styles && styles.auto_style && styles.auto_style.allowed;
   },
 

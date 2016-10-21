@@ -363,6 +363,7 @@ $maxLegendContainerHeight: 300px;
   position: relative;
 }
 .Bubble-average {
+  @include transform(translateY(50%));
   display: block;
   position: absolute;
   right: 105px;

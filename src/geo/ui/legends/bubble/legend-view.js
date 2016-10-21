@@ -69,10 +69,23 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateAverageSize: function () {
+    var sizes = this._calculateBubbleSizes().reverse();
+    sizes.unshift(0);
+
     var values = this.model.get('values').slice(0);
-    var maxValue = _.max(values);
-    var minValue = _.min(values);
-    return (this.model.get('avg') - minValue) * 100 / (maxValue - minValue);
+    var avg = this.model.get('avg');
+
+    // we need to position it in the rigth range
+    var index = _.reduce(values, function (memo, value, index) {
+      return value > avg ? memo : index + 1;
+    }, 0);
+
+    var minValue = sizes[index - 1];
+    var maxValue = sizes[index];
+
+    // Inside the range, we position it lineal
+    var offset = (avg - values[index - 1]) / (values[index] - values[index - 1]);
+    return minValue + maxValue * offset;
   }
 });
 

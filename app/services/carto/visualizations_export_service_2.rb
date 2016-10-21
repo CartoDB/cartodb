@@ -12,9 +12,10 @@ require 'json'
 # 2.0.5: export explicit widget order
 # 2.0.6: export version
 # 2.0.7: export map options
+# 2.0.8: export widget style
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.0.7'.freeze
+    CURRENT_VERSION = '2.0.8'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -188,7 +189,8 @@ module Carto
         type: exported_widget[:type],
         title: exported_widget[:title],
         options: exported_widget[:options],
-        source_id: exported_widget[:source_id]
+        source_id: exported_widget[:source_id],
+        style: exported_widget[:style]
       )
     end
 
@@ -299,7 +301,8 @@ module Carto
         type: widget.type,
         title: widget.title,
         source_id: widget.source_id,
-        order: widget.order
+        order: widget.order,
+        style: widget.style
       }
     end
 

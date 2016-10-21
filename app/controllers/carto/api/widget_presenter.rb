@@ -17,7 +17,8 @@ module Carto
           title: @widget.title,
           order: @widget.order,
           layer_id: @widget.layer_id,
-          options: @widget.options
+          options: @widget.options,
+          style: @widget.style
         }
 
         poro[:source] = { id: @widget.source_id } if @widget.source_id.present?

@@ -35,7 +35,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          render_404 unless @visualization
+          render_404 unless @visualization && @visualization.published?
         end
 
         def load_auth_tokens

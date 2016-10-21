@@ -158,6 +158,10 @@
       opacity: 0;
     }
 
+    .Dot--withSplash {
+      fill: none;
+    }
+
     .Dot-01 {
       transform-origin: 129px 30px;
       animation-delay: 400ms;
@@ -297,9 +301,6 @@
 
 /* GROUP POINTS INTO POLYGONS */
 .Analysis-animation.is-group-points {
-  .Group-line {
-    opacity: 0;
-  }
   &.has-autoplay,
   &:hover {
     .Group-line {
@@ -672,6 +673,9 @@
   .Dot,
   .Dot--green {
     fill: #636D72;
+  }
+  .Dot--withSplash {
+    fill: none;
   }
   &.has-autoplay,
   &:hover {

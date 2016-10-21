@@ -28,6 +28,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
     @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+    @user.soft_mapzen_routing_limit = current_user.soft_mapzen_routing_limit
 
     @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
 
@@ -55,7 +56,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
-        :soft_obs_snapshot_limit, :soft_obs_general_limit
+        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ])
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
@@ -127,6 +128,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+    @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
 
     model_validation_ok = @user.valid?
     if attributes[:password].present? || attributes[:password_confirmation].present?

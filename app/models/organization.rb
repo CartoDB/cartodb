@@ -53,6 +53,7 @@ class Organization < Sequel::Model
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = 0
 
   def validate
     super
@@ -64,6 +65,7 @@ class Organization < Sequel::Model
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
     validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
+    validates_integer :mapzen_routing_quota, allow_nil: false, message: 'mapzen_routing_quota cannot be nil'
 
 
     if default_quota_in_bytes
@@ -100,6 +102,7 @@ class Organization < Sequel::Model
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
     self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
+    self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
   end
 
   # Just to make code more uniform with user.database_schema
@@ -113,6 +116,7 @@ class Organization < Sequel::Model
     @here_isolines_quota_modified = changed_columns.include?(:here_isolines_quota)
     @obs_snapshot_quota_modified = changed_columns.include?(:obs_snapshot_quota)
     @obs_general_quota_modified = changed_columns.include?(:obs_general_quota)
+    @mapzen_routing_quota_modified = changed_columns.include?(:mapzen_routing_quota)
     self.updated_at = Time.now
     raise errors.join('; ') unless valid?
   end
@@ -172,7 +176,9 @@ class Organization < Sequel::Model
         over_obs_general = o.get_obs_general_calls > limit
         limit = o.twitter_datasource_quota.to_i - (o.twitter_datasource_quota.to_i * delta)
         over_twitter_imports = o.get_twitter_imports_count > limit
-        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
+        limit = o.mapzen_routing_quota.to_i - (o.mapzen_routing_quota.to_i * delta)
+        over_mapzen_routing = o.get_mapzen_routing_calls > limit
+        over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general || over_mapzen_routing
       rescue OrganizationWithoutOwner => error
         # Avoid aborting because of inconistent organizations; just omit them
         CartoDB::Logger.error(
@@ -227,6 +233,11 @@ class Organization < Sequel::Model
     SearchTweet.get_twitter_imports_count(users_dataset.join(:search_tweets, :user_id => :id), date_from, date_to)
   end
 
+  def get_mapzen_routing_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_organization_mapzen_routing_data(self, date_from, date_to)
+  end
+
   def remaining_geocoding_quota
     remaining = geocoding_quota - get_geocoding_calls
     (remaining > 0 ? remaining : 0)
@@ -249,6 +260,11 @@ class Organization < Sequel::Model
 
   def remaining_twitter_quota
     remaining = twitter_datasource_quota - get_twitter_imports_count
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_mapzen_routing_quota
+    remaining = mapzen_routing_quota - get_mapzen_routing_calls
     (remaining > 0 ? remaining : 0)
   end
 
@@ -295,6 +311,8 @@ class Organization < Sequel::Model
       geocoder_provider:         geocoder_provider,
       isolines_provider:         isolines_provider,
       routing_provider:          routing_provider,
+      mapzen_routing_quota:       mapzen_routing_quota,
+      mapzen_routing_block_price: mapzen_routing_block_price,
       seats:                     seats,
       twitter_username:          twitter_username,
       location:                  twitter_username,
@@ -406,6 +424,7 @@ class Organization < Sequel::Model
       'here_isolines_quota', here_isolines_quota,
       'obs_snapshot_quota', obs_snapshot_quota,
       'obs_general_quota', obs_general_quota,
+      'mapzen_routing_quota', mapzen_routing_quota,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date,

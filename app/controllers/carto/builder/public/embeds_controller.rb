@@ -24,7 +24,7 @@ module Carto
         end
 
         def show_protected
-          render_404 and return unless @visualization.published?
+          render_404 and return unless @visualization.published? || @visualization.has_read_permission?(current_viewer)
 
           show and return if @visualization.password_valid?(params[:password])
 

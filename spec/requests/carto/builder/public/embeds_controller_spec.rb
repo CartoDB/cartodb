@@ -23,6 +23,14 @@ describe Carto::Builder::Public::EmbedsController do
     User[@user.id].destroy
   end
 
+  def stub_passwords(password)
+    Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
+    Carto::Visualization.any_instance.stubs(:password_valid?).returns(false)
+    Carto::Visualization.any_instance.stubs(:password_valid?).with(password).returns(true)
+  end
+
+  TEST_PASSWORD = 'manolo'.freeze
+
   describe '#show' do
     it 'does not display public visualizations without mapcaps' do
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC)
@@ -140,6 +148,13 @@ describe Carto::Builder::Public::EmbedsController do
     describe 'in organizations' do
       include_context 'organization with users helper'
 
+      before(:all) do
+        @org_map_2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+
+        @org_protected_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map_2.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+        @org_protected_visualization.save
+      end
+
       before(:each) do
         @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
         @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id, version: 3)
@@ -169,6 +184,17 @@ describe Carto::Builder::Public::EmbedsController do
         response.body.should include @org_visualization.name
       end
 
+      it 'embeds protected visualizations if logged in as allowed user' do
+        login_as(@org_user_1)
+
+        stub_passwords(TEST_PASSWORD)
+
+        get builder_visualization_public_embed_protected_url(visualization_id: @org_protected_visualization.id, password: TEST_PASSWORD)
+
+        response.status.should == 200
+        response.body.should include @org_protected_visualization.id
+      end
+
       it 'returns 403 for private visualizations if logged in is not an allowed user' do
         login_as(@org_user_2)
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
@@ -191,14 +217,6 @@ describe Carto::Builder::Public::EmbedsController do
   end
 
   describe '#show_protected' do
-    def stub_passwords(password)
-      Carto::Visualization.any_instance.stubs(:has_password?).returns(true)
-      Carto::Visualization.any_instance.stubs(:password_valid?).returns(false)
-      Carto::Visualization.any_instance.stubs(:password_valid?).with(password).returns(true)
-    end
-
-    TEST_PASSWORD = 'manolo'.freeze
-
     it 'does not display visualizations without mapcaps' do
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
       unpublished_visualization.published?.should be_false

@@ -41,7 +41,7 @@
 //end bloomberg fonts//
 
 /* scroll bar */
-            ::-webkit-scrollbar {
+        ::-webkit-scrollbar {
         width: 12px; 
         height: 12px;
         background: transparent;
@@ -91,6 +91,7 @@
 * {
   text-rendering: optimizeLegibility;
   box-sizing: border-box;
+  -webkit-user-drag: none;
 }
 
 

@@ -27,7 +27,6 @@ describe Carto::Builder::Public::EmbedsController do
     it 'does not display visualizations without mapcaps' do
       unpublished_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: @map.id, version: 3)
       get builder_visualization_public_embed_url(visualization_id: unpublished_visualization.id)
-
       response.status.should == 404
 
       unpublished_visualization.destroy
@@ -92,7 +91,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
         response.body.include?('Embed error | CARTO').should be true
-        response.status.should == 403
+        response.status.should == 404
       end
 
       it 'can be embedded if logged in' do
@@ -142,7 +141,7 @@ describe Carto::Builder::Public::EmbedsController do
       it 'does not embed private visualizations' do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
-        response.status.should == 403
+        response.status.should == 404
         response.body.should include 'Embed error | CARTO'
       end
 
@@ -154,11 +153,11 @@ describe Carto::Builder::Public::EmbedsController do
         response.body.should include @org_visualization.name
       end
 
-      it 'embeds private visualizations if logged in as not allowed user' do
+      it 'returns 403 for private visualizations if logged in is not an allowed user' do
         login_as(@org_user_2)
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
-        response.status.should == 403
+        response.status.should == 404
         response.body.should include 'Embed error | CARTO'
       end
 

@@ -161,7 +161,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_publically_accesible?
-    is_public? || is_link_privacy?
+    (is_public? && published?) || is_link_privacy?
   end
 
   def writable_by?(user)

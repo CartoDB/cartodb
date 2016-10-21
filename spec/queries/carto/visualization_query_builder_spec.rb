@@ -333,39 +333,47 @@ describe Carto::VisualizationQueryBuilder do
 
   describe '#with_published' do
     it 'is implied by public search, so querying public filters public, unpublished' do
-      _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
       visualizations = @vqb.with_privacy(Carto::Visualization::PRIVACY_PUBLIC).build
       visualization.published?.should be false
       visualizations.map(&:id).should_not include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
     it 'selects public v2' do
-      _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 
       visualizations = @vqb.with_published.build
       visualization.published?.should be true
       visualizations.map(&:id).should include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
     it 'selects public v3 datasets' do
-      _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC, type: Carto::Visualization::TYPE_CANONICAL })
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC, type: Carto::Visualization::TYPE_CANONICAL })
 
       visualizations = @vqb.with_published.build
       visualization.published?.should be true
       visualizations.map(&:id).should include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
     it 'does not select private v2 maps' do
-      _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PRIVATE })
 
       visualizations = @vqb.with_published.build
       visualization.published?.should be false
       visualizations.map(&:id).should_not include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
     it 'selects v3 mapcapped mapcapped' do
-      _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3 })
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3 })
 
       visualizations = @vqb.with_published.build
       visualization.published?.should be false

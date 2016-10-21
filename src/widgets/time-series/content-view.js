@@ -25,6 +25,7 @@ module.exports = cdb.core.View.extend({
       }));
     } else {
       this._appendView(new HistogramView({
+        widgetModel: this.model,
         model: this._dataviewModel,
         rangeFilter: this._dataviewModel.filter,
         torqueLayerModel: this._dataviewModel.layer

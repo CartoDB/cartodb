@@ -20,6 +20,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this.widgetModel = this.options.widgetModel;
     this._rangeFilter = this.options.rangeFilter;
     this._originalData = this.model.getUnfilteredDataModel();
     this.model.bind('change:data', this._onChangeData, this);
@@ -45,7 +46,7 @@ module.exports = cdb.core.View.extend({
   _createHistogramView: function () {
     this._chartView = new HistogramChartView({
       type: 'time',
-      chartBarColorClass: 'CDB-Chart-bar--timeSeries',
+      chartBarColor: this.widgetModel.getWidgetColor(),
       animationSpeed: 100,
       margin: {
         top: 4,

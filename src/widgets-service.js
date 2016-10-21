@@ -140,7 +140,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var attrsNames = ['id'];
+  var attrsNames = ['id', 'style'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'time-series';
   widgetAttrs.attrsNames = attrsNames;

@@ -85,7 +85,7 @@ var BubbleLegendView = LegendViewBase.extend({
 
     // Inside the range, we position it lineal
     var offset = (avg - values[index - 1]) / (values[index] - values[index - 1]);
-    return minValue + maxValue * offset;
+    return minValue + (maxValue - minValue) * offset;
   }
 });
 

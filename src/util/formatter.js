@@ -4,11 +4,7 @@ var d3 = require('d3');
 var format = {};
 
 var formatExponential = function (value) {
-  if (!_.isNumber(value)) {
-    value = value * 1;
-  }
-
-  var template = _.template('<%= mantissa %><span class="Legend-choroplethSup">x</span>10<sup class="Legend-choroplethSup"><%= decimals %></sup>');
+  var template = _.template('<%= mantissa %><span class="Legend-exponential">x</span>10<sup class="Legend-exponential"><%= decimals %></sup>');
   var exp = value.toExponential(10);
   var parts = exp.split('e');
   return template({
@@ -18,9 +14,13 @@ var formatExponential = function (value) {
 };
 
 format.formatNumber = function (value, unit) {
-  if (!_.isNumber(value) || value === 0) {
+  // we are using here the unary operator because parseInt fails to handle exponential number
+  var converted = +value;
+  if (isNaN(converted) || converted === 0) {
     return value;
   }
+
+  value = converted;
 
   var format = d3.format('.2s');
 
@@ -32,12 +32,7 @@ format.formatNumber = function (value, unit) {
     return value;
   }
 
-  if (value < 0 && value <= 0.1) {
-    value = value + (unit ? ' ' + unit : '');
-    return value;
-  }
-
-  if (value < 0.1) {
+  if (abs_v < 0.001) {
     value = formatExponential(value) + (unit ? ' ' + unit : '');
     return value;
   }

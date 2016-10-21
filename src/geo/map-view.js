@@ -92,8 +92,6 @@ var MapView = View.extend({
     geometryView.render();
   },
 
-  // 
-
   render: function () {
     this._addLayers();
     return this;

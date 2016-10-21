@@ -6,7 +6,6 @@ global.L = L;
 
 var Map = require('../../../../src/geo/map');
 var VisModel = require('../../../../src/vis/vis');
-var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');

@@ -148,13 +148,6 @@ describe Carto::Builder::Public::EmbedsController do
     describe 'in organizations' do
       include_context 'organization with users helper'
 
-      before(:all) do
-        @org_map_2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
-
-        @org_protected_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map_2.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
-        @org_protected_visualization.save
-      end
-
       before(:each) do
         @org_map = FactoryGirl.create(:map, user_id: @org_user_owner.id)
         @org_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map.id, version: 3)
@@ -167,6 +160,11 @@ describe Carto::Builder::Public::EmbedsController do
         share_visualization(@org_visualization, @org_user_1)
         Carto::Visualization.any_instance.unstub(:organization?)
         Carto::Visualization.any_instance.stubs(:needed_auth_tokens).returns([])
+
+        @org_map_2 = FactoryGirl.create(:map, user_id: @org_user_owner.id)
+
+        @org_protected_visualization = FactoryGirl.create(:carto_visualization, user: @carto_org_user_owner, map_id: @org_map_2.id, version: 3, privacy: Carto::Visualization::PRIVACY_PROTECTED)
+        share_visualization(@org_protected_visualization, @org_user_1)
       end
 
       it 'does not embed private visualizations' do
@@ -184,12 +182,12 @@ describe Carto::Builder::Public::EmbedsController do
         response.body.should include @org_visualization.name
       end
 
-      it 'embeds protected visualizations if logged in as allowed user' do
+      it 'embeds protected visualizations if logged in as allowed user with the right password' do
         login_as(@org_user_1)
 
         stub_passwords(TEST_PASSWORD)
 
-        get builder_visualization_public_embed_protected_url(visualization_id: @org_protected_visualization.id, password: TEST_PASSWORD)
+        post builder_visualization_public_embed_protected_url(visualization_id: @org_protected_visualization.id, password: TEST_PASSWORD)
 
         response.status.should == 200
         response.body.should include @org_protected_visualization.id

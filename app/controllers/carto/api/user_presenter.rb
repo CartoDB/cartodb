@@ -114,6 +114,12 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
           },
+          mapzen_routing: {
+            quota:       @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
+            block_price: @user.organization_user? ? @user.organization.mapzen_routing_block_price : @user.mapzen_routing_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_mapzen_routing_calls : @user.get_mapzen_routing_calls,
+            hard_limit:  @user.hard_mapzen_routing_limit?
+          },
           geocoder_provider: @user.geocoder_provider,
           isolines_provider: @user.isolines_provider,
           routing_provider: @user.routing_provider,

@@ -373,7 +373,7 @@ class Carto::Visualization < ActiveRecord::Base
   # - v2 (Editor): not private
   # - v3 (Builder): not derived or not private, mapcapped
   def published?
-    !is_privacy_private? && (version.to_i != VERSION_BUILDER || !derived? || mapcapped?)
+    !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
   end
 
   def mapcapped?
@@ -458,7 +458,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    version != VERSION_BUILDER && uses_vizjson2?
+    version != VERSION_BUILDER && (uses_vizjson2? || layers.any?(&:gmapsbase?))
   end
 
   def can_be_automatically_migrated_to_v3?

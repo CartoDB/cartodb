@@ -193,9 +193,9 @@ a.Filters-cleanSearch { line-height:32px }
   }
 }
 .Filters-typeLink.is-selected {
-  color:$cTypography-linkSelected;
-  height: 17px;
+  height: 16px;
   display: block;
+  color:$cTypography-linkSelected;
 
   &:before {
     content:'';

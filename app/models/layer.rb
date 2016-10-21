@@ -215,7 +215,7 @@ class Layer < Sequel::Model
   end
 
   def affected_table_names(query)
-    query_tables = user.in_database["SELECT unnest(CDB_QueryTables(?))", query]
+    query_tables = user.in_database["SELECT unnest(CDB_QueryTablesText(?))", query]
     query_tables.map(:unnest)
   end
 

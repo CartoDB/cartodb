@@ -9,7 +9,7 @@ var HistogramAutoStyler = AutoStyler.extend({
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       style = StyleUtils.changeStyle(style, item, this.getColorLine(item, this.getCustomStyle()));
     }.bind(this));
-    return style;
+    return StyleUtils.replaceWrongSpaceChar(style);
   },
 
   getCustomStyle: function () {

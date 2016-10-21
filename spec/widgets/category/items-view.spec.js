@@ -48,6 +48,14 @@ describe('widgets/category/items-view', function () {
     });
   });
 
+  describe('blockFiltering', function () {
+    it('should add nodynamic class to widget-list', function () {
+      this.dataviewModel.set('sync_on_bbox_change', false);
+
+      expect(this.view.$el.hasClass('CDB-Widget-list--nodynamic')).toBeTruthy();
+    });
+  });
+
   describe('bind', function () {
     beforeEach(function () {
       spyOn(this.dataviewModel, 'bind');
@@ -65,6 +73,12 @@ describe('widgets/category/items-view', function () {
       var bind = this.widgetModel.bind.calls.argsFor(0);
       expect(bind[0]).toEqual('change:search');
       expect(bind[1]).toEqual(this.view.toggle);
+    });
+
+    it('should toggle filtering view when sync_on_bbox_change enabled/disabled', function () {
+      var bind = this.dataviewModel.bind.calls.argsFor(1);
+      expect(bind[0]).toEqual('change:sync_on_bbox_change');
+      expect(bind[1]).toEqual(this.view.blockFiltering);
     });
   });
 });

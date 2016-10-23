@@ -1,4 +1,3 @@
-<!--<div class="Notifier-item <%- (status === 'loading') ? 'is-working' : ''%> Notifier-item--<%- status %>">-->
 <div class="Notifier-item Notifier-item--<%- status %>">
 
   <% if (status === 'loading') { %>

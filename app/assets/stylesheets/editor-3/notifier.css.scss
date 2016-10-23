@@ -22,7 +22,6 @@
 
 .Notifier-inner {
   position: relative;
-  border-top: 1px solid $cSecondaryLine;
 
   .is-dark & {
     border-color: #3A484E;
@@ -35,26 +34,49 @@
 
 .Notifier-item {
   @include display-flex();
-  padding: 20px $baseSize * 3;
+  position: relative;
+  margin: 0 $baseSize * 3;
+  padding-top: 20px;
+  padding-bottom: 20px;
   color: $cSecondaryText;
+  &::before {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: $cSecondaryLine;
+    content: '';
+  }
+  &.Notifier-item--success::before {
+    background: #9DE0AD;
+  }
+  &.Notifier-item--error::before {
+    background: #F15743;
+  }
+  &.Notifier-item--warning::before {
+    background: #F5A623;
+  }
 }
 
 .Notifier-item--success {
-  border-top: 1px solid #9DE0AD;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
   background: rgba(#9DE0AD, 0.12);
-  margin-top: -1px;
 }
 .Notifier-item--error {
-  border-top: 1px solid #F15743;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
   background: rgba(#F15743, 0.12);
-  margin-top: -1px;
 }
 .Notifier-item--warning {
-  border-top: 1px solid #F5A623;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
   background: #FEFEDD;
-  margin-top: -1px;
 }
-
 
 .Notifier-info {
   @include flex(1);
@@ -74,10 +96,11 @@
   margin-top: 1px;
 }
 
-// Loader styles
+// Loader styles/
+/*
 .Notifier .CDB-LoaderIcon .CDB-LoaderIcon-path {
   stroke: rgba(0, 0, 0, 0.24);
 }
 .Notifier.is-dark .CDB-LoaderIcon .CDB-LoaderIcon-path {
   stroke: rgba(255, 255, 255, 0.88);
-}
+}*/

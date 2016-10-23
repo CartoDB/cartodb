@@ -60,6 +60,10 @@ module Carto
           account_creator.with_soft_twitter_datasource_limit(create_params[:soft_twitter_datasource_limit])
         end
 
+        if create_params[:soft_mapzen_routing_limit].present?
+          account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
+        end
+
         render_jsonp(account_creator.validation_errors.full_messages, 410) && return unless account_creator.valid?
 
         account_creator.enqueue_creation(self)
@@ -141,7 +145,8 @@ module Carto
         :soft_here_isolines_limit,
         :soft_obs_general_limit,
         :soft_obs_snapshot_limit,
-        :soft_twitter_datasource_limit
+        :soft_twitter_datasource_limit,
+        :soft_mapzen_routing_limit
       ].freeze
 
       # TODO: Use native strong params when in Rails 4+

@@ -69,9 +69,36 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateAverageSize: function () {
+    // we build the size range, and reverse it to be able to normalize it with values.
+    var sizes = this._calculateBubbleSizes().reverse();
+
+    // we put 0 as the initial of the range
+    sizes.unshift(0);
+
+    // we need values and sizes because avg is a value and we need to place it taking sizes as reference.
     var values = this.model.get('values').slice(0);
-    var maxValue = _.max(values);
-    return this.model.get('avg') * 100 / maxValue;
+    var avg = this.model.get('avg');
+
+    // we need to position it in the right range
+    // this reduce thing search the index of the range (index base) that avg belongs to
+    // while avg is greater than the current value, memo is the next index, if not, memo doesn't change anymore
+    // index + 1 because we pushed 0 to sizes and we need both arrays to have the same length
+    var index = _.reduce(values, function (memo, value, index) {
+      return value > avg ? memo : index + 1;
+    }, 0);
+
+    // avg it's at least equal to the last item
+    if (index === values.length) {
+      return 100;
+    }
+
+    // with the index calculate above, we get the % of the sizes we have to place the avg
+    var minValue = sizes[index - 1];
+    var maxValue = sizes[index];
+
+    // Inside the range, we position it lineal
+    var offset = (avg - values[index - 1]) / (values[index] - values[index - 1]);
+    return minValue + (maxValue - minValue) * offset;
   }
 });
 

@@ -102,7 +102,7 @@ describe('api/sql', function() {
     var long_query = 'SELECT * ' + long_sql;
 
     s.execute(long_query, null, {
-      dp: 2
+      dp: 0
     })
 
     expect(ajaxParams.url.indexOf('http://')).not.toEqual(-1);
@@ -116,7 +116,7 @@ describe('api/sql', function() {
     expect(ajaxParams.data.q).toEqual(long_query);
     expect(ajaxParams.data.format).toEqual('geojson');
     expect(ajaxParams.data.api_key).toEqual('testkey');
-    expect(ajaxParams.data.dp).toEqual(2);
+    expect(ajaxParams.data.dp).toEqual(0);
     expect(ajaxParams.rambo).toEqual('test');
   });
 

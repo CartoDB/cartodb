@@ -211,7 +211,7 @@ $maxLegendContainerHeight: 300px;
   bottom: 0;
   left: 0;
   max-height: calc(100vh - 20px);
-  padding: 12px 24px;
+  padding: 24px 24px 0;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
   overflow: hidden;
@@ -261,7 +261,7 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-LayerLegends {
-  margin-bottom: 12px;
+  margin-bottom: 24px;
 }
 
 .CDB-LayerLegends:empty {
@@ -269,7 +269,7 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-Legend-item {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .CDB-LayerLegends:last-child .CDB-Legend-item:last-child {
@@ -448,7 +448,7 @@ $index-items: 7 6 5 4 3 2 1;
 }
 
 .Legend-categoryListItem {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .Legend-categoryListItem:last-child {
   margin-bottom: 0;
@@ -483,7 +483,7 @@ $index-items: 7 6 5 4 3 2 1;
   display: block;
 }
 .Legend-placeholderInner {
-  padding: 16px 24px 0;
+  padding: 12px 24px 0;
 }
 
 @media (max-width: 600px) {

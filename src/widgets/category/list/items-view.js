@@ -19,6 +19,11 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this.widgetModel = this.options.widgetModel;
     this.dataviewModel = this.options.dataviewModel;
+
+    if (!this.dataviewModel.get('sync_on_bbox_change')) {
+      this.$el.addClass('CDB-Widget-list--nodynamic');
+    }
+
     this._initBinds();
   },
 
@@ -42,6 +47,7 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this.widgetModel);
 
     this.dataviewModel.bind('change:data', this.render, this);
+    this.dataviewModel.bind('change:sync_on_bbox_change', this.blockFiltering, this);
     this.add_related_model(this.dataviewModel);
   },
 
@@ -82,6 +88,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _setFilters: function (mdl) {
+    if (!this.dataviewModel.get('sync_on_bbox_change')) return this;
     var isSelected = mdl.get('selected');
     var filter = this.dataviewModel.filter;
     var clickedName = mdl.get('name');
@@ -110,6 +117,19 @@ module.exports = cdb.core.View.extend({
       filter.accept(clickedName);
     }
     this.widgetModel.set('acceptedCategories', this.widgetModel._acceptedCategories().pluck('name'));
+  },
+
+  blockFiltering: function (e) {
+    if (e.changed['sync_on_bbox_change']) { // Is dynamic
+      this.$el.removeClass('CDB-Widget-list--nodynamic');
+    } else { // It is not
+      this.$el.addClass('CDB-Widget-list--nodynamic');
+      this.dataviewModel.filter.acceptAll();
+    }
+  },
+
+  removeSelections: function () {
+    this.dataviewModel.filter.acceptAll();
   },
 
   toggle: function () {

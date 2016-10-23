@@ -363,6 +363,7 @@ $maxLegendContainerHeight: 300px;
   position: relative;
 }
 .Bubble-average {
+  @include transform(translateY(50%));
   display: block;
   position: absolute;
   right: 105px;
@@ -441,6 +442,9 @@ $index-items: 7 6 5 4 3 2 1;
   margin-left: 50%;
   border-left: 1px dotted rgba(#000, 0.4);
   content: '';
+}
+.Legend-exponential {
+  font-size: 80%;
 }
 
 .Legend-categoryListItem {

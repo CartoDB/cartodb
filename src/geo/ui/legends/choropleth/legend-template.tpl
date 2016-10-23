@@ -4,7 +4,6 @@
 </div>
 <div class="Legend-choropleth" style="background: linear-gradient(90deg <% for(var i in colors) { %>,<%= colors[i].value %><% } %>)">
   <span class="Legend-choroplethAverage CDB-Text CDB-Size-small u-altTextColor" style="left: <%- avgPercentage %>%;">
-    <span class="Legend-choroplethAverageText"><%- formatter.formatNumber(avg) %> AVG</span>
+    <span class="Legend-choroplethAverageText"><%= formatter.formatNumber(avg) %> AVG</span>
   </span>
 </div>
- 

@@ -14,7 +14,7 @@ var newVisMock = function () {
   visMock.dataviews.createFormulaModel.and.returnValue(new Backbone.Model());
   visMock.done = function (callback) { callback(); };
   visMock.error = function (callback) { callback(); };
-  visMock.instantiateMap = jasmine.createSpy('instantiateMap');
+  visMock.init = jasmine.createSpy('init');
   visMock.centerMapToOrigin = jasmine.createSpy('centerMapToOrigin');
 
   return visMock;
@@ -72,7 +72,7 @@ describe('create-dashboard', function () {
 
       // visjson is loaded into the vis and map instantiation succeeded
       this.visMock.trigger('load', this.visMock);
-      this.visMock.instantiateMap.calls.argsFor(0)[0].success();
+      this.visMock.init.calls.argsFor(0)[0].success();
 
       expect(callback).toHaveBeenCalled();
       var error = callback.calls.argsFor(0)[0];
@@ -89,7 +89,7 @@ describe('create-dashboard', function () {
 
       // visjson is loaded into the vis and map instantiation failed
       this.visMock.trigger('load', this.visMock);
-      this.visMock.instantiateMap.calls.argsFor(0)[0].error();
+      this.visMock.init.calls.argsFor(0)[0].error();
 
       expect(callback).toHaveBeenCalled();
       var error = callback.calls.argsFor(0)[0];
@@ -104,12 +104,12 @@ describe('create-dashboard', function () {
 
       createDashboard(this.selectorId, this.vizJSON, {}, callback);
 
-      expect(this.visMock.instantiateMap).not.toHaveBeenCalled();
+      expect(this.visMock.init).not.toHaveBeenCalled();
 
       // visjson is loaded into the vis
       this.visMock.trigger('load', this.visMock);
 
-      expect(this.visMock.instantiateMap).toHaveBeenCalled();
+      expect(this.visMock.init).toHaveBeenCalled();
     });
   });
 });

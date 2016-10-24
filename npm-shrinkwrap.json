@@ -76,7 +76,7 @@
                           "dependencies": {
                             "inherits": {
                               "version": "2.0.3",
-                              "from": "inherits@>=2.0.1 <2.1.0",
+                              "from": "inherits@>=2.0.0 <3.0.0",
                               "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                             },
                             "typedarray": {
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#ce10a4d8ae09c949beb45c799c36811bf0558483",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#40464b78b468ddbb2927dc1358c172fa3137420a",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1447,7 +1447,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ce10a4d8ae09c949beb45c799c36811bf0558483",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#40464b78b468ddbb2927dc1358c172fa3137420a",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1733,35 +1733,14 @@
       "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
-          "version": "1.1.8",
+          "version": "1.2.0",
           "from": "good-listener@>=1.1.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.1.8.tgz",
+          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.0.tgz",
           "dependencies": {
             "delegate": {
-              "version": "3.0.2",
-              "from": "delegate@>=3.0.2 <4.0.0",
-              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.0.2.tgz",
-              "dependencies": {
-                "component-closest": {
-                  "version": "1.0.1",
-                  "from": "component-closest@>=1.0.1 <1.1.0",
-                  "resolved": "https://registry.npmjs.org/component-closest/-/component-closest-1.0.1.tgz",
-                  "dependencies": {
-                    "component-matches-selector": {
-                      "version": "0.1.6",
-                      "from": "component-matches-selector@>=0.1.6 <0.2.0",
-                      "resolved": "https://registry.npmjs.org/component-matches-selector/-/component-matches-selector-0.1.6.tgz",
-                      "dependencies": {
-                        "component-query": {
-                          "version": "0.0.3",
-                          "from": "component-query@*",
-                          "resolved": "https://registry.npmjs.org/component-query/-/component-query-0.0.3.tgz"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "version": "3.1.0",
+              "from": "delegate@>=3.1.0 <4.0.0",
+              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.0.tgz"
             }
           }
         },

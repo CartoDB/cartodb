@@ -46,7 +46,7 @@ module.exports = cdb.core.View.extend({
   _createHistogramView: function () {
     this._chartView = new HistogramChartView({
       type: 'time',
-      chartBarColor: this.widgetModel.getWidgetColor(),
+      chartBarColor: this.widgetModel.getWidgetColor() || '#F2CC8F',
       animationSpeed: 100,
       margin: {
         top: 4,

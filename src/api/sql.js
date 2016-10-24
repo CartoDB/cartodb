@@ -110,7 +110,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
-      if(v) {
+      if(v != null) {
         q += '&' + r + "=" + v;
       }
     }
@@ -121,7 +121,7 @@ SQL.prototype.execute = function(sql, vars, options, callback) {
     for(var i in reqParams) {
       var r = reqParams[i];
       var v = options[r];
-      if (v) {
+      if (v != null) {
         objPost[r] = v;
       }
     }

@@ -12,7 +12,7 @@ var infowindowTemplate = require('./search_infowindow_template.tpl');
  *  location found by the geocoder.
  */
 var Search = View.extend({
-  className: 'CDB-Search',
+  className: 'CDB-Search CDB-Overlay',
 
   _ZOOM_BY_CATEGORY: {
     'building': 18,

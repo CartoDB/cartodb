@@ -17,43 +17,34 @@ describe Carto::Admin::BiVisualizationsController do
     end
 
     it 'returns 401 for non-authenticated requests' do
-      get bi_visualizations_embed_map_url(user_domain: @user1.username,
-                                          id: UUIDTools::UUID.timestamp_create.to_s), {}
-
-      response.status.should == 401
+      get bi_visualizations_embed_map_url(user_domain: @user1.username, id: UUIDTools::UUID.timestamp_create.to_s), {} do |response|
+        response.status.should == 401
+      end
     end
 
     it 'returns 404 for requests without matching bi_visualization' do
-      get bi_visualizations_embed_map_url(user_domain: @user1.username,
-                                          id: UUIDTools::UUID.timestamp_create.to_s,
-                                          api_key: @user1.api_key), {}
-
-      response.status.should == 404
+      get bi_visualizations_embed_map_url(user_domain: @user1.username, id: UUIDTools::UUID.timestamp_create.to_s, api_key: @user1.api_key), {} do |response|
+        response.status.should == 404
+      end
     end
 
     it 'returns 400 for requests with a id not uuid' do
-      get bi_visualizations_embed_map_url(user_domain: @user1.username,
-                                          id: 'nouuid',
-                                          api_key: @user1.api_key), {}
-
-      response.status.should == 400
+      get bi_visualizations_embed_map_url(user_domain: @user1.username, id: 'nouuid', api_key: @user1.api_key), {} do |response|
+        response.status.should == 400
+      end
     end
 
     it 'returns the embed' do
-      get bi_visualizations_embed_map_url(user_domain: @user1.username,
-                                          id: @bi_visualization.id,
-                                          api_key: @user1.api_key), {}
-
-      response.status.should == 200
-      response.body.should match /#{@bi_visualization.viz_json}/
+      get bi_visualizations_embed_map_url(user_domain: @user1.username, id: @bi_visualization.id, api_key: @user1.api_key), {} do |response|
+        response.status.should == 200
+        response.body.should match /#{bi_visualization.viz_json}/
+      end
     end
 
     it 'returns 403 if the vizjson does not belong to the user' do
-      get bi_visualizations_embed_map_url(user_domain: @user2.username,
-                                          id: @bi_visualization.id,
-                                          api_key: @user2.api_key), {}
-
-      response.status.should == 403
+      get bi_visualizations_embed_map_url(user_domain: @user2.username, id: @bi_visualization.id, api_key: @user2.api_key), {} do |response|
+        response.status.should == 403
+      end
     end
   end
 end

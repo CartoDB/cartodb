@@ -26,6 +26,27 @@ describe('dashboard', function () {
     expect(URLHelper.getStateFromCurrentURL()).toEqual(correctState);
   });
 
+  it('url should resolve to empty state if state query is empty', function () {
+    var url = 'http://localhost:9002/examples/populated-places-vector.html?state=';
+    spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
+    expect(URLHelper.getStateFromCurrentURL()).toEqual({});
+  });
+
+  it('url should resolve to empty state if state query is null', function () {
+    var url = 'http://localhost:9002/examples/populated-places-vector.html?state';
+    spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
+    expect(URLHelper.getStateFromCurrentURL()).toEqual({});
+  });
+
+  it('url should work with bounding box', function () {
+    var url = 'http://localhost:9002/examples/populated-places-vector.html?state=%7B%22map%22%3A%7B%22ne%22%3A%5B-22.91792293614603%2C-205.83984375%5D%2C%22sw%22%3A%5B77.8418477505252%2C10.8984375%5D%7D%2C%22widgets%22%3A%7B%22a7b718f0-23db-4b4c-a52f-d38aeab268c0%22%3A%7B%22acceptedCategories%22%3A%5B%22Populated+place%22%5D%7D%2C%22060ba59d-2e0e-46f9-9735-b9c107930f99%22%3A%7B%22normalized%22%3Atrue%2C%22min%22%3A1189104.3%2C%22max%22%3A5945917.5%7D%7D%7D';
+    spyOn(URLHelper, 'getLocalURL').and.returnValue(url);
+    expect(URLHelper.getStateFromURL(url).map).toEqual({
+      ne: [-22.91792293614603, -205.83984375],
+      sw: [77.8418477505252, 10.8984375]
+    });
+  });
+
   it('should return dashboard view', function () {
     var view = new DashboardView({
       widgets: new Backbone.Collection(),

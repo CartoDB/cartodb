@@ -22,7 +22,7 @@ module.exports = AutoStyler.extend({
   },
 
   _getCategoryRamp: function (categories, column) {
-    var ramp = 'ramp([' + column + '],';
+    var ramp = 'ramp([' + column + '], ';
 
     var catListColors = '';
     var catListValues = '';
@@ -35,6 +35,8 @@ module.exports = AutoStyler.extend({
       catListColors += start + this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {
         catListValues += start + cat.name.replace(/'/g, '\\\'') + end;
+      } else if (end === "'") {
+        catListValues = catListValues.substring(0, catListValues.length - 2);
       }
     }
 

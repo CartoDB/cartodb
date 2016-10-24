@@ -19,12 +19,14 @@ module.exports = cdb.core.Model.extend({
     'collapsed': false
   },
 
-  super: function () {
+  super: function (name) {
     // NOTE: add this to backbone himself?
+    name = name || this.super.caller.name;
+
     var returned = this.prototype &&
       this.prototype.prototype &&
-      this.prototype.prototype[this.super.caller.name] &&
-      this.prototype.prototype[this.super.caller.name].call(this);
+      this.prototype.prototype[name] &&
+      this.prototype.prototype[name].call(this);
 
     return returned;
   },
@@ -62,7 +64,7 @@ module.exports = cdb.core.Model.extend({
   isAutoStyleEnabled: function (autoStyle) {
     var styles = this.get('style');
 
-    if (!styles) return true;
+    if (!styles && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;
     return styles && styles.auto_style && styles.auto_style.allowed;
   },
 
@@ -104,6 +106,7 @@ module.exports = cdb.core.Model.extend({
     var style = this.autoStyler.getStyle();
     layer.set('cartocss', style);
     this.set('autoStyle', true);
+    return true;
   },
 
   setState: function (state) {

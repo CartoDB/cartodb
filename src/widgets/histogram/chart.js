@@ -472,7 +472,7 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:normalized', this._onChangeNormalized, this);
-    this.options.widgetModel.bind('change:style', function () {
+    this.options.widgetModel && this.options.widgetModel.bind('change:style', function () {
       this.options.chartBarColor = this.options.widgetModel.getColor();
       this.reset();
     }, this);

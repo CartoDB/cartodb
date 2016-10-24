@@ -73,7 +73,7 @@ module.exports = WidgetModel.extend({
   autoStyle: function () {
     // NOTE: maybe not pre-assing colors to categories?
     this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
-    this.super();
+    WidgetModel.prototype.autoStyle.call(this);
   },
 
   _updateColors: function (e) {

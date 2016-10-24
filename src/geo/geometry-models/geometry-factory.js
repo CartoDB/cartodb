@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var L = require('leaflet');
 var Point = require('./point');
 var Polyline = require('./polyline');
 var Polygon = require('./polygon');
@@ -22,14 +21,10 @@ var getGeometryCoordinates = function (geoJSON) {
     geoJSON.coordinates;
 };
 
-var getLatLngsFromCoordinates = function (coords) {
-  var latlngs = L.GeoJSON.coordsToLatLngs(coords);
-  return _.chain(latlngs)
-    .map(function (latlng) {
-      return [latlng.lat, latlng.lng];
-    })
-    .uniq()
-    .value();
+var convertLngLatsToLatLngs = function (lnglats) {
+  return _.map(lnglats, function (lnglat) {
+    return [ lnglat[1], lnglat[0] ];
+  });
 };
 
 var GeometryFactory = function () {};
@@ -61,8 +56,8 @@ GeometryFactory.prototype.createGeometryFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createPointFromGeoJSON = function (geoJSON) {
-  var coords = getGeometryCoordinates(geoJSON);
-  var latlngs = getLatLngsFromCoordinates([ coords ]);
+  var lnglats = getGeometryCoordinates(geoJSON);
+  var latlngs = convertLngLatsToLatLngs([ lnglats ]);
   return this.createPoint({
     latlng: latlngs[0],
     geojson: geoJSON,
@@ -71,8 +66,8 @@ GeometryFactory.prototype.createPointFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createPolylineFromGeoJSON = function (geoJSON) {
-  var coords = getGeometryCoordinates(geoJSON);
-  var latlngs = getLatLngsFromCoordinates(coords);
+  var lnglats = getGeometryCoordinates(geoJSON);
+  var latlngs = convertLngLatsToLatLngs(lnglats);
   return this.createPolyline({
     geojson: geoJSON,
     editable: true
@@ -80,8 +75,8 @@ GeometryFactory.prototype.createPolylineFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createPolygonFromGeoJSON = function (geoJSON) {
-  var coords = getGeometryCoordinates(geoJSON)[0];
-  var latlngs = getLatLngsFromCoordinates(coords);
+  var lnglats = getGeometryCoordinates(geoJSON)[0];
+  var latlngs = convertLngLatsToLatLngs(lnglats);
   return this.createPolygon({
     geojson: geoJSON,
     editable: true
@@ -89,9 +84,9 @@ GeometryFactory.prototype.createPolygonFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createMultiPolygonFromGeoJSON = function (geoJSON) {
-  var coords = getGeometryCoordinates(geoJSON);
-  var latlngs = _.map(coords, function (coords) {
-    return getLatLngsFromCoordinates(coords[0]);
+  var lnglats = getGeometryCoordinates(geoJSON);
+  var latlngs = _.map(lnglats, function (lnglats) {
+    return convertLngLatsToLatLngs(lnglats[0]);
   }, this);
   return this.createMultiPolygon({
     geojson: geoJSON,

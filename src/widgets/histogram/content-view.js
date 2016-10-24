@@ -350,11 +350,15 @@ module.exports = cdb.core.View.extend({
     var max = this.model.get('max');
     var loBarIndex = this.model.get('lo_index');
     var hiBarIndex = this.model.get('hi_index');
+    var startMin;
+    var startMax;
 
     if (!loBarIndex || !hiBarIndex) {
       if (min && max && data.length > 0) {
-        loBarIndex = _.findWhere(data, {start: min}).bin;
-        hiBarIndex = _.findWhere(data, {start: max}).bin;
+        startMin = _.findWhere(data, {start: min});
+        startMax = _.findWhere(data, {start: max});
+        loBarIndex = startMin && startMin.bin || 0;
+        hiBarIndex = startMax && startMax.bin || data.length;
       } else {
         loBarIndex = 0;
         hiBarIndex = data.length;
@@ -452,7 +456,9 @@ module.exports = cdb.core.View.extend({
       zoom_enabled: false,
       filter_enabled: false,
       lo_index: null,
-      hi_index: null
+      hi_index: null,
+      min: null,
+      max: null
     });
     this._updateStats();
   }

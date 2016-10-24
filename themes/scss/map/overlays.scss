@@ -311,6 +311,7 @@ $maxLegendContainerHeight: 300px;
   @include display-flex();
   max-height: 100px;
   padding-top: 3px;
+  padding-bottom: 8px;
 }
 .Bubble-itemCircle {
   display: block;

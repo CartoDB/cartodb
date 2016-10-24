@@ -3,9 +3,20 @@
 
 $buttonColor: #636D72;
 
+.CDB-OverlayContainer {
+  display: flex;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  align-items: center;
+  z-index: 11;
+}
+
 // zoom overlay
 .CDB-Overlay {
-  position: relative;
+  display: flex;
+  align-items: center;
   min-width: 32px;
   height: 32px;
   border-radius: 4px;
@@ -14,12 +25,11 @@ $buttonColor: #636D72;
   z-index: 20000;
 }
 .CDB-Zoom {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
+  order: 1;
+  margin-right: 8px;
 }
+
 .CDB-Zoom-action {
-  display: inline-block;
   position: relative;
   width: 32px;
   height: 100%;
@@ -40,8 +50,7 @@ $buttonColor: #636D72;
   }
 
   &:last-child {
-    margin-left: -4px;
-    border-left: 1px solid #F8F8F8;
+    border-left: 1px solid #EEE;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
   }
@@ -79,72 +88,63 @@ $buttonColor: #636D72;
   }
 }
 .CDB-Zoom-info {
-  position: absolute;
-  top: -24px;
-  right: 0;
-  left: 0;
-  height: 34px;
-  padding-top: 6px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.64);
-  color: #FFF;
+  width: 32px;
+  border-left: 1px solid #EEE;
+  color: #979EA1;
   font-family: 'Open Sans';
   font-size: $sFontSize-small;
-  font-weight: $sFontWeight-semibold;
-  line-height: $sLineHeight-small;
+  line-height: 32px;
   text-align: center;
-  z-index: 1;
 }
 
 // loader search
 .CDB-Search {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-
-  &.has-zoom {
-    left: 84px;
-  }
+  order: 2;
+  height: 32px;
+  margin-right: 8px;
+}
+.CDB-Search .CDB-Shape-magnify::before {
+  top: 11px;
+  left: 10px;
+  border-color: #636D72;
+}
+.CDB-Search .CDB-Shape-magnify::after {
+  right: 13px;
+  bottom: 10px;
+  background: #636D72;
 }
 .CDB-Search-inner {
   @include transition(width, 100ms ease-in);
+  display: flex;
+  align-items: center;
   width: 32px;
-  height: 32px;
+  height: 100%;
   overflow: hidden;
+
   &.is-active {
-    width: 184px;
+    width: 152px;
     .CDB-Search-text {
+      display: block;
       opacity: 1;
     }
   }
 }
-.CDB-Search-action {
-  display: block;
+.CDB-Search-actionButton {
   position: relative;
   width: 32px;
-  cursor: pointer;
-}
-.CDB-Search-actionButton {
-  position: absolute;
-  top: 8px;
-  left: 8px;
+  height: 32px;
   color: $buttonColor;
 }
 .CDB-Search-text {
-  @include transition(opacity, 100ms ease-in);
-  display: inline-block;
-  position: absolute;
-  top: 8px;
-  left: 33px;
-  width: 130px;
-  margin-right: 8px;
+  @include transition(opacity, 150ms ease-in);
+  display: none;
+  width: 100px;
   padding: 0 0 0 8px;
   border: 0;
   border-left: 1px solid #F8F8F8;
   background: none;
   font: 12px/16px 'Open Sans';
   opacity: 0;
-  vertical-align: middle;
 
   &:focus {
     outline: none;
@@ -153,56 +153,26 @@ $buttonColor: #636D72;
 
 //FullScreen overlay
 .CDB-Fullscreen {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 63px;
-  height: 48px;
+  order: 4;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-  z-index: 10;
+  .CDB-Shape-Arrow::after,
+  .CDB-Shape-Arrow::before {
+    background: #636D72;
+  }
 
-  &::before {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-top: 48px solid #FFF;
-    border-left: 48px solid transparent;
-    content: '';
-  }
-  &::after {
-    display: block;
-    position: absolute;
-    top: -22px;
-    left: 31px;
-    width: 10px;
-    height: 100px;
-    transform: rotate(-45deg);
-    background-image: linear-gradient(-90deg, #000 0%, rgba(0, 0, 0, 0) 100%);
-    content: '';
-    opacity: 0.2;
-  }
   .CDB-Shape-Arrow.is-down {
-    top: 5px;
-    left: 45px;
+    top: 8px;
+    left: 12px;
   }
   .CDB-Shape-Arrow.is-up {
-    top: 6px;
-    left: 52px;
+    top: 8px;
+    left: 20px;
   }
-  &:hover {
-    .CDB-Shape-Arrow.is-up {
-      @include transition(all, 100ms);
-      top: 3px;
-      left: 55px;
-    }
-    .CDB-Shape-Arrow.is-down {
-      @include transition(all, 100ms);
-      top: 7px;
-      left: 43px;
-    }
+  .CDB-Fullscreen-link {
+    width: 100%;
+    height: 100%;
   }
 }
 .CDB-Logo {
@@ -231,20 +201,20 @@ $maxLegendContainerHeight: 300px;
   background: #FFF;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
   box-sizing: border-box;
-  z-index: 20000;
   overflow: hidden;
+  z-index: 20000;
 }
 .CDB-Legends-canvasInner {
-  overflow: hidden;
-  padding: 24px;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: calc(100vh - 20px);
+  padding: 12px 24px;
   border-radius: $baseSize / 2;
   box-sizing: border-box;
-  position: relative;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  max-height: calc(100vh - 20px);
+  overflow: hidden;
 }
 .CDB-Legends-canvasShadow {
   display: none;
@@ -291,16 +261,19 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-LayerLegends {
-  margin-top: 12px;
+  margin-bottom: 12px;
 }
-.CDB-LayerLegends:first-child {
-  margin-top: 0;
+
+.CDB-LayerLegends:empty {
+  margin-bottom: 0;
 }
+
 .CDB-Legend-item {
   margin-bottom: 16px;
-  &:last-child {
-    margin-bottom: 32px;
-  }
+}
+
+.CDB-LayerLegends:last-child .CDB-Legend-item:last-child {
+  margin-bottom: 0;
 }
 
 .CDB-Legend-item.is-disabled {
@@ -327,8 +300,10 @@ $maxLegendContainerHeight: 300px;
 
 .Bubble-item {
   @include opacity(0.5);
+  @include transform(translateX(-50%));
   position: absolute;
   bottom: 0;
+  left: 50%;
   cursor: pointer;
 }
 
@@ -388,6 +363,7 @@ $maxLegendContainerHeight: 300px;
   position: relative;
 }
 .Bubble-average {
+  @include transform(translateY(50%));
   display: block;
   position: absolute;
   right: 105px;
@@ -467,6 +443,9 @@ $index-items: 7 6 5 4 3 2 1;
   border-left: 1px dotted rgba(#000, 0.4);
   content: '';
 }
+.Legend-exponential {
+  font-size: 80%;
+}
 
 .Legend-categoryListItem {
   margin-bottom: 6px;
@@ -490,7 +469,9 @@ $index-items: 7 6 5 4 3 2 1;
   border-radius: 50%;
   content: '';
 }
-
+.Legend-categoryTitle {
+  max-width: 90%;
+}
 .Legend-placeholder {
   position: relative;
   margin: 0 -24px;
@@ -505,9 +486,12 @@ $index-items: 7 6 5 4 3 2 1;
   padding: 16px 24px 0;
 }
 
-
-@media (max-width: 759px) {
+@media (max-width: 600px) {
   .CDB-Legends-canvas {
     display: none !important;
+  }
+  .CDB-Zoom-info,
+  .CDB-Fullscreen {
+    display: none;
   }
 }

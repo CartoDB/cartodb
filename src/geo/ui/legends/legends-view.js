@@ -14,7 +14,6 @@ var LegendsView = Backbone.View.extend({
     this._layersCollection = options.layersCollection;
 
     this._isRendered = false;
-
     this.settingsModel = options.settingsModel;
     this._initBinds();
   },

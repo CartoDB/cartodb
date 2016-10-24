@@ -14,8 +14,9 @@ var ChoroplethLegendView = LegendViewBase.extend({
     });
   },
 
+  // In order to work with negative values, we need to include the total range
   _calculateAVGPercentage: function () {
-    return this.model.get('avg') * 100 / this.model.get('max');
+    return (this.model.get('avg') - this.model.get('min')) * 100 / (this.model.get('max') - this.model.get('min'));
   }
 });
 

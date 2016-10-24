@@ -133,8 +133,8 @@ module.exports = DataviewModelBase.extend({
   Ported from cartodb-postgresql
   https://github.com/CartoDB/cartodb-postgresql/blob/master/scripts-available/CDB_DistType.sql
   */
-  getDistributionType: function () {
-    var histogram = this.get('data');
+  getDistributionType: function (data) {
+    var histogram = data || this.get('data');
     var freqAccessor = function (a) { return a.freq; };
     var osc = d3.max(histogram, freqAccessor) - d3.min(histogram, freqAccessor);
     var mean = d3.mean(histogram, freqAccessor);

@@ -1,6 +1,8 @@
 var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
+var overlayTemplate = require('./ui/overlays-container.tpl');
+var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom'];
 
 var MapView = View.extend({
   initialize: function () {
@@ -95,6 +97,7 @@ var MapView = View.extend({
   // 
 
   render: function () {
+    this.$el.append(overlayTemplate());
     this._addLayers();
     return this;
   },
@@ -107,8 +110,14 @@ var MapView = View.extend({
   },
 
   addOverlay: function (overlay) {
+    var type;
     if (overlay) {
-      this.$el.append(overlay.render().el);
+      type = overlay.type;
+      if (type && CONTAINED_OVERLAYS.indexOf(type) >= 0) {
+        this._overlayContainer().append(overlay.render().el);
+      } else {
+        this.$el.append(overlay.render().el);
+      }
       this.addView(overlay);
     }
   },
@@ -117,6 +126,9 @@ var MapView = View.extend({
     return this.options.map_object;
   },
 
+  _overlayContainer: function () {
+    return this.$('.CDB-OverlayContainer');
+  },
   /**
   * set model property but unbind changes first in order to not create an infinite loop
   */

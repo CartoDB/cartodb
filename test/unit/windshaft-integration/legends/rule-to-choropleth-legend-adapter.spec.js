@@ -59,7 +59,8 @@ describe('src/windshaft-integration/legends/rule-to-choropleth-legend-adapter', 
           { label: '3000', value: '#CCCCCC' }
         ],
         avg: 1975,
-        max: 3000
+        max: 3000,
+        min: 0
       });
     });
   });

@@ -89,14 +89,6 @@ var LegendViewBase = Backbone.View.extend({
     return sanitize.html(html);
   },
 
-  enable: function () {
-    this.$el.removeClass('is-disabled');
-  },
-
-  disable: function () {
-    this.$el.addClass('is-disabled');
-  },
-
   _toggleLoadingClass: function () {
     this.$el.toggleClass('is-loading', this.model.isLoading());
   }

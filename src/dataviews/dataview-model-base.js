@@ -38,8 +38,15 @@ module.exports = Model.extend({
   },
 
   _getBoundingBoxFilterParam: function () {
-    var boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
-    return 'bbox=' + boundingBoxFilter.toString();
+    var result = '';
+    var boundingBoxFilter;
+
+    if (this.get('sync_on_bbox_change')) {
+      boundingBoxFilter = new WindshaftFiltersBoundingBoxFilter(this._map.getViewBounds());
+      result = 'bbox=' + boundingBoxFilter.toString();
+    }
+
+    return result;
   },
 
   /**
@@ -181,6 +188,10 @@ module.exports = Model.extend({
   },
 
   _onChangeBinds: function () {
+    this.on('change:sync_on_bbox_change', function (model, value, opts) {
+      this.refresh();
+    }, this);
+
     this.listenTo(this._map, 'change:center change:zoom', _.debounce(this._onMapBoundsChanged.bind(this), BOUNDING_BOX_FILTER_WAIT));
 
     this.on('change:url', function (model, value, opts) {

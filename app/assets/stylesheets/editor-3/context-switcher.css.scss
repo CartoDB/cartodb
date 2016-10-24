@@ -20,6 +20,12 @@
 .Editor-contextSwitcher.has-timeSeries {
   bottom: 190px;
 }
+.Editor-contextSwitcher--geom {
+  right: 102px;
+}
+.Editor-contextSwitcher--geom.in-table {
+  display: none;
+}
 .Editor-contextSwitcherButton {
   @include display-flex();
   @include align-items(center);
@@ -28,6 +34,9 @@
   height: 32px;
   text-align: center;
   cursor: pointer;
+}
+.Editor-contextSwitcherButton--geom.is-hidden {
+  display: none;
 }
 .Editor-contextSwitcherItem {
   border-right: 1px solid rgba(0, 0, 0, 0.08);

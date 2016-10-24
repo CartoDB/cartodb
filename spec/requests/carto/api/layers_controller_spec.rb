@@ -64,7 +64,7 @@ describe Carto::Api::LayersController do
 
       get_json api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
         response.status.should be_success
-        @layers_data = response.body
+        @layers_data = response.body.with_indifferent_access
       end
       # Done this way to preserve the order
       data_layers = @layers_data['layers']
@@ -79,7 +79,7 @@ describe Carto::Api::LayersController do
 
       get_json api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
         response.status.should be_success
-        @layers_data = response.body
+        @layers_data = response.body.with_indifferent_access
       end
       data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
       data_layers.count.should eq 2
@@ -229,9 +229,9 @@ describe Carto::Api::LayersController do
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
         response.status.should be_success
-        response_body = response.body.deep_symbolize_keys
+        response_body = response.body.with_indifferent_access
         response_body['total_entries'].should eq 2
-        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2
+        response_body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 1
         response_body['layers'][0]['id'].should eq layer.id
         response_body['layers'][1]['id'].should eq layer2.id
       end
@@ -262,9 +262,9 @@ describe Carto::Api::LayersController do
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
       get_json api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
         response.status.should be_success
-        response_body = response.body.deep_symbolize_keys
+        response_body = response.body.with_indifferent_access
         response_body['total_entries'].should eq 2 + existing_layers_count
-        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2 + existing_layers_count
+        response_body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2
         new_layers_ids = response_body['layers'].map { |l| l['id'] }
         (new_layers_ids - existing_layers_ids).should == expected_layers_ids
       end
@@ -275,7 +275,7 @@ describe Carto::Api::LayersController do
           id: layer.id
         )) do |response|
         response.status.should be_success
-        response_body = response.body.deep_symbolize_keys
+        response_body = response.body.with_indifferent_access
         response_body['id'].should eq layer.id
         response_body['kind'].should eq layer.kind
       end

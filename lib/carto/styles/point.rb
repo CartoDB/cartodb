@@ -34,8 +34,8 @@ module Carto::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      ["marker-line-width: #{width};",
-       "marker-line-color: #{color};",
+      ["marker-line-color: #{color};",
+       "marker-line-width: #{width};",
        "marker-line-opacity: #{opacity};",
        "marker-placement: point;",
        "marker-type: ellipse;",

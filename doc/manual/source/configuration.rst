@@ -176,3 +176,24 @@ the system populates the data library with the public datasets from ``http://com
 The ``format`` option is used to define the format of the file generated when you are importing one datasets from
 the data library. When you import a dataset it uses a stored URL to download that dataset as a file, in the format
 defined in the config, and import as your own dataset.
+
+Separate folders
+----------------
+
+Default installation keeps logs, configuration files and assets under the standard Rails folder structure: ``/log``,
+``/config`` and ``/public`` at Rails root (your installation directory). Some installations might be interested in
+moving those directories outside Rails root in order to separate code and data. You can accomplish that with symbolic
+links. Nevertheless, there are three environment variables that you can use instead:
+
+* ``RAILS_LOG_BASE_PATH``: for example, setting it to ``/var/carto`` will use that as a base folder for log files, which
+  will be stored at ``/var/carto/log``. Defaults to ``Rails.root``.
+* ``RAILS_CONFIG_BASE_PATH``: for example, setting it to ``/etc/carto`` will make Rails open the application and database
+  configuration files at ``/etc/carto/conf/app_config.yml`` and ``/etc/carto/conf/database.yml``. Defaults to ``Rails.root``.
+* ``RAILS_PUBLIC_UPLOADS_PATH``: sets assets base path, both static and dynamic. For example, setting
+  it to ``/var/carto/assets`` will upload files (markers, avatars and so on) to ``/var/carto/assets/uploads``, but it also
+  makes Rails server to load public assets (CSSs, JS...) from there. Defaults to ``app_config[:importer]["uploads_path"]`` or ``Rails.root``
+  if it's not present (due to backwards compatibility).  If you use this variable you'll need to do one onf the following:
+
+  * Use nginx to load the assets (recommended): making ``/public`` the nginx default root will make nginx use the proper
+    folders for assets, without requesting them to the Rails server: ``root /opt/carto/builder/embedded/cartodb/public;``.
+  * Copy or link assets (from ``/<RAILS ROOT>/public``) to public upload path folder.

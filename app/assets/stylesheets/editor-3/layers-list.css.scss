@@ -123,6 +123,9 @@
   border-radius: $baseSize / 2;
   cursor: pointer;
 }
+.Editor-ListLayer-media.is-hidden {
+  opacity: 0.24;
+}
 
 .Editor-ListLayer-media--basemap {
   border: 1px solid $cMainLine;

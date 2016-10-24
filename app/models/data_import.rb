@@ -23,15 +23,18 @@ require_relative '../../services/importer/lib/importer/mail_notifier'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
 require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
-require_relative '../../services/importer/lib/importer/connector'
+require_relative '../../services/importer/lib/importer/connector_runner'
 require_relative '../../services/importer/lib/importer/exceptions'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
+require_dependency 'carto/configuration'
 
 include CartoDB::Datasources
 
 class DataImport < Sequel::Model
+  include Carto::Configuration
+
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
 
   attr_accessor   :log, :results
@@ -119,7 +122,10 @@ class DataImport < Sequel::Model
   end
 
   def before_save
-    self.logger = self.log.id unless self.logger.present?
+    unless logger.present?
+      log.save
+      self.logger = log.id
+    end
     self.updated_at = Time.now
   end
 
@@ -154,7 +160,7 @@ class DataImport < Sequel::Model
   end
 
   def dataimport_logger
-    @@dataimport_logger ||= Logger.new("#{Rails.root}/log/imports.log")
+    @@dataimport_logger ||= Logger.new(log_file_path("imports.log"))
   end
 
   # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
@@ -268,16 +274,18 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
-    path = Rails.root.join("public#{data_source}").to_s
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
-    elsif File.exist?(path) && !File.directory?(path)
-      values[:data_type] = TYPE_FILE
-      values[:data_source] = path
-    elsif Addressable::URI.parse(data_source).host.present?
-      values[:data_type] = TYPE_URL
-      values[:data_source] = data_source
+    else
+      path = uploaded_file_path(data_source)
+      if File.exist?(path) && !File.directory?(path)
+        values[:data_type] = TYPE_FILE
+        values[:data_source] = path
+      elsif Addressable::URI.parse(data_source).host.present?
+        values[:data_type] = TYPE_URL
+        values[:data_source] = data_source
+      end
     end
 
     self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
@@ -432,16 +440,15 @@ class DataImport < Sequel::Model
   end
 
   def instantiate_log
-    uuid = self.logger
+    uuid = logger
 
     if valid_uuid?(uuid)
       self.log = CartoDB::Log.where(id: uuid.to_s).first
     else
       self.log = CartoDB::Log.new(
-          type:     CartoDB::Log::TYPE_DATA_IMPORT,
-          user_id:  current_user.id
+        type:     CartoDB::Log::TYPE_DATA_IMPORT,
+        user_id:  current_user.id
       )
-      self.log.store
     end
   end
 
@@ -677,18 +684,18 @@ class DataImport < Sequel::Model
     [importer, runner, datasource_provider, manual_fields]
   end
 
-  # Create an Importer using a Connector to fetch the data.
+  # Create an Importer using a ConnectorRunner to fetch the data.
   # This methods returns an array with two elements:
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
-    CartoDB::Importer2::Connector.check_availability!(current_user)
+    CartoDB::Importer2::ConnectorRunner.check_availability!(current_user)
 
     database_options = pg_options
 
     self.host = database_options[:host]
 
-    connector = CartoDB::Importer2::Connector.new(
+    connector = CartoDB::Importer2::ConnectorRunner.new(
       service_item_id,
       user: current_user,
       pg: database_options,
@@ -720,8 +727,14 @@ class DataImport < Sequel::Model
       importer.run(tracker)
       log.append 'After importer run'
     end
+
     store_results(importer, runner, datasource_provider, manual_fields)
     importer.nil? ? false : importer.success?
+  rescue => e
+    # Note: If this exception is not treated, results will not be defined
+    # and the import will finish with a null error_code
+    set_error(manual_fields.fetch(:error_code, 99999))
+    raise e
   end
 
   # Note: Assumes that if importer is nil an error happened

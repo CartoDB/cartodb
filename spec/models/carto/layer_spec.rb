@@ -67,14 +67,20 @@ describe Carto::Layer do
       affected.should eq [@table2]
     end
 
-    it 'returns values from both query and table_name' do
+    it 'returns values only from query (overrides table_name) if both specified' do
       query = "SELECT * FROM #{@table2.name}"
       @layer.stubs(:options).returns(table_name: @table1.name, query: query)
       @layer.stubs(:affected_table_names).with(query).returns([@table2.name]).once
       affected = @layer.affected_tables
-      affected.count.should eq 2
-      affected.should include @table1
+      affected.count.should eq 1
       affected.should include @table2
+    end
+
+    describe '#affected_table_names' do
+      it 'should return the affected tables' do
+        sql = "select coalesce('tabname', null) from cdb_tablemetadata;select 1;select * from spatial_ref_sys"
+        @layer.send(:affected_table_names, sql).should =~ ["cartodb.cdb_tablemetadata", "public.spatial_ref_sys"]
+      end
     end
   end
 end

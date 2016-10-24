@@ -49,6 +49,12 @@
     "next": "next",
   },
   "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE",
+    },
     "done": "Done",
     "finished": "has finished",
     "style-analysis": "Style this analysis",
@@ -160,7 +166,21 @@
     },
     "data-observatory-measure": {
       "title": "Enrich from Data Observatory",
-      "short-title": "Data observatory"
+      "short-title": "Data observatory",
+      "age-and-gender": "Age and Gender",
+      "boundaries": "Boundaries",
+      "education": "Education",
+      "employment": "Employment",
+      "families": "Families",
+      "housing": "Housing",
+      "income": "Income",
+      "language": "Language",
+      "migration": "Migration",
+      "nationality": "Nationality",
+      "population-segments": "Population segments",
+      "race-and-ethnicity": "Race and Ethnicity",
+      "religion": "Religion",
+      "transportation": "Transportation"
     },
     "merge": {
       "title": "Join columns from 2nd layer",
@@ -230,9 +250,10 @@
   },
 
   "analysis-category": {
+    "all": "All",
+    "analyze-predict": "Analyze and predict",
     "create-clean": "Create and clean",
-    "data-transformation": "Transform",
-    "analyze-predict": "Analyze and predict"
+    "data-transformation": "Transform"
   },
   "form-components": {
     "editors": {
@@ -261,6 +282,7 @@
           "buckets": "bucket |||| buckets"
         },
         "input-categories": {
+          "null": "null",
           "others": "Others"
         }
       }
@@ -336,6 +358,11 @@
         "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
         "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
         "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+      },
+      "connector-warning-details": {
+        "continue-btn": "Continue",
+        "too-many-rows": "You may have reached the maximum limit.",
+        "unable-to-import-all-rows": "For a database connector import, the number of rows allowed is %{maxRowsPerConnectorImport}. Some of your data may not be imported."
       },
       "error-details": {
         "check-errors": "Check errors",
@@ -438,11 +465,20 @@
         "desc": "Oops there was an error."
       },
       "no-results": {
-        "title": "'Oh! No results",
+        "title": "Oh! No results",
         "desc": "Unfortunately we could not find anything with these parameters"
       }
     },
     "modals": {
+      "editor-vis-warning": {
+        "title": "You are about to open an Editor map with the new Builder",
+        "explanation": "Builder offers an easy to use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
+        "question": "Opening your map in Builder may cause the loss of any feature not supported yet. Are you sure you want to continue?",
+        "go-back": "No, go back to dashboard",
+        "open": "Yes, open with Builder",
+        "duplicate": "duplicate and open with Builder",
+        "opening-title": "Opening %{name} with Builder"
+      },
       "add-basemap": {
         "modal-title": "Add a custom basemap",
         "modal-desc": "Select from these great resources",
@@ -459,16 +495,34 @@
           "enter": "Enter a URL",
           "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g.",
-          "tms": "TMS"
+          "tms": "TMS",
+          "couldnt-validate": "We couldn't validate this, if you're sure it contains data click \"add basemap\"",
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
           "enter": "Enter your map ID/URL",
           "enter-token": "Enter your access token",
-          "username": "E.g. username.ab12cd3",
-          "access-token": "E.g. pk.bfg32ewdsadeyJ1Ijoi…",
           "error": "Error retrieving your basemap. Please, check your access token.",
           "invalid": "This URL is not valid."
+        },
+        "wms": {
+          "insert": "Insert your WMS/WMTS URL",
+          "invalid": "The URL is either invalid or contains unsupported projections",
+          "see-docs": "see docs",
+          "oh-no": "Oh! No results",
+          "unfortunately": "Unfortunately we couldn't found any layer that matched your search term",
+          "tables-pluralize": "table |||| tables",
+          "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
+        },
+        "tilejson": {
+          "insert": "Insert your TileJSON URL",
+          "invalid": "Invalid URL, please make sure it is correct"
+        },
+        "nasa": {
+          "select": "Select a date from which you want a NASA Worldview basemap",
+          "day": "Day",
+          "night": "Night",
+          "cant-select": "You can't select a date in night mode"
         }
       },
       "export-data": {
@@ -568,7 +622,7 @@
           },
           "link": {
             "type": "LINK",
-            "title": "People with Link",
+            "title": "Only accessible with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
@@ -588,7 +642,7 @@
           },
           "upgrade": {
             "title": "Interested on sharing within your organization?",
-            "desc": "%{contact} for try one of our Enterprise plans",
+            "desc": "%{contact} to try one of our Enterprise plans",
             "contact": "Contact us",
             "mail": "sales@carto.com"
           },
@@ -669,6 +723,7 @@
         "add-btn": "Add analysis",
         "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
         "unknown-geometry-type": "unknown",
+        "info-analysis": "Info about analysis",
         "option-types": {
           "connect-with-lines": {
             "title": "Connect with lines",
@@ -695,7 +750,7 @@
             "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
           },
           "filter": {
-            "title": "Filter rows by column value",
+            "title": "Filter by column value",
             "desc": "Keep or discard rows according to a custom criteria."
           },
           "merge": {
@@ -704,7 +759,11 @@
           },
           "moran-cluster": {
             "title": "Detect outliers and clusters",
-            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters."
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "high-low": "High-Low (HL)",
+            "high-high": "High-High (HH)",
+            "low-high": "Low-High (LH)",
+            "low-low": "Low-Low (LL)"
           },
           "kmeans": {
             "title": "Calculate clusters of points",
@@ -1057,6 +1116,7 @@
     "sql": "SQL",
     "data": "Metadata",
     "updated": "Updated %{ago}",
+    "read": "Read",
     "options": {
       "add-row": "Add row",
       "add-column": "Add column",
@@ -1171,7 +1231,9 @@
             "scrollwheel": "Scroll wheel zoom",
             "layer_selector": "Layer selector",
             "logo": "CARTO Logo",
-            "widgets": "Widgets column"
+            "widgets": "Widgets column",
+            "legends": "Legends",
+            "dashboard_menu": "Render dashboard menu"
           }
         }
       }
@@ -1283,10 +1345,8 @@
         "delete": "Delete",
         "cancel-delete-analysis": "Cancel"
       },
-      "notifier": {
-        "layer-added": "Layer added successfully."
-      },
       "basemap": {
+        "remove-baselayer": "Remove baselayer",
         "custom-basemap": "Custom basemap",
         "title-label": "Basemap",
         "by": "by",
@@ -1316,7 +1376,7 @@
       },
       "menu-tab-pane-labels": {
         "data": "Data",
-        "analyses": "Analyses",
+        "analyses": "Analysis",
         "style": "Style",
         "infowindow": "Pop-up",
         "legends": "Legend"
@@ -1494,6 +1554,9 @@
         "street-address-help": "In which column are your street addresses stored?",
         "target": "Target",
         "target-layer": "Target layer",
+        "intersection-layer": "Intersect layer",
+        "filtering-layer": "Filtering layer",
+        "base-layer": "Base layer",
         "target-col": "Target col.",
         "target-column": "Target column",
         "target-percent": "Target percent",
@@ -1517,7 +1580,7 @@
         "weight-type": "Weight type",
         "weighted-by": "Weighted by",
         "weighted-by-help": "Weights contribution by a value for each point",
-        "workflow": "Workflow",
+        "workflow": "Your workflow",
         "write-max-value": "Write max value",
         "write-min-value": "Write min value",
         "yes": "Yes"
@@ -1581,7 +1644,7 @@
         "cartocss": "SQL"
       },
       "code-mirror": {
-        "save": "CMD + S to apply your query."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",
@@ -1629,13 +1692,69 @@
       }
     },
     "legend": {
-      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!"
+      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!",
+      "data-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can't be empty."
+        },
+        "pre-html": "<!-- insert your custom html code above this line -->",
+        "post-html": "<!-- insert your custom html code below this line -->"
+      },
+      "menu-tab-pane-labels": {
+        "color": "color",
+        "size": "size"
+      },
+      "messages": {
+        "migrated-legend": {
+          "title": "IMPORTED LEGEND",
+          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
+          "accept": "Delete imported legend"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        },
+        "legends-disabled": {
+          "title": "LEGENDS DISABLED",
+          "body": "The legends setting is disabled. Changes made will not be shown until you enable legends.",
+          "show": "ENABLE"
+        }
+      },
+      "types": {
+        "none": "none",
+        "category": "category",
+        "gradient": "gradient",
+        "bubble": "bubble",
+        "custom": "custom"
+      },
+      "legend-form": {
+        "type": {
+          "title": "Select Style"
+        },
+        "properties": {
+          "title": "Creating your legend",
+          "subtitle": "Add items"
+        },
+        "add": "Add item",
+        "title": "Title",
+        "fill": "Fill",
+        "by-size": "By Size",
+        "by-color": "By Color",
+        "untitled": "Untitled"
+      },
+      "pixel-title": "Amount"
     },
     "style": {
       "types": {
         "none": "-",
         "simple": "none",
-        "hexabins": "hexabins",
+        "hexabins": "hexbins",
         "squares": "squares",
         "regions": "Adm. Regions",
         "heatmap": "pixel",
@@ -1653,6 +1772,7 @@
           "title-label-point": "Style",
           "title-label-line": "Lines style",
           "title-label-polygon": "Polygons style",
+          "placeholder-text": "There's no geometry in your data that could be styled.",
           "desc": "Change the visualization"
         },
         "unanimatable": {
@@ -1852,8 +1972,8 @@
   "notifications": {
     "vis": {
       "failed": {
-        "title": "This map couldn't be rendered.",
-        "body": "Please refresh the page and contact us if the error persists."
+        "title": "This map couldn't be rendered",
+        "body": "Please refresh the page and contact us if the error persists"
       }
     },
     "analysis": {
@@ -1865,30 +1985,36 @@
     },
     "widgets": {
       "delete": "Widget deleted correctly.",
-      "success": "Widget successfully added.",
+      "success": "Widget successfully added",
       "error": {
         "title": "Error adding widget:",
         "body": "%{body} %{error}"
       },
       "loading": "Adding widget…",
-      "updating": "Updating widget…"
+      "updating": "Updating widget…",
+      "restoring": "Restoring widgets…",
+      "restored": "Widgets restored"
+    },
+    "layer": {
+      "error": "Layer error: %{error}",
+      "added": "Layer added successfully."
     },
     "cartocss": {
         "error": {
           "body": "%{body} %{error}",
           "title": "Error in CartoCSS styles:"
         },
-        "success": "CartoCSS applied."
+        "success": "CartoCSS applied"
     },
     "sql": {
       "alter-loading": "Modifying table…",
-      "alter-success": "Modifying applied.",
+      "alter-success": "Modifying applied",
       "applying": "Applying query…",
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"
       },
-      "success": "SQL query applied."
+      "success": "SQL query applied"
     }
   }
 }

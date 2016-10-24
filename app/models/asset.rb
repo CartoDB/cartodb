@@ -1,6 +1,10 @@
 require 'open-uri'
 require_relative '../../lib/cartodb/image_metadata.rb'
+require_relative '../helpers/file_upload'
+require_dependency 'carto/configuration'
+
 class Asset < Sequel::Model
+  include Carto::Configuration
 
   many_to_one :user
 
@@ -109,17 +113,22 @@ class Asset < Sequel::Model
     o.public_url(secure: true).to_s
   end
 
-  def save_local(filename)
-    file_upload_helper = CartoDB::FileUpload.new(Cartodb.config[:importer].fetch("uploads_path", nil))
+  def local_dir
+    @local_dir ||= Pathname.new(public_uploaded_assets_path).join(target_asset_path)
+  end
 
-    local_path = file_upload_helper.get_uploads_path.join(target_asset_path)
-    FileUtils.mkdir_p local_path
-    FileUtils.cp @file.path, local_path.join(filename)
+  def local_filename(filename)
+    local_dir.join(filename)
+  end
+
+  def save_local(filename)
+    FileUtils.mkdir_p local_dir
+    FileUtils.cp @file.path, local_filename(filename)
 
     mode = chmod_mode
-    FileUtils.chmod(mode, local_path.join(filename)) if mode
+    FileUtils.chmod(mode, local_filename(filename)) if mode
 
-    p = File.join('/', 'uploads', target_asset_path, filename)
+    p = File.join('/', ASSET_SUBFOLDER, target_asset_path, filename)
     "#{asset_protocol}//#{CartoDB.account_host}#{p}"
   end
 
@@ -130,8 +139,12 @@ class Asset < Sequel::Model
 
   def remove
     unless use_s3?
-      local_url = public_url.gsub(/http:\/\/#{CartoDB.account_host}/,'')
-      FileUtils.rm("#{Rails.root}/public#{local_url}") rescue ''
+      local_url = public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, '')
+      begin
+        FileUtils.rm((public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/'))
+      rescue => e
+        CartoDB::Logger.error(message: "Error removing asset", asset: self, exception: e)
+      end
       return
     end
     basename = File.basename(public_url)
@@ -149,6 +162,8 @@ class Asset < Sequel::Model
     bucket_name = Cartodb.config[:assets]["s3_bucket_name"]
     @s3_bucket ||= s3.buckets[bucket_name]
   end
+
+  ASSET_SUBFOLDER = 'uploads'.freeze
 
   private
 

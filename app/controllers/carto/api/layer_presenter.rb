@@ -349,7 +349,7 @@ module Carto
           'properties' => wizard_properties_properties_to_style_properties_properties(wpp, type)
         }
 
-        merge_into_if_present(options['style_properties'], 'aggregation', generate_aggregation(wpp))
+        merge_into_if_present(options['style_properties']['properties'], 'aggregation', generate_aggregation(wpp))
 
         if SOURCE_TYPES_WITH_SQL_WRAP.include?(@source_type)
           options['sql_wrap'] = options['query_wrapper']
@@ -357,6 +357,10 @@ module Carto
 
         if @source_type == 'cluster'
           options['cartocss_custom'] = true
+        end
+
+        if type == 'animation' && @layer.widgets.where(type: 'time-series').none?
+          create_time_series_widget(wpp)
         end
       end
 
@@ -372,7 +376,7 @@ module Carto
         'cluster' => 'simple'
       }.freeze
 
-      SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density'].freeze
+      SOURCE_TYPES_WITH_SQL_WRAP = ['cluster', 'density', 'torque_cat'].freeze
 
       def set_if_present(hash, key, value)
         # Dirty check because `false` is a valid `value`
@@ -514,7 +518,11 @@ module Carto
       }.freeze
 
       def generate_stroke(wpp)
-        stroke_mapping = wpp['geometry_type'] == 'point' ? STROKE_FROM_POINT_MAPPING : STROKE_FROM_NON_POINT_MAPPING
+        stroke_mapping = if wpp['geometry_type'] == 'point' && @source_type != 'density'
+                           STROKE_FROM_POINT_MAPPING
+                         else
+                           STROKE_FROM_NON_POINT_MAPPING
+                         end
 
         stroke = {}
 
@@ -547,6 +555,13 @@ module Carto
           color['range'] = wpp['categories'].map { |c| c['color'] }
           color['domain'] = wpp['categories'].map { |c| c['title'] }
         end
+
+        color_attribute = if wpp['property_cat']
+                            wpp['property_cat']
+                          elsif @source_type == 'density'
+                            'agg_value'
+                          end
+        color['attribute'] = color_attribute if color_attribute
 
         color.merge!(TORQUE_HEAT_COLOR_DEFAULTS) if @source_type == 'torque_heat'
 
@@ -795,6 +810,23 @@ module Carto
         apply_default_opacity(color)
 
         color
+      end
+
+      def create_time_series_widget(wpp)
+        if wpp['property'] && @layer.options[:source]
+          @layer.widgets.create(
+            type: 'time-series',
+            order: 0,
+            title: 'time_date__t',
+            options: {
+              column: wpp['property'],
+              bins: 256,
+              sync_on_data_change: true,
+              sync_on_bbox_change: true
+            },
+            source_id: @layer.options[:source]
+          )
+        end
       end
     end
   end

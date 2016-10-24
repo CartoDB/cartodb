@@ -76,16 +76,22 @@
 
 .ModalBlockList-item {
   @include display-flex();
+  @include flex-direction(column);
   width: 304px;
   min-width: 304px;
   margin: 0 4px 8px;
-  padding: 16px;
   border: 1px solid $cWhite;
   border-radius: 4px;
   background: $cWhite;
   box-sizing: border-box;
   cursor: pointer;
+  overflow: hidden;
 }
+.DatasetsList .ModalBlockList-item {
+  @include flex-direction(row);
+  padding: 12px;
+}
+
 
 .ModalBlockList-itemInput {
   margin-right: $baseSize;
@@ -110,12 +116,11 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: auto;
-  opacity: 0.5;
+}
+.ModalBlockList-item.is-disabled .ModalBlockList-item-headerTitle {
+  @include opacity(0.5);
 }
 
-.ModalBlockList-item-body {
-  @include display-flex();
-}
 .ModalBlockList-item-media {
   width: 40px;
   min-width: 40px;
@@ -233,6 +238,10 @@
   @include flex-grow(1);
   @include justify-content(center);
   @include align-items(center);
+}
+
+.Publish-optionsList {
+  width: 100%;
 }
 
 .Publish-modalButton {

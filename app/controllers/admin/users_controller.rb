@@ -66,10 +66,6 @@ class Admin::UsersController < Admin::AdminController
       @user.set_fields(attributes, [:email])
     end
 
-    if attributes[:builder_enabled].present?
-      @user.set_fields(attributes, [:builder_enabled])
-    end
-
     raise Sequel::ValidationFailed.new('Validation failed') unless @user.valid?
     @user.update_in_central
     @user.save(raise_on_failure: true)

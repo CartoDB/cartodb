@@ -37,7 +37,7 @@ class Table
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
   STATEMENT_TIMEOUT = 1.hour*1000
 
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
@@ -300,7 +300,6 @@ class Table
   # TODO: basically most if not all of what the import_cleanup does is done by cartodbfy.
   # Consider deletion.
   def import_cleanup
-    owner.in_database(:as => :superuser) do |user_database|
       # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
       # In that case:
       #  - If cartodb_id already exists, remove ogc_fid
@@ -317,21 +316,27 @@ class Table
       end
 
       # Remove primary key
-      existing_pk = user_database[%Q{
-        SELECT c.conname AS pk_name
-        FROM pg_class r, pg_constraint c, pg_namespace n
-        WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{self.name}'
-        AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
-      }].first
+      owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
+        existing_pk = user_database[%Q{
+          SELECT c.conname AS pk_name
+          FROM pg_class r, pg_constraint c, pg_namespace n
+          WHERE r.oid = c.conrelid AND contype='p' AND relname = '#{name}'
+          AND r.relnamespace = n.oid and n.nspname= '#{owner.database_schema}'
+        }].first
+
       existing_pk = existing_pk[:pk_name] unless existing_pk.nil?
-      user_database.run(%Q{
-        ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
-      }) unless existing_pk.nil?
+
+        user_database.run(%{
+          ALTER TABLE #{qualified_table_name} DROP CONSTRAINT "#{existing_pk}"
+        }) unless existing_pk.nil?
+      end
 
       # All normal fields casted to text
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
-          user_database.run(%Q{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
+          end
         end
       end
 
@@ -339,25 +344,34 @@ class Table
       if aux_cartodb_id_column.present?
         begin
           already_had_cartodb_id = false
-          user_database.run(%Q{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
+          end
         rescue
           already_had_cartodb_id = true
         end
         unless already_had_cartodb_id
-          user_database.run(%Q{UPDATE #{qualified_table_name} SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)})
-          cartodb_id_sequence_name = user_database["SELECT pg_get_serial_sequence('#{owner.database_schema}.#{self.name}', 'cartodb_id')"].first[:pg_get_serial_sequence]
-          max_cartodb_id = user_database[%Q{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
-          # only reset the sequence on real imports.
+          owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+            user_database.run(%{
+              UPDATE #{qualified_table_name}
+              SET cartodb_id = CAST(#{aux_cartodb_id_column} AS INTEGER)
+            })
 
-          if max_cartodb_id
-            user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id+1}")
+            cartodb_id_sequence_name = user_database[%{
+              SELECT pg_get_serial_sequence('#{owner.database_schema}.#{name}', 'cartodb_id')
+            }].first[:pg_get_serial_sequence]
+            max_cartodb_id = user_database[%{SELECT max(cartodb_id) FROM #{qualified_table_name}}].first[:max]
+            # only reset the sequence on real imports.
+
+            if max_cartodb_id
+              user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id + 1}")
+            end
           end
         end
-        user_database.run(%Q{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+        owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+          user_database.run(%{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
+        end
       end
-
-    end
-
   end
 
   def before_create
@@ -1108,7 +1122,7 @@ class Table
   def pg_indexes
     owner.in_database(as: :superuser).fetch(%{
       SELECT
-        a.attname as column, i.relname as name
+        a.attname as column, i.relname as name, ix.indisvalid as valid
       FROM
         pg_class t, pg_class i, pg_index ix, pg_attribute a, pg_namespace n
       WHERE
@@ -1128,8 +1142,9 @@ class Table
     owner.in_database.execute(%{CREATE INDEX #{concurrently} "#{index_name(column, prefix)}" ON "#{name}"("#{column}")})
   end
 
-  def drop_index(column, prefix = '')
-    owner.in_database.execute(%{DROP INDEX "#{index_name(column, prefix)}"})
+  def drop_index(column, prefix = '', concurrent: false)
+    concurrently = concurrent ? 'CONCURRENTLY' : ''
+    owner.in_database.execute(%{DROP INDEX #{concurrently} "#{index_name(column, prefix)}"})
   end
 
   def cartodbfy
@@ -1420,7 +1435,7 @@ class Table
   end
 
   # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def get_valid_name(contendent)
     user_table_names = owner.tables.map(&:name)
 

@@ -9,7 +9,10 @@ require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
+require_dependency 'carto/configuration'
+
 class Geocoding < Sequel::Model
+  include Carto::Configuration
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
@@ -65,7 +68,7 @@ class Geocoding < Sequel::Model
   end
 
   def geocoding_logger
-    @@geocoding_logger ||= Logger.new("#{Rails.root}/log/geocodings.log")
+    @@geocoding_logger ||= Logger.new(log_file_path('geocodings.log'))
   end
 
   def error

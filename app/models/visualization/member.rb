@@ -78,6 +78,7 @@ module CartoDB
       attribute :next_id,             String, default: nil
       attribute :bbox,                String, default: nil
       attribute :auth_token,          String, default: nil
+      attribute :version,             Integer
       # Don't use directly, use instead getter/setter "transition_options"
       attribute :slide_transition_options,  String, default: DEFAULT_OPTIONS_VALUE
       attribute :active_child,        String, default: nil
@@ -361,6 +362,11 @@ module CartoDB
       def tags=(tags)
         tags.reject!(&:blank?) if tags
         super(tags)
+      end
+
+      def version=(version)
+        self.dirty = true
+        super(version)
       end
 
       def public?
@@ -692,6 +698,13 @@ module CartoDB
         mapcaps.exists?
       end
 
+      def invalidate_for_permissions_change
+        # A change in permissions should trigger the same invalidations as a privacy change
+        self.privacy_changed = true
+        invalidate_cache
+        save_named_map
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator
@@ -748,6 +761,8 @@ module CartoDB
       end
 
       def do_store(propagate_changes = true, table_privacy_changed = false)
+        self.version = user.new_visualizations_version if version.nil?
+
         if password_protected?
           raise CartoDB::InvalidMember.new('No password set and required') unless has_password?
         else
@@ -815,7 +830,14 @@ module CartoDB
       def update_named_map
         return if named_map_updates_disabled?
 
-        Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        # On visualization destroy, an update will be performed after every
+        # layer in the vis is destroyed until the template has no layers
+        # and the update fails. This is a hacky way to fix that. A better way
+        # would be to fix callbacks.
+        visualization_for_presentation = carto_visualization.for_presentation
+        unless visualization_for_presentation.layers.empty?
+          Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        end
       end
 
       def propagate_privacy_and_name_to(table)

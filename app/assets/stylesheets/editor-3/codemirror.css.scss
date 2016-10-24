@@ -20,13 +20,13 @@
 .CodeMirror-bullet {
   @include transform(translateY(-50%));
   position: absolute;
-  left: -25px;
   top: 50%;
-  z-index: 5;
+  left: -25px;
   width: $halfBaseSize;
   height: $halfBaseSize;
   border-radius: 50%;
   background-color: $cError;
+  z-index: 5;
 }
 
 .CodeMirror-error {
@@ -34,18 +34,14 @@
   padding: $halfBaseSize 10px;
   border-top: 1px solid #3A484E;
   background-color: #27333A;
-  text-align: left;
   line-height: $sLineHeight-medium;
+  text-align: left;
 }
 
 .CodeMirror-errorMessage {
   @include flex(1 1 auto);
+  list-style-type: disc;
 }
-
-.CodeMirror-errorDocs {
-
-}
-
 
 .CodeMirror-error,
 .CodeMirror-linenumber.has-error {
@@ -60,8 +56,12 @@
   color: #4F5B60;
 }
 
-.CodeMirror-errorMessage {
-  list-style-type: disc;
+.CodeMirror-readonlyLine {
+  background: #4F5B60;
+}
+
+.CodeMirror-readonlyLine ~ .CodeMirror-line span {
+  color: $cWhite !important;
 }
 
 .CodeMirror {
@@ -82,8 +82,9 @@
   padding: 0 14px; /* Horizontal padding of content */
 }
 
-.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
-  background-color: white; /* The little square between H and V scrollbars */
+.CodeMirror-scrollbar-filler,
+.CodeMirror-gutter-filler {
+  background-color: #fff; /* The little square between H and V scrollbars */
 }
 
 /* GUTTER */

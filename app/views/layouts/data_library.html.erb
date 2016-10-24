@@ -4,7 +4,7 @@
     <%= favicon_link_tag "/favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, carto">
+    <meta name="keywords" content="<%= yield :keywords %>">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -16,8 +16,8 @@
     <meta property="og:image" content="<%= @avatar_url %>" />
 
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@cartodb">
-    <meta name="twitter:creator" content="@cartodb">
+    <meta name="twitter:site" content="@CARTO">
+    <meta name="twitter:creator" content="@CARTO">
     <meta name="twitter:title" content="<%= yield :title %>">
     <meta name="twitter:description" content="<%= yield :description %>">
     <meta name="twitter:image" content="<%= @avatar_url %>">

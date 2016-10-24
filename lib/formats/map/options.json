@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": ["dashboard_menu", "legends", "scrollwheel", "layer_selector"],
+  "additionalProperties": false,
+  "properties": {
+    "dashboard_menu": {
+      "type": "boolean"
+    },
+    "legends": {
+      "type": "boolean"
+    },
+    "scrollwheel": {
+      "type": "boolean"
+    },
+    "layer_selector": {
+      "type": "boolean"
+    }
+  }
+}

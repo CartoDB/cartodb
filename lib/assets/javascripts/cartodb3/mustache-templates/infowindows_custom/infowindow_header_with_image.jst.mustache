@@ -4,15 +4,13 @@
     <div class="CDB-infowindow-header CDB-infowindow-headerMedia js-header js-cover">
       {{#loading}}<div class="CDB-Loader js-loader"></div>{{/loading}}
       <div class="CDB-infowindow-mediaTitle">
-        {{#content.fields}}
-          {{^index}}
-            {{#value}}
-              <h4 class="CDB-infowindow-title">
-                <span>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></span>
-              </h4>
-            {{/value}}
-          {{/index}}
-        {{/content.fields}}
+        {{#content.fields.1}}
+          {{#value}}
+            <h4 class="CDB-infowindow-title">
+              <span>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></span>
+            </h4>
+          {{/value}}
+        {{/content.fields.1}}
       </div>
     </div>
     <div class="CDB-infowindow-inner js-inner">
@@ -20,13 +18,15 @@
       <div class="CDB-infowindow-list js-content">
         {{#content.fields}}
           {{#index}}
-            <div class="CDB-infowindow-listItem">
-              {{#alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
-              {{/alternative_name}}
-              {{^alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
-              {{/alternative_name}}
+            <div class="CDB-infowindow-listItem CDB-infowindow-listItem--order{{index}}">
+              {{#title}}
+                {{#alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
+                {{/alternative_name}}
+                {{^alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
+                {{/alternative_name}}
+              {{/title}}
               <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
             </div>
           {{/index}}

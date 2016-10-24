@@ -67,6 +67,8 @@ module CartoDB
       user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
       user.obs_general_quota = attributes[:obs_general_quota] || 1000
       user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
+      user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
+      user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       user.viewer                = attributes[:viewer] || false
@@ -149,6 +151,7 @@ module CartoDB
       user_mock.stubs(:groups).returns(groups)
       user_mock.stubs(:public_url).returns(public_url)
       user_mock.stubs(:avatar_url).returns(avatar_url)
+      user_mock.stubs(:new_visualizations_version).returns(2)
       user_mock
     end
 

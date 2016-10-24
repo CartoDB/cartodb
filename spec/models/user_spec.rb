@@ -1178,7 +1178,7 @@ describe User do
   it "should remove its user tables, layers and data imports after deletion" do
     doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
     data_import = DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => '/../db/fake_data/clubbing.csv').run_import!
+                      :data_source => fake_data_path('clubbing.csv')).run_import!
     doomed_user.add_layer Layer.create(:kind => 'carto')
     table_id  = data_import.table_id
     uuid      = UserTable.where(id: table_id).first.table_visualization.id
@@ -1517,6 +1517,17 @@ describe User do
           db_service.role_exists?(db, role).should == false
         end.to raise_error(/role "#{role}" does not exist/)
         db.disconnect
+      end
+
+      it 'deletes temporary analysis tables' do
+        db = @org_user_2.in_database
+        db.run('CREATE TABLE analysis_123 (a int)')
+        db.run(%{INSERT INTO cdb_analysis_catalog (username, cache_tables, node_id, analysis_def)
+                 VALUES ('#{@org_user_2.username}', '{analysis_123}', 'a0', '{}')})
+        @org_user_2.destroy
+
+        db = @org_user_owner.in_database
+        db["SELECT COUNT(*) FROM cdb_analysis_catalog WHERE username='#{@org_user_2.username}'"].first[:count].should eq 0
       end
     end
   end

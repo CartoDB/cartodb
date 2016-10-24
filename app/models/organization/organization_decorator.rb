@@ -29,6 +29,10 @@ module CartoDB
           quota:       self.here_isolines_quota,
           monthly_use: self.get_here_isolines_calls
         },
+        mapzen_routing: {
+          quota:       self.mapzen_routing_quota,
+          monthly_use: self.get_mapzen_routing_calls
+        },
         geocoder_provider: self.geocoder_provider,
         isolines_provider: self.isolines_provider,
         routing_provider: self.routing_provider,

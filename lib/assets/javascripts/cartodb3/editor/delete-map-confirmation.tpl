@@ -11,14 +11,14 @@
       <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('editor.maps.delete.desc') %></p>
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
-          <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-close">
+          <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
               <%- _t('editor.maps.delete.cancel') %>
             </span>
           </button>
         </li>
         <li class="Modal-listActionsitem">
-          <button class="CDB-Button CDB-Button--primary CDB-Button--big">
+          <button class="CDB-Button CDB-Button--primary CDB-Button--big js-confirm">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
               <%- _t('editor.maps.delete.confirm') %>
             </span>

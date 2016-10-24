@@ -61,6 +61,7 @@ class Carto::AnalysisNode
   def fix_analysis_node_queries(old_username, new_user, renamed_tables)
     if options && options.key?(:table_name)
       old_table_name = options[:table_name]
+      old_username, old_table_name = old_table_name.split('.') if old_table_name.include?('.')
       options[:table_name] = renamed_tables.fetch(old_table_name, old_table_name)
     end
 

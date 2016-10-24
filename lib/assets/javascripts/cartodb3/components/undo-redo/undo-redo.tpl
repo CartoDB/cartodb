@@ -1,9 +1,9 @@
 <div class="u-flex u-alignCenter">
-  <button>
-    <i class="CDB-IconFont CDB-IconFont-undo Size-large u-actionTextColor js-undo js-theme <% if (!canUndo) { %>is-disabled<% } %>"></i>
+  <button class="js-undo">
+    <i class="CDB-IconFont CDB-IconFont-undo Size-large u-actionTextColor js-theme <% if (!canUndo) { %>is-disabled<% } %>"></i>
   </button>
-  <button class="u-lSpace--xl">
-    <i class="CDB-IconFont CDB-IconFont-redo Size-large u-actionTextColor js-redo js-theme <% if (!canRedo) { %>is-disabled<% } %>"></i>
+  <button class="u-lSpace--xl js-redo">
+    <i class="CDB-IconFont CDB-IconFont-redo Size-large u-actionTextColor js-theme <% if (!canRedo) { %>is-disabled<% } %>"></i>
   </button>
   <% if (canClear) { %>
   <button class="u-lSpace--xl CDB-Button CDB-Button--secondary CDB-Button--white js-clear">

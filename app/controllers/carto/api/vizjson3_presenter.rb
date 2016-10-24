@@ -2,6 +2,7 @@ require_dependency 'carto/api/layer_vizjson_adapter'
 require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/named_maps/template'
+require_dependency 'carto/legend_migrator'
 
 module Carto
   module Api
@@ -78,23 +79,22 @@ module Carto
         map = @visualization.map
 
         vizjson = {
-          id:             @visualization.id,
-          version:        VIZJSON_VERSION,
-          title:          @visualization.qualified_name(user),
-          likes:          @visualization.likes.count,
-          description:    html_safe(@visualization.description),
-          scrollwheel:    map.scrollwheel,
-          legends:        map.legends,
-          map_provider:   map.provider,
           bounds:         bounds_from(map),
           center:         map.center,
-          zoom:           map.zoom,
-          updated_at:     map.viz_updated_at,
-          layers:         layers_vizjson(forced_privacy_version),
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
-          widgets:        widgets_vizjson,
           datasource:     datasource_vizjson(options, forced_privacy_version),
-          user:           user_info_vizjson(user)
+          description:    html_safe(@visualization.description),
+          options:        map.options,
+          id:             @visualization.id,
+          layers:         layers_vizjson(forced_privacy_version),
+          likes:          @visualization.likes.count,
+          map_provider:   map.provider,
+          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
+          title:          @visualization.qualified_name(user),
+          updated_at:     map.viz_updated_at,
+          user:           user_info_vizjson(user),
+          version:        VIZJSON_VERSION,
+          widgets:        widgets_vizjson,
+          zoom:           map.zoom
         }
 
         visualization_analyses = @visualization.analyses
@@ -269,6 +269,8 @@ module Carto
           data[:legend] = legend
         end
 
+        data[:legends] = layer_vizjson[:legends] || []
+
         data
       end
     end
@@ -304,24 +306,12 @@ module Carto
       end
 
       def to_vizjson
+        vizjson = { id: @layer.id }
+
         if @layer.base?
-          {
-            id:      @layer.id,
-            type:    @layer.kind,
-            options: @layer.options
-          }
-        elsif @layer.torque?
-          as_torque
+          vizjson.merge(as_base)
         else
-          {
-            id:         @layer.id,
-            type:       'CartoDB',
-            infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
-            tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
-            legend:     @layer.legend,
-            visible:    @layer.options['visible'],
-            options:    options_data
-          }
+          vizjson.merge(as_data).merge(@layer.torque? ? as_torque : as_carto)
         end
       end
 
@@ -331,25 +321,61 @@ module Carto
         @layer.affected_tables.map(&:visualization).map(&:attributions).join(', ')
       end
 
+      def as_data
+        old_legend = @layer.legend
+        legends = @layer.legends
+
+        migrate_legends(old_legend) if old_legend && legends.empty?
+
+        legends_presentation = @layer.legends.map do |legend|
+          Carto::Api::LegendPresenter.new(legend).to_hash
+        end
+
+        { legends: legends_presentation }
+      end
+
+      def migrate_legends(old_legend)
+        Carto::LegendMigrator.new(@layer.id, old_legend).build.save
+        @layer.legends.reload
+      end
+
       def as_torque
         layer_options = @layer.options.deep_symbolize_keys
 
         torque = {
-          id:         @layer.id,
           type:       'torque',
-          legend:     @layer.legend,
           options:    layer_options.select { |k| TORQUE_ATTRS.include? k }.merge(attribution: attribution)
         }
 
         torque[:cartocss] = layer_options[:tile_style]
-
         torque[:cartocss_version] = layer_options[:style_version]
+        torque[:sql] = sql_from(@layer)
 
-        torque[:sql] = wrap(sql_from(@layer), @layer.options)
+        if @layer.options['source'].present?
+          torque[:source] = @layer.options['source']
+        end
 
-        torque[:source] = @layer.options['source'] if @layer.options['source'].present?
+        sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
+        torque[:sql_wrap] = sql_wrap if sql_wrap
 
         torque
+      end
+
+      def as_carto
+        {
+          type:       'CartoDB',
+          infowindow: whitelisted_attrs(migrate_builder_infowindow(@layer.infowindow, mustache_dir: 'infowindows')),
+          tooltip:    whitelisted_attrs(migrate_builder_infowindow(@layer.tooltip, mustache_dir: 'tooltips')),
+          visible:    @layer.options['visible'],
+          options:    options_data
+        }
+      end
+
+      def as_base
+        {
+          type:    @layer.kind,
+          options: @layer.options
+        }
       end
 
       def options_data
@@ -364,7 +390,7 @@ module Carto
           data[:source] = source
           data.delete(:sql)
         else
-          data[:sql] = wrap(sql_from(@layer), @layer.options)
+          data[:sql] = sql_from(@layer)
         end
 
         sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
@@ -388,12 +414,6 @@ module Carto
       def css_from(options)
         style = options.include?('tile_style') ? options['tile_style'] : nil
         (style.nil? || style.strip.empty?) ? EMPTY_CSS : options.fetch('tile_style')
-      end
-
-      def wrap(query, options)
-        wrapper = options.fetch('query_wrapper', nil)
-        return query if wrapper.nil? || wrapper.empty?
-        EJS.evaluate(wrapper, sql: query)
       end
 
       def public_options

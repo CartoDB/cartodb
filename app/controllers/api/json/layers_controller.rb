@@ -21,10 +21,16 @@ class Api::Json::LayersController < Api::ApplicationController
             return(render_jsonp({ description: 'You cannot add a layer in this visualization' }, 403))
           end
 
+          table_name = @layer.options['table_name']
+          user_name = @layer.options['user_name']
+          if user_name.present?
+            table_name = user_name + '.' + table_name
+          end
+
           if ::Layer::DATA_LAYER_KINDS.include?(@layer.kind)
             table_visualization = @stats_aggregator.timing('locate') do
               Helpers::TableLocator.new.get_by_id_or_name(
-                @layer.options['table_name'],
+                table_name,
                 current_user
               ).table_visualization
             end

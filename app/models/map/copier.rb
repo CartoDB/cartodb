@@ -48,7 +48,7 @@ module CartoDB
           new_layer = layer.copy
           new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
 
-          user.force_builder? ? reset_layer_styles(layer, new_layer) : new_layer
+          user.builder_enabled? ? reset_layer_styles(layer, new_layer) : new_layer
         end
       end
 

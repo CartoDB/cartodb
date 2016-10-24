@@ -63,7 +63,6 @@ WORKING_SPECS_1 = \
 	spec/models/common_data_spec.rb \
 	spec/lib/api_calls_spec.rb \
 	spec/lib/errors_spec.rb \
-	spec/lib/sql_parser_spec.rb \
 	spec/lib/url_signer_spec.rb \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
@@ -134,6 +133,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
+	services/importer/spec/unit/connector_spec.rb \
+	services/importer/spec/unit/connector_runner_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \
@@ -153,6 +154,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/connectors/importer_overviews_spec.rb \
+	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \
@@ -283,9 +285,14 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/point_spec.rb \
 	spec/lib/carto/styles/polygon_spec.rb \
 	spec/lib/carto/styles/line_spec.rb \
+	spec/lib/carto/styles/geometry_spec.rb \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/models/carto/legend_spec.rb \
+	spec/requests/carto/api/legends_controller_spec.rb \
+	spec/lib/carto/legend_definition_validator_spec.rb \
+	spec/lib/carto/legend_migrator_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

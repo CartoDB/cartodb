@@ -1,4 +1,4 @@
-<ul class="u-flex js-list"></ul>
+<ul class="Publish-optionsList u-flex u-justifySpace js-list"></ul>
 <% if (!isPublished) { %>
 <div class="Share-info">
   <div>

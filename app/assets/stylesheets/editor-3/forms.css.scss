@@ -72,30 +72,6 @@
   display: none;
 }
 
-// TODO: temporary CSS for the Fill component
-
-.Editor-FormDialog {
-  position: absolute;
-  top: 36px;
-  right: 0;
-  width: 248px;
-  z-index: 100;
-}
-
-.Editor-FormDialog .CustomList {
-  display: block;
-  position: relative;
-  top: auto;
-  right: auto;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.Editor-fillContainer {
-  width: 100%;
-  height: 100%;
-}
 .Editor-checker {
   width: 100%;
 }
@@ -108,8 +84,12 @@
 }
 /* move to CartoAssets */
 .Editor-checkerInput .CDB-Checkbox-face {
+  flex: 0 0 16px;
   width: 16px; // Forcing to be at least that width
-  max-width: 16px;
+  min-width: 0;
+}
+.Editor-checkerLabel {
+  margin-left: 8px;
 }
 .Editor-checkerComponent {
   width: 158px;

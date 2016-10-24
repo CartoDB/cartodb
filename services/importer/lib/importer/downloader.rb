@@ -90,6 +90,10 @@ module CartoDB
         {
           content_types: ['application/json', 'text/javascript', 'application/javascript'],
           extensions: ['json']
+        },
+        {
+          content_types: ['application/osm3s+xml'],
+          extensions: ['osm']
         }
       ].freeze
 

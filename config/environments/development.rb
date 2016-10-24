@@ -1,5 +1,7 @@
 # coding: UTF-8
 
+require 'carto/configuration'
+
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -28,6 +30,7 @@ CartoDB::Application.configure do
 
   # Use a different logger for distributed setups
   config.logger = Logger.new(STDOUT)
+  # config.logger = ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('development.log'))
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store

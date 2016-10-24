@@ -186,30 +186,30 @@ shared_examples_for 'vizjson generator' do
       invalid_callback2 = '%3B'
       invalid_callback3 = '123func' # JS names cannot start by number
 
-      table_attributes  = table_factory
-      table_id          = table_attributes.fetch('id')
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback), {}, @headers
+      viz = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+      viz_id = viz.id
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^#{valid_callback}\(\{/i).should eq 0
 
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: invalid_callback1), {}, @headers
       last_response.status.should == 400
 
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: invalid_callback2), {}, @headers
       last_response.status.should == 400
 
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: invalid_callback3), {}, @headers
       last_response.status.should == 400
 
       # if param specified, must not be empty
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: ''), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: ''), {}, @headers
       last_response.status.should == 400
 
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key, callback: valid_callback2), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key, callback: valid_callback2), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^#{valid_callback2}\(\{/i).should eq 0
 
-      get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key), {}, @headers
+      get api_vx_visualizations_vizjson_url(id: viz_id, api_key: @api_key), {}, @headers
       last_response.status.should == 200
       (last_response.body =~ /^\{/i).should eq 0
     end
@@ -221,8 +221,8 @@ shared_examples_for 'vizjson generator' do
       end
 
       it 'renders vizjson vx' do
-        table_id = table_factory.fetch('id')
-        get api_vx_visualizations_vizjson_url(id: table_id, api_key: @api_key),
+        viz = api_visualization_creation(@user_1, @headers, { privacy: Visualization::Member::PRIVACY_PUBLIC, type: Visualization::Member::TYPE_DERIVED })
+        get api_vx_visualizations_vizjson_url(id: viz.id, api_key: @api_key),
           {}, @headers
         last_response.status.should == 200
         ::JSON.parse(last_response.body).keys.length.should > 1

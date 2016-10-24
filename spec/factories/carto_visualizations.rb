@@ -55,6 +55,11 @@ module Carto
         visualization.destroy if visualization
         map.destroy if map
       end
+
+      def destroy_visualization(visualization_id)
+        member = CartoDB::Visualization::Member.new(id: visualization_id).fetch
+        member.delete
+      end
     end
   end
 end

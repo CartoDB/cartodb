@@ -101,6 +101,22 @@ describe('widgets/category/search-title-view', function () {
     });
   });
 
+  describe('allowed', function () {
+    beforeEach(function () {
+      this.view.render();
+    });
+
+    it('should remove button when not allowed', function () {
+      this.widgetModel.set('style', {auto_style: {allowed: false}});
+      expect(this.view.$('.js-autoStyle').length).toBe(0);
+    });
+
+    it('should show button when allowed', function () {
+      this.widgetModel.set('style', {auto_style: {allowed: true}});
+      expect(this.view.$('.js-autoStyle').length).toBe(1);
+    });
+  });
+
   afterEach(function () {
     this.view.clean();
   });

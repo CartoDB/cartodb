@@ -8,7 +8,6 @@ var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
 var GeometryFactory = require('./geometry-models/geometry-factory');
 
-
 var Map = Model.extend({
   defaults: {
     attribution: [config.get('cartodb_attributions')],
@@ -151,19 +150,13 @@ var Map = Model.extend({
   },
 
   disableInteractivity: function () {
-    this._werePopupsEnabled = this.arePopupsEnabled();
     this.disablePopups();
-    this._wasFeatureInteractivityEnabled = this.isFeatureInteractivityEnabled();
     this.disableFeatureInteractivity();
   },
 
   enableInteractivity: function () {
-    if (this._werePopupsEnabled) {
-      this.enablePopups();
-    }
-    if (this._wasFeatureInteractivityEnabled) {
-      this.enableFeatureInteractivity();
-    }
+    this.enablePopups();
+    this.enableFeatureInteractivity();
   },
 
   isInteractive: function () {
@@ -233,8 +226,6 @@ var Map = Model.extend({
   stopDrawingGeometry: function () {
     this.trigger('exitDrawingMode');
   },
-
-  // GEOMETRY EDITON
 
   editGeometry: function (geoJSON) {
     var geometry = this._geometryFactory.createGeometryFromGeoJSON(geoJSON);

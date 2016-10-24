@@ -21,17 +21,16 @@ var MultiPolygon = GeometryBase.extend({
   },
 
   isComplete: function () {
-    // TODO ???
-    return true;
+    return this.polygons.all(function (polygon) {
+      return polygon.isComplete();
+    });
   },
 
   getLatLngs: function () {
     return this.polygons.map('getLatLngs');
   },
 
-  update: function (latlng) {
-    // TODO: ????
-  },
+  update: function (latlng) {},
 
   isEditable: function () {
     return !!this.get('editable');

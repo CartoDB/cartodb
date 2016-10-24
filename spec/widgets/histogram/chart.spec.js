@@ -53,6 +53,7 @@ describe('widgets/histogram/chart', function () {
     this.view = new WidgetHistogramChart(({
       el: $('.js-chart'),
       margin: this.margin,
+      chartBarColor: '#9DE0AD',
       hasHandles: true,
       height: 100,
       data: this.data,
@@ -248,6 +249,12 @@ describe('widgets/histogram/chart', function () {
       var data = this.view._getDataForScales();
       expect(data).not.toBe(this.originalData);
       expect(data).toBe(this.data);
+    });
+  });
+
+  describe('color bar', function () {
+    it('should be green', function () {
+      expect(this.view.$el.find('.CDB-Chart-bar').attr('fill')).toEqual('#9DE0AD');
     });
   });
 });

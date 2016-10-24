@@ -154,7 +154,7 @@ module.exports = cdb.core.View.extend({
       margin: { top: 4, right: 4, bottom: 4, left: 4 },
       hasHandles: true,
       hasAxisTip: true,
-      chartBarColor: this.model.getColor(),
+      chartBarColor: this.model.getColor() || '#9DE0AD',
       width: this.canvasWidth,
       height: this.defaults.chartHeight,
       data: this._dataviewModel.getData(),

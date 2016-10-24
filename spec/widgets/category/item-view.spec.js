@@ -32,4 +32,19 @@ describe('widgets/category/item-view', function () {
     this.view.render();
     expect(this.widgetModel.getState().acceptedCategories[0]).toEqual('USA');
   });
+
+  it('should change bar color', function () {
+    this.widgetModel.set('style', {
+      widget_style: {
+        definition: {
+          fill: {
+            color: {fixed: '#F04'}
+          }
+        }
+      }
+    });
+
+    this.view.render();
+    expect(this.view.$('.CDB-Widget-progressState').css('background-color')).toEqual('rgb(255, 0, 68)');
+  });
 });

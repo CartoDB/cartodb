@@ -406,11 +406,11 @@ class Admin::PagesController < Admin::AdminController
                                               .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
                                               .without_raster
                                               .with_order(:updated_at, :desc)
+                                              .with_user_id(user_id)
+                                              .with_type(vis_type)
+                                              .with_tags(tags)
+                                              .with_organization_id(organization_id)
 
-    builder.with_user_id(user_id)
-    builder.with_type(vis_type)
-    builder.with_tags(tags)
-    builder.with_organization_id(organization_id)
     builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder

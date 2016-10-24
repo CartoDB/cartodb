@@ -1,6 +1,6 @@
 <ul class="CDB-Dropdown-list CDB-Text CDB-Size-medium">
   <li class="CDB-Dropdown-item">
-    <button class="CDB-Dropdown-link js-toggleCollapsed">
+    <div class="CDB-Dropdown-link js-toggleCollapsed">
       Toggle widget
         <div>
         <% if (collapsed) { %>
@@ -10,7 +10,7 @@
         <% } %>
           <span class="u-iBlock CDB-ToggleFace"></span>
         </div>
-    </button>
+    </div>
   </li>
 
   <% if (flags.normalizeHistogram) { %>

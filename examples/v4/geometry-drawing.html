@@ -511,7 +511,7 @@
       }
 
       function editGeometry (vis, geoJSON) {
-        var geometry = vis.map.editGeoJSONGeometry(geoJSON);
+        var geometry = vis.map.editGeometry(geoJSON);
         displayGeoJSON(geometry);
       }
 
@@ -522,7 +522,7 @@
 
       function disableClickToEdit (vis) {
         vis.map.disableFeatureInteractivity();
-        vis.map.stopDrawing();
+        vis.map.stopDrawingGeometry();
         vis.map.off('featureClick', fetchFeatureAndEditGeometry, this);
       }
 
@@ -564,8 +564,8 @@
             }
             $(this).toggleClass('is-enabled', isEnabled);
           });
-          vis.map.stopDrawing();
-          vis.map.stopEditingGeoJSONGeometry();
+          vis.map.stopDrawingGeometry();
+          vis.map.stopEditingGeometry();
         });
 
         document.querySelector('.js-draw-point').addEventListener('click', function () {

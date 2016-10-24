@@ -6,11 +6,8 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
+var GeometryFactory = require('./geometry-models/geometry-factory');
 
-var Point = require('./geometry-models/point');
-var Polyline = require('./geometry-models/polyline');
-var Polygon = require('./geometry-models/polygon');
-var MultiPolygon = require('./geometry-models/multi-polygon');
 
 var Map = Model.extend({
   defaults: {
@@ -28,123 +25,6 @@ var Map = Model.extend({
     popupsEnabled: true,
     isFeatureInteractivityEnabled: false
   },
-
-  // GEOMETRY MANAGEMENT
-
-  drawPoint: function () {
-    return this._drawGeometry(new Point({
-      editable: true
-    }));
-  },
-
-  drawPolyline: function () {
-    return this._drawGeometry(new Polyline({
-      editable: true
-    }));
-  },
-
-  drawPolygon: function () {
-    return this._drawGeometry(new Polygon({
-      editable: true
-    }));
-  },
-
-  _drawGeometry: function (geometry) {
-    this.trigger('enterDrawingMode', geometry);
-    return geometry;
-  },
-
-  stopDrawing: function () {
-    this.trigger('exitDrawingMode');
-  },
-
-  // GEOMETRY EDITON
-
-  editGeoJSONGeometry: function (geoJSON) {
-
-    // MultiPoint, MultiLineString, MultiPolygon
-    var GEOJSON_TYPE_TO_EDIT_METHOD_NAME = {
-      Point: '_editPoint',
-      LineString: '_editPolyline',
-      Polygon: '_editPolygon',
-      MultiPolygon: '_editMultiPolygon'
-    };
-
-    var geometryType = geoJSON.geometry && geoJSON.geometry.type || geoJSON.type;
-    var editMethodName = GEOJSON_TYPE_TO_EDIT_METHOD_NAME[geometryType];
-    if (editMethodName) {
-      // this.disableInteractivity();
-      var geometry = this[editMethodName](geoJSON);
-      this.trigger('enterEditMode', geometry);
-      return geometry;
-    } else {
-      throw new Error('Edition of geometries of type ' + geometryType + ' is not supported');
-    }
-  },
-
-  _editPoint: function (geoJSON) {
-    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
-    var latlngs = this._getLatLngsFromCoords([ coords ]);
-    var point = new Point({
-      latlng: latlngs[0],
-      geojson: geoJSON,
-      editable: true
-    });
-    this.addGeometry(point);
-    return point;
-  },
-
-  _editPolyline: function (geoJSON) {
-    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
-    var latlngs = this._getLatLngsFromCoords(coords);
-    var polyline = new Polyline({
-      geojson: geoJSON,
-      editable: true
-    });
-    polyline.setLatLngs(latlngs);
-    return polyline;
-  },
-
-  _editPolygon: function (geoJSON) {
-    var coords = geoJSON.geometry && geoJSON.geometry.coordinates && geoJSON.geometry.coordinates[0] || geoJSON.coordinates && geoJSON.coordinates[0];
-    var latlngs = this._getLatLngsFromCoords(coords);
-    var polygon = new Polygon({
-      geojson: geoJSON,
-      editable: true
-    });
-    polygon.setLatLngs(latlngs);
-    return polygon;
-  },
-
-  _editMultiPolygon: function (geoJSON) {
-    var coords = geoJSON.geometry && geoJSON.geometry.coordinates || geoJSON.coordinates;
-    var latlngs = _.map(coords, function (coords) {
-      return this._getLatLngsFromCoords(coords[0]);
-    }, this);
-    var polygon = new MultiPolygon({
-      geojson: geoJSON,
-      editable: true
-    }, {
-      latlngs: latlngs
-    });
-    return polygon;
-  },
-
-  _getLatLngsFromCoords: function (coords) {
-    var latlngs = L.GeoJSON.coordsToLatLngs(coords);
-    return _.chain(latlngs)
-      .map(function (latlng) {
-        return [latlng.lat, latlng.lng];
-      })
-      .uniq()
-      .value();
-  },
-
-  stopEditingGeoJSONGeometry: function (geoJSON) {
-    this.trigger('exitEditMode');
-  },
-
-  // ...
 
   initialize: function (attrs, options) {
     options = options || {};
@@ -186,6 +66,7 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
 
+    this._geometryFactory = new GeometryFactory();
     this._updateAttributions();
   },
 
@@ -322,6 +203,47 @@ var Map = Model.extend({
 
   arePopupsDisabled: function () {
     return !this.arePopupsEnabled();
+  },
+
+ // GEOMETRY MANAGEMENT
+
+  drawPoint: function () {
+    return this._drawGeometry(this._geometryFactory.createPoint({
+      editable: true
+    }));
+  },
+
+  drawPolyline: function () {
+    return this._drawGeometry(this._geometryFactory.createPolyline({
+      editable: true
+    }));
+  },
+
+  drawPolygon: function () {
+    return this._drawGeometry(this._geometryFactory.createPolygon({
+      editable: true
+    }));
+  },
+
+  _drawGeometry: function (geometry) {
+    this.trigger('enterDrawingMode', geometry);
+    return geometry;
+  },
+
+  stopDrawingGeometry: function () {
+    this.trigger('exitDrawingMode');
+  },
+
+  // GEOMETRY EDITON
+
+  editGeometry: function (geoJSON) {
+    var geometry = this._geometryFactory.createGeometryFromGeoJSON(geoJSON);
+    this.trigger('enterEditMode', geometry);
+    return geometry;
+  },
+
+  stopEditingGeometry: function (geoJSON) {
+    this.trigger('exitEditMode');
   },
 
   // INTERNAL CartoDB.js METHODS

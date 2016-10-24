@@ -3,10 +3,8 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
 var Map = require('../../../../src/geo/map');
-var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
-var GmapsPathView = require('../../../../src/geo/gmaps/gmaps-path-view');
 var GoogleMapsMapView = require('../../../../src/geo/gmaps/gmaps-map-view');
 var GMapsTiledLayerView = require('../../../../src/geo/gmaps/gmaps-tiled-layer-view');
 var GMapsPlainLayerView = require('../../../../src/geo/gmaps/gmaps-plain-layer-view');
@@ -128,24 +126,6 @@ describe('geo/gmaps/gmaps-map-view', function () {
     var layerView = mapView.getLayerViewByLayerCid(lyr);
     expect(GMapsPlainLayerView.prototype.isPrototypeOf(layerView)).toBeTruthy();
   });
-
-  var geojsonFeature = {
-    'type': 'Point',
-    'coordinates': [-104.99404, 39.75621]
-  };
-
-  var multipoly = {
-    'type': 'MultiPolygon',
-    'coordinates': [
-      [
-        [[40, 40], [20, 45], [45, 30], [40, 40]]
-      ],
-      [
-        [[20, 35], [45, 20], [30, 5], [10, 10], [10, 30], [20, 35]],
-        [[30, 20], [20, 25], [20, 15], [30, 20]]
-      ]
-    ]
-  };
 
   it('should disable gmaps dragging and double click zooming when the map has drag disabled', function () {
     var container = $('<div>').css({

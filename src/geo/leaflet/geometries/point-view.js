@@ -59,7 +59,8 @@ var PointView = View.extend({
   },
 
   _onDrag: function (event) {
-    this.model.set('latlng', this._marker.getLatLng());
+    var latLng = this._marker.getLatLng();
+    this.model.set('latlng', [ latLng.lat, latLng.lng ]);
   },
 
   _onDragEnd: function () {

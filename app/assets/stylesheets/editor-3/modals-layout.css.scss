@@ -5,7 +5,7 @@
 .Modal {
   @include display-flex();
   @include flex-direction(column);
-  height: 100%;
+  height: 100vh;
   background: $cThirdBackground;
   overflow: hidden;
 }
@@ -25,6 +25,10 @@
   margin-right: 0;
   margin-left: 0;
 }
+.Modal-container--analysis .ScrollView {
+  padding-bottom: 250px;
+}
+
 .Modal-container .ScrollView-shadow--top {
   top: -14px;
 }
@@ -94,4 +98,8 @@
 
 .Modal-basemapContainer {
   @include flex-direction(column);
+}
+
+.Dialog-content--expanded {
+  height: 100vh;
 }

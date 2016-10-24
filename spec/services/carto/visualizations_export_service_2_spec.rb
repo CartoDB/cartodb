@@ -10,7 +10,7 @@ describe Carto::VisualizationsExportService2 do
   let(:export) do
     {
       visualization: base_visualization_export,
-      version: '2.0.6'
+      version: '2.0.8'
     }
   end
 
@@ -125,6 +125,18 @@ describe Carto::VisualizationsExportService2 do
               options: {
                 aggregation: "count",
                 aggregation_column: "category_t"
+              },
+              style: {
+                widget_style: {
+                  definition: {
+                    fill: { color: { fixed: '#FFF' } }
+                  }
+                },
+                auto_style: {
+                  definition: {
+                    fill: { color: { fixed: '#FFF' } }
+                  }
+                }
               },
               title: "Category category_t",
               type: "category",
@@ -347,6 +359,7 @@ describe Carto::VisualizationsExportService2 do
     widget.layer.should_not be_nil
     widget.source_id.should eq widget_export[:source_id]
     widget.order.should eq widget_export[:order]
+    widget.style.should eq widget_export[:style]
   end
 
   def verify_legends_vs_export(legends, legends_export)
@@ -582,6 +595,20 @@ describe Carto::VisualizationsExportService2 do
       end
 
       describe 'maintains backwards compatibility with' do
+        it '2.0.7 (without Widget.style)' do
+          export_2_0_7 = export
+          export_2_0_7[:visualization][:layers].each do |layer|
+            layer.fetch(:widgets, []).each { |widget| widget.delete(:style) }
+          end
+
+          service = Carto::VisualizationsExportService2.new
+          visualization = service.build_visualization_from_json_export(export_2_0_7.to_json)
+          visualization.widgets.first.style.blank?.should be_true
+
+          imported_viz = Carto::VisualizationsExportPersistenceService.new.save_import(@user, visualization)
+          imported_viz.widgets.first.style.should == {}
+        end
+
         it '2.0.6 (without map options)' do
           export_2_0_6 = export
           export_2_0_6[:visualization][:map].delete(:options)
@@ -1132,6 +1159,7 @@ describe Carto::VisualizationsExportService2 do
       imported_widget.options.should eq original_widget.options
       imported_widget.layer.should_not be_nil
       imported_widget.source_id.should eq original_widget.source_id
+      imported_widget.styke.should eq original_widget.style
     end
 
     def verify_analyses_match(imported_analyses, original_analyses)

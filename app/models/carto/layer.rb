@@ -250,7 +250,7 @@ module Carto
     def affected_table_names(query)
       return [] unless query.present?
 
-      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTables(#{user.in_database.quote(query)}))")
+      query_tables = user.in_database.execute("SELECT unnest(CDB_QueryTablesText(#{user.in_database.quote(query)}))")
       query_tables.column_values(0).uniq
     end
 

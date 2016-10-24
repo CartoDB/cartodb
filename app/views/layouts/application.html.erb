@@ -11,7 +11,7 @@
   <body>
     <%= content_for(:js) do %>
       <script type="text/javascript">
-        var dashboard_notification = <%= safe_js_object @dashboard_notification.to_json %>;
+        var dashboard_notifications = <%= safe_js_object @dashboard_notifications.to_json %>;
       </script>
     <% end %>
 

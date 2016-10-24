@@ -49,7 +49,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     model: model
   });
   var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
-  if (!_.isEmpty(stateFromURL.map)) {
+  if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
     vizJSON.center = stateFromURL.map.center;
     vizJSON.bounds = null;
     vizJSON.zoom = stateFromURL.map.zoom;
@@ -60,11 +60,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   }));
 
   vis.once('load', function (vis) {
-    if (!_.isEmpty(stateFromURL.map)) {
+    if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
       vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
     }
 
-    var widgetsState = stateFromURL.widgets || {};
+    var widgetsState = stateFromURL && stateFromURL.widgets || {};
 
     // Create widgets
     var widgetsService = new WidgetsService(widgets, vis.dataviews);

@@ -175,6 +175,40 @@ module Carto
         }
       end
 
+      let(:old_bubble_with_custom_labels) do
+        {
+          "type" => "bubble",
+          "show_title" => false,
+          "title" => "",
+          "template" => "",
+          "visible" => true,
+          "items" => [
+            {
+              "name" => "Left label",
+              "visible" => true,
+              "value" => "few",
+              "legend_type" => "bubble",
+              "type" => "text",
+              "sync" => false
+            },
+            {
+              "name" => "Right Label",
+              "visible" => true,
+              "value" => "many",
+              "legend_type" => "bubble",
+              "type" => "text",
+              "sync" => false
+            },
+            {
+              "name" => "Color",
+              "visible" => true,
+              "value" => "#FF5C00",
+              "type" => "color"
+            }
+          ]
+        }
+      end
+
       let(:old_choropleth) do
         {
           "type" => "choropleth",
@@ -328,6 +362,10 @@ module Carto
 
       it 'migrates old bubble to new html' do
         @old_legend = old_bubble
+      end
+
+      it 'migrates old bubble with custom labels to new html' do
+        @old_legend = old_bubble_with_custom_labels
       end
 
       it 'migrates old choropleth to new html' do

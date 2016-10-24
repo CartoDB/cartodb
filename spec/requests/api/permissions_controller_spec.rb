@@ -55,8 +55,7 @@ describe Api::Json::PermissionsController do
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(@entity_id)
-    vis_entity_mock.stubs(:save_named_map)
-    vis_entity_mock.stubs(:invalidate_cache)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
   end
 
@@ -176,8 +175,7 @@ describe 'group permission support' do
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(entity_id)
-    vis_entity_mock.stubs(:save_named_map)
-    vis_entity_mock.stubs(:invalidate_cache)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 
@@ -230,8 +228,7 @@ describe 'group permission support' do
     vis_entity_mock = mock
     vis_entity_mock.stubs(:table?).returns(false)
     vis_entity_mock.stubs(:id).returns(entity_id)
-    vis_entity_mock.stubs(:save_named_map)
-    vis_entity_mock.stubs(:invalidate_cache)
+    vis_entity_mock.stubs(:invalidate_for_permissions_change)
     Permission.any_instance.stubs(:entity).returns(vis_entity_mock)
     Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
 

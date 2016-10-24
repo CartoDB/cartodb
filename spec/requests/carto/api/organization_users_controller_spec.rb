@@ -160,6 +160,7 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.email.should eq "#{username}@carto.com"
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.quota_in_bytes.should eq 1024
+      last_user_created.builder_enabled.should be_nil
       last_user_created.destroy
     end
 

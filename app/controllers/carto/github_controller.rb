@@ -41,6 +41,7 @@ module Carto
         user = User.where(email: github_api.email, github_user_id: nil).first
         return nil unless user
         user.update_column(:github_user_id, github_id)
+        ::User[user.id].update_in_central
       end
       params[:github_api] = github_api
       authenticate!(:github_oauth, scope: user.username)

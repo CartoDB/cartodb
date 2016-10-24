@@ -698,6 +698,13 @@ module CartoDB
         mapcaps.exists?
       end
 
+      def invalidate_for_permissions_change
+        # A change in permissions should trigger the same invalidations as a privacy change
+        self.privacy_changed = true
+        invalidate_cache
+        save_named_map
+      end
+
       private
 
       attr_reader   :repository, :name_checker, :validator

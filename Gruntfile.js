@@ -44,8 +44,8 @@
           done && done(err ? new Error(err): null);
         });
       }
-      checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
-      checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
+      // checkVersion('npm -v', REQUIRED_NPM_VERSION, 'npm', done);
+      // checkVersion('node -v', REQUIRED_NODE_VERSION, 'node', done);
     }
 
     preFlight(function (err) {

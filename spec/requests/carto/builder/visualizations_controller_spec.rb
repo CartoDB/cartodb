@@ -76,7 +76,8 @@ describe Carto::Builder::VisualizationsController do
     end
 
     it 'redirects to embed for visualizations not writable by user' do
-      @other_visualization = FactoryGirl.create(:carto_visualization)
+      map = FactoryGirl.create(:map)
+      @other_visualization = FactoryGirl.create(:carto_visualization, map_id: map.id)
 
       get builder_visualization_url(id: @other_visualization.id)
 

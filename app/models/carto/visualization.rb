@@ -368,6 +368,10 @@ class Carto::Visualization < ActiveRecord::Base
     entities.map(&:get_auth_token)
   end
 
+  def published?
+    version.nil? || version < 3 || mapcapped?
+  end
+
   def mapcapped?
     mapcaps.exists?
   end
@@ -450,10 +454,10 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    version != 3 && uses_vizjson2?
+    version != 3 && (uses_vizjson2? || layers.any?(&:gmapsbase?))
   end
 
-  def can_be_automatically_migrated?
+  def can_be_automatically_migrated_to_v3?
     overlays.builder_incompatible.none?
   end
 

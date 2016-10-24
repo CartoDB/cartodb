@@ -28,7 +28,6 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     : true;
 
   var widgets = new WidgetsCollection();
-  var coords = JSON.parse(vizJSON.center);
 
   var model = new cdb.core.Model({
     title: vizJSON.title,
@@ -39,8 +38,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
     initialPosition: {
-      center: coords,
-      zoom: vizJSON.zoom
+      bounds: vizJSON.bounds
     }
   });
   var dashboardView = new DashboardView({
@@ -50,9 +48,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   });
   var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
   if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-    vizJSON.center = stateFromURL.map.center;
-    vizJSON.bounds = null;
-    vizJSON.zoom = stateFromURL.map.zoom;
+    vizJSON.bounds = [stateFromURL.map.ne, stateFromURL.map.sw];
   }
 
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {
@@ -61,7 +57,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
 
   vis.once('load', function (vis) {
     if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-      vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+      vis.map.setBounds([stateFromURL.map.ne, stateFromURL.map.sw]);
     }
 
     var widgetsState = stateFromURL && stateFromURL.widgets || {};

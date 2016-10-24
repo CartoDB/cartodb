@@ -43,26 +43,17 @@ Dashboard.prototype = {
   },
 
   getMapState: function () {
-    var initialState = this._dashboard.dashboardView.getInitialMapState();
-    var currentCenter = this._dashboard.vis.map.get('center');
-    var currentZoom = this._dashboard.vis.map.getZoom();
-    var upperLat = initialState.center[0] * 0.01;
-    var upperLon = initialState.center[1] * 0.01;
-    var inside = (Math.abs(initialState.center[0] - currentCenter[0]) < upperLat) && (Math.abs(initialState.center[1] - currentCenter[1]) < upperLon);
-    if (inside && _.isEqual(currentZoom, initialState.zoom)) {
-      return {};
-    } else {
-      return {
-        center: currentCenter,
-        zoom: currentZoom
-      };
-    }
+    var currentBoundingBox = this._dashboard.vis.map.getViewBounds();
+    return {
+      ne: currentBoundingBox[0],
+      sw: currentBoundingBox[1]
+    };
   },
 
   setState: function (state) {
     // todo: set map state
     this._dashboard.widgets.setWidgetsState(state.widgets);
-    this._dashboard.vis.map.setView(state.map.center, state.map.zoom);
+    this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
   onStateChanged: function (callback) {

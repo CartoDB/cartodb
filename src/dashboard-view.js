@@ -52,8 +52,7 @@ module.exports = cdb.core.View.extend({
   },
   getInitialMapState: function () {
     return {
-      center: this.model.get('initialPosition').center,
-      zoom: this.model.get('initialPosition').zoom
+      bounds: this.model.get('initialPosition').bounds
     };
   }
 });

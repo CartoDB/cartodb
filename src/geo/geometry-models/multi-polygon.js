@@ -27,7 +27,9 @@ var MultiPolygon = GeometryBase.extend({
   },
 
   getLatLngs: function () {
-    return this.polygons.map('getLatLngs');
+    return this.polygons.map(function (polygon) {
+      return polygon.getLatLngs();
+    });
   },
 
   update: function (latlng) {},

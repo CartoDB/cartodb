@@ -69,6 +69,10 @@ module OrganizationUsersHelper
     if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit
       errors.add(:soft_twitter_datasource_limit, "Organization owner hasn't this soft limit")
     end
+    soft_mapzen_routing_limit = soft_param_to_boolean(params_to_update[:soft_mapzen_routing_limit])
+    if user.soft_mapzen_routing_limit != soft_mapzen_routing_limit && soft_mapzen_routing_limit && !owner.soft_mapzen_routing_limit
+      errors.add(:soft_mapzen_routing_limit, "Organization owner hasn't this soft limit")
+    end
 
     errors.empty?
   end

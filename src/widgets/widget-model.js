@@ -109,6 +109,13 @@ module.exports = cdb.core.Model.extend({
     return true;
   },
 
+  getAutoStyle: function getAutoStyle() {
+    var style = this.get('style')
+    if (style && style.auto_style) {
+      return _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
+    }
+  },
+
   setState: function (state) {
     this.set(state);
   },

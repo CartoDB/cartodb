@@ -2,7 +2,7 @@
 
 # One-time fix tasks
 namespace :carto do
-  namespace :fix
+  namespace :fix do
     desc "Fix zeroed mapzen quotas for organizations"
     task :zero_mapzen_quota_orgs => :environment do
       deploy_time_utc = '2016-10-20 15:32:00'

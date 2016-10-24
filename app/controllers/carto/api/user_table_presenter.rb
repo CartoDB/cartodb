@@ -2,6 +2,8 @@
 module Carto
   module Api
     class UserTablePresenter
+      # options:
+      # - dependent_visualizations
 
       PRIVACY_PRIVATE = 0
       PRIVACY_PUBLIC = 1
@@ -26,10 +28,10 @@ module Carto
         self
       end
 
-      def to_poro
+      def to_poro(dependent_visualizations: false)
         return {} if @user_table.nil?
         row_count_and_size = @user_table.row_count_and_size
-        {
+        poro = {
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
           permission: Carto::Api::PermissionPresenter.new(@permission, current_viewer: @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
@@ -39,6 +41,12 @@ module Carto
           size: row_count_and_size[:size],
           row_count: row_count_and_size[:row_count]
         }
+
+        if dependent_visualizations
+          poro[:dependent_visualizations] = @user_table.dependent_visualizations
+        end
+
+        poro
       end
 
       def privacy_text(privacy)

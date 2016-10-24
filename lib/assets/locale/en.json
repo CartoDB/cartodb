@@ -1135,10 +1135,10 @@
       "option": "Delete dataset...",
       "cancel": "Cancel",
       "confirm": "Ok, delete it",
-      "desc": "Are you sure?",
+      "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
-      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+      "title": "You are about to delete the %{tableName} dataset"
     },
     "metadata": {
       "option": "Edit metadata",

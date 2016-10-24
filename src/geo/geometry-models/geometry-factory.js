@@ -12,6 +12,11 @@ var GEOJSON_TYPE_TO_CREATE_METHOD_NAME = {
   MultiPolygon: 'createMultiPolygonFromGeoJSON'
 };
 
+var getGeometryType = function (geoJSON) {
+  return (geoJSON.geometry && geoJSON.geometry.type) ||
+    geoJSON.type;
+};
+
 var getGeometryCoordinates = function (geoJSON) {
   return (geoJSON.geometry && geoJSON.geometry.coordinates) ||
     geoJSON.coordinates;
@@ -46,7 +51,7 @@ GeometryFactory.prototype.createMultiPolygon = function (attrs, options) {
 };
 
 GeometryFactory.prototype.createGeometryFromGeoJSON = function (geoJSON) {
-  var geometryType = geoJSON.geometry && geoJSON.geometry.type || geoJSON.type;
+  var geometryType = getGeometryType(geoJSON);
   var methodName = GEOJSON_TYPE_TO_CREATE_METHOD_NAME[geometryType];
   if (methodName) {
     return this[methodName](geoJSON);
@@ -84,7 +89,7 @@ GeometryFactory.prototype.createPolygonFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createMultiPolygonFromGeoJSON = function (geoJSON) {
-  var coords = getGeometryCoordinates();
+  var coords = getGeometryCoordinates(geoJSON);
   var latlngs = _.map(coords, function (coords) {
     return getLatLngsFromCoordinates(coords[0]);
   }, this);

@@ -55,6 +55,52 @@ var polygonGeometry = {
   ]
 };
 
+var multiPolygonGeometry = {
+  'type': 'MultiPolygon',
+  'coordinates': [
+    [
+      [
+        [
+          -14.33306,
+          28.044439
+        ],
+        [
+          -14.47389,
+          28.068609
+        ],
+        [
+          -14.49445,
+          28.09972
+        ],
+        [
+          -14.30917,
+          28.142771
+        ]
+      ]
+    ],
+    [
+      [
+        [
+          -14.33306,
+          28.044439
+        ],
+        [
+          -14.47389,
+          28.068609
+        ],
+        [
+          -14.49445,
+          28.09972
+        ],
+        [
+          -14.30917,
+          28.142771
+        ]
+      ]
+    ]
+  ]
+};
+
 describe('src/geo/geometry-models/geometry-factory', function () {
   beforeEach(function () {
     this.geometryFactory = new GeometryFactory();
@@ -71,7 +117,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
     });
 
     _.each([ polylineGeometry, geometryAsFeature(polylineGeometry) ], function (geoJSON) {
-      it('should create a point', function () {
+      it('should create a polyline', function () {
         var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polyline).toBeTruthy();
@@ -80,11 +126,24 @@ describe('src/geo/geometry-models/geometry-factory', function () {
     });
 
     _.each([ polygonGeometry, geometryAsFeature(polygonGeometry) ], function (geoJSON) {
-      it('should create a point', function () {
+      it('should create a polygon', function () {
         var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polygon).toBeTruthy();
         expect(geometry.getLatLngs()).toEqual([ [ 41.918628865183045, -8.96484375 ], [ 43.74728909225908, -7.84423828125 ], [ 43.34914966389313, -1.69189453125 ] ]);
+      });
+    });
+
+    _.each([ multiPolygonGeometry, geometryAsFeature(multiPolygonGeometry) ], function (geoJSON) {
+      it('should create a multipolygon', function () {
+        var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
+
+        expect(geometry instanceof MultiPolygon).toBeTruthy();
+        expect(geometry.polygons.length).toEqual(2);
+        expect(geometry.getLatLngs()).toEqual([
+          [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ],
+          [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ]
+        ]);
       });
     });
   });

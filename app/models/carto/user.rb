@@ -289,7 +289,7 @@ class Carto::User < ActiveRecord::Base
     if organization.present?
       remaining = organization.remaining_mapzen_routing_quota(options)
     else
-      remaining = mapzen_routing_quota - get_mapzen_routing_calls(options)
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
     end
     (remaining > 0 ? remaining : 0)
   end

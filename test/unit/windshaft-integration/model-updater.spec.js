@@ -1,6 +1,7 @@
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
+var DataviewsTracker = require('../../../src/vis/dataviews-tracker');
 var Backbone = require('backbone');
 var ModelUpdater = require('../../../src/windshaft-integration/model-updater');
 var WindshaftError = require('../../../src/windshaft/error');
@@ -36,6 +37,11 @@ describe('src/vis/model-updater', function () {
     this.visModel.setOk = jasmine.createSpy('setOk');
     this.visModel.setError = jasmine.createSpy('setError');
     this.layersCollection = new LayersCollection();
+
+    this.dataviewsTracker = new DataviewsTracker(null, {
+      vis: this.visModel
+    });
+
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
     });
@@ -47,7 +53,8 @@ describe('src/vis/model-updater', function () {
       layerGroupModel: this.layerGroupModel,
       layersCollection: this.layersCollection,
       dataviewsCollection: this.dataviewsCollection,
-      analysisCollection: this.analysisCollection
+      analysisCollection: this.analysisCollection,
+      dataviewsTracker: this.dataviewsTracker
     });
 
     // _getProtocol uses window.location.protocol internally, and that returns "file:"

@@ -55,7 +55,7 @@ module.exports = cdb.core.View.extend({
       animationBarDelay: function (d, i) {
         return (i * 3);
       },
-      chartBarColorClass: 'CDB-Chart-bar--timeSeries',
+      chartBarColor: this._parent.model.getWidgetColor() || '#F2CC8F',
       margin: {
         top: 4,
         right: 4,

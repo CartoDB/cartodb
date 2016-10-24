@@ -10,7 +10,7 @@ module.exports = cdb.core.View.extend({
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-    chartBarColor: '#9DE0AD',
+    chartBarColor: '#F2CC8F',
     labelsMargin: 16, // px
     hasAxisTip: false,
     minimumBarHeight: 2,

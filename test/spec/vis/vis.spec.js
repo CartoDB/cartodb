@@ -309,6 +309,39 @@ describe('vis/vis', function () {
     });
   });
 
+  describe('.init', function () {
+    beforeEach(function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      spyOn(this.vis._windshaftMap, 'createInstance');
+      spyOn(this.vis, 'instantiateMap');
+    });
+
+    it('should instantiate without filters if no filters', function () {
+      this.vis._getFilters = function () {
+        return {};
+      };
+
+      this.vis.init();
+
+      expect(this.vis.instantiateMap).toHaveBeenCalled();
+      expect(this.vis.instantiateMap.calls.mostRecent().args[1]).toBe(false); // include filters
+    });
+
+    it('should instantiate twice if filters', function () {
+      this.vis._getFilters = function () {
+        return {
+          foo: 'bar'
+        };
+      };
+
+      this.vis.instantiateMap.calls.reset();
+      this.vis.init();
+      this.vis._windshaftMap.createInstance.calls.mostRecent().args[0].success();
+
+      expect(this.vis.instantiateMap.calls.mostRecent().args[1]).toBe(true); // include filters
+    });
+  });
+
   describe('.load', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});

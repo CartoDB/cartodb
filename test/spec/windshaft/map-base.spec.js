@@ -234,7 +234,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        }, true);
+        });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.mapDefinition).toEqual({ foo: 'bar' });
@@ -247,7 +247,7 @@ describe('windshaft/map-base', function () {
         var successCallback = jasmine.createSpy('success');
         this.windshaftMap.createInstance({
           success: successCallback
-        }, true);
+        });
 
         expect(successCallback).toHaveBeenCalledWith(this.windshaftMap);
       });
@@ -276,10 +276,10 @@ describe('windshaft/map-base', function () {
 
         this.filter.accept('category');
 
-        // Recreate the instance again
+        // Recreate the instance again with filters
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        });
+        }, true);
         args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         expect(args.params).toEqual({
@@ -313,7 +313,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        }, true);
+        });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
@@ -340,7 +340,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           sourceId: 'sourceId'
-        }, true);
+        });
 
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
         expect(args.params).toEqual({
@@ -363,7 +363,7 @@ describe('windshaft/map-base', function () {
         this.windshaftMap.createInstance({
           sourceId: 'sourceId',
           forceFetch: 'forceFetch'
-        }, true);
+        });
 
         expect(this.modelUpdater.updateModels).toHaveBeenCalledWith(this.windshaftMap, 'sourceId', 'forceFetch');
       });
@@ -381,7 +381,7 @@ describe('windshaft/map-base', function () {
 
         this.windshaftMap.createInstance({
           error: this.errorCallback
-        }, true);
+        });
       });
 
       it('should invoke a given error callback', function () {

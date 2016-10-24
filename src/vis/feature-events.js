@@ -50,7 +50,6 @@ CartoDBFeatureEvents.prototype._bindCartoDBFeatureEvents = function () {
 
 CartoDBFeatureEvents.prototype._onFeatureOver = function (event, latlng, position, data, layerIndex) {
   this._featureOverLayerIndex = layerIndex;
-
   this._triggerMouseEvent('featureOver', arguments);
 };
 
@@ -61,6 +60,7 @@ CartoDBFeatureEvents.prototype._onFeatureClick = function (event, latlng, positi
 CartoDBFeatureEvents.prototype._onFeatureOut = function (something, layerIndex) {
   if (this._featureOverLayerIndex === layerIndex) {
     this.trigger('featureOut', undefined, layerIndex);
+    delete this._featureOverLayerIndex;
   }
 };
 

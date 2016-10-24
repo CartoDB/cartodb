@@ -18,9 +18,7 @@ EditionController.prototype.disableEdition = function () {
     this._geometry.remove();
     this._map.removeGeometry(this._geometry);
     delete this._geometry;
-
-    // TODO: What if they were disabled?
-    this._map.enablePopups();
+    this._reEnableOrDisablePopups();
   }
 };
 

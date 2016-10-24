@@ -9,8 +9,7 @@ var TooltipManager = require('./tooltip-manager');
 var FeatureEvents = require('./feature-events');
 var MapCursorManager = require('./map-cursor-manager');
 var MapEventsManager = require('./map-events-manager');
-var DrawingController = require('./drawing-controller');
-var EditionController = require('./edition-controller');
+var GeometryManagementController = require('./geometry-management-controller');
 var LegendsView = require('../geo/ui/legends/legends-view.js');
 
 /**
@@ -63,23 +62,7 @@ var Vis = View.extend({
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();
 
-    // Drawing capabilities
-    var drawingController = new DrawingController(this.mapView, this.model.map);
-    this.model.map.on('enterDrawingMode', function (geometry) {
-      drawingController.enableDrawing(geometry);
-    }, this);
-    this.model.map.on('exitDrawingMode', function (geometry) {
-      drawingController.disableDrawing(geometry);
-    }, this);
-
-    // Edition capabilities
-    var editionController = new EditionController(this.mapView, this.model.map);
-    this.model.map.on('enterEditMode', function (geometry) {
-      editionController.enableEdition(geometry);
-    }, this);
-    this.model.map.on('exitEditMode', function () {
-      editionController.disableEdition();
-    }, this);
+    new GeometryManagementController(this.mapView, this.model.map); // eslint-disable-line
 
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this.model, {

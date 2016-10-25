@@ -71,11 +71,10 @@ module.exports = cdb.core.Model.extend({
   getWidgetColor: function () {
     var styles = this.get('style');
 
-    return (styles && styles.widget_style &&
+    return styles && styles.widget_style &&
           styles.widget_style.definition &&
-          styles.widget_style.definition.fill &&
-          styles.widget_style.definition.fill.color &&
-          styles.widget_style.definition.fill.color.fixed) || '#9de0ad';
+          styles.widget_style.definition.color &&
+          styles.widget_style.definition.color.fixed;
   },
 
   getColor: function (name) {

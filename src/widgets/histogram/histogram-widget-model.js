@@ -31,11 +31,6 @@ module.exports = WidgetModel.extend({
     this.dataviewModel.set('enabled', !isCollapsed);
   },
 
-  cancelAutoStyle: function () {
-    this.dataviewModel.layer.restoreCartoCSS();
-    this.set('autoStyle', false);
-  },
-
   getState: function () {
     var state = WidgetModel.prototype.getState.call(this);
     var start = this.dataviewModel.get('start');

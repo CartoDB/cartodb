@@ -22,8 +22,6 @@ module Carto
     validates :ids_json, carto_json_symbolizer: true
     validates :export_json, carto_json_symbolizer: true
 
-    validate :under_max_mapcaps_per_visualziation
-
     def regenerate_visualization
       regenerated_visualization = build_visualization_from_hash_export(lazy_export_json)
 
@@ -55,14 +53,6 @@ module Carto
 
     def update_named_map
       Carto::NamedMaps::Api.new(regenerate_visualization).update
-    end
-
-    MAX_MAPCAPS_PER_VISUALIZATION = 1
-
-    def under_max_mapcaps_per_visualziation
-      unless visualization.mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
-        errors.add(:base, "Can't add more mapcaps to visualization")
-      end
     end
   end
 end

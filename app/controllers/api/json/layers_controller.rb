@@ -56,6 +56,32 @@ class Api::Json::LayersController < Api::ApplicationController
             @stats_aggregator.timing('privacy') do
               @parent.process_privacy_in(@layer)
             end
+
+            from_layer = Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
+            from_letter = params[:from_letter]
+            letter = @layer.options['letter']
+            if from_layer && from_letter.present? && letter.present?
+              # Copy LayerNodeStyles from the old layer if given.
+              existing = @layer.layer_node_styles.map(&:source_id)
+              from_layer.layer_node_styles.each do |lns|
+                new_id = lns.source_id.gsub(from_letter, letter)
+                if lns.source_id.starts_with?(from_letter) && !existing.include?(new_id)
+                  new_lns = lns.duplicate
+                  new_lns.source_id = new_id
+                  @layer.add_layer_node_style(new_lns)
+                end
+              end
+
+              # Update old layer styles
+              if from_letter != letter
+                node_id_to_fix = @layer.options['source'].gsub(letter, from_letter)
+                style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
+                if style_node
+                  style_node.source_id = @layer.options['source']
+                  style_node.save
+                end
+              end
+            end
           end
 
           @stats_aggregator.timing('parent.save') do

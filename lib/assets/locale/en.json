@@ -1386,6 +1386,10 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "merge-type": {
+          "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
+          "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
+        },
         "quota": {
           "cancel": "cancel",
           "confirm": "confirm",

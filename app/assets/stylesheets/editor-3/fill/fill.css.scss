@@ -41,6 +41,9 @@
 .CDB-OptionInput-container {
   height: 100%;
 }
+.CDB-OptionInput-container--noSlider {
+  width: 100%;
+}
 
 .InputColor-modalHeader {
   @include display-flex();

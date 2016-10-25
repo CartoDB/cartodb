@@ -1658,14 +1658,17 @@ class User < Sequel::Model
   end
 
   def batch_queries_statement_timeout=(timeout_ms)
-    unless timeout_ms.nil? || (timeout_ms.is_a?(Fixnum) && timeout_ms > 0)
+    unless !timeout_ms.present? || timeout_ms.to_i > 0
        raise 'batch_queries_statement_timeout must be nil or an integer greater than 0'
     end
-    @batch_queries_statement_timeout = timeout_ms
-    if @batch_queries_statement_timeout.nil?
+    if !timeout_ms.present?
+      # NOTE: nil is cast to the empty string in redis (""), which can be cast to 0 in
+      # the SQL API. In order to prevent undesired behavior, just delete this key.
+      @batch_queries_statement_timeout = nil
       $users_metadata.HDEL batch_limits_key, 'timeout'
     else
-      $users_metadata.HMSET batch_limits_key, 'timeout', timeout_ms
+      @batch_queries_statement_timeout = timeout_ms.to_i
+      $users_metadata.HMSET batch_limits_key, 'timeout', @batch_queries_statement_timeout
     end
   end
 

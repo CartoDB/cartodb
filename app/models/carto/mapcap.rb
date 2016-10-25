@@ -60,9 +60,8 @@ module Carto
     MAX_MAPCAPS_PER_VISUALIZATION = 1
 
     def under_max_mapcaps_per_visualziation
-      unless visualization.mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
-        errors.add(:base, "Can't add more mapcaps to visualization")
-      end
+      mapcaps = visualization.mapcaps
+      mapcaps.last.destroy unless mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
     end
   end
 end

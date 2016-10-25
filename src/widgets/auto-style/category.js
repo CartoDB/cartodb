@@ -13,6 +13,33 @@ module.exports = AutoStyler.extend({
     return StyleUtils.replaceWrongSpaceChar(style);
   },
 
+  getRange: function () {
+    var model = this.dataviewModel;
+    var categories = model.get('data');
+    var range = [];
+
+    for (var i = 0; i < categories.length; i++) {
+      range.push(this.colors.getColorByCategory(categories[i].name))
+    }
+
+    return range;
+  },
+
+  getDef: function () {
+    var model = this.dataviewModel;
+    var categories = model.get('data');
+    var range = this.getRange();
+    var definitions = {};
+
+    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+      definitions[item.substring(0, item.indexOf('-'))] = {
+        domain: categories, range: range, attribute: model.get('column')
+      };
+    });
+
+    return definitions;
+  },
+
   _generateCategoryRamp: function (sym) {
     var model = this.dataviewModel;
     var categories = model.get('data');
@@ -29,12 +56,11 @@ module.exports = AutoStyler.extend({
 
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i];
-      var start = "'";
-      var end = i !== categories.length - 1 ? "', " : "'";
+      var end = i !== categories.length - 1 ? ", " : "";
 
-      catListColors += start + this.colors.getColorByCategory(cat.name) + end;
+      catListColors += this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {
-        catListValues += start + cat.name.replace(/'/g, '\\\'') + end;
+        catListValues += cat.name.replace(/'/g, '\\\'') + end;
       } else if (end === "'") {
         catListValues = catListValues.substring(0, catListValues.length - 2);
       }

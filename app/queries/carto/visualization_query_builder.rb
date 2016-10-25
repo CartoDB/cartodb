@@ -325,7 +325,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(%{
             visualizations.privacy <> '#{Carto::Visualization::PRIVACY_PRIVATE}'
         and (
-               visualizations.version <> #{Carto::Visualization::VERSION_BUILDER}
+               ((visualizations.version <> #{Carto::Visualization::VERSION_BUILDER}) or (visualizations.version is null))
             or
                visualizations.type <> '#{Carto::Visualization::TYPE_DERIVED}'
             or

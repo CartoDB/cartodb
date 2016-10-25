@@ -16,8 +16,7 @@ module Carto
                     :owners_only
       before_filter :load_mapcap, only: [:show, :destroy]
 
-      after_filter :ensure_only_one_mapcap,
-                   :track_published_map, only: :create
+      after_filter :track_published_map, only: :create
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError,
@@ -59,14 +58,6 @@ module Carto
 
       def owners_only
         raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_user)
-      end
-
-      MAX_MAPCAPS_PER_MAP = 1
-
-      def ensure_only_one_mapcap
-        previous_mapcaps = @visualization.mapcaps # already ordered from newer to older
-
-        previous_mapcaps[MAX_MAPCAPS_PER_MAP..-1].each(&:destroy) if previous_mapcaps.count > MAX_MAPCAPS_PER_MAP
       end
 
       def load_mapcap

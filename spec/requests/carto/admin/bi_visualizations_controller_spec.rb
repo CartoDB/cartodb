@@ -16,11 +16,11 @@ describe Carto::Admin::BiVisualizationsController do
       @bi_dataset.destroy
     end
 
-    it 'returns 401 for non-authenticated requests' do
+    it 'displays login page for non-authenticated requests' do
       get bi_visualizations_embed_map_url(user_domain: @user1.username,
                                           id: UUIDTools::UUID.timestamp_create.to_s), {}
 
-      response.status.should == 401
+      login_page_response?(response).should be_true
     end
 
     it 'returns 404 for requests without matching bi_visualization' do

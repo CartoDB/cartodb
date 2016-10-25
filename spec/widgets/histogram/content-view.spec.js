@@ -217,6 +217,12 @@ describe('widgets/histogram/content-view', function () {
       expect(this.view.$('.CDB-Widget-info').length).toBe(1);
     });
 
+    it('should collapse properly', function () {
+      expect(this.view.$('.CDB-Widget-content').length).toBe(1);
+      this.widgetModel.set('collapsed', true);
+      expect(this.view.$('.CDB-Widget-content').length).toBe(0);
+    });
+
     it('should update data and original data of the mini histogram if there is a bins change and it is not zoomed', function () {
       var i = 0;
       this.dataviewModel.sync = function (method, model, options) {

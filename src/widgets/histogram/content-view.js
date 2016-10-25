@@ -68,6 +68,7 @@ module.exports = cdb.core.View.extend({
       this.histogramChartView.setNormalized(normalized);
       this.miniHistogramChartView.setNormalized(normalized);
     }, this);
+    this.model.bind('change:collapsed', this.render, this);
   },
 
   _onFirstLoad: function () {
@@ -119,7 +120,8 @@ module.exports = cdb.core.View.extend({
       template({
         title: this.model.get('title'),
         showStats: this.model.get('show_stats'),
-        itemsCount: !isDataEmpty ? data.length : '-'
+        itemsCount: !isDataEmpty ? data.length : '-',
+        isCollapsed: !!this.model.get('collapsed')
       })
     );
 
@@ -128,7 +130,6 @@ module.exports = cdb.core.View.extend({
       this._initTitleView();
     } else {
       this._setupBindings();
-      this.$el.toggleClass('is-collapsed', !!this.model.get('collapsed'));
       this._initViews();
     }
 

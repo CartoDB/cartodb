@@ -28,4 +28,10 @@
     </div>
   </li>
   <% } %>
+  <li class="CDB-Dropdown-item">
+    <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-listItem" data-val="edit-widget" title="Edit">Edit</button>
+  </li>
+  <li class="CDB-Dropdown-item">
+    <button type="button" class="CDB-Dropdown-link u-ellipsis u-errorTextColor js-listItem" title="Delete...">Delete...</button>
+  </li>
 </ul>

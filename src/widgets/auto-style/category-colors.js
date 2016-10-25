@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require( 'underscore' );
 var colorScales = [
   '#7F3C8D',
   '#11A579',
@@ -7,10 +7,12 @@ var colorScales = [
   '#E73F74'
 ]; // Demo colors
 
-function getColorRange (styles) {
+function getColorRange( styles ) {
+  styles = styles.auto_style || styles;
+
   var colorRange = styles && styles.definition &&
-      styles.definition.color &&
-      styles.definition.color.range;
+    styles.definition.color &&
+    styles.definition.color.range;
 
   return colorRange || colorScales;
 }
@@ -23,58 +25,58 @@ function getColorRange (styles) {
  *
  */
 
-function CategoryColors (styles) {
-  this.updateColors(styles);
+function CategoryColors( styles ) {
+  this.updateColors( styles );
 }
 
-CategoryColors.prototype.updateColors = function updateColors (styles) {
-  var colorRange = getColorRange(styles);
+CategoryColors.prototype.updateColors = function updateColors( styles ) {
+  var colorRange = getColorRange( styles );
   this.colors = {};
-  _.each(colorRange, function (c) {
-    this.colors[c] = null;
-  }, this);
+  _.each( colorRange, function( c ) {
+    this.colors[ c ] = null;
+  }, this );
 };
 
-CategoryColors.prototype.updateData = function (d) {
+CategoryColors.prototype.updateData = function( d ) {
   // Remove categories from colors where they are not present anymore
-  _.each(this.colors, function (value, key) {
-    if (!_.contains(d, value)) {
-      this.colors[key] = null;
+  _.each( this.colors, function( value, key ) {
+    if ( !_.contains( d, value ) ) {
+      this.colors[ key ] = null;
     } else {
-      d = _.without(d, value);
+      d = _.without( d, value );
     }
-  }, this);
+  }, this );
 
   // Set colors by new categories
-  _.each(d, function (category) {
+  _.each( d, function( category ) {
     var nextFreeColor = this.getNextAvailableColor();
-    if (nextFreeColor) {
-      this.colors[nextFreeColor] = category;
+    if ( nextFreeColor ) {
+      this.colors[ nextFreeColor ] = category;
     }
-  }, this);
+  }, this );
 };
 
-CategoryColors.prototype.getNextAvailableColor = function () {
-  for (var i in this.colors) {
-    if (this.colors[i] === null) {
+CategoryColors.prototype.getNextAvailableColor = function() {
+  for ( var i in this.colors ) {
+    if ( this.colors[ i ] === null ) {
       return i;
     }
   }
   return null;
 };
 
-CategoryColors.prototype.getColorByCategory = function (category) {
+CategoryColors.prototype.getColorByCategory = function( category ) {
   // console.trace('Get color by cat');
-  for (var i in this.colors) {
-    if (this.colors[i] === category) {
+  for ( var i in this.colors ) {
+    if ( this.colors[ i ] === category ) {
       return i;
     }
   }
   return '#A5AA99';
 };
 
-CategoryColors.prototype.getCategoryByColor = function (color) {
-  return this.colors[color];
+CategoryColors.prototype.getCategoryByColor = function( color ) {
+  return this.colors[ color ];
 };
 
 module.exports = CategoryColors;

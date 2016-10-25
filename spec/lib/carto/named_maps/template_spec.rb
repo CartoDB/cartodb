@@ -596,6 +596,41 @@ module Carto
           end
         end
 
+        describe '#preview_layers' do
+          before(:all) do
+            template = Carto::NamedMaps::Template.new(@visualization)
+            @preview_layers = template.to_hash[:preview_layers]
+          end
+
+          after(:all) do
+            @preview_layers = nil
+          end
+
+          it 'should contain preview_layers' do
+            @preview_layers.should be
+          end
+
+          it 'should not generate preview_layers for basemaps' do
+            preview_layers_ids = @preview_layers.map(&:keys).flatten
+
+            @visualization.base_layers.map(&:id).each do |id|
+              preview_layers_ids.should_not include(id)
+            end
+          end
+
+          it 'should generate preview_layers correctly' do
+            @preview_layers[0].key.should eq @visualization.data_layers.first
+
+            @visualization.data_layers.each_with_index do |layer, index|
+              expected_visibility = {
+                "#{layer.id}": layer.options[:visible]
+              }
+
+              @preview_layers[index].should eq expected_visibility
+            end
+          end
+        end
+
         describe '#analyses' do
           before(:all) do
             @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)

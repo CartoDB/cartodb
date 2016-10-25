@@ -49,8 +49,9 @@ var HistogramAutoStyler = AutoStyler.extend({
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
+        var geom = item.substring(0, item.indexOf('-'));
 
-        definitions[item.substring(0, item.indexOf('-'))] = {
+        definitions[geom === 'marker' ? 'point' : geom] = {
           color: {
             range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
             quantification: scales.quantification,

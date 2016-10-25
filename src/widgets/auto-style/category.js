@@ -32,7 +32,8 @@ module.exports = AutoStyler.extend({
     var definitions = {};
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
-      definitions[item.substring(0, item.indexOf('-'))] = {
+      var geom = item.substring(0, item.indexOf('-'));
+      definitions[geom === 'marker' ? 'point' : geom] = {
         domain: categories, range: range, attribute: model.get('column')
       };
     });

@@ -106,13 +106,24 @@ module.exports = cdb.core.Model.extend({
     var style = this.autoStyler.getStyle();
     layer.set('cartocss', style);
     this.set('autoStyle', true);
+    // this.getAutoStyle();
     return true;
   },
 
   getAutoStyle: function getAutoStyle() {
-    var style = this.get('style')
-    if (style && style.auto_style) {
-      return _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
+    var style = this.get('style');
+    var cartocss = this.dataviewModel.layer.get('cartocss');
+
+    if (style && style.auto_style && style.auto_style.definition) {
+      var toRet = _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
+
+      return _.extend(toRet, {definition: this.autoStyler.getDef(cartocss)});
+    }
+    else {
+      return {
+        definition: this.autoStyler.getDef(cartocss),
+        cartocss: cartocss
+      };
     }
   },
 

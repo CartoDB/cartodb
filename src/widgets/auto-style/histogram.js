@@ -1,5 +1,6 @@
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
+var cartocolor = require('cartocolor');
 
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
@@ -35,6 +36,31 @@ var HistogramAutoStyler = AutoStyler.extend({
     var cuantification = scales.quantification + ');';
 
     return sym + ': ' + ramp + colors + cuantification;
+  },
+
+  getDef: function (cartocss) {
+    var definitions = {};
+    var shape = this.dataviewModel.getDistributionType(
+      this.dataviewModel.getUnfilteredDataModel().get('data')
+    );
+    var bins = this.dataviewModel.get('bins');
+    var attr = this.dataviewModel.get('column');
+
+    ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+      if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {
+        var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
+
+        definitions[item.substring(0, item.indexOf('-'))] = {
+          color: {
+            range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
+            quantification: scales.quantification,
+            attribute: attr
+          }
+        };
+      }
+    });
+
+    return definitions;
   }
 
 });

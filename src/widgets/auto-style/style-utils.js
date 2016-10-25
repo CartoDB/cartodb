@@ -52,5 +52,6 @@ module.exports = {
   changeStyle: _.memoize(changeStyle, function (css, attr, style) {
     return css + attr + style;
   }),
+  getAttrRegex: getAttrRegex,
   replaceWrongSpaceChar: replaceWrongSpaceChar
 };

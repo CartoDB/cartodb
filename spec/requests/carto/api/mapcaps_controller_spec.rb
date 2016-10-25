@@ -34,16 +34,14 @@ describe Carto::Api::MapcapsController do
   end
 
   def mapcap_should_be_correct(response)
-    response_body = response.body
-
-    new_mapcap_id = response_body[:id]
+    new_mapcap_id = response[:id]
     new_mapcap_id.should_not be_nil
 
     mapcap = Carto::Mapcap.find(new_mapcap_id)
 
     expected_response = JSON.load(Carto::Api::MapcapPresenter.new(mapcap).to_poro.to_json).deep_symbolize_keys
 
-    response_body.should eq expected_response
+    response.should eq expected_response
   end
 
   describe '#create' do
@@ -57,7 +55,7 @@ describe Carto::Api::MapcapsController do
       post_json create_mapcap_url, {} do |response|
         response.status.should eq 201
 
-        mapcap_should_be_correct(response)
+        mapcap_should_be_correct(response.body)
       end
     end
 
@@ -68,7 +66,7 @@ describe Carto::Api::MapcapsController do
         post_json create_mapcap_url, {} do |response|
           response.status.should eq 201
 
-          mapcap_should_be_correct(response)
+          mapcap_should_be_correct(response.body)
         end
       end
 
@@ -100,20 +98,18 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'indexes all mapcaps' do
-      get index_mapcap_url, {} do |response|
+      get_json index_mapcap_url, {} do |response|
         response.status.should eq 200
 
         response.body.each do |mapcap_representation|
-          mapcap_should_be_correct(mapcap_representation)
+          mapcap_should_be_correct(mapcap_representation.deep_symbolize_keys)
         end
       end
     end
 
     it 'returns 403 if user does not own the visualization' do
-      get index_mapcap_url(user: @intruder), {} do |response|
+      get_json index_mapcap_url(user: @intruder), {} do |response|
         response.status.should eq 403
-
-        response.body.should be_empty
       end
     end
   end
@@ -132,24 +128,22 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'shows a mapcap' do
-      get show_mapcap_url, {} do |response|
+      get_json show_mapcap_url, {} do |response|
         response.status.should eq 200
 
-        mapcap_should_be_correct(response)
+        mapcap_should_be_correct(response.body)
       end
     end
 
     it 'returns 404 for an inexistent mapcap' do
-      get show_mapcap_url(mapcap: dummy_mapcap) do |response|
+      get_json show_mapcap_url(mapcap: dummy_mapcap) do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 403 if user does not own the visualization' do
-      get show_mapcap_url(user: @intruder), {} do |response|
+      get_json show_mapcap_url(user: @intruder), {} do |response|
         response.status.should eq 403
-
-        response.body.should be_empty
       end
     end
   end
@@ -168,7 +162,7 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'destroy a mapcap' do
-      get destroy_mapcap_url, {} do |response|
+      delete_json destroy_mapcap_url, {} do |response|
         response.status.should eq 204
         response.body.should be_empty
 
@@ -177,16 +171,14 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'returns 404 for an inexistent mapcap' do
-      get destroy_mapcap_url(mapcap: dummy_mapcap) do |response|
+      delete_json destroy_mapcap_url(mapcap: dummy_mapcap) do |response|
         response.status.should eq 404
       end
     end
 
     it 'returns 403 if user does not own the visualization' do
-      get destroy_mapcap_url(user: @intruder), {} do |response|
+      delete_json destroy_mapcap_url(user: @intruder), {} do |response|
         response.status.should eq 403
-
-        response.body.should be_empty
       end
     end
   end

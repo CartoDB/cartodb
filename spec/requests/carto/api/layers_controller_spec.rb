@@ -62,9 +62,9 @@ describe Carto::Api::LayersController do
       table2_visualization.attributions = table_2_attribution
       table2_visualization.store
 
-      get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+      get_json api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
         response.status.should be_success
-        @layers_data = JSON.parse(response.body)
+        @layers_data = response.body.with_indifferent_access
       end
       # Done this way to preserve the order
       data_layers = @layers_data['layers']
@@ -77,9 +77,9 @@ describe Carto::Api::LayersController do
       table2_visualization.attributions = modified_table_2_attribution
       table2_visualization.store
 
-      get api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
+      get_json api_v1_maps_layers_index_url(map_id: visualization.map.id, api_key: @api_key) do |response|
         response.status.should be_success
-        @layers_data = JSON.parse(response.body)
+        @layers_data = response.body.with_indifferent_access
       end
       data_layers = @layers_data['layers'].select { |layer| layer['kind'] == 'carto' }
       data_layers.count.should eq 2
@@ -181,7 +181,7 @@ describe Carto::Api::LayersController do
       table.map.add_layer layer
 
       login_as(user_2, scope: user_2.username)
-      get api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
+      get_json api_v1_maps_layers_index_url(user_domain: user_2.username, map_id: table.map.id) do |response|
         response.status.should be_success
         body = JSON.parse(last_response.body)
 
@@ -190,7 +190,7 @@ describe Carto::Api::LayersController do
 
       login_as(user_3, scope: user_3.username)
       host! "#{user_3.username}.localhost.lan"
-      get api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
+      get_json api_v1_maps_layers_index_url(user_domain: user_3.username, map_id: table.map.id) do |response|
         response.status.should == 404
       end
     end
@@ -227,11 +227,11 @@ describe Carto::Api::LayersController do
       @user.add_layer layer2
 
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
-      get api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |_|
-        last_response.status.should be_success
-        response_body = JSON.parse(last_response.body)
-        response_body['total_entries'].should   eq 2
-        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2
+      get_json api_v1_users_layers_index_url(params.merge(user_id: @user.id)) do |response|
+        response.status.should be_success
+        response_body = response.body.with_indifferent_access
+        response_body['total_entries'].should eq 2
+        response_body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 1
         response_body['layers'][0]['id'].should eq layer.id
         response_body['layers'][1]['id'].should eq layer2.id
       end
@@ -260,22 +260,22 @@ describe Carto::Api::LayersController do
       @table.map.add_layer layer2
 
       default_url_options[:host] = "#{@user.subdomain}.localhost.lan"
-      get api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |_|
-        last_response.status.should be_success
-        response_body = JSON.parse(last_response.body)
+      get_json api_v1_maps_layers_index_url(params.merge(map_id: @table.map.id)) do |response|
+        response.status.should be_success
+        response_body = response.body.with_indifferent_access
         response_body['total_entries'].should eq 2 + existing_layers_count
-        body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2 + existing_layers_count
+        response_body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 2
         new_layers_ids = response_body['layers'].map { |l| l['id'] }
         (new_layers_ids - existing_layers_ids).should == expected_layers_ids
       end
 
-      get api_v1_maps_layers_show_url(
+      get_json api_v1_maps_layers_show_url(
         params.merge(
           map_id: @table.map.id,
           id: layer.id
-        )) do |_|
-        last_response.status.should be_success
-        response_body = JSON.parse(last_response.body)
+        )) do |response|
+        response.status.should be_success
+        response_body = response.body.with_indifferent_access
         response_body['id'].should eq layer.id
         response_body['kind'].should eq layer.kind
       end

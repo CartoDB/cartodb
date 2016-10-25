@@ -206,7 +206,7 @@ class UserTable < Sequel::Model
   end
 
   def before_destroy
-    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user.viewer
+    raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy tables") if user && user.viewer
     service.before_destroy
     super
   end

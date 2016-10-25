@@ -22,7 +22,7 @@
   </li>
 </ul>
 
-<% if (isSourceType) { %>
+<% if (isSourceType && !isCustomQueryApplied) { %>
   <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView">
     <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
       <li class="Editor-contextSwitcherItem">

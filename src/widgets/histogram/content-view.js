@@ -49,6 +49,7 @@ module.exports = cdb.core.View.extend({
 
     this._renderMiniChart();
     this._renderMainChart();
+    this._renderAllValues();
   },
 
   _initTitleView: function () {
@@ -112,6 +113,8 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this.clearSubViews();
+    this._unbinds();
+
     var data = this._dataviewModel.getData();
     var originalData = this._originalData.getData();
     var isDataEmpty = !_.size(data) && !_.size(originalData);
@@ -214,6 +217,18 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:avg', this._onChangeAvg, this);
   },
 
+  _unbinds: function () {
+    this._dataviewModel.off('change:bins', this._onChangeBins, this);
+    this.model.off('change:zoomed', this._onChangeZoomed, this);
+    this.model.off('change:zoom_enabled', this._onChangeZoomEnabled, this);
+    this.model.off('change:filter_enabled', this._onChangeFilterEnabled, this);
+    this.model.off('change:total', this._onChangeTotal, this);
+    this.model.off('change:nulls', this._onChangeNulls, this);
+    this.model.off('change:max', this._onChangeMax, this);
+    this.model.off('change:min', this._onChangeMin, this);
+    this.model.off('change:avg', this._onChangeAvg, this);
+  },
+
   _clearTooltip: function () {
     this.$('.js-tooltip').stop().hide();
   },
@@ -297,6 +312,14 @@ module.exports = cdb.core.View.extend({
 
   _onChangeZoomEnabled: function () {
     this.$('.js-zoom').toggleClass('is-hidden', !this.model.get('zoom_enabled'));
+  },
+
+  _renderAllValues: function () {
+    this._changeHeaderValue('.js-nulls', 'nulls', '');
+    this._changeHeaderValue('.js-val', 'total', 'SELECTED');
+    this._changeHeaderValue('.js-max', 'max', '');
+    this._changeHeaderValue('.js-min', 'min', '');
+    this._changeHeaderValue('.js-avg', 'avg', '');
   },
 
   _changeHeaderValue: function (className, what, suffix) {

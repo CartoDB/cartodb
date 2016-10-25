@@ -80,7 +80,3 @@ CategoryColors.prototype.getCategoryByColor = function (color) {
 };
 
 module.exports = CategoryColors;
-r ];
-};
-
-module.exports = CategoryColors;

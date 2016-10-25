@@ -9,8 +9,8 @@ var colorScales = [
 
 function getColorRange (styles) {
   var colorRange = styles && styles.definition &&
-      styles.definition.fill && styles.definition.fill.color &&
-      styles.definition.fill.color.range;
+      styles.definition.color &&
+      styles.definition.color.range;
 
   return colorRange || colorScales;
 }

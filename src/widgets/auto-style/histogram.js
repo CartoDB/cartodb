@@ -15,8 +15,7 @@ var HistogramAutoStyler = AutoStyler.extend({
   getCustomStyle: function () {
     return this.styles &&
       this.styles.definition &&
-      this.styles.definition.fill &&
-      this.styles.definition.fill.color;
+      this.styles.definition.color;
   },
 
   getColorLine: function (sym, custom) {

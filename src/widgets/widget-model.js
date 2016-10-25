@@ -73,9 +73,8 @@ module.exports = cdb.core.Model.extend({
 
     return styles && styles.widget_style &&
           styles.widget_style.definition &&
-          styles.widget_style.definition.fill &&
-          styles.widget_style.definition.fill.color &&
-          styles.widget_style.definition.fill.color.fixed;
+          styles.widget_style.definition.color &&
+          styles.widget_style.definition.color.fixed;
   },
 
   getColor: function (name) {

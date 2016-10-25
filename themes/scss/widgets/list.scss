@@ -43,7 +43,7 @@
 }
 
 .CDB-Widget-list {
-  display: block;
+  @include display-flex();
   position: relative;
   margin: 0;
   overflow: hidden;

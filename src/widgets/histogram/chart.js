@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
 var cdb = require('cartodb.js');
+var tinycolor = require("tinycolor2");
 var formatter = require('../../formatter');
 
 module.exports = cdb.core.View.extend({
@@ -942,6 +943,8 @@ module.exports = cdb.core.View.extend({
     var bars = this.chart.selectAll('.CDB-Chart-bar')
       .data(data);
 
+    this._addHoverToStylesheet();
+
     bars
       .enter()
       .append('rect')
@@ -996,11 +999,23 @@ module.exports = cdb.core.View.extend({
       });
   },
 
+  _addHoverToStylesheet: function () {
+    var color = tinycolor(this.options.chartBarColor).darken().toString();
+
+    if (document.styleSheets[0].cssRules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
+      document.styleSheets[0].insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
+    }
+    else {
+      document.styleSheets[0].cssRules[0].style.fill = color;
+    }
+  },
+
   _generateBars: function () {
     var self = this;
     var data = this.model.get('data');
 
     this._calcBarWidth();
+    this._addHoverToStylesheet();
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

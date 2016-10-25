@@ -619,8 +619,6 @@ module Carto
           end
 
           it 'should generate preview_layers correctly' do
-            @preview_layers[0].key.should eq @visualization.data_layers.first
-
             @visualization.data_layers.each_with_index do |layer, index|
               expected_visibility = {
                 "#{layer.id}": layer.options[:visible]

@@ -4,6 +4,7 @@
 
 .Notifier {
   @include css3-prefix(hyphens, auto);
+  position: relative;
   margin: 0 -25px;
   border-top: 1px solid $cSecondaryLine;
   word-wrap: break-word;

@@ -110,7 +110,7 @@ module.exports = cdb.core.Model.extend({
     return true;
   },
 
-  getAutoStyle: function getAutoStyle() {
+  getAutoStyle: function getAutoStyle () {
     var style = this.get('style');
     var cartocss = this.dataviewModel.layer.get('cartocss');
 
@@ -118,8 +118,7 @@ module.exports = cdb.core.Model.extend({
       var toRet = _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
 
       return _.extend(toRet, {definition: this.autoStyler.getDef(cartocss)});
-    }
-    else {
+    } else {
       return {
         definition: this.autoStyler.getDef(cartocss),
         cartocss: cartocss

@@ -60,8 +60,11 @@ module Carto
     MAX_MAPCAPS_PER_VISUALIZATION = 1
 
     def under_max_mapcaps_per_visualziation
-      mapcaps = visualization.mapcaps
-      mapcaps.last.destroy unless mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
+      other_mapcaps = visualization.mapcaps.select { |mapcap| mapcap.id != id }
+
+      unless other_mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
+        other_mapcaps.last.destroy
+      end
     end
   end
 end

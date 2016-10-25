@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
+var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
@@ -12,7 +13,6 @@ var ModelUpdater = require('../windshaft-integration/model-updater');
 var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
-var DataviewsTracker = require('./dataviews-tracker');
 var SettingsModel = require('./settings');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
@@ -31,15 +31,13 @@ var VisModel = Backbone.Model.extend({
     this._analysisPoller = new AnalysisPoller();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
-    this._dataviewsCollection = new Backbone.Collection();
+    this._dataviewsCollection = new DataviewsCollection(null, {
+      vis: this
+    });
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
     this._instantiateMapWasCalled = false;
-
-    this._dataviewsTracker = new DataviewsTracker(null, {
-      vis: this
-    });
   },
 
   done: function (callback) {
@@ -129,8 +127,7 @@ var VisModel = Backbone.Model.extend({
       layerGroupModel: this.layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
-      analysisCollection: this._analysisCollection,
-      dataviewsTracker: this._dataviewsTracker
+      analysisCollection: this._analysisCollection
     });
 
     // Create the WindshaftMap
@@ -244,10 +241,7 @@ var VisModel = Backbone.Model.extend({
     var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
       return layerModel.get('source') === analysisModel.get('id');
     });
-    var isAnalysisLinkedToDataview = this._dataviewsCollection.any(function (dataviewModel) {
-      var sourceId = dataviewModel.getSourceId();
-      return analysisModel.get('id') === sourceId;
-    });
+    var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
   },
 
@@ -270,16 +264,19 @@ var VisModel = Backbone.Model.extend({
 
   init: function (options) {
     options = options || {};
-    var filters = this._getFilters();
+    var filters = this._dataviewsCollection.anyFilter();
     var self = this;
 
-    if (_.isEmpty(filters)) {
-      this.instantiateMap(options, false);
+    if (!filters) {
+      options = _.extend({}, options, {includeFilters: false});
+      this.instantiateMap(options);
     } else {
       // request without filters
+      options = _.extend({}, options, {includeFilters: true});
       this._windshaftMap.createInstance({
-        success: self.instantiateMap.bind(self, options, true),
-        error: options.error
+        success: self.instantiateMap.bind(self, options),
+        error: options.error,
+        includeFilters: false
       });
     }
   },
@@ -288,26 +285,26 @@ var VisModel = Backbone.Model.extend({
    * Force a map instantiation.
    * Only expected to be called once if {skipMapInstantiation} flag is set to true when vis is created.
    */
-  instantiateMap: function (options, includeFilters) {
+  instantiateMap: function (options) {
     options = options || {};
     if (!this._instantiateMapWasCalled) {
       this._instantiateMapWasCalled = true;
       var successCallback = options.success;
       options.success = function () {
-        this._dataviewsTracker.track();
+        this._dataviewsCollection.track();
         this._initBindsAfterFirstMapInstantiation();
         successCallback && successCallback();
       }.bind(this);
-      this.reload(options, includeFilters);
+      this.reload(options);
     }
   },
 
-  reload: function (options, includeFilters) {
-    options = options || {};
-    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
+  reload: function (options) {
+    options = _.extend({includeFilters: true}, options);
+    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error', 'includeFilters');
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._windshaftMap.createInstance(options, includeFilters || true); // this reload method is call from other places
+      this._windshaftMap.createInstance(options); // this reload method is call from other places
     }
   },
 
@@ -383,17 +380,6 @@ var VisModel = Backbone.Model.extend({
       })
       .flatten()
       .value();
-  },
-
-  _getFilters: function () {
-    return this._dataviewsCollection.reduce(function (filters, dataview) {
-      var filter = dataview.filter;
-      if (filter && !filter.isEmpty()) {
-        filters['dataviews'] = filters['dataviews'] || {};
-        _.extend(filters['dataviews'], filter.toJSON());
-      }
-      return filters;
-    }, {});
   }
 });
 

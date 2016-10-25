@@ -21,16 +21,12 @@ var ModelUpdater = function (deps) {
   if (!deps.analysisCollection) {
     throw new Error('analysisCollection is required');
   }
-  if (!deps.dataviewsTracker) {
-    throw new Error('dataviewsTracker is required');
-  }
 
   this._visModel = deps.visModel;
   this._layerGroupModel = deps.layerGroupModel;
   this._layersCollection = deps.layersCollection;
   this._dataviewsCollection = deps.dataviewsCollection;
   this._analysisCollection = deps.analysisCollection;
-  this._dataviewsTracker = deps.dataviewsTracker;
 };
 
 ModelUpdater.prototype.updateModels = function (windshaftMap, sourceId, forceFetch) {
@@ -167,8 +163,6 @@ ModelUpdater.prototype._updateLegendModel = function (legendModel, layerMetadata
 
 ModelUpdater.prototype._updateDataviewModels = function (windshaftMap, sourceId, forceFetch) {
   this._dataviewsCollection.each(function (dataviewModel) {
-    this._dataviewsTracker.add(dataviewModel);
-
     var dataviewMetadata = windshaftMap.getDataviewMetadata(dataviewModel.get('id'));
     if (dataviewMetadata) {
       dataviewModel.set({

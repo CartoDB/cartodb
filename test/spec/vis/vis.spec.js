@@ -303,8 +303,9 @@ describe('vis/vis', function () {
         expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
           sourceId: 'sourceId',
           forceFetch: 'forceFetch',
-          success: 'success'
-        }, true);
+          success: 'success',
+          includeFilters: true
+        });
       });
     });
   });
@@ -317,28 +318,26 @@ describe('vis/vis', function () {
     });
 
     it('should instantiate without filters if no filters', function () {
-      this.vis._getFilters = function () {
-        return {};
+      this.vis._dataviewsCollection.anyFilter = function () {
+        return false;
       };
-
+      this.vis.instantiateMap.calls.reset();
       this.vis.init();
 
       expect(this.vis.instantiateMap).toHaveBeenCalled();
-      expect(this.vis.instantiateMap.calls.mostRecent().args[1]).toBe(false); // include filters
+      expect(this.vis.instantiateMap.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
     });
 
     it('should instantiate twice if filters', function () {
-      this.vis._getFilters = function () {
-        return {
-          foo: 'bar'
-        };
+      this.vis._dataviewsCollection.anyFilter = function () {
+        return true;
       };
 
       this.vis.instantiateMap.calls.reset();
       this.vis.init();
       this.vis._windshaftMap.createInstance.calls.mostRecent().args[0].success();
 
-      expect(this.vis.instantiateMap.calls.mostRecent().args[1]).toBe(true); // include filters
+      expect(this.vis.instantiateMap.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
     });
   });
 

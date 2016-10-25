@@ -4,6 +4,11 @@ var BackboneCancelSync = require('../util/backbone-abort-sync');
 var WindshaftFiltersBoundingBoxFilter = require('../windshaft/filters/bounding-box');
 var BOUNDING_BOX_FILTER_WAIT = 500;
 
+var UNFETCHED_STATUS = 'unfeteched';
+var FETCHING_STATUS = 'fetching';
+var FETCHED_STATUS = 'fetched';
+var FETCH_ERROR_STATUS = 'fetched';
+
 /**
  * Default dataview model
  */
@@ -13,7 +18,8 @@ module.exports = Model.extend({
     data: [],
     sync_on_data_change: true,
     sync_on_bbox_change: true,
-    enabled: true
+    enabled: true,
+    status: UNFETCHED_STATUS
   },
 
   url: function () {
@@ -188,7 +194,7 @@ module.exports = Model.extend({
   },
 
   _onChangeBinds: function () {
-    this.on('change:sync_on_bbox_change', function (model, value, opts) {
+    this.on('change:sync_on_bbox_change', function () {
       this.refresh();
     }, this);
 
@@ -263,6 +269,7 @@ module.exports = Model.extend({
 
   fetch: function (opts) {
     opts = opts || {};
+    this.set('status', FETCHING_STATUS);
     var layerDataProvider = this._getLayerDataProvider();
     if (layerDataProvider && layerDataProvider.canProvideDataFor(this)) {
       this.set(this.parse(layerDataProvider.getDataFor(this)));
@@ -275,16 +282,22 @@ module.exports = Model.extend({
 
       return Model.prototype.fetch.call(this, _.extend(opts, {
         success: function () {
+          this.set('status', FETCHED_STATUS);
           successCallback && successCallback(arguments);
           this.trigger('loaded', this);
         }.bind(this),
         error: function (mdl, err) {
+          this.set('status', FETCH_ERROR_STATUS);
           if (!err || (err && err.statusText !== 'abort')) {
             this._triggerError(err);
           }
         }.bind(this)
       }));
     }
+  },
+
+  isFetched: function () {
+    return this.get('status') === FETCHED_STATUS;
   },
 
   toJSON: function () {

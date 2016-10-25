@@ -8,6 +8,7 @@ var VisModel = require('../../../src/vis/vis');
 var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var CartoDBLayer = require('../../../src/geo/map/cartodb-layer');
 var HistogramDataviewModel = require('../../../src/dataviews/histogram-dataview-model');
+var DataviewsCollection = require('../../../src/dataviews/dataviews-collection');
 var WindshaftMapBase = require('../../../src/windshaft/map-base');
 var WindshaftClient = require('../../../src/windshaft/client');
 var CategoryFilter = require('../../../src/windshaft/filters/category');
@@ -45,7 +46,11 @@ describe('windshaft/map-base', function () {
       }
     };
 
-    this.dataviewsCollection = new Backbone.Collection();
+    this.vis = new VisModel();
+    this.dataviewsCollection = new DataviewsCollection(null, {
+      vis: this.vis
+    });
+
     this.layersCollection = new Backbone.Collection();
     this.analysisCollection = new Backbone.Collection();
     this.modelUpdater = jasmine.createSpyObj('modelUpdater', ['updateModels', 'setErrors']);
@@ -57,7 +62,6 @@ describe('windshaft/map-base', function () {
 
     this.client = new WindshaftClient(this.windshaftSettings);
 
-    this.vis = new VisModel();
     this.cartoDBLayerGroup = new Model();
     this.cartoDBLayer1 = new CartoDBLayer({ id: '12345-67890' }, { vis: this.vis });
     this.cartoDBLayer2 = new CartoDBLayer({ id: '09876-54321' }, { vis: this.vis });
@@ -129,7 +133,7 @@ describe('windshaft/map-base', function () {
             this.client.instantiateMap.calls.reset();
           }
 
-          this.windshaftMap.createInstance(this.options, true);
+          this.windshaftMap.createInstance(this.options);
 
           expect(this.client.instantiateMap).not.toHaveBeenCalled();
 
@@ -148,7 +152,7 @@ describe('windshaft/map-base', function () {
           });
 
           for (var i = 0; i < MAX_NUMBER_OF_EQUAL_REQUESTS; i++) {
-            this.windshaftMap.createInstance(this.options, true);
+            this.windshaftMap.createInstance(this.options);
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
             this.client.instantiateMap.calls.reset();
@@ -180,15 +184,16 @@ describe('windshaft/map-base', function () {
           });
 
           it('should make a request if options are different', function () {
-            this.windshaftMap.createInstance({ different: 'options' }, true);
+            this.windshaftMap.createInstance({ different: 'options' });
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
           });
 
           it('should make a request if filters have changed', function () {
+            var options = _.extend(this.options, {includeFilters: true});
             this.filter.accept('something');
 
-            this.windshaftMap.createInstance(this.options, true);
+            this.windshaftMap.createInstance(options);
 
             expect(this.client.instantiateMap).toHaveBeenCalled();
           });
@@ -265,8 +270,9 @@ describe('windshaft/map-base', function () {
         spyOn(this.windshaftMap, 'toJSON').and.returnValue({ foo: 'bar' });
 
         this.windshaftMap.createInstance({
-          sourceId: 'sourceId'
-        }, true);
+          sourceId: 'sourceId',
+          includeFilters: true
+        });
         var args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         // Filters are empty because no filter is active yet
@@ -278,8 +284,9 @@ describe('windshaft/map-base', function () {
 
         // Recreate the instance again with filters
         this.windshaftMap.createInstance({
-          sourceId: 'sourceId'
-        }, true);
+          sourceId: 'sourceId',
+          includeFilters: true
+        });
         args = this.client.instantiateMap.calls.mostRecent().args[0];
 
         expect(args.params).toEqual({

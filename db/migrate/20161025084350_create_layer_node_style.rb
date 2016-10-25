@@ -11,6 +11,7 @@ migration(
       json        :options
       json        :infowindow
       json        :tooltip
+      unique      [:layer_id, :source_id]
     end
   end,
   Proc.new do

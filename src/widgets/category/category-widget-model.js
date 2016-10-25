@@ -80,8 +80,10 @@ module.exports = WidgetModel.extend({
     this.autoStyler.colors.updateColors(e.changed.style);
   },
 
-  cancelAutoStyle: function () {
-    this.dataviewModel.layer.restoreCartoCSS();
+  cancelAutoStyle: function (noRestore) {
+    if (!noRestore) {
+      this.dataviewModel.layer.restoreCartoCSS();
+    }
     this.set('autoStyle', false);
   },
 

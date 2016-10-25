@@ -1966,7 +1966,7 @@
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",
-          "description": "Define how your widget interacts with the data",
+          "description": "Description",
           "yes": "Yes",
           "no": "No"
         }

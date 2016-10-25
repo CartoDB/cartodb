@@ -1,5 +1,6 @@
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
+var _ = require('underscore');
 
 module.exports = AutoStyler.extend({
   getStyle: function () {
@@ -19,7 +20,7 @@ module.exports = AutoStyler.extend({
     var range = [];
 
     for (var i = 0; i < categories.length; i++) {
-      range.push(this.colors.getColorByCategory(categories[i].name))
+      range.push(this.colors.getColorByCategory(categories[i].name));
     }
 
     return range;
@@ -33,8 +34,8 @@ module.exports = AutoStyler.extend({
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       var geom = item.substring(0, item.indexOf('-'));
-      definitions[geom === 'marker' ? 'point' : geom] = {
-        domain: _.pluck(categories, 'name'), range: range, attribute: model.get('column')
+      definitions[geom === 'marker' ? 'point' : geom] = { color:
+        { domain: _.pluck(categories, 'name'), range: range, attribute: model.get('column') }
       };
     });
 
@@ -57,7 +58,7 @@ module.exports = AutoStyler.extend({
 
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i];
-      var end = i !== categories.length - 1 ? ", " : "";
+      var end = i !== categories.length - 1 ? ', ' : '';
 
       catListColors += this.colors.getColorByCategory(cat.name) + end;
       if (!cat.agg) {

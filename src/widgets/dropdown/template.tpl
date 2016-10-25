@@ -15,7 +15,7 @@
 
   <% if (flags.normalizeHistogram) { %>
   <li class="CDB-Dropdown-item">
-    <div class="CDB-Dropdown-link js-toggleNormalized">
+    <button class="CDB-Dropdown-link js-toggleNormalized">
       Show totals
       <div class="CDB-Dropdown-toggle">
         <% if (normalized) { %>
@@ -25,7 +25,7 @@
         <% } %>
         <span class="u-iBlock CDB-ToggleFace"></span>
       </div>
-    </div>
+    </button>
   </li>
   <% } %>
 </ul>

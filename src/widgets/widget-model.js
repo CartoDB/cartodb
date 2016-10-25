@@ -34,7 +34,13 @@ module.exports = cdb.core.Model.extend({
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
 
-    if (this.isAutoStyleEnabled()) {
+    this.activeAutoStyler();
+    this.bind('change:style', this.activeAutoStyler, this);
+  },
+
+  activeAutoStyler: function (e) {
+    style = e && e.changed && e.changed.style;
+    if (this.isAutoStyleEnabled(style) && !this.autoStyler) {
       this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
     }
   },
@@ -107,6 +113,12 @@ module.exports = cdb.core.Model.extend({
     this.set('autoStyle', true);
     // this.getAutoStyle();
     return true;
+  },
+
+  reapplyAutoStyle: function () {
+    var style = this.autoStyler.getStyle();
+    this.dataviewModel.layer.set('cartocss', style);
+    this.set('autoStyle', true);
   },
 
   cancelAutoStyle: function (noRestore) {

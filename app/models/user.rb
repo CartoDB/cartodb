@@ -1649,6 +1649,30 @@ class User < Sequel::Model
     builder_enabled? ? 3 : 2
   end
 
+  def batch_queries_statement_timeout
+    if !defined?(@batch_queries_statement_timeout)
+      timeout_str = $users_metadata.HMGET(batch_limits_key, 'timeout').first
+      @batch_queries_statement_timeout = timeout_str.nil? ? nil : timeout_str.to_i
+    end
+    @batch_queries_statement_timeout
+  end
+
+  def batch_queries_statement_timeout=(timeout_ms)
+    unless timeout_ms.nil? || (timeout_ms.is_a?(Fixnum) && timeout_ms > 0)
+       raise 'batch_queries_statement_timeout must be nil or an integer greater than 0'
+    end
+    @batch_queries_statement_timeout = timeout_ms
+    if @batch_queries_statement_timeout.nil?
+      $users_metadata.HDEL batch_limits_key, 'timeout'
+    else
+      $users_metadata.HMSET batch_limits_key, 'timeout', timeout_ms
+    end
+  end
+
+  def batch_limits_key
+    "limits:batch:#{username}"
+  end
+
   private
 
   def common_data_outdated?
@@ -1756,4 +1780,5 @@ class User < Sequel::Model
       db_service.connect_to_aggregation_tables
     end
   end
+
 end

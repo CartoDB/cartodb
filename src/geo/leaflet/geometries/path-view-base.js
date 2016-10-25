@@ -31,7 +31,14 @@ var PathViewBase = View.extend({
   },
 
   _renderPoints: function () {
-    this.model.points.each(this._renderPoint, this);
+    var points = this._getPoints();
+    _.each(points, this._renderPoint, this);
+  },
+
+  _getPoints: function () {
+    return _.uniq(this.model.points.models, function (point) {
+      return point.getLatLng().join(',');
+    });
   },
 
   _renderPoint: function (point) {

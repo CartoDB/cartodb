@@ -15,6 +15,7 @@ var MultiPolygonView = View.extend({
 
   render: function () {
     this._renderPolygons();
+    this._updateModelsGeoJSON();
   },
 
   _renderPolygons: function () {

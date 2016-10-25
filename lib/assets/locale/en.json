@@ -1138,7 +1138,8 @@
       "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
-      "title": "You are about to delete the %{tableName} dataset"
+      "title": "You are about to delete the %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected"
     },
     "metadata": {
       "option": "Edit metadata",

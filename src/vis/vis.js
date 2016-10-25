@@ -14,6 +14,7 @@ var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
+var whenAllDataviewsFetched = require('./dataviews-tracker');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -31,9 +32,7 @@ var VisModel = Backbone.Model.extend({
     this._analysisPoller = new AnalysisPoller();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
-    this._dataviewsCollection = new DataviewsCollection(null, {
-      vis: this
-    });
+    this._dataviewsCollection = new DataviewsCollection();
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
@@ -264,7 +263,7 @@ var VisModel = Backbone.Model.extend({
 
   init: function (options) {
     options = options || {};
-    var filters = this._dataviewsCollection.anyFilter();
+    var filters = this._dataviewsCollection.isAnyDataviewFiltered();
     var self = this;
 
     if (!filters) {
@@ -291,12 +290,16 @@ var VisModel = Backbone.Model.extend({
       this._instantiateMapWasCalled = true;
       var successCallback = options.success;
       options.success = function () {
-        this._dataviewsCollection.track();
+        whenAllDataviewsFetched(this._dataviewsCollection, this._onDataviewFetched.bind(this));
         this._initBindsAfterFirstMapInstantiation();
         successCallback && successCallback();
       }.bind(this);
       this.reload(options);
     }
+  },
+
+  _onDataviewFetched: function () {
+    this.trigger('dataviewsFetched');
   },
 
   reload: function (options) {

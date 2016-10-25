@@ -7,7 +7,7 @@ var BOUNDING_BOX_FILTER_WAIT = 500;
 var UNFETCHED_STATUS = 'unfeteched';
 var FETCHING_STATUS = 'fetching';
 var FETCHED_STATUS = 'fetched';
-var FETCH_ERROR_STATUS = 'fetched';
+var FETCH_ERROR_STATUS = 'error';
 
 /**
  * Default dataview model
@@ -296,10 +296,6 @@ module.exports = Model.extend({
     }
   },
 
-  isFetched: function () {
-    return this.get('status') === FETCHED_STATUS;
-  },
-
   toJSON: function () {
     throw new Error('toJSON should be defined for each dataview');
   },
@@ -342,6 +338,14 @@ module.exports = Model.extend({
 
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  isFetched: function () {
+    return this.get('status') === FETCHED_STATUS;
+  },
+
+  isUnavailable: function () {
+    return this.get('status') === FETCH_ERROR_STATUS;
   }
 },
 

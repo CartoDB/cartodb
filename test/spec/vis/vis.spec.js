@@ -318,7 +318,7 @@ describe('vis/vis', function () {
     });
 
     it('should instantiate without filters if no filters', function () {
-      this.vis._dataviewsCollection.anyFilter = function () {
+      this.vis._dataviewsCollection.isAnyDataviewFiltered = function () {
         return false;
       };
       this.vis.instantiateMap.calls.reset();
@@ -329,7 +329,7 @@ describe('vis/vis', function () {
     });
 
     it('should instantiate twice if filters', function () {
-      this.vis._dataviewsCollection.anyFilter = function () {
+      this.vis._dataviewsCollection.isAnyDataviewFiltered = function () {
         return true;
       };
 

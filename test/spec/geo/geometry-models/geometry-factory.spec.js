@@ -4,6 +4,7 @@ var Point = require('../../../../src/geo/geometry-models/point');
 var Polyline = require('../../../../src/geo/geometry-models/polyline');
 var Polygon = require('../../../../src/geo/geometry-models/polygon');
 var MultiPolygon = require('../../../../src/geo/geometry-models/multi-polygon');
+var MultiPolyline = require('../../../../src/geo/geometry-models/multi-polyline');
 
 var geometryAsFeature = function (geometry) {
   return {
@@ -101,6 +102,14 @@ var multiPolygonGeometry = {
   ]
 };
 
+var multiPolylineGeometry =  {
+  'type': 'MultiLineString',
+  'coordinates': [
+    [ [100.0, 0.0], [101.0, 1.0] ],
+    [ [102.0, 2.0], [103.0, 3.0] ]
+  ]
+};
+
 describe('src/geo/geometry-models/geometry-factory', function () {
   beforeEach(function () {
     this.geometryFactory = new GeometryFactory();
@@ -134,15 +143,27 @@ describe('src/geo/geometry-models/geometry-factory', function () {
       });
     });
 
-    _.each([ multiPolygonGeometry, geometryAsFeature(multiPolygonGeometry) ], function (geoJSON) {
+    _.each([ multiPolygonGeometry ], function (geoJSON) {
       it('should create a multipolygon', function () {
         var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof MultiPolygon).toBeTruthy();
-        expect(geometry.polygons.length).toEqual(2);
+        expect(geometry.paths.length).toEqual(2);
         expect(geometry.getLatLngs()).toEqual([
           [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ],
           [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ]
+        ]);
+      });
+    });
+
+    _.each([ multiPolylineGeometry ], function (geoJSON) {
+      it('should create a multipolyline', function () {
+        var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
+
+        expect(geometry instanceof MultiPolyline).toBeTruthy();
+        expect(geometry.paths.length).toEqual(2);
+        expect(geometry.getLatLngs()).toEqual([
+          [ [ 0, 100 ], [ 1, 101 ] ], [ [ 2, 102 ], [ 3, 103 ] ]
         ]);
       });
     });

@@ -1,44 +1,26 @@
-var _ = require('underscore');
 var PolygonView = require('../../../../../src/geo/leaflet/geometries/polygon-view.js');
 var Polygon = require('../../../../../src/geo/geometry-models/polygon.js');
 
 var SharedTestsForPathViews = require('./shared-tests-for-path-views.js');
+var GeoJSONHelper = require('./geojson-helper.js');
 
 var pathToGeoJSONFunction = function (path) {
-  var coords = path.getLatLngs();
-  coords.push(coords[0]);
-  coords = _.map(coords, function (lnglat) {
-    return [lnglat[1], lnglat[0]];
-  });
-
+  var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs());
   return {
     'type': 'Feature',
     'properties': {},
     'geometry': {
       'type': 'Polygon',
-      'coordinates': [
-        coords
-      ]
+      'coordinates': [ coords ]
     }
   };
 };
 
-describe('src/geo/leaflet/geometries/polygon-view.js', function () {
+fdescribe('src/geo/leaflet/geometries/polygon-view.js', function () {
   beforeEach(function () {
     this.geometry = new Polygon(null, {
       latlngs: [
-        [
-          -1,
-          1
-        ],
-        [
-          1,
-          2
-        ],
-        [
-          3,
-          4
-        ]
+        [-1, 1], [1, 2], [3, 4]
       ]
     });
 

@@ -1,9 +1,9 @@
 var MultiPathViewBase = require('./multi-path-view-base');
-var PolygonView = require('./polygon-view');
+var PolylineView = require('./polyline-view');
 
 var MultiPolygonView = MultiPathViewBase.extend({
-  PathViewClass: PolygonView,
-  geoJSONType: 'MultiPolygon'
+  PathViewClass: PolylineView,
+  geoJSONType: 'MultiLineString'
 });
 
 module.exports = MultiPolygonView;

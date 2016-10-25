@@ -1,6 +1,7 @@
 var Point = require('../../../../../src/geo/geometry-models/point.js');
 
 module.exports = function (pathToGeoJSONFunction) {
+  if (!pathToGeoJSONFunction) throw new Error('pathToGeoJSONFunction function is required');
 
   beforeEach(function () {
     if (!this.geometry) throw new Error('geometry is required');

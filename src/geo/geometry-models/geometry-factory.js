@@ -3,12 +3,14 @@ var Point = require('./point');
 var Polyline = require('./polyline');
 var Polygon = require('./polygon');
 var MultiPolygon = require('./multi-polygon');
+var MultiPolyline = require('./multi-polyline');
 
 var GEOJSON_TYPE_TO_CREATE_METHOD_NAME = {
   Point: 'createPointFromGeoJSON',
   LineString: 'createPolylineFromGeoJSON',
   Polygon: 'createPolygonFromGeoJSON',
-  MultiPolygon: 'createMultiPolygonFromGeoJSON'
+  MultiPolygon: 'createMultiPolygonFromGeoJSON',
+  MultiLineString: 'createMultiPolylineFromGeoJSON'
 };
 
 var getGeometryType = function (geoJSON) {
@@ -43,6 +45,10 @@ GeometryFactory.prototype.createPolygon = function (attrs, options) {
 
 GeometryFactory.prototype.createMultiPolygon = function (attrs, options) {
   return new MultiPolygon(attrs, options);
+};
+
+GeometryFactory.prototype.createMultiPolyline = function (attrs, options) {
+  return new MultiPolyline(attrs, options);
 };
 
 GeometryFactory.prototype.createGeometryFromGeoJSON = function (geoJSON) {
@@ -89,6 +95,19 @@ GeometryFactory.prototype.createMultiPolygonFromGeoJSON = function (geoJSON) {
     return convertLngLatsToLatLngs(lnglats[0]);
   }, this);
   return this.createMultiPolygon({
+    geojson: geoJSON,
+    editable: true
+  }, {
+    latlngs: latlngs
+  });
+};
+
+GeometryFactory.prototype.createMultiPolylineFromGeoJSON = function (geoJSON) {
+  var lnglats = getGeometryCoordinates(geoJSON);
+  var latlngs = _.map(lnglats, function (lnglats) {
+    return convertLngLatsToLatLngs(lnglats);
+  }, this);
+  return this.createMultiPolyline({
     geojson: geoJSON,
     editable: true
   }, {

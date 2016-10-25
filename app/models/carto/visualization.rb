@@ -377,6 +377,16 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
   end
 
+  MAX_MAPCAPS_PER_VISUALIZATION = 1
+
+  def create_mapcap!
+    unless mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
+      mapcaps.last.destroy
+    end
+
+    mapcaps.create!
+  end
+
   def mapcapped?
     mapcaps.exists?
   end

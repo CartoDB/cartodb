@@ -17,11 +17,11 @@ module Hubspot
       end
     end
 
-    private
-
     def enabled?
       token && base_url
     end
+
+    private
 
     def serialize_params(params)
       parse_params_array = params.keys.map do |key|

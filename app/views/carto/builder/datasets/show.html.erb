@@ -1,4 +1,4 @@
-<div class="Editor">
+<div class="Editor js-editor">
   <div class="Editor-wrapper">
     <div class="EditorMenu">
       <a class="EditorMenu-logo" href="<%= CartoDB.url(self, 'dashboard', {}, current_user) %>/datasets">
@@ -33,6 +33,7 @@
   var tableData = <%= safe_js_object @user_table_data.to_json %>;
   var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
   var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
+  var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
   var ACTIVE_LOCALE = 'en';
 </script>
 

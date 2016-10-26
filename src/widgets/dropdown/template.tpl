@@ -2,7 +2,7 @@
   <li class="CDB-Dropdown-item">
     <button class="CDB-Dropdown-link js-toggleCollapsed">
       Toggle widget
-        <div>
+        <div class="CDB-Dropdown-toggle">
         <% if (collapsed) { %>
           <input class="CDB-Toggle js-inputCollapsed" checked="checked" type="checkbox" name="collapsed">
         <% } else { %>
@@ -15,9 +15,9 @@
 
   <% if (flags.normalizeHistogram) { %>
   <li class="CDB-Dropdown-item">
-    <div class="CDB-Dropdown-link js-toggleNormalized">
+    <button class="CDB-Dropdown-link js-toggleNormalized">
       Show totals
-      <div>
+      <div class="CDB-Dropdown-toggle">
         <% if (normalized) { %>
         <input class="CDB-Toggle u-iBlock js-inputNormalized" type="checkbox" name="normalized">
         <% } else { %>
@@ -25,7 +25,7 @@
         <% } %>
         <span class="u-iBlock CDB-ToggleFace"></span>
       </div>
-    </div>
+    </button>
   </li>
   <% } %>
 </ul>

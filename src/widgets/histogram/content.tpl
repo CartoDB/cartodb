@@ -1,6 +1,6 @@
 <div class="CDB-Widget-header js-header">
   <div class="js-title"></div>
-  <% if (showStats) { %>
+  <% if (showStats && !isCollapsed) { %>
     <dl class="CDB-Widget-info CDB-Text CDB-Size-small u-secondaryTextColor u-upperCase u-tSpace">
       <dt class="CDB-Widget-infoCount js-nulls">0</dt><dd class="CDB-Widget-infoDescription">NULL ROWS</dd>
       <dt class="CDB-Widget-infoCount js-min">0</dt><dd class="CDB-Widget-infoDescription">MIN</dd>
@@ -9,6 +9,7 @@
     </dl>
   <% } %>
 </div>
+<% if (!isCollapsed) { %>
 <div class="CDB-Widget-content CDB-Widget-content--histogram js-content">
   <div class="CDB-Widget-tooltip CDB-Widget-tooltip--light CDB-Text CDB-Size-small js-tooltip"></div>
   <div class="CDB-Widget-filter CDB-Widget-contentSpaced ">
@@ -19,3 +20,4 @@
     </div>
   </div>
 </div>
+<% } %>

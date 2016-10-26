@@ -1,5 +1,7 @@
 # encoding utf-8
 
+require 'hubspot/events_api'
+
 module Resque
   module TrackingJobs
     module SendSegmentEvent
@@ -22,7 +24,8 @@ module Resque
     module SendHubspotEvent
       @queue = :tracker
 
-      def self.perform
+      def self.perform(id, params)
+        Hubspot::EventsAPI.instance.report_event(id, params)
       end
     end
   end

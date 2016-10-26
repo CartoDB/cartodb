@@ -2,7 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
 var cdb = require('cartodb.js');
-var tinycolor = require("tinycolor2");
+var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 
 module.exports = cdb.core.View.extend({
@@ -1004,8 +1004,7 @@ module.exports = cdb.core.View.extend({
 
     if (document.styleSheets[0].cssRules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
       document.styleSheets[0].insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
-    }
-    else {
+    } else {
       document.styleSheets[0].cssRules[0].style.fill = color;
     }
   },

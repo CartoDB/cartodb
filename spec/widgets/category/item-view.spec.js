@@ -37,9 +37,7 @@ describe('widgets/category/item-view', function () {
     this.widgetModel.set('style', {
       widget_style: {
         definition: {
-          fill: {
-            color: {fixed: '#F04'}
-          }
+          color: {fixed: '#F04'}
         }
       }
     });

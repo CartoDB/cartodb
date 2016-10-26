@@ -4,7 +4,6 @@ var MultiGeometryBase = require('./multi-geometry-base');
 
 var MultiPolygon = MultiGeometryBase.extend({
   defaults: {
-    type: 'multiPolygon',
     editable: false
   },
 

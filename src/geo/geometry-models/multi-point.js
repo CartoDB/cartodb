@@ -4,7 +4,6 @@ var MultiGeometryBase = require('./multi-geometry-base');
 
 var MultiPoint = MultiGeometryBase.extend({
   defaults: {
-    type: 'multiPoint',
     editable: false
   },
 

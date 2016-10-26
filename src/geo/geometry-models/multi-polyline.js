@@ -4,7 +4,6 @@ var MultiGeometryBase = require('./multi-geometry-base');
 
 var MultiPolyline = MultiGeometryBase.extend({
   defaults: {
-    type: 'multiPolyline',
     editable: false
   },
 

@@ -3,7 +3,7 @@ var PathBase = require('./path-base');
 
 var Polygon = PathBase.extend({
   defaults: {
-    type: 'polygon',
+    editable: false,
     color: '#397dba'
   },
 

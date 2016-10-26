@@ -3,7 +3,7 @@ var PathBase = require('./path-base');
 
 var Polyline = PathBase.extend({
   defaults: {
-    type: 'polyline',
+    editable: false,
     color: '#397dba'
   },
 

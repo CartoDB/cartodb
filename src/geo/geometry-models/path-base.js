@@ -4,10 +4,6 @@ var Point = require('./point');
 var GeometryBase = require('./geometry-base');
 
 var PathBase = GeometryBase.extend({
-  defaults: {
-    editable: false
-  },
-
   initialize: function (attrs, options) {
     GeometryBase.prototype.initialize.apply(this, arguments);
     options = options || {};

@@ -76,7 +76,9 @@ module.exports = WidgetModel.extend( {
 
   _updateColors: function( e ) {
     this.autoStyler.colors.updateColors( e.changed.style );
-    this.reapplyAutoStyle();
+    if (this.isAutoStyle()) {
+      this.reapplyAutoStyle();
+    }
   },
 
   isLocked: function() {

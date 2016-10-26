@@ -1,5 +1,11 @@
 var _ = require('underscore');
 
+ATTR_TO_NUMBER = {
+  'marker-fill': 1,
+  'line-color': 2,
+  'polygon-fill': 3
+};
+
 function getAttrRegex (attr, multi) {
   return new RegExp('\\' + 's' + attr + ':.*?(;|\n)', multi ? 'g' : '');
 }
@@ -22,6 +28,10 @@ function insertCartoCSSAttribute (cartocss, attrib, flag) {
   return cartocss.replace(flag, attrib);
 }
 
+function createEmtpyLayer(cartocss, attr) {
+  return "#layer ['mapnik::geometry_type'=" + ATTR_TO_NUMBER[attr] + "] {  } " + cartocss;
+}
+
 function replaceWrongSpaceChar (cartocss) {
   return cartocss.replace(new RegExp(String.fromCharCode(160), 'g'), ' ');
 }
@@ -38,7 +48,7 @@ function changeStyle (cartocss, attr, newStyle) {
   return insertCartoCSSAttribute(
             removeEmptyLayer(
               removeAttr(
-                setFlagInCartocss(cartocss, attr, flag),
+                setFlagInCartocss(createEmtpyLayer(cartocss, attr), attr, flag),
                 attr
               )
             ),

@@ -58,6 +58,10 @@ class Carto::AnalysisNode
     children.map(&:source_descendants).flatten
   end
 
+  def descendants
+    [self] + children.map(&:descendants).flatten
+  end
+
   def fix_analysis_node_queries(old_username, new_user, renamed_tables)
     if options && options.key?(:table_name)
       old_table_name = options[:table_name]

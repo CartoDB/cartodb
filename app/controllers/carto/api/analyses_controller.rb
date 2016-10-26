@@ -39,12 +39,14 @@ module Carto
           )
         end
         analysis.save!
+        purge_layer_node_style_cache(analysis)
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 
       def update
         @analysis.analysis_definition = analysis_definition_from_request
         @analysis.save!
+        purge_layer_node_style_cache(@analysis)
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
 
@@ -54,6 +56,24 @@ module Carto
       end
 
       private
+
+      def purge_layer_node_style_cache(analysis)
+        layer_ids = analysis.visualization.data_layers.map(&:id)
+        layer_node_styles = LayerNodeStyle.where(layer_id: layer_ids).all
+        analysis.analysis_node.descendants.each do |node|
+          simple_geom = node.options[:simple_geom] if node.options
+          if simple_geom.present?
+            layer_node_styles.select { |lns| lns.source_id == node.id && lns.simple_geom != simple_geom }.each do |lns|
+              if lns.simple_geom.nil?
+                lns.simple_geom = simple_geom
+                lns.save
+              else
+                lns.destroy
+              end
+            end
+          end
+        end
+      end
 
       def analysis_definition_from_request
         analysis_json = json_post(request.raw_post)

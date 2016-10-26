@@ -3,7 +3,7 @@ module Carto
   module Api
     class UserTablePresenter
       # options:
-      # - owned_dependent_derived_visualizations
+      # - accessible_dependent_derived_maps
 
       PRIVACY_PRIVATE = 0
       PRIVACY_PUBLIC = 1
@@ -28,7 +28,7 @@ module Carto
         self
       end
 
-      def to_poro(owned_dependent_derived_visualizations: false, context: nil)
+      def to_poro(accessible_dependent_derived_maps: false, context: nil)
         return {} if @user_table.nil?
         row_count_and_size = @user_table.row_count_and_size
         poro = {
@@ -42,8 +42,10 @@ module Carto
           row_count: row_count_and_size[:row_count]
         }
 
-        if owned_dependent_derived_visualizations && context
-          poro[:owned_dependent_derived_visualizations] = @user_table.owned_dependent_derived_visualizations.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
+        if accessible_dependent_derived_maps && context
+          poro[:accessible_dependent_derived_maps] = @user_table.accessible_dependent_derived_maps.map {
+            |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro
+          }
         end
 
         poro

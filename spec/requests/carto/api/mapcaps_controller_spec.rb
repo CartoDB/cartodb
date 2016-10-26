@@ -39,7 +39,7 @@ describe Carto::Api::MapcapsController do
 
     mapcap = Carto::Mapcap.find(new_mapcap_id)
 
-    expected_response = JSON.load(Carto::Api::MapcapPresenter.new(mapcap).to_poro.to_json).deep_symbolize_keys
+    expected_response = JSON.parse(Carto::Api::MapcapPresenter.new(mapcap).to_poro.to_json).deep_symbolize_keys
 
     response.should eq expected_response
   end

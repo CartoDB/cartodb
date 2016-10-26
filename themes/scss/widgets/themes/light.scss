@@ -202,12 +202,6 @@ $chartMiniSelected: rgba(#333, 1);
     stroke: $link;
   }
 
-  // .CDB-Chart-bar {
-  //   fill: $highlighted;
-  // }
-  // .CDB-Chart-bar.is-highlighted {
-  //   fill: $darkHighlighted;
-  // }
   .CDB-Chart-bar--timeSeries {
     fill: $highlightedAlternative;
   }

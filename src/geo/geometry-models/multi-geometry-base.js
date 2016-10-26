@@ -25,10 +25,6 @@ var MultiGeometryBase = GeometryBase.extend({
     return this.geometries.all(function (geometry) {
       return geometry.isComplete();
     });
-  },
-
-  isEditable: function () {
-    return !!this.get('editable');
   }
 });
 

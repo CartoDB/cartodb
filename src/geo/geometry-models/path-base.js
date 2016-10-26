@@ -37,10 +37,6 @@ var PathBase = GeometryBase.extend({
     this.setLatLngs(latlngs);
   },
 
-  isEditable: function () {
-    return !!this.get('editable');
-  },
-
   _createPoint: function (latlng) {
     return new Point({
       latlng: latlng,

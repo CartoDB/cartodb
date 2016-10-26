@@ -28,10 +28,6 @@ var Point = GeometryBase.extend({
     return this.get('latlng');
   },
 
-  isEditable: function () {
-    return !!this.get('editable');
-  },
-
   toGeoJSON: function () {
     var coords = GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(this.getLatLng());
     return {

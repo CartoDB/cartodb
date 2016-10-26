@@ -18,5 +18,12 @@ module Resque
                                 properties: properties)
       end
     end
+
+    module SendHubspotEvent
+      @queue = :tracker
+
+      def self.perform
+      end
+    end
   end
 end

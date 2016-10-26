@@ -6,11 +6,12 @@ migration(
   Proc.new do
     create_table :layer_node_styles do
       primary_key :id, type: :uuid, default: 'uuid_generate_v4()'.lit
-      foreign_key :layer_id, :layers, type: :uuid, on_delete: :cascade
-      String      :source_id
-      json        :options
-      json        :infowindow
-      json        :tooltip
+      foreign_key :layer_id, :layers, type: :uuid, null: false, on_delete: :cascade
+      String      :source_id, null: false
+      String      :simple_geom
+      json        :options, null: false
+      json        :infowindow, null: false
+      json        :tooltip, null: false
       unique      [:layer_id, :source_id]
     end
   end,

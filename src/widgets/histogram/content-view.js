@@ -173,14 +173,12 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
     this.histogramChartView.model.once('change:data', function () {
-      if (_.isNumber(this.model.get('min')) || _.isNumber(this.model.get('max'))) {
-        var scale = d3.scale.linear().domain([this._dataviewModel.get('start'), this._dataviewModel.get('end')]).range([0, this._dataviewModel.get('bins')]);
-        var lo = Math.round(scale(this.model.get('min')));
-        var hi = Math.round(scale(this.model.get('max')));
-        if (lo !== 0 && hi !== this._dataviewModel.get('bins') - 1) {
-          this.histogramChartView.selectRange(lo, hi);
-          this.model.set('filter_enabled', true);
-        }
+      var bars = this._calculateBars();
+      var lo = bars.loBarIndex;
+      var hi = bars.hiBarIndex;
+      if (lo !== 0 || hi !== this._dataviewModel.get('bins')) {
+        this.histogramChartView.selectRange(lo, hi);
+        this.model.set('filter_enabled', true);
       }
     }, this);
 
@@ -377,16 +375,23 @@ module.exports = cdb.core.View.extend({
     var startMin;
     var startMax;
 
-    if (!loBarIndex || !hiBarIndex) {
-      if (min && max && data.length > 0) {
-        startMin = _.findWhere(data, {start: min});
-        startMax = _.findWhere(data, {start: max});
-        loBarIndex = startMin && startMin.bin || 0;
-        hiBarIndex = startMax && startMax.bin || data.length;
-      } else {
+    if (data.length > 0) {
+      if (!_.isNumber(min) && !_.isNumber(loBarIndex)) {
         loBarIndex = 0;
-        hiBarIndex = data.length;
+      } else if (_.isNumber(min) && !_.isNumber(loBarIndex)) {
+        startMin = _.findWhere(data, {start: min});
+        loBarIndex = startMin && startMin.bin || 0;
       }
+
+      if (!_.isNumber(max) && !_.isNumber(hiBarIndex)) {
+        hiBarIndex = data.length;
+      } else if (_.isNumber(max) && !_.isNumber(hiBarIndex)) {
+        startMax = _.findWhere(data, {end: max});
+        hiBarIndex = startMax && startMax.bin + 1 || data.length;
+      }
+    } else {
+      loBarIndex = 0;
+      hiBarIndex = data.length;
     }
 
     return {
@@ -412,7 +417,7 @@ module.exports = cdb.core.View.extend({
       }
 
       if (hiBarIndex >= 0 && hiBarIndex - 1 < data.length) {
-        max = data[hiBarIndex - 1].end;
+        max = data[Math.max(0, hiBarIndex - 1)].end;
       }
 
       this.model.set({ total: sum, nulls: nulls, min: min, max: max, avg: avg });

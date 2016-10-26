@@ -29,9 +29,9 @@ module Carto
       end
 
       def create
-        @visualization.create_mapcap!
+        mapcap = @visualization.create_mapcap!
 
-        render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro, :created)
+        render_jsonp(Carto::Api::MapcapPresenter.new(mapcap).to_poro, :created)
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise Carto::UnprocesableEntityError.new(message)

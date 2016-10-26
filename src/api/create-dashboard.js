@@ -28,7 +28,6 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     : true;
 
   var widgets = new WidgetsCollection();
-  var coords = JSON.parse(vizJSON.center);
 
   var model = new cdb.core.Model({
     title: vizJSON.title,
@@ -39,8 +38,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
     initialPosition: {
-      center: coords,
-      zoom: vizJSON.zoom
+      bounds: vizJSON.bounds
     }
   });
   var dashboardView = new DashboardView({
@@ -49,10 +47,8 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     model: model
   });
   var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
-  if (!_.isEmpty(stateFromURL.map)) {
-    vizJSON.center = stateFromURL.map.center;
-    vizJSON.bounds = null;
-    vizJSON.zoom = stateFromURL.map.zoom;
+  if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
+    vizJSON.bounds = [stateFromURL.map.ne, stateFromURL.map.sw];
   }
 
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {
@@ -60,11 +56,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   }));
 
   vis.once('load', function (vis) {
-    if (!_.isEmpty(stateFromURL.map)) {
-      vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+    if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
+      vis.map.setBounds([stateFromURL.map.ne, stateFromURL.map.sw]);
     }
 
-    var widgetsState = stateFromURL.widgets || {};
+    var widgetsState = stateFromURL && stateFromURL.widgets || {};
 
     // Create widgets
     var widgetsService = new WidgetsService(widgets, vis.dataviews);

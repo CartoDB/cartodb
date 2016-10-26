@@ -17,10 +17,15 @@ module.exports = {
   },
   getStateFromURL: function (url) {
     var uri = new URI(url);
+    var state;
+    var result = {};
     if (uri.hasQuery('state')) {
-      return JSON.parse(decodeURIComponent(uri.query(true)['state']));
+      state = uri.query(true)['state'];
+      if (!_.isEmpty(state)) {
+        result = JSON.parse(decodeURIComponent(state));
+      }
     }
-    return {};
+    return result;
   },
   getLocalURL: _.constant(window.location.href)
 };

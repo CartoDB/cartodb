@@ -16,7 +16,7 @@ var pathToGeoJSONFunction = function (path) {
   };
 };
 
-fdescribe('src/geo/leaflet/geometries/polygon-view.js', function () {
+describe('src/geo/leaflet/geometries/polygon-view.js', function () {
   beforeEach(function () {
     this.geometry = new Polygon(null, {
       latlngs: [

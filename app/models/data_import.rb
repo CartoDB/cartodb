@@ -1041,7 +1041,8 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
-    return unless current_user_id = current_user.id
+    current_user_id = current_user.id
+    return unless current_user_id
 
     if visualization_id
       Carto::Tracking::Events::CreatedMap.new(current_user_id,
@@ -1059,7 +1060,8 @@ class DataImport < Sequel::Model
                           end
 
       user_table = ::UserTable.where(condition).first
-      if user_table && map = user_table.map
+      map = user_table.map
+      if user_table && map
         vis = Carto::Visualization.where(map_id: map.id).first
 
         Carto::Tracking::Events::CreatedDataset.new(current_user_id,

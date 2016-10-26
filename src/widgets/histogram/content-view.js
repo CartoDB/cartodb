@@ -254,7 +254,7 @@ module.exports = cdb.core.View.extend({
 
     var data = this._originalData.getData();
 
-    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
+    if (loBarIndex !== hiBarIndex && loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
       this.filter.setRange(
         data[loBarIndex].start,
         data[hiBarIndex - 1].end
@@ -420,7 +420,7 @@ module.exports = cdb.core.View.extend({
         max = data[Math.max(0, hiBarIndex - 1)].end;
       }
 
-      this.model.set({ total: sum, nulls: nulls, min: min, max: max, avg: avg });
+      this.model.set({ total: sum, nulls: nulls, min: min, max: max, avg: avg, lo_index: loBarIndex, hi_index: hiBarIndex });
     }
   },
 

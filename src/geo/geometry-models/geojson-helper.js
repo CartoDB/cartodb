@@ -1,6 +1,18 @@
 var _ = require('underscore');
 
+var getGeometry = function (geoJSON) {
+  return geoJSON.geometry || geoJSON;
+};
+
 module.exports = {
+  getGeometryType: function (geoJSON) {
+    return getGeometry(geoJSON).type;
+  },
+
+  getGeometryCoordinates: function (geoJSON) {
+    return getGeometry(geoJSON).coordinates;
+  },
+
   convertLatlngsToLnglats: function (latlngs) {
     return _.map(latlngs, this.convertLatlngToLngLat);
   },

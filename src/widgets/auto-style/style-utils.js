@@ -1,6 +1,6 @@
 var _ = require('underscore');
 
-ATTR_TO_NUMBER = {
+var ATTR_TO_NUMBER = {
   'marker-fill': 1,
   'line-color': 2,
   'polygon-fill': 3
@@ -28,8 +28,8 @@ function insertCartoCSSAttribute (cartocss, attrib, flag) {
   return cartocss.replace(flag, attrib);
 }
 
-function createEmtpyLayer(cartocss, attr) {
-  return "#layer ['mapnik::geometry_type'=" + ATTR_TO_NUMBER[attr] + "] {  } " + cartocss;
+function createEmtpyLayer (cartocss, attr) {
+  return "#layer ['mapnik::geometry_type'=" + ATTR_TO_NUMBER[attr] + '] {  } ' + cartocss;
 }
 
 function replaceWrongSpaceChar (cartocss) {

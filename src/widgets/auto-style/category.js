@@ -58,7 +58,7 @@ module.exports = AutoStyler.extend({
 
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i];
-      var start = "'"
+      var start = "'";
       var end = i !== categories.length - 1 ? "', " : "'";
 
       catListColors += start + this.colors.getColorByCategory(cat.name) + end;

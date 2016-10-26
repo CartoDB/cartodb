@@ -39,7 +39,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   activeAutoStyler: function (e) {
-    style = e && e.changed && e.changed.style;
+    var style = e && e.changed && e.changed.style;
     if (this.isAutoStyleEnabled(style) && !this.autoStyler) {
       this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
     }

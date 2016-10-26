@@ -16,7 +16,7 @@ module.exports = AutoStyler.extend({
 
   getRange: function () {
     return _.map(this.dataviewModel.get('data'), function (category) {
-        return this.colors.getColorByCategory(category.name);
+      return this.colors.getColorByCategory(category.name);
     }, this);
   },
 

@@ -19,18 +19,6 @@ module.exports = cdb.core.Model.extend({
     'collapsed': false
   },
 
-  super: function (name) {
-    // NOTE: add this to backbone himself?
-    name = name || this.super.caller.name;
-
-    var returned = this.prototype &&
-      this.prototype.prototype &&
-      this.prototype.prototype[name] &&
-      this.prototype.prototype[name].call(this);
-
-    return returned;
-  },
-
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
 

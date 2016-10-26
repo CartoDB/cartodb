@@ -36,46 +36,36 @@ Dashboard.prototype = {
     var state = {};
     var mapState = this.getMapState(); // TODO
     if (!_.isEmpty(mapState)) state.map = mapState;
-    /*
-     * TODO: Disabled widget states until issues are fixed.
-     * See https://github.com/CartoDB/deep-insights.js/issues/416
-     */
-    // var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
-    // if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
+
+    var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
+    if (!_.isEmpty(widgetsState)) state.widgets = widgetsState;
     return state;
   },
 
   getMapState: function () {
-    var initialState = this._dashboard.dashboardView.getInitialMapState();
-    var currentCenter = this._dashboard.vis.map.get('center');
-    var currentZoom = this._dashboard.vis.map.getZoom();
-    var upperLat = initialState.center[0] * 0.01;
-    var upperLon = initialState.center[1] * 0.01;
-    var inside = (Math.abs(initialState.center[0] - currentCenter[0]) < upperLat) && (Math.abs(initialState.center[1] - currentCenter[1]) < upperLon);
-    if (inside && _.isEqual(currentZoom, initialState.zoom)) {
-      return {};
-    } else {
-      return {
-        center: currentCenter,
-        zoom: currentZoom
-      };
-    }
+    var currentBoundingBox = this._dashboard.vis.map.getViewBounds();
+    return {
+      ne: currentBoundingBox[0],
+      sw: currentBoundingBox[1]
+    };
   },
 
   setState: function (state) {
     // todo: set map state
     this._dashboard.widgets.setWidgetsState(state.widgets);
-    this._dashboard.vis.map.setView(state.map.center, state.map.zoom);
+    this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
   onStateChanged: function (callback) {
-    /*
-     * TODO: Disabled widget states until issues are fixed.
-     * See https://github.com/CartoDB/deep-insights.js/issues/416
-     */
-    // this._dashboard.widgets._widgetsCollection.bind('change', function () {
-    //   callback(this.getState(), this.getDashboardURL());
-    // }, this);
+    this._dashboard.vis.once('dataviewsFetched', function () {
+      this._bindChange(callback);
+    }, this);
+  },
+
+  _bindChange: function (callback) {
+    this._dashboard.widgets._widgetsCollection.bind('change', function () {
+      callback(this.getState(), this.getDashboardURL());
+    }, this);
 
     this._dashboard.vis.map.bind('change', function () {
       callback(this.getState(), this.getDashboardURL());

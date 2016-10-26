@@ -377,6 +377,22 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
   end
 
+  MAX_MAPCAPS_PER_VISUALIZATION = 1
+
+  def create_mapcap
+    unless mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
+      mapcaps.last.destroy
+    end
+
+    Mapcap.create!(visualization_id: id)
+  rescue ActiveRecord::RecordInvalid => exception
+    validation_errors = exception.record.errors.full_messages.join(', ')
+    CartoDB::Logger.error(message: 'Couldn\'t create Mapcap',
+                          exception: exception,
+                          visualization_id: id,
+                          errors: validation_errors)
+  end
+
   def mapcapped?
     mapcaps.exists?
   end

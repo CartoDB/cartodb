@@ -60,9 +60,9 @@ describe Carto::Api::MapcapsController do
     end
 
     it 'should only allow MAX_MAPCAPS_PER_VISUALIZATION mapcaps' do
-      max_mapcaps_per_visualization = Carto::Mapcap::MAX_MAPCAPS_PER_VISUALIZATION
+      max_mapcaps = Carto::visualization::MAX_MAPCAPS_PER_VISUALIZATION
 
-      (max_mapcaps_per_visualization + 1).times do
+      (max_mapcaps + 1).times do
         post_json create_mapcap_url, {} do |response|
           response.status.should eq 201
 

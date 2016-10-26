@@ -7,13 +7,19 @@
     </div>
     <div>
       <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
-        <%= _t('dataset.delete.title', { tableName: "<span class='CDB-Text is-semibold'>" + tableName + "</span>" }) %>
+        <%= _t('dataset.delete.title', { tableName: tableName }) %>
       </h2>
       <p class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('dataset.delete.desc') %></p>
 
       <% if (affectedVisCount > 0) { %>
         <div class="Modal-listActions">
-          <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dataset.delete.affected-vis-count', {smart_count: affectedVisCount}) %></p>
+          <p class="CDB-Text CDB-Size-medium u-altTextColor">
+            <% if (affectedVisCount > 3) {%>
+              <%= _t('dataset.delete.affected-vis-count-extended', {affectedVisCount: affectedVisCount}) %>
+            <% } else { %>
+              <%= _t('dataset.delete.affected-vis-count', {smart_count: affectedVisCount}) %>
+            <% } %>
+          </p>
 
           <ul class="u-flex u-justifyStart u-tSpace-xl">
             <% visibleAffectedVis.forEach(function(vis) { %>
@@ -44,7 +50,13 @@
 
       <% if (affectedEntitiesCount > 0) { %>
         <div class="Modal-listActions">
-          <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dataset.delete.affected-entities-count', {smart_count: affectedEntitiesCount}) %></p>
+          <p class="CDB-Text CDB-Size-medium u-altTextColor">
+            <% if (affectedVisCount > 3) {%>
+              <%= _t('dataset.delete.affected-entities-count-extended', {affectedEntitiesCount: affectedEntitiesCount}) %>
+            <% } else { %>
+              <%= _t('dataset.delete.affected-entities-count', {smart_count: affectedEntitiesCount}) %>
+            <% } %>
+          </p>
 
           <ul class="u-flex u-justifyStart u-tSpace-xl">
           <% visibleAffectedEntities.forEach(function(entity) { %>

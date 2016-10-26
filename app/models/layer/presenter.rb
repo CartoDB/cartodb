@@ -104,7 +104,8 @@ module CartoDB
             {
               tooltip: lns.tooltip,
               infowindow: lns.infowindow,
-              options: lns.options
+              options: lns.options,
+              simple_geom: lns.simple_geom
             }
           ]
         end

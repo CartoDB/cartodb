@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.41",
+  "version": "4.3.48",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -172,9 +172,9 @@
                           "resolved": "https://registry.npmjs.org/jsonfile/-/jsonfile-2.4.0.tgz"
                         },
                         "klaw": {
-                          "version": "1.3.0",
+                          "version": "1.3.1",
                           "from": "klaw@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.0.tgz"
+                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.1.tgz"
                         },
                         "path-is-absolute": {
                           "version": "1.0.1",
@@ -566,7 +566,7 @@
                           "dependencies": {
                             "chalk": {
                               "version": "1.1.3",
-                              "from": "chalk@>=1.1.0 <2.0.0",
+                              "from": "chalk@>=1.1.1 <2.0.0",
                               "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
                               "dependencies": {
                                 "ansi-styles": {
@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#geometry-management",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#f21517ec9980c88b1f7b4614fc398d3f216abc3d",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#66334b7f104f795873da416b42036c546b342a91",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1447,7 +1447,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#geometry-management",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#f21517ec9980c88b1f7b4614fc398d3f216abc3d",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#66334b7f104f795873da416b42036c546b342a91",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1837,7 +1837,7 @@
             },
             "debug": {
               "version": "2.2.0",
-              "from": "debug@>=2.1.1 <3.0.0",
+              "from": "debug@2.2.0",
               "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
               "dependencies": {
                 "ms": {

@@ -38,6 +38,13 @@ module Carto
 
       after(:all) { @legend = nil }
 
+      it 'won\'t crash validation if layer is nil' do
+        legend = Legend.new
+
+        expect { legend.save }.to_not raise_error
+        legend.errors.should_not be_empty
+      end
+
       it 'requires a type' do
         @legend.errors[:type].should_not be_empty
       end

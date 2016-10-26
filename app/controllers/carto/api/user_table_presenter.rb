@@ -43,9 +43,7 @@ module Carto
         }
 
         if accessible_dependent_derived_maps && context
-          poro[:accessible_dependent_derived_maps] = @user_table.accessible_dependent_derived_maps.map {
-            |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro
-          }
+          poro[:accessible_dependent_derived_maps] = derived_maps_to_presenter(context)
         end
 
         poro
@@ -54,6 +52,12 @@ module Carto
       def privacy_text(privacy)
         #TODO: This came from UserTable
         privacy == PRIVACY_LINK ? 'PUBLIC' : PRIVACY_VALUES_TO_TEXTS[privacy]
+      end
+
+      private
+
+      def derived_maps_to_presenter(context)
+        @user_table.accessible_dependent_derived_maps.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
       end
 
     end

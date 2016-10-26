@@ -26,6 +26,8 @@ module Resque
       @queue = :tracker
 
       def self.perform(id, params)
+        return unless ::Hubspot::EventsAPI.instance.enabled?
+
         Hubspot::EventsAPI.instance.report_event(id, params)
       end
     end

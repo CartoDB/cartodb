@@ -2,7 +2,7 @@ var _ = require('underscore');
 var View = require('../../../core/view');
 var PointView = require('./point-view');
 
-var PathViewBase = View.extend({
+var MultiPointView = View.extend({
   initialize: function (options) {
     if (!options.model) throw new Error('model is required');
     if (!options.nativeMap) throw new Error('nativeMap is required');
@@ -15,17 +15,11 @@ var PathViewBase = View.extend({
     this.model.points.on('add', this._onPointsAdded, this);
     this.model.points.on('reset', this._onPointsResetted, this);
 
-    this._geometry = this._createGeometry();
     this._pointViews = {};
-  },
-
-  _createGeometry: function () {
-    throw new Error('Subclasses of MyLeafletPathViewBase must implement _createGeometry');
   },
 
   render: function () {
     this._renderPoints();
-    this._geometry.addTo(this.leafletMap);
     this._updateModelsGeoJSON();
   },
 
@@ -50,7 +44,6 @@ var PathViewBase = View.extend({
   },
 
   _onPointsChanged: function () {
-    this._updateGeometry();
     this._updateModelsGeoJSON();
   },
 
@@ -59,7 +52,6 @@ var PathViewBase = View.extend({
       return !this._pointViews[point.cid];
     }, this);
     _.each(newPoints, this._renderPoint, this);
-    this._updateGeometry();
     this._updateModelsGeoJSON();
   },
 
@@ -69,23 +61,27 @@ var PathViewBase = View.extend({
       return !this._pointViews[point.cid];
     }, this);
     _.each(newPoints, this._renderPoint, this);
-    this._updateGeometry();
     this._updateModelsGeoJSON();
   },
 
-  _updateGeometry: function () {
-    this._geometry.setLatLngs(this.model.getLatLngs());
-  },
-
   _updateModelsGeoJSON: function () {
-    this.model.set({
-      geojson: this._geometry.toGeoJSON()
-    });
+    if (this.model.isComplete()) {
+      var geojson = {
+        type: 'MultiPoint'
+      };
+
+      geojson.coordinates = this.model.points.map(function (point) {
+        return point.toGeoJSON().geometry.coordinates;
+      });
+
+      this.model.set({
+        geojson: geojson
+      });
+    }
   },
 
   _onRemoveTriggered: function () {
     this._removePoints();
-    this.leafletMap.removeLayer(this._geometry);
     this.remove();
   },
 
@@ -96,4 +92,4 @@ var PathViewBase = View.extend({
   }
 });
 
-module.exports = PathViewBase;
+module.exports = MultiPointView;

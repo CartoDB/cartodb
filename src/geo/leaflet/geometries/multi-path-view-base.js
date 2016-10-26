@@ -35,7 +35,7 @@ var MultiPathViewBase = View.extend({
   },
 
   _updateModelsGeoJSON: function () {
-    if (this._areAllPathsComplete()) {
+    if (this.model.isComplete()) {
       var geojson = {
         type: this.geoJSONType
       };
@@ -50,18 +50,12 @@ var MultiPathViewBase = View.extend({
     }
   },
 
-  _areAllPathsComplete: function () {
-    return this.model.paths.all(function (path) {
-      return path.isComplete();
-    });
-  },
-
   _onRemoveTriggered: function () {
-    this._removePolygons();
+    this._removePaths();
     this.remove();
   },
 
-  _removePolygons: function () {
+  _removePaths: function () {
     this.model.paths.each(function (path) {
       path.remove();
     }, this);

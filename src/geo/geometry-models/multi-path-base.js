@@ -16,12 +16,6 @@ var MultiPathBase = GeometryBase.extend({
     this.paths = new Backbone.Collection(paths);
   },
 
-  isComplete: function () {
-    return this.paths.all(function (path) {
-      return path.isComplete();
-    });
-  },
-
   getLatLngs: function () {
     return this.paths.map(function (path) {
       return path.getLatLngs();
@@ -29,6 +23,12 @@ var MultiPathBase = GeometryBase.extend({
   },
 
   update: function (latlng) {},
+
+  isComplete: function () {
+    return this.paths.all(function (path) {
+      return path.isComplete();
+    });
+  },
 
   isEditable: function () {
     return !!this.get('editable');

@@ -65,7 +65,7 @@ module Carto
     end
 
     def owned_dependent_derived_visualizations
-      affected_visualizations.map{ |v| (v.has_read_permission?(self.user) && v.type == 'derived') ? v : nil }.compact
+      affected_visualizations.map { |v| (v.has_read_permission?(self.user) && v.type == 'derived') ? v : nil }.compact
     end
 
     def non_dependent_visualizations

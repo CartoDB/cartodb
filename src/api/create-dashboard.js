@@ -57,7 +57,11 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
 
   vis.once('load', function (vis) {
     if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-      vis.map.setBounds([stateFromURL.map.ne, stateFromURL.map.sw]);
+      if (!_.isUndefined(stateFromURL.map.ne) && !_.isUndefined(stateFromURL.map.sw)) {
+        vis.map.setBounds([stateFromURL.map.ne, stateFromURL.map.sw]);
+      } else if (!_.isUndefined(stateFromURL.map.center) && !_.isUndefined(stateFromURL.map.zoom)) {
+        vis.map.setView(stateFromURL.map.center, stateFromURL.map.zoom);
+      }
     }
 
     var widgetsState = stateFromURL && stateFromURL.widgets || {};

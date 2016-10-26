@@ -36,6 +36,7 @@ describe('src/vis/model-updater', function () {
     this.visModel.setOk = jasmine.createSpy('setOk');
     this.visModel.setError = jasmine.createSpy('setError');
     this.layersCollection = new LayersCollection();
+
     this.layerGroupModel = new CartoDBLayerGroup({}, {
       layersCollection: this.layersCollection
     });

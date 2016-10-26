@@ -133,8 +133,9 @@ describe('dataviews/dataview-model-base', function () {
       it('should change bounds', function () {
         expect(this.model.listenTo.calls.argsFor(0)[0]).toEqual(this.model._map);
         expect(this.model.listenTo.calls.argsFor(0)[1]).toEqual('change:center change:zoom');
-        expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:url');
-        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:enabled');
+        expect(this.model.on.calls.argsFor(0)[0]).toEqual('change:sync_on_bbox_change');
+        expect(this.model.on.calls.argsFor(1)[0]).toEqual('change:url');
+        expect(this.model.on.calls.argsFor(2)[0]).toEqual('change:enabled');
       });
     });
   });
@@ -277,6 +278,9 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should NOT fetch if the bounding box have changed while the dataview was disabled and sync_on_bbox_change is disabled', function () {
       this.model.set('sync_on_bbox_change', false);
+      // To get the full range of data
+      expect(this.model.fetch).toHaveBeenCalled();
+      this.model.fetch.calls.reset();
 
       // Map bounds have changed
       this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
@@ -342,6 +346,9 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should NOT fetch when the bounding box has changed and the dataview has sync_on_bbox_change disabled', function () {
       this.model.set('sync_on_bbox_change', false);
+      // To get the full range of data
+      expect(this.model.fetch).toHaveBeenCalled();
+      this.model.fetch.calls.reset();
 
       this.map.getViewBounds.and.returnValue([102, 200], [300, 400]);
       this.map.trigger('change:center');

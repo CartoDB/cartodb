@@ -48,11 +48,19 @@ var WindshaftMap = Backbone.Model.extend({
 
   // TODO: Move this somewhere else and keep this class as a wrapper for windshaft responses
   createInstance: function (options) {
+    var filters;
     options = options || {};
 
     try {
       var payload = this.toJSON();
       var params = this._getParams();
+
+      if (options.includeFilters === true) {
+        filters = this._dataviewsCollection.getFilters();
+        if (!_.isEmpty(filters)) {
+          params.filters = filters;
+        }
+      }
 
       var request = new Request(payload, params, options);
       if (this._canPerformRequest(request)) {
@@ -129,23 +137,7 @@ var WindshaftMap = Backbone.Model.extend({
       params.auth_token = this.get('authToken');
     }
 
-    var filters = this._getFilterParamFromDataviews();
-    if (!_.isEmpty(filters)) {
-      params.filters = filters;
-    }
-
     return params;
-  },
-
-  _getFilterParamFromDataviews: function () {
-    return this._dataviewsCollection.reduce(function (filters, dataview) {
-      var filter = dataview.filter;
-      if (filter && !filter.isEmpty()) {
-        filters['dataviews'] = filters['dataviews'] || {};
-        _.extend(filters['dataviews'], filter.toJSON());
-      }
-      return filters;
-    }, {});
   },
 
   getBaseURL: function (subhost) {

@@ -303,9 +303,41 @@ describe('vis/vis', function () {
         expect(this.vis._windshaftMap.createInstance).toHaveBeenCalledWith({
           sourceId: 'sourceId',
           forceFetch: 'forceFetch',
-          success: 'success'
+          success: 'success',
+          includeFilters: true
         });
       });
+    });
+  });
+
+  describe('.instantiateMap', function () {
+    beforeEach(function () {
+      this.vis.load(new VizJSON(fakeVizJSON()), {});
+      spyOn(this.vis, 'reload').and.callThrough();
+    });
+
+    it('should instantiate without filters if no filters', function () {
+      this.vis._isAnyDataviewFiltered = function () {
+        return false;
+      };
+      this.vis.reload.calls.reset();
+      this.vis.instantiateMap();
+
+      expect(this.vis.reload).toHaveBeenCalled();
+      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
+    });
+
+    it('should instantiate twice if filters', function () {
+      this.vis._isAnyDataviewFiltered = function () {
+        return true;
+      };
+
+      this.vis.reload.calls.reset();
+      this.vis.instantiateMap();
+      this.vis.reload.calls.mostRecent().args[0].success();
+
+      expect(this.vis.reload).toHaveBeenCalledTimes(2);
+      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
     });
   });
 

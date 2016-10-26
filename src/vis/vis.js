@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var util = require('../core/util');
 var Map = require('../geo/map');
 var DataviewsFactory = require('../dataviews/dataviews-factory');
+var DataviewsCollection = require('../dataviews/dataviews-collection');
 var WindshaftClient = require('../windshaft/client');
 var WindshaftNamedMap = require('../windshaft/named-map');
 var WindshaftAnonymousMap = require('../windshaft/anonymous-map');
@@ -13,6 +14,7 @@ var LayersCollection = require('../geo/map/layers');
 var AnalysisPoller = require('../analysis/analysis-poller');
 var LayersFactory = require('./layers-factory');
 var SettingsModel = require('./settings');
+var whenAllDataviewsFetched = require('./dataviews-tracker');
 
 var STATE_INIT = 'init'; // vis hasn't been sent to Windshaft
 var STATE_OK = 'ok'; // vis has been sent to Windshaft and everything is ok
@@ -30,7 +32,7 @@ var VisModel = Backbone.Model.extend({
     this._analysisPoller = new AnalysisPoller();
     this._layersCollection = new LayersCollection();
     this._analysisCollection = new Backbone.Collection();
-    this._dataviewsCollection = new Backbone.Collection();
+    this._dataviewsCollection = new DataviewsCollection();
 
     this.overlaysCollection = new Backbone.Collection();
     this.settings = new SettingsModel();
@@ -238,10 +240,7 @@ var VisModel = Backbone.Model.extend({
     var isAnalysisLinkedToLayer = this._layersCollection.any(function (layerModel) {
       return layerModel.get('source') === analysisModel.get('id');
     });
-    var isAnalysisLinkedToDataview = this._dataviewsCollection.any(function (dataviewModel) {
-      var sourceId = dataviewModel.getSourceId();
-      return analysisModel.get('id') === sourceId;
-    });
+    var isAnalysisLinkedToDataview = this._dataviewsCollection.isAnalysisLinkedToDataview(analysisModel);
     return isAnalysisLinkedToLayer || isAnalysisLinkedToDataview;
   },
 
@@ -268,23 +267,42 @@ var VisModel = Backbone.Model.extend({
    */
   instantiateMap: function (options) {
     options = options || {};
-    if (!this._instantiateMapWasCalled) {
-      this._instantiateMapWasCalled = true;
-      var successCallback = options.success;
-      options.success = function () {
-        this._initBindsAfterFirstMapInstantiation();
-        successCallback && successCallback();
-      }.bind(this);
-      this.reload(options);
+    if (this._instantiateMapWasCalled) {
+      return;
     }
+    this._instantiateMapWasCalled = true;
+
+    this.reload({
+      success: function () {
+        options.success && options.success();
+        this._onMapInstantiatedForTheFirstTime();
+      }.bind(this),
+      includeFilters: false
+    });
+  },
+
+  _onMapInstantiatedForTheFirstTime: function () {
+    var anyDataviewFiltered = this._isAnyDataviewFiltered();
+    whenAllDataviewsFetched(this._dataviewsCollection, this._onDataviewFetched.bind(this));
+    this._initBindsAfterFirstMapInstantiation();
+
+    anyDataviewFiltered && this.reload({ includeFilters: anyDataviewFiltered });
+  },
+
+  _isAnyDataviewFiltered: function () {
+    return this._dataviewsCollection.isAnyDataviewFiltered();
+  },
+
+  _onDataviewFetched: function () {
+    this.trigger('dataviewsFetched');
   },
 
   reload: function (options) {
-    options = options || {};
-    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error');
+    options = _.extend({includeFilters: true}, options);
+    options = _.pick(options, 'sourceId', 'forceFetch', 'success', 'error', 'includeFilters');
     if (this._instantiateMapWasCalled) {
       this.trigger('reload');
-      this._windshaftMap.createInstance(options);
+      this._windshaftMap.createInstance(options); // this reload method is call from other places
     }
   },
 

@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var log = require('../cdb.log');
 var RuleToLegendModelAdapters = require('./legends/rule-to-legend-model-adapters');
-
 /**
  * This class exposes a method that knows how to set/update the metadata on internal
  * CartoDB.js models that are linked to a "resource" in the Maps API.

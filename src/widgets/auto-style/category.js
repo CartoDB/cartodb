@@ -15,15 +15,9 @@ module.exports = AutoStyler.extend({
   },
 
   getRange: function () {
-    var model = this.dataviewModel;
-    var categories = model.get('data');
-    var range = [];
-
-    for (var i = 0; i < categories.length; i++) {
-      range.push(this.colors.getColorByCategory(categories[i].name));
-    }
-
-    return range;
+    return _.map(this.dataviewModel.get('data'), function (category) {
+        return this.colors.getColorByCategory(category.name);
+    }, this);
   },
 
   getDef: function () {

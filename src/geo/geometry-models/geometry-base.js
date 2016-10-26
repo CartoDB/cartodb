@@ -14,7 +14,11 @@ var GeometryBase = Model.extend({
   },
 
   toGeoJSON: function () {
-    return this.get('geojson');
+    throw new Error('subclasses of GeometryBase must implement toGeoJSON');
+  },
+
+  _triggerChangeEvent: function () {
+    this.trigger('change', this);
   }
 });
 

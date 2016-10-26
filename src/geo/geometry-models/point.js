@@ -1,3 +1,4 @@
+var GeoJSONHelper = require('./geojson-helper');
 var GeometryBase = require('./geometry-base');
 
 var Point = GeometryBase.extend({
@@ -13,21 +14,30 @@ var Point = GeometryBase.extend({
   },
 
   setLatLng: function (latlng) {
-    return this.set('latlng', latlng);
+    this.set('latlng', latlng);
+    this._triggerChangeEvent();
   },
 
   update: function (latlng) {
     if (!this.get('latlng')) {
-      this.set('latlng', latlng);
+      this.setLatLng(latlng);
     }
   },
 
   isComplete: function () {
-    return this.get('geojson') && this.get('latlng');
+    return this.get('latlng');
   },
 
   isEditable: function () {
     return !!this.get('editable');
+  },
+
+  toGeoJSON: function () {
+    var coords = GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(this.getLatLng());
+    return {
+      'type': 'Point',
+      'coordinates': coords
+    };
   }
 });
 

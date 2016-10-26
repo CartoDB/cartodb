@@ -22,7 +22,6 @@ var PointView = View.extend({
     if (!this.isDragging()) {
       this._marker.setLatLng(this.model.get('latlng'));
     }
-    this._updateModelsGeoJSON();
   },
 
   render: function () {
@@ -52,7 +51,6 @@ var PointView = View.extend({
         this._marker.on('dragend', this._onDragEnd.bind(this));
       }
       this.leafletMap.addLayer(this._marker);
-      this._updateModelsGeoJSON();
     }
   },
 
@@ -71,12 +69,6 @@ var PointView = View.extend({
 
   isDragging: function () {
     return !!this._isDragging;
-  },
-
-  _updateModelsGeoJSON: function () {
-    this.model.set({
-      geojson: this._marker.toGeoJSON()
-    });
   },
 
   _onRemoveTriggered: function () {

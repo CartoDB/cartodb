@@ -1,20 +1,6 @@
-var PolygonView = require('../../../../../src/geo/leaflet/geometries/polygon-view.js');
-var Polygon = require('../../../../../src/geo/geometry-models/polygon.js');
-
-var SharedTestsForPathViews = require('./shared-tests-for-path-views.js');
-var GeoJSONHelper = require('./geojson-helper.js');
-
-var pathToGeoJSONFunction = function (path) {
-  var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs());
-  return {
-    'type': 'Feature',
-    'properties': {},
-    'geometry': {
-      'type': 'Polygon',
-      'coordinates': [ coords ]
-    }
-  };
-};
+var PolygonView = require('../../../../../src/geo/leaflet/geometries/polygon-view');
+var Polygon = require('../../../../../src/geo/geometry-models/polygon');
+var SharedTestsForPathViews = require('./shared-tests-for-path-views');
 
 describe('src/geo/leaflet/geometries/polygon-view.js', function () {
   beforeEach(function () {
@@ -31,5 +17,5 @@ describe('src/geo/leaflet/geometries/polygon-view.js', function () {
     });
   });
 
-  SharedTestsForPathViews.call(this, pathToGeoJSONFunction);
+  SharedTestsForPathViews.call(this);
 });

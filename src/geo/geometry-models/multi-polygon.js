@@ -1,4 +1,5 @@
 var Polygon = require('./polygon');
+var GeoJSONHelper = require('./geojson-helper');
 var MultiGeometryBase = require('./multi-geometry-base');
 
 var MultiPolygon = MultiGeometryBase.extend({
@@ -13,6 +14,16 @@ var MultiPolygon = MultiGeometryBase.extend({
     }, {
       latlngs: latlngs
     });
+  },
+
+  toGeoJSON: function () {
+    var coords = this.geometries.map(function (path) {
+      return [ GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs()) ];
+    });
+    return {
+      'type': 'MultiPolygon',
+      'coordinates': coords
+    };
   }
 });
 

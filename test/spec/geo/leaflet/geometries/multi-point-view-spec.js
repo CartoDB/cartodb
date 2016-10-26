@@ -1,23 +1,9 @@
-var _ = require('underscore');
-var MultiPointView = require('../../../../../src/geo/leaflet/geometries/multi-point-view.js');
-var MultiPoint = require('../../../../../src/geo/geometry-models/multi-point.js');
-
-var GeoJSONHelper = require('./geojson-helper.js');
-
-var multiPathToGeoJSONFunction = function (multiPath) {
-  var coords = multiPath.geometries.map(function (path) {
-    return GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(path.getLatLng());
-  });
-  return {
-    'type': 'MultiPoint',
-    'coordinates': coords
-  };
-};
+var MultiPointView = require('../../../../../src/geo/leaflet/geometries/multi-point-view');
+var MultiPoint = require('../../../../../src/geo/geometry-models/multi-point');
+var SharedTestsForMultiGeometryViews = require('./shared-tests-for-multi-geometry-views');
 
 describe('src/geo/leaflet/geometries/multi-point-view.js', function () {
   beforeEach(function () {
-    spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
-
     this.geometry = new MultiPoint(null, {
       latlngs: [
         [0, 1],
@@ -30,44 +16,11 @@ describe('src/geo/leaflet/geometries/multi-point-view.js', function () {
       model: this.geometry,
       nativeMap: this.leafletMap
     });
-
-    this.geometryView.render();
   });
 
-  it('should render the paths', function () {
-    expect(this.leafletMap.addLayer.calls.count()).toEqual(2); // 2 points
-  });
+  SharedTestsForMultiGeometryViews.call(this);
 
-  it('should update the geoJSON of the model', function () {
-    expect(this.geometry.get('geojson')).toEqual(multiPathToGeoJSONFunction(this.geometry));
-  });
-
-  describe('when a path is updated', function () {
-    it('should update the geoJSON of the model', function () {
-      this.geometry.geometries.at(0).setLatLng([-1, 1]);
-      expect(this.geometry.get('geojson')).toEqual(multiPathToGeoJSONFunction(this.geometry));
-    });
-  });
-
-  describe('when the model is removed', function () {
-    it('should remove each path', function () {
-      this.geometry.geometries.each(function (polygon) {
-        spyOn(polygon, 'remove');
-      });
-
-      this.geometry.remove();
-
-      expect(this.geometry.geometries.all(function (polygon) {
-        return polygon.remove.calls.count() === 1;
-      })).toBe(true);
-    });
-
-    it('should remove the view', function () {
-      spyOn(this.geometryView, 'remove');
-
-      this.geometry.remove();
-
-      expect(this.geometryView.remove).toHaveBeenCalled();
-    });
+  it('should render the geometries', function () {
+    expect(this.leafletMap.addLayer.calls.count()).toEqual(2); // 2 markers
   });
 });

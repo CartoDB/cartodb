@@ -12,6 +12,7 @@ var MultiGeometryBase = GeometryBase.extend({
       geometries = _.map(options.latlngs, this._createGeometry, this);
     }
     this.geometries = new Backbone.Collection(geometries);
+    this.geometries.on('change', this._triggerChangeEvent, this);
   },
 
   _createGeometry: function (latlngs) {

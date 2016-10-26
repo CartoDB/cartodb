@@ -5,6 +5,7 @@ var Polygon = require('./polygon');
 var MultiPoint = require('./multi-point');
 var MultiPolygon = require('./multi-polygon');
 var MultiPolyline = require('./multi-polyline');
+var GeoJSONHelper = require('./geojson-helper');
 
 var GEOJSON_TYPE_TO_CREATE_METHOD_NAME = {
   Point: 'createPointFromGeoJSON',
@@ -23,12 +24,6 @@ var getGeometryType = function (geoJSON) {
 var getGeometryCoordinates = function (geoJSON) {
   return (geoJSON.geometry && geoJSON.geometry.coordinates) ||
     geoJSON.coordinates;
-};
-
-var convertLngLatsToLatLngs = function (lnglats) {
-  return _.map(lnglats, function (lnglat) {
-    return [ lnglat[1], lnglat[0] ];
-  });
 };
 
 var GeometryFactory = function () {};
@@ -68,10 +63,10 @@ GeometryFactory.prototype.createGeometryFromGeoJSON = function (geoJSON) {
 };
 
 GeometryFactory.prototype.createPointFromGeoJSON = function (geoJSON) {
-  var lnglats = getGeometryCoordinates(geoJSON);
-  var latlngs = convertLngLatsToLatLngs([ lnglats ]);
+  var lnglat = getGeometryCoordinates(geoJSON);
+  var latlng = GeoJSONHelper.convertLngLatToLatLng(lnglat);
   return this.createPoint({
-    latlng: latlngs[0],
+    latlng: latlng,
     geojson: geoJSON,
     editable: true
   });
@@ -79,7 +74,7 @@ GeometryFactory.prototype.createPointFromGeoJSON = function (geoJSON) {
 
 GeometryFactory.prototype.createPolylineFromGeoJSON = function (geoJSON) {
   var lnglats = getGeometryCoordinates(geoJSON);
-  var latlngs = convertLngLatsToLatLngs(lnglats);
+  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
   return this.createPolyline({
     geojson: geoJSON,
     editable: true
@@ -88,7 +83,9 @@ GeometryFactory.prototype.createPolylineFromGeoJSON = function (geoJSON) {
 
 GeometryFactory.prototype.createPolygonFromGeoJSON = function (geoJSON) {
   var lnglats = getGeometryCoordinates(geoJSON)[0];
-  var latlngs = convertLngLatsToLatLngs(lnglats);
+  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
+  // Remove the last latlng, which is duplicated
+  latlngs = latlngs.slice(0, -1);
   return this.createPolygon({
     geojson: geoJSON,
     editable: true
@@ -97,7 +94,7 @@ GeometryFactory.prototype.createPolygonFromGeoJSON = function (geoJSON) {
 
 GeometryFactory.prototype.createMultiPointFromGeoJSON = function (geoJSON) {
   var lnglats = getGeometryCoordinates(geoJSON);
-  var latlngs = convertLngLatsToLatLngs(lnglats);
+  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
   return this.createMultiPoint({
     geojson: geoJSON,
     editable: true
@@ -109,7 +106,10 @@ GeometryFactory.prototype.createMultiPointFromGeoJSON = function (geoJSON) {
 GeometryFactory.prototype.createMultiPolygonFromGeoJSON = function (geoJSON) {
   var lnglats = getGeometryCoordinates(geoJSON);
   var latlngs = _.map(lnglats, function (lnglats) {
-    return convertLngLatsToLatLngs(lnglats[0]);
+    // Remove the last latlng, which is duplicated
+    latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats[0]);
+    latlngs = latlngs.slice(0, -1);
+    return latlngs;
   }, this);
   return this.createMultiPolygon({
     geojson: geoJSON,
@@ -122,7 +122,7 @@ GeometryFactory.prototype.createMultiPolygonFromGeoJSON = function (geoJSON) {
 GeometryFactory.prototype.createMultiPolylineFromGeoJSON = function (geoJSON) {
   var lnglats = getGeometryCoordinates(geoJSON);
   var latlngs = _.map(lnglats, function (lnglats) {
-    return convertLngLatsToLatLngs(lnglats);
+    return GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
   }, this);
   return this.createMultiPolyline({
     geojson: geoJSON,

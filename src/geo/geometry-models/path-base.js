@@ -17,6 +17,7 @@ var PathBase = GeometryBase.extend({
       points = _.map(options.latlngs, this._createPoint, this);
     }
     this.points = new Backbone.Collection(points);
+    this.points.on('change', this._triggerChangeEvent, this);
   },
 
   getLatLngs: function () {
@@ -27,10 +28,13 @@ var PathBase = GeometryBase.extend({
 
   setLatLngs: function (latlngs) {
     this.points.reset(_.map(latlngs, this._createPoint, this));
+    this._triggerChangeEvent();
   },
 
   update: function (latlng) {
-    this.points.add(this._createPoint(latlng));
+    var latlngs = this.getLatLngs();
+    latlngs.push(latlng);
+    this.setLatLngs(latlngs);
   },
 
   isEditable: function () {

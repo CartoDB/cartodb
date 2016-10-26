@@ -11,12 +11,10 @@ var MultiGeometryViewBase = View.extend({
     this.leafletMap = options.nativeMap;
 
     this.model.on('remove', this._onRemoveTriggered, this);
-    this.model.geometries.on('change', this._onGeometriesChanged, this);
   },
 
   render: function () {
     this._renderGeometries();
-    this._updateModelsGeoJSON();
   },
 
   _renderGeometries: function () {
@@ -29,26 +27,6 @@ var MultiGeometryViewBase = View.extend({
       nativeMap: this.leafletMap
     });
     polygonView.render();
-  },
-
-  _onGeometriesChanged: function () {
-    this._updateModelsGeoJSON();
-  },
-
-  _updateModelsGeoJSON: function () {
-    if (this.model.isComplete()) {
-      var geojson = {
-        type: this.geoJSONType
-      };
-
-      geojson.coordinates = this.model.geometries.map(function (geometry) {
-        return geometry.toGeoJSON().geometry.coordinates;
-      });
-
-      this.model.set({
-        geojson: geojson
-      });
-    }
   },
 
   _onRemoveTriggered: function () {

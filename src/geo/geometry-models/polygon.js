@@ -1,3 +1,4 @@
+var GeoJSONHelper = require('./geojson-helper');
 var PathBase = require('./path-base');
 
 var Polygon = PathBase.extend({
@@ -7,7 +8,15 @@ var Polygon = PathBase.extend({
   },
 
   isComplete: function () {
-    return this.get('geojson') && this.points.length > 2;
+    return this.points.length > 2;
+  },
+
+  toGeoJSON: function () {
+    var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(this.getLatLngs());
+    return {
+      'type': 'Polygon',
+      'coordinates': [ coords ]
+    };
   }
 });
 

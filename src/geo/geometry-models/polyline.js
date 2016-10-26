@@ -1,3 +1,4 @@
+var GeoJSONHelper = require('./geojson-helper');
 var PathBase = require('./path-base');
 
 var Polyline = PathBase.extend({
@@ -7,7 +8,15 @@ var Polyline = PathBase.extend({
   },
 
   isComplete: function () {
-    return this.get('geojson') && this.points.length > 1;
+    return this.points.length > 1;
+  },
+
+  toGeoJSON: function () {
+    var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolylineCoords(this.getLatLngs());
+    return {
+      'type': 'LineString',
+      'coordinates': coords
+    };
   }
 });
 

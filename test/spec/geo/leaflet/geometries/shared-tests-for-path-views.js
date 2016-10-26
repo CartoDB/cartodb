@@ -1,8 +1,6 @@
 var Point = require('../../../../../src/geo/geometry-models/point.js');
 
-module.exports = function (pathToGeoJSONFunction) {
-  if (!pathToGeoJSONFunction) throw new Error('pathToGeoJSONFunction function is required');
-
+module.exports = function () {
   beforeEach(function () {
     if (!this.geometry) throw new Error('geometry is required');
     if (!this.geometryView) throw new Error('geometryView is required');
@@ -39,18 +37,10 @@ module.exports = function (pathToGeoJSONFunction) {
     expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
   });
 
-  it('should update the GeoJSON of the model', function () {
-    expect(this.geometry.get('geojson')).toEqual(pathToGeoJSONFunction(this.geometry));
-  });
-
   describe('when the model is updated', function () {
     describe('when a point changed', function () {
       beforeEach(function () {
         this.geometry.points.at(0).set('latlng', [ -45, 45 ]);
-      });
-
-      it('should update the geoJSON of the model', function () {
-        expect(this.geometry.get('geojson')).toEqual(pathToGeoJSONFunction(this.geometry));
       });
 
       it("should update the polygon's latlng", function () {
@@ -71,10 +61,6 @@ module.exports = function (pathToGeoJSONFunction) {
         this.geometry.points.add(point);
       });
 
-      it('should update the geoJSON of the model', function () {
-        expect(this.geometry.get('geojson')).toEqual(pathToGeoJSONFunction(this.geometry));
-      });
-
       it("should update the polygon's latlng", function () {
         expect(this.geometry.getLatLngs()).toEqual([
           [ -1, 1 ], [ 1, 2 ], [ 3, 4 ], [ -40, 40 ]
@@ -85,23 +71,8 @@ module.exports = function (pathToGeoJSONFunction) {
     describe('when points are resetted, function', function () {
       beforeEach(function () {
         this.geometry.setLatLngs([
-          [
-            -10,
-            10
-          ],
-          [
-            10,
-            20
-          ],
-          [
-            30,
-            40
-          ]
+          [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
-      });
-
-      it('should update the geoJSON of the model', function () {
-        expect(this.geometry.get('geojson')).toEqual(pathToGeoJSONFunction(this.geometry));
       });
 
       it("should update the polygon's latlng", function () {

@@ -1,20 +1,6 @@
-var PolylineView = require('../../../../../src/geo/leaflet/geometries/polyline-view.js');
-var Polyline = require('../../../../../src/geo/geometry-models/polyline.js');
-
-var SharedTestsForPathViews = require('./shared-tests-for-path-views.js');
-var GeoJSONHelper = require('./geojson-helper.js');
-
-var pathToGeoJSONFunction = function (path) {
-  var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolylineCoords(path.getLatLngs());
-  return {
-    'type': 'Feature',
-    'properties': {},
-    'geometry': {
-      'type': 'LineString',
-      'coordinates': coords
-    }
-  };
-};
+var PolylineView = require('../../../../../src/geo/leaflet/geometries/polyline-view');
+var Polyline = require('../../../../../src/geo/geometry-models/polyline');
+var SharedTestsForPathViews = require('./shared-tests-for-path-views');
 
 describe('src/geo/leaflet/geometries/polyline-view.js', function () {
   beforeEach(function () {
@@ -31,5 +17,5 @@ describe('src/geo/leaflet/geometries/polyline-view.js', function () {
     });
   });
 
-  SharedTestsForPathViews.call(this, pathToGeoJSONFunction);
+  SharedTestsForPathViews.call(this);
 });

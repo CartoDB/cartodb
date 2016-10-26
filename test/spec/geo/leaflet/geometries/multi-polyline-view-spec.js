@@ -1,18 +1,6 @@
-var MultiPolylineView = require('../../../../../src/geo/leaflet/geometries/multi-polyline-view.js');
-var MultiPolyline = require('../../../../../src/geo/geometry-models/multi-polyline.js');
-
-var SharedTestsForMultiPathViews = require('./shared-tests-for-multi-path-views.js');
-var GeoJSONHelper = require('./geojson-helper.js');
-
-var multiPathToGeoJSONFunction = function (multiPath) {
-  var coords = multiPath.geometries.map(function (path) {
-    return GeoJSONHelper.convertLatLngsToGeoJSONPolylineCoords(path.getLatLngs());
-  });
-  return {
-    'type': 'MultiLineString',
-    'coordinates': coords
-  };
-};
+var MultiPolylineView = require('../../../../../src/geo/leaflet/geometries/multi-polyline-view');
+var MultiPolyline = require('../../../../../src/geo/geometry-models/multi-polyline');
+var SharedTestsForMultiGeometryViews = require('./shared-tests-for-multi-geometry-views');
 
 describe('src/geo/leaflet/geometries/multi-polyline-view.js', function () {
   beforeEach(function () {
@@ -40,5 +28,9 @@ describe('src/geo/leaflet/geometries/multi-polyline-view.js', function () {
     });
   });
 
-  SharedTestsForMultiPathViews.call(this, multiPathToGeoJSONFunction);
+  SharedTestsForMultiGeometryViews.call(this);
+
+  it('should render the geometries', function () {
+    expect(this.leafletMap.addLayer.calls.count()).toEqual(10); // 2 geometries with 4 markers each
+  });
 });

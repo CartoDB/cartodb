@@ -32,36 +32,7 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
     expect(marker.options.draggable).toBe(false);
   });
 
-  it('should update the geoJSON of the model', function () {
-    expect(this.point.get('geojson')).toEqual({
-      'type': 'Feature',
-      'properties': {},
-      'geometry': {
-        'type': 'Point',
-        'coordinates': [
-          40,
-          -40
-        ]
-      }
-    });
-  });
-
   describe('when the model is updated', function () {
-    it('should update the geoJSON of the model', function () {
-      this.point.set('latlng', [ -45, 45 ]);
-      expect(this.point.get('geojson')).toEqual({
-        'type': 'Feature',
-        'properties': {},
-        'geometry': {
-          'type': 'Point',
-          'coordinates': [
-            45,
-            -45
-          ]
-        }
-      });
-    });
-
     it("should update the marker's latlng", function () {
       var marker = this.leafletMap.addLayer.calls.argsFor(0)[0];
 
@@ -125,32 +96,6 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
       this.marker.fire('dragend');
 
       expect(this.point.get('latlng')).toEqual([ -90, 90 ]);
-    });
-
-    it("should update model's geojson when the marker is dragged & dropped", function () {
-      var newGeoJSON = {
-        'type': 'Feature',
-        'properties': {},
-        'geometry': {
-          'type': 'Point',
-          'coordinates': [
-            90,
-            -90
-          ]
-        }
-      };
-
-      spyOn(this.marker, 'toGeoJSON').and.returnValue(newGeoJSON);
-      spyOn(this.marker, 'getLatLng').and.returnValue({
-        lat: -90,
-        lng: 90
-      });
-
-      this.marker.fire('dragstart');
-      this.marker.fire('drag');
-      this.marker.fire('dragend');
-
-      expect(this.point.get('geojson')).toEqual(newGeoJSON);
     });
 
     it("shouldn't update the marker's latlng while dragging", function () {

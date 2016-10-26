@@ -14,11 +14,9 @@ var PathViewBase = View.extend({
 
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.points.on('change', this._onPointsChanged, this);
-    this.model.points.on('add', this._onPointsAdded, this);
     this.model.points.on('reset', this._onPointsResetted, this);
 
     this._geometry = this._createGeometry();
-    this._pointViews = {};
   },
 
   _createGeometry: function () {
@@ -28,7 +26,6 @@ var PathViewBase = View.extend({
   render: function () {
     this._renderPoints();
     this._geometry.addTo(this.leafletMap);
-    this._updateModelsGeoJSON();
   },
 
   _renderPoints: function () {
@@ -40,42 +37,21 @@ var PathViewBase = View.extend({
       model: point,
       nativeMap: this.leafletMap
     });
-    this._pointViews[point.cid] = pointView;
     pointView.render();
   },
 
   _onPointsChanged: function () {
     this._updateGeometry();
-    this._updateModelsGeoJSON();
   },
 
-  _onPointsAdded: function () {
-    var newPoints = this.model.points.select(function (point) {
-      return !this._pointViews[point.cid];
-    }, this);
-    _.each(newPoints, this._renderPoint, this);
+  _onPointsResetted: function (collection, options) {
+    this._removePoints(options.previousModels);
+    this.model.points.each(this._renderPoint, this);
     this._updateGeometry();
-    this._updateModelsGeoJSON();
-  },
-
-  _onPointsResetted: function () {
-    this._removePoints();
-    var newPoints = this.model.points.select(function (point) {
-      return !this._pointViews[point.cid];
-    }, this);
-    _.each(newPoints, this._renderPoint, this);
-    this._updateGeometry();
-    this._updateModelsGeoJSON();
   },
 
   _updateGeometry: function () {
     this._geometry.setLatLngs(this.model.getLatLngs());
-  },
-
-  _updateModelsGeoJSON: function () {
-    this.model.set({
-      geojson: this._geometry.toGeoJSON()
-    });
   },
 
   _onRemoveTriggered: function () {
@@ -84,8 +60,9 @@ var PathViewBase = View.extend({
     this.remove();
   },
 
-  _removePoints: function () {
-    this.model.points.each(function (point) {
+  _removePoints: function (points) {
+    points = points || this.model.points.models;
+    _.each(points, function (point) {
       point.remove();
     }, this);
   }

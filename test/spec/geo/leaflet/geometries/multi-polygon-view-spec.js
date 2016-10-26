@@ -1,18 +1,6 @@
-var MultiPolygonView = require('../../../../../src/geo/leaflet/geometries/multi-polygon-view.js');
-var MultiPolygon = require('../../../../../src/geo/geometry-models/multi-polygon.js');
-
-var SharedTestsForMultiPathViews = require('./shared-tests-for-multi-path-views.js');
-var GeoJSONHelper = require('./geojson-helper.js');
-
-var multiPathToGeoJSONFunction = function (multiPath) {
-  var coords = multiPath.geometries.map(function (path) {
-    return [ GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs()) ];
-  });
-  return {
-    'type': 'MultiPolygon',
-    'coordinates': coords
-  };
-};
+var MultiPolygonView = require('../../../../../src/geo/leaflet/geometries/multi-polygon-view');
+var MultiPolygon = require('../../../../../src/geo/geometry-models/multi-polygon');
+var SharedTestsForMultiGeometryViews = require('./shared-tests-for-multi-geometry-views');
 
 describe('src/geo/leaflet/geometries/multi-polygon-view.js', function () {
   beforeEach(function () {
@@ -40,5 +28,9 @@ describe('src/geo/leaflet/geometries/multi-polygon-view.js', function () {
     });
   });
 
-  SharedTestsForMultiPathViews.call(this, multiPathToGeoJSONFunction);
+  SharedTestsForMultiGeometryViews.call(this);
+
+  it('should render the geometries', function () {
+    expect(this.leafletMap.addLayer.calls.count()).toEqual(10); // 2 geometries with 4 markers each
+  });
 });

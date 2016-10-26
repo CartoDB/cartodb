@@ -479,11 +479,12 @@ $index-items: 7 6 5 4 3 2 1;
   content: '';
 }
 .Legend-categoryIcon {
+  display: block;
   width: 10px;
   height: 10px;
-  display: block;
   background-repeat: no-repeat;
   background-position: 50% 50%;
+  background-size: 100%;
 }
 .Legend-categoryTitle {
   max-width: 90%;

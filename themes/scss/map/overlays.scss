@@ -272,6 +272,15 @@ $maxLegendContainerHeight: 300px;
   margin-bottom: 12px;
 }
 
+
+.CDB-Legend-item {
+  div.cartodb-legend {
+    position: static;
+    box-shadow: 0 0 0;
+    border: 0;
+  }
+}
+
 .CDB-LayerLegends:last-child .CDB-Legend-item:last-child {
   margin-bottom: 0;
 }

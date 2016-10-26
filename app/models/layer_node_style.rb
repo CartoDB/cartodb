@@ -10,6 +10,7 @@ class LayerNodeStyle < Sequel::Model
     lns.infowindow = infowindow
     lns.tooltip = tooltip
     lns.options = options
+    lns.simple_geom = simple_geom
     lns
   end
 
@@ -17,5 +18,10 @@ class LayerNodeStyle < Sequel::Model
     self.infowindow = layer.infowindow
     self.tooltip = layer.tooltip
     self.options = layer.options.symbolize_keys.slice(*OPTIONS_TO_COPY)
+
+    vis = layer.visualization
+    node = Carto::AnalysisNode.find_by_natural_id(vis.id, source_id) if vis
+    simple_geom = node.options[:simple_geom] if node && node.options
+    self.simple_geom = simple_geom if simple_geom.present?
   end
 end

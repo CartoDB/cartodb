@@ -12,8 +12,8 @@
   height: auto;
   transition: all 0.2s;
   text-align: center;
-  z-index: 4;
   opacity: 1;
+  z-index: 4;
 
   &.is-hidden {
     height: 0;

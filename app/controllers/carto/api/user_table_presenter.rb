@@ -57,7 +57,8 @@ module Carto
       private
 
       def derived_maps_to_presenter(context)
-        @user_table.accessible_dependent_derived_maps.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
+        visualizations = @user_table.accessible_dependent_derived_maps
+        visualizations.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
       end
 
     end

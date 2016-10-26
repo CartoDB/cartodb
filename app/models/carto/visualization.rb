@@ -384,7 +384,7 @@ class Carto::Visualization < ActiveRecord::Base
       mapcaps.last.destroy
     end
 
-    mapcaps.create!(visualization_id: id)
+    mapcaps.create!
   end
 
   def mapcapped?

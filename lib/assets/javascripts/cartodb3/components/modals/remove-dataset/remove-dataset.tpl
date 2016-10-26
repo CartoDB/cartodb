@@ -51,7 +51,7 @@
       <% if (affectedEntitiesCount > 0) { %>
         <div class="Modal-listActions">
           <p class="CDB-Text CDB-Size-medium u-altTextColor">
-            <% if (affectedVisCount > 3) {%>
+            <% if (affectedEntitiesCount > 3) {%>
               <%= _t('dataset.delete.affected-entities-count-extended', {affectedEntitiesCount: affectedEntitiesCount}) %>
             <% } else { %>
               <%= _t('dataset.delete.affected-entities-count', {smart_count: affectedEntitiesCount}) %>

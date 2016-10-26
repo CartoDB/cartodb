@@ -8,7 +8,6 @@ var template = require('./content.tpl');
 var DropdownView = require('../dropdown/widget-dropdown-view');
 var AnimateValues = require('../animate-values.js');
 var animationTemplate = require('./animation-template.tpl');
-var d3 = require('d3');
 
 /**
  * Widget content view for a histogram

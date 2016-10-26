@@ -310,7 +310,7 @@ describe('vis/vis', function () {
     });
   });
 
-  describe('.init', function () {
+  describe('.instantiateMap', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});
       spyOn(this.vis, 'reload').and.callThrough();

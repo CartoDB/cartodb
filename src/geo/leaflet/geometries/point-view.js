@@ -4,6 +4,8 @@ var View = require('../../../core/view');
 
 var PointView = View.extend({
   initialize: function (options) {
+    View.prototype.initialize.apply(this, arguments);
+
     if (!options.model) throw new Error('model is required');
     if (!options.nativeMap) throw new Error('nativeMap is required');
 

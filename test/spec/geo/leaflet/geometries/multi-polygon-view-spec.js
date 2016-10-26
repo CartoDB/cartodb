@@ -5,7 +5,7 @@ var SharedTestsForMultiPathViews = require('./shared-tests-for-multi-path-views.
 var GeoJSONHelper = require('./geojson-helper.js');
 
 var multiPathToGeoJSONFunction = function (multiPath) {
-  var coords = multiPath.paths.map(function (path) {
+  var coords = multiPath.geometries.map(function (path) {
     return [ GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs()) ];
   });
   return {

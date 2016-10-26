@@ -4,6 +4,8 @@ var PointView = require('./point-view');
 
 var PathViewBase = View.extend({
   initialize: function (options) {
+    View.prototype.initialize.apply(this, arguments);
+
     if (!options.model) throw new Error('model is required');
     if (!options.nativeMap) throw new Error('nativeMap is required');
 
@@ -30,14 +32,7 @@ var PathViewBase = View.extend({
   },
 
   _renderPoints: function () {
-    var points = this._getPoints();
-    _.each(points, this._renderPoint, this);
-  },
-
-  _getPoints: function () {
-    return _.uniq(this.model.points.models, function (point) {
-      return point.getLatLng().join(',');
-    });
+    this.model.points.each(this._renderPoint, this);
   },
 
   _renderPoint: function (point) {

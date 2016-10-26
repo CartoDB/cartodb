@@ -1,13 +1,19 @@
 var Polygon = require('./polygon');
-var MultiPathBase = require('./multi-path-base');
+var MultiGeometryBase = require('./multi-geometry-base');
 
-var MultiPolygon = MultiPathBase.extend({
+var MultiPolygon = MultiGeometryBase.extend({
   defaults: {
     type: 'multiPolygon',
     editable: false
   },
 
-  PathClass: Polygon
+  _createGeometry: function (latlngs) {
+    return new Polygon({
+      editable: this.isEditable()
+    }, {
+      latlngs: latlngs
+    });
+  }
 });
 
 module.exports = MultiPolygon;

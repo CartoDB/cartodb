@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Easy example | CartoDB.js</title>
+    <title>Geometry Editor | CartoDB.js</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
@@ -95,6 +95,10 @@
         <button class="js-drawing-control js-edit-geometry-point">Edit Point</button>
         <button class="js-drawing-control js-edit-geometry-polyline">Edit Polyline</button>
         <button class="js-drawing-control js-edit-geometry-polygon">Edit Polygon</button>
+        <br/>
+        <button class="js-drawing-control js-edit-geometry-multi-point">Edit MultiPoint</button>
+        <button class="js-drawing-control js-edit-geometry-multi-polyline">Edit MultiPolyline</button>
+        <button class="js-drawing-control js-edit-geometry-multi-polygon">Edit MultiPolygon</button>
         <br/>
         <button class="js-drawing-control js-edit-features">Click & Edit</button>
       </div>
@@ -401,7 +405,19 @@
         "transition_options":{}
       };
 
-      var spain = {
+      var point = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -3.779296875,
+            40.245991504199026
+          ]
+        }
+      };
+  
+      var polygon = {
         "type": "Feature",
         "properties": {},
         "geometry": {
@@ -453,11 +469,7 @@
         }
       };
 
-      var madrid = { "type": "MultiPoint",
-        "coordinates": [ [100.0, 0.0], [101.0, 1.0] ]
-      };
-
-      var meridian = {
+      var polyline = {
         "type": "Feature",
         "properties": {},
         "geometry": {
@@ -475,6 +487,26 @@
         }
       };
 
+      var multiPoint = {
+        "type": "MultiPoint",
+        "coordinates": [ [100.0, 0.0], [101.0, 1.0] ]
+      };
+      var multiPolyline = {
+        "type": "MultiLineString",
+        "coordinates": [
+          [ [100.0, 0.0], [101.0, 1.0] ],
+          [ [102.0, 2.0], [103.0, 3.0] ]
+        ]
+      };
+      var multiPolygon = {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [[[102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]],
+          [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
+           [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]
+          ]
+        ]
+      };
       function displayGeoJSON (geometry) {
         updateDisplayedGeoJSON(geometry);
         geometry.on('change', updateDisplayedGeoJSON);
@@ -577,17 +609,32 @@
         });
         document.querySelector('.js-edit-geometry-point').addEventListener('click', function () {
           if ($(this).hasClass('is-enabled')) {
-            editGeometry(vis, madrid);
+            editGeometry(vis, point);
           }
         });
         document.querySelector('.js-edit-geometry-polyline').addEventListener('click', function () {
           if ($(this).hasClass('is-enabled')) {
-            editGeometry(vis, meridian);
+            editGeometry(vis, polyline);
           }
         });
         document.querySelector('.js-edit-geometry-polygon').addEventListener('click', function () {
           if ($(this).hasClass('is-enabled')) {
-            editGeometry(vis, spain);
+            editGeometry(vis, polygon);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-point').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPoint);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-polyline').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPolyline);
+          }
+        });
+        document.querySelector('.js-edit-geometry-multi-polygon').addEventListener('click', function () {
+          if ($(this).hasClass('is-enabled')) {
+            editGeometry(vis, multiPolygon);
           }
         });
         document.querySelector('.js-edit-features').addEventListener('click', function () {

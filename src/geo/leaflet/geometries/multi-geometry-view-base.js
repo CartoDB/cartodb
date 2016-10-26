@@ -1,36 +1,37 @@
 var View = require('../../../core/view');
-var MultiPathViewBase = View.extend({
+
+var MultiGeometryViewBase = View.extend({
   initialize: function (options) {
     if (!options.model) throw new Error('model is required');
     if (!options.nativeMap) throw new Error('nativeMap is required');
-    if (!this.PathViewClass) throw new Error('subclasses of MultiPathViewBase must declare the PathViewClass instance variable');
+    if (!this.PathViewClass) throw new Error('subclasses of MultiGeometryViewBase must declare the PathViewClass instance variable');
     if (!this.geoJSONType) throw new Error('subclasses of geoJSONType must declare the PathViewClass instance variable');
 
     this.model = this.model || options.model;
     this.leafletMap = options.nativeMap;
 
     this.model.on('remove', this._onRemoveTriggered, this);
-    this.model.paths.on('change', this._onPathsChanged, this);
+    this.model.geometries.on('change', this._onGeometriesChanged, this);
   },
 
   render: function () {
-    this._renderPaths();
+    this._renderGeometries();
     this._updateModelsGeoJSON();
   },
 
-  _renderPaths: function () {
-    this.model.paths.each(this._renderPath, this);
+  _renderGeometries: function () {
+    this.model.geometries.each(this._renderPath, this);
   },
 
-  _renderPath: function (path) {
+  _renderPath: function (geometry) {
     var polygonView = new this.PathViewClass({
-      model: path,
+      model: geometry,
       nativeMap: this.leafletMap
     });
     polygonView.render();
   },
 
-  _onPathsChanged: function () {
+  _onGeometriesChanged: function () {
     this._updateModelsGeoJSON();
   },
 
@@ -40,8 +41,8 @@ var MultiPathViewBase = View.extend({
         type: this.geoJSONType
       };
 
-      geojson.coordinates = this.model.paths.map(function (path) {
-        return path.toGeoJSON().geometry.coordinates;
+      geojson.coordinates = this.model.geometries.map(function (geometry) {
+        return geometry.toGeoJSON().geometry.coordinates;
       });
 
       this.model.set({
@@ -51,15 +52,15 @@ var MultiPathViewBase = View.extend({
   },
 
   _onRemoveTriggered: function () {
-    this._removePaths();
+    this._removeGeometries();
     this.remove();
   },
 
-  _removePaths: function () {
-    this.model.paths.each(function (path) {
-      path.remove();
+  _removeGeometries: function () {
+    this.model.geometries.each(function (geometry) {
+      geometry.remove();
     }, this);
   }
 });
 
-module.exports = MultiPathViewBase;
+module.exports = MultiGeometryViewBase;

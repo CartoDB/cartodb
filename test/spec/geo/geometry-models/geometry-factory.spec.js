@@ -163,7 +163,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
       var geometry = this.geometryFactory.createGeometryFromGeoJSON(multiPolygonGeometry);
 
       expect(geometry instanceof MultiPolygon).toBeTruthy();
-      expect(geometry.paths.length).toEqual(2);
+      expect(geometry.geometries.length).toEqual(2);
       expect(geometry.getLatLngs()).toEqual([
         [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ],
         [ [ 28.044439, -14.33306 ], [ 28.068609, -14.47389 ], [ 28.09972, -14.49445 ], [ 28.142771, -14.30917 ] ]
@@ -174,7 +174,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
       var geometry = this.geometryFactory.createGeometryFromGeoJSON(multiPolylineGeometry);
 
       expect(geometry instanceof MultiPolyline).toBeTruthy();
-      expect(geometry.paths.length).toEqual(2);
+      expect(geometry.geometries.length).toEqual(2);
       expect(geometry.getLatLngs()).toEqual([
         [ [ 0, 100 ], [ 1, 101 ] ], [ [ 2, 102 ], [ 3, 103 ] ]
       ]);

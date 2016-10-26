@@ -1,7 +1,7 @@
-var MultiPathViewBase = require('./multi-path-view-base');
+var MultiGeometryViewBase = require('./multi-geometry-view-base');
 var PolylineView = require('./polyline-view');
 
-var MultiPolygonView = MultiPathViewBase.extend({
+var MultiPolygonView = MultiGeometryViewBase.extend({
   PathViewClass: PolylineView,
   geoJSONType: 'MultiLineString'
 });

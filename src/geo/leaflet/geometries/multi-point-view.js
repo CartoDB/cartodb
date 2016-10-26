@@ -1,95 +1,9 @@
-var _ = require('underscore');
-var View = require('../../../core/view');
+var MultiGeometryViewBase = require('./multi-geometry-view-base');
 var PointView = require('./point-view');
 
-var MultiPointView = View.extend({
-  initialize: function (options) {
-    if (!options.model) throw new Error('model is required');
-    if (!options.nativeMap) throw new Error('nativeMap is required');
-
-    this.model = this.model || options.model;
-    this.leafletMap = options.nativeMap;
-
-    this.model.on('remove', this._onRemoveTriggered, this);
-    this.model.points.on('change', this._onPointsChanged, this);
-    this.model.points.on('add', this._onPointsAdded, this);
-    this.model.points.on('reset', this._onPointsResetted, this);
-
-    this._pointViews = {};
-  },
-
-  render: function () {
-    this._renderPoints();
-    this._updateModelsGeoJSON();
-  },
-
-  _renderPoints: function () {
-    var points = this._getPoints();
-    _.each(points, this._renderPoint, this);
-  },
-
-  _getPoints: function () {
-    return _.uniq(this.model.points.models, function (point) {
-      return point.getLatLng().join(',');
-    });
-  },
-
-  _renderPoint: function (point) {
-    var pointView = new PointView({
-      model: point,
-      nativeMap: this.leafletMap
-    });
-    this._pointViews[point.cid] = pointView;
-    pointView.render();
-  },
-
-  _onPointsChanged: function () {
-    this._updateModelsGeoJSON();
-  },
-
-  _onPointsAdded: function () {
-    var newPoints = this.model.points.select(function (point) {
-      return !this._pointViews[point.cid];
-    }, this);
-    _.each(newPoints, this._renderPoint, this);
-    this._updateModelsGeoJSON();
-  },
-
-  _onPointsResetted: function () {
-    this._removePoints();
-    var newPoints = this.model.points.select(function (point) {
-      return !this._pointViews[point.cid];
-    }, this);
-    _.each(newPoints, this._renderPoint, this);
-    this._updateModelsGeoJSON();
-  },
-
-  _updateModelsGeoJSON: function () {
-    if (this.model.isComplete()) {
-      var geojson = {
-        type: 'MultiPoint'
-      };
-
-      geojson.coordinates = this.model.points.map(function (point) {
-        return point.toGeoJSON().geometry.coordinates;
-      });
-
-      this.model.set({
-        geojson: geojson
-      });
-    }
-  },
-
-  _onRemoveTriggered: function () {
-    this._removePoints();
-    this.remove();
-  },
-
-  _removePoints: function () {
-    this.model.points.each(function (point) {
-      point.remove();
-    }, this);
-  }
+var MultiPointView = MultiGeometryViewBase.extend({
+  PathViewClass: PointView,
+  geoJSONType: 'MultiPoint'
 });
 
 module.exports = MultiPointView;

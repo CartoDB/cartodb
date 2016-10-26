@@ -19,7 +19,7 @@ module.exports = function (multiPathToGeoJSONFunction) {
 
   describe('when a path is updated', function () {
     it('should update the geoJSON of the model', function () {
-      this.geometry.paths.at(0).setLatLngs([
+      this.geometry.geometries.at(0).setLatLngs([
         [-1, 1], [1, 2], [3, 4], [-1, 1]
       ]);
       expect(this.geometry.get('geojson')).toEqual(multiPathToGeoJSONFunction(this.geometry));
@@ -28,13 +28,13 @@ module.exports = function (multiPathToGeoJSONFunction) {
 
   describe('when the model is removed', function () {
     it('should remove each path', function () {
-      this.geometry.paths.each(function (polygon) {
+      this.geometry.geometries.each(function (polygon) {
         spyOn(polygon, 'remove');
       });
 
       this.geometry.remove();
 
-      expect(this.geometry.paths.all(function (polygon) {
+      expect(this.geometry.geometries.all(function (polygon) {
         return polygon.remove.calls.count() === 1;
       })).toBe(true);
     });

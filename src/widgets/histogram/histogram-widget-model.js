@@ -20,6 +20,7 @@ module.exports = WidgetModel.extend({
   initialize: function (attrs, opts) {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.on('change:collapsed', this._onCollapsedChange, this);
+    this.on('change:style', this._updateAutoStyle, this);
     this.dataviewModel.once('change', function () {
       if (this.get('autoStyle')) {
         this.autoStyle();
@@ -29,6 +30,16 @@ module.exports = WidgetModel.extend({
 
   _onCollapsedChange: function (m, isCollapsed) {
     this.dataviewModel.set('enabled', !isCollapsed);
+  },
+
+  _updateAutoStyle: function (e) {
+    var styles = (e && e.changed && e.changed.style) || this.get('style');
+    if (this.autoStyler) {
+      this.autoStyler.updateColors(styles);
+    }
+    if (this.isAutoStyle()) {
+      this.reapplyAutoStyle();
+    }
   },
 
   getState: function () {

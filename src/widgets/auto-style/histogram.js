@@ -18,6 +18,10 @@ var HistogramAutoStyler = AutoStyler.extend({
       this.styles.definition.color;
   },
 
+  updateColors: function (style) {
+    this.styles = style.auto_style;
+  },
+
   getColorLine: function (sym, custom) {
     var scales = custom || {};
 

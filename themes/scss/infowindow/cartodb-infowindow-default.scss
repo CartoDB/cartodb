@@ -31,6 +31,29 @@
   }
   .cartodb-popup-content {
     font-family: 'Open Sans';
+    h4 {
+      margin-bottom: 2px;
+      color: #636D72;
+      font-size: 10px;
+      font-weight: 300;
+      line-height: 14px;
+      text-transform: uppercase;
+    }
+    p {
+      color: #2E3C43;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 16px;
+    }
+  }
+  .cartodb-popup-tip-container {
+    position: absolute;
+    bottom: -16px;
+    left: 12px;
+    width: 0;
+    height: 0;
+    border-top: 16px solid #FFF;
+    border-right: 16px solid transparent;
   }
 }
 

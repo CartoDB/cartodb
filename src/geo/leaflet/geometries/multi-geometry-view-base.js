@@ -4,8 +4,7 @@ var MultiGeometryViewBase = View.extend({
   initialize: function (options) {
     if (!options.model) throw new Error('model is required');
     if (!options.nativeMap) throw new Error('nativeMap is required');
-    if (!this.PathViewClass) throw new Error('subclasses of MultiGeometryViewBase must declare the PathViewClass instance variable');
-    if (!this.geoJSONType) throw new Error('subclasses of geoJSONType must declare the PathViewClass instance variable');
+    if (!this.GeometryViewClass) throw new Error('subclasses of MultiGeometryViewBase must declare the GeometryViewClass instance variable');
 
     this.model = this.model || options.model;
     this.leafletMap = options.nativeMap;
@@ -22,7 +21,7 @@ var MultiGeometryViewBase = View.extend({
   },
 
   _renderPath: function (geometry) {
-    var polygonView = new this.PathViewClass({
+    var polygonView = new this.GeometryViewClass({
       model: geometry,
       nativeMap: this.leafletMap
     });

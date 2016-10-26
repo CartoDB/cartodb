@@ -261,41 +261,36 @@ var VisModel = Backbone.Model.extend({
     }
   },
 
-  init: function (options) {
-    options = options || {};
-    var filters = this._dataviewsCollection.isAnyDataviewFiltered();
-    var self = this;
-
-    if (!filters) {
-      options = _.extend({}, options, {includeFilters: false});
-      this.instantiateMap(options);
-    } else {
-      // request without filters
-      options = _.extend({}, options, {includeFilters: true});
-      this._windshaftMap.createInstance({
-        success: self.instantiateMap.bind(self, options),
-        error: options.error,
-        includeFilters: false
-      });
-    }
-  },
-
   /**
    * Force a map instantiation.
    * Only expected to be called once if {skipMapInstantiation} flag is set to true when vis is created.
    */
   instantiateMap: function (options) {
     options = options || {};
-    if (!this._instantiateMapWasCalled) {
-      this._instantiateMapWasCalled = true;
-      var successCallback = options.success;
-      options.success = function () {
-        whenAllDataviewsFetched(this._dataviewsCollection, this._onDataviewFetched.bind(this));
-        this._initBindsAfterFirstMapInstantiation();
-        successCallback && successCallback();
-      }.bind(this);
-      this.reload(options);
+    if (this._instantiateMapWasCalled) {
+      return;
     }
+    this._instantiateMapWasCalled = true;
+
+    this.reload({
+      success: function () {
+        options.success && options.success();
+        this._onMapInstantiatedForTheFirstTime();
+      }.bind(this),
+      includeFilters: false
+    });
+  },
+
+  _onMapInstantiatedForTheFirstTime: function () {
+    var anyDataviewFiltered = this._isAnyDataviewFiltered();
+    whenAllDataviewsFetched(this._dataviewsCollection, this._onDataviewFetched.bind(this));
+    this._initBindsAfterFirstMapInstantiation();
+
+    anyDataviewFiltered && this.reload({ includeFilters: anyDataviewFiltered });
+  },
+
+  _isAnyDataviewFiltered: function () {
+    return this._dataviewsCollection.isAnyDataviewFiltered();
   },
 
   _onDataviewFetched: function () {

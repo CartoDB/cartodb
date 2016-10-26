@@ -241,7 +241,7 @@ describe('vis/vis', function () {
       });
 
       this.vis.load(new VizJSON(fakeVizJSON()), {});
-      this.vis.init();
+      this.vis.instantiateMap();
 
       this.vis.reload.calls.reset();
     });
@@ -287,7 +287,7 @@ describe('vis/vis', function () {
 
     describe('when vis has been instantiated once', function () {
       beforeEach(function () {
-        this.vis.init();
+        this.vis.instantiateMap();
         this.vis._windshaftMap.createInstance.calls.reset();
       });
 
@@ -313,31 +313,31 @@ describe('vis/vis', function () {
   describe('.init', function () {
     beforeEach(function () {
       this.vis.load(new VizJSON(fakeVizJSON()), {});
-      spyOn(this.vis._windshaftMap, 'createInstance');
-      spyOn(this.vis, 'instantiateMap');
+      spyOn(this.vis, 'reload').and.callThrough();
     });
 
     it('should instantiate without filters if no filters', function () {
-      this.vis._dataviewsCollection.isAnyDataviewFiltered = function () {
+      this.vis._isAnyDataviewFiltered = function () {
         return false;
       };
-      this.vis.instantiateMap.calls.reset();
-      this.vis.init();
+      this.vis.reload.calls.reset();
+      this.vis.instantiateMap();
 
-      expect(this.vis.instantiateMap).toHaveBeenCalled();
-      expect(this.vis.instantiateMap.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
+      expect(this.vis.reload).toHaveBeenCalled();
+      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(false); // include filters
     });
 
     it('should instantiate twice if filters', function () {
-      this.vis._dataviewsCollection.isAnyDataviewFiltered = function () {
+      this.vis._isAnyDataviewFiltered = function () {
         return true;
       };
 
-      this.vis.instantiateMap.calls.reset();
-      this.vis.init();
-      this.vis._windshaftMap.createInstance.calls.mostRecent().args[0].success();
+      this.vis.reload.calls.reset();
+      this.vis.instantiateMap();
+      this.vis.reload.calls.mostRecent().args[0].success();
 
-      expect(this.vis.instantiateMap.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
+      expect(this.vis.reload).toHaveBeenCalledTimes(2);
+      expect(this.vis.reload.calls.mostRecent().args[0].includeFilters).toBe(true); // include filters
     });
   });
 
@@ -648,7 +648,7 @@ describe('vis/vis', function () {
         spyOn(this.vis, 'trackLoadingObject');
 
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.init();
+        this.vis.instantiateMap();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -709,7 +709,7 @@ describe('vis/vis', function () {
 
       it('should NOT start polling for analysis that are "ready" and are the source of a layer', function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.init();
+        this.vis.instantiateMap();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -768,7 +768,7 @@ describe('vis/vis', function () {
 
       it("should NOT start polling for analyses that don't have a URL yet", function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.init();
+        this.vis.instantiateMap();
 
         // Analysis node is created using analyse but node is not associated to any layer or dataview
         this.vis.analysis.analyse({
@@ -830,7 +830,7 @@ describe('vis/vis', function () {
 
       it('should reload the map when analysis is done', function () {
         this.vis.load(new VizJSON(this.vizjson));
-        this.vis.init();
+        this.vis.instantiateMap();
 
         // Response from Maps API is received
         $.ajax.calls.argsFor(0)[0].success({
@@ -963,7 +963,7 @@ describe('vis/vis', function () {
       this.vis.load(new VizJSON(fakeVizJSON()));
       this.vis.on('reload', reloadCallback);
 
-      this.vis.init();
+      this.vis.instantiateMap();
 
       expect(reloadCallback).toHaveBeenCalled();
     });

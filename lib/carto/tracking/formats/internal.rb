@@ -37,6 +37,10 @@ module Carto
                                                 visualization: visualization,
                                                 hash: @hash).to_hash
         end
+
+        def to_hubspot
+          Hash.new
+        end
       end
     end
   end

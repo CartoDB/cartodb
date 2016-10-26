@@ -29,7 +29,7 @@ module Carto
       end
 
       def create
-        @mapcap = Carto::Mapcap.create!(visualization_id: @visualization.id)
+        @visualization.create_mapcap!
 
         render_jsonp(Carto::Api::MapcapPresenter.new(@mapcap).to_poro, :created)
       rescue ActiveRecord::RecordInvalid => exception

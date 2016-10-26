@@ -42,6 +42,20 @@
         </div>
       <% } %>
 
+      <% if (affectedEntitiesCount > 0) { %>
+        <div class="Modal-listActions">
+          <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dataset.delete.affected-entities-count', {smart_count: affectedEntitiesCount}) %></p>
+
+          <ul class="u-flex u-justifyStart u-tSpace-xl">
+          <% visibleAffectedEntities.forEach(function(entity) { %>
+            <li class="u-rSpace--m">
+              <div class="Share-user Share-user--medium" style="background-image: url(<%- entity.avatarUrl %>)" data-username="<%- entity.username %>" title="<%- entity.username %>"></div>
+            </li>
+          <% }); %>
+        </ul>
+        </div>
+      <% } %>
+
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--medium js-cancel">

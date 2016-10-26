@@ -1139,7 +1139,8 @@
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
       "title": "You are about to delete the %{tableName} dataset",
-      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected"
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
+      "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access"
     },
     "metadata": {
       "option": "Edit metadata",

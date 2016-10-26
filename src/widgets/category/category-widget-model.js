@@ -76,6 +76,7 @@ module.exports = WidgetModel.extend( {
 
   _updateColors: function( e ) {
     this.autoStyler.colors.updateColors( e.changed.style );
+    this.autoStyler.colors.updateData( _.pluck(this.dataviewModel.get('data'), 'name'));
     if (this.isAutoStyle()) {
       this.reapplyAutoStyle();
     }

@@ -148,7 +148,7 @@ module Carto
           formatted_string_number(min + (index * step))
         end
       else
-        values = [min] + [""] * (steps-2) + [max]
+        values = [min] + [""] * (steps - 2) + [max]
       end
 
       heights = Array.new(steps) do |index|

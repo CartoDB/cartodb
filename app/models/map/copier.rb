@@ -90,6 +90,7 @@ module CartoDB
       def link(map, layer)
         layer.save
         layer.add_map(map)
+        layer.save
       end
 
       def reset_layer_styles(old_layer, new_layer)

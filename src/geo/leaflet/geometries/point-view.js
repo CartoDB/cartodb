@@ -5,7 +5,6 @@ var GeometryViewBase = require('./geometry-view-base');
 var PointView = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
-    this.model.on('remove', this._onRemoveTriggered, this);
     this.model.on('change:latlng', this._onLatlngChanged, this);
   },
 
@@ -64,7 +63,8 @@ var PointView = GeometryViewBase.extend({
     return !!this._isDragging;
   },
 
-  _onRemoveTriggered: function () {
+  _onGeometryRemoved: function () {
+    GeometryViewBase.prototype._onGeometryRemoved.apply(this);
     this.leafletMap.removeLayer(this._marker);
   }
 });

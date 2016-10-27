@@ -8,10 +8,10 @@ var GeometryViewBase = View.extend({
     this.model = this.model || options.model;
     this.leafletMap = options.nativeMap;
 
-    this.model.on('remove', this._onRemoveTriggered, this);
+    this.model.on('remove', this._onGeometryRemoved, this);
   },
 
-  _onRemoveTriggered: function () {
+  _onGeometryRemoved: function () {
     this.remove();
     this.clean();
   }

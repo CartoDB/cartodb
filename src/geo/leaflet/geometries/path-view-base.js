@@ -5,8 +5,6 @@ var PathViewBase = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
 
-    this.model.on('remove', this._onRemoveTriggered, this);
-
     this.model.points.on('change', this._onPointsChanged, this);
     this.model.points.on('reset', this._onPointsResetted, this);
     this.add_related_model(this.model.points);
@@ -48,7 +46,8 @@ var PathViewBase = GeometryViewBase.extend({
     this._geometry.setLatLngs(this.model.getLatLngs());
   },
 
-  _onRemoveTriggered: function () {
+  _onGeometryRemoved: function () {
+    GeometryViewBase.prototype._onGeometryRemoved.apply(this);
     this.leafletMap.removeLayer(this._geometry);
   }
 });

@@ -341,21 +341,8 @@ $maxLegendContainerHeight: 300px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
 }
-.Bubble-item.is-filter {
-  @include opacity(1);
-}
-.Bubble-item.is-filter::before {
-  display: none;
-}
 .Bubble-numbers {
   position: relative;
-}
-.Bubble-item.is-filter .Bubble-itemCircle {
-  background: #F9F9F9 !important;
-  opacity: 1 !important;
-  &::before {
-    display: none;
-  }
 }
 .Bubble-numbersItem {
   position: absolute;

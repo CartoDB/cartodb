@@ -8,7 +8,6 @@ var colorScales = [
 ]; // Demo colors
 
 function getColorRange (styles) {
-  styles = styles ? styles.auto_style : styles;
 
   var colorRange = styles && styles.definition &&
       styles.definition.color &&

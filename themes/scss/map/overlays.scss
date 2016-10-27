@@ -478,6 +478,13 @@ $index-items: 7 6 5 4 3 2 1;
   border-radius: 50%;
   content: '';
 }
+.Legend-categoryIcon {
+  width: 10px;
+  height: 10px;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
 .Legend-categoryTitle {
   max-width: 90%;
 }

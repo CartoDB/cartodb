@@ -21,6 +21,13 @@ var MultiGeometryBase = GeometryBase.extend({
 
   update: function (latlng) {},
 
+  remove: function () {
+    GeometryBase.prototype.remove.apply(this);
+    this.geometries.each(function (geometry) {
+      geometry.remove();
+    });
+  },
+
   isComplete: function () {
     return this.geometries.all(function (geometry) {
       return geometry.isComplete();

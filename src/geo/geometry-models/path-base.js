@@ -14,6 +14,7 @@ var PathBase = GeometryBase.extend({
     }
     this.points = new Backbone.Collection(points);
     this.points.on('change', this._triggerChangeEvent, this);
+    this.points.on('reset', this._onPointsResetted, this);
   },
 
   getLatLngs: function () {
@@ -33,11 +34,27 @@ var PathBase = GeometryBase.extend({
     this.setLatLngs(latlngs);
   },
 
+  remove: function () {
+    GeometryBase.prototype.remove.apply(this);
+    this._removePoints();
+  },
+
   _createPoint: function (latlng) {
     return new Point({
       latlng: latlng,
       editable: this.isEditable()
     });
+  },
+
+  _onPointsResetted: function (collection, options) {
+    this._removePoints(options.previousModels);
+  },
+
+  _removePoints: function (points) {
+    points = points || this.points.models;
+    _.each(points, function (point) {
+      point.remove();
+    }, this);
   }
 });
 

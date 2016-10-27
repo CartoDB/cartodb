@@ -31,6 +31,7 @@ var MapView = View.extend({
     this.bind('clean', this._removeLayers, this);
 
     this.map.geometries.on('add', this._onGeometryAdded, this);
+    this.add_related_model(this.map.geometries);
   },
 
   _getLayerViewFactory: function () {

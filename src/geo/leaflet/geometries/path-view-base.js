@@ -1,20 +1,15 @@
-var _ = require('underscore');
-var View = require('../../../core/view');
+var GeometryViewBase = require('./geometry-view-base');
 var PointView = require('./point-view');
 
-var PathViewBase = View.extend({
+var PathViewBase = GeometryViewBase.extend({
   initialize: function (options) {
-    View.prototype.initialize.apply(this, arguments);
-
-    if (!options.model) throw new Error('model is required');
-    if (!options.nativeMap) throw new Error('nativeMap is required');
-
-    this.model = this.model || options.model;
-    this.leafletMap = options.nativeMap;
+    GeometryViewBase.prototype.initialize.apply(this, arguments);
 
     this.model.on('remove', this._onRemoveTriggered, this);
+
     this.model.points.on('change', this._onPointsChanged, this);
     this.model.points.on('reset', this._onPointsResetted, this);
+    this.add_related_model(this.model.points);
 
     this._geometry = this._createGeometry();
   },
@@ -45,7 +40,6 @@ var PathViewBase = View.extend({
   },
 
   _onPointsResetted: function (collection, options) {
-    this._removePoints(options.previousModels);
     this.model.points.each(this._renderPoint, this);
     this._updateGeometry();
   },
@@ -55,16 +49,7 @@ var PathViewBase = View.extend({
   },
 
   _onRemoveTriggered: function () {
-    this._removePoints();
     this.leafletMap.removeLayer(this._geometry);
-    this.remove();
-  },
-
-  _removePoints: function (points) {
-    points = points || this.model.points.models;
-    _.each(points, function (point) {
-      point.remove();
-    }, this);
   }
 });
 

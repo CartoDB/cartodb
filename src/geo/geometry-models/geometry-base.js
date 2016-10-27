@@ -5,16 +5,16 @@ var GeometryBase = Model.extend({
     throw new Error('subclasses of GeometryBase must implement update');
   },
 
+  remove: function () {
+    this.trigger('remove');
+  },
+
   isComplete: function () {
     throw new Error('subclasses of GeometryBase must implement isComplete');
   },
 
   isEditable: function () {
     return !!this.get('editable');
-  },
-
-  remove: function () {
-    this.trigger('remove');
   },
 
   toGeoJSON: function () {

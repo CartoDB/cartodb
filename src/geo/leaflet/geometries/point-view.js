@@ -1,17 +1,10 @@
 var L = require('leaflet');
 var _ = require('underscore');
-var View = require('../../../core/view');
+var GeometryViewBase = require('./geometry-view-base');
 
-var PointView = View.extend({
+var PointView = GeometryViewBase.extend({
   initialize: function (options) {
-    View.prototype.initialize.apply(this, arguments);
-
-    if (!options.model) throw new Error('model is required');
-    if (!options.nativeMap) throw new Error('nativeMap is required');
-
-    this.model = this.model || options.model;
-    this.leafletMap = options.nativeMap;
-
+    GeometryViewBase.prototype.initialize.apply(this, arguments);
     this.model.on('remove', this._onRemoveTriggered, this);
     this.model.on('change:latlng', this._onLatlngChanged, this);
   },
@@ -73,7 +66,6 @@ var PointView = View.extend({
 
   _onRemoveTriggered: function () {
     this.leafletMap.removeLayer(this._marker);
-    this.remove();
   }
 });
 

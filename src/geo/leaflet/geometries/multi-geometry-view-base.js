@@ -1,15 +1,9 @@
-var View = require('../../../core/view');
+var GeometryViewBase = require('./geometry-view-base');
 
-var MultiGeometryViewBase = View.extend({
+var MultiGeometryViewBase = GeometryViewBase.extend({
   initialize: function (options) {
-    if (!options.model) throw new Error('model is required');
-    if (!options.nativeMap) throw new Error('nativeMap is required');
+    GeometryViewBase.prototype.initialize.apply(this, arguments);
     if (!this.GeometryViewClass) throw new Error('subclasses of MultiGeometryViewBase must declare the GeometryViewClass instance variable');
-
-    this.model = this.model || options.model;
-    this.leafletMap = options.nativeMap;
-
-    this.model.on('remove', this._onRemoveTriggered, this);
   },
 
   render: function () {
@@ -17,26 +11,15 @@ var MultiGeometryViewBase = View.extend({
   },
 
   _renderGeometries: function () {
-    this.model.geometries.each(this._renderPath, this);
+    this.model.geometries.each(this._renderGeometry, this);
   },
 
-  _renderPath: function (geometry) {
+  _renderGeometry: function (geometry) {
     var polygonView = new this.GeometryViewClass({
       model: geometry,
       nativeMap: this.leafletMap
     });
     polygonView.render();
-  },
-
-  _onRemoveTriggered: function () {
-    this._removeGeometries();
-    this.remove();
-  },
-
-  _removeGeometries: function () {
-    this.model.geometries.each(function (geometry) {
-      geometry.remove();
-    }, this);
   }
 });
 

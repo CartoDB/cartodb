@@ -53,7 +53,7 @@ class Organization < Sequel::Model
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
-  DEFAULT_MAPZEN_ROUTING_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = nil
 
   def validate
     super
@@ -65,8 +65,6 @@ class Organization < Sequel::Model
     validates_integer :here_isolines_quota, allow_nil: false, message: 'here_isolines_quota cannot be nil'
     validates_integer :obs_snapshot_quota, allow_nil: false, message: 'obs_snapshot_quota cannot be nil'
     validates_integer :obs_general_quota, allow_nil: false, message: 'obs_general_quota cannot be nil'
-    validates_integer :mapzen_routing_quota, allow_nil: false, message: 'mapzen_routing_quota cannot be nil'
-
 
     if default_quota_in_bytes
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
@@ -264,7 +262,7 @@ class Organization < Sequel::Model
   end
 
   def remaining_mapzen_routing_quota
-    remaining = mapzen_routing_quota - get_mapzen_routing_calls
+    remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     (remaining > 0 ? remaining : 0)
   end
 

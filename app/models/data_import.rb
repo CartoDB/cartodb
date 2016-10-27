@@ -1041,7 +1041,15 @@ class DataImport < Sequel::Model
   end
 
   def track_results(results, import_id)
-    current_user_id = current_user.id if current_user
+    current_user_id = current_user.id
+    return unless current_user_id
+
+    if visualization_id
+      Carto::Tracking::Events::CreatedMap.new(current_user_id,
+                                              user_id: current_user_id,
+                                              visualization_id: visualization_id,
+                                              origin: 'import').report
+    end
 
     results.select(&:success?).each do |result|
       condition, origin = if result.name
@@ -1052,21 +1060,15 @@ class DataImport < Sequel::Model
                           end
 
       user_table = ::UserTable.where(condition).first
-      vis = Carto::Visualization.where(map_id: user_table.map.id).first
+      map = user_table.map if user_table
+      if map
+        vis = Carto::Visualization.where(map_id: map.id).first
 
-      if current_user_id
         Carto::Tracking::Events::CreatedDataset.new(current_user_id,
                                                     user_id: current_user_id,
                                                     visualization_id: vis.id,
                                                     origin: origin).report
       end
-    end
-
-    if visualization_id && current_user_id
-      Carto::Tracking::Events::CreatedMap.new(current_user_id,
-                                              user_id: current_user_id,
-                                              visualization_id: visualization_id,
-                                              origin: 'import').report
     end
   rescue => exception
     CartoDB::Logger.warning(message: 'Carto::Tracking: Couldn\'t report event',

@@ -39,6 +39,10 @@ module Carto
       results.count 
     end
 
+    def first
+      results.first
+    end
+
     private
 
     def results

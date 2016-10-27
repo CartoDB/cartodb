@@ -25,7 +25,7 @@ module Carto
             {
               "name" => 0,
               "visible" => true,
-              "value" => "#A6CEE3"
+              "value" => "super.png"
             },
             {
               "name" => 1350,
@@ -65,7 +65,7 @@ module Carto
             {
               "name" => 900,
               "visible" => true,
-              "value" => "#CAB2D6"
+              "value" => "duper.png"
             },
             {
               "name" => 90000,
@@ -98,7 +98,7 @@ module Carto
             {
               "name" => "Untitled",
               "visible" => true,
-              "value" => "#3E7BB6",
+              "value" => "superduper.png",
               "sync" => true
             },
             {
@@ -128,7 +128,7 @@ module Carto
         @old_legend = old_category
       end
 
-      it 'migrates old custom to new custom' do
+      it 'migrates old custom to new custom with no template' do
         @old_legend = old_custom
       end
 
@@ -137,10 +137,30 @@ module Carto
 
         new_legend.type.should eq 'custom'
         new_legend.valid?.should be_true
+
+        category_keys = new_legend.definition[:categories]
+                                  .map(&:keys)
+                                  .flatten
+                                  .uniq
+
+        category_keys.should include(:title)
+        category_keys.should include(:color)
+        category_keys.should include(:icon)
       end
     end
 
     describe('#html types') do
+      let(:old_custom) do
+        {
+          "type" => "custom",
+          "show_title" => true,
+          "title" => "",
+          "template" => "<h1>Manolo Escobar</h1>",
+          "visible" => true,
+          "items" => []
+        }
+      end
+
       let(:old_bubble) do
         {
           "type" => "bubble",
@@ -358,6 +378,10 @@ module Carto
         truncated['items'].last['value'] = '#fatal#fatal#fatal'
 
         @old_legend = truncated
+      end
+
+      it 'migrates old custom with template to new html' do
+        @old_legend = old_custom
       end
 
       it 'migrates old bubble to new html' do

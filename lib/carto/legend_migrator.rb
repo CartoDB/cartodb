@@ -10,7 +10,7 @@ module Carto
     end
 
     def build
-      new_type, new_definition = type_and_definition
+      new_definition, new_type = definition_and_type
       legend_title = title if title.present? && legend['show_title']
 
       Legend.new(layer_id: layer_id,
@@ -40,16 +40,21 @@ module Carto
       legend['title']
     end
 
-    HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
-    CUSTOM_TYPES = %w(category custom).freeze
+    def template
+      @template ||= legend['template']
+    end
 
-    def type_and_definition
-      if HTML_RAMP_TYPES.include?(type)
-        ['html', build_html_definition_from_ramp_type]
-      elsif CUSTOM_TYPES.include?(type)
-        ['custom', build_custom_definition_from_custom_type]
+    HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
+
+    def definition_and_type
+      if type == 'custom'
+        definition_and_type_for_custom
+      elsif type == 'category'
+        [build_custom_definition_from_custom_type, 'custom']
       elsif type == 'bubble'
-        ['html', build_html_definition_from_bubble]
+        [build_html_definition_from_bubble, 'html']
+      elsif HTML_RAMP_TYPES.include?(type)
+        [build_html_definition_from_ramp_type, 'html']
       else
         [nil, nil]
       end
@@ -60,18 +65,30 @@ module Carto
     def build_custom_definition_from_custom_type
       categories = items.each_with_index.map do |item, index|
         title = item['name'].to_s || "Category #{index + 1}"
-        color = item['value']
+        value = item['value']
 
         category_definition = { title: title }
 
-        if color && color =~ COLOR_REGEXP
-          category_definition[:color] = color
+        if value
+          if value =~ COLOR_REGEXP
+            category_definition[:color] = value
+          else
+            category_definition[:icon] = value
+          end
         end
 
         category_definition
       end
 
       { categories: categories }
+    end
+
+    def definition_and_type_for_custom
+      if template.present?
+        [{ html: template }, 'html']
+      else
+        [build_custom_definition_from_custom_type, 'custom']
+      end
     end
 
     def build_html_definition_from_ramp_type
@@ -135,7 +152,7 @@ module Carto
           formatted_string_number(min + (index * step))
         end
       else
-        values = [min] + [""] * (steps-2) + [max]
+        values = [min] + [""] * (steps - 2) + [max]
       end
 
       heights = Array.new(steps) do |index|

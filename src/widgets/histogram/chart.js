@@ -663,6 +663,7 @@ module.exports = cdb.core.View.extend({
     var loPosition = this._getBarPosition(loBarIndex);
     var hiPosition = this._getBarPosition(hiBarIndex);
 
+    this.model.set({lo_index: loBarIndex, hi_index: hiBarIndex});
     this._selectRange(loPosition, hiPosition);
   },
 

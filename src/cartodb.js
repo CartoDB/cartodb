@@ -50,7 +50,6 @@ cdb.ui.common.Table = require('./ui/common/table');
 
 cdb.geo.geocoder.NOKIA = require('./geo/geocoder/nokia-geocoder');
 cdb.geo.geocoder.YAHOO = require('./geo/geocoder/yahoo-geocoder');
-cdb.geo.Geometry = require('./geo/geometry');
 
 cdb.geo.TileLayer = require('./geo/map/tile-layer');
 cdb.geo.GMapsBaseLayer = require('./geo/map/gmaps-base-layer');

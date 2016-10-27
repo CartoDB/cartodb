@@ -7,10 +7,5 @@ module.exports = {
   LeafletWMSLayerView: require('./leaflet/leaflet-wms-layer-view'),
   LeafletCartoDBLayerGroupView: require('./leaflet/leaflet-cartodb-layer-group-view'),
 
-  leaflet: {
-    PointView: require('./leaflet/leaflet-point-view'),
-    PathView: require('./leaflet/leaflet-path-view')
-  },
-
   LeafletMapView: require('./leaflet/leaflet-map-view')
 };

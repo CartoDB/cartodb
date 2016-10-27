@@ -145,7 +145,7 @@ module Concerns
           attrs.delete(:organization_id)
           return attrs
         when :update
-          attrs[:batch_queries_statement_timeout] = self.batch_queries_statement_timeout
+          attrs[:batch_queries_statement_timeout] = batch_queries_statement_timeout
           attrs
         end
       end

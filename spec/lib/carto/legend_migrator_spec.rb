@@ -128,7 +128,7 @@ module Carto
         @old_legend = old_category
       end
 
-      it 'migrates old custom to new custom' do
+      it 'migrates old custom to new custom with no template' do
         @old_legend = old_custom
       end
 
@@ -141,6 +141,17 @@ module Carto
     end
 
     describe('#html types') do
+      let(:old_custom) do
+        {
+          "type" => "custom",
+          "show_title" => true,
+          "title" => "",
+          "template" => "<h1>Manolo Escobar</h1>",
+          "visible" => true,
+          "items" => []
+        }
+      end
+
       let(:old_bubble) do
         {
           "type" => "bubble",
@@ -358,6 +369,10 @@ module Carto
         truncated['items'].last['value'] = '#fatal#fatal#fatal'
 
         @old_legend = truncated
+      end
+
+      it 'migrates old custom with template to new html' do
+        @old_legend = old_custom
       end
 
       it 'migrates old bubble to new html' do

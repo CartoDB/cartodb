@@ -8,7 +8,7 @@ var Polygon = PathBase.extend({
   },
 
   isComplete: function () {
-    return this.points.length > 2;
+    return this.points.length >= 3;
   },
 
   toGeoJSON: function () {

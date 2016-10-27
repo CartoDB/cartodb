@@ -8,7 +8,7 @@ var Polyline = PathBase.extend({
   },
 
   isComplete: function () {
-    return this.points.length > 1;
+    return this.points.length >= 2;
   },
 
   toGeoJSON: function () {

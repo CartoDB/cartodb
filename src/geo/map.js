@@ -65,7 +65,6 @@ var Map = Model.extend({
     this.layers.bind('change:attribution', this._updateAttributions, this);
     this.layers.bind('reset', this._onLayersResetted, this);
 
-    this._geometryFactory = new GeometryFactory();
     this._updateAttributions();
   },
 
@@ -201,19 +200,19 @@ var Map = Model.extend({
  // GEOMETRY MANAGEMENT
 
   drawPoint: function () {
-    return this._drawGeometry(this._geometryFactory.createPoint({
+    return this._drawGeometry(GeometryFactory.createPoint({
       editable: true
     }));
   },
 
   drawPolyline: function () {
-    return this._drawGeometry(this._geometryFactory.createPolyline({
+    return this._drawGeometry(GeometryFactory.createPolyline({
       editable: true
     }));
   },
 
   drawPolygon: function () {
-    return this._drawGeometry(this._geometryFactory.createPolygon({
+    return this._drawGeometry(GeometryFactory.createPolygon({
       editable: true
     }));
   },
@@ -228,7 +227,7 @@ var Map = Model.extend({
   },
 
   editGeometry: function (geoJSON) {
-    var geometry = this._geometryFactory.createGeometryFromGeoJSON(geoJSON);
+    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
     this.trigger('enterEditMode', geometry);
     return geometry;
   },

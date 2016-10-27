@@ -16,10 +16,6 @@ var geometryAsFeature = function (geometry) {
 };
 
 describe('src/geo/geometry-models/geometry-factory', function () {
-  beforeEach(function () {
-    this.geometryFactory = new GeometryFactory();
-  });
-
   describe('.createGeometryFromGeoJSON', function () {
     var pointGeometry = {
       'type': 'Point',
@@ -31,7 +27,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
     _.each([ pointGeometry, geometryAsFeature(pointGeometry) ], function (geoJSON) {
       it('should create a point', function () {
-        var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
+        var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Point).toBeTruthy();
         expect(geometry.getLatLng()).toEqual([ 40.245991504199026, -3.779296875 ]);
@@ -54,7 +50,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
     _.each([ polylineGeometry, geometryAsFeature(polylineGeometry) ], function (geoJSON) {
       it('should create a polyline', function () {
-        var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
+        var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polyline).toBeTruthy();
         expect(geometry.getLatLngs()).toEqual([
@@ -90,7 +86,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
     _.each([ polygonGeometry, geometryAsFeature(polygonGeometry) ], function (geoJSON) {
       it('should create a polygon', function () {
-        var geometry = this.geometryFactory.createGeometryFromGeoJSON(geoJSON);
+        var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polygon).toBeTruthy();
         expect(geometry.getLatLngs()).toEqual([
@@ -107,7 +103,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
     };
 
     it('should create a multipoint', function () {
-      var geometry = this.geometryFactory.createGeometryFromGeoJSON(multiPointGeometry);
+      var geometry = GeometryFactory.createGeometryFromGeoJSON(multiPointGeometry);
 
       expect(geometry instanceof MultiPoint).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);
@@ -124,7 +120,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
     };
 
     it('should create a multipolygon', function () {
-      var geometry = this.geometryFactory.createGeometryFromGeoJSON(multiPolygonGeometry);
+      var geometry = GeometryFactory.createGeometryFromGeoJSON(multiPolygonGeometry);
 
       expect(geometry instanceof MultiPolygon).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);
@@ -141,7 +137,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
     };
 
     it('should create a multipolyline', function () {
-      var geometry = this.geometryFactory.createGeometryFromGeoJSON(multiPolylineGeometry);
+      var geometry = GeometryFactory.createGeometryFromGeoJSON(multiPolylineGeometry);
 
       expect(geometry instanceof MultiPolyline).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);

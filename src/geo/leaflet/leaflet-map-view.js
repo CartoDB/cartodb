@@ -4,19 +4,16 @@ var L = require('leaflet');
 var MapView = require('../map-view');
 var View = require('../../core/view');
 var Sanitize = require('../../core/sanitize');
-var LeafletPointView = require('./leaflet-point-view');
-var LeafletPathView = require('./leaflet-path-view');
+var LeafletLayerViewFactory = require('./leaflet-layer-view-factory');
+var LeafletGeometryViewFactory = require('./geometries/view-factory');
 
 var LeafletMapView = MapView.extend({
 
   initialize: function() {
-
-    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
-
     MapView.prototype.initialize.call(this);
 
     var self = this;
-
+    _.bindAll(this, '_addLayer', '_removeLayer', '_setZoom', '_setCenter', '_setView');
     var center = this.map.get('center');
 
     var mapConfig = {
@@ -51,9 +48,6 @@ var LeafletMapView = MapView.extend({
     }
 
     this.map.bind('set_view', this._setView, this);
-
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
 
     this._bindModel();
     this.setAttribution();
@@ -120,6 +114,18 @@ var LeafletMapView = MapView.extend({
     if (bounds) {
       this.showBounds(bounds);
     }
+  },
+
+  _getLayerViewFactory: function () {
+    this._layerViewFactory = this._layerViewFactory || new LeafletLayerViewFactory({
+      vector: this.map.get('vector')
+    });
+
+    return this._layerViewFactory;
+  },
+
+  _getGeometryViewFactory: function () {
+    return LeafletGeometryViewFactory;
   },
 
   // this replaces the default functionality to search for
@@ -207,16 +213,6 @@ var LeafletMapView = MapView.extend({
 
   _setView: function() {
     this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0 );
-  },
-
-  _addGeomToMap: function(geom) {
-    var geo = LeafletMapView.createGeometry(geom);
-    geo.geom.addTo(this._leafletMap);
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    this._leafletMap.removeLayer(geo.geom);
   },
 
   _getNativeMap: function () {
@@ -308,17 +304,6 @@ var LeafletMapView = MapView.extend({
     this._leafletMap.setView(this.map.get("center"), this.map.get("zoom") || 0, {
       animate: false
     });
-  }
-
-}, {
-  /**
-   * create the view for the geometry model
-   */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
-      return new LeafletPointView(geometryModel);
-    }
-    return new LeafletPathView(geometryModel);
   }
 
 });

@@ -93,7 +93,7 @@ var VisModel = Backbone.Model.extend({
 
     var datasource = vizjson.datasource;
 
-    this._windshaftSettings = {
+    var windshaftSettings = {
       urlTemplate: vizjson.datasource.maps_api_template,
       userName: vizjson.datasource.user_name,
       statTag: vizjson.datasource.stat_tag,
@@ -101,29 +101,24 @@ var VisModel = Backbone.Model.extend({
       authToken: this.get('authToken')
     };
 
+    var WindshaftMapClass = WindshaftAnonymousMap;
     if (vizjson.isNamedMap()) {
-      this._windshaftSettings.templateName = vizjson.datasource.template_name;
-    }
-
-    var WindshaftMapClass;
-    if (vizjson.isNamedMap()) {
+      windshaftSettings.templateName = vizjson.datasource.template_name;
       WindshaftMapClass = WindshaftNamedMap;
-    } else {
-      WindshaftMapClass = WindshaftAnonymousMap;
     }
 
-    this.layerGroupModel = new CartoDBLayerGroup({
+    var windshaftClient = new WindshaftClient(windshaftSettings);
+
+    var layerGroupModel = this.layerGroupModel = new CartoDBLayerGroup({
       apiKey: this.get('apiKey'),
       authToken: this.get('authToken')
     }, {
       layersCollection: this._layersCollection
     });
 
-    var windshaftClient = new WindshaftClient(this._windshaftSettings);
-
     var modelUpdater = new ModelUpdater({
       visModel: this,
-      layerGroupModel: this.layerGroupModel,
+      layerGroupModel: layerGroupModel,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
@@ -137,15 +132,15 @@ var VisModel = Backbone.Model.extend({
     }, {
       client: windshaftClient,
       modelUpdater: modelUpdater,
-      windshaftSettings: this._windshaftSettings,
+      windshaftSettings: windshaftSettings,
       dataviewsCollection: this._dataviewsCollection,
       layersCollection: this._layersCollection,
       analysisCollection: this._analysisCollection
     });
 
-    this._layersFactory = new LayersFactory({
+    var layersFactory = new LayersFactory({
       visModel: this,
-      windshaftSettings: this._windshaftSettings
+      windshaftSettings: windshaftSettings
     });
 
     // Create the Map
@@ -160,10 +155,11 @@ var VisModel = Backbone.Model.extend({
       scrollwheel: !!this.scrollwheel,
       drag: allowDragging,
       provider: vizjson.map_provider,
-      vector: vizjson.vector
+      vector: vizjson.vector,
+      isFeatureInteractivityEnabled: this.get('interactiveFeatures')
     }, {
       layersCollection: this._layersCollection,
-      layersFactory: this._layersFactory
+      layersFactory: layersFactory
     });
 
     // Reset the collection of overlays
@@ -190,8 +186,15 @@ var VisModel = Backbone.Model.extend({
 
     this._windshaftMap.bind('instanceCreated', this._onMapInstanceCreated, this);
 
-    // Lastly: reset the layer models on the map
-    var layerModels = this._newLayerModels(vizjson);
+    // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
+    // will be merged and released. Leaving this here for backwards compatibility
+    // and to make sure everything still works fine during the release and next
+    // few moments (e.g: some viz.json files might be cached, etc.).
+    var layersData = this._flattenLayers(vizjson.layers);
+    var layerModels = _.map(layersData, function (layerData) {
+      return layersFactory.createLayer(layerData.type, layerData);
+    });
+
     this.map.layers.reset(layerModels);
 
     // "Load" existing analyses from the viz.json. This will generate
@@ -347,17 +350,6 @@ var VisModel = Backbone.Model.extend({
     this.map.reCenter();
   },
 
-  _newLayerModels: function (vizjson) {
-    // TODO: This can be removed once https://github.com/CartoDB/cartodb/pull/9118
-    // will be merged and released. Leaving this here for backwards compatibility
-    // and to make sure everything still works fine during the release and next
-    // few moments (e.g: some viz.json files might be cached, etc.).
-    var layersData = this._flattenLayers(vizjson.layers);
-    return _.map(layersData, function (layerData) {
-      return this._layersFactory.createLayer(layerData.type, layerData);
-    }, this);
-  },
-
   _flattenLayers: function (vizjsonLayers) {
     return _.chain(vizjsonLayers)
       .map(function (vizjsonLayer) {
@@ -378,6 +370,12 @@ var VisModel = Backbone.Model.extend({
       })
       .flatten()
       .value();
+  },
+
+  addCustomOverlay: function (overlayView) {
+    overlayView.type = 'custom';
+    this.overlaysCollection.add(overlayView);
+    return overlayView;
   }
 });
 

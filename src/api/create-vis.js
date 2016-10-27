@@ -10,7 +10,8 @@ var DEFAULT_OPTIONS = {
   infowindow: true,
   tooltip: true,
   logo: true,
-  show_empty_infowindow_fields: false
+  show_empty_infowindow_fields: false,
+  interactiveFeatures: false
 };
 
 var createVis = function (el, vizjson, options) {
@@ -75,7 +76,8 @@ var loadVizJSON = function (el, visModel, vizjsonData, options) {
     apiKey: options.apiKey,
     authToken: options.authToken,
     showEmptyInfowindowFields: options.show_empty_infowindow_fields === true,
-    https: isProtocolHTTPs || options.https === true || vizjson.https === true
+    https: isProtocolHTTPs || options.https === true || vizjson.https === true,
+    interactiveFeatures: options.interactiveFeatures
   });
 
   visModel.setSettings({

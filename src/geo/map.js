@@ -6,6 +6,7 @@ var log = require('cdb.log');
 var Model = require('../core/model');
 var Layers = require('./map/layers');
 var sanitize = require('../core/sanitize');
+var GeometryFactory = require('./geometry-models/geometry-factory');
 
 var Map = Model.extend({
   defaults: {
@@ -147,6 +148,16 @@ var Map = Model.extend({
     return this.layers.remove(layerModel);
   },
 
+  disableInteractivity: function () {
+    this.disablePopups();
+    this.disableFeatureInteractivity();
+  },
+
+  enableInteractivity: function () {
+    this.enablePopups();
+    this.enableFeatureInteractivity();
+  },
+
   isInteractive: function () {
     return this.isFeatureInteractivityEnabled() ||
       this.arePopupsEnabled() && this._isAnyCartoDBLayerInteractive();
@@ -184,6 +195,45 @@ var Map = Model.extend({
 
   arePopupsDisabled: function () {
     return !this.arePopupsEnabled();
+  },
+
+ // GEOMETRY MANAGEMENT
+
+  drawPoint: function () {
+    return this._drawGeometry(GeometryFactory.createPoint({
+      editable: true
+    }));
+  },
+
+  drawPolyline: function () {
+    return this._drawGeometry(GeometryFactory.createPolyline({
+      editable: true
+    }));
+  },
+
+  drawPolygon: function () {
+    return this._drawGeometry(GeometryFactory.createPolygon({
+      editable: true
+    }));
+  },
+
+  _drawGeometry: function (geometry) {
+    this.trigger('enterDrawingMode', geometry);
+    return geometry;
+  },
+
+  stopDrawingGeometry: function () {
+    this.trigger('exitDrawingMode');
+  },
+
+  editGeometry: function (geoJSON) {
+    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
+    this.trigger('enterEditMode', geometry);
+    return geometry;
+  },
+
+  stopEditingGeometry: function (geoJSON) {
+    this.trigger('exitEditMode');
   },
 
   // INTERNAL CartoDB.js METHODS

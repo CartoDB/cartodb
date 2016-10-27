@@ -1,19 +1,19 @@
 /* global google */
 var _ = require('underscore');
+var Backbone = require('backbone');
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var Projector = require('./projector');
-var PointView = require('./gmaps-point-view');
-var PathView = require('./gmaps-path-view');
+var GMapsLayerViewFactory = require('./gmaps-layer-view-factory');
 
 var GoogleMapsMapView = MapView.extend({
 
   initialize: function() {
+    MapView.prototype.initialize.call(this);
+
     _.bindAll(this, '_ready');
     this._isReady = false;
     var self = this;
-
-    MapView.prototype.initialize.call(this);
 
     var bounds = this.map.getViewBounds();
 
@@ -92,15 +92,30 @@ var GoogleMapsMapView = MapView.extend({
       self.trigger('dblclick', e);
     });
 
-    this.map.geometries.bind('add', this._addGeometry, this);
-    this.map.geometries.bind('remove', this._removeGeometry, this);
-
     this._bindModel();
     this.setAttribution();
 
     this.projector = new Projector(this._gmapsMap);
 
     this.projector.draw = this._ready;
+  },
+
+  _getLayerViewFactory: function () {
+    this._layerViewFactory = this._layerViewFactory || new GMapsLayerViewFactory({
+      vector: this.map.get('vector')
+    });
+
+    return this._layerViewFactory;
+  },
+
+  _getGeometryViewFactory: function () {
+    // TODO: We'll need to return a real factory when we add support
+    // for geometry management on Google Maps.
+    return {
+      createGeometryView: function () {
+        return new Backbone.View();
+      }
+    };
   },
 
   _ready: function() {
@@ -213,28 +228,6 @@ var GoogleMapsMapView = MapView.extend({
     this._gmapsMap.setOptions({ draggableCursor: cursor });
   },
 
-  _addGeomToMap: function(geom) {
-    var geo = GoogleMapsMapView.createGeometry(geom);
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(this._gmapsMap);
-      }
-    } else {
-        geo.geom.setMap(this._gmapsMap);
-    }
-    return geo;
-  },
-
-  _removeGeomFromMap: function(geo) {
-    if(geo.geom.length) {
-      for(var i = 0 ; i < geo.geom.length; ++i) {
-        geo.geom[i].setMap(null);
-      }
-    } else {
-      geo.geom.setMap(null);
-    }
-  },
-
   getNativeMap: function() {
     return this._gmapsMap;
   },
@@ -243,16 +236,6 @@ var GoogleMapsMapView = MapView.extend({
     google.maps.event.trigger(this._gmapsMap, 'resize');
   }
 
-}, {
-  /**
-   * create the view for the geometry model
-   */
-  createGeometry: function(geometryModel) {
-    if(geometryModel.isPoint()) {
-      return new PointView(geometryModel);
-    }
-    return new PathView(geometryModel);
-  }
 });
 
 module.exports = GoogleMapsMapView;

@@ -14,12 +14,11 @@ TooltipManager.prototype.manage = function (mapView, map) {
   this._map = map;
 
   this._map.layers.bind('reset', this._addTooltipForLayers, this);
-  this._addTooltipForLayers();
-
   this._map.layers.bind('add', this._addTooltipForLayer, this);
+  this._addTooltipForLayers();
 };
 
-TooltipManager.prototype._addTooltipForLayers = function (layerModels) {
+TooltipManager.prototype._addTooltipForLayers = function () {
   this._map.layers.each(this._addTooltipForLayer, this);
 };
 

@@ -6,14 +6,12 @@ global.L = L;
 
 var Map = require('../../../../src/geo/map');
 var VisModel = require('../../../../src/vis/vis');
-var Geometry = require('../../../../src/geo/geometry');
 var TileLayer = require('../../../../src/geo/map/tile-layer');
 var CartoDBLayer = require('../../../../src/geo/map/cartodb-layer');
 var PlainLayer = require('../../../../src/geo/map/plain-layer');
 var GMapsBaseLayer = require('../../../../src/geo/map/gmaps-base-layer');
 var CartoDBLayerGroup = require('../../../../src/geo/cartodb-layer-group');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
-var LeafletLayerViewFactory = require('../../../../src/geo/leaflet/leaflet-layer-view-factory');
 var LeafletTiledLayerView = require('../../../../src/geo/leaflet/leaflet-tiled-layer-view');
 var LeafletPlainLayerView = require('../../../../src/geo/leaflet/leaflet-plain-layer-view');
 
@@ -41,7 +39,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     mapView = new LeafletMapView({
       el: container,
       map: map,
-      layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: this.layerGroupModel
     });
 
@@ -180,34 +177,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var layer = new TileLayer({type: 'rambo'});
     map.addLayer(layer);
     expect(_.size(mapView._layerViews)).toEqual(0);
-  });
-
-  var geojsonFeature = {
-    'type': 'Point',
-    'coordinates': [-104.99404, 39.75621]
-  };
-
-  it('should add and remove a geometry', function () {
-    var geo = new Geometry({
-      geojson: geojsonFeature
-    });
-    map.addGeometry(geo);
-    expect(_.size(mapView.geometries)).toEqual(1);
-    geo.destroy();
-    expect(_.size(mapView.geometries)).toEqual(0);
-  });
-
-  it('should edit a geometry', function () {
-    var geo = new Geometry({
-      geojson: geojsonFeature
-    });
-    map.addGeometry(geo);
-    var v = mapView.geometries[geo.cid];
-    v.trigger('dragend', null, [10, 20]);
-    expect(geo.get('geojson')).toEqual({
-      'type': 'Point',
-      'coordinates': [20, 10]
-    });
   });
 
   it('should save automatically when the zoom or center changes', function (done) {
@@ -384,7 +353,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
         el: container,
         map: map,
         map_object: leafletMap,
-        layerViewFactory: new LeafletLayerViewFactory(),
         layerGroupModel: this.layerGroupModel
       });
 
@@ -414,7 +382,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
         el: container,
         map: map,
         map_object: leafletMap,
-        layerViewFactory: new LeafletLayerViewFactory(),
         layerGroupModel: this.layerGroupModel
       });
 
@@ -442,7 +409,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var mapView = new LeafletMapView({
       el: container,
       map: map,
-      layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model()
     });
 
@@ -463,7 +429,6 @@ describe('geo/leaflet/leaflet-map-view', function () {
     var mapView = new LeafletMapView({
       el: container,
       map: map,
-      layerViewFactory: new LeafletLayerViewFactory(),
       layerGroupModel: new Backbone.Model()
     });
 

@@ -11,6 +11,21 @@ var CartoDBLayerGroup = require('../../../src/geo/cartodb-layer-group');
 
 var LayerGroupModel = CartoDBLayerGroup;
 
+var fakeLayerViewFactory = {
+  createLayerView: function () {
+    var layerView = new Backbone.View();
+    layerView.setCursor = jasmine.createSpy('setCursor');
+    spyOn(layerView, 'remove');
+    return layerView;
+  }
+};
+
+var MyMapView = MapView.extend({
+  _getLayerViewFactory: function () {
+    return fakeLayerViewFactory;
+  }
+});
+
 describe('core/geo/map-view', function () {
   beforeEach(function () {
     this.container = $('<div>').css('height', '200px');
@@ -22,35 +37,29 @@ describe('core/geo/map-view', function () {
     });
 
     this.layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
-    this.mapView = new MapView({
+    this.mapView = new MyMapView({
       el: this.container,
       map: this.map,
-      layerViewFactory: this.layerViewFactory,
       layerGroupModel: new LayerGroupModel(null, {
         layersCollection: this.map.layers
       })
     });
     spyOn(this.mapView, 'setCursor');
-
     spyOn(this.mapView, 'getNativeMap');
     spyOn(this.mapView, '_addLayerToMap');
   });
 
   describe('.render', function () {
     it('should add layer views to the map', function () {
-      this.layerViewFactory.createLayerView.and.callFake(function () {
-        return jasmine.createSpyObj('layerView', ['something']);
-      });
       var tileLayer = new TileLayer();
       var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
       var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
       this.map.layers.reset([tileLayer, cartoDBLayer1, cartoDBLayer2]);
 
-      this.mapView = new MapView({
+      this.mapView = new MyMapView({
         el: this.container,
         map: this.map,
-        layerViewFactory: this.layerViewFactory,
         layerGroupModel: new LayerGroupModel(null, {
           windshaftMap: this.windshaftMap,
           layersCollection: this.map.layers
@@ -92,9 +101,6 @@ describe('core/geo/map-view', function () {
   describe('bindings to map.layers', function () {
     describe('when layers of map.layers are resetted', function () {
       it('should group CartoDB layers into a single layerView and add one layerView for each non-CartoDB layer', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['something']);
-        });
         var tileLayer = new TileLayer();
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
@@ -116,9 +122,6 @@ describe('core/geo/map-view', function () {
 
     describe('when new layerModels are added to map.layers', function () {
       it('should add a new layer view to the map', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['something']);
-        });
         var layer1 = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.addLayer(layer1);
@@ -130,9 +133,6 @@ describe('core/geo/map-view', function () {
       });
 
       it('should group CartoDB layers into a single layerView', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['something']);
-        });
         var tileLayer = new TileLayer();
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
@@ -164,9 +164,6 @@ describe('core/geo/map-view', function () {
 
     describe('when layerModels are removed from map.layers', function () {
       it('should should remove the corresponding layerView for layers that are rendered individually (not grouped)', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['remove']);
-        });
         var tileLayer = new TileLayer();
 
         this.map.layers.reset([tileLayer]);
@@ -182,9 +179,6 @@ describe('core/geo/map-view', function () {
       });
 
       it('should should only remove a group layerView when all grouped layerModels have been removed', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['remove']);
-        });
         var cartoDBLayer1 = new CartoDBLayer({}, { vis: this.vis });
         var cartoDBLayer2 = new CartoDBLayer({}, { vis: this.vis });
 
@@ -212,17 +206,15 @@ describe('core/geo/map-view', function () {
       });
 
       it('should be able to add a layer after removing it', function () {
-        this.layerViewFactory.createLayerView.and.callFake(function () {
-          return jasmine.createSpyObj('layerView', ['remove']);
-        });
         var cartoDBLayer = new CartoDBLayer({}, { vis: this.vis });
 
         this.map.layers.reset([cartoDBLayer]);
 
         var cartodbLayerView = this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid);
         expect(cartodbLayerView).toBeDefined();
-        expect(this.layerViewFactory.createLayerView.calls.count()).toBe(1);
+        expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid)).toBeDefined();
 
+        // Remove the layer
         this.map.layers.remove(cartoDBLayer);
 
         // View for the cartodbLayer has been removed
@@ -231,110 +223,6 @@ describe('core/geo/map-view', function () {
 
         this.map.layers.add(cartoDBLayer);
         expect(this.mapView.getLayerViewByLayerCid(cartoDBLayer.cid)).toBeDefined();
-        expect(this.layerViewFactory.createLayerView.calls.count()).toBe(2);
-      });
-    });
-  });
-
-  describe('triggering of featureOver, featureOut and featureClick events', function () {
-    beforeEach(function () {
-      spyOn(this.map, 'isInteractive').and.returnValue(true);
-      this.map.enableFeatureInteractivity();
-
-      this.layerViewFactory.createLayerView.and.callFake(function () {
-        var newLayerView = new Backbone.View();
-        newLayerView.setCursor = jasmine.createSpy('setCursor');
-        this.mapView.trigger('newLayerView', newLayerView);
-        return newLayerView;
-      }.bind(this));
-
-      this.cartoDBLayer = new CartoDBLayer({}, { vis: this.vis });
-      this.map.layers.reset([ this.cartoDBLayer ]);
-      this.layerView = this.mapView.getLayerViewByLayerCid(this.cartoDBLayer.cid);
-    });
-
-    _.each(['featureOver', 'featureClick'], function (eventName) {
-      describe(eventName, function () {
-        it('map model should trigger a ' + eventName + ' event', function () {
-          var callback = jasmine.createSpy('callback');
-          this.map.on(eventName, callback);
-
-          this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-          expect(callback).toHaveBeenCalledWith({
-            layer: this.cartoDBLayer,
-            latlng: [10, 20],
-            position: {
-              x: 15,
-              y: 30
-            },
-            feature: { cartodb_id: 30 }
-          });
-        });
-
-        it('map model should NOT trigger an event if feature interactivity is disabled', function () {
-          this.map.disableFeatureInteractivity();
-          var callback = jasmine.createSpy('callback');
-          this.map.on(eventName, callback);
-
-          this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-          expect(callback).not.toHaveBeenCalled();
-        });
-
-        if (eventName === 'featureOver') {
-          it('should change the mouse pointer', function () {
-            this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-            expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
-          });
-
-          it('should NOT change the mouse pointer if map is not interactive', function () {
-            this.map.isInteractive.and.returnValue(false);
-
-            this.layerView.trigger(eventName, {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-            expect(this.mapView.setCursor).not.toHaveBeenCalled();
-          });
-        }
-      });
-    }, this);
-
-    describe('featureOut', function () {
-      it('map model should trigger a featureOut event', function () {
-        var callback = jasmine.createSpy('callback');
-        this.map.on('featureOut', callback);
-
-        this.layerView.trigger('featureOut', {});
-
-        expect(callback).toHaveBeenCalledWith();
-      });
-
-      it('map model should NOT trigger an event if feature interactivity is disabled', function () {
-        this.map.disableFeatureInteractivity();
-        var callback = jasmine.createSpy('callback');
-        this.map.on('featureOver', callback);
-
-        this.layerView.trigger('featureOver', {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-        expect(callback).not.toHaveBeenCalled();
-      });
-
-      it('should change the mouse pointer', function () {
-        this.layerView.trigger('featureOut', {});
-
-        expect(this.mapView.setCursor).toHaveBeenCalledWith('auto');
-      });
-
-      it('should NOT change the mouse pointer if feature interactivity is disabled', function () {
-        this.map.disableFeatureInteractivity();
-
-        var callback = jasmine.createSpy('callback');
-        this.map.on('featureOver', callback);
-
-        this.layerView.trigger('featureOver', {}, [10, 20], { x: 15, y: 30 }, { cartodb_id: 30 }, 0);
-
-        expect(callback).not.toHaveBeenCalled();
       });
     });
   });

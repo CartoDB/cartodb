@@ -11,13 +11,19 @@ var TooltipManager = require('../../../src/vis/tooltip-manager');
 describe('src/vis/tooltip-manager.js', function () {
   beforeEach(function () {
     this.map = new Map(null, { layersFactory: {} });
-    this.layerView = new Backbone.Model();
-    var layerViewFactory = jasmine.createSpyObj('layerViewFactory', ['createLayerView']);
-    layerViewFactory.createLayerView.and.returnValue(this.layerView);
+    var layerView = this.layerView = new Backbone.View();
+    var MyMapView = MapView.extend({
+      _getLayerViewFactory: function () {
+        return {
+          createLayerView: function () {
+            return layerView;
+          }
+        };
+      }
+    });
 
-    this.mapView = new MapView({
+    this.mapView = new MyMapView({
       map: this.map,
-      layerViewFactory: layerViewFactory,
       layerGroupModel: new Backbone.Model()
     });
     this.mapView.getNativeMap = function () {};

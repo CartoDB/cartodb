@@ -6,24 +6,14 @@ var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo']
 
 var MapView = View.extend({
   initialize: function () {
-    if (this.options.map === undefined) {
-      throw new Error('you should specify a map model');
-    }
+    if (this.options.map === undefined) throw new Error('map is required');
+    if (this.options.layerGroupModel === undefined) throw new Error('layerGroupModel is required');
 
-    if (this.options.layerGroupModel === undefined) {
-      throw new Error('layerGroupModel is required');
-    }
     this._cartoDBLayerGroup = this.options.layerGroupModel;
-
-    if (this.options.layerViewFactory === undefined) {
-      throw new Error('you should specify a layerViewFactory');
-    }
-
-    this._cartoDBLayerGroupView = null;
     this.map = this.options.map;
     this.add_related_model(this.map);
 
-    this._layerViewFactory = this.options.layerViewFactory;
+    this._cartoDBLayerGroupView = null;
     this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
@@ -40,54 +30,25 @@ var MapView = View.extend({
 
     this.bind('clean', this._removeLayers, this);
 
-    this.on('newLayerView', this._onNewLayerViewAdded, this);
+    this.map.geometries.on('add', this._onGeometryAdded, this);
+    this.add_related_model(this.map.geometries);
   },
 
-  _onNewLayerViewAdded: function (layerView, layerModel) {
-    layerView.on('featureOver', function () {
-      if (this.map.isInteractive()) {
-        this.setCursor('pointer');
-        if (this.map.isFeatureInteractivityEnabled()) {
-          this._triggerMouseEvent('featureOver', arguments);
-        }
-      }
-    }, this);
+  _getLayerViewFactory: function () {
+    throw new Error('subclasses of MapView must implement _getLayerViewFactory');
+  },
 
-    layerView.on('featureOut', function () {
-      if (this.map.isInteractive()) {
-        this.setCursor('auto');
-        if (this.map.isFeatureInteractivityEnabled()) {
-          this.map.trigger('featureOut');
-        }
-      }
-    }, this);
-
-    layerView.on('featureClick', function (e, latlng, pos, data, layerIndex) {
-      if (this.map.isFeatureInteractivityEnabled()) {
-        this._triggerMouseEvent('featureClick', arguments);
-      }
-    }, this);
+  _getGeometryViewFactory: function () {
+    throw new Error('subclasses of MapView must implement _getGeometryViewFactory');
   },
 
   setCursor: function () {
     throw new Error('subclasses of MapView must implement setCursor');
   },
 
-  _triggerMouseEvent: function (eventName, originalEventArguments) {
-    var latlng = originalEventArguments[1];
-    var position = originalEventArguments[2];
-    var featureData = originalEventArguments[3];
-    var layerIndex = originalEventArguments[4];
-
-    this.map.trigger(eventName, {
-      layer: this.map.layers.getCartoDBLayers()[layerIndex],
-      latlng: latlng,
-      position: {
-        x: position.x,
-        y: position.y
-      },
-      feature: featureData
-    });
+  _onGeometryAdded: function (geometry) {
+    var geometryView = this._getGeometryViewFactory().createGeometryView(geometry, this);
+    geometryView.render();
   },
 
   render: function () {
@@ -226,7 +187,7 @@ var MapView = View.extend({
   },
 
   _createLayerView: function (layerModel) {
-    return this._layerViewFactory.createLayerView(layerModel, this.getNativeMap());
+    return this._getLayerViewFactory().createLayerView(layerModel, this.getNativeMap());
   },
 
   _removeLayers: function () {

@@ -10,6 +10,10 @@ var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
 var LayersCollection = require('../../../src/geo/map/layers');
 var LayersFactory = require('../../../src/vis/layers-factory');
 
+var Point = require('../../../src/geo/geometry-models/point');
+var Polyline = require('../../../src/geo/geometry-models/polyline');
+var Polygon = require('../../../src/geo/geometry-models/polygon');
+
 var fakeLayersFactory = new LayersFactory({
   visModel: new Backbone.Model(),
   windshaftSettings: {}
@@ -23,7 +27,7 @@ describe('core/geo/map', function () {
   beforeEach(function () {
     this.vis = new VisModel();
 
-    map = new Map(null, { layersFactory: fakeLayersFactory });
+    this.map = map = new Map(null, { layersFactory: fakeLayersFactory });
   });
 
   describe('.initialize', function () {
@@ -188,13 +192,7 @@ describe('core/geo/map', function () {
     ]);
   });
 
-  describe('API methods', function () {
-    beforeEach(function () {
-      this.map = new Map({}, {
-        layersFactory: fakeLayersFactory
-      });
-    });
-
+  describe('Layer creation methods', function () {
     var testCases = [
       {
         createMethod: 'createCartoDBLayer',
@@ -323,40 +321,40 @@ describe('core/geo/map', function () {
         });
       });
     }, this);
+  });
 
-    describe('.reCenter', function () {
-      it('should set the original bounds if present', function () {
-        var map = new Map({
-          bounds: [[1, 2], [3, 4]],
-          center: '[41.40282319070747, 2.3435211181640625]'
-        }, { layersFactory: fakeLayersFactory });
+  describe('.reCenter', function () {
+    it('should set the original bounds if present', function () {
+      var map = new Map({
+        bounds: [[1, 2], [3, 4]],
+        center: '[41.40282319070747, 2.3435211181640625]'
+      }, { layersFactory: fakeLayersFactory });
 
-        // Change internal attributes
-        map.set({
-          view_bounds_sw: 'something',
-          view_bounds_ne: 'else',
-          center: 'different'
-        });
-
-        map.reCenter();
-
-        expect(map.get('view_bounds_sw')).toEqual([1, 2]);
-        expect(map.get('view_bounds_ne')).toEqual([3, 4]);
+      // Change internal attributes
+      map.set({
+        view_bounds_sw: 'something',
+        view_bounds_ne: 'else',
+        center: 'different'
       });
 
-      it('should set the original center if bounds are not present', function () {
-        var map = new Map({
-          center: [41.40282319070747, 2.3435211181640625]
-        }, { layersFactory: fakeLayersFactory });
+      map.reCenter();
 
-        map.set({
-          center: 'different'
-        });
+      expect(map.get('view_bounds_sw')).toEqual([1, 2]);
+      expect(map.get('view_bounds_ne')).toEqual([3, 4]);
+    });
 
-        map.reCenter();
+    it('should set the original center if bounds are not present', function () {
+      var map = new Map({
+        center: [41.40282319070747, 2.3435211181640625]
+      }, { layersFactory: fakeLayersFactory });
 
-        expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
+      map.set({
+        center: 'different'
       });
+
+      map.reCenter();
+
+      expect(map.get('center')).toEqual([ 41.40282319070747, 2.3435211181640625 ]);
     });
   });
 
@@ -418,6 +416,86 @@ describe('core/geo/map', function () {
         this.layer2.hasInteraction.and.returnValue(false);
         expect(this.map.isInteractive()).toBeFalsy();
       });
+    });
+  });
+
+  describe('.disableInteractivity', function () {
+    it('should disable feature interactivity and popups', function () {
+      this.map.enablePopups();
+      this.map.enableFeatureInteractivity();
+
+      this.map.disableInteractivity();
+
+      expect(this.map.arePopupsEnabled()).toBeFalsy();
+      expect(this.map.isFeatureInteractivityEnabled()).toBeFalsy();
+    });
+  });
+
+  describe('.enableInteractivity', function () {
+    it('should enable feature interactivity and popups', function () {
+      this.map.disablePopups();
+      this.map.disableFeatureInteractivity();
+
+      this.map.enableInteractivity();
+
+      expect(this.map.arePopupsEnabled()).toBeTruthy();
+      expect(this.map.isFeatureInteractivityEnabled()).toBeTruthy();
+    });
+  });
+
+  describe('geometry management', function () {
+    _.each({
+      drawPoint: Point,
+      drawPolyline: Polyline,
+      drawPolygon: Polygon
+    }, function (ExpectedGeometryClass, methodUnderTest) {
+      it('.' + methodUnderTest + ' should trigger an event with the right geometry', function () {
+        var callback = jasmine.createSpy('callback');
+        this.map.on('enterDrawingMode', callback);
+
+        var geometry = this.map[methodUnderTest]();
+
+        expect(geometry instanceof ExpectedGeometryClass).toBeTruthy();
+        expect(callback).toHaveBeenCalledWith(geometry);
+      });
+    });
+
+    it('.stopDrawingGeometry should trigger an event', function () {
+      var callback = jasmine.createSpy('callback');
+      this.map.on('exitDrawingMode', callback);
+
+      this.map.stopDrawingGeometry();
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('.editGeometry should trigger and event with the right geometry', function () {
+      var callback = jasmine.createSpy('callback');
+      this.map.on('enterEditMode', callback);
+
+      var geometry = this.map.editGeometry({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [
+            -3.779296875,
+            40.245991504199026
+          ]
+        }
+      });
+
+      expect(geometry instanceof Point).toBeTruthy();
+      expect(callback).toHaveBeenCalledWith(geometry);
+    });
+
+    it('.stopEditingGeometry should trigger an event', function () {
+      var callback = jasmine.createSpy('callback');
+      this.map.on('exitEditMode', callback);
+
+      this.map.stopEditingGeometry();
+
+      expect(callback).toHaveBeenCalled();
     });
   });
 });

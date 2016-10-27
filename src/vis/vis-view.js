@@ -6,7 +6,12 @@ var MapViewFactory = require('../geo/map-view-factory');
 var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
+var FeatureEvents = require('./feature-events');
+var MapCursorManager = require('./map-cursor-manager');
+var MapEventsManager = require('./map-events-manager');
+var GeometryManagementController = require('./geometry-management-controller');
 var LegendsView = require('../geo/ui/legends/legends-view.js');
+
 /**
  * Visualization creation
  */
@@ -57,6 +62,8 @@ var Vis = View.extend({
     this.mapView.bind('newLayerView', this._bindLayerViewToLoader, this);
     this.mapView.render();
 
+    new GeometryManagementController(this.mapView, this.model.map); // eslint-disable-line
+
     // Infowindows && Tooltips
     var infowindowManager = new InfowindowManager(this.model, {
       showEmptyFields: this.model.get('showEmptyInfowindowFields')
@@ -65,6 +72,22 @@ var Vis = View.extend({
 
     var tooltipManager = new TooltipManager(this.model);
     tooltipManager.manage(this.mapView, this.model.map);
+
+    var featureEvents = new FeatureEvents({
+      mapView: this.mapView,
+      mapModel: this.model.map
+    });
+
+    new MapCursorManager({ // eslint-disable-line
+      mapView: this.mapView,
+      mapModel: this.model.map,
+      featureEvents: featureEvents
+    });
+
+    new MapEventsManager({ // eslint-disable-line
+      mapModel: this.model.map,
+      featureEvents: featureEvents
+    });
 
     this._renderLegends();
 

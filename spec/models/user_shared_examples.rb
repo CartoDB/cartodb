@@ -559,4 +559,100 @@ shared_examples_for "user models" do
       @user.get_auth_token.should eq token
     end
   end
+
+  describe 'batch_queries_statement_timeout' do
+
+    include_context 'users helper'
+
+    it 'batch_queries_statement_timeout is not touched at all when creating a user' do
+      User.expects(:batch_queries_statement_timeout).never
+      User.expects(:batch_queries_statement_timeout=).never
+      begin
+        user = create_user
+      ensure
+        user.destroy
+      end
+    end
+
+    it 'batch_queries_statement_timeout is not touched at all when saving a user' do
+      @user1.expects(:batch_queries_statement_timeout).never
+      @user1.expects(:batch_queries_statement_timeout=).never
+      @user1.save
+    end
+
+    it 'synces with central upon update_to_central' do
+      cartodb_central_client_mock = mock()
+      cartodb_central_client_mock.expects(:update_user).once.with() { |username, attributes|
+        username == @user1.username && attributes[:batch_queries_statement_timeout] == 42
+      }
+      @user1.expects(:sync_data_with_cartodb_central?).once.returns(true)
+      @user1.expects(:cartodb_central_client).once.returns(cartodb_central_client_mock)
+
+      @user1.batch_queries_statement_timeout = 42
+      @user1.update_in_central
+    end
+
+    it 'reads from redis just once' do
+      begin
+        user = create_user
+        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([42])
+        user.batch_queries_statement_timeout.should be 42
+        user.batch_queries_statement_timeout.should be 42
+      ensure
+        user.destroy
+      end
+    end
+
+    it 'reads from redis just once, even if nil' do
+      begin
+        user = create_user
+        $users_metadata.expects(:HMGET).with("limits:batch:#{user.username}", 'timeout').once.returns([nil])
+        user.batch_queries_statement_timeout.should be_nil
+        user.batch_queries_statement_timeout.should be_nil
+      ensure
+        user.destroy
+      end
+    end
+
+    it 'deletes the key in redis when set to nil' do
+      $users_metadata.expects(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', nil).never
+      @user1.batch_queries_statement_timeout = nil
+      @user1.batch_queries_statement_timeout.should be_nil
+    end
+
+    it 'deletes the key in redis when set to the empty string' do
+      # This is important to sync from central and use the default value instead
+      $users_metadata.expects(:HDEL).with("limits:batch:#{@user1.username}", 'timeout').once
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', "").never
+      @user1.batch_queries_statement_timeout = ""
+      @user1.batch_queries_statement_timeout.should be_nil
+    end
+
+    it 'sets the value in redis to the integer specified' do
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
+      @user1.batch_queries_statement_timeout = 42
+      @user1.batch_queries_statement_timeout.should eq 42
+    end
+
+    it 'raises an error if set to zero' do
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 0).never
+      expect {
+        @user1.batch_queries_statement_timeout = 0
+      }.to raise_exception
+    end
+
+    it 'raises an error if set to a negative value' do
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', -42).never
+      expect {
+        @user1.batch_queries_statement_timeout = -42
+      }.to raise_exception
+    end
+
+    it 'can cast to integer values' do
+      $users_metadata.expects(:HMSET).with("limits:batch:#{@user1.username}", 'timeout', 42).once
+      @user1.batch_queries_statement_timeout = "42"
+      @user1.batch_queries_statement_timeout.should eq 42
+    end
+  end
 end

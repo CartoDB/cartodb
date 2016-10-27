@@ -10,7 +10,7 @@ module Carto
     end
 
     def build
-      new_type, new_definition = type_and_definition
+      new_definition, new_type = definition_and_type
       legend_title = title if title.present? && legend['show_title']
 
       Legend.new(layer_id: layer_id,
@@ -40,14 +40,19 @@ module Carto
       legend['title']
     end
 
-    HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
-    CUSTOM_TYPES = %w(category custom).freeze
+    def template
+      @template ||= legend['template']
+    end
 
-    def type_and_definition
+    HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
+
+    def definition_and_type
       if HTML_RAMP_TYPES.include?(type)
         ['html', build_html_definition_from_ramp_type]
-      elsif CUSTOM_TYPES.include?(type)
+      elsif type == 'category'
         ['custom', build_custom_definition_from_custom_type]
+      elsif type == 'custom'
+        definition_and_type_for_custom
       elsif type == 'bubble'
         ['html', build_html_definition_from_bubble]
       else
@@ -72,6 +77,14 @@ module Carto
       end
 
       { categories: categories }
+    end
+
+    def definition_and_type_for_custom
+      if template
+        ['html', { html: template }]
+      else
+        ['custom', build_custom_definition_from_custom_type]
+      end
     end
 
     def build_html_definition_from_ramp_type

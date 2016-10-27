@@ -48,7 +48,9 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   });
   var stateFromURL = opts.state || URLHelper.getStateFromCurrentURL();
   if (stateFromURL && !_.isEmpty(stateFromURL.map)) {
-    vizJSON.bounds = [stateFromURL.map.ne, stateFromURL.map.sw];
+    if (stateFromURL.map.ne && stateFromURL.map.sw) {
+      vizJSON.bounds = [stateFromURL.map.ne, stateFromURL.map.sw];
+    }
   }
 
   var vis = cdb.createVis(dashboardView.$('#map'), vizJSON, _.extend(opts, {

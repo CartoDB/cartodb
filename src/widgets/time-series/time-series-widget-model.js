@@ -2,46 +2,9 @@ var WidgetModel = require('../widget-model');
 var _ = require('underscore');
 
 /**
- * Model for a histogram widget
+ * Model for a time-series widget
  */
 module.exports = WidgetModel.extend({
-  defaults: {
-    normalized: true
-  },
-
-  defaultState: _.extend(
-    {
-      autoStyle: false,
-      normalized: false
-    },
-    WidgetModel.prototype.defaultState
-  ),
-
-  initialize: function (attrs, opts) {
-    WidgetModel.prototype.initialize.apply(this, arguments);
-    this.on('change:collapsed', this._onCollapsedChange, this);
-    this.on('change:style', this._updateAutoStyle, this);
-    this.dataviewModel.once('change', function () {
-      if (this.get('autoStyle')) {
-        this.autoStyle();
-      }
-    }, this);
-  },
-
-  _onCollapsedChange: function (m, isCollapsed) {
-    this.dataviewModel.set('enabled', !isCollapsed);
-  },
-
-  _updateAutoStyle: function (e) {
-    var styles = (e && e.changed && e.changed.style) || this.get('style');
-    if (this.autoStyler) {
-      this.autoStyler.updateColors(styles);
-    }
-    if (this.isAutoStyle()) {
-      this.reapplyAutoStyle();
-    }
-  },
-
   getState: function () {
     var state = WidgetModel.prototype.getState.call(this);
     var start = this.dataviewModel.get('start');

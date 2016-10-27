@@ -2,6 +2,7 @@ var _ = require('underscore');
 var WidgetModel = require('./widgets/widget-model');
 var CategoryWidgetModel = require('./widgets/category/category-widget-model');
 var HistogramWidgetModel = require('./widgets/histogram/histogram-widget-model');
+var TimeSeriesWidgetModel = require('./widgets/time-series/time-series-widget-model');
 
 /**
  * Public API to interact with dashboard widgets.
@@ -135,7 +136,7 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  * @param {Number} bins
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
+WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
@@ -145,9 +146,10 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer) {
   widgetAttrs.type = 'time-series';
   widgetAttrs.attrsNames = attrsNames;
 
-  var widgetModel = new WidgetModel(widgetAttrs, {
+  var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
+  widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;

@@ -80,7 +80,7 @@ module Carto
     end
 
     def definition_and_type_for_custom
-      if template
+      if template.present?
         [{ html: template }, 'html']
       else
         [build_custom_definition_from_custom_type, 'custom']

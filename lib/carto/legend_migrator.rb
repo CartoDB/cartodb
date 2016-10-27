@@ -47,14 +47,14 @@ module Carto
     HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
 
     def definition_and_type
-      if HTML_RAMP_TYPES.include?(type)
-        ['html', build_html_definition_from_ramp_type]
-      elsif type == 'category'
-        ['custom', build_custom_definition_from_custom_type]
-      elsif type == 'custom'
+      if type == 'custom'
         definition_and_type_for_custom
+      elsif type == 'category'
+        [build_custom_definition_from_custom_type, 'custom']
       elsif type == 'bubble'
-        ['html', build_html_definition_from_bubble]
+        [build_html_definition_from_bubble, 'html']
+      elsif HTML_RAMP_TYPES.include?(type)
+        [build_html_definition_from_ramp_type, 'html']
       else
         [nil, nil]
       end
@@ -81,9 +81,9 @@ module Carto
 
     def definition_and_type_for_custom
       if template
-        ['html', { html: template }]
+        [{ html: template }, 'html']
       else
-        ['custom', build_custom_definition_from_custom_type]
+        [build_custom_definition_from_custom_type, 'custom']
       end
     end
 

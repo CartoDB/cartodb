@@ -24,7 +24,7 @@ var Point = GeometryBase.extend({
   },
 
   isComplete: function () {
-    return this.get('latlng');
+    return !!this.get('latlng');
   },
 
   toGeoJSON: function () {

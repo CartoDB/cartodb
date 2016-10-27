@@ -65,12 +65,16 @@ module Carto
     def build_custom_definition_from_custom_type
       categories = items.each_with_index.map do |item, index|
         title = item['name'].to_s || "Category #{index + 1}"
-        color = item['value']
+        value = item['value']
 
         category_definition = { title: title }
 
-        if color && color =~ COLOR_REGEXP
-          category_definition[:color] = color
+        if value
+          if value =~ COLOR_REGEXP
+            category_definition[:color] = value
+          else
+            category_definition[:icon] = value
+          end
         end
 
         category_definition
@@ -110,7 +114,7 @@ module Carto
 
       compact_item_colors = item_colors.compact
       if compact_item_colors.count == 1
-        item_colors << generate_end_color(item_colors.first)
+        compact_item_colors << generate_end_color(item_colors.first)
       end
 
       gradient_stops = compact_item_colors.join(', ')

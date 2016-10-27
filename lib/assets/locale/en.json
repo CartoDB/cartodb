@@ -1236,7 +1236,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Render dashboard menu"
+            "dashboard_menu": "Show blue bar"
           }
         }
       }

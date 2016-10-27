@@ -6,24 +6,24 @@
 
 .EditOverlay {
   position: absolute;
+  top: 32px;
   right: 0;
   left: 0;
-  top: 32px;
-  text-align: center;
-  z-index: 4;
-  opacity: 1;
   height: auto;
   transition: all 0.2s;
+  text-align: center;
+  opacity: 1;
+  z-index: 4;
 
   &.is-hidden {
-    opacity: 0; 
     height: 0;
+    opacity: 0;
     overflow: hidden;
   }
 }
 .EditOverlay-inner {
   display: inline-block;
   padding: 10px;
-  background: rgba(#000, 0.6);
   border-radius: 2px;
+  background: rgba(#000, 0.6);
 }

@@ -20,6 +20,7 @@ module.exports = cdb.core.View.extend({
   },
 
   initialize: function () {
+    this._timeseriesModel = this.options.timeseriesModel;
     this._rangeFilter = this.options.rangeFilter;
     this._originalData = this.model.getUnfilteredDataModel();
     this.model.bind('change:data', this._onChangeData, this);
@@ -40,6 +41,10 @@ module.exports = cdb.core.View.extend({
     headerView.bind('resetFilter', this._onResetFilter, this);
     this.addView(headerView);
     this.$el.append(headerView.render().el);
+  },
+
+  selectRange: function (loBarIndex, hiBarIndex) {
+    this._chartView.selectRange(loBarIndex, hiBarIndex);
   },
 
   _createHistogramView: function () {
@@ -82,6 +87,7 @@ module.exports = cdb.core.View.extend({
   _onResetFilter: function () {
     this._rangeFilter.unsetRange();
     this._chartView.removeSelection();
+    this._timeseriesModel.set({lo_index: null, hi_index: null});
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
@@ -90,6 +96,7 @@ module.exports = cdb.core.View.extend({
       data[loBarIndex].start,
       data[hiBarIndex - 1].end
     );
+    this._timeseriesModel.set({lo_index: loBarIndex, hi_index: hiBarIndex});
   },
 
   _onChangeChartWidth: function () {

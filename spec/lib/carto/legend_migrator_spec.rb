@@ -25,7 +25,7 @@ module Carto
             {
               "name" => 0,
               "visible" => true,
-              "value" => "#A6CEE3"
+              "value" => "super.png"
             },
             {
               "name" => 1350,
@@ -65,7 +65,7 @@ module Carto
             {
               "name" => 900,
               "visible" => true,
-              "value" => "#CAB2D6"
+              "value" => "duper.png"
             },
             {
               "name" => 90000,
@@ -98,7 +98,7 @@ module Carto
             {
               "name" => "Untitled",
               "visible" => true,
-              "value" => "#3E7BB6",
+              "value" => "superduper.png",
               "sync" => true
             },
             {
@@ -137,6 +137,15 @@ module Carto
 
         new_legend.type.should eq 'custom'
         new_legend.valid?.should be_true
+
+        category_keys = new_legend.definition[:categories]
+                                  .map(&:keys)
+                                  .flatten
+                                  .uniq
+
+        category_keys.should include(:title)
+        category_keys.should include(:color)
+        category_keys.should include(:icon)
       end
     end
 

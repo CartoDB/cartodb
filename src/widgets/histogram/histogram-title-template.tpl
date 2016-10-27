@@ -7,7 +7,7 @@
       " data-tooltip="<%- isAutoStyle ? 'Remove auto style' : 'Auto style' %>">
       <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
     </button>
-    <button class="CDB-Shape js-actions u-lSpace">
+    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace">
       <div class="CDB-Shape-threePoints is-blue is-small">
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>

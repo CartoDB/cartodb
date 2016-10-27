@@ -43,7 +43,7 @@
 }
 
 .CDB-Widget-list {
-  display: block;
+  @include display-flex();
   position: relative;
   margin: 0;
   overflow: hidden;
@@ -99,7 +99,7 @@
 .CDB-Widget-listItem--fake {
   position: relative;
   margin-top: $baseSize;
-  margin-bottom: $baseSize;
+  margin-bottom: 36px;
   border-bottom: 1px solid transparent;
 
   &:before,

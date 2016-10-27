@@ -581,8 +581,8 @@ shared_examples_for "user models" do
     end
 
     it 'synces with central upon update_to_central' do
-      cartodb_central_client_mock = mock()
-      cartodb_central_client_mock.expects(:update_user).once.with() { |username, attributes|
+      cartodb_central_client_mock = mock
+      cartodb_central_client_mock.expects(:update_user).once.with { |username, attributes|
         username == @user1.username && attributes[:batch_queries_statement_timeout] == 42
       }
       @user1.expects(:sync_data_with_cartodb_central?).once.returns(true)

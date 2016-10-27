@@ -92,7 +92,7 @@ class User < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
-  DEFAULT_MAPZEN_ROUTING_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = nil
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
@@ -143,7 +143,6 @@ class User < Sequel::Model
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
     errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
-    errors.add(:mapzen_routing_quota, "cannot be nil") if mapzen_routing_quota.nil?
   end
 
   def organization_validation
@@ -1089,7 +1088,7 @@ class User < Sequel::Model
     if organization.present?
       remaining = organization.remaining_mapzen_routing_quota
     else
-      remaining = mapzen_routing_quota - get_mapzen_routing_calls
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     end
     (remaining > 0 ? remaining : 0)
   end

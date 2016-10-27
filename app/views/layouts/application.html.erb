@@ -9,6 +9,12 @@
     <%= csrf_meta_tag -%>
   </head>
   <body>
+    <%= content_for(:js) do %>
+      <script type="text/javascript">
+        var dashboard_notifications = <%= safe_js_object @dashboard_notifications.to_json %>;
+      </script>
+    <% end %>
+
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
       <%= render 'admin/shared/private_header' %>
 

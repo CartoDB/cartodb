@@ -24,6 +24,9 @@
     "min": "MIN",
     "max": "MAX"
   },
+  "builder-activated-notification": {
+    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
+  },
   "builder-onboarding": {
     "title": "Welcome to the Builder,",
     "description": "Let us show you all the new and exciting things that you can do with CARTO.",
@@ -1148,7 +1151,7 @@
     "duplicate": {
       "option": "Duplicate dataset",
       "query": "applied query",
-      "customOption": "Duplicate dataset from query",
+      "customOption": "Create Dataset from query",
       "error": "There was an error duplicating %{name}",
       "loading": "Duplicating your dataset %{name}..."
     },
@@ -1386,6 +1389,10 @@
         "hover": "Hover"
       },
       "analysis-form": {
+        "merge-type": {
+          "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
+          "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
+        },
         "quota": {
           "cancel": "cancel",
           "confirm": "confirm",
@@ -1962,7 +1969,7 @@
           "description": "Apply style to your visualization",
           "sync_on_data_change": "Unfiltered",
           "sync_on_bbox_change": "Dynamic",
-          "description": "Define how your widget interacts with the data",
+          "description": "Description",
           "yes": "Yes",
           "no": "No"
         }

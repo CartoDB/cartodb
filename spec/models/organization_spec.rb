@@ -223,7 +223,7 @@ describe Organization do
       organization.users.count.should eq 3
 
       results = member1.in_database(as: :public_user).fetch(%Q{
-        SELECT has_function_privilege('#{member1.database_public_username}', 'cdb_querytables(text)', 'execute')
+        SELECT has_function_privilege('#{member1.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
       results[:has_function_privilege].should eq true
@@ -234,7 +234,7 @@ describe Organization do
       organization.users.count.should eq 2
 
       results = member2.in_database(as: :public_user).fetch(%Q{
-        SELECT has_function_privilege('#{member2.database_public_username}', 'cdb_querytables(text)', 'execute')
+        SELECT has_function_privilege('#{member2.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
       results[:has_function_privilege].should eq true
@@ -250,7 +250,7 @@ describe Organization do
       organization.users.count.should eq 1
 
       results = owner.in_database(as: :public_user).fetch(%Q{
-        SELECT has_function_privilege('#{owner.database_public_username}', 'cdb_querytables(text)', 'execute')
+        SELECT has_function_privilege('#{owner.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
       }).first
       results.nil?.should eq false
       results[:has_function_privilege].should eq true

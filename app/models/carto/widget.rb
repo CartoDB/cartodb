@@ -9,8 +9,12 @@ class Carto::Widget < ActiveRecord::Base
   serialize :options, ::Carto::CartoJsonSymbolizerSerializer
   validates :options, carto_json_symbolizer: true
 
+  serialize :style, ::Carto::CartoJsonSymbolizerSerializer
+  validates :style, carto_json_symbolizer: true
+
   belongs_to :layer, class_name: Carto::Layer
 
+  before_validation :set_style_if_nil
   validates :layer, :order, :type, :options, presence: true
   validate :validate_user_not_viewer
 
@@ -59,6 +63,10 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   private
+
+  def set_style_if_nil
+    self.style ||= {}
+  end
 
   def notify_maps_change
     layer.maps.each do |m|

@@ -110,7 +110,7 @@ module Carto
 
       compact_item_colors = item_colors.compact
       if compact_item_colors.count == 1
-        item_colors << generate_end_color(item_colors.first)
+        compact_item_colors << generate_end_color(item_colors.first)
       end
 
       gradient_stops = compact_item_colors.join(', ')

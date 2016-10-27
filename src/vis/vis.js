@@ -355,6 +355,7 @@ var VisModel = Backbone.Model.extend({
   },
 
   addCustomOverlay: function (overlayView) {
+    overlayView.type = 'custom';
     this.overlaysCollection.add(overlayView);
     return overlayView;
   }

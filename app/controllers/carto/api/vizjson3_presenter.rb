@@ -335,7 +335,11 @@ module Carto
       end
 
       def migrate_legends(old_legend)
+        @layer.options[:backup_legend] = old_legend
         Carto::LegendMigrator.new(@layer.id, old_legend).build.save
+        @layer.options[:legend] = nil
+
+        @layer.save
         @layer.legends.reload
       end
 

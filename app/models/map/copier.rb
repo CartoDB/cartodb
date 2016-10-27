@@ -47,19 +47,27 @@ module CartoDB
                   first_base ? (first_base.order + 1) : 0
                 end
 
+        modified_layers = []
+
         data_layer_copies_from(origin_map, user).map do |layer|
           # Push layers on top if needed
           if(destination_map.layers.map(&:order).include?(order))
             destination_map.layers.select { |l| l.order >= order }.each do |layer|
               layer.order += 1
-              layer.save
+              # layer must be saved later
+              modified_layers << layer
             end
           end
 
           layer.order = order
           link(destination_map, layer)
+          # link saves
+          modified_layers -= [layer]
           order += 1
         end
+
+        # this avoid extra saving (including validation) overhead
+        modified_layers.uniq.map(&:save)
       end
 
       private
@@ -82,7 +90,6 @@ module CartoDB
       def link(map, layer)
         layer.save
         layer.add_map(map)
-        layer.save
       end
 
       def reset_layer_styles(old_layer, new_layer)

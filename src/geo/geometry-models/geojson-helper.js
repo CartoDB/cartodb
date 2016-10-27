@@ -38,7 +38,7 @@ module.exports = {
   },
 
   convertLatLngsToGeoJSONPolygonCoords: function (latlngs) {
-    latlngs.push(latlngs[0]);
+    latlngs = latlngs.concat([ latlngs[0] ]);
     return this.convertLatlngsToLnglats(latlngs);
   }
 };

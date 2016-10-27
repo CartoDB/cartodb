@@ -364,13 +364,6 @@ module Carto
         }
       end
 
-      it 'omits badly formatted colors' do
-        truncated = old_intensity.dup
-        truncated['items'].last['value'] = '#fatal#fatal#fatal'
-
-        @old_legend = truncated
-      end
-
       it 'migrates old custom with template to new html' do
         @old_legend = old_custom
       end
@@ -413,10 +406,24 @@ module Carto
 
       after(:each) do
         new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
-        @old_legend = nil
 
         new_legend.type.should eq 'html'
         new_legend.valid?.should be_true
+
+        unless @old_legend['type'] == 'bubble' || @old_legend['type'] == 'custom'
+          html = new_legend.definition[:html]
+
+          # Result should have labels, colors, and icons somewhere in generated
+          # html
+          @old_legend['items'].map { |item| item['value'] }.each do |value|
+            html.downcase.should include(value.to_s.downcase)
+          end
+
+          # No incomplete gradients allowed
+          html.scan(/#(?:[0-9a-fA-F]{3}){1,2}/).size.should be >= 2
+        end
+
+        @old_legend = nil
       end
     end
 

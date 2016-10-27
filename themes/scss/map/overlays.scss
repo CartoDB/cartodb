@@ -178,7 +178,7 @@ $buttonColor: #636D72;
 .CDB-Logo {
   @include transform(translateX(-50%));
   position: absolute;
-  bottom: 12px;
+  bottom: 0;
   left: 50%;
   width: auto;
   height: auto;

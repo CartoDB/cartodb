@@ -158,17 +158,6 @@ var Map = Model.extend({
     this.enableFeatureInteractivity();
   },
 
-  isInteractive: function () {
-    return this.isFeatureInteractivityEnabled() ||
-      this.arePopupsEnabled() && this._isAnyCartoDBLayerInteractive();
-  },
-
-  _isAnyCartoDBLayerInteractive: function () {
-    return _.any(this.layers.getCartoDBLayers(), function (layerModel) {
-      return layerModel.hasInteraction();
-    });
-  },
-
   enableFeatureInteractivity: function () {
     this.set('isFeatureInteractivityEnabled', true);
   },

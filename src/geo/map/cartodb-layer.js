@@ -69,10 +69,6 @@ var CartoDBLayer = LayerModelBase.extend({
     return this.get('visible');
   },
 
-  hasInteraction: function () {
-    return this.isVisible() && (this._hasInfowindowFields() || this._hasTooltipFields());
-  },
-
   _hasInfowindowFields: function () {
     return this.infowindow.hasFields();
   },
@@ -96,6 +92,14 @@ var CartoDBLayer = LayerModelBase.extend({
       .union(this.tooltip.getFieldNames())
       .uniq()
       .value();
+  },
+
+  isInfowindowEnabled: function () {
+    return this.infowindow.hasTemplate();
+  },
+
+  isTooltipEnabled: function () {
+    return this.tooltip.hasTemplate();
   },
 
   getName: function () {

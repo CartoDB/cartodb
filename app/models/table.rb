@@ -815,9 +815,10 @@ class Table
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           # INFO: There's a complex logic for retrying and need to know how often it is actually done
-          Rollbar.report_message('Retrying insert_row!',
-                                 'debug',
-                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
+          CartoDB::Logger.debug(message: 'Retrying insert_row!',
+                                user_id: self.user_id,
+                                qualified_table_name: self.qualified_table_name,
+                                raw_attributes: raw_attributes)
           retry
         end
       end
@@ -857,9 +858,11 @@ class Table
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               # INFO: There's a complex logic for retrying and need to know how often it is actually done
-              Rollbar.report_message('Retrying update_row!',
-                                     'debug',
-                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
+              CartoDB::Logger.debug(message: 'Retrying update_row!',
+                                    user_id: self.user_id,
+                                    qualified_table_name: self.qualified_table_name,
+                                    row_id: row_id,
+                                    raw_attributes: raw_attributes)
               retry
             end
           else

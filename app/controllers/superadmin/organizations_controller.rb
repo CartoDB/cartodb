@@ -46,7 +46,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
     @organization.destroy_cascade
     respond_with(:superadmin, @organization)
   rescue => e
-    Rollbar.report_message('Error deleting organization', 'error', error: e.inspect, organization: @organization)
+    CartoDB::Logger.error(exception: e, message: 'Error deleting organization', organization: @organization)
     render json: { errors: [e.inspect] }, status: 500
   end
 

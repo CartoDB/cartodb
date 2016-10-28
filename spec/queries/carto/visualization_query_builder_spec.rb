@@ -352,6 +352,18 @@ describe Carto::VisualizationQueryBuilder do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
+    it 'selects nil version maps' do
+      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
+
+      visualization.update_column(:version, nil)
+
+      visualizations = @vqb.with_published.build
+      visualization.published?.should be true
+      visualizations.map(&:id).should include visualization.id
+
+      destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+
     it 'selects public v3 datasets' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC, type: Carto::Visualization::TYPE_CANONICAL })
 

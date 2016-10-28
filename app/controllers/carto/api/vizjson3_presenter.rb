@@ -323,7 +323,10 @@ module Carto
 
       def as_data
         old_legend_migrated = !@layer.legend || @layer.legend[:migrated]
-        migrate_legends(old_legend) unless old_legend_migrated
+
+        unless @layer.legends || old_legend_migrated
+          migrate_legends(old_legend)
+        end
 
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash

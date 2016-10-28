@@ -13,6 +13,49 @@ module Carto
       @layer.destroy
     end
 
+    describe('#with templates') do
+      let(:old_legend_with_template) do
+        {
+          "show_title" => false,
+          "title" => "",
+          "template" => "<h1>Manolo Escobar</h1>",
+          "visible" => true,
+          "items" => []
+        }
+      end
+
+      it 'should migrate to html for type custom' do
+        @old_legend = old_legend_with_template.merge(type: 'custom')
+      end
+
+      it 'should migrate to html for type category' do
+        @old_legend = old_legend_with_template.merge(type: 'category')
+      end
+
+      it 'should migrate to html for type bubble' do
+        @old_legend = old_legend_with_template.merge(type: 'bubble')
+      end
+
+      it 'should migrate to html for type choropleth' do
+        @old_legend = old_legend_with_template.merge(type: 'choropleth')
+      end
+
+      it 'should migrate to html for type intensity' do
+        @old_legend = old_legend_with_template.merge(type: 'intensity')
+      end
+
+      it 'should migrate to html for type density' do
+        @old_legend = old_legend_with_template.merge(type: 'density')
+      end
+
+      after(:each) do
+        new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
+
+        new_legend.definition[:html].should include('<h1>Manolo Escobar</h1>')
+        new_legend.type.should eq 'html'
+      end
+    end
+
     describe('#custom types') do
       let(:old_category) do
         {
@@ -128,10 +171,6 @@ module Carto
         @old_legend = old_category
       end
 
-      it 'migrates old custom to new custom with no template' do
-        @old_legend = old_custom
-      end
-
       after(:each) do
         new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
 
@@ -181,40 +220,6 @@ module Carto
               "name" => "Right Label",
               "visible" => true,
               "value" => 6273765,
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Color",
-              "visible" => true,
-              "value" => "#FF5C00",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      let(:old_bubble_with_custom_labels) do
-        {
-          "type" => "bubble",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true,
-              "value" => "few",
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Right Label",
-              "visible" => true,
-              "value" => "many",
               "legend_type" => "bubble",
               "type" => "text",
               "sync" => false
@@ -379,10 +384,6 @@ module Carto
 
       it 'migrates old bubble to new html' do
         @old_legend = old_bubble
-      end
-
-      it 'migrates old bubble with custom labels to new html' do
-        @old_legend = old_bubble_with_custom_labels
       end
 
       it 'migrates old choropleth to new html' do

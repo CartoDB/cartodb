@@ -79,7 +79,7 @@ class Carto::AnalysisNode
 
   private
 
-  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze
+  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params].freeze
   def get_children(definition, path = [])
     children = definition.map do |k, v|
       if v.is_a?(Hash)

@@ -99,8 +99,6 @@ module.exports = cdb.core.Model.extend({
     var style = this.autoStyler.getStyle();
     layer.set('cartocss', style);
     this.set('autoStyle', true);
-    // this.getAutoStyle();
-    return true;
   },
 
   reapplyAutoStyle: function () {

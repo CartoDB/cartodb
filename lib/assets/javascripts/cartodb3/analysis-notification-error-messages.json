@@ -1,0 +1,10 @@
+{
+  "messages": [{
+    "match": "Exception: (.*)$"
+  }, {
+    "match": "REMOTE ERROR: .*Error: (.*?)$"
+  }, {
+    "replace": "RuntimeError: Execution of function interrupted by signal",
+    "with": "Test"
+  }]
+}

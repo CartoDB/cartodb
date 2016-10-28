@@ -18,7 +18,7 @@ module Carto
                     :redirect_to_editor_if_forced,
                     :auto_migrate_visualization_if_possible, only: :show
       before_filter :authors_only
-      before_filter :editable_visualizations_only, only: :show
+      before_filter :editable_visualizations_only, :load_carto_viewer, only: :show
 
       # TODO: remove this when analysis logic lives in the backend
       before_filter :ensure_source_analyses, unless: :has_analyses?
@@ -37,19 +37,24 @@ module Carto
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = Cartodb.config[:basemaps].present? && Cartodb.config[:basemaps]
-        @builder_notifications = builder_notifications
         @overlays_data = @visualization.overlays.map do |overlay|
           Carto::Api::OverlayPresenter.new(overlay).to_poro
         end
         latest_mapcap = @visualization.latest_mapcap
         @mapcaps_data = latest_mapcap ? [Carto::Api::MapcapPresenter.new(latest_mapcap).to_poro] : []
+
+        @builder_notifications = notifications(:builder)
+        @dashboard_notifications = notifications(:dashboard)
       end
 
       private
 
-      def builder_notifications
-        carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
-        carto_viewer ? carto_viewer.notifications_for_category(:builder) : {}
+      def load_carto_viewer
+        @carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
+      end
+
+      def notifications(category)
+        @carto_viewer ? @carto_viewer.notifications_for_category(category) : {}
       end
 
       def redirect_to_editor_if_forced

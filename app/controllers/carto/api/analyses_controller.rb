@@ -44,9 +44,15 @@ module Carto
       end
 
       def update
-        @analysis.analysis_definition = analysis_definition_from_request
+        new_definition = analysis_definition_from_request
+        new_root_node = Carto::AnalysisNode.new(new_definition)
+        modified_node_ids = find_modified_nodes(@analysis.analysis_node, new_root_node)
+        affected_node_ids = find_affected_nodes(modified_node_ids)
+
+        @analysis.analysis_definition = new_definition
         @analysis.save!
-        purge_layer_node_style_cache(@analysis)
+        purge_layer_node_style_cache(affected_node_ids)
+
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
 
@@ -57,21 +63,30 @@ module Carto
 
       private
 
-      def purge_layer_node_style_cache(analysis)
-        layer_ids = analysis.visualization.data_layers.map(&:id)
-        layer_node_styles = LayerNodeStyle.where(layer_id: layer_ids).all
-        analysis.analysis_node.descendants.each do |node|
-          simple_geom = node.options[:simple_geom] if node.options
-          if simple_geom.present?
-            layer_node_styles.select { |lns| lns.source_id == node.id && lns.simple_geom != simple_geom }.each do |lns|
-              if lns.simple_geom.nil?
-                lns.simple_geom = simple_geom
-                lns.save
-              else
-                lns.destroy
-              end
-            end
-          end
+      def purge_layer_node_style_cache(node_ids)
+        layer_ids = @visualization.data_layers.map(&:id)
+        LayerNodeStyle.where(layer_id: layer_ids, source_id: node_ids).delete
+      end
+
+      def find_affected_nodes(modified_node_ids)
+        all_visualization_nodes = @visualization.analyses.map(&:analysis_node).map(:descendants).flatten
+        all_visualization_nodes.select { |node|
+          node.descendants.any? { |descendant| modified_node_ids.include?(descendant.id) }
+        }.map(&:id)
+      end
+
+      def find_modified_nodes(old_root, new_root)
+        old_nodes = old_root.descendants
+        new_nodes = new_root.descendants
+
+        old_ids = old_nodes.map(&:id)
+        new_ids = new_nodes.map(&:id)
+
+        kept_ids = old_ids & new_ids
+        kept_ids.select do |node_id|
+          old_node = old_nodes.find { |n| n.id == node_id }
+          new_node = new_nodes.find { |n| n.id == node_id }
+          old_node.params != new_node.params
         end
       end
 

@@ -54,40 +54,37 @@ InfowindowManager.prototype._addInfowindowOverlay = function (layerView, layerMo
 
 InfowindowManager.prototype._bindFeatureClickEvent = function (layerView) {
   layerView.bind('featureClick', function (e, latlng, pos, data, layerIndex) {
-    if (this._map.arePopupsEnabled()) {
-      var layerModel = layerView.model.getLayerAt(layerIndex);
-      if (!layerModel) {
-        throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
-      }
-
-      if (!layerModel.infowindow.hasFields()) {
-        return;
-      }
-
-      this._updateInfowindowModel(layerModel.infowindow);
-
-      this._infowindowModel.set({
-        latlng: latlng,
-        visibility: true
-      });
-
-      this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
-
-      if (layerView.tooltipView) {
-        layerView.tooltipView.setFilter(function (feature) {
-          return feature.cartodb_id !== data.cartodb_id;
-        }).hide();
-      }
-
-      var clearFilter = function (infowindowModel) {
-        if (!infowindowModel.get('visibility')) {
-          layerView.tooltipView && layerView.tooltipView.setFilter(null);
-        }
-      };
-
-      this._infowindowModel.unbind('change:visibility', clearFilter);
-      this._infowindowModel.once('change:visibility', clearFilter);
+    var layerModel = layerView.model.getLayerAt(layerIndex);
+    if (!layerModel) {
+      throw new Error('featureClick event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
+    if (!this._map.arePopupsEnabled() || !layerModel.infowindow.hasTemplate()) {
+      return;
+    }
+
+    this._updateInfowindowModel(layerModel.infowindow);
+
+    this._infowindowModel.set({
+      latlng: latlng,
+      visibility: true
+    });
+
+    this._fetchAttributes(layerView, layerModel, data.cartodb_id, latlng);
+
+    if (layerView.tooltipView) {
+      layerView.tooltipView.setFilter(function (feature) {
+        return feature.cartodb_id !== data.cartodb_id;
+      }).hide();
+    }
+
+    var clearFilter = function (infowindowModel) {
+      if (!infowindowModel.get('visibility')) {
+        layerView.tooltipView && layerView.tooltipView.setFilter(null);
+      }
+    };
+
+    this._infowindowModel.unbind('change:visibility', clearFilter);
+    this._infowindowModel.once('change:visibility', clearFilter);
   }, this);
 };
 

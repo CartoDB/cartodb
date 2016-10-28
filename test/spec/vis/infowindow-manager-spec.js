@@ -13,7 +13,8 @@ var createCartoDBLayer = function (vis, infowindowAttrs) {
       'name': 'name',
       'title': true,
       'position': 1
-    }]
+    }],
+    template: '<p>{{ name }}</p>'
   };
   return new CartoDBLayer({
     infowindow: infowindowAttrs
@@ -213,6 +214,33 @@ describe('src/vis/infowindow-manager.js', function () {
       ],
       'visibility': true
     });
+  });
+
+  it('should not fetch attributes and show the infowindow if template is empty', function () {
+    var layer1 = createCartoDBLayer(this.vis, {
+      template: '',
+      template_type: 'underscore',
+      fields: [{
+        'name': 'name',
+        'title': true,
+        'position': 1
+      }],
+      alternative_names: 'alternative_names1'
+    });
+
+    var infowindowManager = new InfowindowManager(this.vis);
+    infowindowManager.manage(this.mapView, this.map);
+
+    this.map.layers.reset([ layer1 ]);
+
+    var infowindowView = this.mapView.addInfowindow.calls.mostRecent().args[0];
+    var infowindowModel = infowindowView.model;
+
+    // Simulate the featureClick event for layer #0
+    this.layerView.trigger('featureClick', {}, [100, 200], undefined, { cartodb_id: 10 }, 0);
+
+    expect(this.layerView.model.fetchAttributes).not.toHaveBeenCalled();
+    expect(infowindowModel.get('visibility')).toEqual(false);
   });
 
   it('should not fetch attributes and show the infowindow if popups are disabled', function () {

@@ -7,7 +7,6 @@ var TorqueLayer = require('../../../src/geo/map/torque-layer');
 var TileLayer = require('../../../src/geo/map/tile-layer');
 var WMSLayer = require('../../../src/geo/map/wms-layer');
 var GMapsBaseLayer = require('../../../src/geo/map/gmaps-base-layer');
-var LayersCollection = require('../../../src/geo/map/layers');
 var LayersFactory = require('../../../src/vis/layers-factory');
 
 var Point = require('../../../src/geo/geometry-models/point');

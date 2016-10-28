@@ -14,7 +14,7 @@
       <% if (affectedVisCount > 0) { %>
         <div class="Modal-listActions">
           <p class="CDB-Text CDB-Size-medium u-altTextColor">
-            <% if (affectedVisCount > 3) {%>
+            <% if (affectedVisCount > maxVisCount) {%>
               <%= _t('dataset.delete.affected-vis-count-extended', {affectedVisCount: affectedVisCount}) %>
             <% } else { %>
               <%= _t('dataset.delete.affected-vis-count', {smart_count: affectedVisCount}) %>
@@ -48,10 +48,12 @@
         </div>
       <% } %>
 
-      <% if (affectedEntitiesCount > 0) { %>
+      <% if (affectedEntitiesCount > 0 || organizationAffected) { %>
         <div class="Modal-listActions">
           <p class="CDB-Text CDB-Size-medium u-altTextColor">
-            <% if (affectedEntitiesCount > 3) {%>
+            <% if (organizationAffected) { %>
+              <%= _t('dataset.delete.whole-organization-affected') %>
+            <% } else if (affectedEntitiesCount > maxEntitiesCount && visibleAffectedEntities.length > 0) {%>
               <%= _t('dataset.delete.affected-entities-count-extended', {affectedEntitiesCount: affectedEntitiesCount}) %>
             <% } else { %>
               <%= _t('dataset.delete.affected-entities-count', {smart_count: affectedEntitiesCount}) %>

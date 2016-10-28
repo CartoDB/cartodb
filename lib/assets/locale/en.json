@@ -1142,7 +1142,8 @@
       "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
       "affected-vis-count-extended": "%{affectedVisCount} maps affected, some of them are",
       "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access",
-      "affected-entities-count-extended": "%{affectedEntitiesCount} user will lose access, some of them are"
+      "affected-entities-count-extended": "%{affectedEntitiesCount} users will lose access, some of them are",
+      "whole-organization-affected": "All users from your organization will be affected"
     },
     "metadata": {
       "option": "Edit metadata",

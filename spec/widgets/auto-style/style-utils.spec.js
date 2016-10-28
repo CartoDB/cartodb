@@ -7,7 +7,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       var attr = 'marker-fill';
       var newStyle = 'marker-fill: blue;';
 
-      var expected = '#layer { marker-fill: blue; marker-line-color: white;}';
+      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -17,7 +17,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       var attr = 'marker-fill';
       var newStyle = 'marker-fill: blue;';
 
-      var expected = '#layer { marker-fill: blue; marker-line-color: white;}';
+      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -27,7 +27,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       var attr = 'marker-fill';
       var newStyle = 'marker-fill: blue;';
 
-      var expected = '#layer { marker-fill: blue; marker-line-color: white;}';
+      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white;}";
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });
@@ -37,7 +37,7 @@ describe('src/widgets/auto-style/style-utils', function () {
       var attr = 'marker-fill';
       var newStyle = 'marker-fill: blue;';
 
-      var expected = '#layer { marker-fill: blue; marker-line-color: white; [me>gasol] { marker-line-color: green; }}';
+      var expected = "#layer ['mapnik::geometry_type'=1] { marker-fill: blue;  } #layer { marker-line-color: white; [me>gasol] { marker-line-color: green; }}";
 
       expect(StyleUtils.changeStyle(cartocss, attr, newStyle)).toBe(expected);
     });

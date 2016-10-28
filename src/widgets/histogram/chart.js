@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var d3 = require('d3');
 var cdb = require('cartodb.js');
+var tinycolor = require('tinycolor2');
 var formatter = require('../../formatter');
 
 module.exports = cdb.core.View.extend({
@@ -10,7 +11,7 @@ module.exports = cdb.core.View.extend({
     // render the chart once the width is set as default, provide false value for this prop to disable this behavior
     // e.g. for "mini" histogram behavior
     showOnWidthChange: true,
-    chartBarColorClass: '',
+    chartBarColor: '#F2CC8F',
     labelsMargin: 16, // px
     hasAxisTip: false,
     minimumBarHeight: 2,
@@ -472,6 +473,10 @@ module.exports = cdb.core.View.extend({
     this.model.bind('change:show_shadow_bars', this._onChangeShowShadowBars, this);
     this.model.bind('change:width', this._onChangeWidth, this);
     this.model.bind('change:normalized', this._onChangeNormalized, this);
+    this.options.widgetModel && this.options.widgetModel.bind('change:style', function () {
+      this.options.chartBarColor = this.options.widgetModel.getWidgetColor();
+      this.reset();
+    }, this);
 
     if (this._originalData) {
       this._originalData.on('change:data', function () {
@@ -939,10 +944,13 @@ module.exports = cdb.core.View.extend({
     var bars = this.chart.selectAll('.CDB-Chart-bar')
       .data(data);
 
+    this._addHoverToStylesheet();
+
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
+      .attr('class', 'CDB-Chart-bar')
+      .attr('fill', this.options.chartBarColor)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';
@@ -992,11 +1000,22 @@ module.exports = cdb.core.View.extend({
       });
   },
 
+  _addHoverToStylesheet: function () {
+    var color = tinycolor(this.options.chartBarColor).darken().toString();
+
+    if (document.styleSheets[0].cssRules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
+      document.styleSheets[0].insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
+    } else {
+      document.styleSheets[0].cssRules[0].style.fill = color;
+    }
+  },
+
   _generateBars: function () {
     var self = this;
     var data = this.model.get('data');
 
     this._calcBarWidth();
+    this._addHoverToStylesheet();
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')
@@ -1007,7 +1026,8 @@ module.exports = cdb.core.View.extend({
     bars
       .enter()
       .append('rect')
-      .attr('class', 'CDB-Chart-bar ' + this.options.chartBarColorClass)
+      .attr('class', 'CDB-Chart-bar')
+      .attr('fill', this.options.chartBarColor)
       .attr('data', function (d) { return _.isEmpty(d) ? 0 : d.freq; })
       .attr('transform', function (d, i) {
         return 'translate(' + (i * self.barWidth) + ', 0 )';

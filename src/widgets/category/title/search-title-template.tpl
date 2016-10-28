@@ -12,14 +12,16 @@
   <div class="CDB-Widget-title CDB-Widget-contentSpaced js-title">
     <h3 class="CDB-Text CDB-Size-large u-ellipsis js-titleText" title="<%- title %>"><%- title %></h3>
     <div class="CDB-Widget-options CDB-Widget-contentSpaced">
-      <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-colors
-        <%- isAutoStyle ? 'is-selected' : '' %>
-        <%- isAutoStyle ? 'js-cancelAutoStyle' : 'js-autoStyle' %>
-        " data-tooltip="
-          <%- isAutoStyle ? 'Remove auto style' : 'Auto style' %>
-        ">
-        <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
-      </button>
+      <% if (isAutoStyleEnabled) { %>
+        <button class="CDB-Widget-buttonIcon CDB-Widget-buttonIcon--circle js-colors
+          <%- isAutoStyle ? 'is-selected' : '' %>
+          <%- isAutoStyle ? 'js-cancelAutoStyle' : 'js-autoStyle' %>
+          " data-tooltip="
+            <%- isAutoStyle ? 'Remove auto style' : 'Auto style' %>
+          ">
+          <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
+        </button>
+      <% } %>
       <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace">
         <div class="CDB-Shape-threePoints is-blue is-small">
           <div class="CDB-Shape-threePointsItem"></div>

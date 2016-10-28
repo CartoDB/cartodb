@@ -5,6 +5,6 @@
   </div>
   <div class="CDB-Widget-progressBar">
     <div class="CDB-Widget-progressState CDB-Widget-progressState--pattern <%- isAggregated ? 'CDB-Widget-progressState--inactive' : '' %>"
-      style="width: <%- percentage %>%; background-color: <%- customColor ? color : '' %>"></div>
+      style="width: <%- percentage %>%; background-color: <%- color %>"></div>
   </div>
 </div>

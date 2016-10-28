@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var cdb = require('cartodb.js');
+var AutoStylerFactory = require('./auto-style/factory');
 
 /**
  * Default widget model
@@ -20,6 +21,16 @@ module.exports = cdb.core.Model.extend({
 
   initialize: function (attrs, opts) {
     this.dataviewModel = opts.dataviewModel;
+
+    this.activeAutoStyler();
+    this.bind('change:style', this.activeAutoStyler, this);
+  },
+
+  activeAutoStyler: function (e) {
+    var style = e && e.changed && e.changed.style;
+    if (this.isAutoStyleEnabled(style) && !this.autoStyler) {
+      this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
+    }
   },
 
   /**
@@ -42,6 +53,81 @@ module.exports = cdb.core.Model.extend({
     this.dataviewModel.remove();
     this.trigger('destroy', this);
     this.stopListening();
+  },
+
+  isAutoStyleEnabled: function (autoStyle) {
+    var styles = this.get('style');
+
+    if (!styles && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;
+    return styles && styles.auto_style && styles.auto_style.allowed;
+  },
+
+  getWidgetColor: function () {
+    var styles = this.get('style');
+
+    return styles && styles.widget_style &&
+          styles.widget_style.definition &&
+          styles.widget_style.definition.color &&
+          styles.widget_style.definition.color.fixed;
+  },
+
+  getColor: function (name) {
+    if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
+      return this.autoStyler.colors.getColorByCategory(name);
+    } else {
+      return this.getWidgetColor();
+    }
+  },
+
+  isAutoStyle: function () {
+    return this.get('autoStyle');
+  },
+
+  autoStyle: function () {
+    if (!this.isAutoStyleEnabled()) return;
+
+    var layer = this.dataviewModel.layer;
+
+    if (!layer.get('initialStyle')) {
+      var initialStyle = layer.get('cartocss');
+      if (!initialStyle && layer.get('meta')) {
+        initialStyle = layer.get('meta').cartocss;
+      }
+      layer.set('initialStyle', initialStyle);
+    }
+
+    var style = this.autoStyler.getStyle();
+    layer.set('cartocss', style);
+    this.set('autoStyle', true);
+  },
+
+  reapplyAutoStyle: function () {
+    var style = this.autoStyler.getStyle();
+    this.dataviewModel.layer.set('cartocss', style);
+    this.set('autoStyle', true);
+  },
+
+  cancelAutoStyle: function (noRestore) {
+    if (!noRestore) {
+      this.dataviewModel.layer.restoreCartoCSS();
+    }
+    this.set('autoStyle', false);
+  },
+
+  getAutoStyle: function getAutoStyle () {
+    var style = this.get('style');
+    var cartocss = this.dataviewModel.layer.get('cartocss');
+
+    if (style && style.auto_style && style.auto_style.definition) {
+      var toRet = _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
+
+      return _.extend(toRet, {definition: this.autoStyler.getDef(cartocss)});
+    } else {
+      return {
+        definition: this.autoStyler.getDef(cartocss),
+        cartocss: cartocss
+      };
+    }
   },
 
   setState: function (state) {

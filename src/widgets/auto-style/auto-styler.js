@@ -3,8 +3,9 @@ var CategoryColors = require('./category-colors');
 var AutoStyler = cdb.core.Model.extend({
   initialize: function (dataviewModel, options) {
     this.options = options || {};
+    this.styles = options && options.auto_style;
     this.dataviewModel = dataviewModel;
-    this.colors = new CategoryColors();
+    this.colors = new CategoryColors(this.styles);
     this.layer = this.dataviewModel.layer;
     this.STYLE_TEMPLATE = this.options.basemap === 'DARK' ? AutoStyler.STYLE_TEMPLATE_DARK : AutoStyler.STYLE_TEMPLATE_LIGHT;
   },

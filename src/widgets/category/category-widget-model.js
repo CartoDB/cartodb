@@ -1,38 +1,36 @@
 var _ = require('underscore');
 var WidgetModel = require('../widget-model');
 var LockedCategoriesCollection = require('./locked-categories-collection');
-var AutoStylerFactory = require('../auto-style/factory');
 
 /**
  * Model for a category widget
  */
 module.exports = WidgetModel.extend({
 
-  defaults: _.extend(
-    {
-      type: 'category',
-      search: false,
-      locked: false
-    },
+  defaults: _.extend({
+    type: 'category',
+    search: false,
+    locked: false
+  },
     WidgetModel.prototype.defaults
   ),
 
-  defaultState: _.extend(
-    {
-      acceptedCategories: [],
-      locked: false,
-      autoStyle: false
-    },
+  defaultState: _.extend({
+    acceptedCategories: [],
+    locked: false,
+    autoStyle: false
+  },
     WidgetModel.prototype.defaultState
   ),
 
   initialize: function () {
     WidgetModel.prototype.initialize.apply(this, arguments);
     this.lockedCategories = new LockedCategoriesCollection();
-    this.autoStyler = AutoStylerFactory.get(this.dataviewModel);
+
     this.listenTo(this.dataviewModel, 'change:allCategoryNames', this._onDataviewAllCategoryNamesChange);
     this.on('change:locked', this._onLockedChange, this);
     this.on('change:collapsed', this._onCollapsedChange, this);
+    this.on('change:style', this._updateColors, this);
     this.dataviewModel.filter.on('change', function () {
       this.set('acceptedCategories', this._acceptedCategories().pluck('name'));
     }, this);
@@ -71,27 +69,17 @@ module.exports = WidgetModel.extend({
   },
 
   autoStyle: function () {
-    var layer = this.dataviewModel.layer;
-    if (!layer.get('initialStyle')) {
-      var initialStyle = layer.get('cartocss');
-      if (!initialStyle && layer.get('meta')) {
-        initialStyle = layer.get('meta').cartocss;
-      }
-      layer.set('initialStyle', initialStyle);
-    }
+    // NOTE: maybe not pre-assing colors to categories?
     this.autoStyler.colors.updateData(this.dataviewModel.get('allCategoryNames'));
-    var style = this.autoStyler.getStyle();
-    layer.set('cartocss', style);
-    this.set('autoStyle', true);
+    WidgetModel.prototype.autoStyle.call(this);
   },
 
-  cancelAutoStyle: function () {
-    this.dataviewModel.layer.restoreCartoCSS();
-    this.set('autoStyle', false);
-  },
-
-  isAutoStyle: function () {
-    return this.get('autoStyle');
+  _updateColors: function (e) {
+    this.autoStyler.colors.updateColors(e.changed.style && e.changed.style.auto_style);
+    this.autoStyler.colors.updateData(_.pluck(this.dataviewModel.get('data'), 'name'));
+    if (this.isAutoStyle()) {
+      this.reapplyAutoStyle();
+    }
   },
 
   isLocked: function () {
@@ -140,8 +128,10 @@ module.exports = WidgetModel.extend({
   },
 
   _onDataviewAllCategoryNamesChange: function (m, names) {
-    if (!this.isAutoStyle()) {
-      this.autoStyler.colors.updateData(names);
+    if (this.isAutoStyleEnabled()) {
+      if (!this.isAutoStyle()) {
+        this.autoStyler.colors.updateData(names);
+      }
     }
   },
 

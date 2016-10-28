@@ -39,7 +39,6 @@ module Carto
           )
         end
         analysis.save!
-        purge_layer_node_style_cache(analysis)
         render_jsonp(AnalysisPresenter.new(analysis).to_poro, 201)
       end
 

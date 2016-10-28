@@ -280,6 +280,9 @@ var VisModel = Backbone.Model.extend({
         options.success && options.success();
         this._onMapInstantiatedForTheFirstTime();
       }.bind(this),
+      error: function () {
+        options.error && options.error();
+      },
       includeFilters: false
     });
   },

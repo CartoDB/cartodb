@@ -322,9 +322,10 @@ module Carto
       end
 
       def as_data
-        old_legend_migrated = !@layer.legend || @layer.legend[:migrated]
+        old_legend = @layer.legend
+        old_legend_migrated = !old_legend || old_legend[:migrated]
 
-        unless @layer.legends || old_legend_migrated
+        unless @layer.legends.any? || old_legend_migrated
           migrate_legends(old_legend)
         end
 

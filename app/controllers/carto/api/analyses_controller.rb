@@ -45,7 +45,7 @@ module Carto
 
       def update
         new_definition = analysis_definition_from_request
-        new_root_node = Carto::AnalysisNode.new(new_definition)
+        new_root_node = Carto::AnalysisNode.new(new_definition.deep_symbolize_keys)
         modified_node_ids = find_modified_nodes(@analysis.analysis_node, new_root_node)
         affected_node_ids = find_affected_nodes(modified_node_ids)
 
@@ -69,7 +69,7 @@ module Carto
       end
 
       def find_affected_nodes(modified_node_ids)
-        all_visualization_nodes = @visualization.analyses.map(&:analysis_node).map(:descendants).flatten
+        all_visualization_nodes = @visualization.analyses.map(&:analysis_node).map(&:descendants).flatten
         all_visualization_nodes.select { |node|
           node.descendants.any? { |descendant| modified_node_ids.include?(descendant.id) }
         }.map(&:id)

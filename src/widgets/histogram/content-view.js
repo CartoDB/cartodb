@@ -62,21 +62,67 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._originalData.once('change:data', this._onFirstLoad, this);
+    this._originalData.once('change:data', function () {
+      this._dataviewModel.fetch();
+    }, this);
     this.model.bind('change:normalized', function () {
       var normalized = this.model.get('normalized');
       this.histogramChartView.setNormalized(normalized);
       this.miniHistogramChartView.setNormalized(normalized);
     }, this);
     this.model.bind('change:collapsed', this.render, this);
+
+    this.model.bind('init:state', function () {
+      var data = this._dataviewModel.getData();
+      if (data.length === 0) {
+        this._dataviewModel.once('change:data', this._onInitialState, this);
+      } else {
+        this._onInitialState();
+      }
+    }, this);
   },
 
-  _onFirstLoad: function () {
+  _onInitialState: function () {
     this.render();
     this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
-    this._dataviewModel.once('change:data', function () {}, this);
     this.add_related_model(this._dataviewModel);
-    this._dataviewModel.fetch();
+
+    this._setInitialRange();
+
+    if (this.model.get('zoomed')) {
+      this._onZoomIn();
+      this._onChangeZoomEnabled();
+    }
+  },
+
+  _setInitialRange: function () {
+    var data = this._dataviewModel.getData();
+    var min = this.model.get('min');
+    var max = this.model.get('max');
+    var lo;
+    var hi;
+    var startMin;
+    var startMax;
+
+    if (_.isNumber(min)) {
+      startMin = _.findWhere(data, {start: min});
+      lo = startMin && startMin.bin || 0;
+    }
+
+    if (_.isNumber(max)) {
+      startMax = _.findWhere(data, {end: max});
+      hi = startMax && startMax.bin + 1 || data.length;
+    }
+
+    if (lo && lo !== 0 || hi && hi !== this._dataviewModel.get('bins')) {
+      this.filter.setRange(
+        data[lo].start,
+        data[hi - 1].end
+      );
+
+      this.histogramChartView.selectRange(lo, hi);
+      this.model.set('filter_enabled', true);
+    }
   },
 
   _isZoomed: function () {
@@ -173,15 +219,6 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
-    this.histogramChartView.model.once('change:data', function () {
-      var bars = this._calculateBars();
-      var lo = bars.loBarIndex;
-      var hi = bars.hiBarIndex;
-      if (lo !== 0 || hi !== this._dataviewModel.get('bins')) {
-        this.histogramChartView.selectRange(lo, hi);
-        this.model.set('filter_enabled', true);
-      }
-    }, this);
 
     this._updateStats();
   },
@@ -322,7 +359,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _changeHeaderValue: function (className, what, suffix) {
-    if (this.model.get(what) === undefined) {
+    if (this.model.get(what) == null) {
       this.$(className).text('0 ' + suffix);
       return;
     }

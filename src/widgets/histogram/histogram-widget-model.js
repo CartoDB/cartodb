@@ -60,8 +60,8 @@ module.exports = WidgetModel.extend({
     };
 
     if (_.isNumber(lo) && _.isNumber(hi)) {
-      l = data[lo].start;
-      m = data[hi - 1].end;
+      l = data[lo] && data[lo].start;
+      m = data[hi - 1] && data[hi - 1].end;
     } else {
       l = start;
       m = end;
@@ -70,8 +70,13 @@ module.exports = WidgetModel.extend({
     if (checkRoughEqual(start, l)) {
       state.min = l;
     }
+
     if (checkRoughEqual(end, m)) {
       state.max = m;
+    }
+
+    if (this.get('zoomed') === true) {
+      state.zoomed = true;
     }
 
     return state;

@@ -130,6 +130,15 @@ module.exports = cdb.core.Model.extend({
     }
   },
 
+  setInitialState: function (state) {
+    this.initialState = state;
+  },
+
+  applyInitialState: function () {
+    this.setState(this.initialState);
+    this.trigger('init:state');
+  },
+
   setState: function (state) {
     this.set(state);
   },

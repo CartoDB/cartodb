@@ -29,6 +29,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
+    this.model.bind('init:state', this.render, this);
     this.model.bind('change:collapsed', function (mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);

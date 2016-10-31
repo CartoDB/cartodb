@@ -21,7 +21,8 @@
     border-bottom-right-radius: 0;
   }
 }
-  /* fix migration old tooltips */
+
+/* fix migration old tooltips */
 .CDB-Tooltip-wrapper.cartodb-tooltip-content-wrapper {
   padding: 20px 24px;
   background: #FFF;
@@ -35,7 +36,6 @@
       color: rgba(#FFF, 0.64);
     }
   }
-
   h4 {
     margin-top: 8px;
     color: #636D72;
@@ -53,6 +53,7 @@
     line-height: 16px;
   }
 }
+
 .CDB-Tooltip {
   padding: 20px 24px;
   font-family: 'Open Sans';

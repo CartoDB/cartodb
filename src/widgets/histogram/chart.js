@@ -1002,11 +1002,22 @@ module.exports = cdb.core.View.extend({
 
   _addHoverToStylesheet: function () {
     var color = tinycolor(this.options.chartBarColor).darken().toString();
+    var sheets = document.styleSheets;
+    var sheet;
+    var rules;
 
-    if (document.styleSheets[0].cssRules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
-      document.styleSheets[0].insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
+    for (var i = 0; i < sheets.length; i++) {
+      sheet = sheets[i];
+      if (sheet.cssRules) {
+        rules = sheet.cssRules;
+        break;
+      }
+    }
+
+    if (!rules || rules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
+      sheet.insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
     } else {
-      document.styleSheets[0].cssRules[0].style.fill = color;
+      rules[0].style.fill = color;
     }
   },
 

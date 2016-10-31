@@ -23,7 +23,7 @@
 }
 
 /* fix migration old tooltips */
-.CDB-Tooltip-wrapper.cartodb-tooltip-content-wrapper {
+.CDB-Tooltip-wrapper .cartodb-tooltip-content-wrapper {
   padding: 20px 24px;
   background: #FFF;
   font-family: 'Open Sans';

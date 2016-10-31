@@ -269,7 +269,7 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-Legend-item {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 
@@ -312,7 +312,6 @@ $maxLegendContainerHeight: 300px;
   position: absolute;
   bottom: 0;
   left: 50%;
-  cursor: pointer;
 }
 
 .Bubble-container {
@@ -341,21 +340,8 @@ $maxLegendContainerHeight: 300px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
 }
-.Bubble-item.is-filter {
-  @include opacity(1);
-}
-.Bubble-item.is-filter::before {
-  display: none;
-}
 .Bubble-numbers {
   position: relative;
-}
-.Bubble-item.is-filter .Bubble-itemCircle {
-  background: #F9F9F9 !important;
-  opacity: 1 !important;
-  &::before {
-    display: none;
-  }
 }
 .Bubble-numbersItem {
   position: absolute;
@@ -419,7 +405,7 @@ $index-items: 7 6 5 4 3 2 1;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 28px;
+  margin-bottom: 38px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

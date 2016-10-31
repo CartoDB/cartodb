@@ -238,7 +238,7 @@ class Layer < Sequel::Model
   def update_layer_node_style
     style = current_layer_node_style
     if style
-      style.update_from_layer
+      style.update_from_layer(self)
       style.save
     end
   end

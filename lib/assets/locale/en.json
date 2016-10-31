@@ -1984,7 +1984,10 @@
       "waiting": "Analysis %{nodeId} enqueued...",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
-      "removed": "Analysis %{nodeId} deleted"
+      "removed": "Analysis %{nodeId} deleted",
+      "errors": {
+        "timeout": "The execution of the analysis timed out and was stopped"
+      }
     },
     "widgets": {
       "delete": "Widget deleted correctly.",

@@ -46,7 +46,7 @@ module.exports = cdb.core.Model.extend({
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
   },
 
-  /**gra
+  /**
    * @public
    */
   remove: function () {
@@ -58,7 +58,7 @@ module.exports = cdb.core.Model.extend({
   isAutoStyleEnabled: function (autoStyle) {
     var styles = this.get('style');
 
-    if ( (!styles || !styles.auto_style) && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;
+    if ((!styles || !styles.auto_style) && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;
     return styles && styles.auto_style && styles.auto_style.allowed;
   },
 

@@ -95,7 +95,6 @@ module CartoDB
           @logger = nil
           @used_quota = 0
           @user_semaphore = Mutex.new
-          @error_report_component = nil
         end
 
         # Factory method
@@ -226,17 +225,6 @@ module CartoDB
           { :retrieved_items => entry.retrieved_items }
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        # @throws DatasourceBaseError
-        def report_component=(component)
-          if component.respond_to?(:report_message)
-            @error_report_component = component
-          else
-            raise DatasourceBaseError.new('Attempted to set invalid report component', DATASOURCE_NAME)
-          end
-        end
-
         private
 
         # Used at specs
@@ -302,9 +290,7 @@ module CartoDB
         # Signature must be like: .report_message('Import error', 'error', error_info: stacktrace)
         def report_error(message, additional_data)
           log("Error: #{message} Additional Info: #{additional_data}")
-          unless @error_report_component.nil?
-            @error_report_component.report_message(message, 'error', error_info: additional_data)
-          end
+          CartoDB::Logger.error(message: message, error_info: additional_data)
         end
 
         # @param api_config Hash

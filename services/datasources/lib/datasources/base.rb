@@ -129,12 +129,6 @@ module CartoDB
         raise 'To be implemented in child classes'
       end
 
-      # Sets an error reporting component
-      # @param component mixed
-      def report_component=(component)
-        raise 'To be implemented in child classes'
-      end
-
       # If true, a single resource id might return >1 subresources (each one spawning a table)
       # @param id String
       # @return Bool

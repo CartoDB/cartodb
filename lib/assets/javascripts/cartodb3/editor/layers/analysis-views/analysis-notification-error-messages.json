@@ -1,0 +1,13 @@
+{
+  "messages": [{
+    "match": "Exception: (.*)$"
+  }, {
+    "match": "REMOTE ERROR: .*Error: (.*?)$"
+  }, {
+    "match": "RuntimeError: Execution of function interrupted by signal",
+    "replaceWith": "timeout"
+  }, {
+    "match": "canceling statement due to statement timeout.",
+    "replaceWith": "timeout"
+  }]
+}

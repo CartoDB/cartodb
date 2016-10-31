@@ -28,10 +28,12 @@
     </button>
   </li>
   <% } %>
-  <li class="CDB-Dropdown-item">
-    <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-editWidget" title="Edit">Edit</button>
-  </li>
-  <li class="CDB-Dropdown-item">
-    <button type="button" class="CDB-Dropdown-link u-ellipsis u-errorTextColor js-removeWidget" title="Delete...">Delete...</button>
-  </li>
+  <% if (show_options) { %>
+    <li class="CDB-Dropdown-item">
+      <button type="button" class="CDB-Dropdown-link u-ellipsis u-actionTextColor js-editWidget" title="Edit">Edit</button>
+    </li>
+    <li class="CDB-Dropdown-item">
+      <button type="button" class="CDB-Dropdown-link u-ellipsis u-errorTextColor js-removeWidget" title="Delete...">Delete...</button>
+    </li>
+  <% } %>
 </ul>

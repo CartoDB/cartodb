@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.60",
+  "version": "4.3.61",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
     "brfs": "^1.4.3",
     "browserify": "13.0.0",
     "browserify-resolutions": "1.1.0",
-    "cartoassets": "cartodb/CartoAssets#10137-form-input-styles",
+    "cartoassets": "cartodb/CartoAssets#master",
     "csswring": "^3.0.5",
     "git-rev": "0.2.1",
     "grunt": "0.4.5",

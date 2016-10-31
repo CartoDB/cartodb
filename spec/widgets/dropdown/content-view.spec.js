@@ -22,15 +22,28 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect($('.js-container').find('.CDB-Dropdown').length).toBe(1);
   });
 
-  it('should not be the options button', function () {
+  it('should not be the options edit and delete button', function () {
+    this.view.options.flags = {
+      normalizeHistogram: true
+    };
     $('.js-button').click();
+
+    expect($('.js-container').find('li').length).toBe(2);
     expect($('.js-container').find('.js-editWidget').length).toBe(0);
+    expect($('.js-container').find('.js-removeWidget').length).toBe(0);
   });
 
   it('should be the options button', function () {
     this.model.set('show_options', true);
+    this.view.options.flags = {
+      normalizeHistogram: true
+    };
+
     $('.js-button').click();
+
+    expect($('.js-container').find('li').length).toBe(4);
     expect($('.js-container').find('.js-editWidget').length).toBe(1);
+    expect($('.js-container').find('.js-removeWidget').length).toBe(1);
   });
 
   it('should detect clicking in the target', function () {

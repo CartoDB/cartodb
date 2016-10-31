@@ -55,7 +55,7 @@ module.exports = cdb.core.Model.extend({
     this.stopListening();
   },
 
-  isAutoStyleEnabled: function (autoStyle) {
+  isAutoStyleEnabled: function () {
     var styles = this.get('style');
 
     if ((!styles || !styles.auto_style) && (this.get('type') === 'category' || this.get('type') === 'histogram')) return true;

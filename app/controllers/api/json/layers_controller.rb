@@ -59,29 +59,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
             from_layer = Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
             from_letter = params[:from_letter]
-            letter = @layer.options['letter']
-            if from_layer && from_letter.present? && letter.present?
-              # Copy LayerNodeStyles from the old layer if given.
-              existing = @layer.layer_node_styles.map(&:source_id)
-              from_layer.layer_node_styles.each do |lns|
-                new_id = lns.source_id.gsub(from_letter, letter)
-                if lns.source_id.starts_with?(from_letter) && !existing.include?(new_id)
-                  new_lns = lns.duplicate
-                  new_lns.source_id = new_id
-                  @layer.add_layer_node_style(new_lns)
-                end
-              end
-
-              # Update old layer styles
-              if from_letter != letter
-                node_id_to_fix = @layer.options['source'].gsub(letter, from_letter)
-                style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
-                if style_node
-                  style_node.source_id = @layer.options['source']
-                  style_node.save
-                end
-              end
-            end
+            copy_layer_node_styles(@layer, from_layer, from_letter)
           end
 
           @stats_aggregator.timing('parent.save') do
@@ -189,5 +167,31 @@ class Api::Json::LayersController < Api::ApplicationController
     true
   rescue => e
     render_jsonp({ description: e.message }, 400)
+  end
+
+  def copy_layer_node_styles(to_layer, from_layer, from_letter)
+    to_letter = to_layer.options['letter']
+    if from_layer.present? && from_letter.present? && to_letter.present?
+      # Copy LayerNodeStyles from the old layer if given.
+      existing = to_layer.layer_node_styles.map(&:source_id)
+      from_layer.layer_node_styles.each do |lns|
+        new_id = lns.source_id.gsub(from_letter, to_letter)
+        if lns.source_id.starts_with?(from_letter) && !existing.include?(new_id)
+          new_lns = lns.duplicate
+          new_lns.source_id = new_id
+          @layer.add_layer_node_style(new_lns)
+        end
+      end
+
+      # Update old layer styles
+      if from_letter != to_letter
+        node_id_to_fix = to_layer.options['source'].gsub(to_letter, from_letter)
+        style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
+        if style_node
+          style_node.source_id = to_layer.options['source']
+          style_node.save
+        end
+      end
+    end
   end
 end

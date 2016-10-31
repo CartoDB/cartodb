@@ -11,11 +11,8 @@ module Carto
       def to_poro
         return {} unless @analysis
 
-        layer_ids = @analysis.visualization.data_layers.map(&:id)
-
-        analysis_node = @analysis.analysis_node
-        analysis_node.descendants.each do |node|
-          style_history = LayerNodeStyle.where(layer_id: layer_ids, source_id: node.id).all
+        @analysis.analysis_node.descendants.each do |node|
+          style_history = Carto::LayerNodeStyle.from_visualization_and_source(@analysis.visualization, node.id)
           node.options[:style_history] = style_history.map { |lns|
             [
               lns.layer_id,

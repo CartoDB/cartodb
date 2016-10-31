@@ -1014,7 +1014,7 @@ module.exports = cdb.core.View.extend({
       }
     }
 
-    if (rules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
+    if (!rules || rules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
       sheet.insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
     } else {
       rules[0].style.fill = color;

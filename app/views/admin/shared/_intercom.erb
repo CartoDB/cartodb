@@ -1,7 +1,7 @@
 <%
 intercom_app_id = Cartodb.get_config(:intercom, 'app_id')
 
-if intercom_app_id.present? && current_user && current_user.has_feature_flag?('intercom')
+if intercom_app_id.present? && current_user && (current_user.has_feature_flag?('intercom'))
   %>
   <script>
   window.intercomSettings = {

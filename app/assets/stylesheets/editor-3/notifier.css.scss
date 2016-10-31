@@ -79,6 +79,21 @@
   background: #FEFEDD;
 }
 
+.Notifier.is-dark {
+  .Notifier-item--success,
+  .Notifier-item--error,
+  .Notifier-item--warning {
+    background: none;
+  }
+}
+
+.Notifier .CDB-Loader {
+  display: none;
+}
+.Notifier .CDB-Loader.is-visible {
+  display: block;
+}
+
 .Notifier-info {
   @include flex(1);
   min-width: 0; // To prevent firefox screw up

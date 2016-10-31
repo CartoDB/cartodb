@@ -349,12 +349,12 @@ module CartoDB
           and relnamespace = (select oid from pg_namespace where nspname = '#{destination_schema}')
         ))
       rescue => exception
-        Rollbar.report_message('Error copying privileges', 'error',
-                               { error: exception.inspect,
-                                 origin_schema: origin_schema,
-                                 origin_table_name: origin_table_name,
-                                 destination_schema: destination_schema,
-                                 destination_table_name: destination_table_name } )
+        CartoDB::Logger.error(exception: exception,
+                              message: 'Error copying privileges',
+                              origin_schema: origin_schema,
+                              origin_table_name: origin_table_name,
+                              destination_schema: destination_schema,
+                              destination_table_name: destination_table_name)
       end
 
       # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
@@ -398,9 +398,9 @@ module CartoDB
             database.run(statement)
           rescue => exception
             if exception.message !~ /relation .* already exists/
-              Rollbar.report_message('Error copying indexes', 'error',
-                                   { error: exception.inspect,
-                                     statement: statement } )
+              CartoDB::Logger.error(exception: exception,
+                                    message: 'Error copying indexes',
+                                    statement: statement)
             end
           end
         }

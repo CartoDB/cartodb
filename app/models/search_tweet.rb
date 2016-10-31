@@ -65,8 +65,7 @@ class SearchTweet < Sequel::Model
 
     if user.effective_twitter_block_price.nil? || calculate_used_credits.nil? \
        || user.effective_twitter_datasource_block_size.nil?
-      Rollbar.report_message('Twitter datasource ', 'error', \
-        error_info: 'Looks like user/org has not set all twitter block or price params')
+      CartoDB::Logger.error('Looks like user/org has not set all twitter block or price params', user: user)
       # As the import itself went well don't break execution, just return something
       0
     else

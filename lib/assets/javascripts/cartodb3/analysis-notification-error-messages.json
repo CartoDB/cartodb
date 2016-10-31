@@ -4,7 +4,10 @@
   }, {
     "match": "REMOTE ERROR: .*Error: (.*?)$"
   }, {
-    "replace": "RuntimeError: Execution of function interrupted by signal",
-    "with": "Test"
+    "match": "RuntimeError: Execution of function interrupted by signal",
+    "replaceWith": "timeout"
+  }, {
+    "match": "canceling statement due to statement timeout.",
+    "replaceWith": "timeout"
   }]
 }

@@ -98,18 +98,6 @@ module CartoDB
           end
         end
 
-        styles_per_node = layer.layer_node_styles.map do |lns|
-          [
-            lns.source_id,
-            {
-              tooltip: lns.tooltip,
-              infowindow: lns.infowindow,
-              options: lns.options
-            }
-          ]
-        end
-        poro['style_history'] = styles_per_node.to_h
-
         poro
       end
 

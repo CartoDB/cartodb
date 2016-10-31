@@ -134,17 +134,7 @@ module Carto
 
       def base_poro(layer)
         # .merge left for backwards compatibility
-        styles_per_node = ::Layer[@layer.id].layer_node_styles.map do |lns|
-          [
-            lns.source_id,
-            {
-              tooltip: lns.tooltip,
-              infowindow: lns.infowindow,
-              options: lns.options
-            }
-          ]
-        end
-        public_values(layer).merge('options' => layer_options, 'style_history' => styles_per_node.to_h)
+        public_values(layer).merge('options' => layer_options)
       end
 
       def public_values(layer)

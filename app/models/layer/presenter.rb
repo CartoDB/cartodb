@@ -97,7 +97,6 @@ module CartoDB
             poro['options']['table_name'] = safe_schema_and_table_quoting(schema_name, poro['options']['table_name'])
           end
         end
-
         poro
       end
 

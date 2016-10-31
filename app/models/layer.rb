@@ -194,10 +194,6 @@ class Layer < Sequel::Model
     options['query'] = qualify_query(query, options['table_name'], owner_username) if query
   end
 
-  def visualization
-    map && map.visualization
-  end
-
   private
 
   def rename_in(target, anchor, substitution)

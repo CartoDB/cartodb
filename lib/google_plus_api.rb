@@ -9,11 +9,11 @@ class GooglePlusAPI
     if response.code == 200
       GooglePlusAPIUserData.new(::JSON.parse(response.body))
     else
-      Rollbar.report_message('Failed getting user from google', 'info', error_info: response.to_s)
+      CartoDB::Logger.info(message: 'Failed getting user from google', error_info: response.to_s)
       nil
     end
   rescue => e
-    Rollbar.report_exception(e)
+    CartoDB::Logger.error(exception: e)
     nil
   end
 

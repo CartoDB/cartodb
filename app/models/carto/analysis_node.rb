@@ -28,7 +28,7 @@ class Carto::AnalysisNode
   end
 
   def options
-    definition[:options]
+    definition[:options] ||= Hash.new
   end
 
   def children

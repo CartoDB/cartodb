@@ -327,4 +327,114 @@ describe Carto::Api::AnalysesController do
       end
     end
   end
+
+  describe '#LayerNodeStyle cache' do
+    before(:all) do
+      @styled_analysis = FactoryGirl.create(:analysis_point_in_polygon, visualization_id: @visualization.id, user_id: @user.id)
+      @layer_id = @visualization.data_layers.first.id
+    end
+
+    before(:each) do
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.create(
+          layer_id: @layer_id,
+          source_id: node_id,
+          options: {
+            tile_style: 'wadus'
+          },
+          infowindow: {},
+          tooltip: {}
+        )
+      end
+    end
+
+    after(:each) do
+      Carto::LayerNodeStyle.where(layer_id: @layer_id).delete_all
+    end
+
+    it '#show returns tile styles' do
+      get_json viz_analysis_url(@user, @visualization, @styled_analysis.id) do |response|
+        response.status.should eq 200
+        Carto::AnalysisNode.new(response[:body][:analysis_definition].deep_symbolize_keys).descendants.each do |node|
+          node.options[:style_history][@layer_id.to_sym][:options][:tile_style].should eq 'wadus'
+        end
+      end
+    end
+
+    it '#update invalidates the affected node' do
+      @styled_analysis.analysis_node.params[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should only invalidate the parent
+      updated_ids = [@styled_analysis.natural_id]
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        modified = updated_ids.include?(node_id)
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should eq !modified
+      end
+    end
+
+    it '#update invalidates the affected node and its parent' do
+      first_child = @styled_analysis.analysis_node.children.first
+      first_child.params[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should invalidate the first child and the parent
+      updated_ids = [@styled_analysis.natural_id, first_child.id]
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        modified = updated_ids.include?(node_id)
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should eq !modified
+      end
+    end
+
+    it '#update does not invalidate upon options change' do
+      @styled_analysis.reload
+      @styled_analysis.analysis_node.options[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should not invalidate anything
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should be_true
+      end
+    end
+
+    it '#update does not invalidate upon children node_id change' do
+      @styled_analysis.reload
+      first_child = @styled_analysis.analysis_node.children.first
+      first_child.definition[:id] = 'bogus'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should not invalidate anything
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should be_true
+      end
+    end
+  end
 end

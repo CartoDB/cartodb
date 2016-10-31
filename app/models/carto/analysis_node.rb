@@ -27,6 +27,11 @@ class Carto::AnalysisNode
     definition[:params]
   end
 
+  def non_child_params
+    param_locations = children_and_location.keys.select { |cal| cal.first == :params }.map(&:second)
+    params.reject { |key| param_locations.include?(key) }
+  end
+
   def options
     definition[:options] ||= Hash.new
   end

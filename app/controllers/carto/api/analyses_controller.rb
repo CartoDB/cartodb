@@ -63,7 +63,7 @@ module Carto
       private
 
       def purge_layer_node_style_cache(node_ids)
-        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_ids).delete
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_ids).delete_all
       end
 
       def find_affected_nodes(modified_node_ids)
@@ -84,7 +84,7 @@ module Carto
         kept_ids.select do |node_id|
           old_node = old_nodes.find { |n| n.id == node_id }
           new_node = new_nodes.find { |n| n.id == node_id }
-          old_node.params != new_node.params
+          old_node.non_child_params != new_node.non_child_params
         end
       end
 

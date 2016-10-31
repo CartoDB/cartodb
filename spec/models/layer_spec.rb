@@ -323,8 +323,8 @@ describe Layer do
       @layer.save
       lns = LayerNodeStyle.where(layer_id: @layer.id).first
       lns.should be
-      lns.tooltip.should eq @layer.tooltip
-      lns.infowindow.should eq @layer.infowindow
+      lns.tooltip.should eq @layer.tooltip || {}
+      lns.infowindow.should eq @layer.infowindow || {}
       lns.options['tile_style'].should eq @layer.options['tile_style']
       lns.options['sql_wrap'].should eq @layer.options['sql_wrap']
       lns.options['style_properties'].should eq @layer.options['style_properties']

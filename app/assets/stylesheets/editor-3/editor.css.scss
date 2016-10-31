@@ -16,6 +16,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.Editor--topBar {
+  height: calc(100vh - 40px);
+}
+
 .Editor-wrapper {
   @include display-flex();
   position: relative;

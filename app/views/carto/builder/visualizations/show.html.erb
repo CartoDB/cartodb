@@ -14,6 +14,7 @@
   var overlaysData = <%= safe_js_object @overlays_data.to_json %>;
   var mapcapsData = <%= safe_js_object @mapcaps_data.to_json %>;
   var builderNotifications = <%= safe_js_object @builder_notifications.to_json %>;
+  var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
   var ACTIVE_LOCALE = 'en';
 </script>
 <%= javascript_include_tag 'vendor_editor3.js' %>

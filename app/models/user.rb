@@ -20,6 +20,7 @@ require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
+require_dependency 'carto/helpers/batch_queries_statement_timeout'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -29,6 +30,7 @@ class User < Sequel::Model
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
+  include Carto::BatchQueriesStatementTimeout
 
   self.strict_param_setting = false
 

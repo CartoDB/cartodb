@@ -124,7 +124,7 @@ class Layer < Sequel::Model
   end
 
   def data_layer?
-    kind == 'carto'
+    !base_layer?
   end
 
   def torque_layer?

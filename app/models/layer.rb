@@ -230,7 +230,7 @@ class Layer < Sequel::Model
   end
 
   def source_id
-    options.symbolize_keys[:source]
+    options && options.symbolize_keys[:source]
   end
 
   def update_layer_node_style

@@ -481,13 +481,6 @@ module CartoDB
           client.revoke_tokens(token)
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        # Not implemented
-        def report_component=(_component)
-          nil
-        end
-
         private
 
         def set_tokens(tokens)

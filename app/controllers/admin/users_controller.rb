@@ -74,7 +74,7 @@ class Admin::UsersController < Admin::AdminController
 
     redirect_to CartoDB.url(self, 'account_user', {}, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e, params, @user)
+    CartoDB::Logger.error(exception: e, user: @user, params: params)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
     render action: :account
   rescue Sequel::ValidationFailed => e
@@ -104,7 +104,7 @@ class Admin::UsersController < Admin::AdminController
 
     redirect_to CartoDB.url(self, 'profile_user', {}, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_exception(e, params, @user)
+    CartoDB::Logger.error(exception: e, user: @user, params: params)
     flash.now[:error] = "There was a problem while updating your data. Please, try again and contact us if the problem persists"
     render action: :profile
   rescue Sequel::ValidationFailed => e
@@ -128,7 +128,7 @@ class Admin::UsersController < Admin::AdminController
       render(file: "public/404.html", layout: false, status: 404)
     end
   rescue CartoDB::CentralCommunicationFailure => e
-    Rollbar.report_message('Central error deleting user at CartoDB', 'error', { user: @user.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Central error deleting user at CartoDB', user: @user)
     flash.now[:error] = "Error deleting user: #{e.user_message}"
     render 'account'
   rescue => e

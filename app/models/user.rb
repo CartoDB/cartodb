@@ -1232,7 +1232,7 @@ class User < Sequel::Model
       begin
         in_database(:as => :superuser).fetch("ANALYZE")
       rescue => ee
-        Rollbar.report_exception(ee)
+        CartoDB::Logger.error(exception: ee)
         raise ee
       end
       retry unless attempts > 1
@@ -1695,7 +1695,7 @@ class User < Sequel::Model
       st.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning search tweets to org owner', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
@@ -1707,7 +1707,7 @@ class User < Sequel::Model
       g.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning geocodings to org owner, fallback to deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
     self.geocodings.each { |g| g.destroy }
   end
 

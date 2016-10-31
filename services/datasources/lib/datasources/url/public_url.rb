@@ -142,12 +142,6 @@ module CartoDB
           nil
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        def report_component=(component)
-          nil
-        end
-
         private
 
         def http_client

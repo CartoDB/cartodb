@@ -63,8 +63,7 @@ module Carto
       private
 
       def purge_layer_node_style_cache(node_ids)
-        layer_ids = @visualization.data_layers.map(&:id)
-        LayerNodeStyle.where(layer_id: layer_ids, source_id: node_ids).delete
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_ids).delete
       end
 
       def find_affected_nodes(modified_node_ids)

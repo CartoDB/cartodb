@@ -50,7 +50,7 @@ module Carto
 
         @analysis.analysis_definition = new_definition
         @analysis.save!
-        purge_layer_node_style_cache(affected_node_ids)
+        purge_layer_node_style_history(affected_node_ids)
 
         render_jsonp(AnalysisPresenter.new(@analysis).to_poro, 200)
       end
@@ -62,7 +62,7 @@ module Carto
 
       private
 
-      def purge_layer_node_style_cache(node_ids)
+      def purge_layer_node_style_history(node_ids)
         Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_ids).delete_all
       end
 

@@ -22,6 +22,17 @@ describe('widgets/dropdown/widget-dropdown-view', function () {
     expect($('.js-container').find('.CDB-Dropdown').length).toBe(1);
   });
 
+  it('should not be the options button', function () {
+    $('.js-button').click();
+    expect($('.js-container').find('.js-editWidget').length).toBe(0);
+  });
+
+  it('should be the options button', function () {
+    this.model.set('show_options', true);
+    $('.js-button').click();
+    expect($('.js-container').find('.js-editWidget').length).toBe(1);
+  });
+
   it('should detect clicking in the target', function () {
     spyOn(this.view, '_toggleClick').and.callThrough();
     this.view._initBinds();

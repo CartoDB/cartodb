@@ -1,7 +1,7 @@
 <div class="Bubble-container u-flex u-justifySpace">
   <ul class="Bubble-numbers u-flex u-justifySpace">
     <% for (var i = 0; i<labels.length; i++) { %>
-      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: <%- labelPositions[i] %>%"><%- formatter.formatNumber(labels[i]) %></li>
+      <li class="Bubble-numbersItem CDB-Text CDB-Size-small" style="bottom: <%- labelPositions[i] %>%"><%= formatter.formatNumber(labels[i]) %></li>
     <% } %>
   </ul>
 

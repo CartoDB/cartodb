@@ -227,10 +227,7 @@ class Geocoding < Sequel::Model
     if translated_formatter =~ SANITIZED_FORMATTER_REGEXP
       translated_formatter
     else
-      # TODO better remove this trace once everything is fine
-      Rollbar.report_message(%Q{Incorrect formatter string received: "#{formatter}"},
-                             'warning',
-                             {user_id: user.id})
+      CartoDB::Logger.warning(message: %{Incorrect formatter string received: "#{formatter}"}, user: user)
       ''
     end
   end

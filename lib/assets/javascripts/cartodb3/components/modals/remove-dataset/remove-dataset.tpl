@@ -12,7 +12,7 @@
       <p class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('dataset.delete.desc') %></p>
 
       <% if (affectedVisCount > 0) { %>
-        <div class="Modal-listActions">
+        <div class="Modal-listActions js-affectedVis">
           <p class="CDB-Text CDB-Size-medium u-altTextColor">
             <% if (affectedVisCount > maxVisCount) {%>
               <%= _t('dataset.delete.affected-vis-count-extended', {affectedVisCount: affectedVisCount}) %>
@@ -49,7 +49,7 @@
       <% } %>
 
       <% if (affectedEntitiesCount > 0 || organizationAffected) { %>
-        <div class="Modal-listActions">
+        <div class="Modal-listActions js-affectedEntities">
           <p class="CDB-Text CDB-Size-medium u-altTextColor">
             <% if (organizationAffected) { %>
               <%= _t('dataset.delete.whole-organization-affected') %>

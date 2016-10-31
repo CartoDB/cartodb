@@ -827,7 +827,11 @@ class Table
     primary_key
   end
 
+  MAX_UPDATE_ROW_RETRIES = 3
+
   def update_row!(row_id, raw_attributes)
+    retries = 0
+
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
@@ -863,7 +867,15 @@ class Table
                                     qualified_table_name: qualified_table_name,
                                     row_id: row_id,
                                     raw_attributes: raw_attributes)
-              retry
+              if (retries += 1) > MAX_UPDATE_ROW_RETRIES
+                CartoDB::Logger.error(message: 'Max update_row! retries reached',
+                                      user_id: user_id,
+                                      qualified_table_name: qualified_table_name,
+                                      row_id: row_id,
+                                      raw_attributes: raw_attributes)
+              else
+                retry
+              end
             end
           else
             raise e

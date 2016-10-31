@@ -194,6 +194,7 @@ module.exports = cdb.core.View.extend({
       showOnWidthChange: false,
       data: this._dataviewModel.getData(),
       normalized: this.model.get('normalized'),
+      chartBarColor: this.model.getColor() || '#9DE0AD',
       originalData: this._originalData,
       widgetModel: this.model
     }));

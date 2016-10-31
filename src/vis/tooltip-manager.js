@@ -68,7 +68,7 @@ TooltipManager.prototype._bindFeatureOverEvent = function (layerView) {
       throw new Error('featureOver event for layer ' + layerIndex + ' was captured but layerModel coudn\'t be retrieved');
     }
 
-    if (this._map.arePopupsEnabled() && layerModel.tooltip.hasFields()) {
+    if (this._map.arePopupsEnabled() && layerModel.tooltip.hasTemplate()) {
       layerView.tooltipView.setTemplate(layerModel.tooltip.get('template'));
       layerView.tooltipView.setFields(layerModel.tooltip.fields.toJSON());
       layerView.tooltipView.setAlternativeNames(layerModel.tooltip.get('alternative_names'));

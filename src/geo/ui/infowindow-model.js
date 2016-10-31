@@ -9,7 +9,8 @@ var InfowindowModel = Backbone.Model.extend({
     autoPan: true,
     template_type: 'mustache',
     content: '',
-    alternative_names: { }
+    alternative_names: { },
+    visibility: false
   },
 
   DEFAULT_TEMPLATE: defaultInfowindowTemplate,

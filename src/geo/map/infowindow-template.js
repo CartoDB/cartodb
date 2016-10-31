@@ -35,6 +35,10 @@ var InfowindowTemplate = Backbone.Model.extend({
 
   hasFields: function () {
     return !this.fields.isEmpty();
+  },
+
+  hasTemplate: function () {
+    return !!this.get('template');
   }
 });
 

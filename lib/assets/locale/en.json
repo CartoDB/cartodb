@@ -1990,7 +1990,7 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out"
+        "timeout": "The execution of the analysis timed out and was stopped"
       }
     },
     "widgets": {

@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var $ = require('jquery');
 var LegendViewBase = require('../base/legend-view-base');
 var template = require('./legend-template.tpl');
 var formatter = require('../../../../util/formatter');

@@ -269,7 +269,7 @@ $maxLegendContainerHeight: 300px;
 }
 
 .CDB-Legend-item {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 
@@ -405,7 +405,7 @@ $index-items: 7 6 5 4 3 2 1;
 .Legend-choropleth {
   position: relative;
   height: $baseSize;
-  margin-bottom: 28px;
+  margin-bottom: 38px;
   box-sizing: border-box;
   border-radius: $halfBaseSize;
 }

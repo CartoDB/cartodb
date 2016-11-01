@@ -93,7 +93,7 @@ module.exports = WidgetModel.extend({
       state.zmax = zmax;
     }
 
-    console.log(state);
+    // console.log(state);
 
     return state;
   }

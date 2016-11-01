@@ -15,7 +15,17 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
-    this._initBinds();
+
+    var init = function () {
+      this._initBinds();
+      this.render();
+    };
+
+    if (this.model.get('hasInitialState') === true) {
+      init();
+    } else {
+      this.model.once('change:hasInitialState', init, this);
+    }
   },
 
   render: function () {
@@ -79,12 +89,9 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.once('init:state', function () {
-      this.model.bind('change:title change:description change:collapsed change:prefix change:suffix', this.render, this);
-      this._dataviewModel.bind('change:data', this.render, this);
-      this.add_related_model(this._dataviewModel);
-      this.render();
-    }, this);
+    this.model.bind('change:title change:description change:collapsed change:prefix change:suffix', this.render, this);
+    this._dataviewModel.bind('change:data', this.render, this);
+    this.add_related_model(this._dataviewModel);
   },
 
   _initViews: function () {

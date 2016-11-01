@@ -34,7 +34,7 @@ Dashboard.prototype = {
 
   getState: function () {
     var state = {};
-    var mapState = this.getMapState(); // TODO
+    var mapState = this.getMapState();
     if (!_.isEmpty(mapState)) state.map = mapState;
 
     var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();

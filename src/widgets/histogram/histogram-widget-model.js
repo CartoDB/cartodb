@@ -46,11 +46,17 @@ module.exports = WidgetModel.extend({
     var state = WidgetModel.prototype.getState.call(this);
     var start = this.dataviewModel.get('start');
     var end = this.dataviewModel.get('end');
-    var data = this.dataviewModel.get('data');
-    var lo = this.get('lo_index');
-    var hi = this.get('hi_index');
-    var l;
-    var m;
+    //var filter = this.get('stateFilter');
+
+    // var data = this.dataviewModel.get('data');
+    // var lo = this.get('lo_index');
+    // var hi = this.get('hi_index');
+    var min = this.get('min');
+    var max = this.get('max');
+    var zmin = this.get('zmin');
+    var zmax = this.get('zmax');
+    // var l;
+    // var m;
 
     var checkRoughEqual = function (a, b) {
       if (_.isNumber(a) && _.isNumber(b) && (a !== b) && Math.abs(a - b) > Math.abs(start - end) * 0.01) {
@@ -59,25 +65,35 @@ module.exports = WidgetModel.extend({
       return false;
     };
 
-    if (_.isNumber(lo) && _.isNumber(hi)) {
-      l = data[lo] && data[lo].start;
-      m = data[hi - 1] && data[hi - 1].end;
-    } else {
-      l = start;
-      m = end;
+    // if (_.isNumber(lo) && _.isNumber(hi)) {
+    //   l = data[lo] && data[lo].start;
+    //   m = data[hi - 1] && data[hi - 1].end;
+    // } else {
+    //   l = start;
+    //   m = end;
+    // }
+
+    if (checkRoughEqual(start, min)) {
+      state.min = min;
     }
 
-    if (checkRoughEqual(start, l)) {
-      state.min = l;
-    }
-
-    if (checkRoughEqual(end, m)) {
-      state.max = m;
+    if (checkRoughEqual(end, max)) {
+      state.max = max;
     }
 
     if (this.get('zoomed') === true) {
       state.zoomed = true;
     }
+
+    if (zmin != null) {
+      state.zmin = zmin;
+    }
+
+    if (zmax != null) {
+      state.zmax = zmax;
+    }
+
+    console.log(state);
 
     return state;
   }

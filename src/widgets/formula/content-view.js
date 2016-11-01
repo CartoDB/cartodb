@@ -79,9 +79,12 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('init:state change:title change:description change:collapsed change:prefix change:suffix', this.render, this);
-    this._dataviewModel.bind('change:data', this.render, this);
-    this.add_related_model(this._dataviewModel);
+    this.model.once('init:state', function () {
+      this.model.bind('change:title change:description change:collapsed change:prefix change:suffix', this.render, this);
+      this._dataviewModel.bind('change:data', this.render, this);
+      this.add_related_model(this._dataviewModel);
+      this.render();
+    }, this);
   },
 
   _initViews: function () {

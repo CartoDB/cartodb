@@ -114,6 +114,7 @@
   .Editor {
     .CDB-Dashboard-canvas {
       @include flex-direction(column);
+      width: 0;
     }
     .CDB-Widget-canvas {
       width: 100%;
@@ -124,13 +125,14 @@
     }
     .CDB-Widget {
       @include flex(1);
-      border-right: 2px solid #f2f6f9;
-      margin-bottom: 0;
       width: auto;
       min-width: 352px;
+      margin-bottom: 0;
+      border-right: 2px solid $cSecondaryBackground;
     }
     .CDB-Widget-canvasInner {
       @include display-flex();
+      position: relative;
     }
     .CDB-Widget-header,
     .CDB-Widget-footer,
@@ -157,6 +159,9 @@
     .CDB-Widget-listWrapper .CDB-Widget-contentSpaced--sideMargins {
       margin-right: 0;
       margin-left: 0;
+    }
+    .CDB-Widget-listItemInner {
+      margin: 0;
     }
   }
 }

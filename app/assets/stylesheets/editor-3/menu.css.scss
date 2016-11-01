@@ -111,3 +111,12 @@
   width: 100%;
   border-radius: $baseSize / 2;
 }
+
+
+/* Responsive views */
+@media (max-width: 1200px) {
+  .EditorMenu {
+    @include flex(0 0 48px);
+    width: 48px;
+  }
+}

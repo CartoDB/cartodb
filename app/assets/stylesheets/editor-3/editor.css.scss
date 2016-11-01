@@ -106,3 +106,60 @@
 .CDB-Dashboard-canvas.is-dark {
   background: #293A41;
 }
+
+
+
+/* Responsive views */
+@media (max-width: 1200px) {
+  .Editor {
+    .CDB-Dashboard-canvas {
+      @include flex-direction(column);
+    }
+    .CDB-Widget-canvas {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      min-height: 192px;
+      margin: 8px 0 0;
+    }
+    .CDB-Widget {
+      @include flex(1);
+      border-right: 2px solid #f2f6f9;
+      margin-bottom: 0;
+      width: auto;
+      min-width: 352px;
+    }
+    .CDB-Widget-canvasInner {
+      @include display-flex();
+    }
+    .CDB-Widget-header,
+    .CDB-Widget-footer,
+    .CDB-Widget-content {
+      margin-right: 16px;
+      margin-left: 16px;
+    }
+    .CDB-Widget-list {
+      @include display-flex();
+    }
+    .CDB-Widget-listButton {
+      padding: 4px 0;
+    }
+    .CDB-Widget-listGroup {
+      @include display-flex();
+      @include flex-wrap(wrap);
+      margin: 0 -8px;
+    }
+    .CDB-Widget-listItem {
+      width: 33%;
+      padding: 0 8px;
+      box-sizing: border-box;
+    }
+    .CDB-Widget-listWrapper .CDB-Widget-contentSpaced--sideMargins {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+}
+
+
+

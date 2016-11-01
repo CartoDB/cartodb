@@ -32,7 +32,7 @@ format.formatNumber = function (value, unit) {
     return value;
   }
 
-  if (abs_v < 0.001) {
+  if (abs_v < 0.01) {
     value = formatExponential(value) + (unit ? ' ' + unit : '');
     return value;
   }
@@ -41,7 +41,7 @@ format.formatNumber = function (value, unit) {
     p = 0;
   } else if (abs_v > 10) {
     p = 1;
-  } else if (abs_v > 0) {
+  } else if (abs_v > 0.01) {
     p = Math.min(Math.ceil(Math.abs(Math.log(abs_v) / Math.log(10))) + 2, 2);
   }
 

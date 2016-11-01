@@ -13,6 +13,6 @@
         </li>
       <% } %>
     </ul>
-    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%- formatter.formatNumber(avgLabel) %></p>
+    <p class="Bubble-average CDB-Text CDB-Size-small u-altTextColor" style="bottom: <%- avgSize %>%">AVG: <%= formatter.formatNumber(avgLabel) %></p>
   </div>
 </div>

@@ -36,7 +36,8 @@ module.exports = cdb.core.View.extend({
       this.model.attributes,
       { flags: this.options.flags || {} }, {
         'normalized': false,
-        'collapsed': false
+        'collapsed': false,
+        'show_options': false
       }
     )));
     return this;

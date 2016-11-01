@@ -19,9 +19,7 @@
   @include flex-direction(column);
   @include flex-grow(1);
 }
-.CDB-Dashboard-mapWrapper--withMenu {
-  margin-left: 56px;
-}
+
 .CDB-Map-canvas {
   @include flex-grow(1);
   position: relative;
@@ -38,6 +36,12 @@
 }
 .CDB-Dashboard-belowMap {
   margin-top: 8px;
+}
+
+@media (min-width: 1200px) {
+  .CDB-Dashboard-mapWrapper--withMenu {
+    margin-left: 56px;
+  }
 }
 
 

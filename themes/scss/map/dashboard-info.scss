@@ -225,8 +225,17 @@
     opacity: 1;
   }
 }
+.CDB-Dashboard-menu {
+  display: none;
+}
+@media (min-width: 1200px) {
+  .CDB-Dashboard-menu {
+    display: block;
+  }
+}
 @media (max-width: 759px) {
   .CDB-Dashboard-menu {
+    display: block;
     order: 4;
   }
   .CDB-Dashboard-menuInner {
@@ -285,7 +294,6 @@
     border-radius: 4px;
     background: $cWhite;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
-    opacity: 1;
     z-index: 2;
   }
   .CDB-Dashboard-menuTitle {

@@ -136,4 +136,39 @@ describe('widgets/widget-model', function () {
       expect(this.model.getState()).toEqual({collapsed: true});
     });
   });
+
+  describe('isAutoStyleEnabled', function () {
+    beforeEach(function () {
+      this.model.set('type', 'category');
+    });
+
+    it('should return true without style options', function () {
+      expect(this.model.isAutoStyleEnabled()).toBe(true);
+    });
+
+    it('should return true with empty object style options', function () {
+      this.model.set('style', {});
+      expect(this.model.isAutoStyleEnabled()).toBe(true);
+    });
+
+    it('should return true with style options', function () {
+      var style = {
+        auto_style: {
+          allowed: true
+        }
+      };
+      this.model.set('style', style);
+      expect(this.model.isAutoStyleEnabled()).toBe(true);
+    });
+
+    it('should return false with style options', function () {
+      var style = {
+        auto_style: {
+          allowed: false
+        }
+      };
+      this.model.set('style', style);
+      expect(this.model.isAutoStyleEnabled()).toBe(false);
+    });
+  });
 });

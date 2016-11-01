@@ -12,6 +12,7 @@
   @include display-flex();
   position: relative;
   width: 100vw;
+  min-width: 1024px;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
 }

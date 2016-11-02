@@ -323,9 +323,10 @@ module Carto
 
       def as_data
         old_legend = @layer.legend
-        legends = @layer.legends
 
-        migrate_legends(old_legend) if old_legend && legends.empty?
+        if old_legend
+          @layer.legends.any? ? backup_old_legend : migrate_legends(old_legend)
+        end
 
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash
@@ -335,10 +336,13 @@ module Carto
       end
 
       def migrate_legends(old_legend)
-        @layer.options[:backup_legend] = old_legend
         Carto::LegendMigrator.new(@layer.id, old_legend).build.save
-        @layer.options[:legend] = nil
+        backup_old_legend
+      end
 
+      def backup_old_legend
+        @layer.options[:backup_legend] = @layer.options[:legend]
+        @layer.options[:legend] = nil
         @layer.save
         @layer.legends.reload
       end

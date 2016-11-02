@@ -1,7 +1,8 @@
 module Carto
   module Factories
     module Visualizations
-      def full_visualization_table(carto_user, map)
+      def full_visualization_table(carto_user)
+        map = FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id)
         FactoryGirl.create(
           :carto_user_table,
           user_id: carto_user.id,
@@ -15,7 +16,7 @@ module Carto
       def create_full_visualization(
         carto_user,
         map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
-        table: full_visualization_table(carto_user, map),
+        table: full_visualization_table(carto_user),
         data_layer: nil,
         visualization_attributes: {}
       )
@@ -53,6 +54,7 @@ module Carto
 
       # Helper method for `create_full_visualization` results cleanup
       def destroy_full_visualization(map, table, table_visualization, visualization)
+        table_visualization.map.destroy if table_visualization && table_visualization.map
         table_visualization.destroy if table_visualization
         table.destroy if table
         visualization.destroy if visualization

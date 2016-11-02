@@ -13,7 +13,7 @@ class LayerNodeStyle < Sequel::Model
     lns
   end
 
-  def update_from_layer
+  def update_from_layer(layer)
     self.infowindow = layer.infowindow || {}
     self.tooltip = layer.tooltip || {}
     self.options = layer.options.symbolize_keys.slice(*OPTIONS_TO_COPY)

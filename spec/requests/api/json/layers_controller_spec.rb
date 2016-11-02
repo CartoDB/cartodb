@@ -171,4 +171,103 @@ describe Api::Json::LayersController do
       end
     end
   end
+
+  describe 'creating a layer from an analysis node moves the style history' do
+    def create_layer(new_source, new_letter, from_letter)
+      url = api_v1_maps_layers_create_url(user_domain: @user1.username, map_id: @map.id, api_key: @user1.api_key)
+      payload = {
+        kind: 'carto',
+        options: {
+          source: new_source,
+          letter: new_letter,
+          table_name: @table.name,
+          user_name: @user1.username
+        },
+        infowindow: {},
+        tooltip: {},
+        from_layer_id: @original_layer.id,
+        from_letter: from_letter
+      }
+      post_json url, payload do |response|
+        response.status.should eq 200
+        layer_response = response.body
+
+        Carto::Layer.find(layer_response[:id])
+      end
+    end
+
+    before(:each) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+      @original_layer = @map.layers.first
+      @original_layer.options[:source] = 'a2'
+      @original_layer.save
+
+      ['a2', 'a1', 'a0'].each do |node_id|
+        LayerNodeStyle.create(
+          layer_id: @original_layer.id,
+          source_id: node_id,
+          options: { original_id: node_id },
+          infowindow: {},
+          tooltip: {}
+        )
+      end
+    end
+
+    after(:each) do
+      @layer.destroy if @layer
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
+    def verify_layer_node_styles(layer, styles_map)
+      # Map original_source_id -> new_source_id
+      actual_styles_map = layer.layer_node_styles.map { |lns| [lns.options[:original_id], lns.source_id] }.to_h
+      actual_styles_map.should eq styles_map
+    end
+
+    it 'when dragging an intermediate node' do
+      # A new layer B is created (copy A1 -> B1, A0 -> B0) and the old one starts using it as a source (rename A1 -> B1)
+      #
+      #   _______       _______   ______
+      #  | A    |      | A    |  | B    |
+      #  |      |      |      |  |      |
+      #  | [A2] |      | [A2] |  |      |
+      #  | {A1} |  =>  | {B1} |  | {B1} |
+      #  | [A0] |      |      |  | [B0] |
+      #  |______|      |______|  |______|
+
+      @new_layer = create_layer('b1', 'b', 'a')
+
+      verify_layer_node_styles(@new_layer, 'a1' => 'b1', 'a0' => 'b0')
+      verify_layer_node_styles(@original_layer, 'a2' => 'b2', 'a1' => 'b1')
+    end
+
+    describe 'when dragging a header node' do
+      # The original layer is renamed to B (rename A2 -> B1, A1 -> B1) and the new layer is named A (copy A1 and A0)
+      # The rename and the layer creation are independent requests, so we have to handle
+      # both possible orders of requests gracefully.
+      #   _______       _______   ______
+      #  | A    |      | A    |  | B    |
+      #  |      |      |      |  |      |
+      #  | {A2} |  =>  |      |  | {B1} |
+      #  | [A1] |      | [A1] |  | [A1] |
+      #  | [A0] |      | [A0] |  |      |
+      #  |______|      |______|  |______|
+      it 'and the original layer has been previously renamed' do
+        @original_layer.options[:letter] = 'b'
+        @original_layer.options[:source_id] = 'b1'
+        @original_layer.save
+        @new_layer = create_layer('a1', 'a', 'a')
+
+        verify_layer_node_styles(@new_layer, 'a1' => 'a1', 'a0' => 'a0')
+        verify_layer_node_styles(@original_layer, 'a2' => 'b1', 'a1' => 'a1')
+      end
+
+      it 'and the original layer has not yet been renamed' do
+        @new_layer = create_layer('a1', 'a', 'a')
+
+        verify_layer_node_styles(@new_layer, 'a1' => 'a1', 'a0' => 'a0')
+        verify_layer_node_styles(@original_layer, 'a2' => 'b1', 'a1' => 'a1')
+      end
+    end
+  end
 end

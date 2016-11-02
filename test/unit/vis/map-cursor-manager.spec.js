@@ -72,7 +72,18 @@ describe('src/vis/map-cursor-manager.js', function () {
   });
 
   describe('when a feature is not overed anymore', function () {
-    it('should change the cursor to auto', function () {
+    beforeEach(function () {
+      this.mapModel.isFeatureInteractivityEnabled.and.returnValue(true);
+
+      this.featureEvents.trigger('featureOver', {
+        layer: this.layerModel
+      });
+
+      expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
+      this.mapView.setCursor.calls.reset();
+    });
+
+    it('should change the cursor to auto if no other layer is being overed', function () {
       this.featureEvents.trigger('featureOut', {
         layer: this.layerModel
       });
@@ -80,43 +91,23 @@ describe('src/vis/map-cursor-manager.js', function () {
       expect(this.mapView.setCursor).toHaveBeenCalledWith('auto');
     });
 
-    describe('when one or more clickable layers where overed', function () {
-      beforeEach(function () {
-        this.mapModel.isFeatureInteractivityEnabled.and.returnValue(true);
+    it('should change the cursor to pointer if other clickable layers are still being overed', function () {
+      var anotherLayerModel = createLayerModel();
 
-        this.featureEvents.trigger('featureOver', {
-          layer: this.layerModel
-        });
-
-        expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
-        this.mapView.setCursor.calls.reset();
+      // Another layer is being overed
+      this.featureEvents.trigger('featureOver', {
+        layer: anotherLayerModel
       });
 
-      it('should change the cursor to auto if no other clickable layers have been overed', function () {
-        this.featureEvents.trigger('featureOut', {
-          layer: this.layerModel
-        });
+      expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
+      expect(this.mapView.setCursor.calls.reset());
 
-        expect(this.mapView.setCursor).toHaveBeenCalledWith('auto');
+      // First layer is not overed anymore
+      this.featureEvents.trigger('featureOut', {
+        layer: this.layerModel
       });
 
-      it('should change the cursor to pointer if other clickable layers are still being overed', function () {
-        var anotherLayerModel = createLayerModel();
-
-        // Another layer is being overed
-        this.featureEvents.trigger('featureOver', {
-          layer: anotherLayerModel
-        });
-
-        expect(this.mapView.setCursor.calls.reset());
-
-        // First layer is not overed anymore
-        this.featureEvents.trigger('featureOut', {
-          layer: this.layerModel
-        });
-
-        expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
-      });
+      expect(this.mapView.setCursor).toHaveBeenCalledWith('pointer');
     });
   });
 

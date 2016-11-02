@@ -217,12 +217,6 @@ module CartoDB
           false
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        def report_component=(component)
-          nil
-        end
-
         # If true, a single resource id might return >1 subresources (each one spawning a table)
         # @param id String
         # @return Bool

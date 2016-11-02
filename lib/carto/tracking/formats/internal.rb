@@ -39,7 +39,12 @@ module Carto
         end
 
         def to_hubspot
-          Hash.new
+          user = fetch_record!(:user)
+          visualization = fetch_record!(:visualization)
+
+          Carto::Tracking::Formats::Segment.new(user: user,
+                                                visualization: visualization,
+                                                hash: @hash).to_hash
         end
       end
     end

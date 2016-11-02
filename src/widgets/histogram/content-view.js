@@ -29,7 +29,6 @@ module.exports = cdb.core.View.extend({
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
-    this.hasTwoFilters = false;
     this._numberOfFilters = 0;
     this._initStateApplied = false;
 
@@ -98,6 +97,10 @@ module.exports = cdb.core.View.extend({
     this.add_related_model(this._dataviewModel);
     this.render();
 
+    if (this.model.get('autoStyle') === true) {
+      this.model.autoStyle();
+    }
+
     if (this._hasRange()) {
       this._numberOfFilters = 1;
     }
@@ -160,16 +163,20 @@ module.exports = cdb.core.View.extend({
   },
 
   _setInitialZoomRange: function () {
+    if (this._initStateApplied) return;
+
     var data = this._dataviewModel.getData();
     var min = this.model.get('zmin');
     var max = this.model.get('zmax');
+    var lo = _.findWhere(data, {start: min});
+    var hi = _.findWhere(data, {end: max});
 
-    this._setupRange(data, min, max, function (lo, hi) {
-      this.hasTwoFilters = true;
-      this.model.set({ zlo_index: lo, zhi_index: hi });
-      this._initStateApplied = true;
-      this._updateStats();
-    }.bind(this));
+    if (lo != null && hi != null) {
+      this._setupRange(data, min, max, function (lo, hi) {
+        this.model.set({ zlo_index: lo, zhi_index: hi });
+        this._initStateApplied = true;
+      }.bind(this));
+    }
   },
 
   _completeInitialState: function () {
@@ -216,10 +223,7 @@ module.exports = cdb.core.View.extend({
         this._filteredData = this._dataviewModel.getData();
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
-
-      if (this._numberOfFilters === 2 && this._initStateApplied === false) {
-        this._setInitialZoomRange();
-      }
+      this._setInitialZoomRange();
     }
 
     if (this.unsettingRange) {
@@ -367,7 +371,6 @@ module.exports = cdb.core.View.extend({
     var data = this._originalData.getData();
 
     this.model.set({lo_index: loBarIndex, hi_index: hiBarIndex, zlo_index: null, zhi_index: null});
-    this.hasTwoFilters = false;
     this._applyBrushFilter(data, loBarIndex, hiBarIndex);
   },
 
@@ -385,7 +388,6 @@ module.exports = cdb.core.View.extend({
       return;
     }
 
-    this.hasTwoFilters = true;
     this._numberOfFilters = 2;
     this.lockedByUser = true;
     this.model.set({filter_enabled: true, zlo_index: loBarIndex, zhi_index: hiBarIndex});
@@ -644,7 +646,6 @@ module.exports = cdb.core.View.extend({
       zmin: null,
       zmax: null
     });
-    this.hasTwoFilters = false;
     this.filter.unsetRange();
     this._dataviewModel.disableFilter();
     this.histogramChartView.unsetBounds();

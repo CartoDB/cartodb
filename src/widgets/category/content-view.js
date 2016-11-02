@@ -29,10 +29,18 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this.model.bind('init:state', this.render, this);
+    this.model.bind('init:state', this._onInitialState, this);
     this.model.bind('change:collapsed', function (mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);
+  },
+
+  _onInitialState: function () {
+    this.render();
+
+    if (this.model.get('autoStyle') === true) {
+      this.model.autoStyle();
+    }
   },
 
   _initViews: function () {

@@ -1,6 +1,7 @@
 <div class="CDB-Dashboard-menuContainer">
   <div class="CDB-Dashboard-menuInner">
     <div class="CDB-Dashboard-menuHeader">
+      <% if (showLogo === true) { %>
       <div class="CDB-Dashboard-menuLogo">
         <a href="http://carto.com" target="_blank">
           <svg width="62px" height="24px" viewBox="35 63 62 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -14,6 +15,7 @@
           </svg>
         </a>
       </div>
+      <% } %>
 
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
@@ -78,6 +80,7 @@
         <i class="CDB-Text CDB-Size-medium CDB-IconFont CDB-IconFont-rArrowLight Size-large"></i>
       </button>
       <div class="CDB-Dashboard-menuHeaderMobileText">
+        <% if (showLogo === true) { %>
         <div class="CDB-Dashboard-menuLogo">
           <a href="http://carto.com" target="_blank">
           <svg width="62px" height="24px" viewBox="35 63 62 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -91,6 +94,7 @@
           </svg>
           </a>
         </div>
+        <% } %>
         <p class="CDB-Dashboard-menuTime CDB-Text CDB-Size-small u-upperCase u-altTextColor u-bSpace--m js-timeAgo">UPDATED <%- updatedAt %></p>
         <h1 class="CDB-Text CDB-Size-large u-ellipsis js-title u-bSpace--xl u-ellipsis"><%- title %></h1>
         <h2 class="CDB-Text CDB-Size-medium u-secondaryTextColor js-description"><%= cdb.core.sanitize.html(description) %></h2>

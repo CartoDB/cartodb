@@ -37,6 +37,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     userProfileURL: vizJSON.user.profile_url,
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
+    showLogo: opts.cartodb_logo,
     initialPosition: {
       bounds: vizJSON.bounds
     }

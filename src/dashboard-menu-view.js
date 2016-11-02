@@ -17,6 +17,7 @@ var DashboardMenuView = cdb.core.View.extend({
 
     this.$el.html(
       template({
+        showLogo: this.model.get('showLogo'),
         title: this.model.get('title'),
         description: this.model.get('description'),
         updatedAt: moment(this.model.get('updatedAt')).fromNow(),

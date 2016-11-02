@@ -1,8 +1,7 @@
 module Carto
   module Factories
     module Visualizations
-      def full_visualization_table(carto_user)
-        map = FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id)
+      def full_visualization_table(carto_user, map)
         FactoryGirl.create(
           :carto_user_table,
           user_id: carto_user.id,
@@ -15,8 +14,9 @@ module Carto
       # Table is bound to visualization, and to data_layer if it's not passed.
       def create_full_visualization(
         carto_user,
+        canonical_map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
         map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
-        table: full_visualization_table(carto_user),
+        table: full_visualization_table(carto_user, canonical_map),
         data_layer: nil,
         visualization_attributes: {}
       )

@@ -62,9 +62,11 @@
 
           <ul class="u-flex u-justifyStart u-tSpace-xl">
           <% visibleAffectedEntities.forEach(function(entity) { %>
-            <li class="u-rSpace--m">
-              <div class="Share-user Share-user--medium" style="background-image: url(<%- entity.avatarUrl %>)" data-username="<%- entity.username %>" title="<%- entity.username %>"></div>
-            </li>
+            <% if (entity.avatarUrl) { %> 
+              <li class="u-rSpace--m">
+                <div class="Share-user Share-user--medium" style="background-image: url(<%- entity.avatarUrl %>)" data-username="<%- entity.username %>" title="<%- entity.username %>"></div>
+              </li>
+            <% } %>
           <% }); %>
         </ul>
         </div>

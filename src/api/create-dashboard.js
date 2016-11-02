@@ -40,6 +40,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     userProfileURL: vizJSON.user.profile_url,
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
+    autoStyle: opts.autoStyle,
     showLogo: opts.cartodb_logo,
     initialPosition: {
       bounds: vizJSON.bounds
@@ -83,11 +84,10 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     };
     vizJSON.widgets.forEach(function (d) {
       // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
-      var attrs = _.extend({}, d, d.options);
+      var attrs = _.extend({}, d, d.options, {autoStyleEnabled: opts.autoStyle});
       var newWidgetModel = widgetModelsMap[d.type];
       var state = widgetsState[d.id];
 
-      attrs = opts.autoStyle ? attrs : _.extend(attrs, {style: {auto_style: {allowed: false}}});
       if (_.isFunction(newWidgetModel)) {
         // Find the Layer that the Widget should be created for.
         var layer;

@@ -198,7 +198,7 @@ describe Api::Json::LayersController do
 
     before(:each) do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
-      @original_layer = @map.layers.first
+      @original_layer = @map.data_layers.first
       @original_layer.options[:source] = 'a2'
       @original_layer.save
 
@@ -237,8 +237,8 @@ describe Api::Json::LayersController do
 
       @new_layer = create_layer('b1', 'b', 'a')
 
-      verify_layer_node_styles(@new_layer, 'a1' => 'b1', 'a0' => 'b0')
-      verify_layer_node_styles(@original_layer, 'a2' => 'b2', 'a1' => 'b1')
+      verify_layer_node_styles(@new_layer, nil => 'b1', 'a0' => 'b0')
+      verify_layer_node_styles(@original_layer, 'a2' => 'a2', 'a1' => 'b1')
     end
 
     describe 'when dragging a header node' do
@@ -253,20 +253,21 @@ describe Api::Json::LayersController do
       #  | [A0] |      | [A0] |  |      |
       #  |______|      |______|  |______|
       it 'and the original layer has been previously renamed' do
-        @original_layer.options[:letter] = 'b'
-        @original_layer.options[:source_id] = 'b1'
-        @original_layer.save
+        old_model_layer = ::Layer[@original_layer.id]
+        old_model_layer.options['letter'] = 'b'
+        old_model_layer.options['source'] = 'b1'
+        old_model_layer.save
         @new_layer = create_layer('a1', 'a', 'a')
 
-        verify_layer_node_styles(@new_layer, 'a1' => 'a1', 'a0' => 'a0')
-        verify_layer_node_styles(@original_layer, 'a2' => 'b1', 'a1' => 'a1')
+        verify_layer_node_styles(@new_layer, nil => 'a1', 'a0' => 'a0')
+        verify_layer_node_styles(@original_layer, nil => 'b1', 'a1' => 'a1')
       end
 
       it 'and the original layer has not yet been renamed' do
         @new_layer = create_layer('a1', 'a', 'a')
 
-        verify_layer_node_styles(@new_layer, 'a1' => 'a1', 'a0' => 'a0')
-        verify_layer_node_styles(@original_layer, 'a2' => 'b1', 'a1' => 'a1')
+        verify_layer_node_styles(@new_layer, nil => 'a1', 'a0' => 'a0')
+        verify_layer_node_styles(@original_layer, 'a1' => 'a1')
       end
     end
   end

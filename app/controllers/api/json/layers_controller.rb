@@ -171,24 +171,31 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def copy_layer_node_styles(to_layer, from_layer, from_letter)
     to_letter = to_layer.options['letter']
-    if from_layer.present? && from_letter.present? && to_letter.present?
-      # Copy LayerNodeStyles from the old layer if given.
-      existing = to_layer.layer_node_styles.map(&:source_id)
+    to_source = to_layer.options['source']
+    if from_layer.present? && from_letter.present? && to_letter.present? && to_source.present?
       from_layer.layer_node_styles.each do |lns|
         new_id = lns.source_id.gsub(from_letter, to_letter)
-        if lns.source_id.starts_with?(from_letter) && !existing.include?(new_id)
-          new_lns = lns.duplicate
-          new_lns.source_id = new_id
-          to_layer.add_layer_node_style(new_lns)
+        if lns.source_id.starts_with?(from_letter)
+          lns_number = lns.source_id[1..-1].to_i
+          to_source_number = to_source[1..-1].to_i
+          if lns_number < to_source_number
+            # Move LayerNodeStyles from the old layer if given.
+            lns.source_id = new_id
+            to_layer.add_layer_node_style(lns)
+          elsif lns_number > to_source_number && from_letter == to_letter
+            # Remove unneeded old styles in the old layer
+            lns.destroy
+          end
         end
       end
 
       # Update old layer styles
       if from_letter != to_letter
-        node_id_to_fix = to_layer.options['source'].gsub(to_letter, from_letter)
+        # Dragging middle node
+        node_id_to_fix = to_source.gsub(to_letter, from_letter)
         style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
         if style_node
-          style_node.source_id = to_layer.options['source']
+          style_node.source_id = to_source
           style_node.save
         end
       end

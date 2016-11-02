@@ -1267,7 +1267,9 @@
           "confirm": "Ok, export",
           "cancel": "Cancel",
           "desc": "This map, and the connected data, will be exported as a .carto file",
-          "title": "Export \"%{name}\""
+          "title": "Export \"%{name}\"",
+          "privateDesc": "Private Dataset will be exported. Be careful when sharing it, your whole data is there.",
+          "privateTitle": "You're about to export a map with Private Datasets"
         },
         "download": {
           "confirm": "Download",

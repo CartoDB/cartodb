@@ -209,6 +209,7 @@ class Admin::VisualizationsController < Admin::AdminController
   end
 
   def public_map
+
     if current_user.nil? && !request.params[:redirected].present?
       redirect_url = get_corrected_url_if_proceeds(for_table=false)
       unless redirect_url.nil?
@@ -281,7 +282,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
     @public_tables_count    = @visualization.user.public_table_count
     @nonpublic_tables_count = @related_tables.select{|t| !t.public? }.count
-
+    @private_datasets = @nonpublic_tables_count > 0
+    @owning_private_datasets = @related_tables.select {
+      |table| !current_user.nil? && table.user_id == current_user.id 
+    }.count > 0
     @is_liked    = is_liked(@visualization)
     @likes_count = @visualization.likes.count
 

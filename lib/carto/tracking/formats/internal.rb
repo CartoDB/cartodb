@@ -1,6 +1,7 @@
 # encoding utf-8
 
 require_relative 'segment'
+require_relative 'hubspot'
 
 module Carto
   module Tracking

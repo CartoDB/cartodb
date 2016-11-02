@@ -26,6 +26,9 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   opts.renderMenu = _.isBoolean(opts.renderMenu)
     ? opts.renderMenu
     : true;
+  opts.autoStyle = _.isBoolean(opts.autoStyle)
+    ? opts.autoStyle
+    : false;
 
   var widgets = new WidgetsCollection();
 
@@ -84,6 +87,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
       var newWidgetModel = widgetModelsMap[d.type];
       var state = widgetsState[d.id];
 
+      attrs = opts.autoStyle ? attrs : _.extend(attrs, {style: {auto_style: {allowed: false}}});
       if (_.isFunction(newWidgetModel)) {
         // Find the Layer that the Widget should be created for.
         var layer;

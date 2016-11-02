@@ -221,12 +221,6 @@ module CartoDB
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        def report_component=(component)
-          nil
-        end
-
         private
 
         def field_to_csv(field)

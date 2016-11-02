@@ -371,7 +371,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
   rescue => e
-    Rollbar.report_exception(e)
+    CartoDB::Logger.error(exception: e)
     public_map_protected
   end
 
@@ -393,7 +393,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
   rescue => e
-    Rollbar.report_exception(e)
+    CartoDB::Logger.error(exception: e)
     embed_protected
   end
 
@@ -678,7 +678,7 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render layout: 'application_public_visualization_layout' }
     end
   rescue => e
-    Rollbar.report_exception(e)
+    CartoDB::Logger.error(exception: e)
     embed_forbidden
   end
 

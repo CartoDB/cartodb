@@ -1236,7 +1236,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Render dashboard menu"
+            "dashboard_menu": "Show blue bar"
           }
         }
       }
@@ -1393,16 +1393,6 @@
           "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
           "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
         },
-        "quota": {
-          "cancel": "cancel",
-          "confirm": "confirm",
-          "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
-          "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
-          "loading": "Obtaining your quotas...",
-          "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
-          "no-credits-message": "No credits available",
-          "title": "confirm your analysis"
-        },
         "admin-region": "Admin. Region",
         "admin-region-help": "In which column are your region names stored?",
         "aggregate": "Aggregate",
@@ -1429,7 +1419,6 @@
         "city-help": "In which column are your city names stored?",
         "clusters-num": "# of clusters",
         "column": "Column",
-        "columns": "Columns",
         "columns": "Columns",
         "concave-hull": "Concave Hull",
         "confirm-analysis": "Confirm",
@@ -1477,13 +1466,11 @@
         "input": "Input",
         "input-layer": "Define your input layer",
         "input-num": "Input #%{num}",
-        "input-num": "Input #%{num}",
         "intact": "Intact",
         "intact-help": "Keep all polygon tracts as individual polygons",
         "ip-address": "Col. IP AD.",
         "ip-address-help": "In which column are your IP addresses stored?",
         "join-type": "Join Type",
-        "keep-columns": "Select the columns you want to keep",
         "keep-columns": "Select the columns you want to keep",
         "key-columns": "Key columns",
         "key-columns-desc": "Choose similar columns to relate them",
@@ -1510,7 +1497,6 @@
         "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
         "no": "No",
         "no-coincidence": "When no coincidence no row will be added",
-        "no-coincidence": "When no coincidence no row will be added",
         "numerator": "Target column",
         "numerator-help": "Measure spatial autocorrelation of this column",
         "operation": "Operation",
@@ -1530,10 +1516,20 @@
           "loading": "Obtaining your quotas...",
           "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
           "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
-          "no-credits-body": "You have consumed all your credits during this billing cycle. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
+          "no-quota-assigned-contact": "contact our team",
+          "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
+          "no-credits-contact": "Contact us",
+          "no-credits-mail": "sales@carto.com",
           "no-credits-message": "No credits available",
           "cancel": "Cancel",
-          "confirm": "confirm"
+          "confirm": "confirm",
+          "analysis-type": {
+            "routing": "Routing",
+            "trade-area": "Trade area",
+            "georeference-street-address": "Georeference street address",
+            "data-observatory-measure": "Data Observatory"
+          }
         },
         "public_transport": "Public transport",
         "radius": "Distance",
@@ -1988,7 +1984,10 @@
       "waiting": "Analysis %{nodeId} enqueued...",
       "completed": "Analysis %{nodeId} completed",
       "failed": "Analysis %{nodeId} failed",
-      "removed": "Analysis %{nodeId} deleted"
+      "removed": "Analysis %{nodeId} deleted",
+      "errors": {
+        "timeout": "The execution of the analysis timed out and was stopped"
+      }
     },
     "widgets": {
       "delete": "Widget deleted correctly.",

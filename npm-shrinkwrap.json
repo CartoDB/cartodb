@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.58",
+  "version": "4.3.60",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -748,7 +748,8 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3"
+          "from": "grunt-run-node@0.1.3",
+          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",
@@ -818,7 +819,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <2.0.0",
+              "from": "map-obj@>=1.0.1 <1.1.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -1145,13 +1146,13 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#36440a3a7eb5ced9616313c72fe5ad11a532508c",
+      "from": "cartodb/deep-insights.js#autostyle-activation-flag",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#75caba2ddf4f31d76fad99454d13652dff962a33",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#212b9039807eaf95d35dfda4d102201f936e214f",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#df9edaaa51ca7313f44b414d7bc129058f2eb065",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1451,7 +1452,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#212b9039807eaf95d35dfda4d102201f936e214f",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#df9edaaa51ca7313f44b414d7bc129058f2eb065",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

@@ -14,7 +14,7 @@ module Carto
           properties_hash = @hash
 
           properties_hash.merge(user_properties)
-          properties_hash.merge(visualization_properities)
+          properties_hash.merge(visualization_properties)
 
           properties_hash
         end

@@ -9,12 +9,13 @@ module Hubspot
     def report_event(id, params: {})
       return unless enabled?
 
-      url = url(params.merge(_a: token, _n: id))
+      uri = URI("#{base_url}/v1/event")
+      uri.query = URI.encode_www_form(params.merge(_a: token, _n: id))
 
-      request = Net::HTTP::Get.new(url.to_s)
-      Net::HTTP.start(url.host, url.port) do |http|
-        http.request(request)
-      end
+      http = Net::HTTP.new(uri.host, uri.port)
+      response = http.request_get(uri.request_uri)
+
+      [response.code, response.body]
     end
 
     def enabled?
@@ -29,10 +30,6 @@ module Hubspot
       end
 
       parse_params_array.join('&')
-    end
-
-    def url(params)
-      URI.parse("#{base_url}/v1/event?#{serialize_params(params)}")
     end
 
     def base_url

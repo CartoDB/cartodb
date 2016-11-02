@@ -19,8 +19,10 @@ module.exports = cdb.core.Model.extend({
     'collapsed': false
   },
 
-  initialize: function (attrs, opts) {
-    this.dataviewModel = opts.dataviewModel;
+  initialize: function (attrs, models, opts) {
+    opts = opts || {};
+    this.dataviewModel = models.dataviewModel;
+    this.defaults.autoStyleEnabled = opts.autoStyleEnabled;
 
     this.activeAutoStyler();
     this.bind('change:style', this.activeAutoStyler, this);
@@ -56,7 +58,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   isAutoStyleEnabled: function () {
-    if (!this.get('autoStyleEnabled')) return false;
+    if (!this.defaults.autoStyleEnabled) return false;
 
     var styles = this.get('style');
 
@@ -74,7 +76,7 @@ module.exports = cdb.core.Model.extend({
   },
 
   getColor: function (name) {
-    if (this.isAutoStyleEnabled() && this.isAutoStyle()) {
+    if (this.isAutoStyleEnabled() && this.isAutoStyle() && this.get('type') === 'category') {
       return this.autoStyler.colors.getColorByCategory(name);
     } else {
       return this.getWidgetColor();

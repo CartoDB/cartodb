@@ -11,7 +11,7 @@ describe('widgets/category/item-view', function () {
     });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
-    });
+    }, {autoStyleEnabled: true});
     this.view = new ItemView({
       widgetModel: this.widgetModel,
       dataviewModel: this.dataviewModel,

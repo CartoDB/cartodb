@@ -84,7 +84,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     };
     vizJSON.widgets.forEach(function (d) {
       // Flatten the data structure given in vizJSON, the widgetsService will use whatever it needs and ignore the rest
-      var attrs = _.extend({}, d, d.options, {autoStyleEnabled: opts.autoStyle});
+      var attrs = _.extend({}, d, d.options);
       var newWidgetModel = widgetModelsMap[d.type];
       var state = widgetsState[d.id];
 
@@ -99,7 +99,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
           layer = vis.map.layers.at(d.layerIndex);
         }
 
-        newWidgetModel(attrs, layer, state);
+        newWidgetModel(attrs, layer, state, {autoStyleEnabled: opts.autoStyle});
       } else {
         cdb.log.error('No widget found for type ' + d.type);
       }

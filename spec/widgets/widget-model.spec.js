@@ -12,7 +12,7 @@ describe('widgets/widget-model', function () {
 
     this.model = new WidgetModel(null, {
       dataviewModel: dataviewModel
-    });
+    }, {autoStyleEnabled: true});
   });
 
   describe('.update', function () {

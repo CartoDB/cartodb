@@ -31,18 +31,18 @@ WidgetsService.prototype.getList = function () {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {CategoryWidgetModel}
  */
-WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
+WidgetsService.prototype.createCategoryModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
   attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style', 'autoStyleEnabled'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
-  });
+  }, opts);
   widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
@@ -57,19 +57,19 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state) {
  * @param {Object} layer Instance of a layer model (cartodb.js)
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createHistogramModel = function (attrs, layer, state) {
+WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
   var dataAttrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'autoStyleEnabled'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
-  });
+  }, opts);
   widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 
@@ -136,19 +136,19 @@ WidgetsService.prototype.createListModel = function (attrs, layer) {
  * @param {Number} bins
  * @return {WidgetModel}
  */
-WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state) {
+WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, opts) {
   // TODO will other kind really work for a time-series?
   attrs.column_type = attrs.column_type || 'date';
   var dataviewModel = this._dataviews.createHistogramModel(layer, attrs);
 
-  var attrsNames = ['id', 'style', 'autoStyleEnabled'];
+  var attrsNames = ['id', 'style'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'time-series';
   widgetAttrs.attrsNames = attrsNames;
 
   var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
-  });
+  }, opts);
   widgetModel.setState(state);
   this._widgetsCollection.add(widgetModel);
 

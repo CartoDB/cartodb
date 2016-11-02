@@ -338,12 +338,12 @@ module Carto
       def migrate_old_legend
         Carto::LegendMigrator.new(@layer.id, @layer.legend).build.save
         mark_old_legend_migrated
+        @layer.legends.reload
       end
 
       def mark_old_legend_migrated
         @layer.options[:legend][:migrated] = true
         @layer.save
-        @layer.legends.reload
       end
 
       def as_torque

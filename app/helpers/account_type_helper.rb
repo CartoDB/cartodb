@@ -1,8 +1,7 @@
 module AccountTypeHelper
   # Customer-facing plan name. Front is responsible of shortening long ones.
   def plan_name(account_type)
-    plan = PLAN_NAME_BY_ACCOUNT_TYPE.fetch(account_type.downcase, account_type)
-
+    PLAN_NAME_BY_ACCOUNT_TYPE.fetch(account_type.downcase, account_type)
   end
 
   private

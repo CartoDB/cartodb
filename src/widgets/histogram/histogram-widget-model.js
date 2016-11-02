@@ -75,10 +75,14 @@ module.exports = WidgetModel.extend({
 
     if (checkRoughEqual(start, min)) {
       state.min = min;
+    } else {
+      delete state.min;
     }
 
     if (checkRoughEqual(end, max)) {
       state.max = max;
+    } else {
+      delete state.max;
     }
 
     if (this.get('zoomed') === true) {
@@ -93,7 +97,7 @@ module.exports = WidgetModel.extend({
       state.zmax = zmax;
     }
 
-    // console.log(state);
+    console.log(state);
 
     return state;
   }

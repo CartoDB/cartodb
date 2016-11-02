@@ -1,3 +1,7 @@
+<% if (hasError) { %>
+  <div class="Editor-ListLayer-itemError js-error"></div>
+<% } %>
+
 <% if (!isTorque) { %>
   <div class="Editor-ListLayer-dragIcon">
     <div class="CDB-Shape">

@@ -993,7 +993,6 @@ class DataImport < Sequel::Model
                                           redis_storage: $tables_metadata,
                                           user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
                                        })
-      datasource.report_component = Rollbar
       datasource.token = oauth.token unless oauth.nil?
     rescue => ex
       log.append "Exception: #{ex.message}"

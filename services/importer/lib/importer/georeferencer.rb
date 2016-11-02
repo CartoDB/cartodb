@@ -129,9 +129,9 @@ module CartoDB
           end
         rescue Exception => ex
           message = "create_the_geom_from_country_guessing failed: #{ex.message}"
-          Rollbar.report_message(message,
-                                 'warning',
-                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          CartoDB::Logger.warning(exception: ex,
+                                  message: message,
+                                  user_id: @job.logger.user_id)
           job.log "WARNING: #{message}"
         end
         return false
@@ -154,9 +154,9 @@ module CartoDB
           end
         rescue Exception => ex
           message = "create_the_geom_from_namedplaces_guessing failed: #{ex.message}"
-          Rollbar.report_message(message,
-                                 'warning',
-                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          CartoDB::Logger.warning(exception: ex,
+                                  message: message,
+                                  user_id: @job.logger.user_id)
           job.log "WARNING: #{message}"
         end
         return false
@@ -179,9 +179,9 @@ module CartoDB
           end
         rescue Exception => ex
           message = "create_the_geom_from_ip_guessing failed: #{ex.message}"
-          Rollbar.report_message(message,
-                                 'warning',
-                                 {user_id: @job.logger.user_id, backtrace: ex.backtrace})
+          CartoDB::Logger.warning(exception: ex,
+                                  message: message,
+                                  user_id: @job.logger.user_id)
           job.log "WARNING: #{message}"
           return false
         end
@@ -238,8 +238,10 @@ module CartoDB
             raise "Geocoding failed" if geocoding.state == 'failed'
           rescue => e
             config_info = config.select {|key, value| [:table_schema, :table_name, :qualified_table_name, :formatter, :geometry_type, :kind, :max_rows, :country_column, ].include?(key) }
-            Rollbar.report_message('Georeferencer could not register geocoding, fallback to geocoder.run',
-                                   'error', error_info: "user_id: #{user_id}, config: #{config_info}, exception: #{e.inspect} backtrace: #{e.backtrace.join('\n')}")
+            CartoDB::Logger.error(exception: e,
+                                  message: 'Georeferencer could not register geocoding, fallback to geocoder.run',
+                                  user_id: user_id,
+                                  config: config_info)
             geocoder.run
           end
 

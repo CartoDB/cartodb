@@ -17,16 +17,48 @@ var MapCursorManager = function (deps) {
   this._featureEvents.on('featureOver', this._onFeatureOver, this);
   this._featureEvents.on('featureOut', this._onFeatureOut, this);
 
-  // Map to keep track of layers that are being featured overed
+  // Map to keep track of clickable layers that are being feature overed
   this._clickableLayersBeingFeatureOvered = {};
 };
 
 MapCursorManager.prototype._onFeatureOver = function (featureEvent) {
-  var layerModel = featureEvent.layer;
-  if (this._isLayerClickable(layerModel)) {
-    this._clickableLayersBeingFeatureOvered[layerModel.cid] = layerModel;
-    this._mapView.setCursor('pointer');
+  if (this._isLayerClickable(featureEvent.layer) &&
+    !this._isLayerBeingFeatureOvered(featureEvent.layer)) {
+    this._markLayerAsFeatureOvered(featureEvent.layer);
+    this._updateMousePointer();
   }
+};
+
+MapCursorManager.prototype._onFeatureOut = function (featureEvent) {
+  if (this._isLayerBeingFeatureOvered(featureEvent.layer)) {
+    this._unmarkLayerAsFeatureOvered(featureEvent.layer);
+    this._updateMousePointer();
+  }
+};
+
+MapCursorManager.prototype._onLayerVisibilityChanged = function (layerModel) {
+  if (!layerModel.isVisible()) {
+    this._unmarkLayerAsFeatureOvered(layerModel);
+    this._updateMousePointer();
+  }
+};
+
+MapCursorManager.prototype._updateMousePointer = function () {
+  if (this._isAnyClickableLayerBeingFeatureOvered()) {
+    this._mapView.setCursor('pointer');
+  } else {
+    this._mapView.setCursor('auto');
+  }
+};
+
+MapCursorManager.prototype._markLayerAsFeatureOvered = function (layerModel) {
+  this._clickableLayersBeingFeatureOvered[layerModel.cid] = layerModel;
+  layerModel.once('change:visible', this._onLayerVisibilityChanged, this);
+};
+
+MapCursorManager.prototype._unmarkLayerAsFeatureOvered = function (layerModel) {
+  delete this._clickableLayersBeingFeatureOvered[layerModel.cid];
+  layerModel.off('change:visible', this._onLayerVisibilityChanged, this);
 };
 
 MapCursorManager.prototype._isLayerClickable = function (layerModel) {
@@ -34,16 +66,12 @@ MapCursorManager.prototype._isLayerClickable = function (layerModel) {
     this._mapModel.arePopupsEnabled() && layerModel.isInfowindowEnabled();
 };
 
-MapCursorManager.prototype._onFeatureOut = function (featureEvent) {
-  var layerModel = featureEvent.layer;
-  delete this._clickableLayersBeingFeatureOvered[layerModel.cid];
-  if (this._allClickableLayersHaveBeenFeaturedOut()) {
-    this._mapView.setCursor('auto');
-  }
+MapCursorManager.prototype._isLayerBeingFeatureOvered = function (layerModel) {
+  return !!this._clickableLayersBeingFeatureOvered[layerModel.cid];
 };
 
-MapCursorManager.prototype._allClickableLayersHaveBeenFeaturedOut = function () {
-  return _.isEmpty(this._clickableLayersBeingFeatureOvered);
+MapCursorManager.prototype._isAnyClickableLayerBeingFeatureOvered = function () {
+  return !_.isEmpty(this._clickableLayersBeingFeatureOvered);
 };
 
 module.exports = MapCursorManager;

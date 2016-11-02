@@ -25,4 +25,29 @@ describe('dashboard-view', function () {
       expect(this.view.el.querySelector('.Dashboard-belowMap')).toBeDefined();
     });
   });
+
+  describe('CARTO logo', function () {
+    beforeEach(function () {
+      this.view.model = new Backbone.Model({
+        renderMenu: true,
+        showLogo: true
+      });
+      this.view.render();
+    });
+
+    it('should render logo properly', function () {
+      expect(this.view.el.querySelectorAll('.CDB-Dashboard-menuLogo').length).toBe(2); // sidebar and mobile footer
+
+      this.view.model.set('renderMenu', false);
+      this.view.render();
+      expect(this.view.el.querySelectorAll('.CDB-Dashboard-menuLogo').length).toBe(0);
+
+      this.view.model.set({
+        renderMenu: true,
+        showLogo: false
+      });
+      this.view.render();
+      expect(this.view.el.querySelectorAll('.CDB-Dashboard-menuLogo').length).toBe(0);
+    });
+  });
 });

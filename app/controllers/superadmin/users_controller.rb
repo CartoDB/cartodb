@@ -59,7 +59,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.destroy
     respond_with(:superadmin, @user)
   rescue => e
-    Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
     render json: { "error": "Error destroying user: #{e.message}" }, status: 422
   end
 

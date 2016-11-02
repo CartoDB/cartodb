@@ -16,16 +16,16 @@ module.exports = cdb.core.View.extend({
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
 
-    var init = function () {
-      this._initBinds();
-      this.render();
-    };
-
     if (this.model.get('hasInitialState') === true) {
-      init();
+      this._initBinds();
     } else {
-      this.model.once('change:hasInitialState', init, this);
+      this.model.once('change:hasInitialState', this._onInitialState, this);
     }
+  },
+
+  _onInitialState: function () {
+    this._initBinds();
+    this.render();
   },
 
   render: function () {

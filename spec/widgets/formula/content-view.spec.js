@@ -12,7 +12,8 @@ describe('widgets/formula/content-view', function () {
       operation: 'avg'
     });
     this.model = new WidgetModel({
-      title: 'Max population'
+      title: 'Max population',
+      hasInitialState: true
     }, {
       dataviewModel: this.dataviewModel
     });

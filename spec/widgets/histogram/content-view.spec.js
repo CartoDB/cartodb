@@ -21,7 +21,8 @@ describe('widgets/histogram/content-view', function () {
 
     this.widgetModel = new HistogramWidgetModel({
       title: 'Howdy',
-      attrsNames: ['title']
+      attrsNames: ['title'],
+      hasInitialState: true
     }, {
       dataviewModel: this.dataviewModel
     });

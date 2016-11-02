@@ -3,6 +3,7 @@
 
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
 
 @mixin block-shadow() {
   @include css3-prefix(box-shadow, inset 10px 0 10px -10px rgba(0, 0, 0, 0.3));
@@ -96,8 +97,6 @@
 
 
 
-
-
 /* deep insights */
 .CDB-Dashboard-canvas {
   @include block-shadow();
@@ -110,7 +109,20 @@
 
 
 /* Responsive views */
-@media (max-width: 1200px) {
+@media (max-width: 1600px) {
+  .Editor {
+    .CDB-Widget-canvas,
+    .CDB-Widget {
+      width: 280px;
+    }
+    .CDB-Widget-canvas {
+      min-width: 280px;
+      max-width: 280px;
+    }
+  }
+}
+
+@media (max-width: 1280px) {
   .Editor {
     .CDB-Dashboard-canvas {
       @include flex-direction(column);
@@ -120,14 +132,14 @@
       width: 100%;
       min-width: 100%;
       max-width: 100%;
-      min-height: 192px;
+      min-height: 180px;
       margin: 8px 0 0;
     }
     .CDB-Widget {
       @include flex(1);
       width: auto;
-      min-width: 352px;
       margin-bottom: 0;
+      padding: $baseSize * 2 0;
       border-right: 2px solid $cSecondaryBackground;
     }
     .CDB-Widget-canvasInner {
@@ -150,6 +162,12 @@
       @include display-flex();
       @include flex-wrap(wrap);
       margin: 0 -8px;
+    }
+    /* one or two items */
+    .CDB-Widget-listItem:nth-child(1):nth-last-child(1),
+    .CDB-Widget-listItem:nth-child(1):nth-last-child(2),
+    .CDB-Widget-listItem:nth-child(2):nth-last-child(1) {
+      width: 100%;
     }
     .CDB-Widget-listItem {
       width: 33%;

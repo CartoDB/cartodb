@@ -114,9 +114,16 @@
 
 
 /* Responsive views */
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .EditorMenu {
     @include flex(0 0 48px);
     width: 48px;
+  }
+  .EditorMenu-navigationIcon {
+    font-size: 14px;
+  }
+  .EditorMenu-navigationItem {
+    width: $baseSize * 3;
+    height: $baseSize * 3;
   }
 }

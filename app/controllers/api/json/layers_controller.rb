@@ -176,32 +176,40 @@ class Api::Json::LayersController < Api::ApplicationController
       from_layer.layer_node_styles.each do |lns|
         new_id = lns.source_id.gsub(from_letter, to_letter)
         if lns.source_id.starts_with?(from_letter)
-          lns_number = lns.source_id[1..-1].to_i
-          to_source_number = to_source[1..-1].to_i
-          if lns_number < to_source_number
+          if lns.source_id[1..-1].to_i < to_source[1..-1].to_i
             # Move LayerNodeStyles from the old layer if given.
             lns.source_id = new_id
             to_layer.add_layer_node_style(lns)
           end
         end
       end
+      update_source_layer_styles(from_layer, from_letter, to_letter, to_source)
+    end
+  rescue => e
+    CartoDB::Logger.error(
+      message: 'Error copying layer node styles',
+      exception: e,
+      from_layer: from_layer,
+      from_letter: from_letter,
+      to_layer: to_layer
+    )
+  end
 
-      # Update old layer styles
-      if from_letter != to_letter
-        # Dragging middle node
-        node_id_to_fix = to_source.gsub(to_letter, from_letter)
-        style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
-        if style_node
-          style_node.source_id = to_source
-          style_node.save
-        end
-      else
-        # Dragging head node: remove unneeded old styles in the old layer
-        from_layer.reload
-        from_layer.layer_node_styles.select { |lns|
-          lns.source_id.starts_with?(from_letter) && lns.source_id != to_source
-        }.each(&:destroy)
+  def update_source_layer_styles(from_layer, from_letter, to_letter, to_source)
+    if from_letter != to_letter
+      # Dragging middle node: rename the moved node
+      node_id_to_fix = to_source.gsub(to_letter, from_letter)
+      style_node = ::LayerNodeStyle.where(layer_id: from_layer.id, source_id: node_id_to_fix).first
+      if style_node
+        style_node.source_id = to_source
+        style_node.save
       end
+    else
+      # Dragging head node: remove unneeded old styles in the old layer
+      from_layer.reload
+      from_layer.layer_node_styles.select { |lns|
+        lns.source_id.starts_with?(from_letter) && lns.source_id != to_source
+      }.each(&:destroy)
     end
   end
 end

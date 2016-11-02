@@ -174,14 +174,14 @@ describe Api::Json::LayersController do
 
   describe 'creating a layer from an analysis node moves the style history' do
     def create_layer(new_source, new_letter, from_letter)
-      url = api_v1_maps_layers_create_url(user_domain: @user1.username, map_id: @map.id, api_key: @user1.api_key)
+      url = api_v1_maps_layers_create_url(user_domain: @user2.username, map_id: @map.id, api_key: @user2.api_key)
       payload = {
         kind: 'carto',
         options: {
           source: new_source,
           letter: new_letter,
           table_name: @table.name,
-          user_name: @user1.username
+          user_name: @user2.username
         },
         infowindow: {},
         tooltip: {},
@@ -197,7 +197,7 @@ describe Api::Json::LayersController do
     end
 
     before(:each) do
-      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user1)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)
       @original_layer = @map.data_layers.first
       @original_layer.options[:source] = 'a2'
       @original_layer.save

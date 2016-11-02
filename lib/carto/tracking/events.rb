@@ -76,6 +76,7 @@ module Carto
       end
 
       class ExportedMap < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Readable
@@ -97,6 +98,7 @@ module Carto
       class DeletedMap < MapEvent; end
 
       class PublishedMap < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
@@ -106,6 +108,7 @@ module Carto
       end
 
       class ConnectionEvent < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::User
@@ -163,6 +166,7 @@ module Carto
       end
 
       class AnalysisEvent < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable

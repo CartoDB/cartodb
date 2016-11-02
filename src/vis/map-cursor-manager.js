@@ -30,8 +30,10 @@ MapCursorManager.prototype._onFeatureOver = function (featureEvent) {
 };
 
 MapCursorManager.prototype._onFeatureOut = function (featureEvent) {
-  this._unmarkLayerAsFeatureOvered(featureEvent.layer);
-  this._updateMousePointer();
+  if (this._isLayerBeingFeatureOvered(featureEvent.layer)) {
+    this._unmarkLayerAsFeatureOvered(featureEvent.layer);
+    this._updateMousePointer();
+  }
 };
 
 MapCursorManager.prototype._onLayerVisibilityChanged = function (layerModel) {
@@ -65,7 +67,7 @@ MapCursorManager.prototype._isLayerClickable = function (layerModel) {
 };
 
 MapCursorManager.prototype._isLayerBeingFeatureOvered = function (layerModel) {
-  return this._clickableLayersBeingFeatureOvered[layerModel.cid];
+  return !!this._clickableLayersBeingFeatureOvered[layerModel.cid];
 };
 
 MapCursorManager.prototype._isAnyClickableLayerBeingFeatureOvered = function () {

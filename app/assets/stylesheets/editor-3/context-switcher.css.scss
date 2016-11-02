@@ -26,6 +26,9 @@
 .Editor-contextSwitcher--geom.in-table {
   display: none;
 }
+.Editor-contextSwitcher--geom.is-moved {
+  right: 462px;
+}
 .Editor-contextSwitcherButton {
   @include display-flex();
   @include align-items(center);

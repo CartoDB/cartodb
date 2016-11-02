@@ -179,7 +179,7 @@ class Api::Json::LayersController < Api::ApplicationController
         if lns.source_id.starts_with?(from_letter) && !existing.include?(new_id)
           new_lns = lns.duplicate
           new_lns.source_id = new_id
-          @layer.add_layer_node_style(new_lns)
+          to_layer.add_layer_node_style(new_lns)
         end
       end
 

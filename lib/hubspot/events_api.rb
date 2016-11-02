@@ -10,7 +10,7 @@ module Hubspot
       return unless enabled?
 
       uri = URI("#{base_url}/v1/event")
-      uri.query = URI.encode_www_form(params.merge(_a: token, _n: id))
+      uri.query = URI.encode_www_form({ _a: token, _n: id }.merge(params))
 
       http = Net::HTTP.new(uri.host, uri.port)
       response = http.request_get(uri.request_uri)

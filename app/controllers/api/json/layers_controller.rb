@@ -182,9 +182,6 @@ class Api::Json::LayersController < Api::ApplicationController
             # Move LayerNodeStyles from the old layer if given.
             lns.source_id = new_id
             to_layer.add_layer_node_style(lns)
-          elsif lns_number > to_source_number && from_letter == to_letter
-            # Remove unneeded old styles in the old layer
-            lns.destroy
           end
         end
       end
@@ -198,6 +195,12 @@ class Api::Json::LayersController < Api::ApplicationController
           style_node.source_id = to_source
           style_node.save
         end
+      else
+        # Dragging head node: remove unneeded old styles in the old layer
+        from_layer.reload
+        from_layer.layer_node_styles.select { |lns|
+          lns.source_id.starts_with?(from_letter) && lns.source_id != to_source
+        }.each(&:destroy)
       end
     end
   end

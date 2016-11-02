@@ -65,7 +65,9 @@ var PointView = GeometryViewBase.extend({
 
   _onGeometryRemoved: function () {
     GeometryViewBase.prototype._onGeometryRemoved.apply(this);
-    this.leafletMap.removeLayer(this._marker);
+    if (this._marker) {
+      this.leafletMap.removeLayer(this._marker);
+    }
   }
 });
 

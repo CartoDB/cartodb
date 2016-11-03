@@ -68,6 +68,12 @@ module CartoDB
           monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
           hard_limit:  hard_twitter_datasource_limit
         },
+        mapzen_routing: {
+          quota:       organization_user? ? organization.mapzen_routing_quota : mapzen_routing_quota,
+          block_price: organization_user? ? organization.mapzen_routing_block_price : mapzen_routing_block_price,
+          monthly_use: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
+          hard_limit:  hard_mapzen_routing_limit?
+        },
         salesforce: {
           enabled: organization_user? ? organization.salesforce_datasource_enabled : salesforce_datasource_enabled
         },
@@ -85,7 +91,9 @@ module CartoDB
           remove_logo: remove_logo?,
           sync_tables: sync_tables_enabled,
           google_maps_geocoder_enabled: google_maps_geocoder_enabled?,
-          google_maps_enabled: google_maps_enabled?
+          google_maps_enabled: google_maps_enabled?,
+          engine_enabled: engine_enabled?,
+          builder_enabled: builder_enabled?
         },
         limits: {
           concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

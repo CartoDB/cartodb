@@ -37,7 +37,7 @@ class Table
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
   STATEMENT_TIMEOUT = 1.hour*1000
 
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
 
   # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
@@ -815,9 +815,10 @@ class Table
           new_column_type = get_new_column_type(invalid_column)
           user_database.set_column_type(self.name, invalid_column.to_sym, new_column_type)
           # INFO: There's a complex logic for retrying and need to know how often it is actually done
-          Rollbar.report_message('Retrying insert_row!',
-                                 'debug',
-                                 {user_id: self.user_id, qualified_table_name: self.qualified_table_name, raw_attributes: raw_attributes})
+          CartoDB::Logger.debug(message: 'Retrying insert_row!',
+                                user_id: user_id,
+                                qualified_table_name: qualified_table_name,
+                                raw_attributes: raw_attributes)
           retry
         end
       end
@@ -826,7 +827,11 @@ class Table
     primary_key
   end
 
+  MAX_UPDATE_ROW_RETRIES = 3
+
   def update_row!(row_id, raw_attributes)
+    retries = 0
+
     rows_updated = 0
     owner.in_database do |user_database|
       schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
@@ -857,10 +862,20 @@ class Table
             if new_column_type
               user_database.set_column_type self.name, invalid_column.to_sym, new_column_type
               # INFO: There's a complex logic for retrying and need to know how often it is actually done
-              Rollbar.report_message('Retrying update_row!',
-                                     'debug',
-                                     {user_id: self.user_id, qualified_table_name: self.qualified_table_name, row_id: row_id, raw_attributes: raw_attributes})
-              retry
+              CartoDB::Logger.debug(message: 'Retrying update_row!',
+                                    user_id: user_id,
+                                    qualified_table_name: qualified_table_name,
+                                    row_id: row_id,
+                                    raw_attributes: raw_attributes)
+              if (retries += 1) > MAX_UPDATE_ROW_RETRIES
+                CartoDB::Logger.error(message: 'Max update_row! retries reached',
+                                      user_id: user_id,
+                                      qualified_table_name: qualified_table_name,
+                                      row_id: row_id,
+                                      raw_attributes: raw_attributes)
+              else
+                retry
+              end
             end
           else
             raise e
@@ -1435,7 +1450,7 @@ class Table
   end
 
   # Gets a valid postgresql table name for a given database
-  # See http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
+  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   def get_valid_name(contendent)
     user_table_names = owner.tables.map(&:name)
 

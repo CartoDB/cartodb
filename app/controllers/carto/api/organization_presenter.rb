@@ -36,6 +36,8 @@ module Carto
           obs_snapshot_block_price:   @organization.obs_snapshot_block_price,
           obs_general_quota:          @organization.obs_general_quota,
           obs_general_block_price:    @organization.obs_general_block_price,
+          mapzen_routing_quota:       @organization.mapzen_routing_quota,
+          mapzen_routing_block_price: @organization.mapzen_routing_block_price,
           geocoder_provider:          @organization.geocoder_provider,
           isolines_provider:          @organization.isolines_provider,
           routing_provider:           @organization.routing_provider,

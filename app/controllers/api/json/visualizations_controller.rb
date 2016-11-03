@@ -12,9 +12,11 @@ require_relative '../../../../lib/static_maps_url_helper'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualizations_export_service_2'
+require_dependency 'carto/visualization_migrator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
+  include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id
@@ -149,9 +151,15 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             end
           end
         else
+          old_version = vis.version
+
           vis.attributes = vis_data
           vis = @stats_aggregator.timing('save') do
             vis.store.fetch
+          end
+
+          if version_needs_migration?(old_version, vis.version)
+            migrate_visualization_to_v3(vis)
           end
         end
 

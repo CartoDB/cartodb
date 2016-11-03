@@ -94,6 +94,10 @@
   border-width: 1px 1px 1px 0;
   border-radius: 0 $baseSize - 2 $baseSize - 2 0;
 }
+.ColorBar.ColorBar--spaceless:only-child {
+  border-width: 1px;
+  border-radius: $baseSize - 2;
+}
 .ColorBar.ColorBar--spaceSmall {
   margin-right: 2px;
   border-radius: 2px;

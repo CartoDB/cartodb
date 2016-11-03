@@ -24,6 +24,10 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
 
+  VERSION_BUILDER = 3
+
+  V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
@@ -157,7 +161,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_publically_accesible?
-    is_public? || is_link_privacy?
+    (is_public? || is_link_privacy?) && published?
   end
 
   def writable_by?(user)
@@ -366,6 +370,23 @@ class Carto::Visualization < ActiveRecord::Base
     entities.map(&:get_auth_token)
   end
 
+  # - v2 (Editor): not private
+  # - v3 (Builder): not derived or not private, mapcapped
+  # This Ruby code should match the SQL code at Carto::VisualizationQueryBuilder#build section for @only_published.
+  def published?
+    !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
+  end
+
+  MAX_MAPCAPS_PER_VISUALIZATION = 1
+
+  def create_mapcap!
+    unless mapcaps.count < MAX_MAPCAPS_PER_VISUALIZATION
+      mapcaps.last.destroy
+    end
+
+    mapcaps.create!
+  end
+
   def mapcapped?
     mapcaps.exists?
   end
@@ -437,6 +458,22 @@ class Carto::Visualization < ActiveRecord::Base
 
   def state
     super ? super : build_state
+  end
+
+  def mark_as_vizjson2
+    $tables_metadata.SADD(V2_VISUALIZATIONS_REDIS_KEY, id)
+  end
+
+  def uses_vizjson2?
+    $tables_metadata.SISMEMBER(V2_VISUALIZATIONS_REDIS_KEY, id) > 0
+  end
+
+  def open_in_editor?
+    version != VERSION_BUILDER && (uses_vizjson2? || layers.any?(&:gmapsbase?))
+  end
+
+  def can_be_automatically_migrated_to_v3?
+    overlays.builder_incompatible.none?
   end
 
   private

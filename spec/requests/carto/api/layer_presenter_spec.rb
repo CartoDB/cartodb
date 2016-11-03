@@ -697,6 +697,10 @@ describe Carto::Api::LayerPresenter do
         it 'type is animated' do
           expect(@style).to include('type' => 'animation')
         end
+
+        it 'generates a timeseries widget' do
+          @layer.widgets.where(type: 'time-series').any?
+        end
       end
 
       describe 'torque' do
@@ -738,8 +742,8 @@ describe Carto::Api::LayerPresenter do
         end
 
         before(:each) do
-          layer = build_layer_with_wizard_properties(torque_wizard_properties)
-          options = presenter_with_style_properties(layer).to_poro['options']
+          @layer = build_layer_with_wizard_properties(torque_wizard_properties)
+          options = presenter_with_style_properties(@layer).to_poro['options']
           @style = options['style_properties']
           @properties = @style['properties']
           @animated = @properties['animated']
@@ -820,8 +824,8 @@ describe Carto::Api::LayerPresenter do
       end
 
       before(:each) do
-        layer = build_layer_with_wizard_properties(torque_cat_wizard_properties)
-        options = presenter_with_style_properties(layer).to_poro['options']
+        @layer = build_layer_with_wizard_properties(torque_cat_wizard_properties)
+        options = presenter_with_style_properties(@layer).to_poro['options']
         @style = options['style_properties']
         @properties = @style['properties']
         @animated = @properties['animated']
@@ -832,6 +836,10 @@ describe Carto::Api::LayerPresenter do
 
       it 'generates color range from categories colors' do
         expect(@fill_color).to include('range' => [COLOR_1, COLOR_2])
+      end
+
+      it 'generates color range based on attribute' do
+        expect(@fill_color).to include('attribute' => 'aforo')
       end
     end
 
@@ -864,9 +872,10 @@ describe Carto::Api::LayerPresenter do
         @options = presenter_with_style_properties(layer).to_poro['options']
 
         @style = @options['style_properties']
-        @aggregation = @style['aggregation']
         @properties = @style['properties']
+        @aggregation = @properties['aggregation']
         @fill_color = @properties['fill']['color']
+        @stroke = @properties['stroke']
       end
 
       it 'sets query_wrapper at sql_wrap' do
@@ -905,13 +914,27 @@ describe Carto::Api::LayerPresenter do
           expect(@fill_color).to include('range' => color_ramp)
         end
       end
+
+      describe 'stroke' do
+        it 'takes width from line-width' do
+          expect(@stroke['size']).to include('fixed' => 0.5)
+        end
+
+        it 'takes color from line-color' do
+          expect(@stroke['color']).to include('fixed' => '#FFF')
+        end
+
+        it 'takes opacity from line-opacity' do
+          expect(@stroke['color']).to include('opacity' => 1)
+        end
+      end
     end
 
     describe 'heatmap' do
       shared_examples_for 'heatmap' do
         describe 'aggregation' do
           before(:each) do
-            @aggregation = @style['aggregation']
+            @aggregation = @style['properties']['aggregation']
           end
 
           it 'takes size from torque-resolution' do
@@ -974,8 +997,8 @@ describe Carto::Api::LayerPresenter do
       end
 
       before(:each) do
-        layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
-        options = presenter_with_style_properties(layer).to_poro['options']
+        @layer = build_layer_with_wizard_properties(heatmap_wizard_properties)
+        options = presenter_with_style_properties(@layer).to_poro['options']
 
         @style = options['style_properties']
         @properties = @style['properties']

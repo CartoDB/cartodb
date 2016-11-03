@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.2",
+  "version": "4.3.58",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -172,9 +172,9 @@
                           "resolved": "https://registry.npmjs.org/jsonfile/-/jsonfile-2.4.0.tgz"
                         },
                         "klaw": {
-                          "version": "1.3.0",
+                          "version": "1.3.1",
                           "from": "klaw@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.0.tgz"
+                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.1.tgz"
                         },
                         "path-is-absolute": {
                           "version": "1.0.1",
@@ -187,9 +187,9 @@
                           "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.5.4.tgz",
                           "dependencies": {
                             "glob": {
-                              "version": "7.1.0",
+                              "version": "7.1.1",
                               "from": "glob@>=7.0.5 <8.0.0",
-                              "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.0.tgz",
+                              "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
                               "dependencies": {
                                 "fs.realpath": {
                                   "version": "1.0.0",
@@ -197,9 +197,9 @@
                                   "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
                                 },
                                 "inflight": {
-                                  "version": "1.0.5",
+                                  "version": "1.0.6",
                                   "from": "inflight@>=1.0.4 <2.0.0",
-                                  "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.5.tgz",
+                                  "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
                                   "dependencies": {
                                     "wrappy": {
                                       "version": "1.0.2",
@@ -359,14 +359,14 @@
                           "resolved": "https://registry.npmjs.org/form-data/-/form-data-1.0.1.tgz",
                           "dependencies": {
                             "async": {
-                              "version": "2.0.1",
+                              "version": "2.1.2",
                               "from": "async@>=2.0.1 <3.0.0",
-                              "resolved": "https://registry.npmjs.org/async/-/async-2.0.1.tgz",
+                              "resolved": "https://registry.npmjs.org/async/-/async-2.1.2.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.16.3",
-                                  "from": "lodash@>=4.8.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.3.tgz"
+                                  "version": "4.16.6",
+                                  "from": "lodash@>=4.14.0 <5.0.0",
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.6.tgz"
                                 }
                               }
                             }
@@ -748,8 +748,7 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3",
-          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
+          "from": "grunt-run-node@0.1.3"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",
@@ -819,7 +818,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <1.1.0",
+              "from": "map-obj@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {
@@ -905,9 +904,9 @@
                           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.2.0.tgz",
                           "dependencies": {
                             "amdefine": {
-                              "version": "1.0.0",
+                              "version": "1.0.1",
                               "from": "amdefine@>=0.0.4",
-                              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
+                              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
                             }
                           }
                         }
@@ -966,7 +965,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1069,9 +1068,9 @@
                       "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                       "dependencies": {
                         "amdefine": {
-                          "version": "1.0.0",
+                          "version": "1.0.1",
                           "from": "amdefine@>=0.0.4",
-                          "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
+                          "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
                         }
                       }
                     }
@@ -1147,12 +1146,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#58851bbcc405b9680f0bffd3f6b00d89b0f8633a",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#36440a3a7eb5ced9616313c72fe5ad11a532508c",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#212b9039807eaf95d35dfda4d102201f936e214f",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1288,7 +1287,7 @@
             "torque.js": {
               "version": "2.15.2",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#01ffec1a345d06b5333f64ad7ba860ff6a2ee4ba",
+              "resolved": "git://github.com/cartodb/torque.git#47f02ce23d6f5de5c26c6bb891f67828ea116338",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1432,10 +1431,15 @@
           "from": "d3@3.5.17",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
+        "tinycolor2": {
+          "version": "1.4.1",
+          "from": "tinycolor2@1.4.1",
+          "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz"
+        },
         "urijs": {
-          "version": "1.18.2",
-          "from": "urijs@>=1.17.1 <2.0.0",
-          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.18.2.tgz"
+          "version": "1.17.1",
+          "from": "urijs@1.17.1",
+          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.17.1.tgz"
         }
       }
     },
@@ -1447,7 +1451,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#3f6812303a1fc16573a9fbda4d487811c4fed15b",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#212b9039807eaf95d35dfda4d102201f936e214f",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1588,7 +1592,7 @@
         "torque.js": {
           "version": "2.15.2",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#01ffec1a345d06b5333f64ad7ba860ff6a2ee4ba",
+          "resolved": "git://github.com/cartodb/torque.git#47f02ce23d6f5de5c26c6bb891f67828ea116338",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -1733,42 +1737,21 @@
       "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
-          "version": "1.1.8",
+          "version": "1.2.0",
           "from": "good-listener@>=1.1.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.1.8.tgz",
+          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.0.tgz",
           "dependencies": {
             "delegate": {
-              "version": "3.0.2",
-              "from": "delegate@>=3.0.2 <4.0.0",
-              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.0.2.tgz",
-              "dependencies": {
-                "component-closest": {
-                  "version": "1.0.1",
-                  "from": "component-closest@>=1.0.1 <1.1.0",
-                  "resolved": "https://registry.npmjs.org/component-closest/-/component-closest-1.0.1.tgz",
-                  "dependencies": {
-                    "component-matches-selector": {
-                      "version": "0.1.6",
-                      "from": "component-matches-selector@>=0.1.6 <0.2.0",
-                      "resolved": "https://registry.npmjs.org/component-matches-selector/-/component-matches-selector-0.1.6.tgz",
-                      "dependencies": {
-                        "component-query": {
-                          "version": "0.0.3",
-                          "from": "component-query@*",
-                          "resolved": "https://registry.npmjs.org/component-query/-/component-query-0.0.3.tgz"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "version": "3.1.0",
+              "from": "delegate@>=3.1.0 <4.0.0",
+              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.0.tgz"
             }
           }
         },
         "select": {
-          "version": "1.0.6",
+          "version": "1.1.0",
           "from": "select@>=1.0.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/select/-/select-1.0.6.tgz"
+          "resolved": "https://registry.npmjs.org/select/-/select-1.1.0.tgz"
         },
         "tiny-emitter": {
           "version": "1.1.0",
@@ -1810,7 +1793,7 @@
     "torque.js": {
       "version": "2.15.2",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#01ffec1a345d06b5333f64ad7ba860ff6a2ee4ba",
+      "resolved": "git://github.com/cartodb/torque.git#47f02ce23d6f5de5c26c6bb891f67828ea116338",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb1",

@@ -24,8 +24,8 @@ module Carto::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      ["line-width: #{width};",
-       "line-color: #{color};",
+      ["line-color: #{color};",
+       "line-width: #{width};",
        "line-opacity: #{opacity};"]
     end
   end

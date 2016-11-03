@@ -15,6 +15,20 @@ FactoryGirl.define do
         operation: "min"
       }
     end
+    style do
+      {
+        widget_style: {
+          definition: {
+            fill: { color: { fixed: '#FFF' } }
+          }
+        },
+        auto_style: {
+          definition: {
+            fill: { color: { fixed: '#FFF' } }
+          }
+        }
+      }
+    end
     created_at { Time.now }
     updated_at { Time.now }
 

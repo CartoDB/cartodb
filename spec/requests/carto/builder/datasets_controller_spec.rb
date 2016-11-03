@@ -6,7 +6,7 @@ describe Carto::Builder::DatasetsController do
   describe '#show' do
     before(:all) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      @user = FactoryGirl.build(:valid_user).save
+      @user = FactoryGirl.build(:valid_user, builder_enabled: true).save
       @map = FactoryGirl.create(:carto_map, user_id: @user.id)
       @table = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map)
       @visualization = FactoryGirl.create(:carto_visualization, type: Carto::Visualization::TYPE_CANONICAL,
@@ -14,7 +14,6 @@ describe Carto::Builder::DatasetsController do
     end
 
     before(:each) do
-      @user.stubs(:has_feature_flag?).with('editor-3').returns(true)
       @user.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
       login(@user)
     end
@@ -28,21 +27,12 @@ describe Carto::Builder::DatasetsController do
     end
 
     it 'redirects to public view non-builder users requests' do
-      @user.stubs(:has_feature_flag?).with('editor-3').returns(false)
-
-      get builder_dataset_url(id: @visualization.id)
-
-      response.status.should eq 302
-      response.location.should end_with public_table_map_path(id: @visualization.id)
-    end
-
-    it 'redirects to editor if disabled' do
       @user.stubs(:builder_enabled).returns(false)
 
       get builder_dataset_url(id: @visualization.id)
 
       response.status.should eq 302
-      response.location.should include '/tables/' + @visualization.id
+      response.location.should end_with public_table_map_path(id: @visualization.id)
     end
 
     it 'returns 404 for non-existent visualizations' do

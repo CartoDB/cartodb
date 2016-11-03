@@ -160,6 +160,7 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.email.should eq "#{username}@carto.com"
       last_user_created.soft_geocoding_limit.should eq false
       last_user_created.quota_in_bytes.should eq 1024
+      last_user_created.builder_enabled.should be_nil
       last_user_created.destroy
     end
 
@@ -312,6 +313,22 @@ describe Carto::Api::OrganizationUsersController do
       last_response.status.should eq 200
 
       user_to_update.reload.email.should == new_email
+    end
+
+    it 'should update viewer' do
+      login(@organization.owner)
+
+      2.times do
+        user_to_update = @organization.non_owner_users[0]
+        new_viewer = !user_to_update.viewer?
+        params = { viewer: new_viewer }
+        put api_v2_organization_users_update_url(id_or_name: @organization.name,
+                                                 u_username: user_to_update.username),
+            params
+        last_response.status.should eq 200
+
+        user_to_update.reload.viewer.should == new_viewer
+      end
     end
 
     it 'should update quota_in_bytes' do

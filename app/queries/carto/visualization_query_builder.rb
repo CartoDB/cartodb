@@ -193,6 +193,12 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  # Published: see `Carto::Visualization#published?`
+  def with_published
+    @only_published = true
+    self
+  end
+
   def build
     query = Carto::Visualization.scoped
 
@@ -313,6 +319,21 @@ class Carto::VisualizationQueryBuilder
       query = query.joins(:user).where(users: { organization_id: @organization_id })
     end
 
+    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+      # "Published" is only required for builder maps
+      # This SQL check should match Ruby `Carto::Visualization#published?` definition
+      query = query.where(%{
+            visualizations.privacy <> '#{Carto::Visualization::PRIVACY_PRIVATE}'
+        and (
+               ((visualizations.version <> #{Carto::Visualization::VERSION_BUILDER}) or (visualizations.version is null))
+            or
+               visualizations.type <> '#{Carto::Visualization::TYPE_DERIVED}'
+            or
+               (exists (select 1 from mapcaps mc_pub where visualizations.id = mc_pub.visualization_id limit 1))
+            )
+      })
+    end
+
     @include_associations.each { |association|
       query = query.includes(association)
     }
@@ -336,7 +357,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_paged(page = 1, per_page = 20)
-    self.build.offset((page - 1) * per_page).limit(per_page)
+    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
 
   private

@@ -364,6 +364,11 @@ module CartoDB
         super(tags)
       end
 
+      def version=(version)
+        self.dirty = true
+        super(version)
+      end
+
       def public?
         privacy == PRIVACY_PUBLIC
       end
@@ -691,6 +696,13 @@ module CartoDB
 
       def mapcapped?
         mapcaps.exists?
+      end
+
+      def invalidate_for_permissions_change
+        # A change in permissions should trigger the same invalidations as a privacy change
+        self.privacy_changed = true
+        invalidate_cache
+        save_named_map
       end
 
       private

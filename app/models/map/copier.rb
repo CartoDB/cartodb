@@ -33,10 +33,41 @@ module CartoDB
         end
       end
 
+      # TL;DR: adds data layers between existing base layers.
+      #
+      # Stacks data layer on top of the last data layer and/or
+      # the first base layer found, and keeps any existing "top"
+      # base layers on top.
       def copy_data_layers(origin_map, destination_map, user)
+        last_data = destination_map.layers.reverse.find(&:data_layer?)
+        order = if last_data
+                  last_data.order + 1
+                else
+                  first_base = destination_map.layers.find(&:base_layer?)
+                  first_base ? (first_base.order + 1) : 0
+                end
+
+        modified_layers = []
+
         data_layer_copies_from(origin_map, user).map do |layer|
+          # Push layers on top if needed
+          if(destination_map.layers.map(&:order).include?(order))
+            destination_map.layers.select { |l| l.order >= order }.each do |layer|
+              layer.order += 1
+              # layer must be saved later
+              modified_layers << layer
+            end
+          end
+
+          layer.order = order
           link(destination_map, layer)
+          # link saves
+          modified_layers -= [layer]
+          order += 1
         end
+
+        # this avoid extra saving (including validation) overhead
+        modified_layers.uniq.map(&:save)
       end
 
       private
@@ -48,7 +79,7 @@ module CartoDB
           new_layer = layer.copy
           new_layer.qualify_for_organization(map.user.username) if user.id != map.user.id
 
-          user.force_builder? ? reset_layer_styles(layer, new_layer) : new_layer
+          user.builder_enabled? ? reset_layer_styles(layer, new_layer) : new_layer
         end
       end
 

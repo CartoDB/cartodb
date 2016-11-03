@@ -29,6 +29,7 @@ module Carto
           type: params[:type],
           title: params[:title],
           options: params[:options],
+          style: params[:style],
           source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
@@ -42,6 +43,7 @@ module Carto
         update_params[:source_id] = source_id_from_params if source_id_from_params
         @widget.update_attributes(update_params)
         @widget.options = params[:options]
+        @widget.style = params[:style]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)

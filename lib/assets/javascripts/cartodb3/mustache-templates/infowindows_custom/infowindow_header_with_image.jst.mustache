@@ -19,12 +19,14 @@
         {{#content.fields}}
           {{#index}}
             <div class="CDB-infowindow-listItem CDB-infowindow-listItem--order{{index}}">
-              {{#alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
-              {{/alternative_name}}
-              {{^alternative_name}}
-              <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
-              {{/alternative_name}}
+              {{#title}}
+                {{#alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
+                {{/alternative_name}}
+                {{^alternative_name}}
+                <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
+                {{/alternative_name}}
+              {{/title}}
               <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
             </div>
           {{/index}}

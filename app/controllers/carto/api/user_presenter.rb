@@ -114,6 +114,12 @@ module Carto
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
           },
+          mapzen_routing: {
+            quota:       @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
+            block_price: @user.organization_user? ? @user.organization.mapzen_routing_block_price : @user.mapzen_routing_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_mapzen_routing_calls : @user.get_mapzen_routing_calls,
+            hard_limit:  @user.hard_mapzen_routing_limit?
+          },
           geocoder_provider: @user.geocoder_provider,
           isolines_provider: @user.isolines_provider,
           routing_provider: @user.routing_provider,
@@ -156,7 +162,9 @@ module Carto
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
-            google_maps_enabled: @user.google_maps_enabled?
+            google_maps_enabled: @user.google_maps_enabled?,
+            engine_enabled: @user.engine_enabled?,
+            builder_enabled: @user.builder_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

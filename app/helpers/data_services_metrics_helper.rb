@@ -25,6 +25,15 @@ module DataServicesMetricsHelper
     get_here_isolines_data(organization.owner, from, to)
   end
 
+  def get_user_mapzen_routing_data(user, from, to)
+    get_mapzen_routing_data(user, from, to)
+  end
+
+  def get_organization_mapzen_routing_data(organization, from, to)
+    organization.require_organization_owner_presence!
+    get_mapzen_routing_data(organization.owner, from, to)
+  end
+
   def get_user_obs_snapshot_data(user, from, to)
     get_obs_snapshot_data(user, from, to)
   end
@@ -106,4 +115,17 @@ module DataServicesMetricsHelper
     countable_requests
   end
 
+  def get_mapzen_routing_data(user, from, to)
+    orgname = user.organization.nil? ? nil : user.organization.name
+    usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
+    mapzen_routing_key = :routing_mapzen
+    countable_requests = 0
+    from.upto(to).each do |date|
+      success = usage_metrics.get(mapzen_routing_key, :success_responses, date)
+      countable_requests += success unless success.nil?
+      empty = usage_metrics.get(mapzen_routing_key, :empty_responses, date)
+      countable_requests += empty unless empty.nil?
+    end
+    countable_requests
+  end
 end

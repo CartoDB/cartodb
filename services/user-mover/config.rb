@@ -1,5 +1,6 @@
 require 'pg'
 require 'carto/configuration'
+require 'redis_factory'
 
 module CartoDB
   module DataMover
@@ -8,6 +9,8 @@ module CartoDB
         root = File.expand_path(File.dirname(__FILE__))
         carto_config = Carto::Conf.new
         config = carto_config.app_config
+        # get_conf should be private, but this class manages its own exceptions
+        redis_config = RedisFactory.send(:get_conf)
         database = carto_config.db_config
         rails_env = ENV['RAILS_ENV'] || Rails.env || 'production'
         @config = {
@@ -21,8 +24,8 @@ module CartoDB
           user_dbport: ENV['USER_DB_PORT'] || ENV['DB_PORT'] || database[rails_env]['direct_port'] || 5432,
           connect_timeout: ENV['CONNECT_TIMEOUT'] || ENV['CONNECT_TIMEOUT'] || database[rails_env]['connect_timeout'] || 5,
 
-          redis_port: ENV['REDIS_PORT'] || config[rails_env]['redis']['port'],
-          redis_host: ENV['REDIS_HOST'] || config[rails_env]['redis']['host']
+          redis_port: ENV['REDIS_PORT'] || redis_config[:port],
+          redis_host: ENV['REDIS_HOST'] || redis_config[:host]
         }
       end
 

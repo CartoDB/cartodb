@@ -5,7 +5,7 @@
       <h3 class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.add-analysis.modal-desc') %></h3>
     </div>
   </div>
-  <div class="Modal-container">
+  <div class="Modal-container Modal-container--analysis">
     <div class="Modal-inner js-body">
     </div>
   </div>

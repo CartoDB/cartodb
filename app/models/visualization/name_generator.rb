@@ -4,7 +4,7 @@ require_relative './name_checker'
 module CartoDB
   module Visualization
     class NameGenerator
-      PATTERN = 'Untitled visualization'
+      PATTERN = 'Untitled map'
 
       def initialize(user, checker=nil)
         @user     = user
@@ -25,4 +25,3 @@ module CartoDB
     end
   end
 end
-

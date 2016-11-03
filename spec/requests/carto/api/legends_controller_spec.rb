@@ -73,6 +73,24 @@ module Carto
         }
       end
 
+      let(:custom_choropleth_legend_payload) do
+        {
+          pre_html: "<h3>Es acaso</h3>",
+          post_html: "<h3>el mejor artista del mundo?</h3>",
+          title: "La verdad",
+          type: "custom_choropleth",
+          definition: {
+            prefix: "123",
+            suffix: "foo",
+            colors: [
+              { color: '#fff' },
+              { color: '#fabada' },
+              { color: '#CCC' }
+            ]
+          }
+        }
+      end
+
       let(:fake_uuid) { 'aaaaaaaa-0000-bbbb-1111-cccccccccccc' }
 
       before(:all) do
@@ -190,6 +208,10 @@ module Carto
           it 'for choropleth' do
             @payload = choropleth_legend_payload
           end
+
+          it 'for custom_choropleth' do
+            @payload = custom_choropleth_legend_payload
+          end
         end
 
         describe 'with spammy definitions' do
@@ -224,6 +246,10 @@ module Carto
 
           it 'banned for choropleth' do
             @payload = choropleth_legend_payload
+          end
+
+          it 'banned for custom_choropleth' do
+            @payload = custom_choropleth_legend_payload
           end
         end
 

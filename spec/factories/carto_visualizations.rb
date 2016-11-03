@@ -16,10 +16,13 @@ module Carto
         carto_user,
         map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
         table: full_visualization_table(carto_user, map),
-        data_layer: nil)
+        data_layer: nil,
+        visualization_attributes: {}
+      )
 
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
-        visualization = FactoryGirl.create(:carto_visualization, user: carto_user, map: map)
+        visualization = FactoryGirl.create(:carto_visualization, { user: carto_user, map: map }
+                                   .merge(visualization_attributes))
 
         unless data_layer.present?
           data_layer = visualization.map.data_layers.first
@@ -54,6 +57,11 @@ module Carto
         table.destroy if table
         visualization.destroy if visualization
         map.destroy if map
+      end
+
+      def destroy_visualization(visualization_id)
+        member = CartoDB::Visualization::Member.new(id: visualization_id).fetch
+        member.delete
       end
     end
   end

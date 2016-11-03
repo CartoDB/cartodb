@@ -146,13 +146,14 @@ module Carto
         :soft_obs_general_limit,
         :soft_obs_snapshot_limit,
         :soft_twitter_datasource_limit,
-        :soft_mapzen_routing_limit
+        :soft_mapzen_routing_limit,
+        :viewer
       ].freeze
 
       # TODO: Use native strong params when in Rails 4+
       def create_params
         @create_params ||=
-          permit(COMMON_MUTABLE_ATTRIBUTES + [:username, :viewer])
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username])
       end
 
       # TODO: Use native strong params when in Rails 4+

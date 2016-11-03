@@ -4,8 +4,8 @@
 
 .Notifier {
   @include css3-prefix(hyphens, auto);
+  position: relative;
   margin: 0 -25px;
-  padding: 0 $baseSize * 3;
   border-top: 1px solid $cSecondaryLine;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -23,8 +23,6 @@
 
 .Notifier-inner {
   position: relative;
-  padding: $baseSize + 4 0;
-  border-top: 1px solid $cSecondaryLine;
 
   .is-dark & {
     border-color: #3A484E;
@@ -37,8 +35,63 @@
 
 .Notifier-item {
   @include display-flex();
-  padding: $baseSize 0;
+  position: relative;
+  margin: 0 $baseSize * 3;
+  padding-top: 20px;
+  padding-bottom: 20px;
   color: $cSecondaryText;
+  &::before {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: $cSecondaryLine;
+    content: '';
+  }
+  &.Notifier-item--success::before {
+    background: #9DE0AD;
+  }
+  &.Notifier-item--error::before {
+    background: #F15743;
+  }
+  &.Notifier-item--warning::before {
+    background: #F5A623;
+  }
+}
+
+.Notifier-item--success {
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
+  background: rgba(#9DE0AD, 0.12);
+}
+.Notifier-item--error {
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
+  background: rgba(#F15743, 0.12);
+}
+.Notifier-item--warning {
+  margin-right: 0;
+  margin-left: 0;
+  padding: 20px $baseSize * 3;
+  background: #FEFEDD;
+}
+
+.Notifier.is-dark {
+  .Notifier-item--success,
+  .Notifier-item--error,
+  .Notifier-item--warning {
+    background: none;
+  }
+}
+
+.Notifier .CDB-Loader {
+  display: none;
+}
+.Notifier .CDB-Loader.is-visible {
+  display: block;
 }
 
 .Notifier-info {
@@ -57,12 +110,4 @@
 
 .Notifier-icon {
   margin-top: 1px;
-}
-
-// Loader styles
-.Notifier .CDB-LoaderIcon .CDB-LoaderIcon-path {
-  stroke: rgba(0, 0, 0, 0.24);
-}
-.Notifier.is-dark .CDB-LoaderIcon .CDB-LoaderIcon-path {
-  stroke: rgba(255, 255, 255, 0.88);
 }

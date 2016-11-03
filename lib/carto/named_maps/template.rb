@@ -41,6 +41,7 @@ module Carto
               dataviews: dataviews,
               analyses: analyses_definitions
             },
+            preview_layers: preview_layers,
             view: view
           }
         end
@@ -193,6 +194,16 @@ module Carto
 
       def analyses_definitions
         @visualization.analyses.map(&:analysis_definition_for_api)
+      end
+
+      def preview_layers
+        preview_layers = {}
+
+        @visualization.carto_and_torque_layers.each do |layer|
+          preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
+        end
+
+        preview_layers
       end
 
       def stats_aggregator

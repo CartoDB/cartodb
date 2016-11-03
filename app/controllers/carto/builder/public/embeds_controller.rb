@@ -51,6 +51,7 @@ module Carto
 
         def load_vizjson
           @vizjson = generate_named_map_vizjson3(visualization_for_presentation, params)
+          @auto_style = @visualization.user.has_feature_flag?('auto-style')
         end
 
         def load_state

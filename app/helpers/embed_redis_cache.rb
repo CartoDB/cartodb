@@ -19,7 +19,7 @@ class EmbedRedisCache
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    Rollbar.report_exception(exception)
+    CartoDB::Logger.error(exception: exception)
     nil
   end
 
@@ -33,7 +33,7 @@ class EmbedRedisCache
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    Rollbar.report_exception(exception)
+    CartoDB::Logger.error(exception: exception)
     nil
   end
 
@@ -43,7 +43,7 @@ class EmbedRedisCache
     # Captures:
     # - Redis::BaseError if redis is down
     # - IO errors due to deploys changing physical path (see read_frontend_version / calculate_embed_template_hash)
-    Rollbar.report_exception(exception)
+    CartoDB::Logger.error(exception: exception)
     nil
   end
 

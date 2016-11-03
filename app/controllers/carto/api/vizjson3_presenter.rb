@@ -322,10 +322,11 @@ module Carto
       end
 
       def as_data
-        old_legend = @layer.legend
-        legends = @layer.legends
+        old_legend_not_migrated = @layer.legend && !@layer.legend[:migrated]
 
-        migrate_legends(old_legend) if old_legend && legends.empty?
+        if old_legend_not_migrated
+          @layer.legends.any? ? mark_old_legend_migrated : migrate_old_legend
+        end
 
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash
@@ -334,9 +335,15 @@ module Carto
         { legends: legends_presentation }
       end
 
-      def migrate_legends(old_legend)
-        Carto::LegendMigrator.new(@layer.id, old_legend).build.save
+      def migrate_old_legend
+        Carto::LegendMigrator.new(@layer.id, @layer.legend).build.save
+        mark_old_legend_migrated
         @layer.legends.reload
+      end
+
+      def mark_old_legend_migrated
+        @layer.options[:legend][:migrated] = true
+        @layer.save
       end
 
       def as_torque

@@ -186,10 +186,6 @@ module Carto
       @user ||= map.nil? ? nil : map.user
     end
 
-    def mapcapped?
-      visualization && visualization.mapcapped?
-    end
-
     def default_query(user = nil)
       sym_options = options.symbolize_keys
       query = sym_options[:query]

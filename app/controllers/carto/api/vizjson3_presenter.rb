@@ -324,7 +324,7 @@ module Carto
       def as_data
         old_legend_not_migrated = @layer.legend && !@layer.legend[:migrated]
 
-        if !@layer.mapcapped? && old_legend_not_migrated
+        if @layer.persisted? && old_legend_not_migrated
           @layer.legends.any? ? mark_old_legend_migrated : migrate_old_legend
         end
 

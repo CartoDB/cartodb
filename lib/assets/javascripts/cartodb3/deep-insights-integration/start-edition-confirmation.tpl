@@ -6,19 +6,19 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m">This geometry is too big to edit from the web</h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor">Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.</p>
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m"><%- _t('components.modals.edit-feature.confirmation.title') %></h2>
+      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.edit-feature.confirmation.desc') %></p>
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">
-              <%- _t('editor.maps.delete.cancel') %>
+              <%- _t('components.modals.edit-feature.confirmation.cancel') %>
             </span>
           </button>
         </li>
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--primary CDB-Button--big js-confirm">
-            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Ok, continue</span>
+            <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%- _t('components.modals.edit-feature.confirmation.continue') %></span>
           </button>
         </li>
       </ul>

@@ -8,7 +8,7 @@
   <div class="Editor-HeaderInfo-inner">
     <div class="Editor-HeaderInfo-title u-bSpace">
       <h2 class="Inline-editor">
-        <div class="CDB-Text CDB-Size-huge is-light u-ellipsis">Edit <%- type ? type : 'geometry' %></div>
+        <div class="CDB-Text CDB-Size-huge is-light u-ellipsis"><%- _t('editor.edit-feature.edit', { featureType: featureType }) %></div>
       </h2>
     </div>
 

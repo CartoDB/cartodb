@@ -25,7 +25,10 @@
 <% if (isSourceType && !isCustomQueryApplied) { %>
   <div class="EditOverlay js-editOverlay is-hidden"><p class="EditOverlay-inner CDB-Text CDB-Size-medium u-whiteTextColor js-editOverlay-text"></p></div>
 
-  <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView">
+  <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView
+  <% if (isThereOtherWidgets) { %>is-moved<% } %>
+  <% if (isThereTimeSeries) { %>has-timeSeries<% } %>
+  ">
     <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
       <li class="Editor-contextSwitcherItem">
         <div class="Editor-contextSwitcherButton Editor-contextSwitcherButton--geom js-newGeometry" data-feature-type='point'>

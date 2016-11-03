@@ -27,10 +27,14 @@ module Carto
         @canonical_visualization_data = Carto::Api::VisualizationPresenter.new(
           @canonical_visualization, current_viewer, self).to_poro
         @user_table_data = Carto::Api::UserTablePresenter.new(
-          @user_table, @canonical_visualization.permission, current_viewer).to_poro
+          @user_table, @canonical_visualization.permission, current_viewer
+        ).to_poro(accessible_dependent_derived_maps: true, context: self)
         @layers_data = @canonical_visualization.layers.map do |l|
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
+
+        carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
+        @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
       end
 
       private

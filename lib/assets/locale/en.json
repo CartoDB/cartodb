@@ -475,7 +475,7 @@
     "modals": {
       "editor-vis-warning": {
         "title": "You are about to open an Editor map with the new Builder",
-        "explanation": "Builder offers an easy to use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
+        "explanation": "Builder offers an easy-to-use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
         "question": "Opening your map in Builder may cause the loss of any feature not supported yet. Are you sure you want to continue?",
         "go-back": "No, go back to dashboard",
         "open": "Yes, open with Builder",
@@ -499,13 +499,13 @@
           "not-valid": "Insert a valid XYZ URL",
           "eg": "E.g.",
           "tms": "TMS",
-          "couldnt-validate": "We couldn't validate this, if you're sure it contains data click \"add basemap\"",
+          "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\"",
         },
         "mapbox": {
           "insert": "Insert your Mapbox URL",
           "enter": "Enter your map ID/URL",
           "enter-token": "Enter your access token",
-          "error": "Error retrieving your basemap. Please, check your access token.",
+          "error": "Error retrieving your basemap. Please check your access token.",
           "invalid": "This URL is not valid."
         },
         "wms": {
@@ -513,7 +513,7 @@
           "invalid": "The URL is either invalid or contains unsupported projections",
           "see-docs": "see docs",
           "oh-no": "Oh! No results",
-          "unfortunately": "Unfortunately we couldn't found any layer that matched your search term",
+          "unfortunately": "Unfortunately, we couldn't find a layer that matched your search term",
           "tables-pluralize": "table |||| tables",
           "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
         },
@@ -644,7 +644,7 @@
             "subtitle": "We had an internal error trying to save your data. We recommend you try again."
           },
           "upgrade": {
-            "title": "Interested on sharing within your organization?",
+            "title": "Interested in sharing within your organization?",
             "desc": "%{contact} to try one of our Enterprise plans",
             "contact": "Contact us",
             "mail": "sales@carto.com"
@@ -956,7 +956,7 @@
           "loading": "Loading",
           "searching": "Searching",
           "error": {
-            "title": "Oouch! There has been an error loading your datasets",
+            "title": "Ouch! There has been an error loading your datasets",
             "desc": "If the problem persists contact us at"
           },
           "no-datasets": {
@@ -981,6 +981,20 @@
           "privacy-click": "Click to change it to %{nextPrivacy}",
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
           "add-layer": "Add layer"
+        }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "This geometry is too big to edit from the web",
+          "desc": "Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.",
+          "cancel": "Cancel",
+          "continue": "Ok, continue"
+        },
+        "delete": {
+          "title": "You are about to delete a feature",
+          "desc": "Are you sure you want to delete it?",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it"
         }
       }
     },
@@ -1138,10 +1152,15 @@
       "option": "Delete dataset...",
       "cancel": "Cancel",
       "confirm": "Ok, delete it",
-      "desc": "Are you sure?",
+      "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
-      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+      "title": "You are about to delete the %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
+      "affected-vis-count-extended": "%{affectedVisCount} maps affected, some of them are",
+      "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access",
+      "affected-entities-count-extended": "%{affectedEntitiesCount} users will lose access, some of them are",
+      "whole-organization-affected": "All users from your organization will be affected"
     },
     "metadata": {
       "option": "Edit metadata",
@@ -1298,7 +1317,7 @@
       }
     },
     "elements": {
-      "message": "Unfortunately map overlays are not available yet, they will be very soon, stay tuned!"
+      "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
     },
     "layers": {
       "options": {
@@ -1660,7 +1679,7 @@
       "messages": {
         "sql-readonly": {
           "title": "SQL ONLY READ",
-          "body": "You just applied analysis to this layer. The SQL is now read only.",
+          "body": "You just applied an analysis to this layer. The SQL is now read only.",
           "accept": "CLOSE"
         },
         "empty-data": {
@@ -1720,7 +1739,7 @@
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
-          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "body": "This layer is hidden. Changes won't be shown until you make it visible.",
           "show": "SHOW"
         },
         "legends-disabled": {
@@ -1907,7 +1926,7 @@
       }
     },
     "widgets": {
-      "no-geometry-data": "Your dataset lacks of geometry data and it's not possible to add a widget.",
+      "no-geometry-data": "Your dataset lacks geometry data and it's not possible to add a widget.",
       "options": {
         "remove": "Delete...",
         "rename": "Rename",
@@ -1970,6 +1989,24 @@
           "no": "No"
         }
       }
+    },
+    "edit-feature": {
+      "features": {
+        "point": "point",
+        "line": "line",
+        "polygon": "polygon"
+      },
+      "overlay-text": "Start clicking on the map to draw your %{featureType}",
+      "add": "Add",
+      "save": "Save",
+      "attributes": "Attributes",
+      "attributes-columns": "Change column names and type in table mode",
+      "cancel": "Cancel",
+      "geometry": "Geometry",
+      "geometry-edit": "You can also edit it on the map",
+      "valid": "Must be valid",
+      "delete": "Delete %{featureType}",
+      "edit": "Edit %{featureType}"
     }
   },
   "notifications": {
@@ -2014,13 +2051,33 @@
     },
     "sql": {
       "alter-loading": "Modifying table…",
-      "alter-success": "Modifying applied",
+      "alter-success": "Modification applied",
       "applying": "Applying query…",
       "error": {
         "body": "%{body} %{error}",
         "title": "Error in SQL query:"
       },
       "success": "SQL query applied"
+    },
+    "edit-feature": {
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Deleting feature…",
+        "error": {
+          "title": "Error deleting feature:"
+        },
+        "success": "Feature deleted correctly"
+      },
+      "save": {
+        "loading": "Saving feature…",
+        "error": {
+          "title": "Error saving feature:"
+        },
+        "success": "Feature successfully saved"
+      },
+      "adding": "Adding widget…",
     }
   }
 }

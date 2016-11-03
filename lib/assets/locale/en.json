@@ -2065,16 +2065,12 @@
       },
       "destroy": {
         "loading": "Deleting feature…",
-        "error": {
-          "title": "Error deleting feature:"
-        },
+        "error": "Error deleting feature",
         "success": "Feature deleted correctly"
       },
       "save": {
         "loading": "Saving feature…",
-        "error": {
-          "title": "Error saving feature:"
-        },
+        "error": "Error saving feature",
         "success": "Feature successfully saved"
       },
       "adding": "Adding widget…",

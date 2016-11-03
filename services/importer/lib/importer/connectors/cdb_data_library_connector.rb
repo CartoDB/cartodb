@@ -22,19 +22,23 @@ module CartoDB
       private
 
       def accepted_parameters
-        %w(driver channel host port database table username password remote_schema)
+        %w(name driver channel host port database table username password remote_schema)
       end
 
       def server_options
-        %w(host port database)
+        %w(name host port database)
       end
 
       def server_name
-        server_string = [server_params['host'],
-                         server_params['port'],
-                         server_params['database']].join(';')
-        server_hash = Digest::SHA1.hexdigest server_string
-        "connector_#{channel_name}_#{server_hash}"
+        if (server_params['name'])
+          return server_params['name']
+        else
+          server_string = [server_params['host'],
+                           server_params['port'],
+                           server_params['database']].join(';')
+          server_hash = Digest::SHA1.hexdigest server_string
+          return "connector_#{channel_name}_#{server_hash}"
+        end
       end
 
       def run_pre_create

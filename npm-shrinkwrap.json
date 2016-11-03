@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.60",
+  "version": "4.4.2-dev",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -162,9 +162,9 @@
                       "resolved": "https://registry.npmjs.org/fs-extra/-/fs-extra-0.26.7.tgz",
                       "dependencies": {
                         "graceful-fs": {
-                          "version": "4.1.9",
+                          "version": "4.1.10",
                           "from": "graceful-fs@>=4.1.2 <5.0.0",
-                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.9.tgz"
+                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.10.tgz"
                         },
                         "jsonfile": {
                           "version": "2.4.0",
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.0 <3.0.0",
+                      "from": "inherits@>=2.0.1 <2.1.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }
@@ -1146,8 +1146,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#autostyle-activation-flag",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#75caba2ddf4f31d76fad99454d13652dff962a33",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#a664408ae2ebe7186af849808cadee9ffe394e5f",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

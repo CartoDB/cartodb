@@ -105,7 +105,8 @@ module.exports = cdb.core.View.extend({
       this._numberOfFilters = 1;
     }
 
-    if (this._hasZoomRange()) {
+    // in order to calculate the stats right, we simulate the full zommmed range
+    if (this._isZoomed()) {
       this._numberOfFilters = 2;
     }
 
@@ -152,34 +153,18 @@ module.exports = cdb.core.View.extend({
 
     this._setupRange(data, min, max, function (lo, hi) {
       this.model.set({ filter_enabled: filterEnabled, lo_index: lo, hi_index: hi });
+      this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
+      this._initStateApplied = true;
+
+      // If zoomed, we open the zoom level. Internally it does a fetch, so a change:data is triggered
+      // and the _onHistogramDataChanged callback will do the _updateStats call.
       if (this._isZoomed()) {
-        this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
         this._onChangeZoomEnabled();
         this._onZoomIn();
       } else {
-        this._completeInitialState();
+        this._updateStats();
       }
     }.bind(this));
-  },
-
-  _setInitialZoomRange: function () {
-    if (this._initStateApplied) return;
-
-    var data = this._dataviewModel.getData();
-    var min = this.model.get('zmin');
-    var max = this.model.get('zmax');
-    var lo = _.findWhere(data, {start: min});
-    var hi = _.findWhere(data, {end: max});
-
-    if (lo != null && hi != null) {
-      this._setupRange(data, min, max, function (lo, hi) {
-        this.model.set({ zlo_index: lo, zhi_index: hi });
-        this._initStateApplied = true;
-      }.bind(this));
-    } else {
-      this._initStateApplied = true;
-      this._updateStats();
-    }
   },
 
   _completeInitialState: function () {
@@ -195,13 +180,6 @@ module.exports = cdb.core.View.extend({
   _hasRange: function () {
     var min = this.model.get('min');
     var max = this.model.get('max');
-
-    return (min != null || max != null);
-  },
-
-  _hasZoomRange: function () {
-    var min = this.model.get('zmin');
-    var max = this.model.get('zmax');
 
     return (min != null || max != null);
   },
@@ -226,7 +204,6 @@ module.exports = cdb.core.View.extend({
         this._filteredData = this._dataviewModel.getData();
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
-      this._setInitialZoomRange();
     }
 
     if (this.unsettingRange) {

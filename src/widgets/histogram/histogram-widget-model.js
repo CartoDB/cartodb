@@ -74,14 +74,6 @@ module.exports = WidgetModel.extend({
       state.zoomed = true;
     }
 
-    if (zmin != null) {
-      state.zmin = zmin;
-    }
-
-    if (zmax != null) {
-      state.zmax = zmax;
-    }
-
     return state;
   }
 

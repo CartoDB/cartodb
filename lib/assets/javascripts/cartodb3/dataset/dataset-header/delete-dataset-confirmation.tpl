@@ -6,10 +6,10 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m">
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl">
         <%- _t('dataset.delete.title', { tableName: tableName }) %>
       </h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('dataset.delete.desc') %></p>
+      <p class="CDB-Text CDB-Size-large u-altTextColor"><%- _t('dataset.delete.desc') %></p>
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">

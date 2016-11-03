@@ -176,6 +176,9 @@ module.exports = cdb.core.View.extend({
         this.model.set({ zlo_index: lo, zhi_index: hi });
         this._initStateApplied = true;
       }.bind(this));
+    } else {
+      this._initStateApplied = true;
+      this._updateStats();
     }
   },
 

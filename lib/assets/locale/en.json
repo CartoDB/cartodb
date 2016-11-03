@@ -1987,7 +1987,7 @@
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
         "timeout": "The execution of the analysis timed out and was stopped",
-        "without-geom-webmercator": "column \"the_geom_webmercator\" does not exist"
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },
     "widgets": {

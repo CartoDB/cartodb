@@ -78,6 +78,7 @@
 }
 .CDB-Widget-listGroup {
   @include flex-grow(1);
+  overflow: hidden;
 }
 .CDB-Widget-listItem {
   display: block;

@@ -9,7 +9,7 @@ describe('widgets/histogram/histogram-widget-model', function () {
     });
     this.widgetModel = new HistogramWidgetModel({}, {
       dataviewModel: this.dataviewModel
-    });
+    }, {autoStyleEnabled: true});
   });
 
   describe('when model is set to collapsed', function () {

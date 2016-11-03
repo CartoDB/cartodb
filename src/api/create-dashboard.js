@@ -26,6 +26,9 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
   opts.renderMenu = _.isBoolean(opts.renderMenu)
     ? opts.renderMenu
     : true;
+  opts.autoStyle = _.isBoolean(opts.autoStyle)
+    ? opts.autoStyle
+    : false;
 
   var widgets = new WidgetsCollection();
 
@@ -37,6 +40,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
     userProfileURL: vizJSON.user.profile_url,
     userAvatarURL: vizJSON.user.avatar_url,
     renderMenu: opts.renderMenu,
+    autoStyle: opts.autoStyle,
     showLogo: opts.cartodb_logo,
     initialPosition: {
       bounds: vizJSON.bounds
@@ -95,7 +99,7 @@ var createDashboard = function (selector, vizJSON, opts, callback) {
           layer = vis.map.layers.at(d.layerIndex);
         }
 
-        newWidgetModel(attrs, layer, state);
+        newWidgetModel(attrs, layer, state, {autoStyleEnabled: opts.autoStyle});
       } else {
         cdb.log.error('No widget found for type ' + d.type);
       }

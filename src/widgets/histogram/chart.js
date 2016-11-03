@@ -268,7 +268,8 @@ module.exports = cdb.core.View.extend({
 
   _onMouseOut: function () {
     var bars = this.chart.selectAll('.CDB-Chart-bar');
-    bars.classed('is-highlighted', false);
+    bars.classed('is-highlighted', false)
+        .attr('fill', this.options.chartBarColor);
     this.trigger('hover', { value: null });
   },
 
@@ -311,9 +312,11 @@ module.exports = cdb.core.View.extend({
     this.trigger('hover', hoverProperties);
 
     this.chart.selectAll('.CDB-Chart-bar')
-      .classed('is-highlighted', false);
+      .classed('is-highlighted', false)
+      .attr('fill', this.options.chartBarColor);
 
     if (bar && bar.node()) {
+      bar.attr('fill', this._getHoverColor());
       bar.classed('is-highlighted', true);
     }
   },
@@ -944,8 +947,6 @@ module.exports = cdb.core.View.extend({
     var bars = this.chart.selectAll('.CDB-Chart-bar')
       .data(data);
 
-    this._addHoverToStylesheet();
-
     bars
       .enter()
       .append('rect')
@@ -1000,25 +1001,8 @@ module.exports = cdb.core.View.extend({
       });
   },
 
-  _addHoverToStylesheet: function () {
-    var color = tinycolor(this.options.chartBarColor).darken().toString();
-    var sheets = document.styleSheets;
-    var sheet;
-    var rules;
-
-    for (var i = 0; i < sheets.length; i++) {
-      sheet = sheets[i];
-      if (sheet.cssRules) {
-        rules = sheet.cssRules;
-        break;
-      }
-    }
-
-    if (!rules || rules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
-      sheet.insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
-    } else {
-      rules[0].style.fill = color;
-    }
+  _getHoverColor: function () {
+    return tinycolor(this.options.chartBarColor).darken().toString();
   },
 
   _generateBars: function () {
@@ -1026,7 +1010,6 @@ module.exports = cdb.core.View.extend({
     var data = this.model.get('data');
 
     this._calcBarWidth();
-    this._addHoverToStylesheet();
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

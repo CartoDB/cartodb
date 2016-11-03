@@ -11,7 +11,7 @@ describe('auto-style', function () {
     });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
-    });
+    }, {autoStyleEnabled: true});
     this.autoStyler = this.widgetModel.autoStyler;
   });
 

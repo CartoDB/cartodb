@@ -75,6 +75,15 @@ Dashboard.prototype = {
     }, this);
   },
 
+  _getAutoStyleOpt: function (opts) {
+    var autoStyleEnabled = this._dashboard.dashboardView.model.get('autoStyle');
+
+    opts = opts || {};
+    opts.autoStyleEnabled = autoStyleEnabled || false;
+
+    return opts;
+  },
+
   /**
    * @param {Integer} id - widget id
    * @return a widget object
@@ -93,7 +102,7 @@ Dashboard.prototype = {
    * @return {CategoryWidget} The new widget
    */
   createCategoryWidget: function (widgetAttrs, layer) {
-    return this._dashboard.widgets.createCategoryModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createCategoryModel(widgetAttrs, layer, null, this._getAutoStyleOpt());
   },
 
   /**
@@ -106,7 +115,7 @@ Dashboard.prototype = {
    * @return {HistogramWidget} The new widget
    */
   createHistogramWidget: function (widgetAttrs, layer) {
-    return this._dashboard.widgets.createHistogramModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createHistogramModel(widgetAttrs, layer, null, this._getAutoStyleOpt());
   },
 
   /**
@@ -119,7 +128,7 @@ Dashboard.prototype = {
    * @return {FormulaWidget} The new widget
    */
   createFormulaWidget: function (widgetAttrs, layer) {
-    return this._dashboard.widgets.createFormulaModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createFormulaModel(widgetAttrs, layer, null, this._getAutoStyleOpt());
   },
 
   /**
@@ -132,7 +141,7 @@ Dashboard.prototype = {
    * @return {TimeSeriesWidget} The new widget
    */
   createTimeSeriesWidget: function (widgetAttrs, layer) {
-    return this._dashboard.widgets.createTimeSeriesModel(widgetAttrs, layer);
+    return this._dashboard.widgets.createTimeSeriesModel(widgetAttrs, layer, null, this._getAutoStyleOpt());
   }
 
 };

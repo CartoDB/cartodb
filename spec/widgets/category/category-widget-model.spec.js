@@ -14,7 +14,7 @@ describe('widgets/category/category-widget-model', function () {
     });
     this.widgetModel = new CategoryWidgetModel({}, {
       dataviewModel: this.dataviewModel
-    });
+    }, {autoStyleEnabled: true});
   });
 
   describe('when model is set to collapsed', function () {

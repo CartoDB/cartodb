@@ -48,8 +48,6 @@ module.exports = WidgetModel.extend({
     var end = this.dataviewModel.get('end');
     var min = this.get('min');
     var max = this.get('max');
-    var zmin = this.get('zmin');
-    var zmax = this.get('zmax');
 
     var checkRoughEqual = function (a, b) {
       if (_.isNumber(a) && _.isNumber(b) && (a !== b) && Math.abs(a - b) > Math.abs(start - end) * 0.01) {

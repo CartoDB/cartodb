@@ -29,7 +29,7 @@ module Resque
         return unless ::Hubspot::EventsAPI.instance.enabled?
 
         events_api = ::Hubspot::EventsAPI.instance
-        code, body = events_api.report_event(id, params: params)
+        code, body = events_api.report(id, params: params)
 
         unless code == '200' && body.present?
           CartoDB::Logger.error(message: 'Carto::Tracking: Hubspot service error',

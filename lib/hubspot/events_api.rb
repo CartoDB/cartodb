@@ -6,7 +6,7 @@ module Hubspot
   class EventsAPI
     include Singleton
 
-    def report_event(id, params: {})
+    def report(id, params: {})
       return unless enabled?
 
       uri = URI("#{base_url}/v1/event")

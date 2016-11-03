@@ -1138,10 +1138,15 @@
       "option": "Delete dataset...",
       "cancel": "Cancel",
       "confirm": "Ok, delete it",
-      "desc": "Are you sure?",
+      "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
-      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+      "title": "You are about to delete the %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
+      "affected-vis-count-extended": "%{affectedVisCount} maps affected, some of them are",
+      "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access",
+      "affected-entities-count-extended": "%{affectedEntitiesCount} users will lose access, some of them are",
+      "whole-organization-affected": "All users from your organization will be affected"
     },
     "metadata": {
       "option": "Edit metadata",

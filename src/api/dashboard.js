@@ -34,7 +34,7 @@ Dashboard.prototype = {
 
   getState: function () {
     var state = {};
-    var mapState = this.getMapState(); // TODO
+    var mapState = this.getMapState();
     if (!_.isEmpty(mapState)) state.map = mapState;
 
     var widgetsState = this._dashboard.widgets._widgetsCollection.getStates();
@@ -56,9 +56,12 @@ Dashboard.prototype = {
     this._dashboard.vis.mapvis.map.setBounds([state.map.ne, state.map.sw]);
   },
 
-  onStateChanged: function (callback) {
+  onStateChanged: function (callback, shareURLs) {
     this._dashboard.vis.once('dataviewsFetched', function () {
-      this._bindChange(callback);
+      this._dashboard.widgets._widgetsCollection.each(function (m) {
+        m.applyInitialState();
+      }, this);
+      shareURLs === true && this._bindChange(callback);
     }, this);
   },
 

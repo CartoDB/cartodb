@@ -29,9 +29,22 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
+    if (this.model.get('hasInitialState') === true) {
+      this._onInitialState();
+    } else {
+      this.model.bind('change:hasInitialState', this._onInitialState, this);
+    }
     this.model.bind('change:collapsed', function (mdl, isCollapsed) {
       this.$el.toggleClass('is-collapsed', !!isCollapsed);
     }, this);
+  },
+
+  _onInitialState: function () {
+    this.render();
+
+    if (this.model.get('autoStyle') === true) {
+      this.model.autoStyle();
+    }
   },
 
   _initViews: function () {

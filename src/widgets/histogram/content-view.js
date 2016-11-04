@@ -29,7 +29,15 @@ module.exports = cdb.core.View.extend({
     this._originalData = this._dataviewModel.getUnfilteredDataModel();
     this.filter = this._dataviewModel.filter;
     this.lockedByUser = false;
-    this._initBinds();
+    this._numberOfFilters = 0;
+    this._initStateApplied = false;
+
+    var _initBinds = this._initBinds.bind(this);
+    this._originalData.once('change:data', function () {
+      this._dataviewModel.fetch({
+        complete: _initBinds
+      });
+    }, this);
   },
 
   _initViews: function () {
@@ -62,25 +70,118 @@ module.exports = cdb.core.View.extend({
   },
 
   _initBinds: function () {
-    this._originalData.once('change:data', this._onFirstLoad, this);
     this.model.bind('change:normalized', function () {
       var normalized = this.model.get('normalized');
       this.histogramChartView.setNormalized(normalized);
       this.miniHistogramChartView.setNormalized(normalized);
     }, this);
     this.model.bind('change:collapsed', this.render, this);
+
+    if (this.model.get('hasInitialState') === true) {
+      this._setInitialState();
+    } else {
+      this.model.bind('change:hasInitialState', this._setInitialState, this);
+    }
   },
 
-  _onFirstLoad: function () {
-    this.render();
-    this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
-    this._dataviewModel.once('change:data', function () {}, this);
+  _setInitialState: function () {
+    var data = this._dataviewModel.getData();
+    if (data.length === 0) {
+      this._dataviewModel.once('change:data', this._onInitialState, this);
+    } else {
+      this._onInitialState();
+    }
+  },
+
+  _onInitialState: function () {
     this.add_related_model(this._dataviewModel);
-    this._dataviewModel.fetch();
+    this.render();
+
+    if (this.model.get('autoStyle') === true) {
+      this.model.autoStyle();
+    }
+
+    if (this._hasRange()) {
+      this._numberOfFilters = 1;
+    }
+
+    // in order to calculate the stats right, we simulate the full zommmed range
+    if (this._isZoomed()) {
+      this._numberOfFilters = 2;
+    }
+
+    if (this._numberOfFilters !== 0) {
+      this._setInitialRange();
+    } else {
+      this._completeInitialState();
+    }
+  },
+
+  _setupRange: function (data, min, max, updateCallback) {
+    var lo = 0;
+    var hi = data.length;
+    var startMin;
+    var startMax;
+
+    if (_.isNumber(min)) {
+      startMin = _.findWhere(data, {start: min});
+      lo = startMin ? startMin.bin : 0;
+    }
+
+    if (_.isNumber(max)) {
+      startMax = _.findWhere(data, {end: max});
+      hi = startMax ? startMax.bin + 1 : data.length;
+    }
+
+    if (lo && lo !== 0 || hi && hi !== data.length) {
+      this.filter.setRange(
+        data[lo].start,
+        data[hi - 1].end
+      );
+      this._onChangeFilterEnabled();
+      this.histogramChartView.selectRange(lo, hi);
+    }
+
+    updateCallback && updateCallback(lo, hi);
+  },
+
+  _setInitialRange: function () {
+    var data = this._dataviewModel.getData();
+    var min = this.model.get('min');
+    var max = this.model.get('max');
+    var filterEnabled = (min !== undefined || max !== undefined);
+
+    this._setupRange(data, min, max, function (lo, hi) {
+      this.model.set({ filter_enabled: filterEnabled, lo_index: lo, hi_index: hi });
+      this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
+      this._initStateApplied = true;
+
+      // If zoomed, we open the zoom level. Internally it does a fetch, so a change:data is triggered
+      // and the _onHistogramDataChanged callback will do the _updateStats call.
+      if (this._isZoomed()) {
+        this._onChangeZoomEnabled();
+        this._onZoomIn();
+      } else {
+        this._updateStats();
+      }
+    }.bind(this));
+  },
+
+  _completeInitialState: function () {
+    this._dataviewModel.bind('change:data', this._onHistogramDataChanged, this);
+    this._initStateApplied = true;
+    this._updateStats();
   },
 
   _isZoomed: function () {
     return this.model.get('zoomed');
+  },
+
+  _hasRange: function () {
+    var min = this.model.get('min');
+    var max = this.model.get('max');
+
+    return (min != null || max != null);
   },
 
   _onHistogramDataChanged: function () {
@@ -99,6 +200,8 @@ module.exports = cdb.core.View.extend({
       if (!this._isZoomed()) {
         this.histogramChartView.showShadowBars();
         this.miniHistogramChartView.replaceData(this._dataviewModel.getData());
+      } else {
+        this._filteredData = this._dataviewModel.getData();
       }
       this.histogramChartView.replaceData(this._dataviewModel.getData());
     }
@@ -173,15 +276,6 @@ module.exports = cdb.core.View.extend({
     this.histogramChartView.bind('on_brush_end', this._onBrushEnd, this);
     this.histogramChartView.bind('hover', this._onValueHover, this);
     this.histogramChartView.render().show();
-    this.histogramChartView.model.once('change:data', function () {
-      var bars = this._calculateBars();
-      var lo = bars.loBarIndex;
-      var hi = bars.hiBarIndex;
-      if (lo !== 0 || hi !== this._dataviewModel.get('bins')) {
-        this.histogramChartView.selectRange(lo, hi);
-        this.model.set('filter_enabled', true);
-      }
-    }, this);
 
     this._updateStats();
   },
@@ -256,36 +350,42 @@ module.exports = cdb.core.View.extend({
 
     var data = this._originalData.getData();
 
-    if (loBarIndex !== hiBarIndex && loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
-      this.filter.setRange(
-        data[loBarIndex].start,
-        data[hiBarIndex - 1].end
-      );
-      this._updateStats();
-    } else {
-      console.error('Error accessing array bounds', loBarIndex, hiBarIndex, data);
-    }
+    this.model.set({lo_index: loBarIndex, hi_index: hiBarIndex, zlo_index: null, zhi_index: null});
+    this._applyBrushFilter(data, loBarIndex, hiBarIndex);
   },
 
   _onBrushEnd: function (loBarIndex, hiBarIndex) {
+    if (this._isZoomed()) {
+      this._onBrushEndFiltered(loBarIndex, hiBarIndex);
+    } else {
+      this._onBrushEndUnfiltered(loBarIndex, hiBarIndex);
+    }
+  },
+
+  _onBrushEndFiltered: function (loBarIndex, hiBarIndex) {
+    var data = this._filteredData;
+    if ((!data || !data.length) || (this.model.get('zlo_index') === loBarIndex && this.model.get('zhi_index') === hiBarIndex)) {
+      return;
+    }
+
+    this._numberOfFilters = 2;
+    this.lockedByUser = true;
+    this.model.set({filter_enabled: true, zlo_index: loBarIndex, zhi_index: hiBarIndex});
+    this._applyBrushFilter(data, loBarIndex, hiBarIndex);
+  },
+
+  _onBrushEndUnfiltered: function (loBarIndex, hiBarIndex) {
     var data = this._dataviewModel.getData();
     if ((!data || !data.length) || (this.model.get('lo_index') === loBarIndex && this.model.get('hi_index') === hiBarIndex)) {
       return;
     }
+    this._numberOfFilters = 1;
+    this.model.set({filter_enabled: true, zoom_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex});
+    this._applyBrushFilter(data, loBarIndex, hiBarIndex);
+  },
 
-    if (this._isZoomed()) {
-      this.lockedByUser = true;
-    }
-
-    var properties = { filter_enabled: true, lo_index: loBarIndex, hi_index: hiBarIndex };
-
-    if (!this.model.get('zoomed')) {
-      properties.zoom_enabled = true;
-    }
-
-    this.model.set(properties);
-
-    if (loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
+  _applyBrushFilter: function (data, loBarIndex, hiBarIndex) {
+    if (loBarIndex !== hiBarIndex && loBarIndex >= 0 && loBarIndex < data.length && (hiBarIndex - 1) >= 0 && (hiBarIndex - 1) < data.length) {
       this.filter.setRange(
         data[loBarIndex].start,
         data[hiBarIndex - 1].end
@@ -323,7 +423,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _changeHeaderValue: function (className, what, suffix) {
-    if (this.model.get(what) === undefined) {
+    if (this.model.get(what) == null) {
       this.$(className).text('0 ' + suffix);
       return;
     }
@@ -368,14 +468,25 @@ module.exports = cdb.core.View.extend({
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   },
 
-  _calculateBars: function () {
-    var data = this._dataviewModel.getData();
-    var min = this.model.get('min');
-    var max = this.model.get('max');
-    var loBarIndex = this.model.get('lo_index');
-    var hiBarIndex = this.model.get('hi_index');
+  _calculateBars: function (data) {
+    var min;
+    var max;
+    var loBarIndex;
+    var hiBarIndex;
     var startMin;
     var startMax;
+
+    if (this._isZoomed() && this._numberOfFilters === 2) {
+      min = this.model.get('zmin');
+      max = this.model.get('zmax');
+      loBarIndex = this.model.get('zlo_index');
+      hiBarIndex = this.model.get('zhi_index');
+    } else if (this._numberOfFilters === 1) {
+      min = this.model.get('min');
+      max = this.model.get('max');
+      loBarIndex = this.model.get('lo_index');
+      hiBarIndex = this.model.get('hi_index');
+    }
 
     if (data.length > 0) {
       if (!_.isNumber(min) && !_.isNumber(loBarIndex)) {
@@ -403,12 +514,25 @@ module.exports = cdb.core.View.extend({
   },
 
   _updateStats: function () {
-    var data = this._dataviewModel.getData();
+    if (!this._initStateApplied) return;
+    var data;
+
+    if (!this._isZoomed() || this._isZoomed() && this._numberOfFilters === 2) {
+      data = this.histogramChartView.model.get('data');
+    } else {
+      data = this.miniHistogramChartView.model.get('data');
+    }
+
+    if (data == null) {
+      return;
+    }
+
     var nulls = this._dataviewModel.get('nulls');
-    var bars = this._calculateBars();
+    var bars = this._calculateBars(data);
     var loBarIndex = bars.loBarIndex;
     var hiBarIndex = bars.hiBarIndex;
     var sum, avg, min, max;
+    var attrs;
 
     if (data && data.length) {
       sum = this._calcSum(data, loBarIndex, hiBarIndex);
@@ -422,7 +546,17 @@ module.exports = cdb.core.View.extend({
         max = data[Math.max(0, hiBarIndex - 1)].end;
       }
 
-      this.model.set({ total: sum, nulls: nulls, min: min, max: max, avg: avg, lo_index: loBarIndex, hi_index: hiBarIndex });
+      if (this._isZoomed() && this._numberOfFilters === 2) {
+        attrs = {zmin: min, zmax: max, zlo_index: loBarIndex, zhi_index: hiBarIndex};
+      } else if (!this._isZoomed() && this._numberOfFilters === 1) {
+        attrs = {min: min, max: max, lo_index: loBarIndex, hi_index: hiBarIndex};
+      }
+
+      attrs = _.extend(
+        { total: sum, nulls: nulls, avg: avg },
+        attrs);
+
+      this.model.set(attrs);
     }
   },
 
@@ -478,10 +612,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _resetWidget: function () {
-    this.filter.unsetRange();
-    this._dataviewModel.disableFilter();
-    this.histogramChartView.unsetBounds();
-    this.miniHistogramChartView.hide();
+    this._numberOfFilters = 0;
     this.model.set({
       zoomed: false,
       zoom_enabled: false,
@@ -489,8 +620,17 @@ module.exports = cdb.core.View.extend({
       lo_index: null,
       hi_index: null,
       min: null,
-      max: null
+      max: null,
+      zlo_index: null,
+      zhi_index: null,
+      zmin: null,
+      zmax: null
     });
+    this.filter.unsetRange();
+    this._dataviewModel.disableFilter();
+    this.histogramChartView.unsetBounds();
+    this.miniHistogramChartView.hide();
+    this._clearTooltip();
     this._updateStats();
   }
 });

@@ -15,7 +15,17 @@ module.exports = cdb.core.View.extend({
 
   initialize: function () {
     this._dataviewModel = this.model.dataviewModel;
+
+    if (this.model.get('hasInitialState') === true) {
+      this._initBinds();
+    } else {
+      this.model.once('change:hasInitialState', this._onInitialState, this);
+    }
+  },
+
+  _onInitialState: function () {
     this._initBinds();
+    this.render();
   },
 
   render: function () {

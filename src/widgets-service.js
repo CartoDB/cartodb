@@ -43,7 +43,7 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state, op
   var widgetModel = new CategoryWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   }, opts);
-  widgetModel.setState(state);
+  widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -70,7 +70,7 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
   var widgetModel = new HistogramWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   }, opts);
-  widgetModel.setState(state);
+  widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -97,7 +97,7 @@ WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   var widgetModel = new WidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   });
-  widgetModel.setState(state);
+  widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;
@@ -149,7 +149,7 @@ WidgetsService.prototype.createTimeSeriesModel = function (attrs, layer, state, 
   var widgetModel = new TimeSeriesWidgetModel(widgetAttrs, {
     dataviewModel: dataviewModel
   }, opts);
-  widgetModel.setState(state);
+  widgetModel.setInitialState(state);
   this._widgetsCollection.add(widgetModel);
 
   return widgetModel;

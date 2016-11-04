@@ -134,6 +134,19 @@ module.exports = cdb.core.Model.extend({
     }
   },
 
+  setInitialState: function (state) {
+    this.initialState = state || {};
+  },
+
+  applyInitialState: function () {
+    var attrs = _.extend(
+      this.initialState,
+      {hasInitialState: true}
+    );
+
+    this.setState(attrs);
+  },
+
   setState: function (state) {
     this.set(state);
   },

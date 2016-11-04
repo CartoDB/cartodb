@@ -10,7 +10,8 @@ describe('widgets/category/content-view', function () {
       column: 'col'
     });
     this.model = new CategoryWidgetModel({
-      title: 'Categories of something'
+      title: 'Categories of something',
+      hasInitialState: true
     }, {
       dataviewModel: this.dataviewModel
     });

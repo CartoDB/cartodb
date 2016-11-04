@@ -26,7 +26,17 @@ describe('widgets/histogram/content-view', function () {
       dataviewModel: this.dataviewModel
     });
 
+    var oldFtech = this.dataviewModel.fetch;
+    var widgetModel = this.widgetModel;
+    this.dataviewModel.fetch = function (options) {
+      oldFtech.call(this, options);
+      widgetModel.attributes.hasInitialState = true;
+      options && options.complete && options.complete();
+    };
+
+    spyOn(this.dataviewModel, 'getData').and.returnValue(['0', '1']);
     spyOn(this.dataviewModel, 'fetch').and.callThrough();
+
     this.view = new HistogramContentView({
       model: this.widgetModel,
       dataviewModel: this.dataviewModel
@@ -45,6 +55,23 @@ describe('widgets/histogram/content-view', function () {
       expect(this.dataviewModel.fetch).not.toHaveBeenCalled();
       this.originalData.trigger('change:data', this.originalData);
       expect(this.dataviewModel.fetch).toHaveBeenCalled();
+    });
+  });
+
+  describe('update stats', function () {
+    it('should update the stats values', function () {
+      expect(this.widgetModel.get('min')).toBe(undefined);
+      expect(this.widgetModel.get('max')).toBe(undefined);
+      expect(this.widgetModel.get('avg')).toBe(undefined);
+      expect(this.widgetModel.get('total')).toBe(undefined);
+
+      this.dataviewModel.getData.and.returnValue(JSON.stringify(genHistogramData(20)));
+      this.dataviewModel.trigger('change:data');
+
+      expect(this.widgetModel.get('min')).not.toBe(0);
+      expect(this.widgetModel.get('max')).not.toBe(0);
+      expect(this.widgetModel.get('avg')).not.toBe(0);
+      expect(this.widgetModel.get('total')).not.toBe(0);
     });
   });
 
@@ -114,7 +141,6 @@ describe('widgets/histogram/content-view', function () {
     });
 
     it('should update the stats when the data of the model has changed', function () {
-      spyOn(this.dataviewModel, 'getData').and.callThrough();
       spyOn(this.view, '_updateStats').and.callThrough();
       this.dataviewModel._data.reset(genHistogramData(20));
       this.dataviewModel.trigger('change:data');
@@ -169,7 +195,6 @@ describe('widgets/histogram/content-view', function () {
     });
 
     it('should replace histogram chart data with dataview model data when unsets range', function () {
-      spyOn(this.dataviewModel, 'getData').and.returnValue(['0', '1']);
       this.view.render();
       spyOn(this.view._originalData, 'toJSON');
       spyOn(this.view.histogramChartView, 'replaceData');
@@ -190,24 +215,14 @@ describe('widgets/histogram/content-view', function () {
           'bins': [{ bin: 10 }, { bin: 1 }]
         });
       };
+
+      spyOn(this.view, '_onChangeZoomed').and.callThrough();
+      this.view.render();
+
       spyOn(this.view.histogramChartView, 'replaceData');
       this.view.$('.js-zoom').click();
+      expect(this.view._onChangeZoomed).toHaveBeenCalled();
       expect(this.view.histogramChartView.replaceData).toHaveBeenCalled();
-    });
-
-    it('should update the stats values', function () {
-      expect(this.widgetModel.get('min')).toBe(undefined);
-      expect(this.widgetModel.get('max')).toBe(undefined);
-      expect(this.widgetModel.get('avg')).toBe(undefined);
-      expect(this.widgetModel.get('total')).toBe(undefined);
-
-      this.dataviewModel._data.reset(genHistogramData(20));
-      this.dataviewModel.trigger('change:data');
-
-      expect(this.widgetModel.get('min')).not.toBe(0);
-      expect(this.widgetModel.get('max')).not.toBe(0);
-      expect(this.widgetModel.get('avg')).not.toBe(0);
-      expect(this.widgetModel.get('total')).not.toBe(0);
     });
 
     it('should show stats when show_stats is true', function () {

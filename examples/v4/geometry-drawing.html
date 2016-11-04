@@ -535,7 +535,7 @@
       }
 
       function editGeometry (vis, geoJSON) {
-        var geometry = vis.map.editGeometry(geoJSON);
+        var geometry = window.geometry = vis.map.editGeometry(geoJSON);
         displayGeoJSON(geometry);
       }
 

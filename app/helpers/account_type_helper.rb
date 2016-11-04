@@ -1,19 +1,19 @@
 module AccountTypeHelper
   # Customer-facing plan name. Front is responsible of shortening long ones.
   def plan_name(account_type)
-    PLAN_NAME_BY_ACCOUNT_TYPE.fetch(account_type.downcase, account_type)
+    PLAN_NAME_BY_ACCOUNT_TYPE_DOWN.fetch(account_type.downcase, account_type)
   end
 
   private
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free Builder',
-    'BASIC' => 'Basic Builder - Monthly',
-    'BASIC LUMP-SUM' => 'Basic Builder - Annual',
-    'BASIC ACADEMIC' => 'Basic Builder - Non-Profit - Monthly',
-    'BASIC NON-PROFIT' => 'Basic Builder - Non-Profit - Monthly',
-    'BASIC LUMP-SUM ACADEMIC' => 'Basic Builder - Non-Profit - Annual',
-    'BASIC LUMP-SUM NON-PROFIT' => 'Basic Builder - Non-Profit - Annual',
+    'BASIC' => 'Personal Builder - Monthly',
+    'BASIC LUMP-SUM' => 'Personal Builder - Annual',
+    'BASIC ACADEMIC' => 'Personal Builder - Non-Profit - Monthly',
+    'BASIC NON-PROFIT' => 'Personal Builder - Non-Profit - Monthly',
+    'BASIC LUMP-SUM ACADEMIC' => 'Personal Builder - Non-Profit - Annual',
+    'BASIC LUMP-SUM NON-PROFIT' => 'Personal Builder - Non-Profit - Annual',
     'Enterprise Builder - Annual' => 'Enterprise Builder',
     'Enterprise Builder - On-premises - Annual' => 'Enterprise Builder - On-premises',
     'Cloud Engine & Enterprise Builder - Annual' => 'Cloud Engine & Enterprise Builder',
@@ -33,4 +33,6 @@ module AccountTypeHelper
     'Enterprise LDS - Annual' => 'Enterprise LDS',
     'CARTO Trial Account - Annual' => 'CARTO Trial Account'
   }.freeze
+
+  PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k,v| [k.downcase, v] }]
 end

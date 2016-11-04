@@ -1991,7 +1991,8 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped"
+        "timeout": "The execution of the analysis timed out and was stopped",
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },
     "widgets": {

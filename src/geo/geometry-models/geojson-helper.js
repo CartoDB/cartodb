@@ -60,7 +60,7 @@ module.exports = {
     return latlngs;
   },
 
-  getMultiPointLatLngFromGeoJSONCoords: function (geoJSON) {
+  getMultiPointLatLngsFromGeoJSONCoords: function (geoJSON) {
     var lnglats = this.getGeometryCoordinates(geoJSON);
     return this.convertLngLatsToLatLngs(lnglats);
   },

@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Point = require('./point');
 var Polyline = require('./polyline');
 var Polygon = require('./polygon');
@@ -54,7 +53,7 @@ var createPolygonFromGeoJSON = function (geoJSON) {
 };
 
 var createMultiPointFromGeoJSON = function (geoJSON) {
-  var latlngs = GeoJSONHelper.getMultiPointLatLngFromGeoJSONCoords(geoJSON);
+  var latlngs = GeoJSONHelper.getMultiPointLatLngsFromGeoJSONCoords(geoJSON);
   return createMultiPoint({
     editable: true
   }, {

@@ -26,15 +26,14 @@ module Resque
       @queue = :tracker
 
       def self.perform(id, params)
-        return unless ::Hubspot::EventsAPI.instance.enabled?
-
         events_api = ::Hubspot::EventsAPI.instance
+        return unless events_api.enabled?
+
         code, body = events_api.report(id, params: params)
 
         unless code == '200' && body.present?
-          CartoDB::Logger.error(message: 'Carto::Tracking: Hubspot service error',
-                                event_id: id,
-                                params: params)
+          message = 'Carto::Tracking: Hubspot service error'
+          CartoDB::Logger.error(message: message, event_id: id, params: params)
         end
       end
     end

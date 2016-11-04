@@ -3,7 +3,7 @@ var PathViewBase = require('./path-view-base');
 
 var PolylineView = PathViewBase.extend({
   _createGeometry: function () {
-    return L.polyline(this.model.getLatLngs(), { color: this.model.get('color') });
+    return L.polyline(this.model.getCoordinates(), { color: this.model.get('color') });
   }
 });
 

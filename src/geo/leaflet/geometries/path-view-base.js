@@ -43,7 +43,7 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _updateGeometry: function () {
-    this._geometry.setLatLngs(this.model.getLatLngs());
+    this._geometry.setLatLngs(this.model.getCoordinates());
   },
 
   _onGeometryRemoved: function () {

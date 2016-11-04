@@ -16,7 +16,7 @@ var MultiPoint = MultiGeometryBase.extend({
 
   toGeoJSON: function () {
     var coords = this.geometries.map(function (path) {
-      return GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(path.getLatLng());
+      return GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(path.getCoordinates());
     });
     return {
       'type': 'MultiPoint',

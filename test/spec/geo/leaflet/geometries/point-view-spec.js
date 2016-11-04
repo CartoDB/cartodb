@@ -25,7 +25,7 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
   it('should add a marker to the map', function () {
     expect(this.leafletMap.addLayer).toHaveBeenCalled();
     var marker = this.leafletMap.addLayer.calls.argsFor(0)[0];
-    expect(marker.getLatLng()).toEqual({
+    expect(marker.getCoordinates()).toEqual({
       lat: -40,
       lng: 40
     });
@@ -38,7 +38,7 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
 
       this.point.set('latlng', [ -45, 45 ]);
 
-      expect(marker.getLatLng()).toEqual({
+      expect(marker.getCoordinates()).toEqual({
         lat: -45,
         lng: 45
       });
@@ -86,7 +86,7 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
     });
 
     it("should update model's latlng when the marker is dragged & dropped", function () {
-      spyOn(this.marker, 'getLatLng').and.returnValue({
+      spyOn(this.marker, 'getCoordinates').and.returnValue({
         lat: -90,
         lng: 90
       });
@@ -106,8 +106,8 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
         50
       ]);
 
-      expect(this.marker.getLatLng().lat).toEqual(-40);
-      expect(this.marker.getLatLng().lng).toEqual(40);
+      expect(this.marker.getCoordinates().lat).toEqual(-40);
+      expect(this.marker.getCoordinates().lng).toEqual(40);
 
       this.marker.fire('drag');
       this.marker.fire('dragend');
@@ -117,8 +117,8 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
         50
       ]);
 
-      expect(this.marker.getLatLng().lat).toEqual(-50);
-      expect(this.marker.getLatLng().lng).toEqual(50);
+      expect(this.marker.getCoordinates().lat).toEqual(-50);
+      expect(this.marker.getCoordinates().lng).toEqual(50);
     });
   });
 });

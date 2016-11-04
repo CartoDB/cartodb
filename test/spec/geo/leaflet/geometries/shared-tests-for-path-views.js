@@ -17,20 +17,20 @@ module.exports = function () {
   it('should render some markers and a polygon', function () {
     expect(this.leafletMap.addLayer).toHaveBeenCalled();
     expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
-    expect(this.leafletMarker1.getLatLng()).toEqual({ lat: -1, lng: 1 });
+    expect(this.leafletMarker1.getCoordinates()).toEqual({ lat: -1, lng: 1 });
     expect(this.leafletMarker1.options.draggable).toBe(false);
-    expect(this.leafletMarker2.getLatLng()).toEqual({ lat: 1, lng: 2 });
+    expect(this.leafletMarker2.getCoordinates()).toEqual({ lat: 1, lng: 2 });
     expect(this.leafletMarker2.options.draggable).toBe(false);
-    expect(this.leafletMarker3.getLatLng()).toEqual({ lat: 3, lng: 4 });
+    expect(this.leafletMarker3.getCoordinates()).toEqual({ lat: 3, lng: 4 });
     expect(this.leafletMarker3.options.draggable).toBe(false);
-    expect(this.leafletPolygon.getLatLngs()).toEqual([
+    expect(this.leafletPolygon.getCoordinates()).toEqual([
       { lat: -1, lng: 1 }, { lat: 1, lng: 2 }, { lat: 3, lng: 4 }
     ]);
   });
 
   it('should not render duplicated markers', function () {
     this.leafletMap.addLayer.calls.reset();
-    this.geometry.setLatLngs([
+    this.geometry.setCoordinates([
       [-1, 1], [1, 2], [3, 4], [-1, 1]
     ]);
 
@@ -44,7 +44,7 @@ module.exports = function () {
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -45, 45 ], [ 1, 2 ], [ 3, 4 ]
         ]);
       });
@@ -62,7 +62,7 @@ module.exports = function () {
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -1, 1 ], [ 1, 2 ], [ 3, 4 ], [ -40, 40 ]
         ]);
       });
@@ -70,13 +70,13 @@ module.exports = function () {
 
     describe('when points are resetted, function', function () {
       beforeEach(function () {
-        this.geometry.setLatLngs([
+        this.geometry.setCoordinates([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
       });

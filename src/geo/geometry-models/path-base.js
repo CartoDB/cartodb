@@ -16,21 +16,21 @@ var PathBase = GeometryBase.extend({
     this.points.on('reset', this._onPointsReset, this);
   },
 
-  getLatLngs: function () {
+  getCoordinates: function () {
     return this.points.map(function (point) {
-      return point.get('latlng');
+      return point.getCoordinates();
     });
   },
 
-  setLatLngs: function (latlngs) {
+  setCoordinates: function (latlngs) {
     this.points.reset(this._createPoints(latlngs));
     this._triggerChangeEvent();
   },
 
   update: function (latlng) {
-    var latlngs = this.getLatLngs();
+    var latlngs = this.getCoordinates();
     latlngs.push(latlng);
-    this.setLatLngs(latlngs);
+    this.setCoordinates(latlngs);
   },
 
   remove: function () {

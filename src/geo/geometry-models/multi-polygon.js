@@ -17,7 +17,7 @@ var MultiPolygon = MultiGeometryBase.extend({
 
   toGeoJSON: function () {
     var coords = this.geometries.map(function (path) {
-      return [ GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getLatLngs()) ];
+      return [ GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(path.getCoordinates()) ];
     });
     return {
       'type': 'MultiPolygon',

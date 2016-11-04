@@ -58,7 +58,7 @@ class Carto::Map < ActiveRecord::Base
     zoom:            3,
     bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
     bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
-    provider:        'leaflet',
+    provider:        'openlayers',
     center:          [30, 0]
   }.freeze
 
@@ -67,7 +67,7 @@ class Carto::Map < ActiveRecord::Base
   end
 
   def self.provider_for_baselayer_kind(kind)
-    kind == 'tiled' ? 'leaflet' : 'googlemaps'
+    kind == 'tiled' ? 'openlayers' : 'googlemaps'
   end
 
   # (lat,lon) points on all map data

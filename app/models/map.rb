@@ -57,7 +57,7 @@ class Map < Sequel::Model
     zoom:            3,
     bounding_box_sw: [BoundingBoxHelper::DEFAULT_BOUNDS[:minlat], BoundingBoxHelper::DEFAULT_BOUNDS[:minlon]],
     bounding_box_ne: [BoundingBoxHelper::DEFAULT_BOUNDS[:maxlat], BoundingBoxHelper::DEFAULT_BOUNDS[:maxlon]],
-    provider:        'leaflet',
+    provider:        'openlayers',
     center:          [30, 0]
   }
 

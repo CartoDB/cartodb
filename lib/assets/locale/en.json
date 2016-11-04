@@ -2006,7 +2006,8 @@
       "geometry-edit": "You can also edit it on the map",
       "valid": "Must be valid",
       "delete": "Delete %{featureType}",
-      "edit": "Edit %{featureType}"
+      "edit": "Edit %{featureType}",
+      "copy": "COPY"
     }
   },
   "notifications": {

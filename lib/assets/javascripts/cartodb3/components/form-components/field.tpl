@@ -4,8 +4,11 @@
       <span class="<% if (help) { %> js-help is-underlined<% } %>" <% if (help) { %> data-tooltip="<%- help %>"<% } %> ><%- title %></span>
     </label>
   <% } %>
-  <div class="Editor-formInput u-flex u-alignCenter" data-editor></div>
+  <div class="Editor-formInput u-flex u-alignCenter" data-editor>
+    <% if (copy) { %>
+      <button type="button" class="Share-copy CDB-Button CDB-Button--small js-copy" data-clipboard-target="#<%- editorId %>">
+        <span class="CDB-Button-Text CDB-Text CDB-Size-small u-actionTextColor"><%- copy %></span>
+      </button>
+    <% } %>
+  </div>
 </div>
-
-
-

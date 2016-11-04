@@ -14,10 +14,10 @@ module CartoDB
         # Error reporting to Rollbar, usually caused by unserializable data in payload
         Rollbar.log('warning', nil, 'Could not report to Rollbar', stack: caller)
       end
-    rescue
+    rescue => rollbar_exception
       # Last chance to report error
       begin
-        Rollbar.error(e)
+        Rollbar.error(rollbar_exception)
       rescue
       end
     end

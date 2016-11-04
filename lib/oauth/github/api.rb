@@ -69,7 +69,11 @@ module Carto
       end
 
       def user_emails
-        @user_emails = authenticated_request('GET', 'https://api.github.com/user/emails')
+        @user_emails ||= get_emails
+      end
+
+      def get_emails
+        authenticated_request('GET', 'https://api.github.com/user/emails').select { |email| email['verified'] }
       rescue => e
         CartoDB::Logger.error(message: 'Error obtaining GitHub user emails', exception: e, access_token: access_token)
         nil

@@ -4,6 +4,8 @@
   }, {
     "match": "REMOTE ERROR: .*Error: (.*?)$"
   }, {
+    "match": "ERROR: transform: (couldn't project point .*?)in executeQuery"
+  }, {
     "match": "RuntimeError: Execution of function interrupted by signal",
     "replaceWith": "timeout"
   }, {

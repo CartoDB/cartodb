@@ -7,14 +7,12 @@ module Carto
         def report_to_hubspot
           return unless ::Hubspot::EventsAPI.instance.enabled?
 
-          hubspot_job = Resque::TrackingJobs::SendHubspotEvent
-          supplied_properties = @format.to_hubspot
-
           event_name = name.downcase.tr(' ', '_')
           id = fetch_event_id_for_event_name(event_name)
 
           if id.present?
-            Resque.enqueue(hubspot_job, id, supplied_properties)
+            hubspot_job = Resque::TrackingJobs::SendHubspotEvent
+            Resque.enqueue(hubspot_job, id, @format.to_hubspot)
           else
             message = 'Carto::Tracking: Hubspot event id not configured'
             CartoDB::Logger.error(message: message, event_name: event_name)

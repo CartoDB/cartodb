@@ -34,4 +34,21 @@ describe('src/geo/geometry-models/multi-polyline', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'MultiLineString',
+        coordinates: [
+          [
+            [ 100, 0 ], [ 2, 1 ], [ 3, 2 ], [ 40, 30 ]
+          ], [
+            [ 100, 0 ], [ 20, 10 ], [ 30, 20 ], [ 40, 30 ]
+          ]
+        ]
+      };
+      this.multiPolyline.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.multiPolyline.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

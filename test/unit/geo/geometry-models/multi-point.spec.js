@@ -18,4 +18,15 @@ describe('src/geo/geometry-models/multi-point', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'MultiPoint',
+        coordinates: [ [ 0, 0 ], [ 10, 10 ] ]
+      };
+      this.multiPoint.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.multiPoint.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

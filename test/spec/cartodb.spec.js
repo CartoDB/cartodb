@@ -146,7 +146,6 @@ describe('cartodb.js bundle', function() {
 
       expect(cdb.geo.ui.Search).toEqual(jasmine.any(Function));
 
-      expect(cdb.geo.ui.LayerSelector).toEqual(jasmine.any(Function));
       expect(cdb.geo.ui.LayerView).toEqual(jasmine.any(Function));
 
       expect(cdb.geo.ui.TilesLoader).toEqual(jasmine.any(Function));

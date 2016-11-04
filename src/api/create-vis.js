@@ -117,10 +117,6 @@ var applyOptionsToVizJSON = function (vizjson, options) {
     vizjson.addHeaderOverlay(options.title, options.description, options.shareable);
   }
 
-  if (options.layer_selector) {
-    vizjson.addLayerSelectorOverlay();
-  }
-
   if (options.zoomControl !== undefined && !options.zoomControl) {
     vizjson.removeZoomOverlay();
   }

@@ -3,7 +3,6 @@ var Model = require('../core/model');
 var Template = require('../core/template');
 var Annotation = require('../geo/ui/annotation');
 var Header = require('../geo/ui/header');
-var LayerSelector = require('../geo/ui/layer-selector');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
@@ -156,40 +155,7 @@ OverlaysFactory.register('loader', function (data) {
 
 // layer_selector
 OverlaysFactory.register('layer_selector', function (data, visView, map) {
-  var options = data.options;
-  // if (!options.display) return;
 
-  var template = Template.compile(
-    data.template || '<a href="#/change-visibility" class="layers">Visible layers<div class="count"></div></a>',
-    data.templateType || 'underscore'
-  );
-
-  var dropdown_template = Template.compile(
-    data.template || '<ul></ul><div class="tail"><span class="border"></span></div>',
-    data.templateType || 'underscore'
-  );
-
-  var layerSelector = new LayerSelector({
-    model: new Model(options),
-    mapView: visView.mapView,
-    template: template,
-    dropdown_template: dropdown_template,
-    layer_names: data.layer_names
-  });
-
-  if (visView.legends) {
-    layerSelector.bind('change:visible', function (visible, order, layer) {
-      if (layer.get('type') === 'layergroup' || layer.get('type') === 'torque') {
-        var legend = visView.legends && visView.legends.getLegendByIndex(order);
-
-        if (legend) {
-          legend[visible ? 'show' : 'hide']();
-        }
-      }
-    });
-  }
-
-  return layerSelector.render();
 });
 
 // fullscreen

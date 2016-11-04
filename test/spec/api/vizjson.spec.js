@@ -124,18 +124,6 @@ describe('src/vis/vizjson', function () {
     });
   });
 
-  describe('.addLayerSelectorOverlay', function () {
-    it('should add a layer selector Overlay', function () {
-      var vizjson = new VizJSON({});
-
-      vizjson.addLayerSelectorOverlay();
-
-      expect(vizjson.getOverlayByType('layer_selector')).toEqual({
-        type: 'layer_selector'
-      });
-    });
-  });
-
   describe('.addSearchOverlay', function () {
     it('should add a search overlay', function () {
       var vizjson = new VizJSON({});

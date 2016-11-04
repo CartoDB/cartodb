@@ -152,20 +152,6 @@ describe('src/api/create-vis', function () {
     }.bind(this));
   });
 
-  it('should add layer selector', function (done) {
-    var opts = {
-      title: true,
-      layer_selector: true
-    };
-
-    createVis(this.containerId, fakeVizJSON, opts);
-
-    _.defer(function () {
-      expect(this.container.find('.cartodb-layer-selector-box').length).toEqual(1);
-      done();
-    }.bind(this));
-  });
-
   it('should add header without link in the title', function () {
     fakeVizJSON.title = 'title';
     fakeVizJSON.url = null;

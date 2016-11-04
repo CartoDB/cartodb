@@ -20,8 +20,7 @@ VizJSON.OVERLAY_TYPES = {
   LOADER: 'loader',
   SEARCH: 'search',
   HEADER: 'header',
-  LOGO: 'logo',
-  LAYER_SELECTOR: 'layer_selector'
+  LOGO: 'logo'
 };
 
 VizJSON.MAP_PROVIDER_TYPES = {
@@ -62,14 +61,6 @@ VizJSON.prototype.addHeaderOverlay = function (showTitle, showDescription, isSha
           show_description: showDescription
         }
       }
-    });
-  }
-};
-
-VizJSON.prototype.addLayerSelectorOverlay = function () {
-  if (!this.hasOverlay(VizJSON.OVERLAY_TYPES.LAYER_SELECTOR)) {
-    this.overlays.push({
-      type: VizJSON.OVERLAY_TYPES.LAYER_SELECTOR
     });
   }
 };

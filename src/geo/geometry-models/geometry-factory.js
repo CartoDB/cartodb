@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var Point = require('./point');
 var Polyline = require('./polyline');
 var Polygon = require('./polygon');
@@ -32,56 +31,30 @@ var createMultiPolyline = function (attrs, options) {
 };
 
 var createPointFromGeoJSON = function (geoJSON) {
-  var lnglat = GeoJSONHelper.getGeometryCoordinates(geoJSON);
-  var latlng = GeoJSONHelper.convertLngLatToLatLng(lnglat);
+  var latlng = GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
   return createPoint({
     latlng: latlng,
-    geojson: geoJSON,
     editable: true
   });
 };
 
 var createPolylineFromGeoJSON = function (geoJSON) {
-  var lnglats = GeoJSONHelper.getGeometryCoordinates(geoJSON);
-  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
+  var latlngs = GeoJSONHelper.getPolylineLatLngsFromGeoJSONCoords(geoJSON);
   return createPolyline({
-    geojson: geoJSON,
     editable: true
   }, { latlngs: latlngs });
 };
 
 var createPolygonFromGeoJSON = function (geoJSON) {
-  var lnglats = GeoJSONHelper.getGeometryCoordinates(geoJSON)[0];
-  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
-  // Remove the last latlng, which is duplicated
-  latlngs = latlngs.slice(0, -1);
+  var latlngs = GeoJSONHelper.getPolygonLatLngsFromGeoJSONCoords(geoJSON);
   return createPolygon({
-    geojson: geoJSON,
     editable: true
   }, { latlngs: latlngs });
 };
 
 var createMultiPointFromGeoJSON = function (geoJSON) {
-  var lnglats = GeoJSONHelper.getGeometryCoordinates(geoJSON);
-  var latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
+  var latlngs = GeoJSONHelper.getMultiPointLatLngsFromGeoJSONCoords(geoJSON);
   return createMultiPoint({
-    geojson: geoJSON,
-    editable: true
-  }, {
-    latlngs: latlngs
-  });
-};
-
-var createMultiPolygonFromGeoJSON = function (geoJSON) {
-  var lnglats = GeoJSONHelper.getGeometryCoordinates(geoJSON);
-  var latlngs = _.map(lnglats, function (lnglats) {
-    // Remove the last latlng, which is duplicated
-    latlngs = GeoJSONHelper.convertLngLatsToLatLngs(lnglats[0]);
-    latlngs = latlngs.slice(0, -1);
-    return latlngs;
-  }, this);
-  return createMultiPolygon({
-    geojson: geoJSON,
     editable: true
   }, {
     latlngs: latlngs
@@ -89,12 +62,17 @@ var createMultiPolygonFromGeoJSON = function (geoJSON) {
 };
 
 var createMultiPolylineFromGeoJSON = function (geoJSON) {
-  var lnglats = GeoJSONHelper.getGeometryCoordinates(geoJSON);
-  var latlngs = _.map(lnglats, function (lnglats) {
-    return GeoJSONHelper.convertLngLatsToLatLngs(lnglats);
-  }, this);
+  var latlngs = GeoJSONHelper.getMultiPolylineLatLngsFromGeoJSONCoords(geoJSON);
   return createMultiPolyline({
-    geojson: geoJSON,
+    editable: true
+  }, {
+    latlngs: latlngs
+  });
+};
+
+var createMultiPolygonFromGeoJSON = function (geoJSON) {
+  var latlngs = GeoJSONHelper.getMultiPolygonLatLngsFromGeoJSONCoords(geoJSON);
+  return createMultiPolygon({
     editable: true
   }, {
     latlngs: latlngs

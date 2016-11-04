@@ -34,4 +34,21 @@ describe('src/geo/geometry-models/multi-polygon', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'MultiPolygon',
+        coordinates: [
+          [
+            [ [ 0, 0 ], [ 2, 1 ], [ 3, 2 ], [ 4, 3 ], [ 0, 0 ] ]
+          ], [
+            [ [ 100, 0 ], [ 20, 10 ], [ 30, 20 ], [ 40, 30 ], [ 100, 0 ] ]
+          ]
+        ]
+      };
+      this.multiPolygon.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.multiPolygon.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

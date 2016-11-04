@@ -30,7 +30,7 @@ module.exports = function () {
 
   it('should not render duplicated markers', function () {
     this.leafletMap.addLayer.calls.reset();
-    this.geometry.setLatLngs([
+    this.geometry.setCoordinates([
       [-1, 1], [1, 2], [3, 4], [-1, 1]
     ]);
 
@@ -44,7 +44,7 @@ module.exports = function () {
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -45, 45 ], [ 1, 2 ], [ 3, 4 ]
         ]);
       });
@@ -62,7 +62,7 @@ module.exports = function () {
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -1, 1 ], [ 1, 2 ], [ 3, 4 ], [ -40, 40 ]
         ]);
       });
@@ -70,13 +70,13 @@ module.exports = function () {
 
     describe('when points are resetted, function', function () {
       beforeEach(function () {
-        this.geometry.setLatLngs([
+        this.geometry.setCoordinates([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
       });
 
       it("should update the polygon's latlng", function () {
-        expect(this.geometry.getLatLngs()).toEqual([
+        expect(this.geometry.getCoordinates()).toEqual([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
       });

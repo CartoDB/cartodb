@@ -30,7 +30,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
         var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Point).toBeTruthy();
-        expect(geometry.getLatLng()).toEqual([ 40.245991504199026, -3.779296875 ]);
+        expect(geometry.getCoordinates()).toEqual([ 40.245991504199026, -3.779296875 ]);
       });
     });
 
@@ -53,7 +53,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
         var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polyline).toBeTruthy();
-        expect(geometry.getLatLngs()).toEqual([
+        expect(geometry.getCoordinates()).toEqual([
           [ 43.51668853502906, -2.021484375 ],
           [ 42.293564192170095, 3.6035156249999996 ]
         ]);
@@ -89,7 +89,7 @@ describe('src/geo/geometry-models/geometry-factory', function () {
         var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
 
         expect(geometry instanceof Polygon).toBeTruthy();
-        expect(geometry.getLatLngs()).toEqual([
+        expect(geometry.getCoordinates()).toEqual([
           [ 41.918628865183045, -8.96484375 ],
           [ 43.74728909225908, -7.84423828125 ],
           [ 43.34914966389313, -1.69189453125 ]
@@ -107,8 +107,8 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
       expect(geometry instanceof MultiPoint).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);
-      expect(geometry.geometries.at(0).getLatLng()).toEqual([ 0, 100 ]);
-      expect(geometry.geometries.at(1).getLatLng()).toEqual([ 1, 101 ]);
+      expect(geometry.geometries.at(0).getCoordinates()).toEqual([ 0, 100 ]);
+      expect(geometry.geometries.at(1).getCoordinates()).toEqual([ 1, 101 ]);
     });
 
     var multiPolygonGeometry = {
@@ -124,8 +124,8 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
       expect(geometry instanceof MultiPolygon).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);
-      expect(geometry.geometries.at(0).getLatLngs()).toEqual([ [ 2, 102 ], [ 2, 103 ], [ 3, 103 ], [ 3, 102 ] ]);
-      expect(geometry.geometries.at(1).getLatLngs()).toEqual([ [ 0, 100 ], [ 0, 101 ], [ 1, 101 ], [ 1, 100 ] ]);
+      expect(geometry.geometries.at(0).getCoordinates()).toEqual([ [ 2, 102 ], [ 2, 103 ], [ 3, 103 ], [ 3, 102 ] ]);
+      expect(geometry.geometries.at(1).getCoordinates()).toEqual([ [ 0, 100 ], [ 0, 101 ], [ 1, 101 ], [ 1, 100 ] ]);
     });
 
     var multiPolylineGeometry = {
@@ -141,8 +141,8 @@ describe('src/geo/geometry-models/geometry-factory', function () {
 
       expect(geometry instanceof MultiPolyline).toBeTruthy();
       expect(geometry.geometries.length).toEqual(2);
-      expect(geometry.geometries.at(0).getLatLngs()).toEqual([ [ 0, 100 ], [ 1, 101 ] ]);
-      expect(geometry.geometries.at(1).getLatLngs()).toEqual([ [ 2, 102 ], [ 3, 103 ] ]);
+      expect(geometry.geometries.at(0).getCoordinates()).toEqual([ [ 0, 100 ], [ 1, 101 ] ]);
+      expect(geometry.geometries.at(1).getCoordinates()).toEqual([ [ 2, 102 ], [ 3, 103 ] ]);
     });
   });
 });

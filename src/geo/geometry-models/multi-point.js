@@ -16,12 +16,17 @@ var MultiPoint = MultiGeometryBase.extend({
 
   toGeoJSON: function () {
     var coords = this.geometries.map(function (path) {
-      return GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(path.getLatLng());
+      return GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(path.getCoordinates());
     });
     return {
       'type': 'MultiPoint',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlngs = GeoJSONHelper.getMultiPointLatLngsFromGeoJSONCoords(geoJSON);
+    this.geometries.reset(this._createGeometries(latlngs));
   }
 });
 

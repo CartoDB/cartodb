@@ -19,4 +19,17 @@ describe('src/geo/geometry-models/polygon', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'Polygon',
+        coordinates: [
+          [ [ 0, 0 ], [ 10, 10 ], [ 20, 20 ], [ 0, 0 ] ]
+        ]
+      };
+      this.polygon.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.polygon.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

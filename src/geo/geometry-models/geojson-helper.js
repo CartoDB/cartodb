@@ -40,5 +40,45 @@ module.exports = {
   convertLatLngsToGeoJSONPolygonCoords: function (latlngs) {
     latlngs = latlngs.concat([ latlngs[0] ]);
     return this.convertLatlngsToLnglats(latlngs);
+  },
+
+  getPointLatLngFromGeoJSONCoords: function (geoJSON) {
+    var lnglat = this.getGeometryCoordinates(geoJSON);
+    return this.convertLngLatToLatLng(lnglat);
+  },
+
+  getPolylineLatLngsFromGeoJSONCoords: function (geoJSON) {
+    var lnglats = this.getGeometryCoordinates(geoJSON);
+    return this.convertLngLatsToLatLngs(lnglats);
+  },
+
+  getPolygonLatLngsFromGeoJSONCoords: function (geoJSON) {
+    var lnglats = this.getGeometryCoordinates(geoJSON)[0];
+    var latlngs = this.convertLngLatsToLatLngs(lnglats);
+    // Remove the last latlng, which is duplicated
+    latlngs = latlngs.slice(0, -1);
+    return latlngs;
+  },
+
+  getMultiPointLatLngsFromGeoJSONCoords: function (geoJSON) {
+    var lnglats = this.getGeometryCoordinates(geoJSON);
+    return this.convertLngLatsToLatLngs(lnglats);
+  },
+
+  getMultiPolylineLatLngsFromGeoJSONCoords: function (geoJSON) {
+    var lnglats = this.getGeometryCoordinates(geoJSON);
+    return _.map(lnglats, function (lnglats) {
+      return this.convertLngLatsToLatLngs(lnglats);
+    }, this);
+  },
+
+  getMultiPolygonLatLngsFromGeoJSONCoords: function (geoJSON) {
+    var lnglats = this.getGeometryCoordinates(geoJSON);
+    return _.map(lnglats, function (lnglats) {
+      // Remove the last latlng, which is duplicated
+      var latlngs = this.convertLngLatsToLatLngs(lnglats[0]);
+      latlngs = latlngs.slice(0, -1);
+      return latlngs;
+    }, this);
   }
 };

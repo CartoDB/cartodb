@@ -17,12 +17,17 @@ var MultiPolyline = MultiGeometryBase.extend({
 
   toGeoJSON: function () {
     var coords = this.geometries.map(function (path) {
-      return [ GeoJSONHelper.convertLatLngsToGeoJSONPolylineCoords(path.getLatLngs()) ];
+      return GeoJSONHelper.convertLatLngsToGeoJSONPolylineCoords(path.getCoordinates());
     });
     return {
       'type': 'MultiLineString',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlngs = GeoJSONHelper.getMultiPolylineLatLngsFromGeoJSONCoords(geoJSON);
+    this.geometries.reset(this._createGeometries(latlngs));
   }
 });
 

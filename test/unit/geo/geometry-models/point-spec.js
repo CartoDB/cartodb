@@ -15,4 +15,15 @@ describe('src/geo/geometry-models/point', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'Point',
+        coordinates: [ 0, 300 ]
+      };
+      this.point.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.point.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

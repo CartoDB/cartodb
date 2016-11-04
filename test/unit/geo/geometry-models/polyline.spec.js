@@ -19,4 +19,17 @@ describe('src/geo/geometry-models/polyline', function () {
       });
     });
   });
+
+  describe('.setCoordinatesFromGeoJSON', function () {
+    it('should update the coordinates', function () {
+      var newAndExpectedGeoJSON = {
+        type: 'LineString',
+        coordinates: [
+          [ 0, 0 ], [ 1, 1 ], [ 2, 2 ]
+        ]
+      };
+      this.polyline.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      expect(this.polyline.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    });
+  });
 });

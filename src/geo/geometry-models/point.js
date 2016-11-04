@@ -8,18 +8,17 @@ var Point = GeometryBase.extend({
     iconAnchor: [ 11, 11 ]
   },
 
-  getLatLng: function () {
+  getCoordinates: function () {
     return this.get('latlng');
   },
 
-  setLatLng: function (latlng) {
+  setCoordinates: function (latlng) {
     this.set('latlng', latlng);
-    this._triggerChangeEvent();
   },
 
   update: function (latlng) {
     if (!this.get('latlng')) {
-      this.setLatLng(latlng);
+      this.setCoordinates(latlng);
     }
   },
 
@@ -28,11 +27,16 @@ var Point = GeometryBase.extend({
   },
 
   toGeoJSON: function () {
-    var coords = GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(this.getLatLng());
+    var coords = GeoJSONHelper.convertLatLngsToGeoJSONPointCoords(this.getCoordinates());
     return {
       'type': 'Point',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlng = GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
+    this.setCoordinates(latlng);
   }
 });
 

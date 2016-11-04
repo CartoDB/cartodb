@@ -9,7 +9,9 @@ module Carto
 
           hubspot_job = Resque::TrackingJobs::SendHubspotEvent
           supplied_properties = @format.to_hubspot
-          id = fetch_event_id_from_class_name
+
+          event_name = name.downcase.tr(' ', '_')
+          id = fetch_event_id_for_event_name(event_name)
 
           if id.present?
             Resque.enqueue(hubspot_job, id, supplied_properties)
@@ -21,9 +23,9 @@ module Carto
 
         private
 
-        def fetch_event_id_from_class_name
+        def fetch_event_id_for_event_name(event_name)
           event_ids = Cartodb.get_config(:metrics, 'hubspot', 'event_ids')
-          event_ids[name.downcase.tr(' ', '_')]
+          event_ids[event_name] if event_ids
         end
       end
     end

@@ -34,5 +34,5 @@ module AccountTypeHelper
     'CARTO Trial Account - Annual' => 'CARTO Trial Account'
   }.freeze
 
-  PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k,v| [k.downcase, v] }]
+  PLAN_NAME_BY_ACCOUNT_TYPE_DOWN = Hash[PLAN_NAME_BY_ACCOUNT_TYPE.map { |k, v| [k.downcase, v] }]
 end

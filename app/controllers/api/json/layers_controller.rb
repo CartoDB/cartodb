@@ -173,7 +173,7 @@ class Api::Json::LayersController < Api::ApplicationController
     to_letter = to_layer.options['letter']
     to_source = to_layer.options['source']
     if from_layer.present? && from_letter.present? && to_letter.present? && to_source.present?
-      move_layer_node_styles(from_layer, from_letter, to_letter, to_source)
+      move_layer_node_styles(from_layer, from_letter, to_layer, to_letter, to_source)
       update_source_layer_styles(from_layer, from_letter, to_letter, to_source)
     end
   rescue => e
@@ -186,7 +186,7 @@ class Api::Json::LayersController < Api::ApplicationController
     )
   end
 
-  def move_layer_node_styles(from_layer, from_letter, to_letter, to_source)
+  def move_layer_node_styles(from_layer, from_letter, to_layer, to_letter, to_source)
     source_node_number = to_source[1..-1].to_i
     nodes_to_move = from_layer.layer_node_styles.select do |lns|
       lns.source_id.starts_with?(from_letter) && lns.source_id[1..-1].to_i < source_node_number

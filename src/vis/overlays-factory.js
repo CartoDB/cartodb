@@ -153,6 +153,11 @@ OverlaysFactory.register('loader', function (data) {
   return tilesLoader.render();
 });
 
+// layer_selector
+OverlaysFactory.register('layer_selector', function (data, visView, map) {
+
+});
+
 // fullscreen
 OverlaysFactory.register('fullscreen', function (data, visView, map) {
   var options = _.extend(data, {

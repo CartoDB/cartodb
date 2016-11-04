@@ -48,27 +48,29 @@
 
               <input type="hidden" value="<%= params[:invitation_token] %>" id="invitation_token" name="invitation_token" />
 
-              <div class="Sessions-fieldsGroup">
-                <div class="Sessions-field">
-                  <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
-                  <% if !@user.errors[:username].blank? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
-                  <% end %>
-                </div>
+              <% if @organization.auth_username_password_enabled %>
+                <div class="Sessions-fieldsGroup">
+                  <div class="Sessions-field">
+                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
+                    <% if !@user.errors[:username].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
+                    <% end %>
+                  </div>
 
-                <div class="Sessions-field">
-                  <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? %>
-                  <% if !@user.errors[:email].blank? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
-                  <% end %>
-                </div>
+                  <div class="Sessions-field">
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? %>
+                    <% if !@user.errors[:email].blank? %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
+                    <% end %>
+                  </div>
+                <% end %>
 
                 <% if @user.google_sign_in && @organization.auth_google_enabled %>
                   <%= f.hidden_field :google_sign_in %>
                 <% elsif @user.github_user_id && @organization.auth_github_enabled %>
-                <%= f.hidden_field :github_user_id %>
+                  <%= f.hidden_field :github_user_id %>
                   <input type="hidden" name="github_access_token" value="<%= @github_access_token %>" />
-                <% else %>
+                <% elsif @organization.auth_username_password_enabled %>
                   <div class="Sessions-field">
                     <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
                     <% if !@user.errors[:password].blank? %>
@@ -115,7 +117,10 @@
                 <% end %>
               </div>
             <% end %>
-            <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
+
+            <% if @organization.auth_username_password_enabled %>
+              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-flex u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
+            <% end %>
           </div>
         </div>
       </div>

@@ -17,6 +17,11 @@ var Polyline = PathBase.extend({
       'type': 'LineString',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlngs = GeoJSONHelper.getPolylineLatLngsFromGeoJSONCoords(geoJSON);
+    this.setLatLngs(latlngs);
   }
 });
 

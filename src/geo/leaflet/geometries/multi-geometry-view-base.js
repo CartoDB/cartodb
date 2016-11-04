@@ -4,6 +4,7 @@ var MultiGeometryViewBase = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
     if (!this.GeometryViewClass) throw new Error('subclasses of MultiGeometryViewBase must declare the GeometryViewClass instance variable');
+    this.model.geometries.on('reset', this._renderGeometries, this);
   },
 
   render: function () {

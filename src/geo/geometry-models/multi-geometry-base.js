@@ -7,12 +7,16 @@ var MultiGeometryBase = GeometryBase.extend({
     GeometryBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
-    var geometries = [];
+    this.geometries = new Backbone.Collection();
     if (options.latlngs) {
-      geometries = _.map(options.latlngs, this._createGeometry, this);
+      this.geometries.reset(this._createGeometries(options.latlngs));
     }
-    this.geometries = new Backbone.Collection(geometries);
     this.geometries.on('change', this._triggerChangeEvent, this);
+    this.geometries.on('reset', this._onGeometriesReset, this);
+  },
+
+  _createGeometries: function (latlngs) {
+    return _.map(latlngs, this._createGeometry, this);
   },
 
   _createGeometry: function (latlngs) {
@@ -23,15 +27,25 @@ var MultiGeometryBase = GeometryBase.extend({
 
   remove: function () {
     GeometryBase.prototype.remove.apply(this);
-    this.geometries.each(function (geometry) {
-      geometry.remove();
-    });
+    this._removeGeometries();
   },
 
   isComplete: function () {
     return this.geometries.all(function (geometry) {
       return geometry.isComplete();
     });
+  },
+
+  _onGeometriesReset: function (collection, options) {
+    this._removeGeometries(options.previousModels);
+    this._triggerChangeEvent();
+  },
+
+  _removeGeometries: function (geometries) {
+    geometries = geometries || this.geometries.models;
+    _.each(geometries, function (geometry) {
+      geometry.remove();
+    }, this);
   }
 });
 

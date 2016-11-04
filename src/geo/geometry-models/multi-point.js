@@ -22,6 +22,11 @@ var MultiPoint = MultiGeometryBase.extend({
       'type': 'MultiPoint',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlngs = GeoJSONHelper.getMultiPointLatLngsFromGeoJSONCoords(geoJSON);
+    this.geometries.reset(this._createGeometries(latlngs));
   }
 });
 

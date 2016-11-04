@@ -14,7 +14,6 @@ var Point = GeometryBase.extend({
 
   setLatLng: function (latlng) {
     this.set('latlng', latlng);
-    this._triggerChangeEvent();
   },
 
   update: function (latlng) {
@@ -33,6 +32,11 @@ var Point = GeometryBase.extend({
       'type': 'Point',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlng = GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
+    this.setLatLng(latlng);
   }
 });
 

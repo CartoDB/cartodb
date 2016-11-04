@@ -8,13 +8,12 @@ var PathBase = GeometryBase.extend({
     GeometryBase.prototype.initialize.apply(this, arguments);
     options = options || {};
 
-    var points = [];
+    this.points = new Backbone.Collection();
     if (options.latlngs) {
-      points = _.map(options.latlngs, this._createPoint, this);
+      this.points.reset(this._createPoints(options.latlngs));
     }
-    this.points = new Backbone.Collection(points);
     this.points.on('change', this._triggerChangeEvent, this);
-    this.points.on('reset', this._onPointsResetted, this);
+    this.points.on('reset', this._onPointsReset, this);
   },
 
   getLatLngs: function () {
@@ -24,7 +23,7 @@ var PathBase = GeometryBase.extend({
   },
 
   setLatLngs: function (latlngs) {
-    this.points.reset(_.map(latlngs, this._createPoint, this));
+    this.points.reset(this._createPoints(latlngs));
     this._triggerChangeEvent();
   },
 
@@ -39,6 +38,10 @@ var PathBase = GeometryBase.extend({
     this._removePoints();
   },
 
+  _createPoints: function (latlngs) {
+    return _.map(latlngs, this._createPoint, this);
+  },
+
   _createPoint: function (latlng) {
     return new Point({
       latlng: latlng,
@@ -46,7 +49,7 @@ var PathBase = GeometryBase.extend({
     });
   },
 
-  _onPointsResetted: function (collection, options) {
+  _onPointsReset: function (collection, options) {
     this._removePoints(options.previousModels);
   },
 

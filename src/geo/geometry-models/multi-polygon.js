@@ -23,6 +23,11 @@ var MultiPolygon = MultiGeometryBase.extend({
       'type': 'MultiPolygon',
       'coordinates': coords
     };
+  },
+
+  setCoordinatesFromGeoJSON: function (geoJSON) {
+    var latlngs = GeoJSONHelper.getMultiPolygonLatLngsFromGeoJSONCoords(geoJSON);
+    this.geometries.reset(this._createGeometries(latlngs));
   }
 });
 

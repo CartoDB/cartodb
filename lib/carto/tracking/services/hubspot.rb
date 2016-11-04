@@ -23,7 +23,6 @@ module Carto
 
         def fetch_event_id_from_class_name
           event_ids = Cartodb.get_config(:metrics, 'hubspot', 'event_ids')
-
           event_ids[name.downcase.tr(' ', '_')]
         end
       end

@@ -566,7 +566,7 @@
                           "dependencies": {
                             "chalk": {
                               "version": "1.1.3",
-                              "from": "chalk@>=1.1.1 <2.0.0",
+                              "from": "chalk@>=1.1.0 <2.0.0",
                               "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.3.tgz",
                               "dependencies": {
                                 "ansi-styles": {
@@ -934,7 +934,7 @@
                 },
                 "xtend": {
                   "version": "4.0.1",
-                  "from": "xtend@>=4.0.0 <4.1.0",
+                  "from": "xtend@>=4.0.0 <5.0.0",
                   "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
                 }
               }
@@ -1146,13 +1146,13 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#update-geometries-from-geojson",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#8cc2d213151ada8a3d219d477c6c0d865c87dcbd",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#bcb6579aa5b639b9b6061d2ab79901de860dd509",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
-          "from": "cartodb/cartodb.js#update-geometries-from-geojson",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#0f5adc09f490c0daaa132c8823e586770ebef876",
+          "from": "cartodb/cartodb.js#v4",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#ad72431b7633ecc20b78166a91795e3ca0e2da0b",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1432,10 +1432,15 @@
           "from": "d3@3.5.17",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
+        "tinycolor2": {
+          "version": "1.4.1",
+          "from": "tinycolor2@1.4.1",
+          "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz"
+        },
         "urijs": {
-          "version": "1.18.2",
-          "from": "urijs@>=1.17.1 <2.0.0",
-          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.18.2.tgz"
+          "version": "1.17.1",
+          "from": "urijs@1.17.1",
+          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.17.1.tgz"
         }
       }
     },
@@ -1446,8 +1451,8 @@
     },
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
-      "from": "cartodb/cartodb.js#update-geometries-from-geojson",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#0f5adc09f490c0daaa132c8823e586770ebef876",
+      "from": "cartodb/cartodb.js#v4",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#ad72431b7633ecc20b78166a91795e3ca0e2da0b",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1837,7 +1842,7 @@
             },
             "debug": {
               "version": "2.2.0",
-              "from": "debug@2.2.0",
+              "from": "debug@>=2.1.1 <3.0.0",
               "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
               "dependencies": {
                 "ms": {

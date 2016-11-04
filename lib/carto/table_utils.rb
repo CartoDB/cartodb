@@ -19,10 +19,10 @@ module Carto
     private
 
     ALREADY_QUOTED = /\A".*"\Z/
-    NON_VALID_CHARACTERS = /[^[a-z][A-Z][0-9]_$]/
+    VALID_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_$]*$/
 
     def dashes_quoting(name)
-      name && !name.match(ALREADY_QUOTED) && name =~ NON_VALID_CHARACTERS ? "\"#{name}\"" : name
+      name && !name.match(ALREADY_QUOTED) && !name.match(VALID_IDENTIFIER) ? "\"#{name}\"" : name
     end
 
     def can_be_quoted?(name)

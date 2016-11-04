@@ -51,6 +51,12 @@
   padding: 16px;
   text-align: center;
 }
+.CustomList-messageText {
+  max-width: 100%;
+  white-space: normal;
+  overflow: auto;
+  word-break: break-word;
+}
 .CustomList-item.is-highlighted,
 .CustomList-item:hover {
   background: rgba($cHighlight, 0.16);

@@ -11,5 +11,9 @@
   }, {
     "match": "canceling statement due to statement timeout.",
     "replaceWith": "timeout"
+  }, {
+    "match": "^.*?column \"the_geom_webmercator\" does not exist.*",
+    "replaceWith": "without-geom-webmercator",
+    "errorType": "warning"
   }]
 }

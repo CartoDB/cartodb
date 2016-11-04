@@ -130,6 +130,7 @@
     },
     "connect-with-lines": {
       "title": "Connect with lines",
+      "description": "Create lines from point datasets using a variety of methods",
       "the-geom": "This column was updated to be lines according to the method chosen.",
       "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
@@ -1138,10 +1139,15 @@
       "option": "Delete dataset...",
       "cancel": "Cancel",
       "confirm": "Ok, delete it",
-      "desc": "Are you sure?",
+      "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
       "error": "Error deleting %{tableName}",
       "loading": "Deleting your dataset %{tableName}...",
-      "title": "Deleting %{tableName} will affect your API calls, maps, analyses, ..."
+      "title": "You are about to delete the %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
+      "affected-vis-count-extended": "%{affectedVisCount} maps affected, some of them are",
+      "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access",
+      "affected-entities-count-extended": "%{affectedEntitiesCount} users will lose access, some of them are",
+      "whole-organization-affected": "All users from your organization will be affected"
     },
     "metadata": {
       "option": "Edit metadata",
@@ -1986,7 +1992,8 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped"
+        "timeout": "The execution of the analysis timed out and was stopped",
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },
     "widgets": {

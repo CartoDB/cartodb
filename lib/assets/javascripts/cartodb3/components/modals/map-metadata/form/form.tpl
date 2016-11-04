@@ -1,9 +1,9 @@
 <div class="u-tSpace-xl CDB-Text u-flex js-name-field">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.name') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.name') %></label>
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.description') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.description') %></label>
   <div class="u-grow">
     <div class="js-description-field u-bSpace"></div>
     <div class="Markdown">
@@ -20,5 +20,5 @@
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex u-alignCenter js-tags-field">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.tags') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.maps-metadata.form.tags') %></label>
 </div>

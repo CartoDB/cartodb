@@ -1,9 +1,9 @@
 <div class="u-tSpace-xl CDB-Text u-flex js-name-field">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.name') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.name') %></label>
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.description') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.description') %></label>
   <div class="u-grow">
     <div class="js-description-field u-bSpace"></div>
     <div class="Markdown">
@@ -19,26 +19,26 @@
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.source') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.source') %></label>
   <div class="u-grow">
     <div class="js-source-field u-bSpace"></div>
   </div>
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.attributions') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.attributions') %></label>
   <div class="u-grow">
     <div class="js-attributions-field u-bSpace"></div>
   </div>
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.license') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.license') %></label>
   <div class="u-grow">
     <div class="js-license-field u-bSpace Metadata-select"></div>
   </div>
 </div>
 
 <div class="u-tSpace-xl CDB-Text u-flex u-alignCenter js-tags-field">
-  <label class="Metadata-label CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.tags') %></label>
+  <label class="Metadata-label CDB-Text CDB-Size-medium is-semibold u-upperCase u-ellipsis"><%- _t('components.modals.dataset-metadata.form.tags') %></label>
 </div>

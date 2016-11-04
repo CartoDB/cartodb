@@ -64,6 +64,11 @@
   height: 38px;
 }
 
+.Share-user--medium {
+  width: 32px;
+  height: 32px;
+}
+
 .Share-permission {
   @include display-flex();
   @include align-items(center);

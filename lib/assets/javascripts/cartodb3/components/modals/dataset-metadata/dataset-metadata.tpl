@@ -9,10 +9,10 @@
       </svg>
     </div>
     <div>
-      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
+      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl">
         <%- _t('components.modals.dataset-metadata.modal-title') %>
       </h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor">
+      <p class="CDB-Text CDB-Size-large u-altTextColor">
         <%- _t('components.modals.dataset-metadata.modal-desc') %>
       </p>
       <div class="Modal-listTextItem js-content"></div>

@@ -19,9 +19,13 @@ CartoDBLayerGroupViewBase.prototype = {
   },
 
   _clearInteraction: function () {
-    this.model.each(function (layer, layerIndex) {
-      this._disableInteraction(layerIndex);
-    }, this);
+    for (var layerIndex in this.interaction) {
+      if (this.interaction.hasOwnProperty(layerIndex) &&
+        this.interaction[layerIndex]) {
+        this.interaction[layerIndex].remove();
+        this.interaction[layerIndex] = null;
+      }
+    }
   },
 
   _enableInteraction: function (layerIndexInLayerGroup) {
@@ -59,14 +63,6 @@ CartoDBLayerGroupViewBase.prototype = {
         tiles: this.model.getTileURLTemplates(),
         formatter: function (options, data) { return data; }
       };
-    }
-  },
-
-  _disableInteraction: function (layerIndexInLayerGroup) {
-    var layerInteraction = this.interaction[layerIndexInLayerGroup];
-    if (layerInteraction) {
-      layerInteraction.remove();
-      this.interaction[layerIndexInLayerGroup] = null;
     }
   },
 

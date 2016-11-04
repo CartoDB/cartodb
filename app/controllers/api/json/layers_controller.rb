@@ -59,7 +59,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
             from_layer = Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
             from_letter = params[:from_letter]
-            copy_layer_node_styles(@layer, from_layer, from_letter)
+            update_layer_node_styles(@layer, from_layer, from_letter)
           end
 
           @stats_aggregator.timing('parent.save') do
@@ -169,30 +169,34 @@ class Api::Json::LayersController < Api::ApplicationController
     render_jsonp({ description: e.message }, 400)
   end
 
-  def copy_layer_node_styles(to_layer, from_layer, from_letter)
+  def update_layer_node_styles(to_layer, from_layer, from_letter)
     to_letter = to_layer.options['letter']
     to_source = to_layer.options['source']
     if from_layer.present? && from_letter.present? && to_letter.present? && to_source.present?
-      from_layer.layer_node_styles.each do |lns|
-        new_id = lns.source_id.gsub(from_letter, to_letter)
-        if lns.source_id.starts_with?(from_letter)
-          if lns.source_id[1..-1].to_i < to_source[1..-1].to_i
-            # Move LayerNodeStyles from the old layer if given.
-            lns.source_id = new_id
-            to_layer.add_layer_node_style(lns)
-          end
-        end
-      end
+      move_layer_node_styles(from_layer, from_letter, to_letter, to_source)
       update_source_layer_styles(from_layer, from_letter, to_letter, to_source)
     end
   rescue => e
     CartoDB::Logger.error(
-      message: 'Error copying layer node styles',
+      message: 'Error updating layer node styles',
       exception: e,
       from_layer: from_layer,
       from_letter: from_letter,
       to_layer: to_layer
     )
+  end
+
+  def move_layer_node_styles(from_layer, from_letter, to_letter, to_source)
+    source_node_number = to_source[1..-1].to_i
+    nodes_to_move = from_layer.layer_node_styles.select do |lns|
+      lns.source_id.starts_with?(from_letter) && lns.source_id[1..-1].to_i < source_node_number
+    end
+
+    nodes_to_move.each do |lns|
+      # Move LayerNodeStyles from the old layer if given.
+      lns.source_id = lns.source_id.gsub(from_letter, to_letter)
+      to_layer.add_layer_node_style(lns)
+    end
   end
 
   def update_source_layer_styles(from_layer, from_letter, to_letter, to_source)

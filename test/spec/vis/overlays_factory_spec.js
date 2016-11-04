@@ -52,7 +52,6 @@ describe('vis/overlays-factory', function () {
     { type: 'header', data: { options: { extra: { } } } },
     { type: 'zoom', data: {} },
     { type: 'loader', data: {} },
-    { type: 'layer_selector', data: {} },
     { type: 'fullscreen', data: {} },
     { type: 'share', data: {} },
     { type: 'search', data: {} }

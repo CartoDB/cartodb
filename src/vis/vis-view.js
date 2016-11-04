@@ -167,10 +167,6 @@ var Vis = View.extend({
 
       var opt = data.options;
 
-      if (type === 'layer_selector' && options[type] || type === 'layer_selector' && overlay.model.get('display') && options[type] === undefined) {
-        overlay.show();
-      }
-
       if (type === 'fullscreen' && options[type] || type === 'fullscreen' && opt.display && options[type] === undefined) {
         overlay.show();
       }

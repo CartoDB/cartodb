@@ -130,6 +130,7 @@
     },
     "connect-with-lines": {
       "title": "Connect with lines",
+      "description": "Create lines from point datasets using a variety of methods",
       "the-geom": "This column was updated to be lines according to the method chosen.",
       "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
@@ -1991,7 +1992,8 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped"
+        "timeout": "The execution of the analysis timed out and was stopped",
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },
     "widgets": {

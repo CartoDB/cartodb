@@ -6,14 +6,14 @@
       </svg>
     </div>
     <div>
-      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m">
+      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl">
         <%= _t('dataset.delete.title', { tableName: tableName }) %>
       </h2>
-      <p class="CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('dataset.delete.desc') %></p>
+      <p class="CDB-Text CDB-Size-large u-secondaryTextColor"><%- _t('dataset.delete.desc') %></p>
 
       <% if (affectedVisCount > 0) { %>
         <div class="Modal-listActions js-affectedVis">
-          <p class="CDB-Text CDB-Size-medium u-altTextColor">
+          <p class="CDB-Text CDB-Size-large u-altTextColor">
             <% if (affectedVisCount > maxVisCount) {%>
               <%= _t('dataset.delete.affected-vis-count-extended', {affectedVisCount: affectedVisCount}) %>
             <% } else { %>
@@ -32,7 +32,7 @@
                   <div class="MapCard-content MapCard-content--compact">
                     <div class="MapCard-contentBody">
                       <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
-                        <h3 class="CDB-Text CDB-Size-medium u-bSpace u-ellipsis">
+                        <h3 class="CDB-Text CDB-Size-large u-bSpace u-ellipsis">
                           <a href="<%- vis.url %>" target="_blank" title="<%- vis.name %>" class="u-mainTextColor"><%- vis.name %></a>
                         </h3>
                       </div>
@@ -50,7 +50,7 @@
 
       <% if (affectedEntitiesCount > 0 || organizationAffected) { %>
         <div class="Modal-listActions js-affectedEntities">
-          <p class="CDB-Text CDB-Size-medium u-altTextColor">
+          <p class="CDB-Text CDB-Size-large u-altTextColor">
             <% if (organizationAffected) { %>
               <%= _t('dataset.delete.whole-organization-affected') %>
             <% } else if (affectedEntitiesCount > maxEntitiesCount && visibleAffectedEntities.length > 0) {%>

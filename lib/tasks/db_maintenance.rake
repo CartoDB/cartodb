@@ -865,6 +865,9 @@ namespace :cartodb do
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        if ENV['BUILDER_ENABLED'] == "true"
+          organization.builder_enabled = true
+        end
         organization.save
       end
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
@@ -885,6 +888,9 @@ namespace :cartodb do
         organization.display_name = ENV['ORGANIZATION_DISPLAY_NAME']
         organization.seats = ENV['ORGANIZATION_SEATS']
         organization.quota_in_bytes = ENV['ORGANIZATION_QUOTA']
+        if ENV['BUILDER_ENABLED'] == "true"
+          organization.builder_enabled = true
+        end
         organization.save
       end
     end

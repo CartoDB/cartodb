@@ -17,13 +17,13 @@ module.exports = function () {
   it('should render some markers and a polygon', function () {
     expect(this.leafletMap.addLayer).toHaveBeenCalled();
     expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
-    expect(this.leafletMarker1.getCoordinates()).toEqual({ lat: -1, lng: 1 });
+    expect(this.leafletMarker1.getLatLng()).toEqual({ lat: -1, lng: 1 });
     expect(this.leafletMarker1.options.draggable).toBe(false);
-    expect(this.leafletMarker2.getCoordinates()).toEqual({ lat: 1, lng: 2 });
+    expect(this.leafletMarker2.getLatLng()).toEqual({ lat: 1, lng: 2 });
     expect(this.leafletMarker2.options.draggable).toBe(false);
-    expect(this.leafletMarker3.getCoordinates()).toEqual({ lat: 3, lng: 4 });
+    expect(this.leafletMarker3.getLatLng()).toEqual({ lat: 3, lng: 4 });
     expect(this.leafletMarker3.options.draggable).toBe(false);
-    expect(this.leafletPolygon.getCoordinates()).toEqual([
+    expect(this.leafletPolygon.getLatLngs()).toEqual([
       { lat: -1, lng: 1 }, { lat: 1, lng: 2 }, { lat: 3, lng: 4 }
     ]);
   });

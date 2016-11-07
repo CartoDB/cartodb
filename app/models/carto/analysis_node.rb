@@ -27,8 +27,13 @@ class Carto::AnalysisNode
     definition[:params]
   end
 
+  def non_child_params
+    param_locations = children_and_location.keys.select { |cal| cal.first == :params }.map(&:second)
+    params.reject { |key| param_locations.include?(key) }
+  end
+
   def options
-    definition[:options]
+    definition[:options] ||= Hash.new
   end
 
   def children
@@ -58,6 +63,10 @@ class Carto::AnalysisNode
     children.map(&:source_descendants).flatten
   end
 
+  def descendants
+    [self] + children.map(&:descendants).flatten
+  end
+
   def fix_analysis_node_queries(old_username, new_user, renamed_tables)
     if options && options.key?(:table_name)
       old_table_name = options[:table_name]
@@ -75,7 +84,7 @@ class Carto::AnalysisNode
 
   private
 
-  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params, :options].freeze
+  MANDATORY_KEYS_FOR_ANALYSIS_NODE = [:id, :type, :params].freeze
   def get_children(definition, path = [])
     children = definition.map do |k, v|
       if v.is_a?(Hash)

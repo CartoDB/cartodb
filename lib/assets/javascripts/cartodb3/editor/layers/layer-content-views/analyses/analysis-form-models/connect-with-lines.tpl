@@ -14,22 +14,17 @@
       <div class="Editor-HeaderPad u-rSpace--m"></div>
 
       <div class="Editor-HeaderInfo-inner CDB-Text">
-        <div class="Editor-checker Editor-checker--slim u-flex u-alignCenter" data-fields="order"></div>
+        <div class="CDB-Text Editor-formInner">
+          <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.order-by') %></p>
+          <div class="Editor-formInput" data-editors="order_column"></div>
+        </div>
 
-        <% if (order) { %>
-          <div class="Editor-formInner--nested">
-            <div class="CDB-Text Editor-formInner Editor-formInner--noMargin">
-              <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.order-by') %></p>
-              <div class="Editor-formInput" data-editors="order_column"></div>
-            </div>
+        <div class="CDB-Text Editor-formInner">
+          <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.direction') %></p>
+          <div class="Editor-formInput" data-editors="order_type"></div>
+        </div>
 
-            <div class="CDB-Text Editor-formInner">
-              <p class="CDB-Legend u-upperCase u-iBlock CDB-Text is-semibold CDB-Size-small u-rSpace--m"><%- _t('editor.layers.analysis-form.direction') %></p>
-              <div class="Editor-formInput" data-editors="order_type"></div>
-            </div>
-          </div>
-        <% } %>
-        <div class="Editor-checker" data-fields="category_column"></div> 
+        <div class="Editor-checker" data-fields="category_column"></div>
       </div>
     </div>
   <% } %>

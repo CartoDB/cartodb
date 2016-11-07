@@ -8,7 +8,7 @@
       <i class="Spinner XYZPanel-inputIcon XYZPanel-inputIcon--loader Spinner--formIcon Form-inputIcon js-validating" style="display: none;"></i>
       <div class="XYZPanel-error CDB-InfoTooltip CDB-InfoTooltip--left is-error CDB-Text CDB-Size-medium CDB-InfoTooltip-text js-error <%- (layersFetched && layers.length === 0) ? 'is-visible' : '' %>">
         <% if (layersFetched && layers.length === 0) { %>
-          <%- _t('components.modals.add-basemap.wms.invalid') %> <a target="_blank" href="https://carto.com/docs/carto-editor/maps/#including-an-external-basemap">(<%- _t('components.modals.add-basemap.wms.see-docs') %>)</a>
+          <%- _t('components.modals.add-basemap.wms.invalid') %>
         <% } %>
       </div>
     </div>

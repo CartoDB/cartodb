@@ -29,6 +29,7 @@ module CartoDB
           UUID      :permission_id
           Boolean   :locked, null: false, default: false
           String    :legend_style
+          Boolean   :exportable, null: false, default: true
           String    :license
           String    :source
           String    :attributions

@@ -8,6 +8,7 @@ module.exports = Backbone.Collection.extend({
   comparator: 'order',
 
   initialize: function () {
+    this._allDataviewsFetched = false;
     this._initBinds();
   },
 
@@ -48,5 +49,13 @@ module.exports = Backbone.Collection.extend({
       var widget = this.at(i);
       widget.setState(states[i]);
     }
+  },
+
+  hasInitialState: function () {
+    return this._allDataviewsFetched;
+  },
+
+  initialState: function () {
+    this._allDataviewsFetched = true;
   }
 });

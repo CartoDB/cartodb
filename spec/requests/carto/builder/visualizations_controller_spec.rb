@@ -41,10 +41,10 @@ describe Carto::Builder::VisualizationsController do
     end
 
     describe 'v2 -> v3 migration' do
-        before(:each) do
-          @visualization.version = 2
-          @visualization.save
-        end
+      before(:each) do
+        @visualization.version = 2
+        @visualization.save
+      end
 
       it 'automatically migrates visualizations' do
         get builder_visualization_url(id: @visualization.id)
@@ -83,7 +83,6 @@ describe Carto::Builder::VisualizationsController do
         end
       end
     end
-
 
     it 'returns 404 for non-existent visualizations' do
       get builder_visualization_url(id: UUIDTools::UUID.timestamp_create.to_s)

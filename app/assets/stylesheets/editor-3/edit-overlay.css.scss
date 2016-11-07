@@ -1,0 +1,29 @@
+// Edit overlay
+// ----------------------------------------------
+
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/colors';
+
+.EditOverlay {
+  position: absolute;
+  top: 32px;
+  right: 0;
+  left: 0;
+  height: auto;
+  transition: all 0.2s;
+  text-align: center;
+  opacity: 1;
+  z-index: 4;
+
+  &.is-hidden {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+}
+.EditOverlay-inner {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 2px;
+  background: rgba(#000, 0.6);
+}

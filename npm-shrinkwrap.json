@@ -748,7 +748,8 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3"
+          "from": "grunt-run-node@0.1.3",
+          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",

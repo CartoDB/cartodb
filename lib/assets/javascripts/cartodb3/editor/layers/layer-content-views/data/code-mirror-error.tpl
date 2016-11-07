@@ -3,6 +3,6 @@
     <%- _t('components.codemirror.syntax-error') %>: <span><%- message %></span>
   </li>
   <li class="CodeMirror-errorDocs">
-    <a href="https://docs.carto.com/cartodb-platform/sql-api/" target="_black"><%- _t('components.codemirror.docs') %></a>
+    <a href="https://carto.com/docs/carto-engine/sql-api/" target="_black"><%- _t('components.codemirror.docs') %></a>
   </li>
 </ul>

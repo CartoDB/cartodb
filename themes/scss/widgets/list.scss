@@ -76,6 +76,11 @@
   height: 120px;
   padding: 0 $baseSize * 3;
 }
+
+.CDB-Widget-list--wrapped .CDB-Widget-listGroup {
+  overflow: visible;
+}
+
 .CDB-Widget-listGroup {
   @include flex-grow(1);
   overflow: hidden;

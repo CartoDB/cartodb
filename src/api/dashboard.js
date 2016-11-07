@@ -58,6 +58,7 @@ Dashboard.prototype = {
 
   onStateChanged: function (callback, shareURLs) {
     this._dashboard.vis.once('dataviewsFetched', function () {
+      this._dashboard.widgets._widgetsCollection.initialState();
       this._dashboard.widgets._widgetsCollection.each(function (m) {
         m.applyInitialState();
       }, this);

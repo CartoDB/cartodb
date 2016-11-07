@@ -33,10 +33,10 @@ WidgetsService.prototype.getList = function () {
  */
 WidgetsService.prototype.createCategoryModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createCategoryModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.attrsNames = attrsNames;
 
@@ -59,10 +59,10 @@ WidgetsService.prototype.createCategoryModel = function (attrs, layer, state, op
  */
 WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, opts) {
   _checkProperties(attrs, ['title']);
-  var dataAttrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  var dataAttrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createHistogramModel(layer, dataAttrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'bins', 'show_stats', 'normalized', 'style', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'histogram';
   widgetAttrs.attrsNames = attrsNames;
@@ -86,10 +86,10 @@ WidgetsService.prototype.createHistogramModel = function (attrs, layer, state, o
  */
 WidgetsService.prototype.createFormulaModel = function (attrs, layer, state) {
   _checkProperties(attrs, ['title']);
-  attrs = _.extend(attrs, state); // Will overwrite preset attributes with the ones passed on the state
+  attrs = _.extend(attrs, state, {hasInitialState: this._widgetsCollection.hasInitialState()}); // Will overwrite preset attributes with the ones passed on the state
   var dataviewModel = this._dataviews.createFormulaModel(layer, attrs);
 
-  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description'];
+  var attrsNames = ['id', 'title', 'order', 'collapsed', 'prefix', 'suffix', 'show_stats', 'description', 'hasInitialState'];
   var widgetAttrs = _.pick(attrs, attrsNames);
   widgetAttrs.type = 'formula';
   widgetAttrs.attrsNames = attrsNames;

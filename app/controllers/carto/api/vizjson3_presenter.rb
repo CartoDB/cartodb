@@ -83,12 +83,12 @@ module Carto
           center:         map.center,
           datasource:     datasource_vizjson(options, forced_privacy_version),
           description:    html_safe(@visualization.description),
-          options:        map.options,
+          options:        map_options(@visualization),
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
           likes:          @visualization.likes.count,
           map_provider:   map.provider,
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
+          overlays:       overlays_vizjson(@visualization),
           title:          @visualization.qualified_name(user),
           updated_at:     map.viz_updated_at,
           user:           user_info_vizjson(user),
@@ -207,6 +207,20 @@ module Carto
           markdown = Redcarpet::Markdown.new(renderer, {})
           markdown.render string
         end
+      end
+
+      def map_options(visualization)
+        map = visualization.map
+
+        migration_options = { layer_selector: true } if visualization.overlays.any? { |o| o.type == 'layer_selector' }
+
+        map.options.merge(migration_options || {})
+      end
+
+      def overlays_vizjson(visualization)
+        visualization.overlays.
+          select { |o| !o.type == 'layer_selector' }.
+          map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson }
       end
     end
 

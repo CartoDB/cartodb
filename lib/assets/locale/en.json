@@ -2043,7 +2043,7 @@
     },
     "layer": {
       "error": "Layer error: %{error}",
-      "added": "Layer added successfully."
+      "added": "Layer added successfully"
     },
     "cartocss": {
         "error": {

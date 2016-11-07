@@ -50,7 +50,6 @@
 .Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
-  margin-bottom: 7px;
 }
 .Editor-HeaderInfo-titleText {
   @include flex(1);
@@ -114,3 +113,9 @@
 .Editor-HeaderInfo-publishDate {
   @include flex(1);
 }
+
+
+.Editor-HeaderInfo-inner + .CDB-Shape {
+  margin-top: 11px;
+}
+

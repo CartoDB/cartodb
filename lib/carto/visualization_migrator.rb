@@ -6,8 +6,8 @@ module Carto
       raise "#{vis.id} is not v3" unless vis.version == 3
       # Non-private visualizations need to have a Mapcap to be "published" in the Builder (available at the embed)
 
-      mapcap_creation(vis)
       layer_selector_migration(vis)
+      mapcap_creation(vis)
     end
 
     def version_needs_migration?(version, new_version)

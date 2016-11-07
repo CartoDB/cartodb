@@ -219,7 +219,7 @@ module Carto
 
       def overlays_vizjson(visualization)
         visualization.overlays.
-          select { |o| !o.type == 'layer_selector' }.
+          reject { |o| o.type == 'layer_selector' }.
           map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson }
       end
     end

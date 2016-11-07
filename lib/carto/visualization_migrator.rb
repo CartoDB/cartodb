@@ -24,8 +24,14 @@ module Carto
 
     def layer_selector_migration(vis)
       if vis.overlays.any? { |o| o.type == 'layer_selector' }
-        options = vis.map.options.merge(layer_selector: true)
-        vis.map.update_attribute(:options, options)
+        map = vis.map
+        options = (map.options || {}).merge(layer_selector: true)
+        if map.respond_to?(:update_attribute)
+          map.update_attribute(:options, options)
+        else
+          map.options = options
+          map.save
+        end
       end
 
       vis.overlays.select { |o| o.type == 'layer_selector' }.each(&:destroy)

@@ -29,7 +29,6 @@ module Carto
       end
 
       vis.overlays.select { |o| o.type == 'layer_selector' }.each(&:destroy)
-      vis.reload
     end
   end
 end

@@ -3,10 +3,12 @@
 require 'securerandom'
 require_dependency 'google_plus_api'
 require_dependency 'carto/strong_password_validator'
+require_dependency 'dummy_password_generator'
 
 # This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
+    include DummyPasswordGenerator
 
     PARAM_USERNAME = :username
     PARAM_EMAIL = :email
@@ -170,7 +172,7 @@ module CartoDB
         @user.github_user_id = @github_api.id
         @user.username = @github_api.username
         @user.email = @user_params[PARAM_EMAIL] || @github_api.email
-        dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+        dummy_password = generate_dummy_password
         @user.password = dummy_password
         @user.password_confirmation = dummy_password
       else

@@ -25,6 +25,7 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
+          delete_last_row(user.database_schema, table_name, result.schema, result.table_name)
           copy_privileges(user.database_schema, table_name, result.schema, result.table_name)
           index_statements = generate_index_statements(user.database_schema, table_name)
           overwrite(table_name, result)
@@ -179,6 +180,31 @@ module CartoDB
         ))
       rescue => exception
         Rollbar.report_message('Error copying privileges', 'error',
+                               { error: exception.inspect,
+                                 origin_schema: origin_schema,
+                                 origin_table_name: origin_table_name,
+                                 destination_schema: destination_schema,
+                                 destination_table_name: destination_table_name } )
+      end
+
+      # Delete last record after cartodbfication
+      def delete_last_row(origin_schema, origin_table_name, destination_schema, destination_table_name)
+         CartoDB::StdoutLogger.info "Inside delete_last_row.."
+         flag_value = nil
+         does_table_exist = user.in_database(as: :superuser).fetch(%Q(select exists(
+              SELECT 1  FROM   pg_catalog.pg_class c JOIN   pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE  n.nspname = 'public' AND    c.relname = 'last_row_deletion_table')))
+         does_table_exist.each do |t|
+          CartoDB::StdoutLogger.info "does_table_exist = #{t[:exists]}"
+          flag_value = t[:exists]
+         end
+         if flag_value == true
+          user.in_database(as: :superuser).execute(%Q(delete from #{destination_schema}.#{destination_table_name} where ogc_fid=(
+          select max(ogc_fid) from #{destination_schema}.#{destination_table_name}) 
+          and (select count(*) from public.last_row_deletion_table where name='#{origin_schema}.#{origin_table_name}') =1))
+          CartoDB::StdoutLogger.info "Executed delete_last_row statement"
+         end
+         rescue  => exception
+         Rollbar.report_message('Error in last_delete_row', 'error',
                                { error: exception.inspect,
                                  origin_schema: origin_schema,
                                  origin_table_name: origin_table_name,

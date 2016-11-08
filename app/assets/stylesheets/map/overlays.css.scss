@@ -639,6 +639,7 @@ div.cartodb-zoom .info {
   border: 1px solid $Black;
   background-color: $btn_background_normal;
   z-index: 5;
+  cursor: default;
 }
 
 div.cartodb-zoom { 

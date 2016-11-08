@@ -65,6 +65,8 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :state, class_name: Carto::State
   after_save :save_state_if_needed
 
+  has_many :snapshots, class_name: Carto::State
+
   validates :version, presence: true
 
   before_validation :set_default_version

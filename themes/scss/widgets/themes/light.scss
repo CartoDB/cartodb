@@ -264,6 +264,8 @@ $chartMiniSelected: rgba(#333, 1);
   // TimeSlider
   .CDB-TimeSlider {
     fill: $link;
+    stroke-width: 32px;
+    stroke: transparent;
   }
 
   .CDB-Dropdown {

@@ -8,6 +8,11 @@
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
+
+    <div class="Sessions-loggedin <%= "is-active" if @google_plus_config.present? %>">
+      <div class="Spinner"></div>
+    </div>
+
     <div class="Sessions-inner">
       <div class="Sessions-notloggedin <%= "is-active" unless @google_plus_config.present? %>">
         <div class="Sessions-left">
@@ -79,26 +84,28 @@
                   </div>
                 <% end %>
 
-                <div class="Sessions-field">
-                  <p>
-                    <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                      <span class="js-Loading-text">Sign up</span>
-                      <span class="js-Loading-anim" style="display: none;">
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--01"></span>
-                        </span>
+                <% if @organization.auth_username_password_enabled %>
+                  <div class="Sessions-field">
+                    <p>
+                      <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
+                        <span class="js-Loading-text">Sign up</span>
+                        <span class="js-Loading-anim" style="display: none;">
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--01"></span>
+                          </span>
 
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--02"></span>
-                        </span>
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--02"></span>
+                          </span>
 
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                  </p>
-                </div>
+                      </button>
+                    </p>
+                  </div>
+                <% end %>
               </div>
               </div>
 
@@ -106,13 +113,14 @@
                 <%= f.check_box :terms, { checked: true } %>
               </div>
             <% end %>
-            <% unless @user.google_sign_in || @user.github_user_id %>
+
+            <% if @organization.auth_google_enabled || @organization.auth_github_enabled %>
               <div class="Sessions-field Sessions-oauthContainer">
-                <% if @google_plus_config.present? %>
+                <% if @organization.auth_google_enabled && @google_plus_config.present? %>
                   <%= render partial: 'google_plus/google_plus_button',  locals: { config: @google_plus_config } %>
                 <% end %>
 
-                <% if @github_config.present? %>
+                <% if @organization.auth_github_enabled && @github_config.present? %>
                   <%= render partial: 'github/github_button',  locals: { config: @github_config } %>
                 <% end %>
               </div>
@@ -123,10 +131,6 @@
             <% end %>
           </div>
         </div>
-      </div>
-
-      <div class="Sessions-loggedin <%= "is-active" if @google_plus_config.present? %>">
-        <div class="Spinner"></div>
       </div>
     </div>
 

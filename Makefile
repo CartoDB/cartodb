@@ -72,6 +72,7 @@ WORKING_SPECS_1 = \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
+	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \

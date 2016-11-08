@@ -5,9 +5,9 @@
     </label>
   <% } %>
   <div class="Editor-formInput u-flex u-alignCenter" data-editor>
-    <% if (copy) { %>
+    <% if (isCopyButtonEnabled) { %>
       <button type="button" class="Share-copy CDB-Button CDB-Button--small js-copy" data-clipboard-target="#<%- editorId %>">
-        <span class="CDB-Button-Text CDB-Text CDB-Size-small u-actionTextColor"><%- copy %></span>
+        <span class="CDB-Button-Text CDB-Text CDB-Size-small u-actionTextColor"><%- _t('components.backbone-forms.copy-button') %></span>
       </button>
     <% } %>
   </div>

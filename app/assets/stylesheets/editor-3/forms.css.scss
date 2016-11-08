@@ -64,6 +64,10 @@
   @include flex(1);
 }
 
+.Editor-formHelp {
+  padding: 0 0 1px;
+}
+
 .Editor-boxModal .CDB-Legend {
   padding-left: 0;
 }

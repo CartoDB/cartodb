@@ -168,7 +168,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       rescue KeyError => e
         CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
         head(404)
-      rescue CartoDB::InvalidMember
+      rescue CartoDB::InvalidMember => e
         CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
       rescue => e

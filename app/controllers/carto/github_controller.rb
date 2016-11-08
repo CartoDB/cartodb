@@ -2,9 +2,12 @@
 
 require_dependency 'oauth/github/api'
 require_dependency 'oauth/github/config'
+require_dependency 'account_creator'
 
 module Carto
   class GithubController < ApplicationController
+    include AccountCreator
+
     ssl_required  :github
     before_filter :initialize_github_config
 

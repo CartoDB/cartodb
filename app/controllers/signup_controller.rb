@@ -1,9 +1,11 @@
 require_dependency 'google_plus_config'
+require_dependency 'account_creator'
 
 require_relative '../../lib/user_account_creator'
 
 class SignupController < ApplicationController
   include LoginHelper
+  include AccountCreator
 
   layout 'frontend'
 
@@ -115,16 +117,6 @@ class SignupController < ApplicationController
   end
 
   private
-
-  def trigger_account_creation(account_creator)
-    creation_data = account_creator.enqueue_creation(self)
-
-    flash.now[:success] = 'User creation in progress'
-    # Template variables
-    @user_creation_id = creation_data[:id]
-    @user_name = creation_data[:id]
-    @redirect_url = CartoDB.url(self, 'dashboard')
-  end
 
   def existing_user(user)
     !Carto::User.find_by_username_and_email(user.username, user.email).nil?

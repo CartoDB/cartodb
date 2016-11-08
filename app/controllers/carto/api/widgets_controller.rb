@@ -85,6 +85,8 @@ module Carto
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")
         end
 
+        raise UnprocesableEntityError.new("Missing source.id") unless source_id_from_params.present?
+
         true
       end
 

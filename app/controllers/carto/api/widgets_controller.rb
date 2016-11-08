@@ -33,6 +33,8 @@ module Carto
           source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
+      rescue ActiveRecord::RecordInvalid
+        render json: { errors: widget.errors }, status: 422
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500
@@ -84,8 +86,6 @@ module Carto
         if [@widget_id, params[:id]].compact.uniq.length >= 2
           raise UnprocesableEntityError.new("URL id (#{@widget_id}) and payload id (#{params[:id]}) don't match")
         end
-
-        raise UnprocesableEntityError.new("Missing source.id") unless source_id_from_params.present?
 
         true
       end

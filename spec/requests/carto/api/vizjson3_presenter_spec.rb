@@ -201,7 +201,7 @@ describe Carto::Api::VizJSON3Presenter do
     end
   end
 
-  describe 'anonyous_vizjson' do
+  describe 'anonymous_vizjson' do
     include_context 'full visualization'
 
     it 'v3 should include sql_wrap' do
@@ -328,6 +328,26 @@ describe Carto::Api::VizJSON3Presenter do
         torque_layer[:sql].should be
         torque_layer[:cartocss].should be
         torque_layer[:cartocss_version].should be
+      end
+    end
+
+    describe 'overlays' do
+      include_context 'full visualization'
+
+      def vizjson
+        Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user)
+                                     .send(:calculate_vizjson, forced_privacy_version: :force_anonymous)
+      end
+
+      it 'enables map layer_selector option if there is a layer_selector overlay' do
+        vizjson[:options]['layer_selector'].should eq false
+        @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+        vizjson[:options]['layer_selector'].should eq true
+      end
+
+      it 'removes layer selector overlay ' do
+        @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+        vizjson[:overlays].any? { |o| o[:type] == 'layer_selector' }.should be_false
       end
     end
   end

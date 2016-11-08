@@ -588,6 +588,8 @@ CartoDB::Application.routes.draw do
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
+        resources :snapshots, only: [:index, :show, :create, :update, :destroy],
+                              constraints: { id: UUID_REGEXP }
         resource :state, only: [:update]
 
         scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do

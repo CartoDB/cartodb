@@ -1,3 +1,4 @@
+# This file should be synched with Central
 module AccountTypeHelper
   # Customer-facing plan name. Front is responsible of shortening long ones.
   def plan_name(account_type)

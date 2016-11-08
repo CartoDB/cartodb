@@ -59,6 +59,8 @@ class Carto::User < ActiveRecord::Base
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, :through => :users_group
 
+  has_many :snapshots, class_name: Carto::State
+
   delegate [
       :database_username, :database_password, :in_database,
       :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,

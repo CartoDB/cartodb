@@ -19,9 +19,8 @@ var Polyline = PathBase.extend({
     };
   },
 
-  setCoordinatesFromGeoJSON: function (geoJSON) {
-    var latlngs = GeoJSONHelper.getPolylineLatLngsFromGeoJSONCoords(geoJSON);
-    this.setCoordinates(latlngs);
+  getCoordinatesFromGeoJSONCoords: function (geoJSON) {
+    return GeoJSONHelper.getPolylineLatLngsFromGeoJSONCoords(geoJSON);
   }
 });
 

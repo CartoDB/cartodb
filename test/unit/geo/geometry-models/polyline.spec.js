@@ -21,15 +21,44 @@ describe('src/geo/geometry-models/polyline', function () {
   });
 
   describe('.setCoordinatesFromGeoJSON', function () {
-    it('should update the coordinates', function () {
-      var newAndExpectedGeoJSON = {
-        type: 'LineString',
-        coordinates: [
-          [ 0, 0 ], [ 1, 1 ], [ 2, 2 ]
-        ]
-      };
-      this.polyline.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
-      expect(this.polyline.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+    beforeEach(function () {
+      this.changeCallback = jasmine.createSpy('changeCallback');
+      this.polyline.on('change', this.changeCallback);
+    });
+
+    describe('when given a GeoJSON with the same coordinates', function () {
+      beforeEach(function () {
+        var newAndExpectedGeoJSON = this.polyline.toGeoJSON();
+        this.polyline.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+      });
+
+      it('should NOT trigger a "change" event', function () {
+        expect(this.changeCallback).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when given a GeoJSON with different coordinates', function () {
+      beforeEach(function () {
+        var newAndExpectedGeoJSON = {
+          type: 'LineString',
+          coordinates: [
+            [ 0, 0 ], [ 1, 1 ], [ 2, 2 ]
+          ]
+        };
+        this.polyline.setCoordinatesFromGeoJSON(newAndExpectedGeoJSON);
+        expect(this.polyline.toGeoJSON()).toEqual(newAndExpectedGeoJSON);
+      });
+
+      it('should trigger a "change" event', function () {
+        expect(this.changeCallback).toHaveBeenCalled();
+      });
+
+      it('should update the coordinates', function () {
+        expect(this.polyline.toGeoJSON()).toEqual({
+          type: 'LineString',
+          coordinates: [ [ 0, 0 ], [ 1, 1 ], [ 2, 2 ] ]
+        });
+      });
     });
   });
 });

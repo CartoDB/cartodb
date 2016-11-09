@@ -34,9 +34,8 @@ var Point = GeometryBase.extend({
     };
   },
 
-  setCoordinatesFromGeoJSON: function (geoJSON) {
-    var latlng = GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
-    this.setCoordinates(latlng);
+  getCoordinatesFromGeoJSONCoords: function (geoJSON) {
+    return GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
   }
 });
 

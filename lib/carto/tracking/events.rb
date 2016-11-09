@@ -2,6 +2,7 @@
 
 require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'
+require_dependency 'carto/tracking/services/hubspot'
 require_dependency 'carto/tracking/validators/visualization'
 require_dependency 'carto/tracking/validators/user'
 
@@ -75,6 +76,7 @@ module Carto
       end
 
       class ExportedMap < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Readable
@@ -96,6 +98,7 @@ module Carto
       class DeletedMap < MapEvent; end
 
       class PublishedMap < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
@@ -105,6 +108,7 @@ module Carto
       end
 
       class ConnectionEvent < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::User
@@ -162,6 +166,7 @@ module Carto
       end
 
       class AnalysisEvent < Event
+        include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
 
         include Carto::Tracking::Validators::Visualization::Writable
@@ -175,6 +180,8 @@ module Carto
       class DeletedAnalysis < AnalysisEvent; end
 
       class AppliedSql < Event
+        include Carto::Tracking::Services::Hubspot
+
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
@@ -182,6 +189,8 @@ module Carto
       end
 
       class AppliedCartocss < Event
+        include Carto::Tracking::Services::Hubspot
+
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
@@ -189,6 +198,8 @@ module Carto
       end
 
       class ModifiedStyleForm < Event
+        include Carto::Tracking::Services::Hubspot
+
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 

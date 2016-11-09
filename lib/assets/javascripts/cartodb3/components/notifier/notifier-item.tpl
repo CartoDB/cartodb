@@ -25,7 +25,7 @@
   <% } %>
 
   <div class="Notifier-info">
-    <p class="CDB-Text CDB-Size-medium"><%= info %>. <% if (isActionable) { %> <span class="js-actionButton"></span> <% } %></p>
+    <p class="CDB-Text CDB-Size-medium"><%= info %> <% if (isActionable) { %> <span class="js-actionButton"></span> <% } %></p>
   </div>
 
   <% if (isClosable) { %>

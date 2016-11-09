@@ -223,7 +223,7 @@
     <% end %>
   </div>
 
-  <% if !@user.new? && current_user.organization_owner? -%>
+  <% if !@user.new? && current_user.organization_owner? && @user.engine_enabled? -%>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User API key</label>

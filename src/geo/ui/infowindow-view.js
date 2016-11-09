@@ -30,6 +30,7 @@ var Infowindow = View.extend({
   events: {
     // Close bindings
     'click .js-close': '_closeInfowindow',
+    'click .cartodb-popup-close-button.close': '_closeInfowindow',
     'touchstart .js-close': '_closeInfowindow',
     'MSPointerDown .js-close': '_closeInfowindow',
     // Rest infowindow bindings

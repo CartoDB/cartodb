@@ -33,6 +33,17 @@ describe Carto::Api::AnalysesController do
       id: analysis_id)
   end
 
+  def clean_analysis_definition(analysis_definition)
+    # Remove options[:style_history] from all nested nodes for comparison
+    definition_node = Carto::AnalysisNode.new(analysis_definition.deep_symbolize_keys)
+    definition_node.descendants.each do |n|
+      n.definition[:options].delete(:style_history) if n.definition[:options].present?
+      n.definition.delete(:options) if n.definition[:options] == {}
+    end
+
+    definition_node.definition
+  end
+
   describe '#show' do
     it 'returns 403 if user does not own the visualization' do
       get_json viz_analysis_url(@user2, @visualization, @analysis.id) do |response|
@@ -43,7 +54,7 @@ describe Carto::Api::AnalysesController do
     def verify_analysis_response_body(response_body, analysis)
       response_body[:id].should eq analysis.id
       analysis_definition = response_body[:analysis_definition]
-      analysis_definition.deep_symbolize_keys.should eq analysis.analysis_definition.deep_symbolize_keys
+      clean_analysis_definition(analysis_definition).should eq clean_analysis_definition(analysis.analysis_definition)
       analysis_definition[:id].should eq analysis.natural_id
     end
 
@@ -102,14 +113,14 @@ describe Carto::Api::AnalysesController do
       post_json create_analysis_url(@user, @visualization), payload do |response|
         response.status.should eq 201
         response.body[:id].should_not be_nil
-        analysis_definition = response.body[:analysis_definition].symbolize_keys
+        analysis_definition = clean_analysis_definition(response.body[:analysis_definition])
         analysis_definition.should eq payload[:analysis_definition]
 
         a = Carto::Analysis.find_by_natural_id(@visualization.id, natural_id)
         a.should_not eq nil
         a.user_id.should eq @user.id
         a.visualization_id.should eq @visualization.id
-        a.analysis_definition.deep_symbolize_keys.should eq payload[:analysis_definition].deep_symbolize_keys
+        clean_analysis_definition(a.analysis_definition).should eq payload[:analysis_definition].deep_symbolize_keys
 
         a.destroy
       end
@@ -129,7 +140,7 @@ describe Carto::Api::AnalysesController do
         response_body = response.body
         response_body[:id].should eq @analysis.id
         response_body[:analysis_definition][:id].should eq @analysis.natural_id
-        response_body[:analysis_definition].should eq updated_analysis[:analysis_definition]
+        clean_analysis_definition(response_body[:analysis_definition]).should eq clean_analysis_definition(updated_analysis[:analysis_definition])
       end
 
       # Check that no analysis is _added_
@@ -227,7 +238,7 @@ describe Carto::Api::AnalysesController do
 
       put_json viz_analysis_url(@user, @visualization, @analysis), new_payload do |response|
         response.status.should eq 200
-        response.body[:analysis_definition].symbolize_keys.should eq new_payload[:analysis_definition]
+        clean_analysis_definition(response.body[:analysis_definition]).should eq clean_analysis_definition(new_payload[:analysis_definition])
         a = Carto::Analysis.find(@analysis.id)
         a.analysis_definition[:id].should eq new_payload[:analysis_definition][:id]
         a.analysis_definition[new_key].should eq new_payload[:analysis_definition][new_key]
@@ -313,6 +324,116 @@ describe Carto::Api::AnalysesController do
     it 'returns 403 if user does not own the visualization' do
       delete_json viz_analysis_url(@user2, @visualization, @analysis) do |response|
         response.status.should eq 403
+      end
+    end
+  end
+
+  describe '#LayerNodeStyle cache' do
+    before(:all) do
+      @styled_analysis = FactoryGirl.create(:analysis_point_in_polygon, visualization_id: @visualization.id, user_id: @user.id)
+      @layer_id = @visualization.data_layers.first.id
+    end
+
+    before(:each) do
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.create(
+          layer_id: @layer_id,
+          source_id: node_id,
+          options: {
+            tile_style: 'wadus'
+          },
+          infowindow: {},
+          tooltip: {}
+        )
+      end
+    end
+
+    after(:each) do
+      Carto::LayerNodeStyle.where(layer_id: @layer_id).delete_all
+    end
+
+    it '#show returns tile styles' do
+      get_json viz_analysis_url(@user, @visualization, @styled_analysis.id) do |response|
+        response.status.should eq 200
+        Carto::AnalysisNode.new(response[:body][:analysis_definition].deep_symbolize_keys).descendants.each do |node|
+          node.options[:style_history][@layer_id.to_sym][:options][:tile_style].should eq 'wadus'
+        end
+      end
+    end
+
+    it '#update invalidates the affected node' do
+      @styled_analysis.analysis_node.params[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should only invalidate the parent
+      updated_ids = [@styled_analysis.natural_id]
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        modified = updated_ids.include?(node_id)
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should eq !modified
+      end
+    end
+
+    it '#update invalidates the affected node and its parent' do
+      first_child = @styled_analysis.analysis_node.children.first
+      first_child.params[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should invalidate the first child and the parent
+      updated_ids = [@styled_analysis.natural_id, first_child.id]
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        modified = updated_ids.include?(node_id)
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should eq !modified
+      end
+    end
+
+    it '#update does not invalidate upon options change' do
+      @styled_analysis.reload
+      @styled_analysis.analysis_node.options[:dummy] = 'yes'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should not invalidate anything
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should be_true
+      end
+    end
+
+    it '#update does not invalidate upon children node_id change' do
+      @styled_analysis.reload
+      first_child = @styled_analysis.analysis_node.children.first
+      first_child.definition[:id] = 'bogus'
+      new_payload = {
+        id: @styled_analysis.id,
+        analysis_definition: @styled_analysis.analysis_definition
+      }
+      @styled_analysis.reload
+      put_json viz_analysis_url(@user, @visualization, @styled_analysis), new_payload do |response|
+        response.status.should eq 200
+      end
+
+      # Should not invalidate anything
+      @styled_analysis.analysis_node.descendants.map(&:id).each do |node_id|
+        Carto::LayerNodeStyle.from_visualization_and_source(@visualization, node_id).any?.should be_true
       end
     end
   end

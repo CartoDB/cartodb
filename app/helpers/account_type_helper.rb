@@ -5,6 +5,10 @@ module AccountTypeHelper
     PLAN_NAME_BY_ACCOUNT_TYPE_DOWN.fetch(account_type.downcase, account_type)
   end
 
+  def plan_name_no_time(account_type)
+    plan_name(account_type).gsub(' - Monthly', '').gsub(' - Annual', '')
+  end
+
   private
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {

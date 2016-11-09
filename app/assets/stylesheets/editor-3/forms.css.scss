@@ -64,6 +64,10 @@
   @include flex(1);
 }
 
+.Editor-formHelp {
+  padding: 0 0 1px;
+}
+
 .Editor-boxModal .CDB-Legend {
   padding-left: 0;
 }
@@ -96,6 +100,9 @@
 }
 
 // TODO: fix this in CartoAsssets
+.CDB-Legend--textarea {
+  margin-top: -16px;
+}
 .CDB-OptionInput-container {
   height: 100%;
 }

@@ -16,6 +16,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.Editor--topBar {
+  height: calc(100vh - 40px);
+}
+
 .Editor-wrapper {
   @include display-flex();
   position: relative;
@@ -70,27 +74,23 @@
 }
 .Editor-panel .ps-scrollbar-x-rail {
   height: 2px !Important; // Resets standard scroll track color
-  background: #EEE;
-  z-index: 3;
   border-top: 12px solid $cWhite;
   border-bottom: 2px solid $cWhite;
+  background: #EEE;
+  z-index: 3;
 }
-.Editor-panel .ps-scrollbar-x {
-  height: 2px !Important; // Resets standard scroll bar color
+.Editor-panel .ps-scrollbar-x-rail .ps-scrollbar-x {
+  bottom: -1px !Important; // Resets standard scroll bar position
+  height: 4px !Important; // Resets standard scroll bar color
   background: #AAA;
+  min-width: 120px;
   pointer-events: all;
-}
-.Editor-panel .ps-scrollbar-x-rail:hover .ps-scrollbar-x {
-  bottom: -1px !Important; // Resets standard scroll bar position
-  height: 4px !Important; // Resets standard scroll bar color
-}
-.Editor-panel .ps-scrollbar-x:hover {
-  bottom: -1px !Important; // Resets standard scroll bar position
-  height: 4px !Important; // Resets standard scroll bar color
+  opacity: 0.6;
 }
 
-
-
+.Editor .CDB-Zoom-info {
+  display: block;
+}
 
 
 /* deep insights */

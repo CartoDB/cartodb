@@ -6,6 +6,8 @@ require_relative '../helpers/bounding_box_helper'
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
+  plugin :serialization, :json, :options
+
   one_to_many :tables, class: ::UserTable
   many_to_one :user
 

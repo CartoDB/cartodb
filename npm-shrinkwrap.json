@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.3.39",
+  "version": "4.4.7",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -18,9 +18,9 @@
       "resolved": "git://github.com/cartodb/backbone-model-file-upload.git#ff2c75cdf7e8e8e7dd651b4f69f14d13abe23a19",
       "dependencies": {
         "bower": {
-          "version": "1.7.9",
+          "version": "1.8.0",
           "from": "bower@>=1.3.12 <2.0.0",
-          "resolved": "https://registry.npmjs.org/bower/-/bower-1.7.9.tgz"
+          "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.0.tgz"
         },
         "formidable": {
           "version": "1.0.17",
@@ -162,9 +162,9 @@
                       "resolved": "https://registry.npmjs.org/fs-extra/-/fs-extra-0.26.7.tgz",
                       "dependencies": {
                         "graceful-fs": {
-                          "version": "4.1.9",
+                          "version": "4.1.10",
                           "from": "graceful-fs@>=4.1.2 <5.0.0",
-                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.9.tgz"
+                          "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.10.tgz"
                         },
                         "jsonfile": {
                           "version": "2.4.0",
@@ -172,9 +172,9 @@
                           "resolved": "https://registry.npmjs.org/jsonfile/-/jsonfile-2.4.0.tgz"
                         },
                         "klaw": {
-                          "version": "1.3.0",
+                          "version": "1.3.1",
                           "from": "klaw@>=1.0.0 <2.0.0",
-                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.0.tgz"
+                          "resolved": "https://registry.npmjs.org/klaw/-/klaw-1.3.1.tgz"
                         },
                         "path-is-absolute": {
                           "version": "1.0.1",
@@ -364,9 +364,9 @@
                               "resolved": "https://registry.npmjs.org/async/-/async-2.1.2.tgz",
                               "dependencies": {
                                 "lodash": {
-                                  "version": "4.16.4",
+                                  "version": "4.16.6",
                                   "from": "lodash@>=4.14.0 <5.0.0",
-                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.4.tgz"
+                                  "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.16.6.tgz"
                                 }
                               }
                             }
@@ -748,8 +748,7 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3",
-          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
+          "from": "grunt-run-node@0.1.3"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",
@@ -905,9 +904,9 @@
                           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.2.0.tgz",
                           "dependencies": {
                             "amdefine": {
-                              "version": "1.0.0",
+                              "version": "1.0.1",
                               "from": "amdefine@>=0.0.4",
-                              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
+                              "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
                             }
                           }
                         }
@@ -1069,9 +1068,9 @@
                       "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz",
                       "dependencies": {
                         "amdefine": {
-                          "version": "1.0.0",
+                          "version": "1.0.1",
                           "from": "amdefine@>=0.0.4",
-                          "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
+                          "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
                         }
                       }
                     }
@@ -1147,12 +1146,12 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#749dd786f626f384a5bbb97cbaa15e88a935b2e3",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#81afb629ae53e6c7f6c203ba741a0ddd2fe533ca",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#ce10a4d8ae09c949beb45c799c36811bf0558483",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#594ebc4c4bf3923f269007fe66ec06fe3cdbbcb1",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1263,7 +1262,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <1.1.0",
+                  "from": "turf-jenks@>=1.0.1 <2.0.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1432,10 +1431,15 @@
           "from": "d3@3.5.17",
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
+        "tinycolor2": {
+          "version": "1.4.1",
+          "from": "tinycolor2@1.4.1",
+          "resolved": "https://registry.npmjs.org/tinycolor2/-/tinycolor2-1.4.1.tgz"
+        },
         "urijs": {
-          "version": "1.18.2",
-          "from": "urijs@>=1.17.1 <2.0.0",
-          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.18.2.tgz"
+          "version": "1.17.1",
+          "from": "urijs@1.17.1",
+          "resolved": "https://registry.npmjs.org/urijs/-/urijs-1.17.1.tgz"
         }
       }
     },
@@ -1447,7 +1451,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#ce10a4d8ae09c949beb45c799c36811bf0558483",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#594ebc4c4bf3923f269007fe66ec06fe3cdbbcb1",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1563,7 +1567,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <1.1.0",
+              "from": "turf-jenks@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {
@@ -1733,35 +1737,14 @@
       "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
-          "version": "1.1.8",
+          "version": "1.2.0",
           "from": "good-listener@>=1.1.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.1.8.tgz",
+          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.0.tgz",
           "dependencies": {
             "delegate": {
-              "version": "3.0.2",
-              "from": "delegate@>=3.0.2 <4.0.0",
-              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.0.2.tgz",
-              "dependencies": {
-                "component-closest": {
-                  "version": "1.0.1",
-                  "from": "component-closest@>=1.0.1 <1.1.0",
-                  "resolved": "https://registry.npmjs.org/component-closest/-/component-closest-1.0.1.tgz",
-                  "dependencies": {
-                    "component-matches-selector": {
-                      "version": "0.1.6",
-                      "from": "component-matches-selector@>=0.1.6 <0.2.0",
-                      "resolved": "https://registry.npmjs.org/component-matches-selector/-/component-matches-selector-0.1.6.tgz",
-                      "dependencies": {
-                        "component-query": {
-                          "version": "0.0.3",
-                          "from": "component-query@*",
-                          "resolved": "https://registry.npmjs.org/component-query/-/component-query-0.0.3.tgz"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "version": "3.1.0",
+              "from": "delegate@>=3.1.0 <4.0.0",
+              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.0.tgz"
             }
           }
         },

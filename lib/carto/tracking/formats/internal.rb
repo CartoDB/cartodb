@@ -1,6 +1,7 @@
 # encoding utf-8
 
 require_relative 'segment'
+require_relative 'hubspot'
 
 module Carto
   module Tracking
@@ -36,6 +37,12 @@ module Carto
           Carto::Tracking::Formats::Segment.new(user: user,
                                                 visualization: visualization,
                                                 hash: @hash).to_hash
+        end
+
+        def to_hubspot
+          user = fetch_record!(:user)
+
+          Carto::Tracking::Formats::Hubspot.new(email: user.email).to_hash
         end
       end
     end

@@ -95,6 +95,7 @@ module Concerns
          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
          :user_timeout, :username, :website, :soft_geocoding_limit,
+         :batch_queries_statement_timeout,
          :twitter_datasource_enabled, :twitter_datasource_block_size,
          :twitter_datasource_block_price, :twitter_datasource_quota,
          :soft_twitter_datasource_limit,
@@ -144,6 +145,7 @@ module Concerns
           attrs.delete(:organization_id)
           return attrs
         when :update
+          attrs[:batch_queries_statement_timeout] = batch_queries_statement_timeout
           attrs
         end
       end

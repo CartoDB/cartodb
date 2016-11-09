@@ -38,6 +38,9 @@ describe CartoDB::DataMover::ExportJob do
     subject do
       create_tables(first_user)
       first_user.save
+      first_user.reload
+      carto_user = Carto::User.find(first_user.id)
+      Carto::UserNotification.create!(user: carto_user, notifications: { builder: { onboarding: true } })
       move_user(first_user)
     end
 

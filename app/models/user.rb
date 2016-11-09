@@ -20,6 +20,7 @@ require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
+require_dependency 'carto/helpers/batch_queries_statement_timeout'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -29,6 +30,7 @@ class User < Sequel::Model
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
+  include Carto::BatchQueriesStatementTimeout
 
   self.strict_param_setting = false
 
@@ -92,7 +94,7 @@ class User < Sequel::Model
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
-  DEFAULT_MAPZEN_ROUTING_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = nil
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
@@ -143,7 +145,6 @@ class User < Sequel::Model
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
     errors.add(:obs_general_quota, "cannot be nil") if obs_general_quota.nil?
-    errors.add(:mapzen_routing_quota, "cannot be nil") if mapzen_routing_quota.nil?
   end
 
   def organization_validation
@@ -1089,7 +1090,7 @@ class User < Sequel::Model
     if organization.present?
       remaining = organization.remaining_mapzen_routing_quota
     else
-      remaining = mapzen_routing_quota - get_mapzen_routing_calls
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1231,7 +1232,7 @@ class User < Sequel::Model
       begin
         in_database(:as => :superuser).fetch("ANALYZE")
       rescue => ee
-        Rollbar.report_exception(ee)
+        CartoDB::Logger.error(exception: ee)
         raise ee
       end
       retry unless attempts > 1
@@ -1694,7 +1695,7 @@ class User < Sequel::Model
       st.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning search tweets to org owner', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
@@ -1706,7 +1707,7 @@ class User < Sequel::Model
       g.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning geocodings to org owner, fallback to deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
     self.geocodings.each { |g| g.destroy }
   end
 

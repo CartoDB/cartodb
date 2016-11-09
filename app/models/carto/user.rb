@@ -7,6 +7,7 @@ require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
+require_dependency 'carto/helpers/batch_queries_statement_timeout'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -14,6 +15,7 @@ class Carto::User < ActiveRecord::Base
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
+  include Carto::BatchQueriesStatementTimeout
 
   MIN_PASSWORD_LENGTH = 6
   MAX_PASSWORD_LENGTH = 64
@@ -298,7 +300,7 @@ class Carto::User < ActiveRecord::Base
     if organization.present?
       remaining = organization.remaining_mapzen_routing_quota(options)
     else
-      remaining = mapzen_routing_quota - get_mapzen_routing_calls(options)
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
     end
     (remaining > 0 ? remaining : 0)
   end

@@ -13,13 +13,11 @@
       "></i>
     <% } %>
 
-    <% if (type !== 'geometry') { %>
-      <button class="CDB-Shape-threePoints is-blue is-small js-options">
-        <div class="CDB-Shape-threePointsItem"></div>
-        <div class="CDB-Shape-threePointsItem"></div>
-        <div class="CDB-Shape-threePointsItem"></div>
-      </button>
-    <% } %>
+    <button class="CDB-Shape-threePoints is-blue is-small js-options">
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+    </button>
   </div>
   <p class="CDB-Size-small Table-headItemInfo u-altTextColor"><%- type %></p>
 </div>

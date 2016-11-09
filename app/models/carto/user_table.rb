@@ -37,6 +37,10 @@ module Carto
       row_count_and_size[:size]
     end
 
+    def table_size
+      table.table_size
+    end
+
     # Estimated row_count. Preferred: `estimated_row_count`
     def row_count
       row_count_and_size[:row_count]
@@ -62,6 +66,10 @@ module Carto
 
     def dependent_visualizations
       affected_visualizations.select(&:dependent?)
+    end
+
+    def accessible_dependent_derived_maps
+      affected_visualizations.select { |v| (v.has_read_permission?(user) && v.derived?) ? v : nil }
     end
 
     def non_dependent_visualizations

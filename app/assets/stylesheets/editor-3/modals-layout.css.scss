@@ -85,6 +85,7 @@
 }
 .Modal-inner--grid {
   @include flex(0 503px);
+  overflow: visible;
 }
 .Modal-inner--medium {
   @include flex(0 780px);

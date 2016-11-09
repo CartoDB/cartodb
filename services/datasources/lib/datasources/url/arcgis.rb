@@ -217,12 +217,6 @@ module CartoDB
           false
         end
 
-        # Sets an error reporting component
-        # @param component mixed
-        def report_component=(component)
-          nil
-        end
-
         # If true, a single resource id might return >1 subresources (each one spawning a table)
         # @param id String
         # @return Bool
@@ -415,7 +409,7 @@ module CartoDB
             end
           end
 
-          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
+          prepared_fields = fields.map { |field| "#{field[:name]}" }.join(',')
 
           prepared_url = FEATURE_DATA_POST_URL % [url]
           # @see http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Query_Map_Service_Layer/02r3000000p1000000/

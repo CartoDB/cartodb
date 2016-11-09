@@ -8,7 +8,9 @@
         </svg>
       </div>
     <% } %>
-    <%- body %>
+    <div>
+      <%= body %>
+    </div>
   </div>
 
   <div class="u-flex u-justifySpace u-alignCenter">

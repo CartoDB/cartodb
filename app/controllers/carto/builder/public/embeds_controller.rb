@@ -13,6 +13,7 @@ module Carto
         before_filter :load_vizjson,
                       :load_state, only: [:show, :show_protected]
         before_filter :ensure_viewable, only: [:show]
+        before_filter :ensure_protected_viewable, only: [:show_protected]
         before_filter :load_auth_tokens, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
@@ -24,10 +25,12 @@ module Carto
         end
 
         def show_protected
-          show and return if @visualization.password_valid?(params[:password])
-
-          flash[:error] = 'Invalid password'
-          response.status = 403
+          if @visualization.password_valid?(params[:password])
+            show
+          else
+            flash[:error] = 'Invalid password'
+            response.status = 403
+          end
         end
 
         private
@@ -35,7 +38,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          render_404 unless @visualization && @visualization.published?
+          render_404 unless @visualization
         end
 
         def load_auth_tokens
@@ -48,6 +51,7 @@ module Carto
 
         def load_vizjson
           @vizjson = generate_named_map_vizjson3(visualization_for_presentation, params)
+          @auto_style = @visualization.user.has_feature_flag?('auto-style')
         end
 
         def load_state
@@ -56,9 +60,23 @@ module Carto
 
         def ensure_viewable
           if @visualization.password_protected?
-            return(render 'show_protected', status: 403)
+            if @visualization.published?
+              return(render 'show_protected', status: 403)
+            else
+              return(render 'admin/visualizations/embed_map_error', status: 404)
+            end
           elsif !@visualization.is_viewable_by_user?(current_viewer)
-            return(render 'admin/visualizations/embed_map_error', status: 403)
+            if @visualization.published?
+              return(render 'admin/visualizations/embed_map_error', status: 403)
+            else
+              return(render 'admin/visualizations/embed_map_error', status: 404)
+            end
+          end
+        end
+
+        def ensure_protected_viewable
+          unless @visualization.published? || @visualization.has_read_permission?(current_viewer)
+            render_404 and return
           end
         end
 

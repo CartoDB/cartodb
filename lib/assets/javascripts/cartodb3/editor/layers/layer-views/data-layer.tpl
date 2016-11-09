@@ -80,4 +80,4 @@
     </div>
   </div>
 </div>
-<ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapse' : '' %>"></ul>
+<ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapsed' : '' %>"></ul>

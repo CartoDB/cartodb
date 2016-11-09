@@ -74,6 +74,8 @@ module Carto
              dependent: :destroy,
              order: :created_at
 
+    has_many :layer_node_styles
+
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
       'table/views/infowindow_dark' =>                'infowindow_dark',

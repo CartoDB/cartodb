@@ -146,8 +146,11 @@
   margin-top: 16px;
 }
 .Editor-ListAnalysis:empty,
-.Editor-ListAnalysis.is-hidden {
+.Editor-ListAnalysis.is-collapse {
   display: none;
+}
+.Editor-ListAnalysis.is-hidden {
+  opacity: 0.24;
 }
 
 .Editor-ListAnalysis::before {
@@ -205,7 +208,7 @@
 }
 .Editor-ListAnalysis-inner {
   @include display-flex();
-  width: calc(100% + 8px);
+  width: calc(100% + 12px);
   margin: 0 -4px;
 }
 .Editor-ListAnalysis-inner .Editor-ListAnalysis-item {

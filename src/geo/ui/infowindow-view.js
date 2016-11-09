@@ -30,6 +30,8 @@ var Infowindow = View.extend({
   events: {
     // Close bindings
     'click .js-close': '_closeInfowindow',
+    // some migrations doesn't have js-close class
+    'click .close': '_closeInfowindow',
     'touchstart .js-close': '_closeInfowindow',
     'MSPointerDown .js-close': '_closeInfowindow',
     // Rest infowindow bindings
@@ -136,7 +138,7 @@ var Infowindow = View.extend({
       }
 
       if (this.model.get('maxHeight')) {
-        this.$('.js-content').css('max-height', this.model.get('maxHeight') + 'px');
+        this._getContent().css('max-height', this.model.get('maxHeight') + 'px');
       }
 
       if (this._containsCover()) {
@@ -172,6 +174,16 @@ var Infowindow = View.extend({
     this.add_related_model(this.mapView);
   },
 
+  // migration issue: some infowindows doesn't have this selector
+  _getContent: function () {
+    var $el = this.$('.js-content');
+    if ($el.length === 0) {
+      $el = this.$('.cartodb-popup-content');
+    }
+
+    return $el;
+  },
+
   _onKeyUp: function (e) {
     if (e && e.keyCode === 27) {
       this._closeInfowindow();
@@ -183,7 +195,7 @@ var Infowindow = View.extend({
 
     var hasHeader = this.$('.js-header').length;
     var hasCover = this.$('.js-cover').length;
-    var hasContent = this.$('.js-content').length;
+    var hasContent = this._getContent().length;
     var hasTitle = this.$('.CDB-infowindow-title').length;
 
     if (hasCover) {
@@ -201,13 +213,13 @@ var Infowindow = View.extend({
   },
 
   _renderScroll: function () {
-    if (this.$('.js-content').length === 0) {
+    if (this._getContent().length === 0) {
       return;
     }
 
     this.$('.js-infowindow').addClass('has-scroll');
 
-    Ps.initialize(this.$('.js-content').get(0), {
+    Ps.initialize(this._getContent().get(0), {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20

@@ -205,7 +205,11 @@ module CartoDB
 
         # Allow only "maintaining" privacy link for everyone but not setting it
         if privacy == PRIVACY_LINK && privacy_changed
-          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          if derived?
+            validator.validate_expected_value(:private_maps_enabled, true, user.private_maps_enabled)
+          else
+            validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          end
         end
 
         if type_slide?

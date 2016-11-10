@@ -37,6 +37,7 @@ class Layer < Sequel::Model
     self.update(:order => order) if self.order.blank?
   end
 
+  one_to_many  :layer_node_styles
   many_to_many :maps,  :after_add => proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
@@ -84,7 +85,10 @@ class Layer < Sequel::Model
     maps.each(&:update_related_named_maps)
     maps.each(&:invalidate_vizjson_varnish_cache)
 
-    register_table_dependencies if data_layer?
+    if data_layer?
+      register_table_dependencies
+      update_layer_node_style
+    end
   end
 
   def before_destroy
@@ -225,5 +229,22 @@ class Layer < Sequel::Model
 
   def query
     options.symbolize_keys[:query]
+  end
+
+  def source_id
+    options && options.symbolize_keys[:source]
+  end
+
+  def update_layer_node_style
+    style = current_layer_node_style
+    if style
+      style.update_from_layer(self)
+      style.save
+    end
+  end
+
+  def current_layer_node_style
+    return nil unless source_id
+    LayerNodeStyle.find(layer_id: id, source_id: source_id) || LayerNodeStyle.new(layer: self, source_id: source_id)
   end
 end

@@ -265,7 +265,7 @@ module Carto
     private
 
     def backup_source
-      self.backup_source = source if source.present
+      self.backup_source = source if source.present?
     end
 
     def previous_source

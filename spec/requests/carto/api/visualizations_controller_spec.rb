@@ -857,6 +857,7 @@ describe Carto::Api::VisualizationsController do
 
         collection = CartoDB::Visualization::Collection.new.fetch(user_id: @user_2.id)
         collection.map(&:delete)
+
         post api_v1_visualizations_create_url(user_domain: @user_2.username, api_key: @user_2.api_key),
              factory(@user_2).to_json, @headers
         last_response.status.should == 200

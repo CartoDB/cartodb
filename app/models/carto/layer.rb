@@ -245,7 +245,7 @@ module Carto
       analysis_node.present?
     end
 
-    def fix_source
+    def revert_source
       previous_source = options[:previous_source]
 
       if previous_source && source

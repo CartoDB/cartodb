@@ -51,7 +51,10 @@ module Carto
       end
 
       def to_poro(migrate_builder_infowindows: false)
+        @layer.revert_source unless @layer.has_valid_source?
+
         poro = base_poro(@layer)
+
         if migrate_builder_infowindows
           if poro['infowindow'].present?
             poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])

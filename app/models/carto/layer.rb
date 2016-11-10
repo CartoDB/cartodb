@@ -249,7 +249,7 @@ module Carto
       previous_source = options[:previous_source]
 
       if previous_source && source
-        options['source'] = previous_source
+        self.source = previous_source
       end
     end
 

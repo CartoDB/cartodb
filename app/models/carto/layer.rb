@@ -259,6 +259,10 @@ module Carto
       options['source']
     end
 
+    def source=(source)
+      options['source'] = source
+    end
+
     def analysis_node
       if source && visualization
         Carto::AnalysisNode.find_by_natural_id(visualization.id, source)

@@ -254,6 +254,19 @@ module Carto
       options['source'] = source
     end
 
+    def attempt_source_fix
+      if previous_source
+        revert_source
+      else
+        letter = options['letter'] || source.first
+        number = source[1..-1].to_i
+
+        self.source = "#{letter}#{number > 0 ? number - 1 : 0}"
+      end
+
+      has_valid_source?
+    end
+
     private
 
     def revert_source

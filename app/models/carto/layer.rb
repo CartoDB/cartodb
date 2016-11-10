@@ -245,6 +245,14 @@ module Carto
       analysis_node.present?
     end
 
+    def fix_source_id
+      previous_source_id = options[:previous_source_id]
+
+      if previous_source_id && source_id
+        options[:source_id] = previous_source_id
+      end
+    end
+
     private
 
     def source_id

@@ -241,7 +241,7 @@ module Carto
       options && options['category']
     end
 
-    def source_valid?
+    def has_valid_source?
       analysis_node.present?
     end
 

@@ -255,13 +255,13 @@ module Carto
 
     private
 
-    def source_id
+    def source
       @source_id ||= options['source']
     end
 
     def analysis_node
-      if source_id
-        Carto::AnalysisNode.find_by_natural_id(visualization_id, source_id)
+      if source_id && visualization
+        Carto::AnalysisNode.find_by_natural_id(visualization.id, source_id)
       end
     end
 

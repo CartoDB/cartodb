@@ -253,8 +253,6 @@ module Carto
       end
     end
 
-    private
-
     def source
       options['source']
     end
@@ -262,6 +260,8 @@ module Carto
     def source=(source)
       options['source'] = source
     end
+
+    private
 
     def analysis_node
       if source && visualization

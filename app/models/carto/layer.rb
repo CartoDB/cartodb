@@ -256,7 +256,7 @@ module Carto
     private
 
     def source
-      @source ||= options['source']
+      options['source']
     end
 
     def analysis_node

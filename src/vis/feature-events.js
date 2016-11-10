@@ -9,14 +9,15 @@ var Backbone = require('backbone');
  * @param {Object} deps Dependencies.
  */
 var CartoDBFeatureEvents = function (deps) {
+  deps = deps || {};
   if (!deps.mapView) throw new Error('mapView is required');
-  if (!deps.mapModel) throw new Error('mapModel is required');
+  if (!deps.layersCollection) throw new Error('layersCollection is required');
 
   this._mapView = deps.mapView;
-  this._mapModel = deps.mapModel;
+  this._layersCollection = deps.layersCollection;
 
-  this._mapModel.layers.on('add', this._setLayerView, this);
-  this._mapModel.layers.on('reset', this._setLayerView, this);
+  this._layersCollection.on('add', this._setLayerView, this);
+  this._layersCollection.on('reset', this._setLayerView, this);
   this._setLayerView();
 };
 
@@ -29,7 +30,7 @@ CartoDBFeatureEvents.prototype._setLayerView = function () {
     delete this._layerView;
   }
 
-  var cartoDBLayers = this._mapModel.layers.getCartoDBLayers();
+  var cartoDBLayers = this._layersCollection.getCartoDBLayers();
   if (cartoDBLayers.length > 0) {
     this._layerView = this._mapView.getLayerViewByLayerCid(cartoDBLayers[0].cid);
     this._bindCartoDBFeatureEvents();
@@ -49,34 +50,40 @@ CartoDBFeatureEvents.prototype._bindCartoDBFeatureEvents = function () {
 };
 
 CartoDBFeatureEvents.prototype._onFeatureOver = function (event, latlng, position, data, layerIndex) {
-  this._triggerMouseEvent('featureOver', arguments);
+  var layerModel = this._getCartoDBLayerByLayerIndex(layerIndex);
+  if (layerModel) {
+    this.trigger('featureOver', {
+      layer: layerModel,
+      latlng: latlng,
+      position: position,
+      feature: data
+    });
+  }
 };
 
 CartoDBFeatureEvents.prototype._onFeatureClick = function (event, latlng, position, data, layerIndex) {
-  this._triggerMouseEvent('featureClick', arguments);
+  var layerModel = this._getCartoDBLayerByLayerIndex(layerIndex);
+  if (layerModel) {
+    this.trigger('featureClick', {
+      layer: layerModel,
+      latlng: latlng,
+      position: position,
+      feature: data
+    });
+  }
 };
 
 CartoDBFeatureEvents.prototype._onFeatureOut = function (something, layerIndex) {
-  this.trigger('featureOut', {
-    layer: this._mapModel.layers.getCartoDBLayers()[layerIndex]
-  });
+  var layerModel = this._getCartoDBLayerByLayerIndex(layerIndex);
+  if (layerModel) {
+    this.trigger('featureOut', {
+      layer: layerModel
+    });
+  }
 };
 
-CartoDBFeatureEvents.prototype._triggerMouseEvent = function (eventName, originalEventArguments) {
-  var latlng = originalEventArguments[1];
-  var position = originalEventArguments[2];
-  var featureData = originalEventArguments[3];
-  var layerIndex = originalEventArguments[4];
-
-  this.trigger(eventName, {
-    layer: this._mapModel.layers.getCartoDBLayers()[layerIndex],
-    latlng: latlng,
-    position: {
-      x: position.x,
-      y: position.y
-    },
-    feature: featureData
-  });
+CartoDBFeatureEvents.prototype._getCartoDBLayerByLayerIndex = function (layerIndex) {
+  return this._layersCollection.getCartoDBLayers()[layerIndex];
 };
 
 module.exports = CartoDBFeatureEvents;

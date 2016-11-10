@@ -106,21 +106,6 @@ $cHighlight-mainHover: rgba(#007FBD, 1);
     }
   }
 }
-.Button-importShowDetails {
-  height: 24px;
-  padding: 0 11px;
-  border: 1px solid #CCCCCC;
-  border-radius: 40px;
-  background: transparent;
-  color: $cTypography-paragraphs;
-  font-size: $sFontSize-smallUpperCase;
-  line-height: 24px;
-
-  &:hover {
-    border-color: $cTypography-paragraphs;
-    color: $cTypography-paragraphs;
-  }
-}
 .Button--opacityTransition {
   @include opacity(1);
   display: inline-block;

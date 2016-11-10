@@ -23,7 +23,7 @@
       width:100%;
       height: $h;
       @include border-radius($r);
-      background:#E5E5E5;
+      background:$Black;
       overflow:hidden;
 
       .bar-3,
@@ -63,7 +63,7 @@
 
       // Grey light
       .bar-1 {
-        background:#E5E5E5;
+        background:$Black;
         z-index:1;
         &:after { display:none }
         &:before {

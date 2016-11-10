@@ -4,18 +4,17 @@
 
 // Background importer styles
 
-$radius: 4px;
+$radius: 2px;
 
 .BackgroundPolling {   
   position: fixed;
   bottom: -255px;
   left: 20px;
   width: 420px;
-  box-shadow: 0 0 3px 3px rgba(black, 0.1);
-  background: white;
   @include opacity(0);
   border-radius: $radius;
-  border: 1px solid #CCC;
+  background: $DarkGrey8;
+  border: 1px solid $Black;
   @include transition(all, 300ms);
   z-index: 10;
 }
@@ -29,10 +28,6 @@ $radius: 4px;
   @include align-items(center, center);
   height: 65px;
   padding: 0 20px;
-  background: $cStructure-grayBkg;
-  border-top-left-radius: $radius;
-  border-top-right-radius: $radius;
-  border-bottom: 1px solid $cStructure-mainLine;
 }
 .BackgroundPolling-headerTitle {
   width: 220px;

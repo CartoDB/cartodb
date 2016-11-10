@@ -258,6 +258,7 @@ module Carto
     end
 
     def source=(source)
+      backup_source
       options['source'] = source
     end
 

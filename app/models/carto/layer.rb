@@ -243,6 +243,12 @@ module Carto
 
     private
 
+    def analysis_node
+      if source_id
+        Carto::AnalysisNode.find_by_natural_id(visualization_id, source_id)
+      end
+    end
+
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 
     def tables_from_names(table_names, user)

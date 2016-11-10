@@ -245,14 +245,6 @@ module Carto
       analysis_node.present?
     end
 
-    def revert_source
-      previous_source = options[:previous_source]
-
-      if previous_source && source
-        self.source = previous_source
-      end
-    end
-
     def source
       options['source']
     end
@@ -263,6 +255,14 @@ module Carto
     end
 
     private
+
+    def revert_source
+      previous_source = options[:previous_source]
+
+      if previous_source && source
+        self.source = previous_source
+      end
+    end
 
     def backup_source
       self.previous_source = source if source.present?

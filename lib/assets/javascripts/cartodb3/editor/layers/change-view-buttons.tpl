@@ -1,6 +1,6 @@
 <ul class="u-flex u-alignCenter Editor-contextSwitcher js-mapTableView
   <% if (isThereOtherWidgets) { %>is-moved<% } %>
-  <% if (isThereTimeSeries) { %>has-timeSeries<% } %>
+  <% if (isThereTimeSeries) { %>has-timeSeries <% if (isThereAnimatedTimeSeries) { %>has-animatedtimeSeries<% } %><% } %>
   ">
   <li class="Editor-contextSwitcherItem">
     <div class="Editor-contextSwitcherButton js-showTable">
@@ -27,7 +27,7 @@
 
   <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView
   <% if (isThereOtherWidgets) { %>is-moved<% } %>
-  <% if (isThereTimeSeries) { %>has-timeSeries<% } %>
+  <% if (isThereTimeSeries) { %>has-timeSeries <% if (isThereAnimatedTimeSeries) { %>has-animatedtimeSeries<% } %><% } %>
   ">
     <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
       <li class="Editor-contextSwitcherItem">

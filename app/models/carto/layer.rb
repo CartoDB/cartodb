@@ -241,6 +241,10 @@ module Carto
       options && options['category']
     end
 
+    def source_id_consistent?
+      analysis_node.present?
+    end
+
     private
 
     def source_id

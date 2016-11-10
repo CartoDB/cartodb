@@ -161,8 +161,7 @@ module CartoDB
       end
 
       def default_privacy(owner)
-        private_enabled = derived? ? owner.try(:private_maps_enabled) : owner.try(:private_tables_enabled)
-        private_enabled ? PRIVACY_LINK : PRIVACY_PUBLIC
+        can_be_private?(owner) ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store
@@ -388,6 +387,10 @@ module CartoDB
 
       def is_privacy_private?
         privacy == PRIVACY_PRIVATE
+      end
+
+      def can_be_private?(owner = user)
+        derived? ? owner.try(:private_maps_enabled) : owner.try(:private_tables_enabled)
       end
 
       def organization?

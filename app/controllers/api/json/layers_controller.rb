@@ -171,7 +171,7 @@ class Api::Json::LayersController < Api::ApplicationController
 
   def update_layer_node_styles(to_layer, from_layer, from_letter)
     to_letter = to_layer.options['letter']
-    to_source = to_layer.source
+    to_source = to_layer.options['source']
     if from_layer.present? && from_letter.present? && to_letter.present? && to_source.present?
       move_layer_node_styles(from_layer, from_letter, to_layer, to_letter, to_source)
       update_source_layer_styles(from_layer, from_letter, to_letter, to_source)

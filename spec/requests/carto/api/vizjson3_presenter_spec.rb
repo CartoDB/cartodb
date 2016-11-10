@@ -149,7 +149,7 @@ describe Carto::Api::VizJSON3Presenter do
     it 'includes source at layers options' do
       source = 'a1'
       layer = @visualization.data_layers.first
-      layer.source = source
+      layer.options['source'] = source
       layer.save
       @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
       @table.save
@@ -167,7 +167,7 @@ describe Carto::Api::VizJSON3Presenter do
       query = "select * from #{@table.name}"
 
       layer = @visualization.data_layers.first
-      layer.source.should eq nil
+      layer.options['source'].should eq nil
       layer.options['query'] = query
       layer.save
 
@@ -184,7 +184,7 @@ describe Carto::Api::VizJSON3Presenter do
       v3_vizjson[:layers][1][:options][:source].should be_nil
 
       source = 'a1'
-      layer.source = source
+      layer.options['source'] = source
       layer.save
       @visualization.reload
 

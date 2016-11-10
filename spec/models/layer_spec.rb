@@ -319,7 +319,7 @@ describe Layer do
     end
 
     it 'saves styles for layers with source_id' do
-      @layer.source = 'a0'
+      @layer.options['source'] = 'a0'
       @layer.save
       lns = LayerNodeStyle.where(layer_id: @layer.id).first
       lns.should be
@@ -331,7 +331,7 @@ describe Layer do
     end
 
     it 'does not save styles for layers with source_id' do
-      @layer.source = nil
+      @layer.options['source'] = nil
       @layer.save
       LayerNodeStyle.where(layer_id: @layer.id).count.should eq 0
     end

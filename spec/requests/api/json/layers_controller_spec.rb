@@ -255,7 +255,7 @@ describe Api::Json::LayersController do
       it 'and the original layer has been previously renamed' do
         old_model_layer = ::Layer[@original_layer.id]
         old_model_layer.options['letter'] = 'b'
-        old_model_layer.source = 'b1'
+        old_model_layer.options['source'] = 'b1'
         old_model_layer.save
         @new_layer = create_layer('a1', 'a', 'a')
 

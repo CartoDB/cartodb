@@ -372,8 +372,8 @@ module Carto
         torque[:cartocss_version] = layer_options[:style_version]
         torque[:sql] = sql_from(@layer)
 
-        if @layer.source.present?
-          torque[:source] = @layer.source
+        if @layer.options['source'].present?
+          torque[:source] = @layer.options['source']
         end
 
         sql_wrap = @layer.options['sql_wrap'] || @layer.options['query_wrapper']
@@ -406,7 +406,7 @@ module Carto
           cartocss_version:   @layer.options.fetch('style_version'),
           attribution:        attribution
         }
-        source = @layer.source
+        source = @layer.options['source']
         if source
           data[:source] = source
           data.delete(:sql)

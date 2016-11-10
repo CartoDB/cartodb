@@ -39,7 +39,7 @@ module Carto
             }
           }
         else
-          new_template_name = ALIASED_TEMPLATES.fetch(old_template_name, old_template_name)
+          new_template_name = Pathname.new(old_template_name).basename.to_s
 
           templated_element[:template] = get_template(
             old_template_name,
@@ -58,11 +58,6 @@ module Carto
 
       MIGRATED_TEMPLATES = %w{ infowindow_light_header_blue infowindow_light_header_yellow
                                infowindow_light_header_orange infowindow_light_header_green }.freeze
-
-      ALIASED_TEMPLATES = {
-        'table/views/infowindow_light' => 'infowindow_light',
-        'table/views/infowindow_dark' => 'infowindow_dark'
-      }.freeze
 
       COLOR_MAP = {
         'blue' => '#35AAE5',

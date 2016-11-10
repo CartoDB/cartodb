@@ -263,6 +263,14 @@ module Carto
 
     private
 
+    def previous_source
+      options['previous_source']
+    end
+
+    def previous_source=(previous_source)
+      options['previous_source'] = previous_source
+    end
+
     def analysis_node
       if source && visualization
         Carto::AnalysisNode.find_by_natural_id(visualization.id, source)

@@ -29,6 +29,9 @@ module CartoDB
           privacy: blender.blended_privacy,
           user_id: user.id
         )
+        unless user.private_maps_enabled
+          vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        end
 
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
         vis.store

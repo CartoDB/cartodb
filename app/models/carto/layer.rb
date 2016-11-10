@@ -264,9 +264,15 @@ module Carto
       return unless source
 
       letter = options['letter'] || source.first
-      number = source[1..-1].to_i
+      source_analysis = Carto::Analysis.find_by_natural_id("#{letter}0")
 
-      "#{letter}#{number > 0 ? number - 1 : 0}"
+      if source_analysis
+        source_analysis.descendants.map(&:id).sort.last
+      else
+        number = source[1..-1].to_i
+
+        "#{letter}#{number > 0 ? number - 1 : 0}"
+      end
     end
 
     def backup_source

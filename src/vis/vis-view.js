@@ -75,7 +75,7 @@ var Vis = View.extend({
 
     var featureEvents = new FeatureEvents({
       mapView: this.mapView,
-      mapModel: this.model.map
+      layersCollection: this.model.map.layers
     });
 
     new MapCursorManager({ // eslint-disable-line

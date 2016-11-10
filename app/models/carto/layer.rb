@@ -249,14 +249,14 @@ module Carto
       previous_source_id = options[:previous_source_id]
 
       if previous_source_id && source_id
-        options[:source_id] = previous_source_id
+        options['source'] = previous_source_id
       end
     end
 
     private
 
     def source_id
-      @source_id ||= options[:source_id]
+      @source_id ||= options['source']
     end
 
     def analysis_node

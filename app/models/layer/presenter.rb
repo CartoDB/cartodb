@@ -204,7 +204,7 @@ module CartoDB
             cartocss_version:   layer.options.fetch('style_version'),
             interactivity:      layer.options.fetch('interactivity')
           }
-          source = layer.options['source']
+          source = layer.source
           if options[:for_named_map] && source
             data[:source] = { id: source }
           else

@@ -264,10 +264,19 @@ module Carto
       return unless source
 
       letter = options['letter'] || source.first
-      source_analysis = Carto::Analysis.find_by_natural_id("#{letter}0")
 
-      if source_analysis
-        source_analysis.descendants.map(&:id).sort.last
+      if visualization
+        analysis_nodes = visualization.analyses
+                                      .map(&:analysis_node)
+                                      .map(&:descendants)
+                                      .flatten
+
+        letter_analysis_nodes = analysis_nodes.select do |analysis_node|
+          analysis_node.id.first == letter
+        end
+
+        highest_number_analysis_node = letter_analysis_nodes.sort.last
+        highest_number_analysis_node.id if highest_number_analysis_node
       else
         number = source[1..-1].to_i
 

@@ -18,5 +18,7 @@
     "match": "^.*?column \"the_geom_webmercator\" does not exist.*",
     "replaceWith": "without-geom-webmercator",
     "errorType": "warning"
+  }, {
+    "match": "ERROR: (column .*? does not exist)",
   }]
 }

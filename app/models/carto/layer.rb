@@ -255,26 +255,18 @@ module Carto
     end
 
     def attempt_source_fix
-      if previous_source
-        revert_source
-      elsif source
-        letter = options['letter'] || source.first
-        number = source[1..-1].to_i
-
-        self.source = "#{letter}#{number > 0 ? number - 1 : 0}"
-      end
-
-      has_valid_source?
+      self.source = previous_source ? previous_source : inferred_source
     end
 
     private
 
-    def revert_source
-      previous_source = options[:previous_source]
+    def inferred_source
+      return unless source
 
-      if previous_source && source
-        self.source = previous_source
-      end
+      letter = options['letter'] || source.first
+      number = source[1..-1].to_i
+
+      "#{letter}#{number > 0 ? number - 1 : 0}"
     end
 
     def backup_source

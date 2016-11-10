@@ -241,27 +241,27 @@ module Carto
       options && options['category']
     end
 
-    def source_id_consistent?
+    def source_consistent?
       analysis_node.present?
     end
 
-    def fix_source_id
-      previous_source_id = options[:previous_source_id]
+    def fix_source
+      previous_source = options[:previous_source]
 
-      if previous_source_id && source_id
-        options['source'] = previous_source_id
+      if previous_source && source
+        options['source'] = previous_source
       end
     end
 
     private
 
     def source
-      @source_id ||= options['source']
+      @source ||= options['source']
     end
 
     def analysis_node
-      if source_id && visualization
-        Carto::AnalysisNode.find_by_natural_id(visualization.id, source_id)
+      if source && visualization
+        Carto::AnalysisNode.find_by_natural_id(visualization.id, source)
       end
     end
 

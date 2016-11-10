@@ -257,7 +257,7 @@ module Carto
     def attempt_source_fix
       if previous_source
         revert_source
-      else
+      elsif source
         letter = options['letter'] || source.first
         number = source[1..-1].to_i
 

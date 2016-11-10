@@ -26,8 +26,12 @@ var MultiPolyline = MultiGeometryBase.extend({
   },
 
   setCoordinatesFromGeoJSON: function (geoJSON) {
-    var latlngs = GeoJSONHelper.getMultiPolylineLatLngsFromGeoJSONCoords(geoJSON);
+    var latlngs = this.getCoordinatesFromGeoJSONCoords(geoJSON);
     this.geometries.reset(this._createGeometries(latlngs));
+  },
+
+  getCoordinatesFromGeoJSONCoords: function (geoJSON) {
+    return GeoJSONHelper.getMultiPolylineLatLngsFromGeoJSONCoords(geoJSON);
   }
 });
 

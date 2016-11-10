@@ -19,9 +19,8 @@ var Polygon = PathBase.extend({
     };
   },
 
-  setCoordinatesFromGeoJSON: function (geoJSON) {
-    var latlngs = GeoJSONHelper.getPolygonLatLngsFromGeoJSONCoords(geoJSON);
-    this.setCoordinates(latlngs);
+  getCoordinatesFromGeoJSONCoords: function (geoJSON) {
+    return GeoJSONHelper.getPolygonLatLngsFromGeoJSONCoords(geoJSON);
   }
 });
 

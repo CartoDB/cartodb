@@ -51,7 +51,9 @@ module Carto
       end
 
       def to_poro(migrate_builder_infowindows: false)
-        @layer.attempt_source_fix unless @layer.has_valid_source?
+        if @layer.data_layer? && !@layer.has_valid_source?
+          @layer.attempt_source_fix
+        end
 
         poro = base_poro(@layer)
         if migrate_builder_infowindows

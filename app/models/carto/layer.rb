@@ -241,6 +241,10 @@ module Carto
       options && options['category']
     end
 
+    def builder?
+      visualization.builder? if visualization
+    end
+
     def has_valid_source?
       analysis_node.present?
     end

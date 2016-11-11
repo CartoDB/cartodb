@@ -156,6 +156,7 @@ var VisModel = Backbone.Model.extend({
       drag: allowDragging,
       provider: vizjson.map_provider,
       vector: vizjson.vector,
+      webgl: vizjson.webgl,
       isFeatureInteractivityEnabled: this.get('interactiveFeatures')
     }, {
       layersCollection: this._layersCollection,

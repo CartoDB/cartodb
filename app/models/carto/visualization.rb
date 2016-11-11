@@ -388,7 +388,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def mapcapped?
-    mapcaps.exists?
+    latest_mapcap.present?
   end
 
   def latest_mapcap

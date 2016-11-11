@@ -70,6 +70,10 @@ module Carto
         COLOR_MAP[old_template_name.split('_').last]
       end
 
+      def parse_old_template_name(old_template_name)
+        Pathname.new(old_template_name).basename.to_s
+      end
+
       def get_template_name(name)
         Carto::Layer::TEMPLATES_MAP.fetch(name, name)
       end

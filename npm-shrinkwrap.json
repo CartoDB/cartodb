@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.3",
+  "version": "4.5.5",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -748,8 +748,7 @@
         },
         "grunt-run-node": {
           "version": "0.1.3",
-          "from": "grunt-run-node@0.1.3",
-          "resolved": "https://registry.npmjs.org/grunt-run-node/-/grunt-run-node-0.1.3.tgz"
+          "from": "grunt-run-node@0.1.3"
         },
         "grunt-template-jasmine-requirejs": {
           "version": "0.2.3",
@@ -1152,7 +1151,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#7ddb3928aa5997b41fda9476861acb6749b836d6",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#e88e91c56a773edad27a587b65d0e661780c43fb",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1452,7 +1451,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#7ddb3928aa5997b41fda9476861acb6749b836d6",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#e88e91c56a773edad27a587b65d0e661780c43fb",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

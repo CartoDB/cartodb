@@ -9,7 +9,6 @@ var LeafletCartoDBVectorLayerGroupView = require('./leaflet-cartodb-vector-layer
 var LeafletCartoDBWebglLayerGroupView = require('./leaflet-cartodb-webgl-layer-group-view');
 
 var LayerGroupViewConstructor = function (layerGroupModel, mapModel, options) {
-  console.log(options);
   if (options.webgl) {
     return new LeafletCartoDBWebglLayerGroupView(layerGroupModel, mapModel);
   } else if (options.vector) {

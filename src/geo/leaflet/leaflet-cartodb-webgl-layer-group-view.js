@@ -26,7 +26,6 @@ var LeafletCartoDBVectorLayerGroupView = L.TileLayer.extend({
   },
 
   initialize: function (layerGroupModel, map) {
-    console.log('Iniiiittt');
     LeafletLayerView.call(this, layerGroupModel, this, map);
     layerGroupModel.bind('change:urls', this._onURLsChanged, this);
 
@@ -37,16 +36,13 @@ var LeafletCartoDBVectorLayerGroupView = L.TileLayer.extend({
   },
 
   onAdd: function (map) {
-    console.log('onAdd');
-    console.log(arguments);
+
   },
 
   _onLayerAdded: function (layer) {
     var self = this;
     layer.bind('change:meta', function (e) {
-      setTimeout(function () {
-        self.tangram.addLayer(e.attributes);
-      }, 0);
+      self.tangram.addLayer(e.attributes);
     });
   },
 

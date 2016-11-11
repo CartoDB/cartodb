@@ -39,7 +39,7 @@ module Carto
             }
           }
         else
-          new_template_name = Pathname.new(old_template_name).basename.to_s
+          new_template_name = parse_old_template_name(old_template_name)
 
           templated_element[:template] = get_template(
             old_template_name,

@@ -144,9 +144,9 @@ describe('src/api/create-vis', function () {
       title: true
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.cartodb-header').length).toEqual(1);
       done();
     }.bind(this));
@@ -160,9 +160,9 @@ describe('src/api/create-vis', function () {
       title: true
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.cartodb-header').length).toEqual(1);
       expect(this.container.find('.cartodb-header h1 > a').length).toEqual(0);
     }.bind(this));
@@ -171,9 +171,11 @@ describe('src/api/create-vis', function () {
   it('should add zoom', function (done) {
     fakeVizJSON.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
 
-    createVis(this.containerId, fakeVizJSON, {});
+    var vis = createVis(this.containerId, fakeVizJSON, {});
+    console.time('foo');
 
-    _.defer(function () {
+    vis.once('load', function () {
+      console.timeEnd('foo');
       expect(this.container.find('.CDB-Zoom').length).toEqual(1);
       done();
     }.bind(this));
@@ -185,9 +187,9 @@ describe('src/api/create-vis', function () {
       zoomControl: true
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Zoom').length).toEqual(1);
       done();
     }.bind(this));
@@ -199,9 +201,9 @@ describe('src/api/create-vis', function () {
       zoomControl: false
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Zoom').length).toEqual(0);
       done();
     }.bind(this));
@@ -210,9 +212,9 @@ describe('src/api/create-vis', function () {
   it('should add search', function (done) {
     fakeVizJSON.overlays = [{ type: 'search' }];
 
-    createVis(this.containerId, fakeVizJSON, {});
+    var vis = createVis(this.containerId, fakeVizJSON, {});
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Search').length).toEqual(1);
       done();
     }.bind(this));
@@ -225,9 +227,9 @@ describe('src/api/create-vis', function () {
       searchControl: true
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Search').length).toEqual(1);
       done();
     }.bind(this));
@@ -240,9 +242,9 @@ describe('src/api/create-vis', function () {
       searchControl: false
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Search').length).toEqual(0);
       done();
     }.bind(this));
@@ -255,9 +257,9 @@ describe('src/api/create-vis', function () {
       logo: false
     };
 
-    createVis(this.containerId, fakeVizJSON, opts);
+    var vis = createVis(this.containerId, fakeVizJSON, opts);
 
-    _.defer(function () {
+    vis.once('load', function () {
       expect(this.container.find('.CDB-Logo').length).toEqual(0);
       done();
     }.bind(this));

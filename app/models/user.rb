@@ -899,8 +899,7 @@ class User < Sequel::Model
   end
 
   def private_maps_enabled?
-    flag_enabled = self.private_maps_enabled
-    flag_enabled.present? && flag_enabled == true
+    !!private_maps_enabled
   end
 
   def engine_enabled?

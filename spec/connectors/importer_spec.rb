@@ -126,6 +126,7 @@ describe CartoDB::Connector::Importer do
 
   it 'should import table and vis as private if privacy param is set to private' do
     @user.private_tables_enabled = true
+    @user.private_maps_enabled = true
     @user.save
 
     filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
@@ -150,6 +151,35 @@ describe CartoDB::Connector::Importer do
     data_import.run_import!
 
     UserTable[id: data_import.table.id].privacy.should eq (::UserTable::PRIVACY_VALUES_TO_TEXTS.invert)['private']
+  end
+
+  it 'should import vis as public if privacy param is set to private and user doesn\' have private maps' do
+    @user.private_tables_enabled = true
+    @user.private_maps_enabled = false
+    @user.save
+
+    filepath = "#{Rails.root}/spec/support/data/elecciones2008.csv"
+
+    data_import = DataImport.create(
+      user_id: @user.id,
+      data_source: filepath,
+      updated_at: Time.now.utc,
+      append: false,
+      privacy: ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['private'],
+      create_visualization: true
+    )
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    data_import.success.should eq true
+    Carto::Visualization.find_by_id(data_import.visualization_id).privacy.should eq 'public'
+
+    data_import.values[:data_source] = filepath
+
+    data_import.run_import!
+
+    UserTable[id: data_import.table.id].privacy.should eq ::UserTable::PRIVACY_VALUES_TO_TEXTS.invert['private']
   end
 
   it 'should import tables as private by default if user has private tables enabled' do

@@ -2,7 +2,6 @@ var LegendViewBase = require('../base/legend-view-base');
 
 var HTMLLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {
-    console.log(this._patchStylesForIE(this.model.get('html')));
     return this._patchStylesForIE(this.model.get('html'));
   },
 

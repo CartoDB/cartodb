@@ -172,10 +172,8 @@ describe('src/api/create-vis', function () {
     fakeVizJSON.overlays = [{ type: 'zoom', order: 7, options: { x: 20, y: 20 }, template: 'test' }];
 
     var vis = createVis(this.containerId, fakeVizJSON, {});
-    console.time('foo');
 
     vis.once('load', function () {
-      console.timeEnd('foo');
       expect(this.container.find('.CDB-Zoom').length).toEqual(1);
       done();
     }.bind(this));

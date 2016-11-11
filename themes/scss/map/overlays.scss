@@ -61,6 +61,7 @@ $buttonColor: #636D72;
 }
 .CDB-Zoom-action--out::before {
   position: absolute;
+  top: 50%;
   left: 50%;
   width: 11px;
   height: 1px;
@@ -71,6 +72,7 @@ $buttonColor: #636D72;
 .CDB-Zoom-action--in {
   &::before {
     position: absolute;
+    top: 50%;
     left: 50%;
     width: 11px;
     height: 1px;
@@ -81,6 +83,7 @@ $buttonColor: #636D72;
   &::after {
     position: absolute;
     top: 11px;
+    left: 50%;
     width: 1px;
     height: 11px;
     background: $buttonColor;

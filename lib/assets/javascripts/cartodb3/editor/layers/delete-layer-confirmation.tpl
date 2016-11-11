@@ -6,12 +6,12 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m"><%- _t('editor.layers.delete.title', { layerName: layerName }) %></h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('editor.layers.delete.desc', { layerVisName: layerVisName }) %></p>
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl"><%- _t('editor.layers.delete.title', { layerName: layerName }) %></h2>
+      <p class="CDB-Text CDB-Size-large u-altTextColor"><%= _t('editor.layers.delete.desc', { layerVisName: layerVisName }) %></p>
       <ul class="Modal-listText">
         <% if (affectedItemsMessages.length > 0) { %>
           <li class="Modal-listTextItem">
-            <p class="CDB-Text CDB-Size-medium">
+            <p class="CDB-Text CDB-Size-large">
               <%= _t('editor.layers.delete.affected-items') %>
               <% for (var i = 0; i < affectedItemsMessages.length; i++) { %>
                   <span class="CDB-Text is-semibold"><%- affectedItemsMessages[i] %></span>
@@ -25,7 +25,7 @@
           </li>
         <% } %>
         <li class="Modal-listTextItem">
-          <p class="CDB-Text CDB-Size-medium"><%= _t('editor.layers.delete.link-to-export') %></p>
+          <p class="CDB-Text CDB-Size-large"><%= _t('editor.layers.delete.link-to-export') %></p>
         </li>
       </ul>
       <ul class="Modal-listActions u-flex u-alignCenter">

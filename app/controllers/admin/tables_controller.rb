@@ -10,8 +10,6 @@ class Admin::TablesController < Admin::AdminController
   after_filter :update_user_last_activity, only: [:index, :show]
 
   def index
-    carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first
-    @dashboard_notifications = carto_viewer ? carto_viewer.notifications_for_category(:dashboard) : {}
   end
 
   # We only require login for index, so we must manage the security at this level.

@@ -14,8 +14,9 @@ module Carto
       # Table is bound to visualization, and to data_layer if it's not passed.
       def create_full_visualization(
         carto_user,
+        canonical_map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
         map: FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id),
-        table: full_visualization_table(carto_user, map),
+        table: full_visualization_table(carto_user, canonical_map),
         data_layer: nil,
         visualization_attributes: {}
       )
@@ -53,6 +54,7 @@ module Carto
 
       # Helper method for `create_full_visualization` results cleanup
       def destroy_full_visualization(map, table, table_visualization, visualization)
+        table_visualization.map.destroy if table_visualization && table_visualization.map
         table_visualization.destroy if table_visualization
         table.destroy if table
         visualization.destroy if visualization

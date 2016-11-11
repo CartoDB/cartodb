@@ -3,6 +3,7 @@ require_relative 'group_presenter'
 module Carto
   module Api
     class UserPresenter
+      include AccountTypeHelper
 
       # options:
       # - fetch_groups
@@ -83,6 +84,7 @@ module Carto
           name: @user.name,
           username: @user.username,
           account_type: @user.account_type,
+          account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,

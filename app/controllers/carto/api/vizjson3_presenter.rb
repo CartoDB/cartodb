@@ -83,12 +83,12 @@ module Carto
           center:         map.center,
           datasource:     datasource_vizjson(options, forced_privacy_version),
           description:    html_safe(@visualization.description),
-          options:        map.options,
+          options:        map_options(@visualization),
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
           likes:          @visualization.likes.count,
           map_provider:   map.provider,
-          overlays:       @visualization.overlays.map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson },
+          overlays:       overlays_vizjson(@visualization),
           title:          @visualization.qualified_name(user),
           updated_at:     map.viz_updated_at,
           user:           user_info_vizjson(user),
@@ -208,6 +208,20 @@ module Carto
           markdown.render string
         end
       end
+
+      def map_options(visualization)
+        map = visualization.map
+
+        migration_options = { layer_selector: true } if visualization.overlays.any? { |o| o.type == 'layer_selector' }
+
+        map.options.merge(migration_options || {})
+      end
+
+      def overlays_vizjson(visualization)
+        visualization.overlays.
+          reject { |o| o.type == 'layer_selector' }.
+          map { |o| Carto::Api::OverlayPresenter.new(o).to_vizjson }
+      end
     end
 
     class VizJSON3NamedMapLayerPresenter
@@ -322,10 +336,11 @@ module Carto
       end
 
       def as_data
-        old_legend = @layer.legend
-        legends = @layer.legends
+        old_legend_not_migrated = @layer.legend && !@layer.legend[:migrated]
 
-        migrate_legends(old_legend) if old_legend && legends.empty?
+        if @layer.persisted? && old_legend_not_migrated
+          @layer.legends.any? ? mark_old_legend_migrated : migrate_old_legend
+        end
 
         legends_presentation = @layer.legends.map do |legend|
           Carto::Api::LegendPresenter.new(legend).to_hash
@@ -334,9 +349,15 @@ module Carto
         { legends: legends_presentation }
       end
 
-      def migrate_legends(old_legend)
-        Carto::LegendMigrator.new(@layer.id, old_legend).build.save
+      def migrate_old_legend
+        Carto::LegendMigrator.new(@layer.id, @layer.legend).build.save
+        mark_old_legend_migrated
         @layer.legends.reload
+      end
+
+      def mark_old_legend_migrated
+        @layer.options[:legend][:migrated] = true
+        @layer.save
       end
 
       def as_torque

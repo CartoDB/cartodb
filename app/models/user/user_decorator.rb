@@ -1,5 +1,7 @@
 module CartoDB
   module UserDecorator
+    include AccountTypeHelper
+
     # Options:
     # - show_api_calls: load api calls. Default: true.
     # - extended: load real_table_count and last_active_time. Default: false.
@@ -15,6 +17,7 @@ module CartoDB
         name: name,
         username: username,
         account_type: account_type,
+        account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
         table_count: table_count,
         public_visualization_count: public_visualization_count,

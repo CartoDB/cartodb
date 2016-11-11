@@ -11,14 +11,14 @@
     </div>
 
     <div>
-      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--m"><%- _t('components.modals.export-data.title') %></h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('components.modals.export-data.desc') %>.</p>
+      <h2 class="CDB-Text CDB-Size-huge is-light u-bSpace--xl"><%- _t('components.modals.export-data.title') %></h2>
+      <p class="CDB-Text CDB-Size-large u-altTextColor"><%- _t('components.modals.export-data.desc') %>.</p>
       <% if (!isGeoreferenced) { %>
-        <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace-xl"><%- _t('components.modals.export-data.no-geometry') %></p>
+        <p class="CDB-Text CDB-Size-large u-altTextColor u-tSpace-xl"><%- _t('components.modals.export-data.no-geometry') %></p>
       <% } %>
 
       <div class="Modal-listTextItem u-flex u-alignCenter">
-        <h3 class="CDB-Text CDB-Size-small is-semibold u-upperCase">Select format</h3>
+        <h3 class="CDB-Text CDB-Size-medium is-semibold u-upperCase">Select format</h3>
 
         <form class="js-form" method="POST" action="<%- url %>">
           <input type="hidden" class="js-filename" name="filename" />
@@ -27,7 +27,7 @@
           <input type="hidden" class="js-skipfields" name="skipfields" disabled="disabled" value="" />
           <input type="hidden" class="js-dp" name="dp" value="4" disabled="disabled" />
 
-          <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-small">
+          <ul class="Modal-listForm u-flex u-alignCenter CDB-Text CDB-Size-medium">
             <% _.each(formats, function (format) { %>
             <li class="Modal-listFormItem
               <% if (isGeoreferenced === false && format.geomRequired === true) { %>

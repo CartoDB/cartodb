@@ -10,8 +10,8 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m"><%- _t('editor.maps.export.confirmation.title', { name: name }) %></h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor"><%- _t('editor.maps.export.confirmation.desc') %></p>
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl"><%- _t('editor.maps.export.confirmation.title', { name: name }) %></h2>
+      <p class="CDB-Text CDB-Size-large u-altTextColor"><%- _t('editor.maps.export.confirmation.desc') %></p>
       <ul class="Modal-listActions u-flex u-alignCenter">
         <li class="Modal-listActionsitem">
           <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">

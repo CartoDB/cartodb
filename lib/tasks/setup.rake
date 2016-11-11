@@ -37,6 +37,10 @@ DESC
       u.username = ENV['SUBDOMAIN']
       u.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
 
+      if ENV['BUILDER_ENABLED'] == "true"
+        u.builder_enabled = true
+      end
+
       u.save
 
       raise u.errors.inspect if u.new?
@@ -59,6 +63,10 @@ DESC
       user.password_confirmation = ENV['PASSWORD']
       user.username = ENV['SUBDOMAIN']
       user.database_host = ENV['DATABASE_HOST'] || ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+
+      if ENV['BUILDER_ENABLED'] == "true"
+        u.builder_enabled = true
+      end
 
       if !user.errors.empty?
         puts
@@ -138,6 +146,11 @@ DESC
         else
           u.database_host = ENV['DATABASE_HOST']
         end
+
+        if ENV['BUILDER_ENABLED'] == "true"
+          u.builder_enabled = true
+        end
+
         u.save
         if u.new?
           raise u.errors.inspect

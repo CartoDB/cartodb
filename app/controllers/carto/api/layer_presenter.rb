@@ -54,7 +54,6 @@ module Carto
         @layer.attempt_source_fix unless @layer.has_valid_source?
 
         poro = base_poro(@layer)
-
         if migrate_builder_infowindows
           if poro['infowindow'].present?
             poro['infowindow'] = migrate_builder_infowindow(poro['infowindow'])

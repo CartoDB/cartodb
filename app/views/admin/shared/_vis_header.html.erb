@@ -13,8 +13,8 @@
           <% end %>
           <li><div class="vis_navigation">
             <nav>
-              <%= link_to "Map",  "#/map",   :class => "smaller strong tab button", :title => "Click to view data in map" %>
-              <%= link_to "Table", "#/table", :class => "smaller strong tab hidden button", :title => "Click to view map data in table" %>
+              <%= link_to "Map",  "#/map",   :class => "smaller strong tab hidden button", :title => "Click to view data in map" %>
+              <%= link_to "Table", "#/table", :class => "smaller strong tab button", :title => "Click to view map data in table" %>
             </nav>
           </div></li>
           <% if @visualization.visualization.type == 'table' %>
@@ -27,7 +27,7 @@
       <div class="right header_block">
         <ul class="options">
           <li><%= link_to "Actions", "#/options", :class => "rounded btn dropdown options", :title => "Click to view map actions to perform" %></li>
-          <li><a class="rounded btn share" href="#/visualize" title="Click to export map image"><span>Export</span></a></li>
+          <li><a class="rounded btn share" href="#/visualize" title="Click to export map image"><span>Export Image</span></a></li>
         </ul>
       </div>
 

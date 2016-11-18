@@ -63,6 +63,25 @@ div.map {
     }
   }
 
+  div.ol-cartodb-attribution {
+    position: absolute;
+    right: 0em;
+    bottom: 0em;
+    margin: 0;
+    text-decoration: none;
+    background: rgba(0,0,0,0.32);
+    color: #d8d8d8;
+    padding: 0 5px;
+    display: inline;
+    z-index: 7;
+    pointer-events: auto;
+    font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    cursor: auto;
+    a {
+      color: #0078a8;
+    }
+  }
+
   div.cartodb-legend-stack {
     &:hover {
       .reset {

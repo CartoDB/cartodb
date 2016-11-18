@@ -19,7 +19,7 @@ div.map {
   @include box-sizing(border-box);
   @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
-  background: #333 image-url('layout/noise.png') repeat 0 0;
+  background: #000;
   z-index:1;
 }
 
@@ -611,7 +611,7 @@ div.map {
     top: 0px;
   }
 
-  div.cartodb-layer-selector-box a.layers .count, &:hover{
+  div.cartodb-layer-selector-box a.layers .count {
     background: none;
   }
 

@@ -46,7 +46,7 @@ module Carto
 
     # TODO: Properly migrate log to AR and remove this
     def log
-      CartoDB::Log[self.log_id]
+      CartoDB::Log[log_id]
     end
   end
 end

@@ -161,7 +161,7 @@ module CartoDB
       end
 
       def default_privacy(owner)
-        owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
+        can_be_private?(owner) ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store
@@ -204,7 +204,11 @@ module CartoDB
 
         # Allow only "maintaining" privacy link for everyone but not setting it
         if privacy == PRIVACY_LINK && privacy_changed
-          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          if derived?
+            validator.validate_expected_value(:private_maps_enabled, true, user.private_maps_enabled)
+          else
+            validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          end
         end
 
         if type_slide?
@@ -383,6 +387,10 @@ module CartoDB
 
       def is_privacy_private?
         privacy == PRIVACY_PRIVATE
+      end
+
+      def can_be_private?(owner = user)
+        derived? ? owner.try(:private_maps_enabled) : owner.try(:private_tables_enabled)
       end
 
       def organization?

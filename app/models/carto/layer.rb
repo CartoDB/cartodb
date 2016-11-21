@@ -259,7 +259,7 @@ module Carto
     end
 
     def attempt_source_fix
-      self.source = previous_source || next_same_letter_source || parsed_source
+      self.source = previous_source || next_same_letter_source || guessed_source
     end
 
     private
@@ -283,7 +283,7 @@ module Carto
       end
     end
 
-    def parsed_source
+    def guessed_source
       letter = options['letter'] || source.first
       number = source[1..-1].to_i
 

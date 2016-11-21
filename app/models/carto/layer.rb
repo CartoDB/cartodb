@@ -279,8 +279,7 @@ module Carto
           analysis_node.id.first == letter
         end
 
-        highest_number_analysis_node = letter_analysis_nodes.sort.last
-        highest_number_analysis_node.id if highest_number_analysis_node
+        letter_analysis_nodes.map(&:id).sort.last
       else
         number = source[1..-1].to_i
 

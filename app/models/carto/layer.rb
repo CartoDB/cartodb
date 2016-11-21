@@ -259,7 +259,18 @@ module Carto
     end
 
     def attempt_source_fix
-      self.source = previous_source || next_same_letter_source || guessed_source
+      strategies = [method(:previous_source),
+                    method(:next_same_letter_source),
+                    method(:guessed_source)]
+
+      strategies.each do |strategy|
+        source_candidate = strategy.call
+
+        if valid_source?(source_candidate)
+          self.source = source_candidate
+          break
+        end
+      end
     end
 
     private

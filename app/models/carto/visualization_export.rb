@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+require 'uri'
 require 'fileutils'
 require 'active_record'
 require_relative '../../services/carto/visualizations_export_service_2'

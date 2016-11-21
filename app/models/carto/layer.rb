@@ -254,8 +254,7 @@ module Carto
     end
 
     def source=(source)
-      self.previous_source = source if source.present?
-
+      self.previous_source = self.source if self.source.present?
       options['source'] = source
     end
 

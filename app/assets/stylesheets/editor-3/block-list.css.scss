@@ -133,6 +133,9 @@
 .HorizontalBlockList-item.is-add {
   border: 1px dashed $cMainLine;
   background: $cWhite;
+  &:hover {
+    border: 1px solid $cHoverLine;
+  }
 }
 .HorizontalBlockList-item.is-selected {
   color: $cWhite;

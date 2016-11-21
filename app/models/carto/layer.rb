@@ -265,9 +265,8 @@ module Carto
     private
 
     def next_same_letter_source
-      return unless source
-
-      letter = options['letter'] || source.first
+      letter = options['letter'] || source.to_s.first
+      return unless letter.present?
 
       if visualization
         analysis_nodes = visualization.analyses

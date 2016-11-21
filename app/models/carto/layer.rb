@@ -254,7 +254,8 @@ module Carto
     end
 
     def source=(source)
-      backup_source
+      self.previous_source = source if source.present?
+
       options['source'] = source
     end
 
@@ -288,10 +289,6 @@ module Carto
       number = source[1..-1].to_i
 
       "#{letter}#{number > 0 ? number - 1 : 0}"
-    end
-
-    def backup_source
-      self.previous_source = source if source.present?
     end
 
     def previous_source

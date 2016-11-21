@@ -259,7 +259,7 @@ module Carto
     end
 
     def attempt_source_fix
-      self.source = previous_source ? previous_source : inferred_source
+      self.source = previous_source || inferred_source || parsed_source
     end
 
     private
@@ -280,11 +280,14 @@ module Carto
         end
 
         letter_analysis_nodes.map(&:id).sort.last
-      else
-        number = source[1..-1].to_i
-
-        "#{letter}#{number > 0 ? number - 1 : 0}"
       end
+    end
+
+    def parsed_source
+      letter = options['letter'] || source.first
+      number = source[1..-1].to_i
+
+      "#{letter}#{number > 0 ? number - 1 : 0}"
     end
 
     def backup_source

@@ -1775,7 +1775,11 @@
         "by-color": "By Color",
         "untitled": "Untitled",
         "prefix": "Prefix",
-        "suffix": "Suffix"
+        "suffix": "Suffix",
+        "left-label": "Left Label",
+        "right-label": "Right Label",
+        "top-label": "Top Label",
+        "bottom-label": "Bottom Label"
       },
       "pixel-title": "Amount"
     },

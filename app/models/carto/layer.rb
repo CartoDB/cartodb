@@ -303,6 +303,10 @@ module Carto
       end
     end
 
+    def valid_source?(source = self.source)
+      analysis_node(source).present?
+    end
+
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 
     def tables_from_names(table_names, user)

@@ -838,13 +838,18 @@ module CartoDB
       def update_named_map
         return if named_map_updates_disabled?
 
+        visualization_presentation = if carto_visualization
+                                       carto_visualization.for_presentation
+                                     end
+
+        return unless visualization_presentation
+
         # On visualization destroy, an update will be performed after every
         # layer in the vis is destroyed until the template has no layers
         # and the update fails. This is a hacky way to fix that. A better way
         # would be to fix callbacks.
-        visualization_for_presentation = carto_visualization.for_presentation
-        unless visualization_for_presentation.layers.empty?
-          Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        unless visualization_presentation.layers.empty?
+          Carto::NamedMaps::Api.new(visualization_presentation).update
         end
       end
 

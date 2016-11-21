@@ -838,10 +838,6 @@ module CartoDB
       def update_named_map
         return if named_map_updates_disabled?
 
-        presentation = if carto_visualization
-                         carto_visualization.for_presentation
-                       end
-
         # A visualization destroy triggers destroys on all its layers. Each
         # layer destroy, will trigger an update back to the visualization. When
         # the last layer is destroyed, and the visualization named map template
@@ -849,7 +845,8 @@ module CartoDB
         # error at the Maps API. This is a hack to prevent that update and error
         # from happening. A better way to solve this would be to get
         # callbacks under control.
-        if presentation && presentation.layers.any?
+        presentation_visualization = carto_visualization.try(:for_presentation)
+        if presentation_visualization && presentation_visualization.layers.any?
           Carto::NamedMaps::Api.new(presentation_visualization).update
         end
       end

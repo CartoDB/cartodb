@@ -259,12 +259,12 @@ module Carto
     end
 
     def attempt_source_fix
-      self.source = previous_source || inferred_source || parsed_source
+      self.source = previous_source || next_same_letter_source || parsed_source
     end
 
     private
 
-    def inferred_source
+    def next_same_letter_source
       return unless source
 
       letter = options['letter'] || source.first

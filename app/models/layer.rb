@@ -196,12 +196,6 @@ class Layer < Sequel::Model
     options['query'] = qualify_query(query, options['table_name'], owner_username) if query
   end
 
-  def builder?
-    return unless map && map.visualization
-
-    Carto::Visualization.find(map.visualization.id).builder?
-  end
-
   private
 
   def rename_in(target, anchor, substitution)

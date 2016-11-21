@@ -328,7 +328,7 @@ module Carto
           # TODO: This code is a hack to fix ghost nodes before presenting
           # layers. It shouldn't exist and should be removed as soon as analysis
           # logic lives in the backend
-          unless @layer.has_valid_source?
+          if @layer.builder? && !@layer.has_valid_source?
             @layer.attempt_source_fix
           end
 

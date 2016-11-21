@@ -21,6 +21,10 @@ module UniqueNamesHelper
     test_run_id * 1000000 + @@item_count
   end
 
+  def unique_natural_id
+    ('a'..'z').to_a.sample + unique_integer.to_s
+  end
+
   def test_run_id
     @@test_run_id ||= if ENV['PARALLEL_SEQ']
                         ENV['PARALLEL_SEQ'].to_i

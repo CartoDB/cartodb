@@ -7,12 +7,19 @@ var ChoroplethLegendView = LegendViewBase.extend({
     return template({
       colors: this.model.get('colors'),
       avg: this.model.get('avg'),
+      hasCustomLabels: this._hasCustomLabels(),
       avgPercentage: this._calculateAVGPercentage(),
       prefix: this.model.get('prefix'),
       suffix: this.model.get('suffix'),
       labels: this._getLabels(),
       formatter: formatter
     });
+  },
+
+  _hasCustomLabels: function () {
+    var leftLabel = this.model.get('leftLabel');
+    var rightLabel = this.model.get('rightLabel');
+    return ((leftLabel != null && leftLabel !== '') || (rightLabel != null && rightLabel !== ''));
   },
 
   _getLabels: function () {

@@ -384,9 +384,8 @@ class Carto::Visualization < ActiveRecord::Base
       mapcaps.last.destroy
     end
 
-    mapcaps.create!
-
     auto_generate_indices_for_all_layers
+    mapcaps.create!
   end
 
   def mapcapped?
@@ -481,7 +480,7 @@ class Carto::Visualization < ActiveRecord::Base
   private
 
   def auto_generate_indices_for_all_layers
-    user_tables = data_layers.map(&:affected_tables).flatten.uniq
+    user_tables = data_layers.map(&:user_tables).flatten.uniq
     user_tables.each do |ut|
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end

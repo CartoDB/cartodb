@@ -385,6 +385,8 @@ class Carto::Visualization < ActiveRecord::Base
     end
 
     mapcaps.create!
+
+    auto_generate_indices_for_all_layers
   end
 
   def mapcapped?
@@ -477,6 +479,13 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
+
+  def auto_generate_indices_for_all_layers
+    user_tables = data_layers.map(&:affected_tables).flatten.uniq
+    user_tables.each do |ut|
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
+    end
+  end
 
   def build_state
     self.state = Carto::State.new(user: user, visualization: self)

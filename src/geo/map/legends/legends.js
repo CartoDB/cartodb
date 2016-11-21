@@ -19,7 +19,7 @@ var LEGENDS_METADATA = {
   },
   choropleth: {
     modelClass: ChoroplethLegendModel,
-    definitionAttrs: [ 'prefix', 'suffix' ],
+    definitionAttrs: [ 'prefix', 'suffix', {'leftLabel': 'left_label'}, {'rightLabel': 'right_label'} ],
     dynamic: true
   },
   custom: {
@@ -28,7 +28,7 @@ var LEGENDS_METADATA = {
   },
   custom_choropleth: {
     modelClass: CustomChoroplethLegendModel,
-    definitionAttrs: [ 'prefix', 'suffix', 'colors' ]
+    definitionAttrs: [ 'prefix', 'suffix', {'leftLabel': 'left_label'}, {'rightLabel': 'right_label'}, 'colors' ]
   },
   html: {
     modelClass: HTMLLegendModel,

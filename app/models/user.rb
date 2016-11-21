@@ -223,6 +223,16 @@ class User < Sequel::Model
           self.max_import_table_row_count ||= organization.max_import_table_row_count
           self.max_concurrent_import_count ||= organization.max_concurrent_import_count
           self.max_layers ||= organization.max_layers
+
+          # Non-owner org users get the free SDK plan
+          if organization.owner && organization.owner.mobile_sdk_enabled?
+            self.mobile_max_open_users = 10000 unless changed_columns.include?(:mobile_max_open_users)
+            self.mobile_max_private_users = 10 unless changed_columns.include?(:mobile_max_private_users)
+            self.mobile_xamarin = true unless changed_columns.include?(:mobile_xamarin)
+            self.mobile_gis_extension = true unless changed_columns.include?(:mobile_gis_extension)
+            self.mobile_custom_watermark = false unless changed_columns.include?(:mobile_custom_watermark)
+            self.mobile_offline_maps = false unless changed_columns.include?(:mobile_offline_maps)
+          end
         end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS

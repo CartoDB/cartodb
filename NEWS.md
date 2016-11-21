@@ -71,6 +71,7 @@ sudo make install
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
+* Fixed list of layers in Add basemap WMS URL tab
 
 3.13.0 (2016-XX-XX)
 -------------------

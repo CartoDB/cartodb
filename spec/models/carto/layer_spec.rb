@@ -105,7 +105,7 @@ describe Carto::Layer do
         @layer.options['previous_source'].should eq @analysis.natural_id
       end
 
-      it 'uses backup when available' do
+      it 'uses #previous_source strategy if available' do
         @layer.source = bad_source
         @layer.source.should eq bad_source
         @layer.options['previous_source'] = 'super fake'
@@ -116,7 +116,7 @@ describe Carto::Layer do
         @layer.source.should eq 'super fake'
       end
 
-      it 'looks for highest same letter analysis when no backup' do
+      it 'uses #next_same_letter_source strategy when no #previous_source' do
         @layer.options['source'] = bad_source
         @layer.source.should eq bad_source
         @layer.options['previous_source'].should be_nil
@@ -127,10 +127,11 @@ describe Carto::Layer do
         @layer.source.should eq @analysis.natural_id
       end
 
-      it 'tries parsing when no analysis with same letter nor backup' do
+      it 'uses #guessed_source when no #previous_source nor next_same_letter_source' do
         other_letters = ('a'..'z').to_a - [@analysis.natural_id.first]
         new_letter = other_letters.sample
         new_source = "#{new_letter}7"
+        expected_guessed_source = "#{new_letter}6"
 
         @layer.options['source'] = new_source
         @layer.source.should eq new_source
@@ -139,13 +140,14 @@ describe Carto::Layer do
         @layer.has_valid_source?.should be_false
         @layer.attempt_source_fix
 
-        @layer.source.should eq "#{new_letter}6"
+        @layer.source.should eq expected_guessed_source
       end
 
-      it 'never parses to < 0' do
+      it 'never #guessed_source to < 0' do
         other_letters = ('a'..'z').to_a - [@analysis.natural_id.first]
         new_letter = other_letters.sample
         new_source = "#{new_letter}0"
+        expected_guessed_source = new_source
 
         @layer.options['source'] = new_source
         @layer.source.should eq new_source
@@ -154,7 +156,7 @@ describe Carto::Layer do
         @layer.has_valid_source?.should be_false
         @layer.attempt_source_fix
 
-        @layer.source.should eq "#{new_letter}0"
+        @layer.source.should eq expected_guessed_source
       end
 
       it 'recognizes a valid source' do

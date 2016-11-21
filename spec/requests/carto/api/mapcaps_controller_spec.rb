@@ -79,6 +79,15 @@ describe Carto::Api::MapcapsController do
         response.status.should eq 403
       end
     end
+
+    it 'triggers autoindex regeneration' do
+      Carto::Visualization.any_instance.stubs(:auto_generate_indices_for_all_layers).once
+      post_json create_mapcap_url, {} do |response|
+        response.status.should eq 201
+
+        mapcap_should_be_correct(response.body)
+      end
+    end
   end
 
   describe '#index' do

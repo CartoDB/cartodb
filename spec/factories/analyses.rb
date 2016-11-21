@@ -8,7 +8,7 @@ module AnalysisFactoryHelper
   def self.source_analysis_for_table(table_name, query)
     query ||= "select * from #{table_name}"
     {
-      id:      unique_string,
+      id:      unique_natural_id,
       type:    'source',
       params:  { query: query },
       options: { table_name: table_name }
@@ -39,7 +39,7 @@ FactoryGirl.define do
 
     analysis_definition do
       {
-        id: unique_string,
+        id: unique_natural_id,
         type: "buffer",
         params: {
           source: AnalysisFactoryHelper.source_analysis_for_table(source_table, query)
@@ -58,7 +58,7 @@ FactoryGirl.define do
 
     analysis_definition do
       {
-        id: unique_string,
+        id: unique_natural_id,
         type: "intersection",
         params: {
           source: AnalysisFactoryHelper.source_analysis_for_table(source_table, source_query),

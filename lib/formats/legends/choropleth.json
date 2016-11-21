@@ -1,6 +1,5 @@
 {
   "type": "object",
-  "required": ["prefix", "suffix"],
   "additionalProperties": false,
   "properties": {
     "prefix": { "type": "string" },

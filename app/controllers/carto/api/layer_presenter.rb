@@ -51,13 +51,6 @@ module Carto
       end
 
       def to_poro(migrate_builder_infowindows: false)
-        # TODO: This code is a hack to fix ghost nodes before presenting layers.
-        # It shouldn't exist and should be removed as soon as analysis logic
-        # lives in the backend
-        if @layer.builder? && @layer.data_layer? && !@layer.has_valid_source?
-          @layer.attempt_source_fix
-        end
-
         poro = base_poro(@layer)
         if migrate_builder_infowindows
           if poro['infowindow'].present?

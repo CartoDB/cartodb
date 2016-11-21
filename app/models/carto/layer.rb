@@ -246,7 +246,7 @@ module Carto
     end
 
     def has_valid_source?
-      analysis_node.present?
+      valid_source?
     end
 
     def source

@@ -297,7 +297,7 @@ module Carto
       options['previous_source'] = previous_source
     end
 
-    def analysis_node
+    def analysis_node(source = self.source)
       if source && visualization
         Carto::AnalysisNode.find_by_natural_id(visualization.id, source)
       end

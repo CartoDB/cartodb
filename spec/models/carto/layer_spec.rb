@@ -99,6 +99,10 @@ describe Carto::Layer do
         "#{letter}#{number}"
       end
 
+      it 'recognizes a valid source' do
+        @layer.has_valid_source?.should be_true
+      end
+
       it 'should backup automatically when changing source' do
         @layer.source = bad_source
         @layer.source.should eq bad_source
@@ -106,20 +110,12 @@ describe Carto::Layer do
       end
 
       it 'uses #previous_source strategy if available' do
+        @layer.expects(:next_same_letter_source).never
+        @layer.expects(:guessed_source).never
+
         @layer.source = bad_source
         @layer.source.should eq bad_source
-        @layer.options['previous_source'] = 'super fake'
-
-        @layer.has_valid_source?.should be_false
-        @layer.attempt_source_fix
-
-        @layer.source.should eq 'super fake'
-      end
-
-      it 'uses #next_same_letter_source strategy when no #previous_source' do
-        @layer.options['source'] = bad_source
-        @layer.source.should eq bad_source
-        @layer.options['previous_source'].should be_nil
+        @layer.options['previous_source'] = @analysis.natural_id
 
         @layer.has_valid_source?.should be_false
         @layer.attempt_source_fix
@@ -127,40 +123,39 @@ describe Carto::Layer do
         @layer.source.should eq @analysis.natural_id
       end
 
-      it 'uses #guessed_source when no #previous_source nor next_same_letter_source' do
-        other_letters = ('a'..'z').to_a - [@analysis.natural_id.first]
-        new_letter = other_letters.sample
-        new_source = "#{new_letter}7"
-        expected_guessed_source = "#{new_letter}6"
+      it 'uses #next_same_letter_source strategy when no #previous_source' do
+        @layer.stubs(:previous_source)
+        @layer.expects(:guessed_source).never
 
-        @layer.options['source'] = new_source
-        @layer.source.should eq new_source
-        @layer.options['previous_source'].should be_nil
+        @layer.source = bad_source
+        @layer.source.should eq bad_source
 
         @layer.has_valid_source?.should be_false
         @layer.attempt_source_fix
 
-        @layer.source.should eq expected_guessed_source
+        @layer.source.should eq @analysis.natural_id
+      end
+
+      it 'uses #guessed_source when no #previous_source nor #next_same_letter_source' do
+        @layer.stubs(:previous_source)
+        @layer.stubs(:next_same_letter_source)
+
+        letter = @analysis.natural_id.first
+        number = @analysis.natural_id[1..-1].to_i
+        new_source = "#{letter}#{number + 1}"
+
+        @layer.source = new_source
+        @layer.source.should eq new_source
+
+        @layer.has_valid_source?.should be_false
+        @layer.attempt_source_fix
+
+        @layer.source.should eq @analysis.natural_id
       end
 
       it 'never #guessed_source to < 0' do
-        other_letters = ('a'..'z').to_a - [@analysis.natural_id.first]
-        new_letter = other_letters.sample
-        new_source = "#{new_letter}0"
-        expected_guessed_source = new_source
-
-        @layer.options['source'] = new_source
-        @layer.source.should eq new_source
-        @layer.options['previous_source'].should be_nil
-
-        @layer.has_valid_source?.should be_false
-        @layer.attempt_source_fix
-
-        @layer.source.should eq expected_guessed_source
-      end
-
-      it 'recognizes a valid source' do
-        @layer.has_valid_source?.should be_true
+        @layer.source = 'a0'
+        @layer.send(:guessed_source).should eq 'a0'
       end
     end
   end

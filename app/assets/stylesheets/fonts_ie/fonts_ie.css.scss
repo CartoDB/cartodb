@@ -1,9 +1,0 @@
-@import "compass/css3/font-face";
-
-/*Helvetica*/
-@include font-face("Helvetica", font-files("helvetica.woff", "helvetica.ttf"), "helvetica.eot", normal, normal);
-@include font-face("Helvetica", font-files("helvetica-bold.woff", "helvetica-bold.ttf"), "helvetica-bold.eot", bold, normal);
-
-/*ProximaNova*/
-@include font-face("ProximaNova", font-files("ProximaNova-Regular.woff", "ProximaNova-Regular.ttf"), "ProximaNova-Regular.eot", bold, normal);
-@include font-face("ProximaNova-Semibold", font-files("ProximaNova-Semibold.woff", "ProximaNova-Semibold.ttf"), "ProximaNova-Semibold.eot", bold, normal);

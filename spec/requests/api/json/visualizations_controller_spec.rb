@@ -265,6 +265,35 @@ describe Api::Json::VisualizationsController do
           new_layer.options['query'].should eq layer.options['query']
         end
       end
+
+      it 'sets LINK privacy if the user has private_maps' do
+        table1 = create_table(user_id: @org_user_1.id)
+        payload = {
+          tables: [table1.name]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_LINK
+        end
+      end
+
+      it 'sets PUBLIC privacy if the user doesn\'t have private_maps' do
+        @carto_org_user_2.update_column(:private_maps_enabled, false) # Direct to DB to skip validations
+        table1 = create_table(user_id: @org_user_2.id)
+        payload = {
+          tables: [table1.name]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        end
+      end
     end
   end
 

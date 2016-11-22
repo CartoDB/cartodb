@@ -1773,7 +1773,9 @@
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "prefix": "Prefix",
+        "suffix": "Suffix"
       },
       "pixel-title": "Amount"
     },

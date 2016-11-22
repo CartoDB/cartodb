@@ -44,5 +44,9 @@ module Carto
       user.remaining_geocoding_quota
     end
 
+    # TODO: Properly migrate log to AR and remove this
+    def log
+      CartoDB::Log[log_id]
+    end
   end
 end

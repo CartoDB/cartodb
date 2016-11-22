@@ -161,7 +161,7 @@ module CartoDB
       end
 
       def default_privacy(owner)
-        owner.try(:private_tables_enabled) ? PRIVACY_LINK : PRIVACY_PUBLIC
+        can_be_private?(owner) ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store
@@ -204,7 +204,11 @@ module CartoDB
 
         # Allow only "maintaining" privacy link for everyone but not setting it
         if privacy == PRIVACY_LINK && privacy_changed
-          validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          if derived?
+            validator.validate_expected_value(:private_maps_enabled, true, user.private_maps_enabled)
+          else
+            validator.validate_expected_value(:private_tables_enabled, true, user.private_tables_enabled)
+          end
         end
 
         if type_slide?
@@ -383,6 +387,10 @@ module CartoDB
 
       def is_privacy_private?
         privacy == PRIVACY_PRIVATE
+      end
+
+      def can_be_private?(owner = user)
+        derived? ? owner.try(:private_maps_enabled) : owner.try(:private_tables_enabled)
       end
 
       def organization?
@@ -830,13 +838,16 @@ module CartoDB
       def update_named_map
         return if named_map_updates_disabled?
 
-        # On visualization destroy, an update will be performed after every
-        # layer in the vis is destroyed until the template has no layers
-        # and the update fails. This is a hacky way to fix that. A better way
-        # would be to fix callbacks.
-        visualization_for_presentation = carto_visualization.for_presentation
-        unless visualization_for_presentation.layers.empty?
-          Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        # A visualization destroy triggers destroys on all its layers. Each
+        # layer destroy, will trigger an update back to the visualization. When
+        # the last layer is destroyed, and the visualization named map template
+        # is generated to be updated, it will contain no layers, causing an
+        # error at the Maps API. This is a hack to prevent that update and error
+        # from happening. A better way to solve this would be to get
+        # callbacks under control.
+        presentation_visualization = carto_visualization.try(:for_presentation)
+        if presentation_visualization && presentation_visualization.layers.any?
+          Carto::NamedMaps::Api.new(presentation_visualization).update
         end
       end
 

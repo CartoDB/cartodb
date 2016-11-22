@@ -66,8 +66,8 @@ module Carto
           end
 
           it 'should contain layer id' do
-            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
-            @template_hash[:layergroup][:layers].second[:options][:id].should eq @carto_layer.id
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @carto_layer.id
           end
 
           describe 'with popups' do
@@ -343,8 +343,8 @@ module Carto
           end
 
           it 'should contain layer id' do
-            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
-            @template_hash[:layergroup][:layers].second[:options][:id].should eq @torque_layer.id
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @torque_layer.id
           end
 
           describe 'with aggregations' do

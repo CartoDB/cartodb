@@ -1,6 +1,10 @@
 3.14.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+- This release introduces the Magic Positioner helper to render context menus in the best position inside the
+viewport.
+
+### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
  - `bundle exec rake carto:db:set_carto_attribution`
  - Update basemaps configuration to use CARTO as a category instead of CartoDB

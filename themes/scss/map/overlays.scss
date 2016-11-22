@@ -310,9 +310,6 @@ $maxLegendContainerHeight: 300px;
   content: '';
   visibility: visible;
 }
-.Bubble-list--custom::before {
-  visibility: hidden;
-}
 .Bubble-item {
   @include opacity(0.5);
   @include transform(translateX(-50%));
@@ -347,11 +344,10 @@ $maxLegendContainerHeight: 300px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
 }
-
+.Bubble-list--custom::before,
 .Bubble-item--custom::before {
   visibility: hidden;
 }
-
 .Bubble-numbers {
   position: relative;
 }

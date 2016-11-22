@@ -537,6 +537,8 @@ CartoDB::Application.routes.draw do
         get '/:id/data_imports/:data_import_id' => 'users#data_import'
         get '/:id/synchronizations' => 'users#synchronizations'
         get '/:id/synchronizations/:synchronization_id' => 'users#synchronization'
+        get '/:id/geocodings' => 'users#geocodings'
+        get '/:id/geocodings/:geocoding_id' => 'users#geocoding'
       end
     end
     resources :organizations

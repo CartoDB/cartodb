@@ -195,16 +195,6 @@ module Carto
         @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
-      def preview_layers
-        preview_layers = {}
-
-        @visualization.carto_and_torque_layers.each do |layer|
-          preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
-        end
-
-        preview_layers
-      end
-
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
       end
@@ -260,6 +250,16 @@ module Carto
         end
 
         data
+      end
+
+      def preview_layers
+        preview_layers = {}
+
+        @visualization.carto_and_torque_layers.each do |layer|
+          preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
+        end
+
+        preview_layers
       end
     end
   end

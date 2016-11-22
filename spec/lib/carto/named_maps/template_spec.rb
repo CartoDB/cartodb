@@ -598,11 +598,17 @@ module Carto
 
         describe '#preview_layers' do
           before(:all) do
+            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @visualization.reload
+
             template = Carto::NamedMaps::Template.new(@visualization)
             @preview_layers = template.to_hash[:preview_layers]
           end
 
           after(:all) do
+            @carto_layer.destroy
+            @visualization.reload
+
             @preview_layers = nil
           end
 
@@ -611,7 +617,7 @@ module Carto
           end
 
           it 'should not generate preview_layers for basemaps' do
-            preview_layers_ids = @preview_layers.map(&:keys).flatten
+            preview_layers_ids = @preview_layers.keys.flatten
 
             @visualization.base_layers.map(&:id).each do |id|
               preview_layers_ids.should_not include(id)
@@ -619,12 +625,10 @@ module Carto
           end
 
           it 'should generate preview_layers correctly' do
-            @visualization.data_layers.each_with_index do |layer, index|
-              expected_visibility = {
-                "#{layer.id}": layer.options[:visible]
-              }
-
-              @preview_layers[index].should eq expected_visibility
+            @visualization.data_layers.should_not be_empty
+            @visualization.data_layers.each do |layer|
+              expected_visibility = layer.options['visible'] || false
+              @preview_layers[layer.id.to_sym].should eq expected_visibility
             end
           end
         end

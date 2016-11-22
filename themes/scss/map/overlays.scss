@@ -308,8 +308,11 @@ $maxLegendContainerHeight: 300px;
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
+  visibility: visible;
 }
-
+.Bubble-list--custom::before {
+  visibility: hidden;
+}
 .Bubble-item {
   @include opacity(0.5);
   @include transform(translateX(-50%));
@@ -344,6 +347,11 @@ $maxLegendContainerHeight: 300px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
 }
+
+.Bubble-item--custom::before {
+  visibility: hidden;
+}
+
 .Bubble-numbers {
   position: relative;
 }
@@ -392,6 +400,10 @@ $maxLegendContainerHeight: 300px;
   background: rgba(0, 0, 0, 0.4);
   content: '';
   z-index: 10;
+}
+
+.Bubble-average--custom::after {
+  display: none;
 }
 
 $opacity-list: 0.95 0.9 0.85 0.8 0.75 0.7 0.65;

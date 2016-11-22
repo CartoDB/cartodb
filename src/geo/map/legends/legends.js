@@ -9,7 +9,7 @@ var HTMLLegendModel = require('./html-legend-model');
 var LEGENDS_METADATA = {
   bubble: {
     modelClass: BubbleLegendModel,
-    definitionAttrs: [ { 'fillColor': 'color' } ],
+    definitionAttrs: [ { 'fillColor': 'color' }, {'topLabel': 'top_label'}, {'bottomLabel': 'bottom_label'} ],
     dynamic: true
   },
   category: {

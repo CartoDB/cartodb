@@ -25,8 +25,13 @@ var BubbleLegendView = LegendViewBase.extend({
   },
 
   _calculateLabelPositions: function () {
-    var labelPositions = this._calculateBubbleSizes();
-    labelPositions.push(0);
+    var labelPositions;
+    if (this._hasCustomLabels()) {
+      labelPositions = [0, 100];
+    } else {
+      labelPositions = this._calculateBubbleSizes();
+      labelPositions.push(0);
+    }
     return labelPositions;
   },
 
@@ -37,6 +42,7 @@ var BubbleLegendView = LegendViewBase.extend({
       labels = [];
       labels.push(this.model.get('bottomLabel'));
       labels.push(this.model.get('topLabel'));
+      labels = labels.reverse();
     } else {
       labels = this.model.get('values').slice(0);
       if (this._areSizesInAscendingOrder()) {

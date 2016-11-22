@@ -253,8 +253,6 @@ module Carto
 
               @carto_layer.options[:source] = @analysis.natural_id
               @carto_layer.save
-
-              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
 
             after(:all) do
@@ -265,12 +263,34 @@ module Carto
               @template_hash = nil
             end
 
-            it 'should not contain sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+            describe 'and builder' do
+              before(:all) do
+                @visualization.stubs(:version).returns(3)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should not contain sql' do
+                @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+              end
+
+              it 'should contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+              end
             end
 
-            it 'should contain source' do
-              @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+            describe 'and editor' do
+              before(:all) do
+                @visualization.stubs(:version).returns(2)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should contain sql' do
+                @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+              end
+
+              it 'should not contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source].should be_nil
+              end
             end
           end
 

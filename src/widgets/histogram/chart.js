@@ -130,8 +130,8 @@ module.exports = cdb.core.View.extend({
     var width = textLabel.node().getBBox().width;
     rectLabel.attr('width', width + 4);
 
-    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(handle.attr('transform'));
-    var xPos = +parts[1] + 3;
+    var parts = /translate\((\d*)/.exec(handle.attr('transform'));
+    var xPos = +parts[0] + 3;
 
     if ((xPos - width / 2) < 0) {
       axisTip.attr('transform', 'translate(0, 52)');
@@ -268,8 +268,7 @@ module.exports = cdb.core.View.extend({
 
   _onMouseOut: function () {
     var bars = this.chart.selectAll('.CDB-Chart-bar');
-    bars.classed('is-highlighted', false)
-        .attr('fill', this.options.chartBarColor);
+    bars.classed('is-highlighted', false);
     this.trigger('hover', { value: null });
   },
 
@@ -312,11 +311,9 @@ module.exports = cdb.core.View.extend({
     this.trigger('hover', hoverProperties);
 
     this.chart.selectAll('.CDB-Chart-bar')
-      .classed('is-highlighted', false)
-      .attr('fill', this.options.chartBarColor);
+      .classed('is-highlighted', false);
 
     if (bar && bar.node()) {
-      bar.attr('fill', this._getHoverColor());
       bar.classed('is-highlighted', true);
     }
   },
@@ -671,7 +668,6 @@ module.exports = cdb.core.View.extend({
     var loPosition = this._getBarPosition(loBarIndex);
     var hiPosition = this._getBarPosition(hiBarIndex);
 
-    this.model.set({lo_index: loBarIndex, hi_index: hiBarIndex});
     this._selectRange(loPosition, hiPosition);
   },
 
@@ -947,6 +943,8 @@ module.exports = cdb.core.View.extend({
     var bars = this.chart.selectAll('.CDB-Chart-bar')
       .data(data);
 
+    this._addHoverToStylesheet();
+
     bars
       .enter()
       .append('rect')
@@ -1001,8 +999,14 @@ module.exports = cdb.core.View.extend({
       });
   },
 
-  _getHoverColor: function () {
-    return tinycolor(this.options.chartBarColor).darken().toString();
+  _addHoverToStylesheet: function () {
+    var color = tinycolor(this.options.chartBarColor).darken().toString();
+
+    if (document.styleSheets[0].cssRules[0].selectorText !== '.CDB-Chart-bar.is-highlighted') {
+      document.styleSheets[0].insertRule('.CDB-Chart-bar.is-highlighted { fill: ' + color + ' !important; }', 0);
+    } else {
+      document.styleSheets[0].cssRules[0].style.fill = color;
+    }
   },
 
   _generateBars: function () {
@@ -1010,6 +1014,7 @@ module.exports = cdb.core.View.extend({
     var data = this.model.get('data');
 
     this._calcBarWidth();
+    this._addHoverToStylesheet();
 
     var bars = this.chart.append('g')
       .attr('transform', 'translate(0, 0)')

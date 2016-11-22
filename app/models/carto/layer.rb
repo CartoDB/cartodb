@@ -260,7 +260,7 @@ module Carto
 
     def attempt_source_fix
       strategies = [method(:previous_source),
-                    method(:next_same_letter_source),
+                    method(:last_same_letter_source),
                     method(:guessed_source)]
 
       strategies.each do |strategy|
@@ -275,7 +275,7 @@ module Carto
 
     private
 
-    def next_same_letter_source
+    def last_same_letter_source
       letter = options['letter'] || source.to_s.first
       return unless letter.present?
 

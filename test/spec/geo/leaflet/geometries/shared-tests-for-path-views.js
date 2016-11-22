@@ -11,19 +11,19 @@ module.exports = function () {
     this.leafletMarker1 = this.leafletMap.addLayer.calls.argsFor(0)[0];
     this.leafletMarker2 = this.leafletMap.addLayer.calls.argsFor(1)[0];
     this.leafletMarker3 = this.leafletMap.addLayer.calls.argsFor(2)[0];
-    this.leafletPolygon = this.leafletMap.addLayer.calls.argsFor(3)[0];
+    this.leafletPath = this.leafletMap.addLayer.calls.argsFor(3)[0];
   });
 
-  it('should render some markers and a polygon', function () {
+  it('should render some markers and the path', function () {
     expect(this.leafletMap.addLayer).toHaveBeenCalled();
-    expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
+    expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 path
     expect(this.leafletMarker1.getLatLng()).toEqual({ lat: -1, lng: 1 });
     expect(this.leafletMarker1.options.draggable).toBe(false);
     expect(this.leafletMarker2.getLatLng()).toEqual({ lat: 1, lng: 2 });
     expect(this.leafletMarker2.options.draggable).toBe(false);
     expect(this.leafletMarker3.getLatLng()).toEqual({ lat: 3, lng: 4 });
     expect(this.leafletMarker3.options.draggable).toBe(false);
-    expect(this.leafletPolygon.getLatLngs()).toEqual([
+    expect(this.leafletPath.getLatLngs()).toEqual([
       { lat: -1, lng: 1 }, { lat: 1, lng: 2 }, { lat: 3, lng: 4 }
     ]);
   });
@@ -34,7 +34,7 @@ module.exports = function () {
       [-1, 1], [1, 2], [3, 4], [-1, 1]
     ]);
 
-    expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
+    expect(this.leafletMap.addLayer.calls.count()).toEqual(4); // 3 markers and 1 path
   });
 
   describe('when the model is updated', function () {
@@ -43,7 +43,7 @@ module.exports = function () {
         this.geometry.points.at(0).set('latlng', [ -45, 45 ]);
       });
 
-      it("should update the polygon's latlng", function () {
+      it("should update the path's latlng", function () {
         expect(this.geometry.getCoordinates()).toEqual([
           [ -45, 45 ], [ 1, 2 ], [ 3, 4 ]
         ]);
@@ -61,7 +61,7 @@ module.exports = function () {
         this.geometry.points.add(point);
       });
 
-      it("should update the polygon's latlng", function () {
+      it("should update the path's latlng", function () {
         expect(this.geometry.getCoordinates()).toEqual([
           [ -1, 1 ], [ 1, 2 ], [ 3, 4 ], [ -40, 40 ]
         ]);
@@ -75,7 +75,7 @@ module.exports = function () {
         ]);
       });
 
-      it("should update the polygon's latlng", function () {
+      it("should update the path's latlng", function () {
         expect(this.geometry.getCoordinates()).toEqual([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
@@ -84,13 +84,13 @@ module.exports = function () {
   });
 
   describe('when the model is removed', function () {
-    it('should remove the markers and polygon from the map', function () {
+    it('should remove the markers and path from the map', function () {
       this.geometry.remove();
 
-      expect(this.leafletMap.removeLayer.calls.count()).toEqual(4); // 3 markers and 1 polygon
+      expect(this.leafletMap.removeLayer.calls.count()).toEqual(4); // 3 markers and 1 path
     });
 
-    it('should remove each point from the polygon', function () {
+    it('should remove each point from the path', function () {
       this.geometry.points.each(function (point) {
         spyOn(point, 'remove');
       });

@@ -149,7 +149,6 @@ module CartoDB
       data_library.css
       public_table.css
       sessions.css
-      cartod1b.css
       user_feed.css
       explore.css
       mobile_apps.css

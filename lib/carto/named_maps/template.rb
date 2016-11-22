@@ -94,7 +94,8 @@ module Carto
           if layer.data_layer?
             layer_index += 1
 
-            layers.push(type: 'cartodb', options: options_for_carto_and_torque_layers(layer, layer_index))
+            options = options_for_carto_and_torque_layers(layer, layer_index)
+            layers.push(id: layer.id, type: 'cartodb', options: options)
           elsif layer.base?
             layer_options = layer.options
 
@@ -108,7 +109,9 @@ module Carto
 
         @visualization.torque_layers.each do |layer|
           layer_index += 1
-          layers.push(type: 'torque', options: options_for_carto_and_torque_layers(layer, layer_index))
+
+          options = options_for_carto_and_torque_layers(layer, layer_index)
+          layers.push(id: layer.id, type: 'torque', options: options)
         end
 
         layers
@@ -132,7 +135,6 @@ module Carto
         tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
         options = {
-          id: layer.id,
           cartocss: tile_style.present? ? tile_style : EMPTY_CSS,
           cartocss_version: layer_options.fetch('style_version')
         }

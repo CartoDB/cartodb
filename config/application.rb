@@ -134,8 +134,6 @@ module CartoDB
       old_common.css
       dashboard.css
       cartodb.css
-      fonts_ie.css
-      fonts.css
       front.css
       editor.css
       editor3.css

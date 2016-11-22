@@ -73,6 +73,7 @@ sudo make install
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
 * Fixed an issue registering table dependencies for users with hyphens in the username
+* Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.

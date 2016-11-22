@@ -78,6 +78,7 @@ sudo make install
 * Fixed list of layers in Add basemap WMS URL tab
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
+* 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).
 
 3.13.0 (2016-XX-XX)
 -------------------

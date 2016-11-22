@@ -47,6 +47,13 @@
     border-right: 0;
   }
 }
+.Editor-contextSwitcherItem.is-disabled {
+  opacity: 0.24;
+
+  .Editor-contextSwitcherButton {
+    cursor: default;
+  }
+}
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
   fill: rgba(0, 0, 0, 0.16);
 }

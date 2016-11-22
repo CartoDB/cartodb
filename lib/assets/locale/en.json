@@ -2015,7 +2015,8 @@
       "valid-lat": "Must be a valid latitude",
       "valid": "Only numbers allowed",
       "delete": "Delete %{featureType}",
-      "edit": "Edit %{featureType}"
+      "edit": "Edit %{featureType}",
+      "disabled": "Feature edition is disabled for this layer."
     }
   },
   "notifications": {

@@ -130,8 +130,8 @@ module.exports = cdb.core.View.extend({
     var width = textLabel.node().getBBox().width;
     rectLabel.attr('width', width + 4);
 
-    var parts = /translate\(\s*([^\s,)]+), ([^\s,)]+)/.exec(handle.attr('transform'));
-    var xPos = +parts[1] + 3;
+    var parts = /translate\((\d*)/.exec(handle.attr('transform'));
+    var xPos = +parts[0] + 3;
 
     if ((xPos - width / 2) < 0) {
       axisTip.attr('transform', 'translate(0, 52)');

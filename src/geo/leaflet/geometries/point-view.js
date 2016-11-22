@@ -6,6 +6,12 @@ var PointView = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
     this.model.on('change:latlng', this._onLatlngChanged, this);
+    this.model.on('change:iconUrl change:iconAnchor', this._onIconChanged, this);
+    this._marker = options.nativeGeometry || null;
+  },
+
+  getNativeGeometry: function () {
+    return this._marker;
   },
 
   _onLatlngChanged: function () {
@@ -16,6 +22,15 @@ var PointView = GeometryViewBase.extend({
     }
   },
 
+  _onIconChanged: function () {
+    this._renderMarkerIfNotRendered();
+    var newIcon = L.icon({
+      iconUrl: this.model.get('iconUrl'),
+      iconAnchor: this.model.get('iconAnchor')
+    });
+    this._marker.setIcon(newIcon);
+  },
+
   render: function () {
     if (this.model.get('latlng')) {
       this._renderMarkerIfNotRendered();
@@ -23,7 +38,13 @@ var PointView = GeometryViewBase.extend({
   },
 
   _renderMarkerIfNotRendered: function () {
-    if (!this._marker) {
+    var isEditable = this.model.isEditable();
+    if (this._isMarkerRendered()) {
+      this._marker.off('dragstart');
+      this._marker.off('drag');
+      this._marker.off('dragend');
+      this._marker.off('mousedown');
+    } else {
       var markerOptions = {
         icon: L.icon({
           iconUrl: this.model.get('iconUrl'),
@@ -31,19 +52,24 @@ var PointView = GeometryViewBase.extend({
         })
       };
 
-      var isDraggable = this.model.isEditable();
-      if (isDraggable) {
-        markerOptions.draggable = isDraggable;
-      }
+      markerOptions.draggable = !!isEditable;
 
       this._marker = L.marker(this.model.get('latlng'), markerOptions);
-      if (isDraggable) {
-        this._marker.on('dragstart', this._onDragStart.bind(this));
-        this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
-        this._marker.on('dragend', this._onDragEnd.bind(this));
-      }
       this.leafletMap.addLayer(this._marker);
     }
+
+    if (isEditable) {
+      this._marker.on('dragstart', this._onDragStart.bind(this));
+      this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
+      this._marker.on('dragend', this._onDragEnd.bind(this));
+
+      // TODO: isExpandable
+      this._marker.on('mousedown', this._onMouseDown.bind(this));
+    }
+  },
+
+  _isMarkerRendered: function () {
+    return this._marker && this.leafletMap.hasLayer(this._marker);
   },
 
   _onDragStart: function () {
@@ -57,6 +83,10 @@ var PointView = GeometryViewBase.extend({
 
   _onDragEnd: function () {
     this._isDragging = false;
+  },
+
+  _onMouseDown: function () {
+    this.trigger('mousedown', this.model);
   },
 
   isDragging: function () {

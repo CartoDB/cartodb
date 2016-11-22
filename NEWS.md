@@ -72,6 +72,7 @@ sudo make install
 * Several auth_token related fixes
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
+* Removed non used fonts (Lato and Proxima Nova) and the font loader.
 
 3.13.0 (2016-XX-XX)
 -------------------

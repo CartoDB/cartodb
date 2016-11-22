@@ -720,6 +720,14 @@
           "add-people": "Add people"
         }
       },
+      "add-asset": {
+        "modal-title": "Select marker image",
+        "modal-desc": "Upload your icons or just use our nice selection",
+        "set-image": "Set image",
+        "your-uploads": "Your uploads",
+        "simple-icons": "Simple Icons",
+        "pin-icons": "Pin Icons"
+      },
       "add-analysis": {
         "modal-title": "Add a new analysis",
         "modal-desc": "Select the analysis you want to add",

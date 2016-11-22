@@ -15,7 +15,7 @@ class Carto::Widget < ActiveRecord::Base
   belongs_to :layer, class_name: Carto::Layer
 
   before_validation :set_style_if_nil
-  validates :layer, :order, :type, :options, presence: true
+  validates :layer, :order, :type, :options, :source_id, presence: true
   validate :validate_user_not_viewer
 
   before_destroy :validate_user_not_viewer

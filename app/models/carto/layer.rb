@@ -181,7 +181,7 @@ module Carto
     end
 
     def visualization
-      map.visualization
+      map.visualization if map
     end
 
     def user

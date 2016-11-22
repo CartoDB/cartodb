@@ -414,6 +414,10 @@ class Carto::Visualization < ActiveRecord::Base
         CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
       end
     end
+
+    # This is needed because Carto::Layer does not yet triggers invalidations on save
+    # It can be safely removed once it does
+    map.notify_map_change
   end
 
   def ids_json

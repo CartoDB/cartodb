@@ -41,7 +41,7 @@ module Carto
               dataviews: dataviews,
               analyses: analyses_definitions
             },
-            view: view.merge(preview_layers: preview_layers)
+            view: view
           }
         end
       end
@@ -249,7 +249,7 @@ module Carto
           data[:bounds] = bounds_data
         end
 
-        data
+        data.merge!(preview_layers: preview_layers)
       end
 
       def preview_layers

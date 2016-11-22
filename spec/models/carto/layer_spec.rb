@@ -121,6 +121,7 @@ describe Carto::Layer do
         @layer.attempt_source_fix
 
         @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
       end
 
       it 'uses #last_same_letter_source strategy when no #previous_source' do
@@ -134,6 +135,7 @@ describe Carto::Layer do
         @layer.attempt_source_fix
 
         @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
       end
 
       it 'uses #guessed_source when no #previous_source nor #last_same_letter_source' do
@@ -151,6 +153,7 @@ describe Carto::Layer do
         @layer.attempt_source_fix
 
         @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
       end
 
       it 'never #guessed_source to < 0' do

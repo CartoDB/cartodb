@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var LegendViewBubble = require('../../../../../../src/geo/ui/legends/bubble/legend-view.js');
 var BubbleLegendModel = require('../../../../../../src/geo/map/legends/bubble-legend-model.js');
 
-describe('geo/ui/legends/legend-view-base.js', function () {
+describe('geo/ui/legends/bubbles/legend-view.js', function () {
   beforeEach(function () {
     this.visModel = new Backbone.Model();
 

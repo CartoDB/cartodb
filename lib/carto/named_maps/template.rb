@@ -41,8 +41,7 @@ module Carto
               dataviews: dataviews,
               analyses: analyses_definitions
             },
-            preview_layers: preview_layers,
-            view: view
+            view: view.merge(preview_layers: preview_layers)
           }
         end
       end

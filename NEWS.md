@@ -1,6 +1,10 @@
 3.14.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+- This release introduces the Magic Positioner helper to render context menus in the best position inside the
+viewport.
+
+### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
  - `bundle exec rake carto:db:set_carto_attribution`
  - Update basemaps configuration to use CARTO as a category instead of CartoDB
@@ -59,6 +63,7 @@ sudo make install
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
   * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
+* Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
@@ -68,10 +73,15 @@ sudo make install
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
 * Fixed an issue registering table dependencies for users with hyphens in the username
+* Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
+* Removed non used fonts (Lato and Proxima Nova) and the font loader.
+* Fixed problem generating Histogram stats in columns with only one value (#9737).
+* 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).
+* Minimum buckets is 2 for histogram widgets (#10645).
 
 3.13.0 (2016-XX-XX)
 -------------------

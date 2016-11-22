@@ -22,7 +22,7 @@ module CartoDB
       end
 
       def self.configured?
-        !Cartodb.config[:common_data].nil?
+        Cartodb.get_config(:common_data, 'base_url').present?
       end
 
       def self.build_url(controller)

@@ -110,7 +110,7 @@ describe Carto::Layer do
       end
 
       it 'uses #previous_source strategy if available' do
-        @layer.expects(:next_same_letter_source).never
+        @layer.expects(:last_same_letter_source).never
         @layer.expects(:guessed_source).never
 
         @layer.source = bad_source
@@ -123,7 +123,7 @@ describe Carto::Layer do
         @layer.source.should eq @analysis.natural_id
       end
 
-      it 'uses #next_same_letter_source strategy when no #previous_source' do
+      it 'uses #last_same_letter_source strategy when no #previous_source' do
         @layer.stubs(:previous_source)
         @layer.expects(:guessed_source).never
 
@@ -136,9 +136,9 @@ describe Carto::Layer do
         @layer.source.should eq @analysis.natural_id
       end
 
-      it 'uses #guessed_source when no #previous_source nor #next_same_letter_source' do
+      it 'uses #guessed_source when no #previous_source nor #last_same_letter_source' do
         @layer.stubs(:previous_source)
-        @layer.stubs(:next_same_letter_source)
+        @layer.stubs(:last_same_letter_source)
 
         letter = @analysis.natural_id.first
         number = @analysis.natural_id[1..-1].to_i

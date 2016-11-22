@@ -73,6 +73,7 @@ sudo make install
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
+* Fixed problem generating Histogram stats in columns with only one value (#9737).
 
 3.13.0 (2016-XX-XX)
 -------------------

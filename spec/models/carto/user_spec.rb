@@ -57,5 +57,19 @@ describe Carto::User do
         @carto_user.soft_geocoding_limit?.should be_true
       end
     end
+
+    it 'true for Mercator academic accounts' do
+      @carto_user.account_type = 'Mercator LUMP-SUM Academic'
+
+      @carto_user.remove_logo?.should be_true
+    end
+
+    it 'false for other accounts' do
+      ['ACADEMY-350', 'JOHN SNOW', 'MAGELLAN'].each do |account_type|
+        @carto_user.account_type = account_type
+
+        @carto_user.remove_logo?.should be_false
+      end
+    end
   end
 end

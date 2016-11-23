@@ -44,6 +44,7 @@ var PointView = GeometryViewBase.extend({
       this._marker.off('drag');
       this._marker.off('dragend');
       this._marker.off('mousedown');
+      this._marker.off('click');
     } else {
       var markerOptions = {
         icon: L.icon({
@@ -62,9 +63,8 @@ var PointView = GeometryViewBase.extend({
       this._marker.on('dragstart', this._onDragStart.bind(this));
       this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
       this._marker.on('dragend', this._onDragEnd.bind(this));
-
-      // TODO: isExpandable
       this._marker.on('mousedown', this._onMouseDown.bind(this));
+      this._marker.on('click', this._onMouseClick.bind(this));
     }
   },
 
@@ -86,7 +86,17 @@ var PointView = GeometryViewBase.extend({
   },
 
   _onMouseDown: function () {
+    this._mouseDownClicked = true;
     this.trigger('mousedown', this.model);
+  },
+
+  _onMouseClick: function () {
+    // Some point views reuse existing markers.
+    // We want to only trigger the 'click' event if marker
+    // was clicked while being associated to this view.
+    if (this._mouseDownClicked) {
+      this.trigger('click', this.model);
+    }
   },
 
   isDragging: function () {

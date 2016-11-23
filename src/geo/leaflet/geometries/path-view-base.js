@@ -38,6 +38,9 @@ var PathViewBase = GeometryViewBase.extend({
 
   _renderPoint: function (point) {
     var pointView = this._createPointView(point);
+    pointView.on('click', function (point) {
+      this.model.removePoint(point);
+    }, this);
     pointView.render();
   },
 
@@ -89,9 +92,7 @@ var PathViewBase = GeometryViewBase.extend({
       });
 
       // Add the coordinates of the new point to the path
-      var coordinates = this.model.getCoordinates();
-      coordinates.splice(index + 1, 0, point.getCoordinates());
-      this.model.setCoordinates(coordinates);
+      this.model.addPoint(point, { at: index +  1 });
     }.bind(this));
     this.addView(pointView);
   },

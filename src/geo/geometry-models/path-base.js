@@ -58,6 +58,23 @@ var PathBase = GeometryBase.extend({
     _.each(points, function (point) {
       point.remove();
     }, this);
+  },
+
+  addPoint: function (point, options) {
+    options = options || {};
+    var at = options.at || 0;
+    var coordinates = this.getCoordinates();
+    coordinates.splice(at, 0, point.getCoordinates());
+    this.setCoordinates(coordinates);
+  },
+
+  removePoint: function (point) {
+    var coordinates = this.getCoordinates();
+    if (coordinates.length - 1 >= this.MIN_NUMBER_OF_VERTICES) {
+      var index = coordinates.indexOf(point.getCoordinates());
+      coordinates.splice(index, 1);
+      this.setCoordinates(coordinates);
+    }
   }
 });
 

@@ -8,8 +8,10 @@ var Polygon = PathBase.extend({
     color: '#397dba'
   },
 
+  MIN_NUMBER_OF_VERTICES: 3,
+
   isComplete: function () {
-    return this.points.length >= 3;
+    return this.points.length >= this.MIN_NUMBER_OF_VERTICES;
   },
 
   toGeoJSON: function () {

@@ -8,8 +8,10 @@ var Polyline = PathBase.extend({
     color: '#397dba'
   },
 
+  MIN_NUMBER_OF_VERTICES: 2,
+
   isComplete: function () {
-    return this.points.length >= 2;
+    return this.points.length >= this.MIN_NUMBER_OF_VERTICES;
   },
 
   toGeoJSON: function () {

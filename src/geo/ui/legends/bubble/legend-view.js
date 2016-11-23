@@ -7,6 +7,7 @@ var BubbleLegendView = LegendViewBase.extend({
 
   _getCompiledTemplate: function () {
     return template({
+      hasCustomLabels: this._hasCustomLabels(),
       labels: this._calculateLabels(),
       bubbleSizes: this._calculateBubbleSizes(),
       labelPositions: this._calculateLabelPositions(),
@@ -17,16 +18,36 @@ var BubbleLegendView = LegendViewBase.extend({
     });
   },
 
+  _hasCustomLabels: function () {
+    var topLabel = this.model.get('topLabel');
+    var bottomLabel = this.model.get('bottomLabel');
+    return ((topLabel != null && topLabel !== '') || (bottomLabel != null && bottomLabel !== ''));
+  },
+
   _calculateLabelPositions: function () {
-    var labelPositions = this._calculateBubbleSizes();
-    labelPositions.push(0);
+    var labelPositions;
+    if (this._hasCustomLabels()) {
+      labelPositions = [0, 100];
+    } else {
+      labelPositions = this._calculateBubbleSizes();
+      labelPositions.push(0);
+    }
     return labelPositions;
   },
 
   _calculateLabels: function () {
-    var labels = this.model.get('values').slice(0);
-    if (this._areSizesInAscendingOrder()) {
+    var labels;
+
+    if (this._hasCustomLabels()) {
+      labels = [];
+      labels.push(this.model.get('bottomLabel'));
+      labels.push(this.model.get('topLabel'));
       labels = labels.reverse();
+    } else {
+      labels = this.model.get('values').slice(0);
+      if (this._areSizesInAscendingOrder()) {
+        labels = labels.reverse();
+      }
     }
     return labels;
   },

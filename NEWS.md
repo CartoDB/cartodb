@@ -83,6 +83,7 @@ sudo make install
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
 * 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).
 * Minimum buckets is 2 for histogram widgets (#10645).
+* Fixed with category widgets and aggregation (#10773)
 
 3.13.0 (2016-XX-XX)
 -------------------

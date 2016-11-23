@@ -64,6 +64,7 @@ sudo make install
   * `sudo apt-get install gdal2.1-static-bin`
   * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
 * Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
+* Custom labels for legends (#10763)
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

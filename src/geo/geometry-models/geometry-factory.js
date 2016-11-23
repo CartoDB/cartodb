@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var Point = require('./point');
 var Polyline = require('./polyline');
 var Polygon = require('./polygon');
@@ -30,53 +31,34 @@ var createMultiPolyline = function (attrs, options) {
   return new MultiPolyline(attrs, options);
 };
 
-var createPointFromGeoJSON = function (geoJSON) {
+var createPointFromGeoJSON = function (geoJSON, options) {
   var latlng = GeoJSONHelper.getPointLatLngFromGeoJSONCoords(geoJSON);
-  return createPoint({
-    latlng: latlng,
-    editable: true
-  });
+  return createPoint(_.extend({}, options, { latlng: latlng }));
 };
 
-var createPolylineFromGeoJSON = function (geoJSON) {
+var createPolylineFromGeoJSON = function (geoJSON, options) {
   var latlngs = GeoJSONHelper.getPolylineLatLngsFromGeoJSONCoords(geoJSON);
-  return createPolyline({
-    editable: true
-  }, { latlngs: latlngs });
+  return createPolyline(options, { latlngs: latlngs });
 };
 
-var createPolygonFromGeoJSON = function (geoJSON) {
+var createPolygonFromGeoJSON = function (geoJSON, options) {
   var latlngs = GeoJSONHelper.getPolygonLatLngsFromGeoJSONCoords(geoJSON);
-  return createPolygon({
-    editable: true
-  }, { latlngs: latlngs });
+  return createPolygon(options, { latlngs: latlngs });
 };
 
-var createMultiPointFromGeoJSON = function (geoJSON) {
+var createMultiPointFromGeoJSON = function (geoJSON, options) {
   var latlngs = GeoJSONHelper.getMultiPointLatLngsFromGeoJSONCoords(geoJSON);
-  return createMultiPoint({
-    editable: true
-  }, {
-    latlngs: latlngs
-  });
+  return createMultiPoint(options, { latlngs: latlngs });
 };
 
-var createMultiPolylineFromGeoJSON = function (geoJSON) {
+var createMultiPolylineFromGeoJSON = function (geoJSON, options) {
   var latlngs = GeoJSONHelper.getMultiPolylineLatLngsFromGeoJSONCoords(geoJSON);
-  return createMultiPolyline({
-    editable: true
-  }, {
-    latlngs: latlngs
-  });
+  return createMultiPolyline(options, { latlngs: latlngs });
 };
 
-var createMultiPolygonFromGeoJSON = function (geoJSON) {
+var createMultiPolygonFromGeoJSON = function (geoJSON, options) {
   var latlngs = GeoJSONHelper.getMultiPolygonLatLngsFromGeoJSONCoords(geoJSON);
-  return createMultiPolygon({
-    editable: true
-  }, {
-    latlngs: latlngs
-  });
+  return createMultiPolygon(options, { latlngs: latlngs });
 };
 
 var GEOJSON_TYPE_TO_CREATE_METHOD = {
@@ -88,11 +70,11 @@ var GEOJSON_TYPE_TO_CREATE_METHOD = {
   MultiLineString: createMultiPolylineFromGeoJSON
 };
 
-var createGeometryFromGeoJSON = function (geoJSON) {
+var createGeometryFromGeoJSON = function (geoJSON, options) {
   var geometryType = GeoJSONHelper.getGeometryType(geoJSON);
   var createMethod = GEOJSON_TYPE_TO_CREATE_METHOD[geometryType];
   if (createMethod) {
-    return createMethod(geoJSON);
+    return createMethod(geoJSON, options);
   }
 
   throw new Error('Geometries of type ' + geometryType + ' are not supported yet');

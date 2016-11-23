@@ -25,7 +25,6 @@ var PathViewBase = GeometryViewBase.extend({
 
   render: function () {
     this._renderPoints();
-    this._clearMiddlePoints();
     this._renderMiddlePoints();
 
     this._geometry.addTo(this.leafletMap);
@@ -41,8 +40,11 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _renderMiddlePoints: function () {
-    this._middlePoints = this._calculateMiddlePoints();
-    _.each(this._middlePoints, this._renderMiddlePoint, this);
+    if (this.model.isExpandable()) {
+      this._clearMiddlePoints();
+      this._middlePoints = this._calculateMiddlePoints();
+      _.each(this._middlePoints, this._renderMiddlePoint, this);
+    }
   },
 
   _calculateMiddlePoints: function () {
@@ -112,7 +114,6 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _onPointsChanged: function () {
-    this._clearMiddlePoints();
     this._renderMiddlePoints();
 
     this._updateGeometry();
@@ -120,8 +121,6 @@ var PathViewBase = GeometryViewBase.extend({
 
   _onPointsResetted: function (collection, options) {
     this._renderPoints();
-
-    this._clearMiddlePoints();
     this._renderMiddlePoints();
 
     this._updateGeometry();

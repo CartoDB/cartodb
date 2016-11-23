@@ -18,6 +18,10 @@ var GeometryBase = Model.extend({
     return !!this.get('editable');
   },
 
+  isExpandable: function () {
+    return !!this.get('expandable');
+  },
+
   toGeoJSON: function () {
     throw new Error('subclasses of GeometryBase must implement toGeoJSON');
   },

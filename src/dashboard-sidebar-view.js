@@ -75,7 +75,7 @@ module.exports = cdb.core.View.extend({
   },
 
   _initResize: function () {
-    var breakpoints = ['(max-width: 1600px)', '(max-width: 1280px)','(max-width: 759px)'];
+    var breakpoints = ['(max-width: 1600px)', '(max-width: 1280px)', '(max-width: 759px)'];
     breakpoints.forEach(function (breakpoint) {
       var mq = matchMedia(breakpoint);
       mq.addListener(this._resizeHandler);

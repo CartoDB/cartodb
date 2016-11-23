@@ -356,6 +356,9 @@ defaults: &defaults
             ratelimit_concurrency:  3
             ratelimit_ttl:          4
             ratelimit_wait_secs:    0.1
+  datasources:
+    arcgis_enabled: false
+    salesforce_enabled: false
   basemaps:
     CARTO:
       positron_rainbow_labels:

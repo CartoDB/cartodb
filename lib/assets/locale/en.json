@@ -1779,7 +1779,8 @@
         "left-label": "Left Label",
         "right-label": "Right Label",
         "top-label": "Top Label",
-        "bottom-label": "Bottom Label"
+        "bottom-label": "Bottom Label",
+        "custom-label-placeholder": "Override dynamic value"
       },
       "pixel-title": "Amount"
     },

@@ -8,6 +8,7 @@ var HistogramContentView = require('./widgets/histogram/content-view');
 var ListContentView = require('./widgets/list/content-view');
 var WidgetViewFactory = require('./widgets/widget-view-factory');
 var template = require('./dashboard-sidebar.tpl');
+var matchMedia = window.matchMedia;
 
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-canvas',
@@ -54,7 +55,7 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
 
-    this._resizeHandler = _.debounce(this._onResize.bind(this), 500);
+    this._resizeHandler = this._onResize.bind(this);
   },
 
   render: function () {
@@ -74,18 +75,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _initResize: function () {
-    $(window).on('resize', this._resizeHandler);
+    var mq1280 = matchMedia('(max-width: 1280px)');
+    var mq1600 = matchMedia('(max-width: 1600px)');
 
-    var w = $(window).width();
-    if (w < 759) {
-      this._bounder = 'down';
-    }
-
-    if (w >= 759) {
-      this._bounder = 'up';
-    }
-
-    this._resizeHandler();
+    mq1280.addListener(this._resizeHandler);
+    mq1600.addListener(this._resizeHandler);
   },
 
   _$container: function () {
@@ -153,18 +147,10 @@ module.exports = cdb.core.View.extend({
     Ps.update(this._container());
   },
 
-  _onResize: function () {
-    var w = $(window).width();
-    if (w < 759 && this._bounder === 'up') {
-      this._bounder = 'down';
-      this._updateScroll();
-    }
-
-    if (w >= 759 && this._bounder === 'down') {
-      this._bounder = 'up';
-      this._updateScroll();
-    }
-
+  _onResize: function (mediaQuery) {
+    // we don't use mediaQuery.matches
+    // trigger actions always if breakpoints changes
+    this._updateScroll();
     this._onScroll();
   },
 

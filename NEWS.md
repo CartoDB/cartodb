@@ -70,6 +70,7 @@ sudo make install
 * Fixed an issue registering table dependencies for users with hyphens in the username
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
+* Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
 

@@ -3,20 +3,10 @@
 require_relative '../../lib/internal-geocoder/query_generator_factory.rb'
 require_relative '../../lib/internal-geocoder/abstract_query_generator.rb'
 require_relative '../../../../spec/rspec_configuration.rb'
+require          'active_support/core_ext' # Needed for string.blank?
 
 RSpec.configure do |config|
   config.mock_with :mocha
-end
-
-class String
-  # We just need this instead of adding the whole rails thing
-  def squish
-    self.split.join(' ')
-  end
-
-  def blank?
-    !self || empty?
-  end
 end
 
 =begin

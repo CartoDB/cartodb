@@ -64,6 +64,7 @@ sudo make install
   * `sudo apt-get install gdal2.1-static-bin`
   * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
 * Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
+* Custom labels for legends (#10763)
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
@@ -76,12 +77,14 @@ sudo make install
 * Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
 * Several auth_token related fixes
+* Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
 * 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).
 * Minimum buckets is 2 for histogram widgets (#10645).
+* Fixed with category widgets and aggregation (#10773)
 
 3.13.0 (2016-XX-XX)
 -------------------

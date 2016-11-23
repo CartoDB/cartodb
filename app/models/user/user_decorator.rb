@@ -90,7 +90,6 @@ module CartoDB
         actions: {
           private_tables: private_tables_enabled,
           private_maps: private_maps_enabled?,
-          dedicated_support: dedicated_support?,
           remove_logo: remove_logo?,
           sync_tables: sync_tables_enabled,
           google_maps_geocoder_enabled: google_maps_geocoder_enabled?,

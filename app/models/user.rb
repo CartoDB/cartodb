@@ -817,10 +817,6 @@ class User < Sequel::Model
     end
   end
 
-  def dedicated_support?
-    Carto::AccountType.new.dedicated_support?(self)
-  end
-
   def remove_logo?
     Carto::AccountType.new.remove_logo?(self)
   end

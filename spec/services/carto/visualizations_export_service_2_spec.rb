@@ -628,14 +628,26 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.widgets.first.style.should == {}
         end
 
-        it '2.0.6 (without map options)' do
-          export_2_0_6 = export
-          export_2_0_6[:visualization][:map].delete(:options)
+        describe '2.0.6 (without map options)' do
+          it 'missing options' do
+            export_2_0_6 = export
+            export_2_0_6[:visualization][:map].delete(:options)
 
-          service = Carto::VisualizationsExportService2.new
-          visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
 
-          visualization.map.options.should be
+            visualization.map.options.should be
+          end
+
+          it 'partial options' do
+            export_2_0_6 = export
+            export_2_0_6[:visualization][:map][:options].delete(:dashboard_menu)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+
+            visualization.map.options[:dashboard_menu].should be
+          end
         end
 
         it '2.0.5 (without version)' do

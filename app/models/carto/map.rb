@@ -155,6 +155,8 @@ class Carto::Map < ActiveRecord::Base
     options[:layer_selector] = false if options[:layer_selector].nil?
     options[:legends] = legends if options[:legends].nil?
     options[:scrollwheel] = scrollwheel if options[:scrollwheel].nil?
+
+    options
   end
 
   def validate_options

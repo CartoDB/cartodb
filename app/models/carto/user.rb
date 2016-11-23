@@ -458,10 +458,6 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def dedicated_support?
-    Carto::AccountType.new.dedicated_support?(self)
-  end
-
   def viewable_by?(user)
     self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
   end

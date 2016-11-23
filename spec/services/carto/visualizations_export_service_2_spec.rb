@@ -646,7 +646,7 @@ describe Carto::VisualizationsExportService2 do
             service = Carto::VisualizationsExportService2.new
             visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
 
-            visualization.map.options[:dashboard_menu].should be
+            visualization.map.options[:dashboard_menu].should_not be_nil
           end
         end
 

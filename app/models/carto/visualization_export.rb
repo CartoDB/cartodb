@@ -1,5 +1,6 @@
 # encoding: UTF-8
 
+require 'uri'
 require 'fileutils'
 require 'active_record'
 require_relative '../../services/carto/visualizations_export_service_2'
@@ -43,7 +44,7 @@ module Carto
       file = CartoDB::FileUploadFile.new(filepath)
 
       s3_config = Cartodb.config[:exporter]['s3'] || {}
-      s3_config['content-disposition'] = %{attachment;filename="#{file.original_filename}"}
+      s3_config['content-disposition'] = %{attachment;filename="#{URI::encode(file.original_filename.force_encoding('iso-8859-1'))}";filename*=utf-8''#{URI::encode(file.original_filename)}}
 
       results = file_upload_helper.upload_file_to_storage(
         file_param: file,

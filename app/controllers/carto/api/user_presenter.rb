@@ -160,7 +160,6 @@ module Carto
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
-            dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,

@@ -7,10 +7,10 @@ var PointView = GeometryViewBase.extend({
     GeometryViewBase.prototype.initialize.apply(this, arguments);
     this.model.on('change:latlng', this._onLatlngChanged, this);
     this.model.on('change:iconUrl change:iconAnchor', this._onIconChanged, this);
-    this._marker = options.nativeGeometry || null;
+    this._marker = options.nativeMarker || null;
   },
 
-  getNativeGeometry: function () {
+  getNativeMarker: function () {
     return this._marker;
   },
 

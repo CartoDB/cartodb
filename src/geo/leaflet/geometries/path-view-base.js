@@ -83,7 +83,7 @@ var PathViewBase = GeometryViewBase.extend({
       var indexOfMiddlePoint = this._middlePoints.indexOf(point);
       this._middlePoints.splice(indexOfMiddlePoint, 1);
 
-      // "Transform" the middle to point to a regular point
+      // "Transform" the middle point marker to a regular point marker
       point.set({
         iconUrl: Point.prototype.defaults.iconUrl
       });
@@ -111,7 +111,7 @@ var PathViewBase = GeometryViewBase.extend({
     // If there's a view for middle point -> resuse the native geometry
     if (this._middlePointViews[this._getPointKey(point)]) {
       var existingMiddlePointView = this._middlePointViews[this._getPointKey(point)];
-      pointViewAttrs.nativeGeometry = existingMiddlePointView.getNativeGeometry();
+      pointViewAttrs.nativeMarker = existingMiddlePointView.getNativeMarker();
     }
 
     var pointView = new PointView(pointViewAttrs);

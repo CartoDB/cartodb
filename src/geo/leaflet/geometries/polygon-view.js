@@ -4,6 +4,12 @@ var PathViewBase = require('./path-view-base');
 var PolygonView = PathViewBase.extend({
   _createGeometry: function () {
     return L.polygon(this.model.getCoordinates(), { color: this.model.get('color') });
+  },
+
+  _getCoordinatesForMiddlePoints: function () {
+    var coordinates = this.model.getCoordinates();
+    coordinates.push(coordinates[0]);
+    return coordinates;
   }
 });
 

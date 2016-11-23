@@ -48,16 +48,19 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _calculateMiddlePoints: function () {
-    var points = this.model.points.models;
-    return _.map(points.slice(0, -1), function (pointA, index) {
-      var latLngA = pointA.getCoordinates();
-      var latLngB = points[index + 1].getCoordinates();
+    var coordinates = this._getCoordinatesForMiddlePoints();
+    return _.map(coordinates.slice(0, -1), function (latLngA, index) {
+      var latLngB = coordinates[index + 1];
       return new Point({
         latlng: this._computeMidLatLng(latLngA, latLngB),
         editable: true,
         iconUrl: MIDDLE_POINT_ICON_URL
       });
     }.bind(this));
+  },
+
+  _getCoordinatesForMiddlePoints: function () {
+    return this.model.getCoordinates();
   },
 
   _computeMidLatLng: function (latLngA, latLngB) {

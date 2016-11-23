@@ -264,6 +264,7 @@ describe('api/sql', function() {
       var prevTestData = TEST_DATA;
       var actualErrors = null;
       TEST_DATA = NO_BOUNDS;
+      throwError = false;
 
       s = new SQL({ user: 'jaja' });
       s.getBounds('SELECT * FROM somewhere')
@@ -284,6 +285,7 @@ describe('api/sql', function() {
       var prevTestData = TEST_DATA;
       var actualErrors = null;
       TEST_DATA = NO_BOUNDS;
+      throwError = false;
 
       function cb(err) {
         actualErrors = err;

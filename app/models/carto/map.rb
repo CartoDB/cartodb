@@ -150,12 +150,11 @@ class Carto::Map < ActiveRecord::Base
   private
 
   def ensure_options
-    self.options ||= {
-      dashboard_menu: true,
-      layer_selector: false,
-      legends: legends,
-      scrollwheel: scrollwheel
-    }
+    self.options ||= {}
+    options[:dashboard_menu] = true if options[:dashboard_menu].nil?
+    options[:layer_selector] = false if options[:layer_selector].nil?
+    options[:legends] = legends if options[:legends].nil?
+    options[:scrollwheel] = scrollwheel if options[:scrollwheel].nil?
   end
 
   def validate_options

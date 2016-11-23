@@ -17,6 +17,8 @@ var PathViewBase = GeometryViewBase.extend({
 
     this._middlePoints = [];
     this._middlePointViews = {};
+
+    this.leafletMap.on('zoomend', this._renderMiddlePoints.bind(this));
   },
 
   _createGeometry: function () {

@@ -18,7 +18,9 @@ var PathViewBase = GeometryViewBase.extend({
     this._middlePoints = [];
     this._middlePointViews = {};
 
-    this.leafletMap.on('zoomend', this._renderMiddlePoints.bind(this));
+    _.bindAll(this, '_renderMiddlePoints');
+
+    this.leafletMap.on('zoomend', this._renderMiddlePoints);
   },
 
   _createGeometry: function () {
@@ -136,14 +138,11 @@ var PathViewBase = GeometryViewBase.extend({
     this._geometry.setLatLngs(this.model.getCoordinates());
   },
 
-  _onGeometryRemoved: function () {
-    GeometryViewBase.prototype._onGeometryRemoved.apply(this);
-    this.leafletMap.removeLayer(this._geometry);
-  },
-
-  remove: function () {
-    GeometryViewBase.prototype.remove.call(this);
+  clean: function () {
+    GeometryViewBase.prototype.clean.call(this);
     this._clearMiddlePoints();
+    this.leafletMap.removeLayer(this._geometry);
+    this.leafletMap.off('zoomend', this._renderMiddlePoints);
   },
 
   _getPointKey: function (point) {

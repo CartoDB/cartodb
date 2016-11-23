@@ -12,7 +12,6 @@ var GeometryViewBase = View.extend({
   },
 
   _onGeometryRemoved: function () {
-    this.remove();
     this.clean();
   }
 });

@@ -14,7 +14,7 @@
   @include flex(2);
   margin-right: -25px;
   margin-left: -25px;
-  padding: 25px;
+  padding: 21px 25px 25px 25px;
   background: $cThirdBackground;
 
   &.is-error {
@@ -27,9 +27,16 @@
   }
 
   &.is-dark {
-    background: rgba(40, 44, 47, 0.64);
-    color: $cHighlightYellow;
+    background: rgba(0, 0, 0, 0.40);
+    color: #FEB714;
+    .Infobox-buttonLink {
+      color: $cWhite;
+    }
   }
+}
+.Infobox-buttonLink {
+  padding: 4px 0;
+  color: $cBlue;
 }
 .Infobox-quota {
   @include flex(10);

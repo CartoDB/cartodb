@@ -75,11 +75,11 @@ module.exports = cdb.core.View.extend({
   },
 
   _initResize: function () {
-    var mq1280 = matchMedia('(max-width: 1280px)');
-    var mq1600 = matchMedia('(max-width: 1600px)');
-
-    mq1280.addListener(this._resizeHandler);
-    mq1600.addListener(this._resizeHandler);
+    var breakpoints = ['(max-width: 1600px)', '(max-width: 1280px)','(max-width: 759px)'];
+    breakpoints.forEach(function (breakpoint) {
+      var mq = matchMedia(breakpoint);
+      mq.addListener(this._resizeHandler);
+    }, this);
   },
 
   _$container: function () {

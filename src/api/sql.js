@@ -3,6 +3,10 @@ var $ = require('jquery');
 var Mustache = require('mustache');
 var Promise = require('./promise');
 
+var errorMessages = {
+  NO_BOUNDS: 'No bounds'
+};
+
 function SQL(options) {
   if(window.cdb === this || window === this) {
     return new SQL(options);
@@ -201,6 +205,10 @@ SQL.prototype.getBounds = function(sql, vars, options, callback) {
         var bounds = [[lat0, lon0], [lat1, lon1]];
         promise.trigger('done', bounds);
         callback && callback(null, bounds);
+      } else {
+        var err = [errorMessages.NO_BOUNDS];
+        promise.trigger('error', err);
+        callback && callback(err);
       }
     })
     .error(function(err) {

@@ -9,9 +9,12 @@ describe('api/sql', function() {
   var ajax;
   var ajaxParams;
   var TEST_DATA = { test: 'good' };
+  var NO_BOUNDS = { "rows": [{ "maxx": null }]};
   var throwError;
 
   beforeEach(function() {
+    jasmine.clock().install();
+    
     ajaxParams = null;
     ajax = function(params) {
       ajaxParams = params;
@@ -30,6 +33,10 @@ describe('api/sql', function() {
       user: USER,
       protocol: 'https'
     })
+  });
+
+  afterEach(function () {
+    jasmine.clock().uninstall();
   });
 
   it("should compile the url if not completeDomain passed", function() {
@@ -144,8 +151,6 @@ describe('api/sql', function() {
   });
 
   it("should call promise", function () {
-    jasmine.clock().install();
-
     var data;
     var data_callback;
 
@@ -157,12 +162,9 @@ describe('api/sql', function() {
 
     expect(data).toEqual(TEST_DATA);
     expect(data_callback).toEqual(TEST_DATA);
-
-    jasmine.clock().uninstall();
   });
 
   it("should call promise on error", function() {
-    jasmine.clock().install();
     throwError = true;
     var err = false;
 
@@ -172,8 +174,6 @@ describe('api/sql', function() {
 
     jasmine.clock().tick(10);
     expect(err).toEqual(true);
-
-    jasmine.clock().uninstall();
   });
 
   it("should include url params", function() {
@@ -242,22 +242,67 @@ describe('api/sql', function() {
     $.support.cors = corsPrev;
   });
 
-  it("should get bounds for query", function() {
-    var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
-            '       ST_YMin(ST_Extent(the_geom)) as miny,'+
-            '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
-            '       ST_YMax(ST_Extent(the_geom)) as maxy' +
-            ' from (select * from rambo where id=2) as subq';
-    s = new SQL({ user: 'jaja' });
-    s.getBounds('select * from rambo where id={{id}}', {id: 2});
-    expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
+  describe('.getBounds', function () {
+    it("should get bounds for query", function() {
+      var sql = 'SELECT ST_XMin(ST_Extent(the_geom)) as minx,' +
+              '       ST_YMin(ST_Extent(the_geom)) as miny,'+
+              '       ST_XMax(ST_Extent(the_geom)) as maxx,' +
+              '       ST_YMax(ST_Extent(the_geom)) as maxy' +
+              ' from (select * from rambo where id=2) as subq';
+      s = new SQL({ user: 'jaja' });
+      s.getBounds('select * from rambo where id={{id}}', {id: 2});
+      expect(ajaxParams.url.indexOf(encodeURIComponent(sql))).not.toEqual(-1);
+    });
+
+    it("should get bounds for query with appostrophes", function() {
+      s = new SQL({ user: 'jaja' });
+      s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
+      expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
+    });
+
+    it('should resolve promise as error in case there are no bounds', function () {
+      var prevTestData = TEST_DATA;
+      var actualErrors = null;
+      TEST_DATA = NO_BOUNDS;
+
+      s = new SQL({ user: 'jaja' });
+      s.getBounds('SELECT * FROM somewhere')
+        .error(function (err) {
+          actualErrors = err;
+        });
+
+      jasmine.clock().tick(10);
+      expect(actualErrors).not.toBeNull();
+      expect(actualErrors.length).toBe(1);
+      expect(actualErrors[0]).toEqual('No bounds');
+
+      // Cleaning
+      TEST_DATA = prevTestData;
+    });
+
+    it('should trigger the error callback in case there are no bounds', function () {
+      var prevTestData = TEST_DATA;
+      var actualErrors = null;
+      TEST_DATA = NO_BOUNDS;
+
+      function cb(err) {
+        actualErrors = err;
+      }
+
+      s = new SQL({ user: 'jaja' });
+      s.getBounds('SELECT * FROM somewhere', null, null, cb);
+
+      jasmine.clock().tick(10);
+      expect(actualErrors).not.toBeNull();
+      expect(actualErrors.length).toBe(1);
+      expect(actualErrors[0]).toEqual('No bounds');
+
+      // Cleaning
+      TEST_DATA = prevTestData;
+    });
+    
   });
 
-  it("should get bounds for query with appostrophes", function() {
-    s = new SQL({ user: 'jaja' });
-    s.getBounds("select * from country where name={{ name }}", { name: "'Spain'"});
-    expect(ajaxParams.url.indexOf("%26amp%3B%2339%3B")).toEqual(-1);
-  });
 
 });
 

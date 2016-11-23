@@ -374,7 +374,11 @@ class Carto::Visualization < ActiveRecord::Base
   # - v3 (Builder): not derived or not private, mapcapped
   # This Ruby code should match the SQL code at Carto::VisualizationQueryBuilder#build section for @only_published.
   def published?
-    !is_privacy_private? && (version != VERSION_BUILDER || !derived? || mapcapped?)
+    !is_privacy_private? && (!builder? || !derived? || mapcapped?)
+  end
+
+  def builder?
+    version == VERSION_BUILDER
   end
 
   MAX_MAPCAPS_PER_VISUALIZATION = 1
@@ -384,11 +388,12 @@ class Carto::Visualization < ActiveRecord::Base
       mapcaps.last.destroy
     end
 
+    auto_generate_indices_for_all_layers
     mapcaps.create!
   end
 
   def mapcapped?
-    mapcaps.exists?
+    latest_mapcap.present?
   end
 
   def latest_mapcap
@@ -413,6 +418,10 @@ class Carto::Visualization < ActiveRecord::Base
         CartoDB::Logger.warning(message: 'Couldn\'t add source analysis for layer', user: user, layer: layer)
       end
     end
+
+    # This is needed because Carto::Layer does not yet triggers invalidations on save
+    # It can be safely removed once it does
+    map.notify_map_change
   end
 
   def ids_json
@@ -469,7 +478,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    version != VERSION_BUILDER && (uses_vizjson2? || layers.any?(&:gmapsbase?))
+    !builder? && (uses_vizjson2? || layers.any?(&:gmapsbase?))
   end
 
   def can_be_automatically_migrated_to_v3?
@@ -477,6 +486,13 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
+
+  def auto_generate_indices_for_all_layers
+    user_tables = data_layers.map(&:user_tables).flatten.uniq
+    user_tables.each do |ut|
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
+    end
+  end
 
   def build_state
     self.state = Carto::State.new(user: user, visualization: self)

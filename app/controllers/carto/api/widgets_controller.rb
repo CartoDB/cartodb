@@ -33,6 +33,8 @@ module Carto
           source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
+      rescue ActiveRecord::RecordInvalid
+        render json: { errors: widget.errors }, status: 422
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500

@@ -10,9 +10,7 @@
   </ul>
 </div>
 <div class="Modal-inner Modal-inner--with-navigation">
-  <div class="ScrollView">
-    <div class="ScrollView-wrapper">
-      <div class="ScrollView-content js-tab-content"></div>
-    </div>
+  <div class="ScrollView ScrollView--with-navigation">
+    <div class="ScrollView-content js-tab-content"></div>
   </div>
 </div>

@@ -1,9 +1,14 @@
 require 'rollbar/rails'
 require 'cartodb/logger'
+require 'rollbar/delay/resque'
+
 Rollbar.configure do |config|
   config.access_token = Cartodb.config[:rollbar_api_key]
   config.enabled = (Rails.env.production? || Rails.env.staging?) && config.access_token.present?
   config.net_retries = 1 # This is actually 6 requests (18s), as Rollbar retries two times (failsafes) and CartoDB once
+
+  config.use_resque queue: :tracker
+  config.failover_handlers = [Rollbar.method(:process_from_async_handler)]
 
   # Add exception class names to the exception_level_filters hash to
   # change the level that exception is reported at. Note that if an exception

@@ -364,6 +364,7 @@ class User < Sequel::Model
 
     begin
       # Remove user tables
+      byebug
       tables.all.each(&:destroy)
 
       # Remove user data imports, maps, layers and assets
@@ -377,7 +378,10 @@ class User < Sequel::Model
       end
       data_imports.each(&:destroy)
       maps.each(&:destroy)
-      layers.each { |l| remove_layer l }
+      layers.each do |l|
+        remove_layer(l)
+        l.destroy
+      end
       assets.each(&:destroy)
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
 

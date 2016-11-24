@@ -517,6 +517,54 @@ describe Carto::Api::OrganizationUsersController do
 
       last_response.status.should == 401
     end
+
+    describe 'with Central' do
+      before(:each) do
+        ::User.any_instance.unstub(:delete_in_central)
+        @organization.reload
+        @user_to_be_deleted = @organization.non_owner_users.first
+      end
+
+      def mock_delete_request(code)
+        response_mock = mock
+        response_mock.stubs(:code).returns(code)
+        response_mock.stubs(:body).returns('{"errors": []}')
+        Carto::Http::Request.any_instance.stubs(:run).returns(response_mock)
+      end
+
+      it 'should delete users in Central' do
+        ::User.any_instance.stubs(:destroy).once
+        mock_delete_request(204)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 200
+      end
+
+      it 'should delete users missing from Central' do
+        ::User.any_instance.stubs(:destroy).once
+        mock_delete_request(404)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 200
+      end
+
+      it 'should not delete users that failed to delete from Central' do
+        ::User.any_instance.stubs(:destroy).never
+        mock_delete_request(500)
+        login(@organization.owner)
+
+        delete api_v2_organization_users_delete_url(id_or_name: @organization.name,
+                                                    u_username: @user_to_be_deleted.username)
+
+        last_response.status.should eq 500
+      end
+    end
   end
 
   describe 'user show' do

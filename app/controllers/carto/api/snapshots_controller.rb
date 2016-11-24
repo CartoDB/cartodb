@@ -43,6 +43,10 @@ module Carto
       raise Carto::UnprocesableEntityError.new(message)
     end
 
+    def destroy
+      @snapshot.destroy
+    end
+
     private
 
     def load_visualization

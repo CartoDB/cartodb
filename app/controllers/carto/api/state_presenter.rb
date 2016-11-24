@@ -5,6 +5,12 @@ module Carto
         @state = state
       end
 
+      def self.present_collection(states)
+        states.map do |state|
+          StatePresenter.new(state).to_hash
+        end
+      end
+
       def to_hash
         {
           id: @state.id,

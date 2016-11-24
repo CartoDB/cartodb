@@ -11,7 +11,7 @@ module Carto
                                  user_id: current_viewer.try(:id))
 
       snapshots_presentation = snapshots.map do |snapshot|
-        SnapshotPresenter.new(snapshot).to_h
+        StatePresenter.new(snapshot).to_h
       end
 
       render json: snapshots_presentation, status: :ok

@@ -2,7 +2,8 @@
 
 module Carto
   class SnapshotsController < ::Api::ApplicationController
-    before_filter :load_visualization
+    before_filter :load_visualization,
+                  :check_accessible
     before_filter :load_snapshot, only: [:show, :update, :destroy]
 
     rescue_from Carto::LoadError, with: :rescue_from_carto_error
@@ -28,6 +29,12 @@ module Carto
       @visualization = Carto::visualization.find(params[:visualization_id])
     rescue ActiveRecord::RecordNotFound
       raise Carto::LoadError.new('Visualization not found')
+    end
+
+    def check_accessible
+      unless @visualization.is_viewable_by_user?(current_viewer)
+        raise Carto::UnauthorizedError.new
+      end
     end
 
     def load_snapshot

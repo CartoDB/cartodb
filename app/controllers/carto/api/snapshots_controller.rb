@@ -3,6 +3,7 @@
 module Carto
   class SnapshotsController < ::Api::ApplicationController
     before_filter :load_visualization
+    before_filter :load_snapshot, only: [:show, :update, :destroy]
 
     rescue_from Carto::LoadError, with: :rescue_from_carto_error
 

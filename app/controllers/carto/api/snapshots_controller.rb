@@ -49,6 +49,8 @@ module Carto
 
     def destroy
       @snapshot.destroy
+
+      render json: Hash.new, status: :no_content
     end
 
     private

@@ -112,6 +112,16 @@
     .CDB-Widget {
       width: 280px;
     }
+    .CDB-Widget.CDB-Widget--timeSeries {
+      padding: 12px 0;
+      .CDB-Widget-content {
+        margin-right: 12px;
+        margin-left: 12px;
+      }
+    }
+    .CDB-Widget--timeSeries {
+      width: 100%;
+    }
     .CDB-Widget-canvas {
       min-width: 280px;
       max-width: 280px;

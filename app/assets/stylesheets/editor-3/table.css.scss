@@ -302,3 +302,15 @@ $tableBorderColor: $cSecondaryLine;
 .Table-editorDate input[name="time"] {
   width: 68px;
 }
+
+@media (max-width: 1200px) {
+  .Table {
+    top:  $baseSize;
+    right:  $baseSize;
+    bottom:  $baseSize;
+    left:  $baseSize;
+  }
+}
+
+
+

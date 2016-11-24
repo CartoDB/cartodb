@@ -2323,13 +2323,16 @@ describe User do
       user = FactoryGirl.create(:carto_user)
       table = create_table(user_id: user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
       visualization = table.table_visualization
+      visualization.map.layers # cache layers
+
       return ::User[user.id], table, visualization
     end
 
-    def check_deleted_data(user_id, table_id, visualization_id)
+    def check_deleted_data(user_id, table_id, visualization)
       ::User[user_id].should be_nil
-      Carto::Visualization.exists?(visualization_id).should be_false
+      Carto::Visualization.exists?(visualization.id).should be_false
       Carto::UserTable.exists?(table_id).should be_false
+      visualization.map.layers.each { |layer| Carto::Layer.exists?(layer.id).should be_false }
     end
 
     it 'destroys all related information' do
@@ -2337,7 +2340,7 @@ describe User do
 
       ::User[user.id].destroy
 
-      check_deleted_data(user.id, table.id, visualization.id)
+      check_deleted_data(user.id, table.id, visualization)
     end
 
     it 'destroys all related information, even for viewer users' do
@@ -2348,7 +2351,7 @@ describe User do
 
       user.destroy
 
-      check_deleted_data(user.id, table.id, visualization.id)
+      check_deleted_data(user.id, table.id, visualization)
     end
   end
 

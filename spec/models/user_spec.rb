@@ -2320,38 +2320,43 @@ describe User do
 
   describe '#destroy' do
     def create_full_data
-      user = FactoryGirl.create(:carto_user)
-      table = create_table(user_id: user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
+      carto_user = FactoryGirl.create(:carto_user)
+      user = ::User[carto_user.id]
+      table = create_table(user_id: carto_user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
       visualization = table.table_visualization
       visualization.map.layers # cache layers
 
-      return ::User[user.id], table, visualization
+      user_layer = Layer.create(kind: 'tiled')
+      user.add_layer(user_layer)
+
+      return user, table, visualization, user_layer
     end
 
-    def check_deleted_data(user_id, table_id, visualization)
+    def check_deleted_data(user_id, table_id, visualization, layer_id)
       ::User[user_id].should be_nil
       Carto::Visualization.exists?(visualization.id).should be_false
       Carto::UserTable.exists?(table_id).should be_false
+      Carto::Layer.exists?(layer_id).should be_false
       visualization.map.layers.each { |layer| Carto::Layer.exists?(layer.id).should be_false }
     end
 
     it 'destroys all related information' do
-      user, table, visualization = create_full_data
+      user, table, visualization, layer = create_full_data
 
       ::User[user.id].destroy
 
-      check_deleted_data(user.id, table.id, visualization)
+      check_deleted_data(user.id, table.id, visualization, layer.id)
     end
 
     it 'destroys all related information, even for viewer users' do
-      user, table, visualization = create_full_data
+      user, table, visualization, layer = create_full_data
       user.viewer = true
       user.save
       user.reload
 
       user.destroy
 
-      check_deleted_data(user.id, table.id, visualization)
+      check_deleted_data(user.id, table.id, visualization, layer.id)
     end
   end
 

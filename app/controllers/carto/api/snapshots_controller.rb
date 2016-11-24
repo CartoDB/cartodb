@@ -36,6 +36,13 @@ module Carto
       raise Carto::UnprocesableEntityError.new(message)
     end
 
+    def update
+      @snapshot.update_attributes!(json: params[:json])
+    rescue ActiveRecord::RecordInvalid => exception
+      message = exception.record.errors.full_messages.join(', ')
+      raise Carto::UnprocesableEntityError.new(message)
+    end
+
     private
 
     def load_visualization

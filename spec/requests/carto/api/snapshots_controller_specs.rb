@@ -63,7 +63,35 @@ describe Carto::Api::SnapshotsController do
       get_json(snapshots_index_url, Hash.new) do |response|
         response.status.should eq 200
 
-        response.body.map { |snapshot| snapshot[:id] }.should_not include(@visualization.id)
+        response_ids = response.body
+                               .map { |snapshot| snapshot['id'] }
+                               .compact
+                               .sort
+        response_ids.should_not be_empty
+
+        response_ids.should_not include(@visualization.id)
+      end
+    end
+
+    it 'should list only snapshots for user and visualization' do
+      fellow_url = snapshots_index_url(user_domain: @fellow.subdomain,
+                                       api_key: @fellow.api_key)
+
+      fellow_snaps_for_viz = Carto::State.where(user_id: @fellow.id,
+                                                visualization_id: @visualization.id)
+                                         .map(&:id)
+                                         .sort
+
+      get_json(fellow_url, Hash.new) do |response|
+        response.status.should eq 200
+
+        response_ids = response.body
+                               .map { |snapshot| snapshot['id'] }
+                               .compact
+                               .sort
+        response_ids.should_not be_empty
+
+        response_ids.should eq fellow_snaps_for_viz
       end
     end
   end

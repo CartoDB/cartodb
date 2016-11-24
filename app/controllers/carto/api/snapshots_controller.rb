@@ -28,9 +28,11 @@ module Carto
     end
 
     def create
-      State.create!(user_id: current_viewer.try(:id),
-                    visualization_id: @visualization.id,
-                    json: params[:json])
+      snapshot = State.create!(user_id: current_viewer.try(:id),
+                               visualization_id: @visualization.id,
+                               json: params[:json])
+
+      render json: StatePresenter.new(snapshot).to_hash, status: :created
     rescue ActiveRecord::RecordInvalid => exception
       message = exception.record.errors.full_messages.join(', ')
       raise Carto::UnprocesableEntityError.new(message)

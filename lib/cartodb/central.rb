@@ -72,7 +72,7 @@ module Cartodb
     end
 
     def delete_organization_user(organization_name, username)
-      return send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :delete, [204])
+      return send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :delete, [204, 404])
     end # delete_organization_user
 
     def update_user(username, user_attributes)
@@ -81,7 +81,7 @@ module Cartodb
     end
 
     def delete_user(username)
-      return send_request("api/users/#{username}", nil, :delete, [204])
+      return send_request("api/users/#{username}", nil, :delete, [204, 404])
     end
 
     ############################################################################

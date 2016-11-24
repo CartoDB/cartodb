@@ -1173,7 +1173,7 @@ describe User do
       .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
       .with(".*#{uuid}:vizjson")
-      .times(2 + 5)
+      .at_least_once
       .returns(true)
 
     doomed_user.destroy
@@ -2323,40 +2323,49 @@ describe User do
       carto_user = FactoryGirl.create(:carto_user)
       user = ::User[carto_user.id]
       table = create_table(user_id: carto_user.id, name: 'My first table', privacy: UserTable::PRIVACY_PUBLIC)
-      visualization = table.table_visualization
-      visualization.map.layers # cache layers
+      canonical_visualization = table.table_visualization
+
+      map = FactoryGirl.create(:carto_map_with_layers, user_id: carto_user.id)
+      carto_visualization = FactoryGirl.create(:carto_visualization, user: carto_user, map: map)
+      visualization = CartoDB::Visualization::Member.new(id: carto_visualization.id).fetch
+
+      # Force ORM to cache layers (to check if they are deleted later)
+      canonical_visualization.map.layers
+      visualization.map.layers
 
       user_layer = Layer.create(kind: 'tiled')
       user.add_layer(user_layer)
 
-      return user, table, visualization, user_layer
+      return user, table, [canonical_visualization, visualization], user_layer
     end
 
-    def check_deleted_data(user_id, table_id, visualization, layer_id)
+    def check_deleted_data(user_id, table_id, visualizations, layer_id)
       ::User[user_id].should be_nil
-      Carto::Visualization.exists?(visualization.id).should be_false
+      visualizations.each do |visualization|
+        Carto::Visualization.exists?(visualization.id).should be_false
+        visualization.map.layers.each { |layer| Carto::Layer.exists?(layer.id).should be_false }
+      end
       Carto::UserTable.exists?(table_id).should be_false
       Carto::Layer.exists?(layer_id).should be_false
-      visualization.map.layers.each { |layer| Carto::Layer.exists?(layer.id).should be_false }
     end
 
     it 'destroys all related information' do
-      user, table, visualization, layer = create_full_data
+      user, table, visualizations, layer = create_full_data
 
       ::User[user.id].destroy
 
-      check_deleted_data(user.id, table.id, visualization, layer.id)
+      check_deleted_data(user.id, table.id, visualizations, layer.id)
     end
 
     it 'destroys all related information, even for viewer users' do
-      user, table, visualization, layer = create_full_data
+      user, table, visualizations, layer = create_full_data
       user.viewer = true
       user.save
       user.reload
 
       user.destroy
 
-      check_deleted_data(user.id, table.id, visualization, layer.id)
+      check_deleted_data(user.id, table.id, visualizations, layer.id)
     end
   end
 

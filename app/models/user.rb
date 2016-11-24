@@ -364,7 +364,6 @@ class User < Sequel::Model
 
     begin
       # Remove user tables
-      byebug
       tables.all.each(&:destroy)
 
       # Remove user data imports, maps, layers and assets

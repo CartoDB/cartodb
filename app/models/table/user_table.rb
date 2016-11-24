@@ -212,8 +212,8 @@ class UserTable < Sequel::Model
   end
 
   def after_destroy
-    super
     service.after_destroy
+    super
   end
 
   def before_update

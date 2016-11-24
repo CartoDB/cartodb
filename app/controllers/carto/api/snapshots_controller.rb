@@ -40,6 +40,8 @@ module Carto
 
     def update
       @snapshot.update_attributes!(json: params[:json])
+
+      render json: StatePresenter.new(@snapshot.reload).to_hash
     rescue ActiveRecord::RecordInvalid => exception
       message = exception.record.errors.full_messages.join(', ')
       raise Carto::UnprocesableEntityError.new(message)

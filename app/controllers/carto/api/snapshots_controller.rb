@@ -2,6 +2,8 @@
 
 module Carto
   class SnapshotsController < ::Api::ApplicationController
+    include Carto::ControllerHelper
+
     before_filter :load_visualization,
                   :check_accessible
     before_filter :load_snapshot, only: [:show, :update, :destroy]

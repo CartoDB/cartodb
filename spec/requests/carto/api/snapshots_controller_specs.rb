@@ -59,6 +59,24 @@ describe Carto::Api::SnapshotsController do
       @fellow.destroy
     end
 
+    it 'should reject users with no read access' do
+      @visualization.privacy = 'private'
+      @visualization.save
+      @visualization.reload
+
+      get_json(snapshots_index_url(api_key: nil), Hash.new) do |response|
+        response.status.should eq 401
+      end
+
+      get_json(snapshots_index_url(api_key: @intruder.api_key)) do |response|
+        response.status.should eq 401
+      end
+
+      @visualization.privacy = 'public'
+      @visualization.save
+      @visualization.reload
+    end
+
     it 'should not list visualization state for owner' do
       get_json(snapshots_index_url, Hash.new) do |response|
         response.status.should eq 200

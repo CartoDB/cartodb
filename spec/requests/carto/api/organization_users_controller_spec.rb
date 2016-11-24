@@ -521,7 +521,7 @@ describe Carto::Api::OrganizationUsersController do
     describe 'with Central' do
       before(:each) do
         ::User.any_instance.unstub(:delete_in_central)
-        Cartodb::Central.any_instance.stubs(:initialize)
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
         @organization.reload
         @user_to_be_deleted = @organization.non_owner_users.first
       end

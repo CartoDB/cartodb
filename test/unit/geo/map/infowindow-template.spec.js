@@ -42,6 +42,41 @@ describe('geo/map/infowindow-template', function () {
       expect(this.callback).not.toHaveBeenCalled();
     });
 
+    it('should NOT reset the fields when given the same fields with different `position`', function () {
+      this.infowindowTemplate.update({
+        fields: [
+          { name: 'Name', title: true, position: 0 }
+        ]
+      });
+
+      expect(this.infowindowTemplate.fields.toJSON()).toEqual([
+        { name: 'Name', title: true, position: 1 }
+      ]);
+
+      expect(this.callback).not.toHaveBeenCalled();
+    });
+
+    it('should reset the fields when given the same fields with different `position` and order', function () {
+      this.infowindowTemplate.update({
+        fields: [
+          { name: 'Name', title: true, position: 0 },
+          { name: 'Description', title: true, position: 1 }
+        ]
+      });
+
+      expect(this.callback).toHaveBeenCalled();
+      this.callback.calls.reset();
+
+      this.infowindowTemplate.update({
+        fields: [
+          { name: 'Description', title: true, position: 0 },
+          { name: 'Name', title: true, position: 1 }
+        ]
+      });
+
+      expect(this.callback).toHaveBeenCalled();
+    });
+
     it('should clone alternative names', function () {
       var callback = jasmine.createSpy('callback');
       this.infowindowTemplate.bind('change', callback);

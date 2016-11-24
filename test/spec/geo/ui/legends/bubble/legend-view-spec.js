@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var LegendViewBubble = require('../../../../../../src/geo/ui/legends/bubble/legend-view.js');
 var BubbleLegendModel = require('../../../../../../src/geo/map/legends/bubble-legend-model.js');
 
-describe('geo/ui/legends/legend-view-base.js', function () {
+describe('geo/ui/legends/bubbles/legend-view.js', function () {
   beforeEach(function () {
     this.visModel = new Backbone.Model();
 
@@ -73,6 +73,14 @@ describe('geo/ui/legends/legend-view-base.js', function () {
 
       this.model.set('avg', 40);
       expect(this.legendView._calculateAverageSize()).toBe(100);
+    });
+
+    it('should render custom labels properly', function () {
+      this.model.set('topLabel', 'foo');
+      expect(this.legendView.$('.Bubble-numbersItem').length).toBe(2);
+      expect(this.legendView.$('.Bubble-numbersItem').eq(0).text()).toBe('');
+      expect(this.legendView.$('.Bubble-numbersItem').eq(1).text()).toBe('foo');
+      expect(this.legendView.$('.Bubble-average').text()).toMatch(/^\s+$/);
     });
   });
 });

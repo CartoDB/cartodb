@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
+var PopupFields = require('./popup-fields');
 
 var TooltipTemplate = Backbone.Model.extend({
   defaults: {
@@ -12,14 +13,14 @@ var TooltipTemplate = Backbone.Model.extend({
 
   initialize: function (attrs) {
     attrs = attrs || {};
-    this.fields = new Backbone.Collection(attrs.fields || []);
+    this.fields = new PopupFields(attrs.fields || []);
     this.unset('fields');
   },
 
   update: function (attrs) {
     attrs = _.clone(attrs);
 
-    if (!_.isEqual(attrs.fields, this.fields.toJSON())) {
+    if (!this.fields.equals(attrs.fields)) {
       this.fields.reset(attrs.fields);
     }
     delete attrs.fields;

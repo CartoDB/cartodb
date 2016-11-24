@@ -61,6 +61,7 @@ $buttonColor: #636D72;
 }
 .CDB-Zoom-action--out::before {
   position: absolute;
+  top: 50%;
   left: 50%;
   width: 11px;
   height: 1px;
@@ -71,6 +72,7 @@ $buttonColor: #636D72;
 .CDB-Zoom-action--in {
   &::before {
     position: absolute;
+    top: 50%;
     left: 50%;
     width: 11px;
     height: 1px;
@@ -81,6 +83,7 @@ $buttonColor: #636D72;
   &::after {
     position: absolute;
     top: 11px;
+    left: 50%;
     width: 1px;
     height: 11px;
     background: $buttonColor;
@@ -305,8 +308,8 @@ $maxLegendContainerHeight: 300px;
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
+  visibility: visible;
 }
-
 .Bubble-item {
   @include opacity(0.5);
   @include transform(translateX(-50%));
@@ -340,6 +343,10 @@ $maxLegendContainerHeight: 300px;
   height: 1px;
   background: rgba(0, 0, 0, 0.08);
   content: '';
+}
+.Bubble-list--custom::before,
+.Bubble-item--custom::before {
+  visibility: hidden;
 }
 .Bubble-numbers {
   position: relative;
@@ -377,7 +384,6 @@ $maxLegendContainerHeight: 300px;
   content: '';
   z-index: 10;
 }
-
 .Bubble-average::before {
   display: block;
   position: absolute;
@@ -390,19 +396,9 @@ $maxLegendContainerHeight: 300px;
   content: '';
   z-index: 10;
 }
-
-$opacity-list: 0.95 0.9 0.85 0.8 0.75 0.7 0.65;
-$index-items: 7 6 5 4 3 2 1;
-@each $current-opacity in $opacity-list {
-  $i: index($opacity-list, $current-opacity);
-  .Bubble-item—-#{$i} {
-    opacity: $current-opacity;
-    z-index: nth($index-items, $i);
-  }
+.Bubble-average--custom::after {
+  display: none;
 }
-
-
-
 .Legend-choropleth {
   position: relative;
   height: $baseSize;

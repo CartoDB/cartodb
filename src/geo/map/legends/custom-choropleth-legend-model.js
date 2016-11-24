@@ -7,6 +7,8 @@ var CustomChoroplethLegendModel = StaticLegendModelBase.extend({
       type: 'custom_choropleth',
       prefix: '',
       suffix: '',
+      leftLabel: '',
+      rightLabel: '',
       colors: []
     });
   }

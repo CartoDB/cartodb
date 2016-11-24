@@ -1,0 +1,47 @@
+.AssetsList-recent {
+  overflow: hidden;
+}
+.AssetsList-recentInner {
+  width: 1000px;
+  display: flex;
+}
+.AssetsList {
+  position: relative;
+  width: 945px;
+  margin: 67px auto 60px auto;
+}
+.AssetsList-inner {
+  position: relative;
+  display: block;
+  height: auto;
+  max-height: none;
+  padding-left: 5px;
+  margin: 35px 0 70px 0;
+  overflow: auto;
+}
+.AssetItem {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 58px;
+  height: 58px;
+  margin: 0 20px 20px 0;
+  border: 1px solid #DDD;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.AssetItem-icon {
+  position: absolute;
+  display: inline-block;
+  vertical-align: top;
+  width: 60px;
+  height: 60px;
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #fff;
+}

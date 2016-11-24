@@ -14,8 +14,8 @@ module Carto
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def index
-        snapshots = State.where('id != ? AND' \
-                                'visualization_id = ? AND' \
+        snapshots = State.where('id != ? AND ' \
+                                'visualization_id = ? AND ' \
                                 'user_id = ?',
                                 @visualization.state.id,
                                 @visualization.id,

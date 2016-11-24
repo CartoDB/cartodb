@@ -53,7 +53,7 @@ module Carto
       private
 
       def load_visualization
-        @visualization = Carto::visualization.find(params[:visualization_id])
+        @visualization = Carto::Visualization.find(params[:visualization_id])
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new('Visualization not found')
       end

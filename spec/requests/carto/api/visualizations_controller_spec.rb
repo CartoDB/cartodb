@@ -2033,6 +2033,7 @@ describe Carto::Api::VisualizationsController do
     organization.name = unique_name('org')
     organization.quota_in_bytes = 1234567890
     organization.seats = 5
+    organization.builder_enabled = false
     organization
   end
 

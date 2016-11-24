@@ -66,8 +66,8 @@ module Carto
           end
 
           it 'should contain layer id' do
-            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
-            @template_hash[:layergroup][:layers].second[:options][:id].should eq @carto_layer.id
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @carto_layer.id
           end
 
           describe 'with popups' do
@@ -253,8 +253,6 @@ module Carto
 
               @carto_layer.options[:source] = @analysis.natural_id
               @carto_layer.save
-
-              @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
             end
 
             after(:all) do
@@ -265,12 +263,34 @@ module Carto
               @template_hash = nil
             end
 
-            it 'should not contain sql' do
-              @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+            describe 'and builder' do
+              before(:all) do
+                @visualization.stubs(:version).returns(3)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should not contain sql' do
+                @template_hash[:layergroup][:layers].second[:options][:sql].should be_nil
+              end
+
+              it 'should contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+              end
             end
 
-            it 'should contain source' do
-              @template_hash[:layergroup][:layers].second[:options][:source][:id].should eq @analysis.natural_id
+            describe 'and editor' do
+              before(:all) do
+                @visualization.stubs(:version).returns(2)
+                @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+              end
+
+              it 'should contain sql' do
+                @template_hash[:layergroup][:layers].second[:options].should_not be_nil
+              end
+
+              it 'should not contain source' do
+                @template_hash[:layergroup][:layers].second[:options][:source].should be_nil
+              end
             end
           end
 
@@ -323,8 +343,8 @@ module Carto
           end
 
           it 'should contain layer id' do
-            @template_hash[:layergroup][:layers].second[:options][:id].should_not be_nil
-            @template_hash[:layergroup][:layers].second[:options][:id].should eq @torque_layer.id
+            @template_hash[:layergroup][:layers].second[:id].should_not be_nil
+            @template_hash[:layergroup][:layers].second[:id].should eq @torque_layer.id
           end
 
           describe 'with aggregations' do
@@ -596,39 +616,6 @@ module Carto
           end
         end
 
-        describe '#preview_layers' do
-          before(:all) do
-            template = Carto::NamedMaps::Template.new(@visualization)
-            @preview_layers = template.to_hash[:preview_layers]
-          end
-
-          after(:all) do
-            @preview_layers = nil
-          end
-
-          it 'should contain preview_layers' do
-            @preview_layers.should be
-          end
-
-          it 'should not generate preview_layers for basemaps' do
-            preview_layers_ids = @preview_layers.map(&:keys).flatten
-
-            @visualization.base_layers.map(&:id).each do |id|
-              preview_layers_ids.should_not include(id)
-            end
-          end
-
-          it 'should generate preview_layers correctly' do
-            @visualization.data_layers.each_with_index do |layer, index|
-              expected_visibility = {
-                "#{layer.id}": layer.options[:visible]
-              }
-
-              @preview_layers[index].should eq expected_visibility
-            end
-          end
-        end
-
         describe '#analyses' do
           before(:all) do
             @analysis = FactoryGirl.create(:source_analysis, visualization_id: @visualization.id, user_id: @user.id)
@@ -673,6 +660,43 @@ module Carto
 
         it 'should contain bounds' do
           @template_hash[:view][:bounds].should eq @map.view_bounds_data
+        end
+
+        describe '#preview_layers' do
+          before(:all) do
+            @carto_layer = FactoryGirl.create(:carto_layer, kind: 'carto', maps: [@map])
+            @visualization.reload
+
+            template = Carto::NamedMaps::Template.new(@visualization)
+            @preview_layers = template.to_hash[:view][:preview_layers]
+          end
+
+          after(:all) do
+            @carto_layer.destroy
+            @visualization.reload
+
+            @preview_layers = nil
+          end
+
+          it 'should contain preview_layers' do
+            @preview_layers.should_not be_nil
+          end
+
+          it 'should not generate preview_layers for basemaps' do
+            preview_layers_ids = @preview_layers.keys.flatten
+
+            @visualization.base_layers.map(&:id).each do |id|
+              preview_layers_ids.should_not include(id)
+            end
+          end
+
+          it 'should generate preview_layers correctly' do
+            @visualization.data_layers.should_not be_empty
+            @visualization.data_layers.each do |layer|
+              expected_visibility = layer.options['visible'] || false
+              @preview_layers[layer.id.to_sym].should eq expected_visibility
+            end
+          end
         end
       end
     end

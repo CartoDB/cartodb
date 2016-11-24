@@ -983,6 +983,20 @@
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
           "add-layer": "Add layer"
         }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "This geometry is too big to edit from the web",
+          "desc": "Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.",
+          "cancel": "Cancel",
+          "continue": "Ok, continue"
+        },
+        "delete": {
+          "title": "You are about to delete a feature",
+          "desc": "Are you sure you want to delete it?",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it"
+        }
       }
     },
     "error": {
@@ -999,7 +1013,8 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
-      "interval-error": "Value must be between %{minValue} and %{maxValue}"
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "copy-button": "COPY"
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -1601,6 +1616,7 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
+        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -1703,7 +1719,7 @@
       }
     },
     "legend": {
-      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!",
+      "no-geometry-data": "There's no geometry in your data to add a legend.",
       "data-toggle": {
         "values": "VALUES",
         "html": "HTML"
@@ -1757,7 +1773,14 @@
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "prefix": "Prefix",
+        "suffix": "Suffix",
+        "left-label": "Left Label",
+        "right-label": "Right Label",
+        "top-label": "Top Label",
+        "bottom-label": "Bottom Label",
+        "custom-label-placeholder": "Override dynamic value"
       },
       "pixel-title": "Amount"
     },
@@ -1978,6 +2001,26 @@
           "no": "No"
         }
       }
+    },
+    "edit-feature": {
+      "features": {
+        "point": "point",
+        "line": "line",
+        "polygon": "polygon"
+      },
+      "overlay-text": "Start clicking on the map to draw your %{featureType}",
+      "add": "Add",
+      "save": "Save",
+      "attributes": "Attributes",
+      "attributes-columns": "Change column names and type in table mode",
+      "cancel": "Cancel",
+      "geometry": "Geometry",
+      "geometry-edit": "You can also edit it on the map",
+      "valid-lng": "Must be a valid longitude",
+      "valid-lat": "Must be a valid latitude",
+      "valid": "Only numbers allowed",
+      "delete": "Delete %{featureType}",
+      "edit": "Edit %{featureType}"
     }
   },
   "notifications": {
@@ -2030,6 +2073,22 @@
         "title": "Error in SQL query:"
       },
       "success": "SQL query applied"
+    },
+    "edit-feature": {
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Deleting feature…",
+        "error": "Error deleting feature",
+        "success": "Feature deleted correctly"
+      },
+      "save": {
+        "loading": "Saving feature…",
+        "error": "Error saving feature",
+        "success": "Feature successfully saved"
+      },
+      "adding": "Adding feature…",
     }
   }
 }

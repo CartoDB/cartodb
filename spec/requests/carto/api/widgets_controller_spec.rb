@@ -69,7 +69,7 @@ shared_context 'layer hierarchy' do
     title: 'the title',
     options: { 'a field' => 'first', 'another field' => 'second' },
     order: nil,
-    source: nil,
+    source: { id: 'a0' },
     style: { 'widget_style': { 'fill': 'wadus' } })
 
     payload = {
@@ -228,6 +228,12 @@ describe Carto::Api::WidgetsController do
       end
 
       other_map.destroy
+    end
+
+    it 'returns 422 if missing source' do
+      post_json widgets_url(user_domain: @user1.username, map_id: @map.id, map_layer_id: @widget.layer_id, api_key: @user1.api_key), widget_payload(source: nil), http_json_headers do |response|
+        response.status.should == 422
+      end
     end
 
     it 'returns 403 if visualization is private and current user is not the owner' do

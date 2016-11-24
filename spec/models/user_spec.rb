@@ -343,7 +343,6 @@ describe User do
     it "should return proper values for non-persisted settings" do
       organization = create_organization_with_users
       organization.users.reject(&:organization_owner?).each do |u|
-        u.dedicated_support?.should be_true
         u.remove_logo?.should be_true
         u.private_maps_enabled.should be_true
       end
@@ -681,20 +680,6 @@ describe User do
       user_without_private_maps.private_maps_enabled?.should eq false
       user_without_private_maps.destroy
     end
-
-    it 'should have private maps if he has private_tables_enabled, even if disabled' do
-      user_without_private_maps = create_user :email => 'user_opm3@example.com',  :username => 'useropm3',  :password => 'useropm3', :private_maps_enabled => false, :private_tables_enabled => true
-      user_without_private_maps.private_maps_enabled?.should eq true
-      user_without_private_maps.destroy
-    end
-
-    it 'should not have private maps if he is AMBASSADOR' do
-      user_without_private_maps = create_user :email => 'user_opm2@example.com',  :username => 'useropm2',  :password => 'useropm2', :private_maps_enabled => false
-      user_without_private_maps.stubs(:account_type).returns('AMBASSADOR')
-      user_without_private_maps.private_maps_enabled?.should eq false
-      user_without_private_maps.destroy
-    end
-
   end
 
   describe '#get_geocoding_calls' do

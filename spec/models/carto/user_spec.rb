@@ -37,7 +37,7 @@ describe Carto::User do
     end
   end
 
-  describe '#dedicated_support, #remove_logo and #soft_geocoding_limit' do
+  describe '#remove_logo and #soft_geocoding_limit' do
     before(:all) do
       @carto_user = FactoryGirl.build(:carto_user)
     end
@@ -45,7 +45,6 @@ describe Carto::User do
     it 'false for free accounts' do
       @carto_user.account_type = Carto::AccountType::FREE
 
-      @carto_user.dedicated_support?.should be_false
       @carto_user.remove_logo?.should be_false
       @carto_user.soft_geocoding_limit?.should be_false
     end
@@ -54,9 +53,22 @@ describe Carto::User do
       [Carto::AccountType::BASIC, Carto::AccountType::PRO].each do |account_type|
         @carto_user.account_type = account_type
 
-        @carto_user.dedicated_support?.should be_true
         @carto_user.remove_logo?.should be_true
         @carto_user.soft_geocoding_limit?.should be_true
+      end
+    end
+
+    it 'true for Mercator academic accounts' do
+      @carto_user.account_type = 'Mercator LUMP-SUM Academic'
+
+      @carto_user.remove_logo?.should be_true
+    end
+
+    it 'false for other accounts' do
+      ['ACADEMY-350', 'JOHN SNOW', 'MAGELLAN'].each do |account_type|
+        @carto_user.account_type = account_type
+
+        @carto_user.remove_logo?.should be_false
       end
     end
   end

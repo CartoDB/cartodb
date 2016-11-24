@@ -18,7 +18,19 @@
   right: 392px;
 }
 .Editor-contextSwitcher.has-timeSeries {
+  bottom: 167px;
+}
+.Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
   bottom: 190px;
+}
+.Editor-contextSwitcher--geom {
+  right: 102px;
+}
+.Editor-contextSwitcher--geom.in-table {
+  display: none;
+}
+.Editor-contextSwitcher--geom.is-moved {
+  right: 462px;
 }
 .Editor-contextSwitcherButton {
   @include display-flex();

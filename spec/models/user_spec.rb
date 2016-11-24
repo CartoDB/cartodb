@@ -1161,25 +1161,24 @@ describe User do
   end
 
   it "should remove its user tables, layers and data imports after deletion" do
-    doomed_user = create_user :email => 'doomed2@example.com', :username => 'doomed2', :password => 'doomed123'
-    data_import = DataImport.create(:user_id     => doomed_user.id,
-                      :data_source => fake_data_path('clubbing.csv')).run_import!
-    doomed_user.add_layer Layer.create(:kind => 'carto')
-    table_id  = data_import.table_id
-    uuid      = UserTable.where(id: table_id).first.table_visualization.id
+    doomed_user = create_user(email: 'doomed2@example.com', username: 'doomed2', password: 'doomed123')
+    data_import = DataImport.create(user_id: doomed_user.id, data_source: fake_data_path('clubbing.csv')).run_import!
+    doomed_user.add_layer Layer.create(kind: 'carto')
+    table_id = data_import.table_id
+    uuid = UserTable.where(id: table_id).first.table_visualization.id
 
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with("#{doomed_user.database_name}.*")
-      .returns(true)
+                    .with("#{doomed_user.database_name}.*")
+                    .returns(true)
     CartoDB::Varnish.any_instance.expects(:purge)
-      .with(".*#{uuid}:vizjson")
-      .at_least_once
-      .returns(true)
+                    .with(".*#{uuid}:vizjson")
+                    .at_least_once
+                    .returns(true)
 
     doomed_user.destroy
 
-    DataImport.where(:user_id => doomed_user.id).count.should == 0
-    UserTable.where(:user_id => doomed_user.id).count.should == 0
+    DataImport.where(user_id: doomed_user.id).count.should == 0
+    UserTable.where(user_id: doomed_user.id).count.should == 0
     Layer.db["SELECT * from layers_users WHERE user_id = '#{doomed_user.id}'"].count.should == 0
   end
 

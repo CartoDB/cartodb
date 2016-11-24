@@ -114,8 +114,11 @@
   @include flex(1);
 }
 
-
-.Editor-HeaderInfo-inner + .CDB-Shape {
+.Editor-HeaderInfo-inner ~ .CDB-Shape {
   margin-top: 11px;
+}
+
+.Editor-HeaderInfo-zoom {
+  cursor: pointer;
 }
 

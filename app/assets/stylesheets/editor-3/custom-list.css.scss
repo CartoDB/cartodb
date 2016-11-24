@@ -75,10 +75,12 @@
   @include display-flex();
 }
 /* TODO move to cartoassets and change to border-top and :first-child */
+.CDB-ListDecoration-item {
+  min-height: 41px;
+}
 .CDB-ListDecoration-item:last-type-of {
   border-bottom: 0;
 }
-
 .CustomList-list--visible.ps-container > .ps-scrollbar-y-rail {
   @include opacity(0.8);
   display: block;

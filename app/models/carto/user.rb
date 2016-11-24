@@ -59,7 +59,7 @@ class Carto::User < ActiveRecord::Base
   has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
   has_many :groups, :through => :users_group
 
-  has_many :snapshots, class_name: Carto::State
+  has_many :snapshots, class_name: Carto::State, dependent: :destroy
 
   delegate [
       :database_username, :database_password, :in_database,

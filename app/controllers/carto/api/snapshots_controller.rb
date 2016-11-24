@@ -17,6 +17,10 @@ module Carto
       render json: snapshots_presentation, status: :ok
     end
 
+    def show
+      render json: StatePresenter.new(@snapshot).to_hash, status: :ok
+    end
+
     private
 
     def load_visualization

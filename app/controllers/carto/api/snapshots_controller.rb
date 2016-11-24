@@ -6,6 +6,17 @@ module Carto
 
     rescue_from Carto::LoadError, with: :rescue_from_carto_error
 
+    def index
+      snapshots = Snapshot.where(visualization_id: @visualization.id,
+                                 user_id: current_viewer.try(:id))
+
+      snapshots_presentation = snapshots.map do |snapshot|
+        SnapshotPresenter.new(snapshot).to_h
+      end
+
+      render json: snapshots_presentation, status: :ok
+    end
+
     private
 
     def load_visualization

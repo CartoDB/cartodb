@@ -9,7 +9,8 @@ module Carto
     before_filter :load_snapshot, only: [:show, :update, :destroy]
 
     rescue_from Carto::LoadError,
-                Carto::UnauthorizedError, with: :rescue_from_carto_error
+                Carto::UnauthorizedError,
+                Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
     def index
       snapshots = State.where(visualization_id: @visualization.id,
@@ -24,6 +25,15 @@ module Carto
 
     def show
       render json: StatePresenter.new(@snapshot).to_hash
+    end
+
+    def create
+      State.create!(user_id: current_viewer.try(:id),
+                    visualization_id: @visualization.id,
+                    json: params[:json])
+    rescue ActiveRecord::RecordInvalid => exception
+      message = exception.record.errors.full_messages.join(', ')
+      raise Carto::UnprocesableEntityError.new(message)
     end
 
     private

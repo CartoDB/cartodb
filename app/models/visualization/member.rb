@@ -275,8 +275,6 @@ module CartoDB
 
         invalidate_cache
         overlays.map(&:destroy)
-        layers(:base).map(&:destroy)
-        layers(:cartodb).map(&:destroy)
         safe_sequel_delete {
           # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
           related_map = map

@@ -40,9 +40,6 @@ var PathViewBase = GeometryViewBase.extend({
 
   _renderPoint: function (point) {
     var pointView = this._createPointView(point);
-    pointView.on('click', function (point) {
-      this.model.removePoint(point);
-    }, this);
     pointView.render();
   },
 

@@ -78,6 +78,9 @@
 .CDB-ListDecoration-item {
   min-height: 41px;
 }
+.CDB-ListDecoration-itemPadding--vertical {
+  min-height: auto;
+}
 .CDB-ListDecoration-item:last-type-of {
   border-bottom: 0;
 }

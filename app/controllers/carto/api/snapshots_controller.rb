@@ -24,5 +24,11 @@ module Carto
     rescue ActiveRecord::RecordNotFound
       raise Carto::LoadError.new('Visualization not found')
     end
+
+    def load_snapshot
+      @snapshot = State.find(params[:snapshot_id])
+    rescue ActiveRecord::RecordNotFound
+      raise Carto::LoadError.new('Snapshot not found')
+    end
   end
 end

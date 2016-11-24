@@ -48,7 +48,7 @@ module Carto
       !!user[:soft_mapzen_routing_limit]
     end
 
-    def mailchimp?(user)
+    def mailchimp?(_user)
       # Mailchimp is currently not supported
       false
     end

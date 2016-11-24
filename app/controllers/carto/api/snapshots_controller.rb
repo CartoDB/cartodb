@@ -16,11 +16,7 @@ module Carto
       snapshots = State.where(visualization_id: @visualization.id,
                               user_id: current_viewer.try(:id))
 
-      snapshots_presentation = snapshots.map do |snapshot|
-        StatePresenter.new(snapshot).to_hash
-      end
-
-      render json: snapshots_presentation
+      render json: StatePresenter.collection_to_hash(snapshots)
     end
 
     def show

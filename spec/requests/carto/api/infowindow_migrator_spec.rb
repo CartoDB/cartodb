@@ -53,9 +53,9 @@ describe Carto::Api::InfowindowMigrator do
       migrated = migrator.migrate_builder_infowindow(tiled_layer)
       migrated.should be_nil
     end
-    
+
     let(:default_infowindow) do
-      {"fields"=>[], "template_name"=>"none", "template"=>"", "alternative_names"=>{}, "width"=>226, "maxHeight"=>180}
+      { "fields" => [], "template_name" => "none", "template" => "", "alternative_names" => {}, "width" => 226, "maxHeight" => 180 }
     end
 
     it 'returns the default infowindow if parameter is nil and layer_kind is carto' do

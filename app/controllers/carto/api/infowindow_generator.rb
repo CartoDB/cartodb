@@ -8,21 +8,21 @@ module Carto
       def infowindow_data_v1
         with_template(@layer.infowindow, @layer.infowindow_template_path)
       rescue => e
-        CartoDB::Logger.error(exception: e)
+        CartoDB::Logger.error(exception: e, message: 'infowindow_data_v1 error', layer: @layer)
         throw e
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(@layer.infowindow, @layer.infowindow_template_path))
       rescue => e
-        CartoDB::Logger.error(exception: e)
+        CartoDB::Logger.error(exception: e, message: 'infowindow_data_v2 error', layer: @layer)
         throw e
       end
 
       def tooltip_data_v2
         whitelisted_infowindow(with_template(@layer.tooltip, @layer.tooltip_template_path))
       rescue => e
-        CartoDB::Logger.error(exception: e)
+        CartoDB::Logger.error(exception: e, message: 'tooltip_data_v2 error', layer: @layer)
         throw e
       end
 
@@ -38,12 +38,12 @@ module Carto
 
       INFOWINDOW_KEYS = %w(
         fields template_name template alternative_names width maxHeight
-      )
+      ).freeze
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select { |key, value|
+        infowindow.nil? ? nil : infowindow.select do |key, _|
                                                     INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
-                                                  }
+                                                  end
       end
 
       def with_template(infowindow, path)

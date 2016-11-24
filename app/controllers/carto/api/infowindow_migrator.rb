@@ -6,13 +6,13 @@ module Carto
       def migrate_builder_infowindow(layer, alternate_infowindow = nil)
         return default_infowindow(layer) if needs_default?(layer, layer.infowindow, alternate_infowindow)
 
-        migrate_templated(alternate_infowindow || layer.infowindow, layer.kind, 'infowindows')
+        migrate_templated(alternate_infowindow || layer.infowindow, 'infowindows')
       end
 
       def migrate_builder_tooltip(layer, alternate_tooltip = nil)
         return default_tooltip(layer) if needs_default?(layer, layer.tooltip, alternate_tooltip)
 
-        migrate_templated(alternate_tooltip || layer.tooltip, layer.kind, 'tooltips')
+        migrate_templated(alternate_tooltip || layer.tooltip, 'tooltips')
       end
 
       private
@@ -29,7 +29,7 @@ module Carto
         Carto::Api::InfowindowGenerator.new(layer).default_tooltip
       end
 
-      def migrate_templated(templated_element, layer_kind, mustache_dir)
+      def migrate_templated(templated_element, mustache_dir)
         return nil if templated_element.nil?
 
         template = templated_element['template']

@@ -14,11 +14,11 @@ module Carto
         StatePresenter.new(snapshot).to_h
       end
 
-      render json: snapshots_presentation, status: :ok
+      render json: snapshots_presentation
     end
 
     def show
-      render json: StatePresenter.new(@snapshot).to_hash, status: :ok
+      render json: StatePresenter.new(@snapshot).to_hash
     end
 
     private

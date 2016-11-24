@@ -94,7 +94,7 @@ var PathViewBase = GeometryViewBase.extend({
       });
 
       // Add the coordinates of the new point to the path
-      this.model.addPoint(point, { at: index +  1 });
+      this.model.addPoint(point, { at: index + 1 });
     }.bind(this));
     this.addView(pointView);
   },

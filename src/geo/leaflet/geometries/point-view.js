@@ -2,12 +2,16 @@ var L = require('leaflet');
 var _ = require('underscore');
 var GeometryViewBase = require('./geometry-view-base');
 
+var DRAG_DEBOUNCE_TIME_IN_MILIS = 10;
+
 var PointView = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
     this.model.on('change:latlng', this._onLatlngChanged, this);
     this.model.on('change:iconUrl change:iconAnchor', this._onIconChanged, this);
     this._marker = options.nativeMarker || null;
+
+    _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick');
   },
 
   getNativeMarker: function () {
@@ -24,11 +28,16 @@ var PointView = GeometryViewBase.extend({
 
   _onIconChanged: function () {
     this._renderMarkerIfNotRendered();
-    var newIcon = L.icon({
+    var newIcon = this._createMarkerIcon();
+    this._marker.setIcon(newIcon);
+  },
+
+  _createMarkerIcon: function () {
+    // return L.divIcon({ html: '<p>' + this.cid + '</p>' });
+    return L.icon({
       iconUrl: this.model.get('iconUrl'),
       iconAnchor: this.model.get('iconAnchor')
     });
-    this._marker.setIcon(newIcon);
   },
 
   render: function () {
@@ -40,17 +49,14 @@ var PointView = GeometryViewBase.extend({
   _renderMarkerIfNotRendered: function () {
     var isEditable = this.model.isEditable();
     if (this._isMarkerRendered()) {
-      this._marker.off('dragstart');
-      this._marker.off('drag');
-      this._marker.off('dragend');
-      this._marker.off('mousedown');
-      this._marker.off('click');
+      this._marker.off('dragstart', this._onDragStart);
+      this._marker.off('drag', this._onDrag);
+      this._marker.off('dragend', this._onDragEnd);
+      this._marker.off('mousedown', this._onMouseDown);
+      this._marker.off('click', this._onMouseClick);
     } else {
       var markerOptions = {
-        icon: L.icon({
-          iconUrl: this.model.get('iconUrl'),
-          iconAnchor: this.model.get('iconAnchor')
-        })
+        icon: this._createMarkerIcon()
       };
 
       markerOptions.draggable = !!isEditable;
@@ -60,11 +66,11 @@ var PointView = GeometryViewBase.extend({
     }
 
     if (isEditable) {
-      this._marker.on('dragstart', this._onDragStart.bind(this));
-      this._marker.on('drag', _.debounce(this._onDrag.bind(this), 10));
-      this._marker.on('dragend', this._onDragEnd.bind(this));
-      this._marker.on('mousedown', this._onMouseDown.bind(this));
-      this._marker.on('click', this._onMouseClick.bind(this));
+      this._marker.on('dragstart', this._onDragStart);
+      this._marker.on('drag', this._onDrag);
+      this._marker.on('dragend', this._onDragEnd);
+      this._marker.on('mousedown', this._onMouseDown);
+      this._marker.on('click', this._onMouseClick);
     }
   },
 
@@ -76,10 +82,10 @@ var PointView = GeometryViewBase.extend({
     this._isDragging = true;
   },
 
-  _onDrag: function (event) {
+  _onDrag: _.debounce(function (event) {
     var latLng = this._marker.getLatLng();
     this.model.set('latlng', [ latLng.lat, latLng.lng ]);
-  },
+  }, DRAG_DEBOUNCE_TIME_IN_MILIS),
 
   _onDragEnd: function () {
     this._isDragging = false;

@@ -275,18 +275,19 @@ module CartoDB
 
         invalidate_cache
         overlays.map(&:destroy)
-        safe_sequel_delete {
+        safe_sequel_delete do
           # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
           related_map = map
           related_map.being_destroyed_by_vis_id = id
           related_map.destroy
-        } if map
-        safe_sequel_delete { table.destroy } if (type == TYPE_CANONICAL && table && !from_table_deletion)
-        safe_sequel_delete { children.map { |child|
-                                            # Refetch each item before removal so Relator reloads prev/next cursors
-                                            child.fetch.delete
-                                          }
-        }
+        end if map
+        safe_sequel_delete { table.destroy } if type == TYPE_CANONICAL && table && !from_table_deletion
+        safe_sequel_delete do
+          children.map do |child|
+            # Refetch each item before removal so Relator reloads prev/next cursors
+            child.fetch.delete
+          end
+        end
 
         safe_sequel_delete { permission.destroy_shared_entities } if permission
         safe_sequel_delete { repository.delete(id) }

@@ -6,7 +6,8 @@ module Carto
                   :check_accessible
     before_filter :load_snapshot, only: [:show, :update, :destroy]
 
-    rescue_from Carto::LoadError, with: :rescue_from_carto_error
+    rescue_from Carto::LoadError,
+                Carto::UnauthorizedError, with: :rescue_from_carto_error
 
     def index
       snapshots = State.where(visualization_id: @visualization.id,

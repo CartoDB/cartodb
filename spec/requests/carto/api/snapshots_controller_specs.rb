@@ -38,15 +38,15 @@ describe Carto::Api::SnapshotsController do
                              json: { manolo: 'escobar' })
       end
 
-      @fellow = FactoryGirl.create(:carto_user)
+      @buddy = FactoryGirl.create(:carto_user)
       5.times do
-        Carto::State.create!(user_id: @fellow.id,
+        Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @visualization.id,
                              json: { manolo: 'escobar' })
       end
 
       5.times do
-        Carto::State.create!(user_id: @fellow.id,
+        Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @other_visualization.id,
                              json: { manolo: 'escobar' })
       end
@@ -54,9 +54,9 @@ describe Carto::Api::SnapshotsController do
 
     after(:all) do
       Carto::State.where(user_id: @user.id).map(&:destroy)
-      Carto::State.where(user_id: @fellow.id).map(&:destroy)
+      Carto::State.where(user_id: @buddy.id).map(&:destroy)
 
-      @fellow.destroy
+      @buddy.destroy
     end
 
     it 'should reject users with no read access' do
@@ -92,15 +92,15 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'should list only snapshots for user and visualization' do
-      fellow_url = snapshots_index_url(user_domain: @fellow.subdomain,
-                                       api_key: @fellow.api_key)
+      buddy_url = snapshots_index_url(user_domain: @buddy.subdomain,
+                                      api_key: @buddy.api_key)
 
-      fellow_snaps_for_viz = Carto::State.where(user_id: @fellow.id,
-                                                visualization_id: @visualization.id)
-                                         .map(&:id)
-                                         .sort
+      buddy_snaps_for_viz = Carto::State.where(user_id: @buddy.id,
+                                               visualization_id: @visualization.id)
+                                        .map(&:id)
+                                        .sort
 
-      get_json(fellow_url, Hash.new) do |response|
+      get_json(buddy_url, Hash.new) do |response|
         response.status.should eq 200
 
         response_ids = response.body
@@ -109,7 +109,7 @@ describe Carto::Api::SnapshotsController do
                                .sort
         response_ids.should_not be_empty
 
-        response_ids.should eq fellow_snaps_for_viz
+        response_ids.should eq buddy_snaps_for_viz
       end
     end
   end

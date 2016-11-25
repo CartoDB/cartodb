@@ -35,28 +35,28 @@ describe Carto::Api::SnapshotsController do
 
     before(:all) do
       5.times do
-        Carto::State.create!(user_id: @user.id,
-                             visualization_id: @visualization.id,
-                             state: fake_state)
+        Carto::Snapshot.create!(user_id: @user.id,
+                                visualization_id: @visualization.id,
+                                state: fake_state)
       end
 
       @buddy = FactoryGirl.create(:carto_user)
       5.times do
-        Carto::State.create!(user_id: @buddy.id,
-                             visualization_id: @visualization.id,
-                             state: fake_state)
+        Carto::Snapshot.create!(user_id: @buddy.id,
+                                visualization_id: @visualization.id,
+                                state: fake_state)
       end
 
       5.times do
-        Carto::State.create!(user_id: @buddy.id,
-                             visualization_id: @other_visualization.id,
-                             state: fake_state)
+        Carto::Snapshot.create!(user_id: @buddy.id,
+                                visualization_id: @other_visualization.id,
+                                state: fake_state)
       end
     end
 
     after(:all) do
-      Carto::State.where(user_id: @user.id).map(&:destroy)
-      Carto::State.where(user_id: @buddy.id).map(&:destroy)
+      Carto::Snapshot.where(user_id: @user.id).map(&:destroy)
+      Carto::Snapshot.where(user_id: @buddy.id).map(&:destroy)
 
       @buddy.destroy
     end
@@ -108,10 +108,10 @@ describe Carto::Api::SnapshotsController do
       buddy_url = snapshots_index_url(user_domain: @buddy.subdomain,
                                       api_key: @buddy.api_key)
 
-      buddy_snaps_for_viz = Carto::State.where(user_id: @buddy.id,
-                                               visualization_id: @visualization.id)
-                                        .map(&:id)
-                                        .sort
+      buddy_snaps = Carto::Snapshot.where(user_id: @buddy.id,
+                                          visualization_id: @visualization.id)
+                                   .map(&:id)
+                                   .sort
 
       get_json(buddy_url, Hash.new) do |response|
         response.status.should eq 200
@@ -122,7 +122,7 @@ describe Carto::Api::SnapshotsController do
                                .sort
         response_ids.should_not be_empty
 
-        response_ids.should eq buddy_snaps_for_viz
+        response_ids.should eq buddy_snaps
       end
     end
   end
@@ -139,9 +139,9 @@ describe Carto::Api::SnapshotsController do
     end
 
     before(:all) do
-      @snapshot = Carto::State.create!(user_id: @user.id,
-                                       visualization_id: @visualization.id,
-                                       state: fake_state)
+      @snapshot = Carto::Snapshot.create!(user_id: @user.id,
+                                          visualization_id: @visualization.id,
+                                          state: fake_state)
     end
 
     after(:all) do
@@ -273,9 +273,9 @@ describe Carto::Api::SnapshotsController do
     end
 
     before(:all) do
-      @snapshot = Carto::State.create!(user_id: @user.id,
-                                       visualization_id: @visualization.id,
-                                       state: fake_state)
+      @snapshot = Carto::Snapshot.create!(user_id: @user.id,
+                                          visualization_id: @visualization.id,
+                                          state: fake_state)
     end
 
     after(:all) do
@@ -350,9 +350,9 @@ describe Carto::Api::SnapshotsController do
     end
 
     before(:each) do
-      @snapshot = Carto::State.create!(user_id: @user.id,
-                                       visualization_id: @visualization.id,
-                                       state: fake_state)
+      @snapshot = Carto::Snapshot.create!(user_id: @user.id,
+                                          visualization_id: @visualization.id,
+                                          state: fake_state)
     end
 
     after(:each) do

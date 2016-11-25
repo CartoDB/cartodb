@@ -198,7 +198,7 @@ module Carto
         user_username = user.nil? ? nil : user.username
         user_name = sym_options[:user_name] || user_username
         table_name = sym_options[:table_name]
-        qualify = (user && user.organization_user?) || _username != user_name
+        qualify = (user && user.organization_user?) || user_username != user_name
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && qualify
           "SELECT * FROM #{safe_table_name_quoting(user_name)}.#{safe_table_name_quoting(table_name)}"

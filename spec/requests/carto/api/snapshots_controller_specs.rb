@@ -335,7 +335,7 @@ describe Carto::Api::SnapshotsController do
         response.status.should eq 200
       end
 
-      @snapshot.reload.json.should eq new_state
+      @snapshot.reload.state.should eq new_state
     end
   end
 

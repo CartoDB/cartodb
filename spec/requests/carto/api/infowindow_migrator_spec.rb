@@ -55,7 +55,14 @@ describe Carto::Api::InfowindowMigrator do
     end
 
     let(:default_infowindow) do
-      { "fields" => [], "template_name" => "none", "template" => "", "alternative_names" => {}, "width" => 226, "maxHeight" => 180 }
+      {
+        "fields" => [],
+        "template_name" => "none",
+        "template" => "",
+        "alternative_names" => {},
+        "width" => 226,
+        "maxHeight" => 180
+      }
     end
 
     it 'returns the default infowindow if parameter is nil and layer_kind is carto' do
@@ -63,6 +70,13 @@ describe Carto::Api::InfowindowMigrator do
       migrated = migrator.migrate_builder_infowindow(carto_layer)
       migrated.should_not be_nil
       migrated.should eq default_infowindow
+    end
+
+    it 'returns the alternate for data layers without infowindow' do
+      carto_layer.infowindow = nil
+      alternate = { 'template' => { wadus: true } }
+      migrated = migrator.migrate_builder_infowindow(carto_layer, alternate)
+      migrated.should eq alternate
     end
   end
 end

@@ -41,9 +41,11 @@ module Carto
       ).freeze
 
       def whitelisted_infowindow(infowindow)
-        infowindow.nil? ? nil : infowindow.select do |key, _|
-                                                    INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s)
-                                                  end
+        if infowindow.nil?
+          nil
+        else
+          infowindow.select { |key, _| INFOWINDOW_KEYS.include?(key) || INFOWINDOW_KEYS.include?(key.to_s) }
+        end
       end
 
       def with_template(infowindow, path)
@@ -51,17 +53,24 @@ module Carto
         # - nil means absolutely no infowindow (e.g. a torque)
         # - path = nil or template filled: either pre-filled or custom infowindow, nothing to do here
         # - template and path not nil but template not filled: stay and fill
-        return nil if infowindow.nil?
+        return nil unless infowindow
 
         template = infowindow['template']
-        return infowindow if (!template.nil? && !template.empty?) || path.nil?
+        return infowindow if template.present? || path.nil?
 
         infowindow[:template] = File.read(path)
         infowindow
       end
 
       def default_templated
-        { "fields" => [], "template_name" => "none", "template" => "", "alternative_names" => {}, "width" => 226, "maxHeight" => 180 }
+        {
+          "fields" => [],
+          "template_name" => "none",
+          "template" => "",
+          "alternative_names" => {},
+          "width" => 226,
+          "maxHeight" => 180
+        }
       end
     end
   end

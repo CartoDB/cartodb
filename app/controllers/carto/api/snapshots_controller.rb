@@ -25,9 +25,9 @@ module Carto
       end
 
       def create
-        snapshot = State.create!(user_id: current_viewer.try(:id),
-                                 visualization_id: @visualization.id,
-                                 json: params[:json])
+        snapshot = Snapshot.create!(user_id: current_viewer.try(:id),
+                                    visualization_id: @visualization.id,
+                                    state: params[:state])
 
         render json: SnapshotPresenter.new(snapshot).to_hash, status: :created
       rescue ActiveRecord::RecordInvalid => exception
@@ -65,7 +65,7 @@ module Carto
       end
 
       def load_snapshot
-        @snapshot = State.find(params[:id])
+        @snapshot = Snapshot.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new('Snapshot not found')
       end

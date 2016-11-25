@@ -65,7 +65,10 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :state, class_name: Carto::State
   after_save :save_state_if_needed
 
-  has_many :snapshots, class_name: Carto::State, dependent: :destroy
+  has_many :snapshots,
+           conditions: proc { "id != '#{state_id}'" },
+           class_name: Carto::State,
+           dependent: :destroy
 
   validates :version, presence: true
 

@@ -66,7 +66,7 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :save_state_if_needed
 
   has_many :snapshots,
-           conditions: proc { "id != '#{state_id}'" },
+           conditions: proc { "id != '#{state_id}'" if state_id },
            class_name: Carto::State,
            dependent: :destroy
 

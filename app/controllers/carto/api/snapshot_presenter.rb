@@ -5,9 +5,9 @@ module Carto
         @snapshot = snapshot
       end
 
-      def self.collection_to_hash(states)
-        states.map do |state|
-          SnapshotPresenter.new(state).to_hash
+      def self.collection_to_hash(snapshots)
+        snapshots.map do |snapshot|
+          SnapshotPresenter.new(snapshot).to_hash
         end
       end
 

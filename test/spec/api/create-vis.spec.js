@@ -137,7 +137,7 @@ describe('src/api/create-vis', function () {
     ]);
   });
 
-  it('should add header', function (done) {
+  it('should not add header', function (done) {
     fakeVizJSON.title = 'title';
 
     var opts = {
@@ -147,24 +147,8 @@ describe('src/api/create-vis', function () {
     var vis = createVis(this.containerId, fakeVizJSON, opts);
 
     vis.once('load', function () {
-      expect(this.container.find('.cartodb-header').length).toEqual(1);
+      expect(this.container.find('.cartodb-header').length).toEqual(0);
       done();
-    }.bind(this));
-  });
-
-  it('should add header without link in the title', function () {
-    fakeVizJSON.title = 'title';
-    fakeVizJSON.url = null;
-
-    var opts = {
-      title: true
-    };
-
-    var vis = createVis(this.containerId, fakeVizJSON, opts);
-
-    vis.once('load', function () {
-      expect(this.container.find('.cartodb-header').length).toEqual(1);
-      expect(this.container.find('.cartodb-header h1 > a').length).toEqual(0);
     }.bind(this));
   });
 

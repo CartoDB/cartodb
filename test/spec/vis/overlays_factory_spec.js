@@ -49,7 +49,6 @@ describe('vis/overlays-factory', function () {
     { type: 'attribution', data: {} },
     { type: 'text', data: { options: { extra: { rendered_text: 'something' } } } },
     { type: 'annotation', data: { options: { extra: { rendered_text: 'something' }, style: {} } } },
-    { type: 'header', data: { options: { extra: { } } } },
     { type: 'zoom', data: {} },
     { type: 'loader', data: {} },
     { type: 'fullscreen', data: {} },

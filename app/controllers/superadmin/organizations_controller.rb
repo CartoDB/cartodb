@@ -54,7 +54,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
 
   def get_organization
     @organization = Organization[params[:id]]
-    raise RecordNotFound unless @organization
+    render json: { error: 'Organization not found' }, status: 404 unless @organization
   end # get_organization
 
 end

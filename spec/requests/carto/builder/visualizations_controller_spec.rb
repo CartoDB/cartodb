@@ -16,6 +16,7 @@ describe Carto::Builder::VisualizationsController do
       map = FactoryGirl.create(:map, user_id: @user1.id)
       @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
       @user1.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+      @user1.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
 
       login(@user1)
     end

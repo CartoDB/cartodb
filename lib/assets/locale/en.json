@@ -2026,7 +2026,10 @@
       "valid": "Only numbers allowed",
       "delete": "Delete %{featureType}",
       "edit": "Edit %{featureType}",
-      "disabled": "Feature edition is disabled for this layer."
+      "analysis": "layers with analysis nodes",
+      "custom-sql": "layers with custom SQL applied",
+      "sync": "read only layers",
+      "disabled": "Feature edition is disabled in %{layers}. Flatten your layer to edit data on it."
     }
   },
   "notifications": {

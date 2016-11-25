@@ -250,7 +250,10 @@
       "title": "Predict trends and volatility",
       "short-title": "Trends"
     },
-    "source": "Source"
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
   },
 
   "analysis-category": {

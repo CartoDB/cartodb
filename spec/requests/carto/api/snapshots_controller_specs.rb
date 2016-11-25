@@ -163,6 +163,14 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
+    it 'should only accept owners of snapshots' do
+      intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
+                                        api_key: @intruder.api_key)
+      get_json(intruder_url, Hash.new) do |response|
+        response.status.should eq 403
+      end
+    end
+
     it 'shows a snapshot' do
       get_json(snapshots_show_url, Hash.new) do |response|
         response.status.should eq 200

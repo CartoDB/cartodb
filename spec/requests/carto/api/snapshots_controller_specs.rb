@@ -83,7 +83,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it '404s for non existent visualizations' do
+    it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_index_url(visualization_id: random_uuid)
       get_json(not_found_url, Hash.new) do |response|
         response.status.should eq 404
@@ -170,7 +170,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it '404s for non existent visualizations' do
+    it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_show_url(visualization_id: random_uuid)
       get_json(not_found_url, Hash.new) do |response|
         response.status.should eq 404

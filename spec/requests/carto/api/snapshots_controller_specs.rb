@@ -116,5 +116,9 @@ describe Carto::Api::SnapshotsController do
         response_ids.should eq buddy_snaps_for_viz
       end
     end
+
+    describe('#show') do
+
+    end
   end
 end

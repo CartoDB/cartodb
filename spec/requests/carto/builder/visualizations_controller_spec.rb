@@ -53,6 +53,7 @@ describe Carto::Builder::VisualizationsController do
         response.status.should eq 200
         @visualization.reload
         @visualization.version.should eq 3
+        @visualization.analyses.count.should eq @visualization.data_layers.count
       end
 
       it 'does not automatically migrates visualization with custom overlays' do

@@ -65,11 +65,11 @@ describe Carto::Api::SnapshotsController do
       @visualization.reload
 
       get_json(snapshots_index_url(api_key: nil), Hash.new) do |response|
-        response.status.should eq 401
+        response.status.should eq 403
       end
 
       get_json(snapshots_index_url(api_key: @intruder.api_key)) do |response|
-        response.status.should eq 401
+        response.status.should eq 403
       end
 
       @visualization.privacy = 'public'

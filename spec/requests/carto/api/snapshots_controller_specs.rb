@@ -223,7 +223,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      get_json(snapshots_create_url(api_key: nil), json: fake_json) do |response|
+      post_json(snapshots_create_url(api_key: nil), json: fake_json) do |response|
         response.status.should eq 401
       end
     end
@@ -235,14 +235,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_create_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      get_json(intruder_url, json: fake_json) do |response|
+      post_json(intruder_url, json: fake_json) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_create_url(visualization_id: random_uuid)
-      get_json(not_found_url, json: fake_json) do |response|
+      post_json(not_found_url, json: fake_json) do |response|
         response.status.should eq 404
       end
     end
@@ -250,11 +250,13 @@ describe Carto::Api::SnapshotsController do
     it 'creates a snapshot' do
       @visualization.snapshots.count.should eq 0
 
-      get_json(snapshots_create_url, json: fake_json) do |response|
-        response.status.should eq 200
+      post_json(snapshots_create_url, json: fake_json) do |response|
+        response.status.should eq 201
+
+        @visualization.reload
 
         @visualization.snapshots.count.should eq 1
-        @visualization.snapshots.first.id.eq response.body[:id]
+        @visualization.snapshots.first.id.should eq response.body[:id]
       end
     end
   end

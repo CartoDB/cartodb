@@ -185,6 +185,14 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
+    it 'returns 404 for inexistent snapshots' do
+      not_found_url = snapshots_show_url(snapshot_id: random_uuid)
+
+      get_json(not_found_url, Hash.new) do |response|
+        response.status.should eq 404
+      end
+    end
+
     it 'shows a snapshot' do
       get_json(snapshots_show_url, Hash.new) do |response|
         response.status.should eq 200

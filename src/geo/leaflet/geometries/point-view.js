@@ -8,15 +8,22 @@ var PointView = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
     this.model.on('change:latlng', this._onLatlngChanged, this);
-    this.model.on('change:iconUrl change:iconAnchor', this._onIconChanged, this);
-    this._marker = options.nativeMarker || null;
+    this.model.on('change:iconUrl change:iconAnchor', this._updateMarkersIcon, this);
+
+    this._marker = null;
+    if (options.nativeMarker) {
+      this._marker = options.nativeMarker;
+      this._updateMarkersIcon();
+    }
 
     // This method is debounced and we need to initialize so that:
     //  1. Binding/unbinding can use the debounced function as the callback.
     //  2. Debouncing can be easily disabled in the tests
     this._onDrag = _.debounce(function (event) {
-      var latLng = this._marker.getLatLng();
-      this.model.set('latlng', [ latLng.lat, latLng.lng ]);
+      if (this._marker) {
+        var latLng = this._marker.getLatLng();
+        this.model.set('latlng', [ latLng.lat, latLng.lng ]);
+      }
     }, DRAG_DEBOUNCE_TIME_IN_MILIS),
 
     _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick');
@@ -24,6 +31,10 @@ var PointView = GeometryViewBase.extend({
 
   getNativeMarker: function () {
     return this._marker;
+  },
+
+  unsetMarker: function () {
+    delete this._marker;
   },
 
   _onLatlngChanged: function () {
@@ -34,10 +45,11 @@ var PointView = GeometryViewBase.extend({
     }
   },
 
-  _onIconChanged: function () {
-    this._renderMarkerIfNotRendered();
-    var newIcon = this._createMarkerIcon();
-    this._marker.setIcon(newIcon);
+  _updateMarkersIcon: function () {
+    if (this._marker) {
+      var newIcon = this._createMarkerIcon();
+      this._marker.setIcon(newIcon);
+    }
   },
 
   _createMarkerIcon: function () {

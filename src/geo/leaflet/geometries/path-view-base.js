@@ -37,7 +37,10 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _renderPoint: function (point) {
-    var pointView = this._createPointView(point);
+    var pointView = this._tryToReuseMiddlePointView(point);
+    if (!pointView) {
+      pointView = this._createPointView(point);
+    }
     pointView.render();
   },
 
@@ -79,15 +82,6 @@ var PathViewBase = GeometryViewBase.extend({
     this._middlePointViews[this._getPointKey(point)] = pointView;
     pointView.render();
     pointView.once('mousedown', function (point) {
-      // point is no longer a middlePoint so we remove it
-      var indexOfMiddlePoint = this._middlePoints.indexOf(point);
-      this._middlePoints.splice(indexOfMiddlePoint, 1);
-
-      // "Transform" the middle point marker to a regular point marker
-      point.set({
-        iconUrl: Point.prototype.defaults.iconUrl
-      });
-
       // Add the coordinates of the new point to the path
       this.model.addPoint(point, { at: index + 1 });
     }.bind(this));
@@ -100,19 +94,35 @@ var PathViewBase = GeometryViewBase.extend({
     });
   },
 
-  _createPointView: function (point) {
+  _tryToReuseMiddlePointView: function (point) {
     var pointViewAttrs = {
       model: point,
       nativeMap: this.leafletMap
     };
 
     // If there's a view for middle point -> resuse the native geometry
-    if (this._middlePointViews[this._getPointKey(point)]) {
-      var existingMiddlePointView = this._middlePointViews[this._getPointKey(point)];
+    var existingMiddlePointView = this._middlePointViews[this._getPointKey(point)];
+    if (existingMiddlePointView) {
+      // "Transform" the middle point marker to a regular point marker
+      point.set({
+        iconUrl: Point.prototype.defaults.iconUrl
+      });
+
       pointViewAttrs.nativeMarker = existingMiddlePointView.getNativeMarker();
+      // existingMiddlePointView will be removed/cleaned and we don't wan'ts
+      // the view to remove the marker, so we unset it from the view
+      existingMiddlePointView.unsetMarker();
+      delete this._middlePointViews[this._getPointKey(point)];
     }
 
-    var pointView = new PointView(pointViewAttrs);
+    return new PointView(pointViewAttrs);
+  },
+
+  _createPointView: function (point) {
+    var pointView = new PointView({
+      model: point,
+      nativeMap: this.leafletMap
+    });
     return pointView;
   },
 

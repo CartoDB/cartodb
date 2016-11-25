@@ -201,7 +201,7 @@ module Carto
         qualify = (user && user.organization_user?) || _username != user_name
 
         if table_name.present? && !table_name.include?('.') && user_name.present? && qualify
-          %{ select * from #{safe_table_name_quoting(user_name)}.#{safe_table_name_quoting(table_name)} }
+          "SELECT * FROM #{safe_table_name_quoting(user_name)}.#{safe_table_name_quoting(table_name)}"
         else
           "SELECT * FROM #{qualified_table_name}"
         end

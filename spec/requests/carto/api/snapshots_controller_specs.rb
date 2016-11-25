@@ -177,19 +177,19 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'only accepts owners of snapshots' do
-      intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
-                                        api_key: @intruder.api_key)
-      get_json(intruder_url, Hash.new) do |response|
-        response.status.should eq 403
-      end
-    end
-
     it 'returns 404 for inexistent snapshots' do
       not_found_url = snapshots_show_url(snapshot_id: random_uuid)
 
       get_json(not_found_url, Hash.new) do |response|
         response.status.should eq 404
+      end
+    end
+
+    it 'only accepts owners of snapshots' do
+      intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
+                                        api_key: @intruder.api_key)
+      get_json(intruder_url, Hash.new) do |response|
+        response.status.should eq 403
       end
     end
 

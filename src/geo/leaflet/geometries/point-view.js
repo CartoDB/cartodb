@@ -19,12 +19,12 @@ var PointView = GeometryViewBase.extend({
     // This method is debounced and we need to initialize so that:
     //  1. Binding/unbinding can use the debounced function as the callback.
     //  2. Debouncing can be easily disabled in the tests
-    this._onDrag = _.debounce(function (event) {
+    this._onDrag = _.debounce(function () {
       if (this._marker) {
         var latLng = this._marker.getLatLng();
         this.model.set('latlng', [ latLng.lat, latLng.lng ]);
       }
-    }, DRAG_DEBOUNCE_TIME_IN_MILIS),
+    }.bind(this), DRAG_DEBOUNCE_TIME_IN_MILIS),
 
     _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick');
   },

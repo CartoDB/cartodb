@@ -7,8 +7,8 @@ var PathViewBase = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
 
-    this.model.points.on('change', this._onPointsChanged, this);
-    this.model.points.on('reset', this._onPointsResetted, this);
+    this.model.points.on('change:latlng', this._onPointsChanged, this);
+    this.model.points.on('reset', this._onPointsReset, this);
     this.add_related_model(this.model.points);
 
     this._geometry = this._createGeometry();
@@ -33,6 +33,7 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _renderPoints: function () {
+    this._removePoints();
     this.model.points.each(this._renderPoint, this);
   },
 
@@ -132,11 +133,18 @@ var PathViewBase = GeometryViewBase.extend({
     this._updateGeometry();
   },
 
-  _onPointsResetted: function (collection, options) {
+  _onPointsReset: function (collection, options) {
     this._renderPoints();
     this._renderMiddlePoints();
 
     this._updateGeometry();
+  },
+
+  _removePoints: function (points) {
+    points = points || this.model.points.models;
+    _.each(points, function (point) {
+      point.remove();
+    }, this);
   },
 
   _updateGeometry: function () {
@@ -145,6 +153,7 @@ var PathViewBase = GeometryViewBase.extend({
 
   clean: function () {
     GeometryViewBase.prototype.clean.call(this);
+    this._removePoints();
     this._clearMiddlePoints();
     this.leafletMap.removeLayer(this._geometry);
     this.leafletMap.off('zoomend', this._renderMiddlePoints);

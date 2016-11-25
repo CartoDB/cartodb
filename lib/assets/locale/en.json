@@ -1656,9 +1656,11 @@
         "is-less-than": "Is less than"
       },
       "notifier": {
-        "center-map-loading": "Calculating coordinates...",
-        "center-map-success": "Map centered",
-        "center-map-error": "Error centering map"
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
       }
     },
     "data": {

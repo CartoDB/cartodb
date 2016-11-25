@@ -59,22 +59,26 @@ describe Carto::Api::SnapshotsController do
       @buddy.destroy
     end
 
-    it 'should reject users with no read access' do
-      @visualization.privacy = 'private'
-      @visualization.save
-      @visualization.reload
+    it 'should reject unauthenticated access' do
+      Carto::Visualization.any_instance
+                          .stubs(:is_publically_accesible?)
+                          .returns(false)
 
       get_json(snapshots_index_url(api_key: nil), Hash.new) do |response|
+        response.status.should eq 401
+      end
+    end
+
+    it 'should reject users with no read access' do
+      Carto::Visualization.any_instance
+                          .stubs(:is_viewable_by_user?)
+                          .returns(false)
+
+      intruder_url = snapshots_index_url(user_domain: @intruder.subdomain,
+                                         api_key: @intruder.api_key)
+      get_json(intruder_url, Hash.new) do |response|
         response.status.should eq 403
       end
-
-      get_json(snapshots_index_url(api_key: @intruder.api_key)) do |response|
-        response.status.should eq 403
-      end
-
-      @visualization.privacy = 'public'
-      @visualization.save
-      @visualization.reload
     end
 
     it 'should not list visualization state for owner' do

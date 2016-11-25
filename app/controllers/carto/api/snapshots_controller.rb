@@ -7,7 +7,8 @@ module Carto
 
       before_filter :load_visualization,
                     :check_viewable
-      before_filter :load_snapshot, only: [:show, :update, :destroy]
+      before_filter :load_snapshot,
+                    :owners_only, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,
@@ -72,6 +73,12 @@ module Carto
         @snapshot = State.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         raise Carto::LoadError.new('Snapshot not found')
+      end
+
+      def owners_only
+        unless @snapshot.user_id == current_viewer.id
+          raise Carto::UnauthorizedError.new
+        end
       end
     end
   end

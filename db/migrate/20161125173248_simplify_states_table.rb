@@ -9,17 +9,15 @@ Sequel.migration do
 
   down do
     alter_table :states do
-      foreign_key :user_id,
-                  :users,
-                  type: :uuid,
-                  null: false,
-                  on_delete: :cascade
+      add_foreign_key :user_id,
+                      :users,
+                      type: :uuid,
+                      on_delete: :cascade
 
-      foreign_key :visualization_id,
-                  :visualizations,
-                  type: :uuid,
-                  null: false,
-                  on_delete: :cascade
+      add_foreign_key :visualization_id,
+                      :visualizations,
+                      type: :uuid,
+                      on_delete: :cascade
 
       add_index [:visualization_id, :user_id]
     end

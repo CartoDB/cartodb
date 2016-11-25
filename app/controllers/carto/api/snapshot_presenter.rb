@@ -16,7 +16,7 @@ module Carto
           id: @snapshot.id,
           created_at: @snapshot.created_at,
           updated_at: @snapshot.updated_at,
-          state: @snapshot.json,
+          state: @snapshot.state,
           user: Carto::Api::UserPresenter.new(@snapshot.user).to_public_poro
         }
       end

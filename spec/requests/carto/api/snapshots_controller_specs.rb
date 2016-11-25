@@ -211,15 +211,11 @@ describe Carto::Api::SnapshotsController do
     end
 
     before(:each) do
-      @user.snapshots.map(&:destroy)
-      @buddy.snapshots.map(&:destroy)
-      @intruder.snapshots.map(&:destroy)
+      @user.visualizations.map(&:snapshots).flatten.map(&:destroy)
     end
 
     after(:all) do
-      @user.snapshots.map(&:destroy)
-      @buddy.snapshots.map(&:destroy)
-      @intruder.snapshots.map(&:destroy)
+      @user.visualizations.map(&:snapshots).flatten.map(&:destroy)
     end
 
     it 'rejects unauthenticated access' do
@@ -252,13 +248,13 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'creates a snapshot' do
-      @user.snapshots.count.should eq 0
+      @visualization.snapshots.count.should eq 0
 
       get_json(snapshots_create_url, json: fake_json) do |response|
         response.status.should eq 200
 
-        @user.snapshots.count.should eq 1
-        @user.snapshots.first.id.eq response.body[:id]
+        @visualization.snapshots.count.should eq 1
+        @visualization.snapshots.first.id.eq response.body[:id]
       end
     end
   end

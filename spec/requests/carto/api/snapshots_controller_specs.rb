@@ -61,7 +61,7 @@ describe Carto::Api::SnapshotsController do
       @buddy.destroy
     end
 
-    it 'should reject unauthenticated access' do
+    it 'rejects unauthenticated access' do
       Carto::Visualization.any_instance
                           .stubs(:is_publically_accesible?)
                           .returns(false)
@@ -71,7 +71,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should reject users with no read access' do
+    it 'rejects users with no read access' do
       Carto::Visualization.any_instance
                           .stubs(:is_viewable_by_user?)
                           .returns(false)
@@ -83,7 +83,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should 404 for non existent visualizations' do
+    it '404s for non existent visualizations' do
       not_found_url = snapshots_index_url(visualization_id: random_uuid)
       get_json(not_found_url, Hash.new) do |response|
         response.status.should eq 404
@@ -104,7 +104,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should list only snapshots for user and visualization' do
+    it 'lists only snapshots for user and visualization' do
       buddy_url = snapshots_index_url(user_domain: @buddy.subdomain,
                                       api_key: @buddy.api_key)
 
@@ -148,7 +148,7 @@ describe Carto::Api::SnapshotsController do
       @snapshot.destroy
     end
 
-    it 'should reject unauthenticated access' do
+    it 'rejects unauthenticated access' do
       Carto::Visualization.any_instance
                           .stubs(:is_publically_accesible?)
                           .returns(false)
@@ -158,7 +158,7 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should reject users with no read access' do
+    it 'rejects users with no read access' do
       Carto::Visualization.any_instance
                           .stubs(:is_viewable_by_user?)
                           .returns(false)
@@ -170,14 +170,14 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should 404 for non existent visualizations' do
+    it '404s for non existent visualizations' do
       not_found_url = snapshots_show_url(visualization_id: random_uuid)
       get_json(not_found_url, Hash.new) do |response|
         response.status.should eq 404
       end
     end
 
-    it 'should only accept owners of snapshots' do
+    it 'only accepts owners of snapshots' do
       intruder_url = snapshots_show_url(user_domain: @intruder.subdomain,
                                         api_key: @intruder.api_key)
       get_json(intruder_url, Hash.new) do |response|

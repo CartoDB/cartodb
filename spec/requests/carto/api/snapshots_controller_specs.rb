@@ -83,6 +83,13 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
+    it 'should 404 for non existent visualizations' do
+      not_found_url = snapshots_index_url(visualization_id: random_uuid)
+      get_json(not_found_url, Hash.new) do |response|
+        response.status.should eq 404
+      end
+    end
+
     it 'should not list visualization state for owner' do
       get_json(snapshots_index_url, Hash.new) do |response|
         response.status.should eq 200

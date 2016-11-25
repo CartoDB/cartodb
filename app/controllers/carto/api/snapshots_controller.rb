@@ -17,11 +17,11 @@ module Carto
       def index
         snapshots = @visualization.snapshots.where(user_id: current_viewer.id)
 
-        render json: StatePresenter.collection_to_hash(snapshots)
+        render json: SnapshotPresenter.collection_to_hash(snapshots)
       end
 
       def show
-        render json: StatePresenter.new(@snapshot).to_hash
+        render json: SnapshotPresenter.new(@snapshot).to_hash
       end
 
       def create
@@ -29,7 +29,7 @@ module Carto
                                  visualization_id: @visualization.id,
                                  json: params[:json])
 
-        render json: StatePresenter.new(snapshot).to_hash, status: :created
+        render json: SnapshotPresenter.new(snapshot).to_hash, status: :created
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise Carto::UnprocesableEntityError.new(message)
@@ -38,7 +38,7 @@ module Carto
       def update
         @snapshot.update_attributes!(json: params[:json])
 
-        render json: StatePresenter.new(@snapshot.reload).to_hash
+        render json: SnapshotPresenter.new(@snapshot.reload).to_hash
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise Carto::UnprocesableEntityError.new(message)

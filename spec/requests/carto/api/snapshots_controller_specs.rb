@@ -8,7 +8,7 @@ describe Carto::Api::SnapshotsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
-  let(:fake_json) { { manolo: 'escobar' } }
+  let(:fake_state) { { manolo: 'escobar' } }
 
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
@@ -37,20 +37,20 @@ describe Carto::Api::SnapshotsController do
       5.times do
         Carto::State.create!(user_id: @user.id,
                              visualization_id: @visualization.id,
-                             json: fake_json)
+                             state: fake_state)
       end
 
       @buddy = FactoryGirl.create(:carto_user)
       5.times do
         Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @visualization.id,
-                             json: fake_json)
+                             state: fake_state)
       end
 
       5.times do
         Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @other_visualization.id,
-                             json: fake_json)
+                             state: fake_state)
       end
     end
 
@@ -141,7 +141,7 @@ describe Carto::Api::SnapshotsController do
     before(:all) do
       @snapshot = Carto::State.create!(user_id: @user.id,
                                        visualization_id: @visualization.id,
-                                       json: fake_json)
+                                       state: fake_state)
     end
 
     after(:all) do
@@ -223,7 +223,7 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      post_json(snapshots_create_url(api_key: nil), json: fake_json) do |response|
+      post_json(snapshots_create_url(api_key: nil), state: fake_state) do |response|
         response.status.should eq 401
       end
     end
@@ -235,14 +235,14 @@ describe Carto::Api::SnapshotsController do
 
       intruder_url = snapshots_create_url(user_domain: @intruder.subdomain,
                                           api_key: @intruder.api_key)
-      post_json(intruder_url, json: fake_json) do |response|
+      post_json(intruder_url, state: fake_state) do |response|
         response.status.should eq 403
       end
     end
 
     it 'returns 404 for non existent visualizations' do
       not_found_url = snapshots_create_url(visualization_id: random_uuid)
-      post_json(not_found_url, json: fake_json) do |response|
+      post_json(not_found_url, state: fake_state) do |response|
         response.status.should eq 404
       end
     end
@@ -250,7 +250,7 @@ describe Carto::Api::SnapshotsController do
     it 'creates a snapshot' do
       @visualization.snapshots.count.should eq 0
 
-      post_json(snapshots_create_url, json: fake_json) do |response|
+      post_json(snapshots_create_url, state: fake_state) do |response|
         response.status.should eq 201
 
         @visualization.reload
@@ -275,7 +275,7 @@ describe Carto::Api::SnapshotsController do
     before(:all) do
       @snapshot = Carto::State.create!(user_id: @user.id,
                                        visualization_id: @visualization.id,
-                                       json: fake_json)
+                                       state: fake_state)
     end
 
     after(:all) do
@@ -328,13 +328,13 @@ describe Carto::Api::SnapshotsController do
     end
 
     it 'updates a snapshot' do
-      new_json = { minili: 'iscibir' }
+      new_state = { minili: 'iscibir' }
 
-      put_json(snapshots_update_url, json: new_json) do |response|
+      put_json(snapshots_update_url, state: new_state) do |response|
         response.status.should eq 200
       end
 
-      @snapshot.reload.json.should eq new_json
+      @snapshot.reload.json.should eq new_state
     end
   end
 
@@ -352,7 +352,7 @@ describe Carto::Api::SnapshotsController do
     before(:each) do
       @snapshot = Carto::State.create!(user_id: @user.id,
                                        visualization_id: @visualization.id,
-                                       json: fake_json)
+                                       state: fake_state)
     end
 
     after(:each) do

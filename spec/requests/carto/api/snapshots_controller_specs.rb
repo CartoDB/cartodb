@@ -8,6 +8,8 @@ describe Carto::Api::SnapshotsController do
   include Carto::Factories::Visualizations
   include HelperMethods
 
+  let(:fake_json) { { manolo: 'escobar' } }
+
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
@@ -35,20 +37,20 @@ describe Carto::Api::SnapshotsController do
       5.times do
         Carto::State.create!(user_id: @user.id,
                              visualization_id: @visualization.id,
-                             json: { manolo: 'escobar' })
+                             json: fake_json)
       end
 
       @buddy = FactoryGirl.create(:carto_user)
       5.times do
         Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @visualization.id,
-                             json: { manolo: 'escobar' })
+                             json: fake_json)
       end
 
       5.times do
         Carto::State.create!(user_id: @buddy.id,
                              visualization_id: @other_visualization.id,
-                             json: { manolo: 'escobar' })
+                             json: fake_json)
       end
     end
 
@@ -118,7 +120,25 @@ describe Carto::Api::SnapshotsController do
     end
 
     describe('#show') do
+      def snapshots_show_url(user_domain: @user.subdomain,
+                             visualization_id: @visualization.id,
+                             snapshot_id: @snapshot.id,
+                             api_key: @user.api_key)
+        snapshot_url(user_domain: user_domain,
+                     visualization_id: visualization_id,
+                     snapshot_id: snapshot_id,
+                     api_key: api_key)
+      end
 
+      before(:all) do
+        @snapshot = Carto::State.create!(user_id: @user.id,
+                                         visualization_id: @visualization.id,
+                                         json: fake_json)
+      end
+
+      after(:all) do
+        @snapshot.destroy
+      end
     end
   end
 end

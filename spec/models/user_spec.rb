@@ -2335,7 +2335,7 @@ describe User do
       user_layer = Layer.create(kind: 'tiled')
       user.add_layer(user_layer)
 
-      return user, table, [canonical_visualization, visualization], user_layer
+      [user, table, [canonical_visualization, visualization], user_layer]
     end
 
     def check_deleted_data(user_id, table_id, visualizations, layer_id)

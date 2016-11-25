@@ -223,7 +223,8 @@ describe Carto::Api::SnapshotsController do
                           .stubs(:is_publically_accesible?)
                           .returns(false)
 
-      post_json(snapshots_create_url(api_key: nil), state: fake_state) do |response|
+      nil_api_key_url = snapshots_create_url(api_key: nil)
+      post_json(nil_api_key_url, state: fake_state) do |response|
         response.status.should eq 401
       end
     end

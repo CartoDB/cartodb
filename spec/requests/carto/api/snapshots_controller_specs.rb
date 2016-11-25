@@ -12,12 +12,12 @@ describe Carto::Api::SnapshotsController do
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
     @_m, @_t, @_tv, @visualization = create_full_visualization(@user)
-    @_m, @_t, @_tv, @other_visualization = create_full_visualization(@user)
+    @_om, @_ot, @_otv, @other_visualization = create_full_visualization(@user)
   end
 
   after(:all) do
     destroy_full_visualzation(@_m, @_t, @_tv, @visualization)
-    destroy_full_visualzation(@_m, @_t, @_tv, @other_visualization)
+    destroy_full_visualzation(@_om, @_ot, @_otv, @other_visualization)
     @intruder.destroy
     @user.destroy
   end

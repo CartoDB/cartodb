@@ -15,12 +15,8 @@ module Carto
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def index
-        snapshots = State.where('id != ? AND ' \
-                                'visualization_id = ? AND ' \
-                                'user_id = ?',
-                                @visualization.state.id,
-                                @visualization.id,
-                                current_viewer.try(:id))
+        snapshots = @visualization.snapshots
+                                  .where(user_id: current_viewer.try(:id))
 
         render json: StatePresenter.collection_to_hash(snapshots)
       end

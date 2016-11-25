@@ -9,6 +9,7 @@ Sequel.migration do
 
   down do
     alter_table :states do
+      # NOTE: previous not null for user_id and visualization_id is NOT restored
       add_foreign_key :user_id,
                       :users,
                       type: :uuid,

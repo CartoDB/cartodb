@@ -162,5 +162,12 @@ describe Carto::Api::SnapshotsController do
         response.status.should eq 403
       end
     end
+
+    it 'shows a snapshot' do
+      get_json(snapshots_show_url, Hash.new) do |response|
+        response.status.should eq 200
+        response.body[:id].should eq @snapshot.id
+      end
+    end
   end
 end

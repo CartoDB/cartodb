@@ -36,7 +36,7 @@ module Carto
       end
 
       def update
-        @snapshot.update_attributes!(state: params[:json])
+        @snapshot.update_attributes!(state: params[:state])
 
         render json: SnapshotPresenter.new(@snapshot.reload).to_hash
       rescue ActiveRecord::RecordInvalid => exception

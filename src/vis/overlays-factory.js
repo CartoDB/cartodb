@@ -2,7 +2,6 @@ var _ = require('underscore');
 var Model = require('../core/model');
 var Template = require('../core/template');
 var Annotation = require('../geo/ui/annotation');
-var Header = require('../geo/ui/header');
 var Search = require('../geo/ui/search/search');
 var Text = require('../geo/ui/text');
 var TilesLoader = require('../geo/ui/tiles-loader');
@@ -111,27 +110,6 @@ OverlaysFactory.register('annotation', function (data, visView, map) {
     maxZoom: options.style['max-zoom'],
     latlng: options.extra.latlng,
     style: options.style
-  });
-
-  return widget.render();
-});
-
-OverlaysFactory.register('header', function (data, visView, map) {
-  var options = data.options;
-
-  var template = Template.compile(
-    data.template || [
-      '<div class="content">',
-      '<div class="title">{{{ title }}}</div>',
-      '<div class="description">{{{ description }}}</div>',
-      '</div>'
-    ].join('\n'),
-    data.templateType || 'mustache'
-  );
-
-  var widget = new Header({
-    model: new Model(options),
-    template: template
   });
 
   return widget.render();

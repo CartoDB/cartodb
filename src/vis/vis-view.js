@@ -141,6 +141,8 @@ var Vis = View.extend({
   _createOverlays: function (overlays, options) {
     _(overlays).each(function (data) {
       var type = data.type;
+      var overlay = this.addOverlay(data);
+      var opt = data.options;
 
       // IE<10 doesn't support the Fullscreen API
       if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
@@ -154,18 +156,10 @@ var Vis = View.extend({
         }
       }
 
-      // We add the header overlay
-      var overlay;
-      if (type === 'header') {
-        overlay = this._addHeader(data);
-      } else {
-        overlay = this.addOverlay(data);
-      }
-
       // We show/hide the overlays
-      if (overlay && (type in options) && options[type] === false) overlay.hide();
-
-      var opt = data.options;
+      if (overlay && (type in options) && options[type] === false) {
+        overlay.hide();
+      }
 
       if (type === 'fullscreen' && options[type] || type === 'fullscreen' && opt.display && options[type] === undefined) {
         overlay.show();
@@ -177,25 +171,6 @@ var Vis = View.extend({
 
       if (type === 'search') {
         overlay.updatePosition(this._hasZoomOverlay());
-      }
-
-      if (type === 'header') {
-        var m = overlay.model;
-
-        var title = this.model.get('title');
-        if (title) {
-          m.set('show_title', title);
-        }
-        var description = this.model.get('description');
-        if (description) {
-          m.set('show_description', description);
-        }
-
-        if (m.get('show_title') || m.get('show_description')) {
-          $('.cartodb-map-wrapper').addClass('with_header');
-        }
-
-        overlay.render();
       }
     }, this);
   },
@@ -225,13 +200,6 @@ var Vis = View.extend({
 
   _invalidateSize: function () {
     this.mapView.invalidateSize();
-  },
-
-  _addHeader: function (data) {
-    return this.addOverlay({
-      type: 'header',
-      options: data.options
-    });
   },
 
   addOverlay: function (overlay) {

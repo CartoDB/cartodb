@@ -6,7 +6,7 @@ module Carto
       include Carto::ControllerHelper
 
       before_filter :load_visualization,
-                    :check_viewable
+                    :check_visualization_viewable
       before_filter :load_snapshot,
                     :owners_only, only: [:show, :update, :destroy]
 
@@ -63,7 +63,7 @@ module Carto
         raise Carto::LoadError.new('Visualization not found')
       end
 
-      def check_viewable
+      def check_visualization_viewable
         unless @visualization.is_viewable_by_user?(current_viewer)
           raise Carto::UnauthorizedError.new
         end

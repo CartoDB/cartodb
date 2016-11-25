@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var PointView = require('../../../../../src/geo/leaflet/geometries/point-view.js');
 var Point = require('../../../../../src/geo/geometry-models/point.js');
+var FakeLeafletMap = require('./fake-leaflet-map');
 
 describe('src/geo/leaflet/geometries/point-view.js', function () {
   beforeEach(function () {
@@ -12,7 +13,7 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
         40
       ]
     });
-    this.leafletMap = jasmine.createSpyObj('leafletMap', [ 'addLayer', 'removeLayer' ]);
+    this.leafletMap = new FakeLeafletMap();
 
     this.pointView = new PointView({
       model: this.point,
@@ -23,22 +24,29 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
   });
 
   it('should add a marker to the map', function () {
-    expect(this.leafletMap.addLayer).toHaveBeenCalled();
-    var marker = this.leafletMap.addLayer.calls.argsFor(0)[0];
-    expect(marker.getLatLng()).toEqual({
+    var markers = this.leafletMap.getMarkers();
+    expect(markers.length).toEqual(1);
+    expect(markers[0].getLatLng()).toEqual({
       lat: -40,
       lng: 40
     });
-    expect(marker.options.draggable).toBe(false);
+    expect(markers[0].options.draggable).toBe(false);
   });
 
   describe('when the model is updated', function () {
     it("should update the marker's latlng", function () {
-      var marker = this.leafletMap.addLayer.calls.argsFor(0)[0];
+      var markers = this.leafletMap.getMarkers();
+      expect(markers.length).toEqual(1);
+      expect(markers[0].getLatLng()).toEqual({
+        lat: -40,
+        lng: 40
+      });
 
       this.point.set('latlng', [ -45, 45 ]);
 
-      expect(marker.getLatLng()).toEqual({
+      markers = this.leafletMap.getMarkers();
+      expect(markers.length).toEqual(1);
+      expect(markers[0].getLatLng()).toEqual({
         lat: -45,
         lng: 45
       });
@@ -47,9 +55,11 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
 
   describe('when the model is removed', function () {
     it('should remove the marker if model is removed', function () {
+      expect(this.leafletMap.getMarkers().length).toEqual(1);
+
       this.point.remove();
 
-      expect(this.leafletMap.removeLayer).toHaveBeenCalled();
+      expect(this.leafletMap.getMarkers().length).toEqual(0);
     });
 
     it('should remove the view', function () {
@@ -71,14 +81,15 @@ describe('src/geo/leaflet/geometries/point-view.js', function () {
         editable: true
       });
 
+      this.leafletMap = new FakeLeafletMap();
+
       this.pointView = new PointView({
         model: this.point,
         nativeMap: this.leafletMap
       });
 
-      this.leafletMap.addLayer.calls.reset();
       this.pointView.render();
-      this.marker = this.leafletMap.addLayer.calls.argsFor(0)[0];
+      this.marker = this.leafletMap.getMarkers()[0];
     });
 
     it('should add an editable marker to the map', function () {

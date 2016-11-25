@@ -27,8 +27,6 @@ WORKING_SPECS_1 = \
 	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
 	spec/requests/api/json/layer_presenter_spec.rb \
-	spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
-	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
@@ -78,8 +76,6 @@ WORKING_SPECS_1 = \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
-	spec/models/carto/bi_dataset_spec.rb \
-	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \

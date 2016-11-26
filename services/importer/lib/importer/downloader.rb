@@ -333,7 +333,7 @@ module CartoDB
       end
 
       def extensions_by_content_type(content_type)
-        downcased_content_type = content_type.downcase
+        downcased_content_type = content_type.downcase.gsub('charset=utf-8', '')
         CONTENT_TYPES_MAPPING.each do |item|
           if item[:content_types].include?(downcased_content_type)
             return item[:extensions]

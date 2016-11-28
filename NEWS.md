@@ -79,6 +79,7 @@ sudo make install
 * Fixed an issue registering table dependencies for users with hyphens in the username
 * Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
+* Correctly copy map privacy from source tables
 * Several auth_token related fixes
 * Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.

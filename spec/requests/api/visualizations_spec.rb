@@ -28,7 +28,8 @@ describe Api::Json::VisualizationsController do
       username: 'test',
       email:    'client@example.com',
       password: 'clientex',
-      private_tables_enabled: 'true'
+      private_tables_enabled: true,
+      private_maps_enabled: true
     )
     @api_key = @user.api_key
   end
@@ -45,7 +46,7 @@ describe Api::Json::VisualizationsController do
     end
 
     @headers = {
-      'CONTENT_TYPE'  => 'application/json',
+      'CONTENT_TYPE' => 'application/json'
     }
     host! 'test.localhost.lan'
   end
@@ -59,8 +60,7 @@ describe Api::Json::VisualizationsController do
     it 'creates a visualization' do
       payload = factory.merge(type: 'table')
 
-      post "/api/v1/viz?api_key=#{@api_key}",
-            payload.to_json, @headers
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
 
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
@@ -68,27 +68,15 @@ describe Api::Json::VisualizationsController do
       response.fetch('map_id')      .should == payload.fetch(:map_id)
       response.fetch('description') .should == payload.fetch(:description)
 
-      id      = response.fetch('id')
-      map_id  = response.fetch('map_id')
+      id = response.fetch('id')
 
-      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
-      last_response.status.should ==  200
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
+      last_response.status.should == 200
 
       response = JSON.parse(last_response.body)
       response.fetch('name')        .should_not == nil
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
       response.keys.should_not include 'related'
-
-      payload = { kind: 'carto', order: 1, options: { table_name: 'tname1'} }
-      post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
-        payload.to_json, @headers
-      last_response.status.should == 200
-
-      payload = { kind: 'carto', order: 2, options: { table_name: 'tname2'} }
-      post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
-        payload.to_json, @headers
-      last_response.status.should == 400
     end
 
     it 'creates a visualization from a source_visualization_id' do
@@ -97,10 +85,12 @@ describe Api::Json::VisualizationsController do
 
       payload = { source_visualization_id: source_visualization.fetch('id') }
 
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
       last_response.status.should == 200
+      response = JSON.parse(last_response.body)
+      id = response.fetch('id')
+
+      CartoDB::Visualization::Member.new(id: id).fetch.derived?.should be_true
     end
 
     it 'creates a private visualization from a private table' do
@@ -162,20 +152,18 @@ describe Api::Json::VisualizationsController do
         name:                     visualization_name
       }
 
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
       last_response.status.should == 200
 
-      response  = JSON.parse(last_response.body)
-      response.fetch('name').should =~ /#{visualization_name} 0/
+      response = JSON.parse(last_response.body)
+      response.fetch('name').should =~ /#{visualization_name} 1/
     end
   end # POST /api/v1/viz
 
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
-      payload   = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
+      payload = factory
+      post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
 
       response  =  JSON.parse(last_response.body)
       id        = response.fetch('id')

@@ -216,7 +216,10 @@ var Map = Model.extend({
   },
 
   editGeometry: function (geoJSON) {
-    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON);
+    var geometry = GeometryFactory.createGeometryFromGeoJSON(geoJSON, {
+      editable: true,
+      expandable: true
+    });
     this.trigger('enterEditMode', geometry);
     return geometry;
   },

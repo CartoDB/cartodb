@@ -13,7 +13,6 @@ var PathBase = GeometryBase.extend({
       this.points.reset(this._createPoints(options.latlngs));
     }
     this.points.on('change', this._triggerChangeEvent, this);
-    this.points.on('reset', this._onPointsReset, this);
   },
 
   getCoordinates: function () {
@@ -33,11 +32,6 @@ var PathBase = GeometryBase.extend({
     this.setCoordinates(latlngs);
   },
 
-  remove: function () {
-    GeometryBase.prototype.remove.apply(this);
-    this._removePoints();
-  },
-
   _createPoints: function (latlngs) {
     return _.map(latlngs, this._createPoint, this);
   },
@@ -49,15 +43,14 @@ var PathBase = GeometryBase.extend({
     });
   },
 
-  _onPointsReset: function (collection, options) {
-    this._removePoints(options.previousModels);
+  addPoint: function (point, options) {
+    options = options || {};
+    var at = options.at || 0;
+    this.points.add(point, { at: at });
   },
 
-  _removePoints: function (points) {
-    points = points || this.points.models;
-    _.each(points, function (point) {
-      point.remove();
-    }, this);
+  removePoint: function (point) {
+    this.points.remove(point);
   }
 });
 

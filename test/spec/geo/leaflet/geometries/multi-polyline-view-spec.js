@@ -1,6 +1,7 @@
 var MultiPolylineView = require('../../../../../src/geo/leaflet/geometries/multi-polyline-view');
 var MultiPolyline = require('../../../../../src/geo/geometry-models/multi-polyline');
 var SharedTestsForMultiGeometryViews = require('./shared-tests-for-multi-geometry-views');
+var FakeLeafletMap = require('./fake-leaflet-map');
 
 describe('src/geo/leaflet/geometries/multi-polyline-view.js', function () {
   beforeEach(function () {
@@ -20,7 +21,7 @@ describe('src/geo/leaflet/geometries/multi-polyline-view.js', function () {
         ]
       ]
     });
-    this.leafletMap = jasmine.createSpyObj('leafletMap', [ 'addLayer', 'removeLayer' ]);
+    this.leafletMap = new FakeLeafletMap();
 
     this.geometryView = new MultiPolylineView({
       model: this.geometry,
@@ -31,6 +32,7 @@ describe('src/geo/leaflet/geometries/multi-polyline-view.js', function () {
   SharedTestsForMultiGeometryViews.call(this);
 
   it('should render the geometries', function () {
-    expect(this.leafletMap.addLayer.calls.count()).toEqual(10); // 2 geometries with 4 markers each
+    expect(this.leafletMap.getPaths().length).toEqual(2); // 2 geometries
+    expect(this.leafletMap.getMarkers().length).toEqual(8); // 4 markers for each geometry
   });
 });

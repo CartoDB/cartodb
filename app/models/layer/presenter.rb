@@ -71,7 +71,7 @@ module CartoDB
         {
           id:         layer.id,
           kind:       'CartoDB',
-          infowindow: InfowindowGenerator.new(layer).infowindow_data_v1,
+          infowindow: Carto::Api::InfowindowGenerator.new(layer).infowindow_data_v1,
           order:      layer.order,
           options:    options_data_v1
         }

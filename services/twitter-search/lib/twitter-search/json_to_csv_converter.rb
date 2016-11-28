@@ -189,7 +189,6 @@ module CartoDB
 
         output
       end
-
     end
   end
 end

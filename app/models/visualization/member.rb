@@ -161,7 +161,12 @@ module CartoDB
       end
 
       def ensure_valid_privacy(owner)
+        self.privacy = default_privacy(owner) if privacy.nil?
         self.privacy = PRIVACY_PUBLIC unless can_be_private?(owner)
+      end
+
+      def default_privacy(owner)
+        can_be_private?(owner) ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store

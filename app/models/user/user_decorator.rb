@@ -72,7 +72,7 @@ module CartoDB
           hard_limit:  hard_twitter_datasource_limit
         },
         mailchimp: {
-          enabled: Carto::AccountType.new.mailchimp?(@user)
+          enabled: Carto::AccountType.new.mailchimp?(self)
         },
         mapzen_routing: {
           quota:       organization_user? ? organization.mapzen_routing_quota : mapzen_routing_quota,

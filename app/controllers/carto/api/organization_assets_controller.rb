@@ -20,4 +20,10 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   rescue ActiveRecord::RecordNotFound
     raise LoadError.new
   end
+
+  def load_asset
+    @asset = Organization.find(params[:asset_id])
+  rescue ActiveRecord::RecordNotFound
+    raise LoadError.new('Asset not found')
+  end
 end

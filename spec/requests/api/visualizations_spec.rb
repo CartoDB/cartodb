@@ -233,6 +233,165 @@ describe Api::Json::VisualizationsController do
     end
   end # DELETE /api/v1/viz/:id
 
+  describe '#slides_sorting' do
+    it 'checks proper working of prev/next' do
+      bypass_named_maps
+
+      map_id = ::Map.create(user_id: @user.id).id
+
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(
+             name: 'PARENT',
+             type: CartoDB::Visualization::Member::TYPE_DERIVED
+           ).to_json, @headers
+      body = JSON.parse(last_response.body)
+      parent_vis_id = body.fetch('id')
+
+      # A
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'A',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id
+           }.to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_a_id = body.fetch('id')
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq nil
+
+      # standalone
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           factory(name: 'standalone').to_json, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq nil
+
+      # A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'B',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             prev_id: vis_a_id
+           }.to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_b_id = body.fetch('id')
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_b_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      # C -> A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'C',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             next_id: vis_a_id
+           }.to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_c_id = body.fetch('id')
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_b_id
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      # C -> D -> A -> B
+      post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
+           {
+             name: 'D',
+             type: CartoDB::Visualization::Member::TYPE_SLIDE,
+             parent_id: parent_vis_id,
+             map_id: map_id,
+             prev_id: vis_c_id,
+             next_id: vis_a_id
+           }.to_json, @headers
+      body = JSON.parse(last_response.body)
+      vis_d_id = body.fetch('id')
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_d_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_d_id
+      body.fetch('next_id').should eq vis_b_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq nil
+
+      # C -> A -> B -> D
+      put api_v1_visualizations_set_next_id_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+          { next_id: nil }.to_json, @headers
+      last_response.status.should == 200
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq nil
+      body.fetch('next_id').should eq vis_a_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_a_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_c_id
+      body.fetch('next_id').should eq vis_b_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_b_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_a_id
+      body.fetch('next_id').should eq vis_d_id
+
+      get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
+          {}, @headers
+      body = JSON.parse(last_response.body)
+      body.fetch('prev_id').should eq vis_b_id
+      body.fetch('next_id').should eq nil
+    end
+  end
+
   # Visualizations are always created with default_privacy
   def factory(attributes={})
     {

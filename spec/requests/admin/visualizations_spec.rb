@@ -497,9 +497,10 @@ describe Admin::VisualizationsController do
       # --------TEST ITSELF-----------
 
       org = Organization.new
-      org.name = 'vis-spec-org'
+      org.name = 'vis-spec-org-2'
       org.quota_in_bytes = 1024 ** 3
       org.seats = 10
+      org.builder_enabled = false
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)
@@ -598,6 +599,7 @@ describe Admin::VisualizationsController do
       org.name = 'vis-spec-org'
       org.quota_in_bytes = 1024**3
       org.seats = 10
+      org.builder_enabled = false
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)

@@ -5,11 +5,29 @@
     </button>
   </div>
 
-  <div class="Editor-HeaderInfo-inner">
+  <div class="Editor-HeaderInfo-inner u-ellipsis">
     <div class="Editor-HeaderInfo-title u-bSpace js-header">
       <span class="SelectorLayer-letter CDB-Text CDB-Size-small u-whiteTextColor u-tSpace--m u-rSpace--m u-upperCase" style="background-color: <%- bgColor %>;">
         <%- letter %>
       </span>
+    </div>
+    <div class="u-flex u-ellipsis">
+      <% if (isTableSource) { %>
+        <div class="CDB-Shape CDB-Size-medium u-rSpace">
+          <ul class="CDB-Shape-Dataset is-small is-grey">
+            <li class="CDB-Shape-DatasetItem"></li>
+            <li class="CDB-Shape-DatasetItem"></li>
+          </ul>
+        </div>
+        <p class="CDB-Text CDB-Size-medium u-ellipsis">
+          <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
+        </p>
+      <% } %>
+    </div>
+  </div>
+
+  <ul class="u-flex u-tSpace-xl">
+    <li class="u-rSpace">
       <button class="Editor-HeaderInfo-zoom CDB-Shape js-zoom">
         <svg width="16px" height="15px" viewBox="287 30 16 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="Icon" stroke="none" stroke-width="1" fill-rule="evenodd" transform="translate(288.000000, 30.000000)">
@@ -20,28 +38,15 @@
             <path d="M2,5 L3,5 L3,10 L2,10 L2,5 Z M1,8 L2,8 L2,9 L1,9 L1,8 Z M3,8 L4,8 L4,9 L3,9 L3,8 Z M4,7 L5,7 L5,8 L4,8 L4,7 Z M0,7 L1,7 L1,8 L0,8 L0,7 Z" id="Combined-Shape" transform="translate(2.500000, 7.500000) scale(-1, -1) rotate(90.000000) translate(-2.500000, -7.500000) "></path>
           </g>
         </svg>
-      </button>      
-    </div>
-    <div class="u-flex">
-      <% if (isTableSource) { %>
-        <div class="CDB-Shape CDB-Size-medium u-rSpace">
-          <ul class="CDB-Shape-Dataset is-small is-grey">
-            <li class="CDB-Shape-DatasetItem"></li>
-            <li class="CDB-Shape-DatasetItem"></li>
-          </ul>
-        </div>
-        <p class="Editor-headerLayerName CDB-Text CDB-Size-medium u-ellipsis">
-          <a href="<%- url %>" target="_blank" title="<%- tableName %>" class="Editor-headerLayerName"><%- tableName %></a>
-        </p>
-      <% } %>
-    </div>
-  </div>
+      </button>
+    </li>
+    <li class="CDB-Shape">
+      <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+        <div class="CDB-Shape-threePointsItem"></div>
+      </button>
+    </li>
+  </ul>
 
-  <div class="CDB-Shape">
-    <button class="CDB-Shape-threePoints is-blue is-small js-toggle-menu">
-      <div class="CDB-Shape-threePointsItem"></div>
-      <div class="CDB-Shape-threePointsItem"></div>
-      <div class="CDB-Shape-threePointsItem"></div>
-    </button>
-  </div>
 </div>

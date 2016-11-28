@@ -16,6 +16,7 @@ describe Carto::Builder::VisualizationsController do
       map = FactoryGirl.create(:map, user_id: @user1.id)
       @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
       @user1.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+      @user1.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
 
       login(@user1)
     end
@@ -52,6 +53,19 @@ describe Carto::Builder::VisualizationsController do
         response.status.should eq 200
         @visualization.reload
         @visualization.version.should eq 3
+      end
+
+      it 'correctly copies queries to analysis nodes' do
+        layer = FactoryGirl.build(:carto_layer)
+        layer.options[:query] = 'SELECT prediction FROM location'
+        layer.save
+        @visualization.map.layers << layer
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 200
+        @visualization.reload
+        @visualization.analyses.count.should eq 1
+        @visualization.analyses.first.analysis_node.params[:query].should eq layer.options[:query]
       end
 
       it 'does not automatically migrates visualization with custom overlays' do

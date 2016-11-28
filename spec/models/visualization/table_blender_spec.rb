@@ -35,8 +35,8 @@ describe TableBlender do
       it 'sets increasing order for data layers and keep tiled first and last' do
         map1 = FactoryGirl.create(:carto_map_with_2_tiled_layers, user_id: @carto_user1.id)
         map2 = FactoryGirl.create(:carto_map_with_2_tiled_layers, user_id: @carto_user1.id)
-        map1, table1, table_visualization1, visualization1 = create_full_visualization(@carto_user1, map: map1)
-        map2, table2, table_visualization2, visualization2 = create_full_visualization(@carto_user1, map: map2)
+        map1, table1, table_visualization1, visualization1 = create_full_visualization(@carto_user1, canonical_map: map1)
+        map2, table2, table_visualization2, visualization2 = create_full_visualization(@carto_user1, canonical_map: map2)
 
         blender = CartoDB::Visualization::TableBlender.new(@user1, [::UserTable[table1.id], ::UserTable[table2.id]])
         map = blender.blend

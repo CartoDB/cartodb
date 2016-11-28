@@ -40,8 +40,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
 
-        vis_data = add_default_privacy(vis_data)
-
         param_tables = params[:tables]
         current_user_id = current_user.id
 
@@ -73,8 +71,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
 
-        vis.privacy = vis.default_privacy(current_user)
-
+        vis.ensure_valid_privacy
         # both null, make sure is the first children or automatically link to the tail of the list
         if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
           parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
@@ -406,14 +403,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
-  end
-
-  def add_default_privacy(data)
-    { privacy: default_privacy }.merge(data)
-  end
-
-  def default_privacy
-    current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
   end
 
   def name_candidate

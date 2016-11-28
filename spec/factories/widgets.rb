@@ -8,6 +8,7 @@ FactoryGirl.define do
     order 1
     type 'formula'
     title 'The Title'
+    source_id 'a0'
     options do
       {
         type: "formula",

@@ -33,6 +33,23 @@
   }
 }
 
+.Notifier.is-dark {
+  .Notifier-item {
+    &::before {
+      background: #3A484E;
+    }
+    &.Notifier-item--success::before {
+      background: #9DE0AD;
+    }
+    &.Notifier-item--error::before {
+      background: #F15743;
+    }
+    &.Notifier-item--warning::before {
+      background: #F5A623;
+    }
+  }
+}
+
 .Notifier-item {
   @include display-flex();
   position: relative;

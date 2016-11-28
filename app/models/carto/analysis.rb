@@ -42,10 +42,10 @@ class Carto::Analysis < ActiveRecord::Base
     user_id = user.id
 
     layer_options = layer.options
-    username = layer_options[:user_name]
+    username = layer_options[:user_name] || layer.user.username
     table_name = layer_options[:table_name]
 
-    qualified_table_name = if username && username != user.username
+    qualified_table_name = if layer.user.organization_user?
                              safe_schema_and_table_quoting(username, table_name)
                            else
                              table_name

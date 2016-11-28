@@ -250,7 +250,10 @@
       "title": "Predict trends and volatility",
       "short-title": "Trends"
     },
-    "source": "Source"
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
   },
 
   "analysis-category": {
@@ -261,6 +264,11 @@
   },
   "form-components": {
     "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -983,6 +991,20 @@
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
           "add-layer": "Add layer"
         }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "This geometry is too big to edit from the web",
+          "desc": "Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.",
+          "cancel": "Cancel",
+          "continue": "Ok, continue"
+        },
+        "delete": {
+          "title": "You are about to delete a feature",
+          "desc": "Are you sure you want to delete it?",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it"
+        }
       }
     },
     "error": {
@@ -999,7 +1021,8 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
-      "interval-error": "Value must be between %{minValue} and %{maxValue}"
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "copy-button": "COPY"
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -1314,7 +1337,8 @@
         "expand": "Expand",
         "export": "Export data",
         "hide": "Hide layer",
-        "show": "Show layer"
+        "show": "Show layer",
+        "center-map": "Center map"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
@@ -1447,6 +1471,7 @@
         "denominator-help": "A column to normalize the target column",
         "desc": "DESC",
         "direction": "Direction",
+        "disabled-by-config": "This analysis type is disabled",
         "dissolved": "Dissolved",
         "dissolved-help": "Combine polygons tracts which have equal ranges",
         "distance": "Distance",
@@ -1585,6 +1610,7 @@
         "value-aggregation": "Value aggregation",
         "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
         "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
+        "valid-type": "This kind of data is not valid for this type",
         "walk": "Walk",
         "weight": "Weight",
         "weight-column": "Weight column",
@@ -1638,6 +1664,13 @@
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
         "is-less-than": "Is less than"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
       }
     },
     "data": {
@@ -1758,7 +1791,14 @@
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "prefix": "Prefix",
+        "suffix": "Suffix",
+        "left-label": "Left Label",
+        "right-label": "Right Label",
+        "top-label": "Top Label",
+        "bottom-label": "Bottom Label",
+        "custom-label-placeholder": "Override dynamic value"
       },
       "pixel-title": "Amount"
     },
@@ -1979,6 +2019,26 @@
           "no": "No"
         }
       }
+    },
+    "edit-feature": {
+      "features": {
+        "point": "point",
+        "line": "line",
+        "polygon": "polygon"
+      },
+      "overlay-text": "Start clicking on the map to draw your %{featureType}",
+      "add": "Add",
+      "save": "Save",
+      "attributes": "Attributes",
+      "attributes-columns": "Change column names and type in table mode",
+      "cancel": "Cancel",
+      "geometry": "Geometry",
+      "geometry-edit": "You can also edit it on the map",
+      "valid-lng": "Must be a valid longitude",
+      "valid-lat": "Must be a valid latitude",
+      "valid": "Only numbers allowed",
+      "delete": "Delete %{featureType}",
+      "edit": "Edit %{featureType}"
     }
   },
   "notifications": {
@@ -2031,6 +2091,22 @@
         "title": "Error in SQL query:"
       },
       "success": "SQL query applied"
+    },
+    "edit-feature": {
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Deleting feature…",
+        "error": "Error deleting feature",
+        "success": "Feature deleted correctly"
+      },
+      "save": {
+        "loading": "Saving feature…",
+        "error": "Error saving feature",
+        "success": "Feature successfully saved"
+      },
+      "adding": "Adding feature…",
     }
   }
 }

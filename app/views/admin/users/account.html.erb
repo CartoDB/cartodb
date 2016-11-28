@@ -125,7 +125,7 @@
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your billing plan</label>
           </div>
           <div class="FormAccount-rowData">
-            <div class="FormAccount-planTag CDB-Size-medium"><%= current_user.account_type %></div>
+            <div class="FormAccount-planTag CDB-Size-medium"><%= plan_name(current_user.account_type) %></div>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
               <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= current_user.plan_url(request.protocol) %>" class="FormAccount-link">View details</a></p>
             </div>

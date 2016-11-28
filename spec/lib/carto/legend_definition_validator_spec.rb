@@ -119,15 +119,13 @@ module Carto
         joint_errors.should include('additional properties')
       end
 
-      it 'rejects incomplete definitions' do
+      it 'doesn\'t reject incomplete definitions' do
         incomplete_definition = definition.except(:prefix)
 
         validator = LegendDefinitionValidator.new(:choropleth,
                                                   incomplete_definition)
 
-        validator.errors.should_not be_empty
-        joint_errors = validator.errors.join(', ')
-        joint_errors.should include('did not contain a required property')
+        validator.errors.should be_empty
       end
     end
 

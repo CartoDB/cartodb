@@ -34,6 +34,17 @@ describe SignupController do
       response.status.should == 404
     end
 
+    it 'returns 404 for organizations with whitelisted domains but without any authentication enabled' do
+      @fake_organization = FactoryGirl.create(:organization,
+                                              whitelisted_email_domains: ['carto.com'],
+                                              auth_username_password_enabled: false,
+                                              auth_google_enabled: false,
+                                              auth_github_enabled: false)
+      Organization.stubs(:where).returns([@fake_organization])
+      get signup_url
+      response.status.should == 404
+    end
+
     it 'returns 200 for organizations without signup_page_enabled but with a valid invitation' do
       @fake_organization = FactoryGirl.create(:organization_with_users, whitelisted_email_domains: [])
       owner = Carto::User.find(@fake_organization.owner.id)

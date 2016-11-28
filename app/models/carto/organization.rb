@@ -110,7 +110,11 @@ module Carto
     end
 
     def signup_page_enabled
-      !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+      !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty? && auth_enabled?
+    end
+
+    def auth_enabled?
+      auth_username_password_enabled || auth_google_enabled || auth_github_enabled
     end
 
     def database_name

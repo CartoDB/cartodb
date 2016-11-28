@@ -30,7 +30,7 @@ describe Search::Twitter do
       user_quota = 100
       user_mock = CartoDB::Datasources::Doubles::User.new({twitter_datasource_quota: user_quota})
       user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(false)
-      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
+      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new(id: '123456789', service_item_id: '987654321')
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -73,7 +73,7 @@ describe Search::Twitter do
       user_quota = 100
       user_mock = CartoDB::Datasources::Doubles::User.new({twitter_datasource_quota: user_quota})
       user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
+      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new(id: '123456789', service_item_id: '987654321')
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 

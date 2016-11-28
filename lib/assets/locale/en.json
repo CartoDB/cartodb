@@ -264,6 +264,11 @@
   },
   "form-components": {
     "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {

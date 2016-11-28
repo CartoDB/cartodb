@@ -5,6 +5,8 @@ module Carto
     class SnapshotsController < ::Api::ApplicationController
       include ControllerHelper
 
+      ssl_required :index, :show, :create, :update, :destroy
+
       before_filter :load_visualization,
                     :check_visualization_viewable
       before_filter :load_snapshot,

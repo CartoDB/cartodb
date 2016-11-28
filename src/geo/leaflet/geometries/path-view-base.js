@@ -3,6 +3,15 @@ var GeometryViewBase = require('./geometry-view-base');
 var Point = require('../../geometry-models/point.js');
 var PointView = require('./point-view');
 
+var computeMidLatLng = function (leafletMap, latLngA, latLngB) {
+  var leftPoint = leafletMap.latLngToContainerPoint(latLngA);
+  var rightPoint = leafletMap.latLngToContainerPoint(latLngB);
+  var y = (leftPoint.y + rightPoint.y) / 2;
+  var x = (leftPoint.x + rightPoint.x) / 2;
+  var latlng = leafletMap.containerPointToLatLng([x, y]);
+  return [ latlng.lat, latlng.lng ];
+};
+
 var PathViewBase = GeometryViewBase.extend({
   initialize: function (options) {
     GeometryViewBase.prototype.initialize.apply(this, arguments);
@@ -61,27 +70,19 @@ var PathViewBase = GeometryViewBase.extend({
 
   _calculateMiddlePoints: function () {
     var coordinates = this._getCoordinatesForMiddlePoints();
+    var leafletMap = this.leafletMap;
     return _.map(coordinates.slice(0, -1), function (latLngA, index) {
       var latLngB = coordinates[index + 1];
       return new Point({
-        latlng: this._computeMidLatLng(latLngA, latLngB),
+        latlng: computeMidLatLng(leafletMap, latLngA, latLngB),
         editable: true,
         iconUrl: Point.MIDDLE_POINT_ICON_URL
       });
-    }.bind(this));
+    });
   },
 
   _getCoordinatesForMiddlePoints: function () {
     return this.model.getCoordinates();
-  },
-
-  _computeMidLatLng: function (latLngA, latLngB) {
-    var leftPoint = this.leafletMap.latLngToContainerPoint(latLngA);
-    var rightPoint = this.leafletMap.latLngToContainerPoint(latLngB);
-    var y = (leftPoint.y + rightPoint.y) / 2;
-    var x = (leftPoint.x + rightPoint.x) / 2;
-    var latlng = this.leafletMap.containerPointToLatLng([x, y]);
-    return [ latlng.lat, latlng.lng ];
   },
 
   _renderMiddlePoint: function (point, index) {

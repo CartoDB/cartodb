@@ -5,7 +5,8 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
 
   ssl_required :index, :show
 
-  rescue_from LoadError, with: :rescue_from_carto_error
+  rescue_from LoadError,
+              UnprocesableEntityError, with: :rescue_from_carto_error
 
   def index
     presentation = AssetPresenter.collection_to_hash(@organization.assets)
@@ -15,6 +16,13 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
 
   def show
     render json: AssetPresenter.new(presentation).to_hash
+  end
+
+  def create
+    Asset.create!(kind: params[:kind], organization_id: @organization.id)
+  rescue ActiveRecord::RecordInvalid => exception
+    message = exception.record.errors.full_messages.join(', ')
+    raise UnprocesableEntityError.new(message)
   end
 
   private

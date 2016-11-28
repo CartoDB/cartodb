@@ -59,6 +59,7 @@ sudo make install
 * Configurable path for public uploads:
   * `RAILS_PUBLIC_UPLOADS_PATH`. Example: /var/carto/assets. Defaults to `env_app_config[:importer]["uploads_path"]`
   This will store user uploaded assets at `#{RAILS_PUBLIC_UPLOADS_PATH}/uploads` (needed for backwards compatibility).
+* Don't display Twitter or MailChimp if user can't import it.
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`

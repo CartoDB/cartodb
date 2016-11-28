@@ -4,7 +4,6 @@ var BubbleLegendModel = require('./bubble-legend-model');
 var ChoroplethLegendModel = require('./choropleth-legend-model');
 var CustomLegendModel = require('./custom-legend-model');
 var CustomChoroplethLegendModel = require('./custom-choropleth-legend-model');
-var HTMLLegendModel = require('./html-legend-model');
 
 var LEGENDS_METADATA = {
   bubble: {
@@ -29,10 +28,6 @@ var LEGENDS_METADATA = {
   custom_choropleth: {
     modelClass: CustomChoroplethLegendModel,
     definitionAttrs: [ 'prefix', 'suffix', {'leftLabel': 'left_label'}, {'rightLabel': 'right_label'}, 'colors' ]
-  },
-  html: {
-    modelClass: HTMLLegendModel,
-    definitionAttrs: [ 'html' ]
   }
 };
 

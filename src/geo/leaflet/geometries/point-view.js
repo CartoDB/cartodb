@@ -34,7 +34,6 @@ var PointView = GeometryViewBase.extend({
   },
 
   unsetMarker: function () {
-    console.log('unset marker for view', this.cid);
     delete this._marker;
   },
 
@@ -128,7 +127,6 @@ var PointView = GeometryViewBase.extend({
   clean: function () {
     GeometryViewBase.prototype.clean.apply(this);
     if (this._marker) {
-      console.log('removed marker at', this.model.getCoordinates().join(','), this.cid);
       this.leafletMap.removeLayer(this._marker);
     }
   }

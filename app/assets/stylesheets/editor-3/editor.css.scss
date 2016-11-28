@@ -133,7 +133,7 @@
   .Editor {
     .CDB-Dashboard-canvas {
       @include flex-direction(column);
-      width: 0;
+      max-width: calc(100% - 392px);
     }
     .CDB-Widget-canvas {
       width: 100%;

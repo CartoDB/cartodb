@@ -5,6 +5,7 @@ require 'json'
 require_relative '../util/csv_file_dumper'
 
 require_relative '../../../../twitter-search/twitter-search'
+require_relative '../../../../../lib/cartodb/logger'
 require_relative '../base_file_stream'
 
 module CartoDB
@@ -47,7 +48,7 @@ module CartoDB
         # Gnip's 30 limit minus 'has:geo' one
         MAX_SEARCH_TERMS = 30 - 1
 
-        MAX_QUERY_SIZE   = 1024
+        MAX_QUERY_SIZE = 2048
 
         MAX_TABLE_NAME_SIZE = 30
 
@@ -71,15 +72,25 @@ module CartoDB
           raise MissingConfigurationError.new('missing auth_required', DATASOURCE_NAME) unless config.include?('auth_required')
           raise MissingConfigurationError.new('missing username', DATASOURCE_NAME) unless config.include?('username')
           raise MissingConfigurationError.new('missing password', DATASOURCE_NAME) unless config.include?('password')
-          raise MissingConfigurationError.new('missing search_url', DATASOURCE_NAME) unless config.include?('search_url')
+          if user.has_feature_flag?('gnip_v2')
+            raise MissingConfigurationError.new('missing search_url for v2 API', DATASOURCE_NAME) unless config.include?('search_url_v2')
+          else
+            raise MissingConfigurationError.new('missing search_url for v1 API', DATASOURCE_NAME) unless config.include?('search_url')
+          end
 
           @user_defined_limits = user_defined_limits
+
+          if user.has_feature_flag?('gnip_v2')
+            search_url = config['search_url_v2']
+          else
+            search_url = config['search_url']
+          end
 
           @search_api_config = {
             TwitterSearch::SearchAPI::CONFIG_AUTH_REQUIRED              => config['auth_required'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_USERNAME              => config['username'],
             TwitterSearch::SearchAPI::CONFIG_AUTH_PASSWORD              => config['password'],
-            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL                 => config['search_url'],
+            TwitterSearch::SearchAPI::CONFIG_SEARCH_URL                 => search_url,
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_ACTIVE            => config.fetch('ratelimit_active', nil),
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_MAX_CONCURRENCY   => config.fetch('ratelimit_concurrency', nil),
             TwitterSearch::SearchAPI::CONFIG_REDIS_RL_TTL               => config.fetch('ratelimit_ttl', nil),
@@ -264,10 +275,12 @@ module CartoDB
         end
 
         def clean_category(category)
-          category.gsub(" (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})", '')
-                  .gsub(" #{OR_SEARCH_FILTER} ", ', ')
-                  .gsub(/^\(/, '')
-                  .gsub(/\)$/, '')
+          if @user.has_feature_flag?('gnip_v2')
+            category.gsub(" #{GEO_SEARCH_FILTER}", '')
+          else
+            category.gsub(" (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})", '')
+          end
+          category.gsub(" #{OR_SEARCH_FILTER} ", ', ').gsub(/^\(/, '').gsub(/\)$/, '')
         end
 
         def fields_from(id)
@@ -320,7 +333,7 @@ module CartoDB
             # might not yet have new value, so introduce a small delay on each thread creation
             sleep(0.1)
             threads[category[CATEGORY_NAME_KEY]] = Thread.new {
-              api = TwitterSearch::SearchAPI.new(api_config, redis_storage, @csv_dumper)
+              api = TwitterSearch::SearchAPI.new(api_config, @user, redis_storage, @csv_dumper)
               # Dumps happen inside upon each block response
               total_results = search_by_category(api, base_filters, category)
               category_totals[category[CATEGORY_NAME_KEY]] = total_results
@@ -489,7 +502,11 @@ module CartoDB
             unless category[:terms].count == 0
               query[CATEGORY_TERMS_KEY] << '('
               query[CATEGORY_TERMS_KEY] << category[:terms].join(' OR ')
-              query[CATEGORY_TERMS_KEY] << ") (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})"
+              if @user.has_feature_flag?('gnip_v2')
+                query[CATEGORY_TERMS_KEY] << ") #{GEO_SEARCH_FILTER}"
+              else
+                query[CATEGORY_TERMS_KEY] << ") (#{GEO_SEARCH_FILTER} OR #{PROFILE_GEO_SEARCH_FILTER})"
+              end
             end
 
             if query[CATEGORY_TERMS_KEY].length > MAX_QUERY_SIZE

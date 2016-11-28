@@ -601,13 +601,6 @@ CartoDB::Application.routes.draw do
     scope 'v2/' do
       resources :maps, only: [:show, :update], constraints: { id: UUID_REGEXP }
 
-      # Organization assets
-      scope '/organization/:organization_id' do
-        resources :assets,
-                  only: [:index, :create, :destroy],
-                  constraints: { id: UUID_REGEXP }
-      end
-
       # EUMAPI
       scope 'organization/:id_or_name/' do
         get    'users',             to: 'organization_users#index',   as: :api_v2_organization_users_index
@@ -620,6 +613,13 @@ CartoDB::Application.routes.draw do
 
     scope 'v1/' do
       resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
+
+      # Organization assets
+      scope '/organization/:organization_id' do
+        resources :assets,
+                  only: [:index, :create, :destroy],
+                  constraints: { id: UUID_REGEXP }
+      end
 
       # EUMAPI
       scope 'organization/:id_or_name/' do

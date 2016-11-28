@@ -5,7 +5,9 @@ var Polygon = PathBase.extend({
   defaults: {
     editable: false,
     expandable: false,
-    color: '#397dba'
+    lineColor: '#397dba',
+    lineWeight: '3',
+    lineOpacity: '0.75'
   },
 
   MIN_NUMBER_OF_VERTICES: 3,

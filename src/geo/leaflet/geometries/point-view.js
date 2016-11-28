@@ -24,7 +24,7 @@ var PointView = GeometryViewBase.extend({
         var latLng = this._marker.getLatLng();
         this.model.set('latlng', [ latLng.lat, latLng.lng ]);
       }
-    }.bind(this), DRAG_DEBOUNCE_TIME_IN_MILIS),
+    }.bind(this), DRAG_DEBOUNCE_TIME_IN_MILIS);
 
     _.bindAll(this, '_onDragStart', '_onDrag', '_onDragEnd', '_onMouseDown', '_onMouseClick');
   },

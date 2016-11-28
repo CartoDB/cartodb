@@ -7,7 +7,7 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
 
   before_filter :load_organization,
                 :organization_owners_only
-  before_filter :load_asset, only: [:show, :create, :destroy]
+  before_filter :load_asset, only: [:show, :destroy]
 
   rescue_from LoadError,
               UnprocesableEntityError, with: :rescue_from_carto_error

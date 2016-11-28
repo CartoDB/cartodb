@@ -8,6 +8,8 @@ var PathViewBase = GeometryViewBase.extend({
     GeometryViewBase.prototype.initialize.apply(this, arguments);
 
     this.model.points.on('change:latlng', this._onPointsChanged, this);
+    this.model.points.on('add', this._onPointAdded, this);
+    this.model.points.on('remove', this._onPointRemoved, this);
     this.model.points.on('reset', this._onPointsReset, this);
     this.add_related_model(this.model.points);
 
@@ -137,6 +139,20 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _onPointsChanged: function () {
+    this._renderMiddlePoints();
+
+    this._updateGeometry();
+  },
+
+  _onPointAdded: function (point) {
+    this._renderPoints([ point ]);
+    this._renderMiddlePoints();
+
+    this._updateGeometry();
+  },
+
+  _onPointRemoved: function (point) {
+    this._removePoints([ point ]);
     this._renderMiddlePoints();
 
     this._updateGeometry();

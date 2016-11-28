@@ -46,18 +46,11 @@ var PathBase = GeometryBase.extend({
   addPoint: function (point, options) {
     options = options || {};
     var at = options.at || 0;
-    var newPoints = _.clone(this.points.models);
-    newPoints.splice(at, 0, point);
-    this.points.reset(newPoints);
+    this.points.add(point, { at: at });
   },
 
   removePoint: function (point) {
-    var coordinates = this.getCoordinates();
-    if (coordinates.length - 1 >= this.MIN_NUMBER_OF_VERTICES) {
-      var index = coordinates.indexOf(point.getCoordinates());
-      coordinates.splice(index, 1);
-      this.setCoordinates(coordinates);
-    }
+    this.points.remove(point);
   }
 });
 

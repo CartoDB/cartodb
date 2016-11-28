@@ -5,7 +5,8 @@ var CustomLegendModel = StaticLegendModelBase.extend({
   defaults: function () {
     return _.extend(StaticLegendModelBase.prototype.defaults.apply(this), {
       type: 'custom',
-      items: []
+      items: [],
+      html: ''
     });
   }
 });

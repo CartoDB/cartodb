@@ -24,7 +24,7 @@ var LEGENDS_METADATA = {
   },
   custom: {
     modelClass: CustomLegendModel,
-    definitionAttrs: [ { 'items': 'categories' } ]
+    definitionAttrs: [ { 'items': 'categories' }, 'html' ]
   },
   custom_choropleth: {
     modelClass: CustomChoroplethLegendModel,

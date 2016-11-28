@@ -40,6 +40,9 @@ $size: 20px;
   vertical-align: middle;
   z-index: 1;
 }
+.CDB-Attribution-button.disabled {
+  opacity: 0.24;
+}
 .CDB-Attribution-text {
   @include transition(opacity, 150ms);
   width: 0;

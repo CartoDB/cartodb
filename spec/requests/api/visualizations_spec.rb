@@ -254,7 +254,6 @@ describe Api::Json::VisualizationsController do
 
   describe 'DELETE /api/v1/viz/:id' do
     it 'deletes the visualization' do
-      pending
       payload   = factory
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
@@ -275,7 +274,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'deletes the associated table' do
-      pending
       table_attributes = table_factory
       table_id         = table_attributes.fetch('id')
 

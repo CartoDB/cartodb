@@ -2,14 +2,14 @@
 
 module Carto
   module Api
-    class AssetsPresenter
+    class AssetPresenter
       def initialize(asset)
         @asset = asset
       end
 
       def self.collection_to_hash(assets)
         assets.map do |asset|
-          AssetsPresenter.new(asset).public_values
+          AssetPresenter.new(asset).public_values
         end
       end
 

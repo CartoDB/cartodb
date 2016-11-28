@@ -25,6 +25,10 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
     raise UnprocesableEntityError.new(message)
   end
 
+  def destroy
+    @asset.destroy
+  end
+
   private
 
   def load_organization

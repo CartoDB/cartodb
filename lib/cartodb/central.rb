@@ -5,15 +5,18 @@ module Cartodb
   class Central
 
     def self.sync_data_with_cartodb_central?
-      Cartodb.config[:cartodb_central_api].present? && Cartodb.config[:cartodb_central_api]['username'].present? && Cartodb.config[:cartodb_central_api]['password'].present?
+      Cartodb.get_config(:cartodb_central_api, 'username').present? &&
+        Cartodb.get_config(:cartodb_central_api, 'password').present?
     end
 
     def initialize
-      @host = "http#{'s' if Rails.env.production? || Rails.env.staging?}://#{ Cartodb.config[:cartodb_central_api]['host'] }"
-      @host << ":#{Cartodb.config[:cartodb_central_api]['port']}" if Cartodb.config[:cartodb_central_api]['port'].present?
+      config_host = Cartodb.get_config(:cartodb_central_api, 'host')
+      config_port = Cartodb.get_config(:cartodb_central_api, 'port')
+      @host = "http#{'s' if Rails.env.production? || Rails.env.staging?}://#{config_host}"
+      @host << ":#{config_port}" if config_port.present?
       @auth = {
-        username: Cartodb.config[:cartodb_central_api]['username'],
-        password: Cartodb.config[:cartodb_central_api]['password']
+        username: Cartodb.get_config(:cartodb_central_api, 'username'),
+        password: Cartodb.get_config(:cartodb_central_api, 'password')
       }
     end
 
@@ -72,7 +75,7 @@ module Cartodb
     end
 
     def delete_organization_user(organization_name, username)
-      return send_request("api/organizations/#{ organization_name }/users/#{ username }", nil, :delete, [204])
+      send_request("api/organizations/#{organization_name}/users/#{username}", nil, :delete, [204, 404])
     end # delete_organization_user
 
     def update_user(username, user_attributes)
@@ -81,7 +84,7 @@ module Cartodb
     end
 
     def delete_user(username)
-      return send_request("api/users/#{username}", nil, :delete, [204])
+      send_request("api/users/#{username}", nil, :delete, [204, 404])
     end
 
     ############################################################################

@@ -17,6 +17,7 @@ describe DatasourcesFactory do
   describe '#provider_instantiations' do
     it 'tests all available provider instantiations' do
       user_mock = CartoDB::Datasources::Doubles::User.new
+      user_mock.stubs('has_feature_flag?').with('gnip_v2').returns(false)
       DatasourcesFactory.set_config(get_config)
 
       dropbox_provider = DatasourcesFactory.get_datasource(Url::Dropbox::DATASOURCE_NAME, user_mock)
@@ -35,6 +36,10 @@ describe DatasourcesFactory do
 
       twitter_provider = DatasourcesFactory.get_datasource(Search::Twitter::DATASOURCE_NAME, user_mock)
       twitter_provider.is_a?(Search::Twitter).should eq true
+
+      user_mock.stubs('has_feature_flag?').with('gnip_v2').returns(true)
+      twitter_provider_v2 = DatasourcesFactory.get_datasource(Search::Twitter::DATASOURCE_NAME, user_mock)
+      twitter_provider_v2.is_a?(Search::Twitter).should eq true
 
       nil_provider = DatasourcesFactory.get_datasource(nil, user_mock)
       nil_provider.nil?.should eq true

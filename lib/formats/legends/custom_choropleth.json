@@ -5,6 +5,8 @@
   "properties": {
     "prefix": { "type": "string" },
     "suffix": { "type": "string" },
+    "left_label": { "type": "string" },
+    "right_label": { "type": "string" },
     "colors": {
       "type": "array",
       "additionalProperties": false,

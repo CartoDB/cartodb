@@ -14,6 +14,7 @@ FactoryGirl.define do
     table_quota            5
     quota_in_bytes         5000000
     id                     { UUIDTools::UUID.timestamp_create.to_s }
+    builder_enabled        nil # Most tests still assume editor
 
     trait :admin_privileges do
 
@@ -71,6 +72,7 @@ FactoryGirl.define do
     table_quota 5
     quota_in_bytes 5000000
     id { UUIDTools::UUID.timestamp_create.to_s }
+    builder_enabled nil # Most tests still assume editor
 
     before(:create) do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

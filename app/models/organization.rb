@@ -359,7 +359,7 @@ class Organization < Sequel::Model
   end
 
   def signup_page_enabled
-    !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty? && auth_enabled?
+    whitelisted_email_domains.present? && auth_enabled?
   end
 
   def auth_enabled?

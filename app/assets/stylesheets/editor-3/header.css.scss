@@ -115,12 +115,7 @@
   @include flex(1);
 }
 
-.Editor-HeaderInfo-inner ~ .CDB-Shape {
-  margin-top: 11px;
-}
-
 .Editor-HeaderInfo-zoom {
-  margin-right: 5px;
   fill: $cBlue;
 }
 

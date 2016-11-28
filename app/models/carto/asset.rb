@@ -1,11 +1,8 @@
-# encoding: UTF-8
-
-require 'active_record'
+# encoding: utf-8
 
 module Carto
-  class Asset < ActiveRecord::Base
-
-     belongs_to :user
-
+  class Asset
+    belongs_to :user, class_name: User, dependent: :destroy
+    belongs_to :organization, class_name: Organization, dependent: :destroy
   end
 end

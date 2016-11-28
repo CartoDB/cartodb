@@ -71,6 +71,9 @@ module CartoDB
           monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
           hard_limit:  hard_twitter_datasource_limit
         },
+        mailchimp: {
+          enabled: Carto::AccountType.new.mailchimp?(self)
+        },
         mapzen_routing: {
           quota:       organization_user? ? organization.mapzen_routing_quota : mapzen_routing_quota,
           block_price: organization_user? ? organization.mapzen_routing_block_price : mapzen_routing_block_price,
@@ -90,7 +93,6 @@ module CartoDB
         actions: {
           private_tables: private_tables_enabled,
           private_maps: private_maps_enabled?,
-          dedicated_support: dedicated_support?,
           remove_logo: remove_logo?,
           sync_tables: sync_tables_enabled,
           google_maps_geocoder_enabled: google_maps_geocoder_enabled?,

@@ -266,7 +266,7 @@ describe Api::Json::VisualizationsController do
         end
       end
 
-      it 'sets LINK privacy if the user has private_maps' do
+      it 'sets table privacy if the user has private_maps' do
         table1 = create_table(user_id: @org_user_1.id)
         payload = {
           tables: [table1.name]
@@ -276,7 +276,7 @@ describe Api::Json::VisualizationsController do
           response.status.should eq 200
           vid = response.body[:id]
           v = CartoDB::Visualization::Member.new(id: vid).fetch
-          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_LINK
+          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE
         end
       end
 

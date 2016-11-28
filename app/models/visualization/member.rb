@@ -160,8 +160,13 @@ module CartoDB
         self.id == other_vis.id
       end
 
-      def default_privacy(owner)
-        can_be_private?(owner) ? PRIVACY_LINK : PRIVACY_PUBLIC
+      def ensure_valid_privacy
+        self.privacy = default_privacy if privacy.nil?
+        self.privacy = PRIVACY_PUBLIC unless can_be_private?
+      end
+
+      def default_privacy
+        can_be_private? ? PRIVACY_LINK : PRIVACY_PUBLIC
       end
 
       def store
@@ -838,13 +843,16 @@ module CartoDB
       def update_named_map
         return if named_map_updates_disabled?
 
-        # On visualization destroy, an update will be performed after every
-        # layer in the vis is destroyed until the template has no layers
-        # and the update fails. This is a hacky way to fix that. A better way
-        # would be to fix callbacks.
-        visualization_for_presentation = carto_visualization.for_presentation
-        unless visualization_for_presentation.layers.empty?
-          Carto::NamedMaps::Api.new(carto_visualization.for_presentation).update
+        # A visualization destroy triggers destroys on all its layers. Each
+        # layer destroy, will trigger an update back to the visualization. When
+        # the last layer is destroyed, and the visualization named map template
+        # is generated to be updated, it will contain no layers, causing an
+        # error at the Maps API. This is a hack to prevent that update and error
+        # from happening. A better way to solve this would be to get
+        # callbacks under control.
+        presentation_visualization = carto_visualization.try(:for_presentation)
+        if presentation_visualization && presentation_visualization.layers.any?
+          Carto::NamedMaps::Api.new(presentation_visualization).update
         end
       end
 

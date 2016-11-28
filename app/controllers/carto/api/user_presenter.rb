@@ -148,6 +148,9 @@ module Carto
           salesforce: {
             enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
           },
+          mailchimp: {
+            enabled: Carto::AccountType.new.mailchimp?(@user)
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
@@ -160,7 +163,6 @@ module Carto
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
-            dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,

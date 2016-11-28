@@ -41,7 +41,6 @@ module Carto
               dataviews: dataviews,
               analyses: analyses_definitions
             },
-            preview_layers: preview_layers,
             view: view
           }
         end
@@ -91,11 +90,13 @@ module Carto
         layers = []
         layer_index = -1 # forgive me for I have sinned
 
+        is_builder = @visualization.builder?
         @visualization.named_map_layers.each do |layer|
           if layer.data_layer?
             layer_index += 1
 
-            layers.push(type: 'cartodb', options: options_for_carto_and_torque_layers(layer, layer_index))
+            options = options_for_carto_and_torque_layers(layer, layer_index, is_builder)
+            layers.push(id: layer.id, type: 'cartodb', options: options)
           elsif layer.base?
             layer_options = layer.options
 
@@ -109,7 +110,9 @@ module Carto
 
         @visualization.torque_layers.each do |layer|
           layer_index += 1
-          layers.push(type: 'torque', options: options_for_carto_and_torque_layers(layer, layer_index))
+
+          options = options_for_carto_and_torque_layers(layer, layer_index, is_builder)
+          layers.push(id: layer.id, type: 'torque', options: options)
         end
 
         layers
@@ -128,18 +131,17 @@ module Carto
         options
       end
 
-      def options_for_carto_and_torque_layers(layer, index)
+      def options_for_carto_and_torque_layers(layer, index, is_builder)
         layer_options = layer.options.with_indifferent_access
         tile_style = layer_options[:tile_style].strip if layer_options[:tile_style]
 
         options = {
-          id: layer.id,
           cartocss: tile_style.present? ? tile_style : EMPTY_CSS,
           cartocss_version: layer_options.fetch('style_version')
         }
 
         layer_options_source = layer_options[:source]
-        if layer_options_source
+        if is_builder && layer_options_source
           options[:source] = { id: layer_options_source }
         else
           options[:sql] = visibility_wrapped_sql(layer.default_query(@visualization.user), index)
@@ -196,16 +198,6 @@ module Carto
         @visualization.analyses.map(&:analysis_definition_for_api)
       end
 
-      def preview_layers
-        preview_layers = {}
-
-        @visualization.carto_and_torque_layers.each do |layer|
-          preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
-        end
-
-        preview_layers
-      end
-
       def stats_aggregator
         @@stats_aggregator_instance ||= CartoDB::Stats::EditorAPIs.instance
       end
@@ -260,7 +252,17 @@ module Carto
           data[:bounds] = bounds_data
         end
 
-        data
+        data.merge!(preview_layers: preview_layers)
+      end
+
+      def preview_layers
+        preview_layers = {}
+
+        @visualization.carto_and_torque_layers.each do |layer|
+          preview_layers[:"#{layer.id}"] = layer.options[:visible] || false
+        end
+
+        preview_layers
       end
     end
   end

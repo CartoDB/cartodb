@@ -16,7 +16,7 @@ var PointView = GeometryViewBase.extend({
       this._updateMarkersIcon();
     }
 
-    // This method is debounced and we need to initialize so that:
+    // This method is debounced and we need to initialize it here so that:
     //  1. Binding/unbinding can use the debounced function as the callback.
     //  2. Debouncing can be easily disabled in the tests
     this._onDrag = _.debounce(function () {

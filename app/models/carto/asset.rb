@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Carto
-  class Asset
+  class Asset < ActiveRecord::Base
     belongs_to :user,
                class_name: Carto::User,
                dependent: :destroy

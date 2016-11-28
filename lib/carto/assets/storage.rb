@@ -8,4 +8,12 @@ class Carto::Storage
   def initialize
     @storage = s3 ? s3 : local
   end
+
+  private
+
+  def s3
+  end
+
+  def local
+  end
 end

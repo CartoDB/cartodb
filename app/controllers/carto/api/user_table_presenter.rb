@@ -35,6 +35,7 @@ module Carto
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
           permission: Carto::Api::PermissionPresenter.new(@permission, current_viewer: @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
+          synchronization: Carto::Api::SynchronizationPresenter.new(@user_table.synchronization).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,
           updated_at: @user_table.updated_at,

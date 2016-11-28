@@ -72,6 +72,7 @@ module CartoDB
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
       user.organization          = attributes[:organization] || nil
       user.viewer                = attributes[:viewer] || false
+      user.builder_enabled       = attributes[:builder_enabled] # nil by default, for old tests
       if attributes[:organization_id]
         user.organization_id = attributes[:organization_id]
       end

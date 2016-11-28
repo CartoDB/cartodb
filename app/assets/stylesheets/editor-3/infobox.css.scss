@@ -14,7 +14,7 @@
   @include flex(2);
   margin-right: -25px;
   margin-left: -25px;
-  padding: 21px 25px 25px 25px;
+  padding: 21px 25px 25px;
   background: $cThirdBackground;
 
   &.is-error {
@@ -37,6 +37,10 @@
 .Infobox-buttonLink {
   padding: 4px 0;
   color: $cBlue;
+  &.is-disabled {
+    cursor: default;
+    opacity: 0.24;
+  }
 }
 .Infobox-quota {
   @include flex(10);

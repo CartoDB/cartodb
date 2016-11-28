@@ -3,7 +3,7 @@
 class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   include Carto::ControllerHelper
 
-  ssl_required :index, :show
+  ssl_required :index, :show, :create, :destroy
 
   rescue_from LoadError,
               UnprocesableEntityError, with: :rescue_from_carto_error

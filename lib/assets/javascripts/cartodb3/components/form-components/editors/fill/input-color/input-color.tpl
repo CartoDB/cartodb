@@ -14,3 +14,6 @@
   </ul>
 </button>
 <% } %>
+<% if (hasImage) { %>
+<span>img</span>
+<% } %>

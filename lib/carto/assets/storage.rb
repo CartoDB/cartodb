@@ -9,6 +9,6 @@ class Carto::Storage
   include singleton
 
   def initialize
-    @storage = S3.instance_if_enabled || Local.instance_if_enabled
+    @storage = S3.instance_if_enabled || Local.new
   end
 end

@@ -266,14 +266,10 @@ module CartoDB
           CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
         end
 
-        # Named map must be deleted before the map, or we lose the reference to it
-        Carto::NamedMaps::Api.new(carto_visualization).destroy
-
         unlink_self_from_list!
 
         support_tables.delete_all
 
-        invalidate_cache
         overlays.map(&:destroy)
         safe_sequel_delete do
           # "Mark" that this vis id is the destructor to avoid cycles: Vis -> Map -> relatedvis (Vis again)
@@ -287,6 +283,15 @@ module CartoDB
             # Refetch each item before removal so Relator reloads prev/next cursors
             child.fetch.delete
           end
+        end
+
+        # Avoid invalidating if the visualization has already been destroyed
+        # This happens deleting a canonical visualization, which triggers a table deletion,
+        # which triggers a second deletion of the same visualization
+        carto_vis = carto_visualization
+        if carto_vis
+          Carto::NamedMaps::Api.new(carto_vis).destroy
+          invalidate_cache
         end
 
         safe_sequel_delete { permission.destroy_shared_entities } if permission
@@ -831,11 +836,12 @@ module CartoDB
       end
 
       def create_named_map
+        return unless map
         Carto::NamedMaps::Api.new(carto_visualization).create
       end
 
       def update_named_map
-        return if named_map_updates_disabled?
+        return if named_map_updates_disabled? || map.nil?
 
         # A visualization destroy triggers destroys on all its layers. Each
         # layer destroy, will trigger an update back to the visualization. When

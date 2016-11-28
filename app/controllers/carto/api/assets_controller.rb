@@ -4,13 +4,8 @@ class Carto::Api::AssetsController < ::Api::ApplicationController
   ssl_required :index
 
   def index
-    assets = current_viewer.assets
+    assets = AssetsPresenter.collection_to_hash(current_viewer.assets)
 
-    render_jsonp({ 
-        total_entries: assets.size, 
-        assets: assets.map { |asset| 
-            Carto::Api::AssetsPresenter.new(asset).public_values
-          }
-      })
+    render json: { total_entries: assets.size, assets: assets_presentation }
   end
 end

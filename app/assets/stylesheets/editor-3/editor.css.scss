@@ -131,6 +131,17 @@
 
 @media (max-width: 1280px) {
   .Editor {
+    .CDB-Widget-options {
+      display: none;
+    }
+    .CDB-Widget-body.is-collapsed {
+      height: 100%;
+      .CDB-Widget-content,
+      .CDB-Widget-info {
+        display: block;
+      }
+    }
+
     .CDB-Dashboard-canvas {
       @include flex-direction(column);
       max-width: calc(100% - 392px);
@@ -187,6 +198,14 @@
     }
     .CDB-Widget-listItemInner {
       margin: 0;
+    }
+    .CDB-Dashboard-canvas .ps-container>.ps-scrollbar-x-rail {
+      display: block;
+      opacity: 0.6;
+      width: 100%;
+    }
+    .CDB-Dashboard-canvas .ps-container>.ps-scrollbar-x-rail>.ps-scrollbar-x {
+      min-width: 50%;
     }
   }
 }

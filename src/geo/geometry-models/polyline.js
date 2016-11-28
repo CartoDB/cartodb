@@ -5,7 +5,9 @@ var Polyline = PathBase.extend({
   defaults: {
     editable: false,
     expandable: false,
-    color: '#397dba'
+    lineColor: '#397dba',
+    lineWeight: '4',
+    lineOpacity: '0.5'
   },
 
   MIN_NUMBER_OF_VERTICES: 2,

@@ -70,25 +70,32 @@ module.exports = function (PathClass, PathViewClass) {
       });
     });
 
-    describe('when points are added, function', function () {
+    describe('when points are added', function () {
       beforeEach(function () {
+        this.numberOfMarkersBefore = this.leafletMap.getMarkers().length;
         var point = new Point({
           latlng: [
             -40,
             40
           ]
         });
-        this.geometry.points.add(point);
+        this.geometry.addPoint(point);
       });
 
       it("should update the path's latlng", function () {
         expect(this.geometry.getCoordinates()).toEqual([
-          [ -1, 1 ], [ 1, 2 ], [ 3, 4 ], [ -40, 40 ]
+          [ -40, 40 ], [ -1, 1 ], [ 1, 2 ], [ 3, 4 ]
         ]);
+      });
+
+      it('should render a new marker', function () {
+        var numberOfMarkersAfter = this.leafletMap.getMarkers().length;
+
+        expect(numberOfMarkersAfter).toEqual(this.numberOfMarkersBefore + 1);
       });
     });
 
-    describe('when points are resetted, function', function () {
+    describe('when points are resetted,', function () {
       beforeEach(function () {
         this.geometry.setCoordinates([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
@@ -99,6 +106,11 @@ module.exports = function (PathClass, PathViewClass) {
         expect(this.geometry.getCoordinates()).toEqual([
           [ -10, 10 ], [ 10, 20 ], [ 30, 40 ]
         ]);
+      });
+
+      it('should render the right number of markers', function () {
+        var numberOfMarkersAfter = this.leafletMap.getMarkers().length;
+        expect(numberOfMarkersAfter).toEqual(3);
       });
     });
   });

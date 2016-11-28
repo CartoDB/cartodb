@@ -1332,7 +1332,8 @@
         "expand": "Expand",
         "export": "Export data",
         "hide": "Hide layer",
-        "show": "Show layer"
+        "show": "Show layer",
+        "center-map": "Center map"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
@@ -1658,6 +1659,13 @@
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
         "is-less-than": "Is less than"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
       }
     },
     "data": {

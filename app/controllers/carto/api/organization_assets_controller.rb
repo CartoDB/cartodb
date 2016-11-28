@@ -8,7 +8,7 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   rescue_from LoadError, with: :rescue_from_carto_error
 
   def index
-    presentation = AssestPresenter.collection_to_hash(@organization.assets)
+    presentation = AssetPresenter.collection_to_hash(@organization.assets)
 
     render json: presentation
   end

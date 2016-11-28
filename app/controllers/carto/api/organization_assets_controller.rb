@@ -19,7 +19,7 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   end
 
   def show
-    render json: AssetPresenter.new(presentation).to_hash
+    render json: AssetPresenter.new(@asset).to_hash
   end
 
   def create

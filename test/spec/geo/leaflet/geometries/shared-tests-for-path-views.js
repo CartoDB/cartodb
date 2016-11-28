@@ -130,18 +130,6 @@ module.exports = function (PathClass, PathViewClass) {
       expect(markers.length).toEqual(0);
     });
 
-    it('should remove each point from the path', function () {
-      this.geometry.points.each(function (point) {
-        spyOn(point, 'remove');
-      });
-
-      this.geometry.remove();
-
-      expect(this.geometry.points.all(function (point) {
-        return point.remove.calls.count() === 1;
-      })).toBe(true);
-    });
-
     it('should remove the view', function () {
       spyOn(this.geometryView, 'remove');
 

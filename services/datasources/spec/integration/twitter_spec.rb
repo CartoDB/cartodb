@@ -30,7 +30,7 @@ describe Search::Twitter do
       user_quota = 100
       user_mock = CartoDB::Datasources::Doubles::User.new({twitter_datasource_quota: user_quota})
       user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(false)
-      data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
+      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -52,7 +52,7 @@ describe Search::Twitter do
         )
       end
 
-      twitter_datasource.send :audit_entry, Doubles::SearchTweet
+      twitter_datasource.send :audit_entry, CartoDB::Datasources::Doubles::SearchTweet
       twitter_datasource.data_import_item = data_import_mock
       stream_location = '/tmp/sample_tweets_v1.csv'
       File.unlink(stream_location) if File.exists?(stream_location)
@@ -73,7 +73,7 @@ describe Search::Twitter do
       user_quota = 100
       user_mock = CartoDB::Datasources::Doubles::User.new({twitter_datasource_quota: user_quota})
       user_mock.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
-      data_import_mock = Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
+      data_import_mock = CartoDB::Datasources::Doubles::DataImport.new({id: '123456789', service_item_id: '987654321'})
 
       twitter_datasource = Search::Twitter.get_new(get_config, user_mock)
 
@@ -95,7 +95,7 @@ describe Search::Twitter do
         )
       end
 
-      twitter_datasource.send :audit_entry, Doubles::SearchTweet
+      twitter_datasource.send :audit_entry, CartoDB::Datasources::Doubles::SearchTweet
       twitter_datasource.data_import_item = data_import_mock
       stream_location = '/tmp/sample_tweets_v2.csv'
       File.unlink(stream_location) if File.exists?(stream_location)
@@ -152,4 +152,3 @@ describe Search::Twitter do
   end
 
 end
-

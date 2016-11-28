@@ -3,7 +3,7 @@
 class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   include Carto::ControllerHelper
 
-  ssl_required :index
+  ssl_required :index, :show
 
   rescue_from LoadError, with: :rescue_from_carto_error
 
@@ -11,6 +11,10 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
     presentation = AssetPresenter.collection_to_hash(@organization.assets)
 
     render json: presentation
+  end
+
+  def show
+
   end
 
   private

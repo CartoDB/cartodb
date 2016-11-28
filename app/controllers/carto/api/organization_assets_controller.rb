@@ -5,7 +5,8 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
 
   ssl_required :index, :show, :create, :destroy
 
-  before_filter :load_organization
+  before_filter :load_organization,
+                :organization_owners_only
   before_filter :load_asset, only: [:show, :create, :destroy]
 
   rescue_from LoadError,
@@ -38,6 +39,10 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
     @organization = Organization.find(params[:organization_id])
   rescue ActiveRecord::RecordNotFound
     raise LoadError.new('Organization not found')
+  end
+
+  def organization_owners_only
+    raise UnauthorizedError.new unless @organization.owner?(current_viewer)
   end
 
   def load_asset

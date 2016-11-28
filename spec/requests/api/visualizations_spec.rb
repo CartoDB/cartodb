@@ -8,11 +8,6 @@ require_relative '../../../app/controllers/api/json/visualizations_controller'
 require_relative '../../../services/data-repository/backend/sequel'
 require 'helpers/unique_names_helper'
 
-
-def app
-  CartoDB::Application.new
-end
-
 # INFO: THIS TEST SUITE SHOULD NOT GET NEW TESTS. In order to test visualization controller
 # add the specs to ./spec/requests/api/json/visualizations_controller_shared_examples.rb instead.
 # You can then run it with ./spec/requests/api/json/visualizations_controller_specs.rb and
@@ -165,14 +160,12 @@ describe Api::Json::VisualizationsController do
       payload = factory
       post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
 
-      response  =  JSON.parse(last_response.body)
-      id        = response.fetch('id')
-      tags      = response.fetch('tags')
+      response = JSON.parse(last_response.body)
+      id = response.fetch('id')
 
       response.fetch('tags').should == ['foo', 'bar']
 
-      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        { name: 'changed', tags: [] }.to_json, @headers
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}", { name: 'changed', tags: [], id: id }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed'
@@ -183,42 +176,18 @@ describe Api::Json::VisualizationsController do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 
-      sleep(0.6)
-      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        { name: 'changed name' }.to_json, @headers
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}", { name: 'changed name', id: id }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
 
-      response.fetch('table').fetch('updated_at')
-        .should_not == table_attributes.fetch('updated_at')
-    end
-
-    it 'allows setting the active layer' do
-      payload   = factory
-      post "/api/v1/viz?api_key=#{@api_key}",
-        payload.to_json, @headers
-
-      response  =  JSON.parse(last_response.body)
-      id        = response.fetch('id')
-      tags      = response.fetch('tags')
-
-      response.fetch('tags').should == ['foo', 'bar']
-
-      active_layer_id = 8
-      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        { active_layer_id: active_layer_id }.to_json, @headers
-      last_response.status.should == 200
-      response = JSON.parse(last_response.body)
-      response.fetch('active_layer_id').should == active_layer_id
-      response.fetch('tags').should == ['foo', 'bar']
+      response.fetch('table').fetch('updated_at').should_not == table_attributes.fetch('updated_at')
     end
 
     it 'returns a sanitized name' do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 
-      put "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        { name: 'changed name' }.to_json, @headers
+      put "/api/v1/viz/#{id}?api_key=#{@api_key}", { name: 'changed name', id: id }.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
       response.fetch('name').should == 'changed_name'
@@ -231,41 +200,35 @@ describe Api::Json::VisualizationsController do
 
   describe 'DELETE /api/v1/viz/:id' do
     it 'deletes the visualization' do
-      payload   = factory
+      payload = factory
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
 
       id = JSON.parse(last_response.body).fetch('id')
-      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
 
-      delete "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
+      delete "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 204
       last_response.body.should be_empty
 
-      get "/api/v1/viz/#{id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/viz/#{id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
 
     it 'deletes the associated table' do
       table_attributes = table_factory
-      table_id         = table_attributes.fetch('id')
+      table_id = table_attributes.fetch('id')
 
-      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
       table             = JSON.parse(last_response.body)
       visualization_id  = table.fetch('table_visualization').fetch('id')
 
-      delete "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}",
-        {}, @headers
+      delete "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 204
 
-      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
   end # DELETE /api/v1/viz/:id
@@ -275,21 +238,17 @@ describe Api::Json::VisualizationsController do
       table_attributes = table_factory
       table_id         = table_attributes.fetch('id')
 
-      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
       table             = JSON.parse(last_response.body)
       visualization_id  = table.fetch('table_visualization').fetch('id')
 
-      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
 
-      delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-        {}, @headers
+      delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
 
-      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
 
@@ -297,8 +256,7 @@ describe Api::Json::VisualizationsController do
       table_attributes = table_factory
       table_id         = table_attributes.fetch('id')
 
-      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
       table                   = JSON.parse(last_response.body)
       source_visualization_id = table.fetch('table_visualization').fetch('id')
@@ -317,8 +275,7 @@ describe Api::Json::VisualizationsController do
       get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
 
-      get "/api/v1/viz/#{source_visualization_id}?api_key=#{@api_key}",
-        {}, @headers
+      get "/api/v1/viz/#{source_visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 404
     end
 
@@ -338,8 +295,7 @@ describe Api::Json::VisualizationsController do
       get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
 
-      JSON.parse(last_response.body).fetch('related_tables').length
-        .should == 2
+      JSON.parse(last_response.body).fetch('related_tables').length.should == 2
 
       get "/api/v1/tables/#{table1_id}?api_key=#{@api_key}", {}, @headers
       table1 = JSON.parse(last_response.body)
@@ -358,8 +314,7 @@ describe Api::Json::VisualizationsController do
 
       get "/api/v1/viz/#{visualization_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 200
-      JSON.parse(last_response.body).fetch('related_tables').length
-        .should == 1
+      JSON.parse(last_response.body).fetch('related_tables').length.should == 1
 
       get "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}", {}, @headers
       JSON.parse(last_response.body).length.should == 2
@@ -371,9 +326,6 @@ describe Api::Json::VisualizationsController do
       payload   = { tables: [table.fetch('name'), table.fetch('name')] }
 
       post "/api/v1/viz?api_key=#{@api_key}", payload.to_json, @headers
-      response          = JSON.parse(last_response.body)
-      visualization_id  = response.fetch('id')
-      map_id            = response.fetch('map_id')
 
       delete "/api/v1/tables/#{table_id}?api_key=#{@api_key}", {}, @headers
       last_response.status.should == 204
@@ -393,10 +345,10 @@ describe Api::Json::VisualizationsController do
       map_id = ::Map.create(user_id: @user.id).id
 
       post api_v1_visualizations_create_url(user_domain: @user.username, api_key: @api_key),
-           factory({
-                     name: 'PARENT',
-                     type: CartoDB::Visualization::Member::TYPE_DERIVED
-                   }).to_json, @headers
+           factory(
+             name: 'PARENT',
+             type: CartoDB::Visualization::Member::TYPE_DERIVED
+           ).to_json, @headers
       body = JSON.parse(last_response.body)
       parent_vis_id = body.fetch('id')
 
@@ -490,7 +442,6 @@ describe Api::Json::VisualizationsController do
       body.fetch('prev_id').should eq vis_c_id
       body.fetch('next_id').should eq vis_a_id
 
-
       get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
           {}, @headers
       body = JSON.parse(last_response.body)
@@ -517,7 +468,7 @@ describe Api::Json::VisualizationsController do
 
       # C -> A -> B -> D
       put api_v1_visualizations_set_next_id_url(user_domain: @user.username, api_key: @api_key, id: vis_d_id),
-           { next_id: nil }.to_json, @headers
+          { next_id: nil }.to_json, @headers
       last_response.status.should == 200
 
       get api_v1_visualizations_show_url(user_domain: @user.username, api_key: @api_key, id: vis_c_id),
@@ -571,15 +522,13 @@ describe Api::Json::VisualizationsController do
       name:         name,
       description:  "#{name} description"
     }
-    post "/api/v1/tables?api_key=#{@api_key}",
-      payload.to_json, @headers
+    post "/api/v1/tables?api_key=#{@api_key}", payload.to_json, @headers
 
     table_attributes  = JSON.parse(last_response.body)
     table_id          = table_attributes.fetch('table_visualization').fetch("id")
 
-    put "/api/v1/viz/#{table_id}?api_key=#{@api_key}",
-      { privacy: privacy }.to_json, @headers
+    put "/api/v1/viz/#{table_id}?api_key=#{@api_key}", { privacy: privacy }.to_json, @headers
 
     table_attributes
-  end #table_factory
-end # Api::Json::VisualizationsController
+  end
+end

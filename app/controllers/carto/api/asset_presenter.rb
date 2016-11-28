@@ -13,8 +13,7 @@ module Carto
         end
       end
 
-      def public_values
-        return {} if @asset.nil?
+      def to_hash
         {
           id: @asset.id,
           public_url: @asset.public_url,
@@ -22,7 +21,6 @@ module Carto
           kind: @asset.kind
         }
       end
-
     end
   end
 end

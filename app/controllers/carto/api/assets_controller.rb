@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 class Carto::Api::AssetsController < ::Api::ApplicationController
-
   ssl_required :index
 
   def index
@@ -21,7 +20,4 @@ class Carto::Api::AssetsController < ::Api::ApplicationController
   def uri_user
     @uri_user ||= (current_user.nil? ? nil : Carto::User.where(id: current_user.id).first)
   end
-
-
-
 end

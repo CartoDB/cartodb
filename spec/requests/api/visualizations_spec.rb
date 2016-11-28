@@ -35,7 +35,7 @@ describe Api::Json::VisualizationsController do
 
   before(:each) do
     CartoDB::Varnish.any_instance.stubs(:send_command).returns(true)
-    bypass_named_maps
+    bypass_named_maps_requests
 
     begin
       delete_user_data @user
@@ -57,7 +57,6 @@ describe Api::Json::VisualizationsController do
 
   describe 'POST /api/v1/viz' do
     it 'creates a visualization' do
-      pending
       payload = factory.merge(type: 'table')
 
       post "/api/v1/viz?api_key=#{@api_key}",
@@ -65,7 +64,6 @@ describe Api::Json::VisualizationsController do
 
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
-      response.fetch('name')        .should =~ /visualization/
       response.fetch('tags')        .should == payload.fetch(:tags)
       response.fetch('map_id')      .should == payload.fetch(:map_id)
       response.fetch('description') .should == payload.fetch(:description)
@@ -82,19 +80,18 @@ describe Api::Json::VisualizationsController do
       response.fetch('tags')        .should_not == payload.fetch(:tags).to_json
       response.keys.should_not include 'related'
 
-      payload = { kind: 'carto', order: 1 }
+      payload = { kind: 'carto', order: 1, options: { table_name: 'tname1'} }
       post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
         payload.to_json, @headers
       last_response.status.should == 200
 
-      payload = { kind: 'carto', order: 2 }
+      payload = { kind: 'carto', order: 2, options: { table_name: 'tname2'} }
       post "/api/v1/maps/#{map_id}/layers?api_key=#{@api_key}",
         payload.to_json, @headers
       last_response.status.should == 400
     end
 
     it 'creates a visualization from a source_visualization_id' do
-      pending
       table                 = table_factory
       source_visualization  = table.fetch('table_visualization')
 
@@ -107,7 +104,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'creates a private visualization from a private table' do
-      pending
       table1 = table_factory(privacy: 0)
       source_visualization_id = table1.fetch('table_visualization').fetch('id')
       payload = { source_visualization_id: source_visualization_id }
@@ -120,7 +116,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'creates a private visualization if any table in the list is private' do
-      pending
       table3 = table_factory(privacy: 0)
 
       payload = {
@@ -136,7 +131,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'creates a private visualization if any table in the list is private' do
-      pending
       table1 = table_factory
       table2 = table_factory
       table3 = table_factory(privacy: 0)
@@ -159,7 +153,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'assigns a generated name if name taken' do
-      pending
       table               = table_factory
       visualization       = table.fetch('table_visualization')
       visualization_name  = visualization.fetch('name')
@@ -180,7 +173,6 @@ describe Api::Json::VisualizationsController do
 
   describe 'PUT /api/v1/viz/:id' do
     it 'updates an existing visualization' do
-      pending
       payload   = factory
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
@@ -200,7 +192,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'updates the table in a table visualization', now: true do
-      pending
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 
@@ -215,7 +206,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'allows setting the active layer' do
-      pending
       payload   = factory
       post "/api/v1/viz?api_key=#{@api_key}",
         payload.to_json, @headers
@@ -236,7 +226,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'returns a sanitized name' do
-      pending
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 
@@ -295,7 +284,6 @@ describe Api::Json::VisualizationsController do
 
   describe 'DELETE /api/v1/tables/:id' do
     it 'deletes the associated table visualization' do
-      pending
       table_attributes = table_factory
       table_id         = table_attributes.fetch('id')
 
@@ -318,7 +306,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'deletes dependent visualizations' do
-      pending
       table_attributes = table_factory
       table_id         = table_attributes.fetch('id')
 
@@ -348,7 +335,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'removes the layer from non dependent visualizations' do
-      pending
       table1    = table_factory
       table2    = table_factory
       table1_id = table1.fetch('id')
@@ -392,7 +378,6 @@ describe Api::Json::VisualizationsController do
     end
 
     it 'removes dependent visualizations that have the same layer twice' do
-      pending
       table     = table_factory
       table_id  = table.fetch('id')
       payload   = { tables: [table.fetch('name'), table.fetch('name')] }

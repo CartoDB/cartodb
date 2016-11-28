@@ -250,7 +250,10 @@
       "title": "Predict trends and volatility",
       "short-title": "Trends"
     },
-    "source": "Source"
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
   },
 
   "analysis-category": {
@@ -1463,6 +1466,7 @@
         "denominator-help": "A column to normalize the target column",
         "desc": "DESC",
         "direction": "Direction",
+        "disabled-by-config": "This analysis type is disabled",
         "dissolved": "Dissolved",
         "dissolved-help": "Combine polygons tracts which have equal ranges",
         "distance": "Distance",
@@ -1601,6 +1605,7 @@
         "value-aggregation": "Value aggregation",
         "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
         "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
+        "valid-type": "This kind of data is not valid for this type",
         "walk": "Walk",
         "weight": "Weight",
         "weight-column": "Weight column",

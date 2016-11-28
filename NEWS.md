@@ -66,6 +66,7 @@ sudo make install
 * Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
 * Custom labels for legends (#10763)
 * Builder is enabled by default
+* New option for centering the map according a layer data (#10116).
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

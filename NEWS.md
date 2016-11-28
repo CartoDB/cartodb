@@ -59,6 +59,7 @@ sudo make install
 * Configurable path for public uploads:
   * `RAILS_PUBLIC_UPLOADS_PATH`. Example: /var/carto/assets. Defaults to `env_app_config[:importer]["uploads_path"]`
   This will store user uploaded assets at `#{RAILS_PUBLIC_UPLOADS_PATH}/uploads` (needed for backwards compatibility).
+* Don't display Twitter or MailChimp if user can't import it.
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
@@ -66,6 +67,7 @@ sudo make install
 * Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
 * Custom labels for legends (#10763)
 * Builder is enabled by default
+* New option for centering the map according a layer data (#10116).
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

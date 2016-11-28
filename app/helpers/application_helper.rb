@@ -122,6 +122,10 @@ module ApplicationHelper
       config[:cdn_url] = Cartodb.config[:cdn_url]
     end
 
+    if !Cartodb.get_config(:dataservices, 'enabled').nil?
+      config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
+    end
+
     config.to_json
   end
 

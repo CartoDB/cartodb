@@ -55,6 +55,19 @@ describe Carto::Builder::VisualizationsController do
         @visualization.version.should eq 3
       end
 
+      it 'correctly copies queries to analysis nodes' do
+        layer = FactoryGirl.build(:carto_layer)
+        layer.options[:query] = 'SELECT prediction FROM location'
+        layer.save
+        @visualization.map.layers << layer
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 200
+        @visualization.reload
+        @visualization.analyses.count.should eq 1
+        @visualization.analyses.first.analysis_node.params[:query].should eq layer.options[:query]
+      end
+
       it 'does not automatically migrates visualization with custom overlays' do
         @visualization.save
         @visualization.overlays.create(type: 'header')

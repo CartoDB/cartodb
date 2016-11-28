@@ -110,6 +110,7 @@
     color: $cWhite;
   }
 }
+
 .Editor-HeaderInfo-publishDate {
   @include flex(1);
 }
@@ -119,7 +120,10 @@
 }
 
 .Editor-HeaderInfo-zoom {
-  cursor: pointer;
   margin-right: 5px;
+  fill: $cBlue;
 }
 
+.Editor-HeaderInfo-zoom.is-white {
+  fill: $cWhite;
+}

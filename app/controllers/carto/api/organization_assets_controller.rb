@@ -14,7 +14,7 @@ class Carto::Api::OrganizationAssetsController < ::Api::ApplicationController
   end
 
   def show
-
+    render json: AssetPresenter.new(presentation).to_hash
   end
 
   private

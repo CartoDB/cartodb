@@ -2,6 +2,9 @@
 
 require 'singleton'
 
+require_relative './s3'
+require_relative './local'
+
 class Carto::Storage
   include singleton
 

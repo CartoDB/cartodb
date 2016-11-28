@@ -1,5 +1,9 @@
 module NamedMapsHelper
   def bypass_named_maps
+    Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+  end
+
+  def bypass_named_maps_requests
     mocked_response = mock
     mocked_response.stubs(code: 200, response_body: '{}')
 

@@ -13,7 +13,7 @@ var PathViewBase = GeometryViewBase.extend({
 
     this._geometry = this._createGeometry();
 
-    this._middlePoints = [];
+    this._pointViews = {};
     this._middlePointViews = {};
 
     _.bindAll(this, '_renderMiddlePoints');
@@ -32,24 +32,28 @@ var PathViewBase = GeometryViewBase.extend({
     this._geometry.addTo(this.leafletMap);
   },
 
-  _renderPoints: function () {
-    this._removePoints();
-    this.model.points.each(this._renderPoint, this);
+  _renderPoints: function (points) {
+    points = points || this.model.points.models;
+    _.each(points, this._renderPoint, this);
   },
 
   _renderPoint: function (point) {
     var pointView = this._tryToReuseMiddlePointView(point);
-    if (!pointView) {
+    if (pointView) {
+      delete this._middlePointViews[this._getPointKey(point)];
+    } else {
       pointView = this._createPointView(point);
     }
+    this.addView(pointView);
+    this._pointViews[this._getPointKey(point)] = pointView;
     pointView.render();
   },
 
   _renderMiddlePoints: function () {
     if (this.model.isExpandable()) {
       this._clearMiddlePoints();
-      this._middlePoints = this._calculateMiddlePoints();
-      _.each(this._middlePoints, this._renderMiddlePoint, this);
+      var middlePoints = this._calculateMiddlePoints();
+      _.each(middlePoints, this._renderMiddlePoint, this);
     }
   },
 
@@ -83,6 +87,8 @@ var PathViewBase = GeometryViewBase.extend({
     this._middlePointViews[this._getPointKey(point)] = pointView;
     pointView.render();
     pointView.once('mousedown', function (point) {
+      this._middlePointViewForNewPoint = pointView;
+
       // Add the coordinates of the new point to the path
       this.model.addPoint(point, { at: index + 1 });
     }.bind(this));
@@ -90,33 +96,36 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _clearMiddlePoints: function () {
-    _.each(this._middlePoints, function (point) {
-      point.remove();
+    _.each(this._middlePointViews, function (view, point) {
+      view.clean();
     });
   },
 
   _tryToReuseMiddlePointView: function (point) {
-    var pointViewAttrs = {
-      model: point,
-      nativeMap: this.leafletMap
-    };
+    var pointView;
 
     // If there's a view for middle point -> resuse the native geometry
-    var existingMiddlePointView = this._middlePointViews[this._getPointKey(point)];
-    if (existingMiddlePointView) {
+    if (this._middlePointViewForNewPoint) {
       // "Transform" the middle point marker to a regular point marker
       point.set({
         iconUrl: Point.prototype.defaults.iconUrl
       });
 
-      pointViewAttrs.nativeMarker = existingMiddlePointView.getNativeMarker();
-      // existingMiddlePointView will be removed/cleaned and we don't wan'ts
-      // the view to remove the marker, so we unset it from the view
-      existingMiddlePointView.unsetMarker();
-      delete this._middlePointViews[this._getPointKey(point)];
+      pointView = new PointView({
+        model: point,
+        nativeMap: this.leafletMap,
+        nativeMarker: this._middlePointViewForNewPoint.getNativeMarker()
+      });
+
+      // we're reusing the marker and we don't want this view
+      // to remove it from the map, so we unset it before cleaning
+      // the view
+      this._middlePointViewForNewPoint.unsetMarker();
+      this._middlePointViewForNewPoint.clean();
+      delete this._middlePointViewForNewPoint;
     }
 
-    return new PointView(pointViewAttrs);
+    return pointView;
   },
 
   _createPointView: function (point) {
@@ -134,7 +143,13 @@ var PathViewBase = GeometryViewBase.extend({
   },
 
   _onPointsReset: function (collection, options) {
-    this._renderPoints();
+    var previousPoints = options.previousModels;
+    var newPoints = this.model.points.models;
+    var pointsToRemove = _.difference(previousPoints, newPoints);
+    var pointsToAdd = _.difference(newPoints, previousPoints);
+
+    this._removePoints(pointsToRemove);
+    this._renderPoints(pointsToAdd);
     this._renderMiddlePoints();
 
     this._updateGeometry();
@@ -142,8 +157,11 @@ var PathViewBase = GeometryViewBase.extend({
 
   _removePoints: function (points) {
     points = points || this.model.points.models;
-    _.each(points, function (point) {
-      point.remove();
+    _.each(this._pointViews, function (view, point) {
+      if (points.indexOf(point) >= 0) {
+        view.clean();
+        delete this._pointViews[this._getPointKey(point)];
+      }
     }, this);
   },
 
@@ -153,14 +171,12 @@ var PathViewBase = GeometryViewBase.extend({
 
   clean: function () {
     GeometryViewBase.prototype.clean.call(this);
-    this._removePoints();
-    this._clearMiddlePoints();
     this.leafletMap.removeLayer(this._geometry);
     this.leafletMap.off('zoomend', this._renderMiddlePoints);
   },
 
   _getPointKey: function (point) {
-    return point.getCoordinates().join(',');
+    return point.cid;
   }
 });
 

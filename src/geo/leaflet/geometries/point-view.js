@@ -2,7 +2,7 @@ var L = require('leaflet');
 var _ = require('underscore');
 var GeometryViewBase = require('./geometry-view-base');
 
-var DRAG_DEBOUNCE_TIME_IN_MILIS = 10;
+var DRAG_DEBOUNCE_TIME_IN_MILIS = 0;
 
 var PointView = GeometryViewBase.extend({
   initialize: function (options) {
@@ -34,6 +34,7 @@ var PointView = GeometryViewBase.extend({
   },
 
   unsetMarker: function () {
+    console.log('unset marker for view', this.cid);
     delete this._marker;
   },
 
@@ -127,6 +128,7 @@ var PointView = GeometryViewBase.extend({
   clean: function () {
     GeometryViewBase.prototype.clean.apply(this);
     if (this._marker) {
+      console.log('removed marker at', this.model.getCoordinates().join(','), this.cid);
       this.leafletMap.removeLayer(this._marker);
     }
   }

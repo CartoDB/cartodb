@@ -46,9 +46,9 @@ var PathBase = GeometryBase.extend({
   addPoint: function (point, options) {
     options = options || {};
     var at = options.at || 0;
-    var coordinates = this.getCoordinates();
-    coordinates.splice(at, 0, point.getCoordinates());
-    this.setCoordinates(coordinates);
+    var newPoints = _.clone(this.points.models);
+    newPoints.splice(at, 0, point);
+    this.points.reset(newPoints);
   },
 
   removePoint: function (point) {

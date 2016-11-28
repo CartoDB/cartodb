@@ -21,7 +21,7 @@ describe SignupController do
     end
 
     it 'returns 200 for organizations with signup_page_enabled' do
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['carto.com'])
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto)
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200
@@ -35,11 +35,11 @@ describe SignupController do
     end
 
     it 'returns 404 for organizations with whitelisted domains but without any authentication enabled' do
-      @fake_organization = FactoryGirl.create(:organization,
-                                              whitelisted_email_domains: ['carto.com'],
-                                              auth_username_password_enabled: false,
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto,
+                                              auth_username_password_enabled: true,
                                               auth_google_enabled: false,
                                               auth_github_enabled: false)
+      @fake_organization.stubs(:auth_username_password_enabled).returns(false)
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 404
@@ -56,7 +56,7 @@ describe SignupController do
 
     it 'returns user error with admin mail if organization has not enough seats' do
       fake_owner = FactoryGirl.build(:valid_user)
-      @fake_organization = FactoryGirl.create(:organization, whitelisted_email_domains: ['carto.com'], seats: 0, owner: fake_owner)
+      @fake_organization = FactoryGirl.create(:organization_whitelist_carto, seats: 0, owner: fake_owner)
       Organization.stubs(:where).returns([@fake_organization])
       get signup_url
       response.status.should == 200

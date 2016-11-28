@@ -70,6 +70,9 @@ class Organization < Sequel::Model
       errors.add(:default_quota_in_bytes, 'Default quota must be positive') if default_quota_in_bytes <= 0
     end
     errors.add(:name, 'cannot exist as user') if name_exists_in_users?
+    if whitelisted_email_domains.present? && !auth_enabled?
+      errors.add(:whitelisted_email_domains, 'enable at least one auth. system or clear whitelisted email domains')
+    end
   end
 
   def validate_new_user(user, errors)

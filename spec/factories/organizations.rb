@@ -18,6 +18,11 @@ FactoryGirl.define do
     location 'Madrid'
     builder_enabled false # Most tests still assume editor
 
+    factory :organization_whitelist_carto do
+      whitelisted_email_domains ['carto.com']
+      auth_username_password_enabled true
+    end
+
     factory :organization_with_users do
       after(:create) do |org|
         owner = FactoryGirl.create(:user)

@@ -8,7 +8,7 @@ class Carto::Storage::S3
   end
 
   def enabled?
-    config.present? && bucket_name.present?
+    config.present?
   end
 
   private
@@ -20,9 +20,5 @@ class Carto::Storage::S3
 
   def config
     Cartodb.config.fetch(:aws, 's3')
-  end
-
-  def bucket_name
-    Cartodb.config(:assets, 's3_bucket_name')
   end
 end

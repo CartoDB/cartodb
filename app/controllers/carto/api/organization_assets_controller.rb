@@ -10,6 +10,7 @@ module Carto
       before_filter :load_organization,
                     :organization_owners_only
       before_filter :load_asset, only: [:show, :destroy]
+      before_filter :download_file, only: :create
 
       rescue_from LoadError,
                   UnprocesableEntityError, with: :rescue_from_carto_error

@@ -22,5 +22,11 @@ describe Carto::Snapshot do
       snapshot.save.should be_false
       snapshot.errors[:visualization].should_not be_empty
     end
+
+    it 'rejects nil user' do
+      snapshot = Carto::Snapshot.new(visualization_id: @visualization.id)
+      snapshot.save.should be_false
+      snapshot.errors[:user].should_not be_empty
+    end
   end
 end

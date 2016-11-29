@@ -4,7 +4,7 @@ require 'singleton'
 
 module Carto
   class Storage
-    include singleton
+    include Singleton
 
     def initialize
       S3.new_if_available || Local.new

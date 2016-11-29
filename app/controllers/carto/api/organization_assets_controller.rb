@@ -52,6 +52,19 @@ module Carto
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Asset not found')
       end
+
+      def download_file
+        url = params[:url]
+        unless url.present?
+          raise UnprocesableEntityError.new('Missing url for asset')
+        end
+
+        filename = current_viewer.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
+        file = Tempfile.new(filename)
+        IO.copy_stream(open(url), file)
+
+        file
+      end
     end
   end
 end

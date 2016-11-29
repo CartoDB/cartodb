@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.21-legends",
+  "version": "4.5.21-legends2",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -819,7 +819,7 @@
             },
             "map-obj": {
               "version": "1.0.1",
-              "from": "map-obj@>=1.0.1 <1.1.0",
+              "from": "map-obj@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz"
             },
             "replace-requires": {

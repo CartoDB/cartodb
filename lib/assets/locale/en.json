@@ -2042,7 +2042,7 @@
       "analysis": "layers with analysis nodes",
       "custom-sql": "layers with custom SQL applied",
       "sync": "read only layers",
-      "disabled": "Feature edition is disabled in %{layers}. Flatten your layer to edit data on it."
+      "disabled": "Feature edition is disabled in %{disabledLayerType}. Flatten your layer to edit data on it."
     }
   },
   "notifications": {

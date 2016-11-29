@@ -9,7 +9,8 @@ module Carto
     include Singleton
 
     def initialize
-      S3.new_if_available || Local.new
+      Carto::StorageOptions::S3.new_if_available ||
+        Carto::StorageOptions::Local.new
     end
   end
 end

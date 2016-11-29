@@ -24,6 +24,10 @@ class Carto::Storage::S3
 
   private
 
+  def get_or_create_bucket(bucket_name)
+    bucket(bucket_name) || s3.buckets.create(bucket_name)
+  end
+
   def bucket(bucket_name)
     s3.new.buckets[bucket_name]
   end

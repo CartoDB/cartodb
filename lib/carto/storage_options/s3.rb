@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 class Carto::StorageOptions::S3
   def self.instance_if_enabled

@@ -71,7 +71,7 @@ module Carto
 
         filename = current_viewer.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
         @file = Tempfile.new(filename)
-        IO.copy_stream(open(url), file)
+        IO.copy_stream(open(url), @file)
       end
     end
   end

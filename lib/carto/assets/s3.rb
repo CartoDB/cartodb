@@ -3,7 +3,7 @@
 class Carto::Storage::S3
   def self.instance_if_enabled
     s3 = Carto::Storage::S3.new
-    s3 if s3.config.present?
+    s3 if s3.config.present? && s3.bucket_name.present?
   end
 
   def initailize
@@ -14,8 +14,11 @@ class Carto::Storage::S3
     @config ||= Cartodb.config.fetch(:aws, 's3')
   end
 
+  def bucket_name
+    @bucket_name ||= Cartodb.config.fetch(:assets, 's3_bucket_name')
+  end
+
   def create(namespace, file_path)
-    bucket = get_or_create_bucket(namespace)
     asset = bucket.objects['file_path']
     asset.write(file: file_path)
 
@@ -23,20 +26,13 @@ class Carto::Storage::S3
   end
 
   def delete(namespace, file_path)
-    bucket = bucket(namespace)
-    return unless bucket
-
     bucket.delete(file_path)
   end
 
   private
 
-  def get_or_create_bucket(bucket_name)
-    bucket(bucket_name) || s3.buckets.create(bucket_name)
-  end
-
-  def bucket(bucket_name)
-    s3.new.buckets[bucket_name]
+  def bucket
+    @bucket ||= s3.new.buckets[bucket_name]
   end
 
   def s3

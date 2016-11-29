@@ -1,8 +1,11 @@
 # encoding utf-8
 
 class Carto::StorageOptions::Local
+  UPLOADS_DIRECTORY = "#{Rails.root}/uploads".freeze
+
   def upload(namespaced_name, file)
-    FileUtils.mv(file.path, namespaced_name)
+    File.mkdir(UPLOADS_DIRECTORY)
+    FileUtils.mv(file.path, File.join(UPLOADS_DIRECTORY, namespaced_name))
   end
 
   def remove(namespaced_name)

@@ -1,11 +1,12 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 require 'helpers/unique_names_helper'
+require 'carto/user_authenticator'
 
 include UniqueNamesHelper
+include Carto::UserAuthenticator
 
 FactoryGirl.define do
-
   factory :user, class: ::User do
 
     username               { unique_name('user') }
@@ -78,7 +79,7 @@ FactoryGirl.define do
     end
 
     after(:build) do |carto_user|
-      carto_user.crypted_password = ::User.password_digest(carto_user.password, carto_user.salt)
+      carto_user.crypted_password = password_digest(carto_user.password, carto_user.salt)
     end
 
     after(:create) do |carto_user|

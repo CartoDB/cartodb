@@ -1,6 +1,6 @@
 <div class="Infobox <%- type %>">
   <h2 class="CDB-Text is-semibold CDB-Size-small u-bSpace--m u-upperCase"><%- title %></h2>
-  <div class="CDB-Text CDB-Size-medium u-bSpace--m u-flex">
+  <div class="CDB-Text CDB-Size-medium u-bSpace--xl u-flex">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon is-dark u-rSpace--m">
         <svg class="CDB-LoaderIcon-spinner" viewBox="0 0 50 50">

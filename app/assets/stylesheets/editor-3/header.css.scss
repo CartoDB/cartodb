@@ -110,12 +110,15 @@
     color: $cWhite;
   }
 }
+
 .Editor-HeaderInfo-publishDate {
   @include flex(1);
 }
 
-
-.Editor-HeaderInfo-inner + .CDB-Shape {
-  margin-top: 11px;
+.Editor-HeaderInfo-zoom {
+  fill: $cBlue;
 }
 
+.Editor-HeaderInfo-zoom.is-white {
+  fill: $cWhite;
+}

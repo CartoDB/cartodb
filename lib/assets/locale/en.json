@@ -250,7 +250,10 @@
       "title": "Predict trends and volatility",
       "short-title": "Trends"
     },
-    "source": "Source"
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
   },
 
   "analysis-category": {
@@ -261,6 +264,11 @@
   },
   "form-components": {
     "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -1329,7 +1337,8 @@
         "expand": "Expand",
         "export": "Export data",
         "hide": "Hide layer",
-        "show": "Show layer"
+        "show": "Show layer",
+        "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
@@ -1462,6 +1471,7 @@
         "denominator-help": "A column to normalize the target column",
         "desc": "DESC",
         "direction": "Direction",
+        "disabled-by-config": "This analysis type is disabled",
         "dissolved": "Dissolved",
         "dissolved-help": "Combine polygons tracts which have equal ranges",
         "distance": "Distance",
@@ -1600,6 +1610,7 @@
         "value-aggregation": "Value aggregation",
         "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
         "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
+        "valid-type": "This kind of data is not valid for this type",
         "walk": "Walk",
         "weight": "Weight",
         "weight-column": "Weight column",
@@ -1653,6 +1664,13 @@
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
         "is-less-than": "Is less than"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
       }
     },
     "data": {

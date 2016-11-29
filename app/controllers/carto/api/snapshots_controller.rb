@@ -19,7 +19,11 @@ module Carto
       def index
         snapshots = @visualization.snapshots.where(user_id: current_viewer.id)
 
-        render json: SnapshotPresenter.collection_to_hash(snapshots)
+        presentation = snapshots.map do |snapshot|
+          SnapshotPresenter.new(snapshot).to_hash
+        end
+
+        render json: presentation
       end
 
       def show

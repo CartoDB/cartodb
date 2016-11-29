@@ -4,7 +4,7 @@ class Carto::StorageOptions::Local
   UPLOADS_DIRECTORY = "#{Rails.root}/uploads".freeze
 
   def upload(namespaced_name, file)
-    File.mkdir(UPLOADS_DIRECTORY)
+    FileUtils.mkdir(UPLOADS_DIRECTORY)
     FileUtils.mv(file.path, File.join(UPLOADS_DIRECTORY, namespaced_name))
   end
 

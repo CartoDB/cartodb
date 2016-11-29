@@ -2,9 +2,6 @@
 
 require 'singleton'
 
-require_relative './s3'
-require_relative './local'
-
 module Carto
   class Storage
     include singleton

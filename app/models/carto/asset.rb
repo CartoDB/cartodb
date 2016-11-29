@@ -9,5 +9,9 @@ module Carto
     belongs_to :organization,
                class_name: Carto::Organization,
                dependent: :destroy
+
+    def file=(file)
+      @file = file
+    end
   end
 end

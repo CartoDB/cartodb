@@ -25,7 +25,7 @@ class Carto::Storage::S3
     asset.url_for(:read)
   end
 
-  def delete(namespaced_name, file_path)
+  def delete(namespaced_name)
     bucket.delete(namespaced_name)
   end
 

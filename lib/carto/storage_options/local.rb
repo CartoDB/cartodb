@@ -9,6 +9,6 @@ class Carto::StorageOptions::Local
   end
 
   def remove(namespaced_name)
-    File.delet(namespaced_name) if File.exist?(namespaced_name)
+    File.delete(namespaced_name) if File.exist?(namespaced_name)
   end
 end

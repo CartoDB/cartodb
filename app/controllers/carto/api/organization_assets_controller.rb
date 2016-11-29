@@ -38,6 +38,8 @@ module Carto
 
         public_url = Storage.instance.upload(remote_asset_location, @file)
         asset.update_attributes!(public_url: public_url)
+
+        render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise UnprocesableEntityError.new(message)

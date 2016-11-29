@@ -626,7 +626,10 @@ shared_examples_for "user models" do
     end
 
     it "should update updated_at" do
-      expect { @user.save }.to change(@user, :updated_at)
+      expect do
+        @user.name = "new #{@user.name}"
+        @user.save
+      end.to change(@user, :updated_at)
     end
 
     it "should set up a user after create" do

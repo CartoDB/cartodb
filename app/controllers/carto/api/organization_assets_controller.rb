@@ -36,7 +36,7 @@ module Carto
                                           @organization.id,
                                           asset.id)
 
-        public_url = Storage.upload(remote_asset_location, @file)
+        public_url = Storage.instance.upload(remote_asset_location, @file)
         asset.update_attributes!(public_url: public_url)
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')

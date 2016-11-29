@@ -9,8 +9,16 @@ module Carto
     include Singleton
 
     def initialize
-      Carto::StorageOptions::S3.new_if_available ||
-        Carto::StorageOptions::Local.new
+      @storage = Carto::StorageOptions::S3.new_if_available ||
+                 Carto::StorageOptions::Local.new
+    end
+
+    def upload(location, file)
+      @storage.upload(location, file)
+    end
+
+    def remove(location)
+      @storage.remove(location, file)
     end
   end
 end

@@ -36,7 +36,7 @@ var OverlaysFactory = {
     var t = OverlaysFactory._types[type];
 
     if (!t) {
-      log.error("OverlaysFactory: '" + type + "' does not exist");
+      log.log("Overlays of type '" + type + "' are not supported anymore");
       return;
     }
 

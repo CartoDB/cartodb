@@ -1,10 +1,10 @@
 # encoding utf-8
 
 module Carto
-  module Storage
+  module StorageOptions
     class S3
       def self.instance_if_enabled
-        s3 = Carto::Storage::S3.new
+        s3 = Carto::StorageOptions::S3.new
         s3 if s3.config.present? && s3.bucket_name.present?
       end
 

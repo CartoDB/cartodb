@@ -26,11 +26,16 @@ module Carto
       end
 
       def create
-        asset = Asset.new(kind: params[:kind],
-                          organization_id: @organization.id)
-        asset.file = @file
+        asset = Asset.create!(kind: params[:kind],
+                              organization_id: @organization.id)
 
-        asset.save!
+        remote_asset_location = File.join(Rails.env,
+                                          'organization-assets',
+                                          @organization.id,
+                                          asset.id)
+        public_url = Carto::Storage.upload(remote_asset_location, @file)
+
+        asset.update_attributes!(public_url: public_url)
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise UnprocesableEntityError.new(message)

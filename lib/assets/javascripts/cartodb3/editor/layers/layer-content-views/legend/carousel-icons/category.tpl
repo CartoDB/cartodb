@@ -5,7 +5,7 @@
         <use xlink:href="#path-1"></use>
     </mask>
   </defs>
-  <g id="category" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(529.000000, 429.000000)">
+  <g id="category" transform="translate(529.000000, 429.000000)">
     <use id="Rectangle-2" stroke="#EEEEEE" mask="url(#mask-2)" stroke-width="2" fill="#FFFFFF" xlink:href="#path-1"></use>
     <rect id="Rectangle-679" fill="#DDDDDD" x="7" y="15" width="23" height="2"></rect>
     <rect id="Rectangle-680" fill="#DDDDDD" x="7" y="19" width="13" height="2"></rect>

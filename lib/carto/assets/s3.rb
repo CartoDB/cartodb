@@ -14,6 +14,14 @@ class Carto::Storage::S3
     @config ||= Cartodb.config.fetch(:aws, 's3')
   end
 
+  def create(namespace, file_path)
+    bucket = get_or_create_bucket(namespace)
+    asset = bucket.objects['file_path']
+    asset.write(file: file_path)
+
+    asset.url_for(:read)
+  end
+
   private
 
   def bucket(bucket_name)

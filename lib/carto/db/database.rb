@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_dependency 'carto/db/view'
 require_dependency 'carto/db/function'

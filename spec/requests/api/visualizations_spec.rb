@@ -176,7 +176,9 @@ describe Api::Json::VisualizationsController do
       table_attributes = table_factory
       id = table_attributes.fetch('table_visualization').fetch('id')
 
+      Delorean.jump(1.minute)
       put "/api/v1/viz/#{id}?api_key=#{@api_key}", { name: 'changed name', id: id }.to_json, @headers
+      Delorean.back_to_the_present
       last_response.status.should == 200
       response = JSON.parse(last_response.body)
 
@@ -390,7 +392,7 @@ describe Api::Json::VisualizationsController do
       body.fetch('prev_id').should eq vis_b_id
       body.fetch('next_id').should eq nil
     end
-  end # DELETE /api/v1/viz/:id
+  end
 
   # Visualizations are always created with default_privacy
   def factory(attributes={})

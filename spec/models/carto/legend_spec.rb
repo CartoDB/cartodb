@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require 'spec_helper_min'
 require 'factories/carto_visualizations'

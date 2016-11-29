@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative './carto_json_serializer'
 require_relative '../../controllers/carto/api/legend_presenter'

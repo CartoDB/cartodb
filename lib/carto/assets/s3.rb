@@ -4,7 +4,7 @@ class Carto::Storage::S3
   def self.instance_if_enabled
     s3 = Carto::Storage::S3.new
 
-    s3 if s3.enabled?
+    s3 if Cartodb.config.fetch(:aws, 's3')
   end
 
   def enabled?
@@ -16,9 +16,5 @@ class Carto::Storage::S3
   def bucket
     AWS.config(config)
     AWS::S3.new.buckets[bucket_name]
-  end
-
-  def config
-    Cartodb.config.fetch(:aws, 's3')
   end
 end

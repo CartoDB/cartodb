@@ -65,14 +65,14 @@ describe User do
     @user2.destroy
   end
 
-    it "should authenticate if given email and password are correct" do
-      response_user = ::User.authenticate(@user.email, @user_password)
-      response_user.id.should eq @user.id
-      response_user.email.should eq @user.email
+  it "should authenticate if given email and password are correct" do
+    response_user = ::User.authenticate(@user.email, @user_password)
+    response_user.id.should eq @user.id
+    response_user.email.should eq @user.email
 
-      ::User.authenticate('admin@example.com', 'admin321').should be_nil
-      ::User.authenticate('', '').should be_nil
-    end
+    ::User.authenticate('admin@example.com', 'admin321').should be_nil
+    ::User.authenticate('', '').should be_nil
+  end
 
   it "should authenticate with case-insensitive email and username" do
     response_user = ::User.authenticate('admin@example.com', 'admin123')

@@ -31,7 +31,7 @@ module Carto
       end
 
       def create
-        snapshot = Snapshot.create!(user_id: current_viewer.try(:id),
+        snapshot = Snapshot.create!(user_id: current_viewer.id,
                                     visualization_id: @visualization.id,
                                     state: params[:state])
 

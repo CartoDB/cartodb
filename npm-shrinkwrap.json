@@ -1152,7 +1152,7 @@
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#9b1bebe3c1c8b0cc3492aa76922e84ba63c79da1",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#6a9fca7f8cdff00191c09d49a034360770394d17",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1452,7 +1452,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#9b1bebe3c1c8b0cc3492aa76922e84ba63c79da1",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#6a9fca7f8cdff00191c09d49a034360770394d17",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",

@@ -156,6 +156,7 @@
     .CDB-Widget {
       @include flex(1);
       width: auto;
+      min-height: 180px;
       margin-bottom: 0;
       padding: $baseSize * 2 0;
       border-right: 2px solid $cSecondaryBackground;
@@ -199,12 +200,12 @@
     .CDB-Widget-listItemInner {
       margin: 0;
     }
-    .CDB-Dashboard-canvas .ps-container>.ps-scrollbar-x-rail {
+    .CDB-Widget-canvas .ps-container>.ps-scrollbar-x-rail {
       display: block;
       width: 100%;
       opacity: 0.6;
     }
-    .CDB-Dashboard-canvas .ps-container>.ps-scrollbar-x-rail>.ps-scrollbar-x {
+    .CDB-Widget-canvas .ps-container>.ps-scrollbar-x-rail>.ps-scrollbar-x {
       min-width: 50%;
     }
   }

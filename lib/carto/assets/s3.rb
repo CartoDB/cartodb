@@ -18,15 +18,15 @@ class Carto::Storage::S3
     @bucket_name ||= Cartodb.config.fetch(:assets, 's3_bucket_name')
   end
 
-  def create(namespace, file_path)
-    asset = bucket.objects['file_path']
+  def create(namespaced_name, file_path)
+    asset = bucket.objects[namespaced_name]
     asset.write(file: file_path)
 
     asset.url_for(:read)
   end
 
-  def delete(namespace, file_path)
-    bucket.delete(file_path)
+  def delete(namespaced_name, file_path)
+    bucket.delete(namespaced_name)
   end
 
   private

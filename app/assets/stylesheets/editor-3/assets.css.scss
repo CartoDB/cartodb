@@ -28,4 +28,14 @@
   height: 100%;
   background-repeat: no-repeat;
   background-position: center;
+  background-size: 24px 24px;
+}
+
+.Modal-inner .AssetsList {
+  @include flex-wrap(wrap);
+  margin: 0 -14px;
+  .Carousel-item--small {
+    margin-bottom: 16px;
+    margin-left: 16px;
+  }
 }

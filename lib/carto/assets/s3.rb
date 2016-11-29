@@ -25,6 +25,10 @@ class Carto::Storage::S3
   private
 
   def bucket(bucket_name)
-    AWS::S3.new.buckets[bucket_name]
+    s3.new.buckets[bucket_name]
+  end
+
+  def s3
+    @s3 ||= AWS::S3.new
   end
 end

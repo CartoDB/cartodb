@@ -296,6 +296,11 @@
         "input-categories": {
           "null": "null",
           "others": "Others"
+        },
+        "image": {
+          "recently-title": "Recently used",
+          "none": "None",
+          "show-all": "Show full collections"
         }
       }
     }

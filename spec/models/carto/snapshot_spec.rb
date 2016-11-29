@@ -15,4 +15,7 @@ describe Carto::Snapshot do
     destroy_full_visualization(@_m, @_t, @_tv, @visualization)
     @user.destroy
   end
+
+  describe('#validation') do
+  end
 end

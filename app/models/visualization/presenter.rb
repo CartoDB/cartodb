@@ -121,6 +121,7 @@ module CartoDB
         )
 
         table_data.merge!(table.row_count_and_size)
+        table_data[:synchronization] = synchronization_data_for(table)
 
         table_data
       end
@@ -168,4 +169,3 @@ module CartoDB
     end
   end
 end
-

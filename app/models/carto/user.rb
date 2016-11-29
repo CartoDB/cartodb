@@ -517,8 +517,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def can_change_email?
-    (!google_sign_in || last_password_change_date.present?) &&
-      !Carto::Ldap::Manager.new.configuration_present?
+    (!google_sign_in || last_password_change_date.present?) && !Carto::Ldap::Manager.new.configuration_present?
   end
 
   def can_change_password?

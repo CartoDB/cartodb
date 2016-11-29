@@ -16,7 +16,6 @@ require 'factories/database_configuration_contexts'
 include UniqueNamesHelper
 
 describe 'refactored behaviour' do
-
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).get_twitter_imports_count
@@ -30,7 +29,6 @@ describe 'refactored behaviour' do
       FactoryGirl.create(:valid_user)
     end
   end
-
 end
 
 describe User do
@@ -63,33 +61,6 @@ describe User do
     bypass_named_maps
     @user.destroy
     @user2.destroy
-  end
-
-  it "should authenticate if given email and password are correct" do
-    response_user = ::User.authenticate(@user.email, @user_password)
-    response_user.id.should eq @user.id
-    response_user.email.should eq @user.email
-
-    ::User.authenticate('admin@example.com', 'admin321').should be_nil
-    ::User.authenticate('', '').should be_nil
-  end
-
-  it "should authenticate with case-insensitive email and username" do
-    response_user = ::User.authenticate('admin@example.com', 'admin123')
-    response_user.id.should eq @user.id
-    response_user.email.should eq @user.email
-
-    response_user_2 = ::User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
-    response_user_2.id.should eq @user.id
-    response_user_2.email.should eq @user.email
-
-    response_user_3 = ::User.authenticate('admin', 'admin123')
-    response_user_3.id.should eq @user.id
-    response_user_3.email.should eq @user.email
-
-    response_user_4 = ::User.authenticate('ADMIN', 'admin123')
-    response_user_4.id.should eq @user.id
-    response_user_4.email.should eq @user.email
   end
 
   it "should only allow legal usernames" do

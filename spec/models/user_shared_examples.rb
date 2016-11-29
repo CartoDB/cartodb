@@ -643,7 +643,6 @@ shared_examples_for "user models" do
       @user.crypted_password.should_not be_blank
       @user.crypted_password.should_not == 'admin123'
     end
-
   end
 
   describe 'batch_queries_statement_timeout' do

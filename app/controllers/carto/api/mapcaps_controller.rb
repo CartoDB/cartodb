@@ -21,8 +21,7 @@ module Carto
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,
-                  Carto::UnprocesableEntityError,
-                  Carto::UnauthorizedError, with: :rescue_from_carto_error
+                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
 
       def index
         render_jsonp(@visualization.mapcaps.map { |mapcap| Carto::Api::MapcapPresenter.new(mapcap).to_poro })

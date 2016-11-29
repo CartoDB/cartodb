@@ -26,7 +26,11 @@ module Carto
       end
 
       def create
-        Asset.create!(kind: params[:kind], organization_id: @organization.id)
+        asset = Asset.new(kind: params[:kind],
+                          organization_id: @organization.id)
+        asset.file = @file
+
+        asset.save!
       rescue ActiveRecord::RecordInvalid => exception
         message = exception.record.errors.full_messages.join(', ')
         raise UnprocesableEntityError.new(message)

@@ -617,6 +617,7 @@ CartoDB::Application.routes.draw do
       # Organization assets
       scope '/organization/:organization_id' do
         resources :assets,
+                  controller: 'organization_assets',
                   only: [:index, :show, :create, :destroy],
                   constraints: { id: UUID_REGEXP }
       end

@@ -376,13 +376,13 @@ describe Map do
       map.add_layer(Layer.new(kind: 'carto', order: 5))
       map.save.reload
 
-      second__tiled_layer = Layer.new(kind: 'tiled')
+      second_tiled_layer = Layer.new(kind: 'tiled')
       # more tiled layers allowed only if at top
-      second__tiled_layer.order = 0
-      map.admits_layer?(second__tiled_layer).should == false
-      second__tiled_layer.order = 15
-      map.admits_layer?(second__tiled_layer).should == true
-      map.add_layer(layer)
+      second_tiled_layer.order = 0
+      map.admits_layer?(second_tiled_layer).should == false
+      second_tiled_layer.order = 15
+      map.admits_layer?(second_tiled_layer).should == true
+      map.add_layer(second_tiled_layer)
       map.save.reload
 
       # This is now a valid scenario, for example switcing from a basemap with labels on top to another that has too

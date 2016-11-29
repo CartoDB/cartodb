@@ -390,7 +390,7 @@ describe Api::Json::VisualizationsController do
       body.fetch('prev_id').should eq vis_b_id
       body.fetch('next_id').should eq nil
     end
-  end
+  end # DELETE /api/v1/viz/:id
 
   # Visualizations are always created with default_privacy
   def factory(attributes={})

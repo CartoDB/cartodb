@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 require 'singleton'
-require 'carto/storage/s3'
-require 'carto/storage/local'
+require 'carto/storage_options/s3'
+require 'carto/storage_options/local'
 
 module Carto
   class Storage

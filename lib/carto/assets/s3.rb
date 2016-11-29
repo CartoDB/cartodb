@@ -22,6 +22,13 @@ class Carto::Storage::S3
     asset.url_for(:read)
   end
 
+  def delete(namespace, file_path)
+    bucket = bucket(namespace)
+    return unless bucket
+
+    bucket.delete(file_path)
+  end
+
   private
 
   def get_or_create_bucket(bucket_name)

@@ -505,11 +505,15 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
-  def new_visualizations_version
-    builder_enabled? ? 3 : 2
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
+    end
   end
 
-  def engine_enabled?
-    has_organization? ? organization.engine_enabled : engine_enabled
+  def new_visualizations_version
+    builder_enabled? ? 3 : 2
   end
 end

@@ -1346,7 +1346,7 @@
         "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer",
-        "center-map": "Center map"
+        "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."

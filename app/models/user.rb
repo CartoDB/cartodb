@@ -377,9 +377,13 @@ class User < Sequel::Model
       end
       data_imports.each(&:destroy)
       maps.each(&:destroy)
-      layers.each { |l| remove_layer l }
+      layers.each do |l|
+        remove_layer(l)
+        l.destroy
+      end
       assets.each(&:destroy)
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
+      CartoDB::Visualization::Collection.new.fetch(user_id: id, exclude_shared: true).destroy
 
       destroy_shared_with
 
@@ -906,10 +910,6 @@ class User < Sequel::Model
 
   def private_maps_enabled?
     !!private_maps_enabled
-  end
-
-  def engine_enabled?
-    has_organization? ? organization.engine_enabled : engine_enabled
   end
 
   def viewable_by?(user)
@@ -1646,6 +1646,14 @@ class User < Sequel::Model
       organization.builder_enabled
     else
       !!builder_enabled
+    end
+  end
+
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
     end
   end
 

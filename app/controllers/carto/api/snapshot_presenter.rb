@@ -5,12 +5,6 @@ module Carto
         @snapshot = snapshot
       end
 
-      def self.collection_to_hash(snapshots)
-        snapshots.map do |snapshot|
-          SnapshotPresenter.new(snapshot).to_hash
-        end
-      end
-
       def to_hash
         {
           id: @snapshot.id,

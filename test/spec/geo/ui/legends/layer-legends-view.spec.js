@@ -41,7 +41,7 @@ describe('geo/ui/legends/layer-legends-view', function () {
 
   it('should render all legends', function () {
     // Legends of all types have been rendered
-    expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(6);
+    expect(this.layerLegendsView.$('.CDB-Legend-item').length).toEqual(5);
   });
 
   it('should update the name of the layer when it changes', function () {

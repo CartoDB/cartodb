@@ -22,8 +22,7 @@ module.exports = function (LayerModel) {
       { type: 'bubble', title: 'My Bubble Legend' },
       { type: 'category', title: 'My Category Legend' },
       { type: 'choropleth', title: 'My Choropleth Legend' },
-      { type: 'custom', title: 'My Custom Legend' },
-      { type: 'html', title: 'My HTML Legend' }
+      { type: 'custom', title: 'My Custom Legend' }
     ];
 
     var layer = new LayerModel({
@@ -35,6 +34,5 @@ module.exports = function (LayerModel) {
     expect(layer.legends.category.get('title')).toEqual('My Category Legend');
     expect(layer.legends.choropleth.get('title')).toEqual('My Choropleth Legend');
     expect(layer.legends.custom.get('title')).toEqual('My Custom Legend');
-    expect(layer.legends.html.get('title')).toEqual('My HTML Legend');
   });
 };

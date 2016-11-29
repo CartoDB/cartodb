@@ -10,8 +10,15 @@
 <p class="CDB-Text CDB-Size-small u-secondaryTextColor Editor-ListAnalysis-itemInfoDataset u-ellipsis">
   <%- tableName %>
 </p>
+<% if (isSync) { %>
+  <span class="Editor-ListAnalysis-itemInfoIcon">
+    <div class="u-flex u-alignCenter CDB-Text CDB-Size-small u-altTextColor SyncInfo-message--<%- syncState %>">
+      <i class="CDB-IconFont CDB-IconFont-wifi"></i>
+    </div>
+  </span>
+<% } %>
 <% if (customQueryApplied) { %>
-  <span class="Editor-ListAnalysis-itemSQL Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small">
+  <span class="Editor-ListAnalysis-itemInfoIcon Tag Tag--outline Tag-outline--dark CDB-Text CDB-Size-small">
     SQL
   </span>
 <% } %>

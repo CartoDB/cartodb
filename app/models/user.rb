@@ -908,10 +908,6 @@ class User < Sequel::Model
     !!private_maps_enabled
   end
 
-  def engine_enabled?
-    has_organization? ? organization.engine_enabled : engine_enabled
-  end
-
   def viewable_by?(user)
     self.id == user.id || (has_organization? && self.organization.owner.id == user.id)
   end
@@ -1646,6 +1642,14 @@ class User < Sequel::Model
       organization.builder_enabled
     else
       !!builder_enabled
+    end
+  end
+
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
     end
   end
 

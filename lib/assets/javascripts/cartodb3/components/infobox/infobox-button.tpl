@@ -7,7 +7,9 @@
     <span class="CDB-Button-Text CDB-Text is-semibold u-upperCase CDB-Size-small"><%= label %></span>
   </button>
 <% } else { %>
-  <button class="CDB-Button u-upperCase <% if (disabled) { %>is-disabled<% } %> js-<%- action %> js-action" style="padding-left: 0; padding-right: 0;">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-actionTextColor"><%= label %></span>
+  <button class="Infobox-buttonLink u-upperCase <% if (disabled) { %>is-disabled<% } %> js-<%- action %> js-action CDB-Text is-semibold CDB-Size-small">
+    <%= label %>
   </button>
 <% } %>
+
+

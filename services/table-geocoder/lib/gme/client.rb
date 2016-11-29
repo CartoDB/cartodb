@@ -70,7 +70,7 @@ module Carto
         begin
           get_body(resp)
         rescue OverQueryLimit
-          CartoDB.notify_debug('Carto::Gme::Client rescuing from OverQueryLimit exception', params)
+          CartoDB.notify_debug('Carto::Gme::Client rescuing from OverQueryLimit exception', params.symbolize_keys)
           return self.get(endpoint, params, first_request_time, retry_counter+1)
         end
       end

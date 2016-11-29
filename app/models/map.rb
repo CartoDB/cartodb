@@ -93,6 +93,7 @@ class Map < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
+    layers.each(&:destroy)
     super
     invalidate_vizjson_varnish_cache
   end

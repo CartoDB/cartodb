@@ -17,5 +17,10 @@ describe Carto::Snapshot do
   end
 
   describe('#validation') do
+    it 'rejects nil visualization' do
+      snapshot = Carto::Snapshot.new(user_id: @user.id)
+      snapshot.save.should be_false
+      snapshot.errors[:visualization].should_not be_empty
+    end
   end
 end

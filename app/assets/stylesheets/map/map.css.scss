@@ -91,6 +91,11 @@ div.map {
       border: solid 1px #666;
     }
   }
+  div.cartodb-legend.choropleth li.graph {
+    border: 1px solid $Black;
+    border-radius: 0;
+
+  }
 
   &.table { // TABLE'S MAP
 

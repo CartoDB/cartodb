@@ -13,8 +13,10 @@ module Carto
     VALID_LEGEND_TYPES = %(html category bubble choropleth custom custom_choropleth).freeze
 
     serialize :definition, ::Carto::CartoJsonSerializer
+    serialize :conf, ::Carto::CartoJsonSerializer
 
     validates :definition, carto_json_symbolizer: true
+    serialize :conf, ::Carto::CartoJsonSerializer
     validates :type, :layer, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 

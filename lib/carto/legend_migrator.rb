@@ -10,13 +10,10 @@ module Carto
     end
 
     def build
-      new_definition, new_type = definition_and_type
-      legend_title = title if title.present? && legend['show_title']
-
       Legend.new(layer_id: layer_id,
-                 title: legend_title,
-                 type: new_type,
-                 definition: new_definition)
+                 title: title.present? && legend['show_title'] ? title : nil,
+                 type: 'custom',
+                 definition: definition)
     rescue => exception
       CartoDB::Logger.debug(message: 'Carto::LegendMigrator: couldn\'t migrate',
                             exception: exception,

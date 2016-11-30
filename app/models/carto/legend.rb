@@ -34,6 +34,10 @@ module Carto
       self.definition ||= Hash.new
     end
 
+    def ensure_conf
+      self.conf ||= Hash.new
+    end
+
     def on_data_layer
       if layer && !layer.data_layer?
         errors.add(:layer, "'#{layer.kind}' layers can't have legends")

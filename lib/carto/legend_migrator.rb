@@ -46,7 +46,7 @@ module Carto
 
     HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
 
-    def definition_and_type
+    def definition
       if template.present?
         [{ html: template }, 'custom']
       elsif type == 'custom'

@@ -48,15 +48,15 @@ module Carto
 
     def definition_and_type
       if template.present?
-        [{ html: template }, 'html']
+        [{ html: template }, 'custom']
       elsif type == 'custom'
         [build_custom_definition_from_custom_type, 'custom']
       elsif type == 'category'
         [build_custom_definition_from_custom_type, 'custom']
       elsif type == 'bubble'
-        [build_html_definition_from_bubble, 'html']
+        [build_html_definition_from_bubble, 'custom']
       elsif HTML_RAMP_TYPES.include?(type)
-        [build_html_definition_from_ramp_type, 'html']
+        [build_html_definition_from_ramp_type, 'custom']
       else
         [nil, nil]
       end

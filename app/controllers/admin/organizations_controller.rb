@@ -97,10 +97,10 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
-    render action: 'settings'
+    render action: 'auth'
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = "There's been a validation error, check your values"
-    render action: 'settings'
+    render action: 'auth'
   end
 
   private

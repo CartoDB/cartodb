@@ -24,27 +24,27 @@ module Carto
         }
       end
 
-      it 'should migrate to html for type custom' do
+      it 'should migrate to custom for type custom' do
         @old_legend = old_legend_with_template.merge(type: 'custom')
       end
 
-      it 'should migrate to html for type category' do
+      it 'should migrate to custom for type category' do
         @old_legend = old_legend_with_template.merge(type: 'category')
       end
 
-      it 'should migrate to html for type bubble' do
+      it 'should migrate to custom for type bubble' do
         @old_legend = old_legend_with_template.merge(type: 'bubble')
       end
 
-      it 'should migrate to html for type choropleth' do
+      it 'should migrate to custom for type choropleth' do
         @old_legend = old_legend_with_template.merge(type: 'choropleth')
       end
 
-      it 'should migrate to html for type intensity' do
+      it 'should migrate to custom for type intensity' do
         @old_legend = old_legend_with_template.merge(type: 'intensity')
       end
 
-      it 'should migrate to html for type density' do
+      it 'should migrate to custom for type density' do
         @old_legend = old_legend_with_template.merge(type: 'density')
       end
 
@@ -52,7 +52,7 @@ module Carto
         new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
 
         new_legend.definition[:html].should include('<h1>Manolo Escobar</h1>')
-        new_legend.type.should eq 'html'
+        new_legend.type.should eq 'custom'
       end
     end
 

@@ -113,6 +113,46 @@ module Carto
         legend.errors[:definition].should_not be_empty
         legend.errors[:definition].should_not include('could not be validated')
       end
+
+      describe('#conf') do
+        it 'rejects spam' do
+          bad_conf = { not_column_name: 'not array' }
+          legend = Legend.new(layer_id: @layer.id,
+                              type: 'bubble',
+                              definition: {},
+                              conf: bad_conf)
+
+          legend.valid?
+
+          legend.errors[:conf].should_not be_empty
+          legend.errors[:conf].should_not include('could not be validated')
+        end
+
+        it 'rejects incorrect type for \'columns\'' do
+          bad_conf = { columns: 'not array' }
+          legend = Legend.new(layer_id: @layer.id,
+                              type: 'bubble',
+                              definition: {},
+                              conf: bad_conf)
+
+          legend.valid?
+
+          legend.errors[:conf].should_not be_empty
+          legend.errors[:conf].should_not include('could not be validated')
+        end
+
+        it 'accepts proper conf' do
+          bad_conf = { columns: ['manolo', 'escobar'] }
+          legend = Legend.new(layer_id: @layer.id,
+                              type: 'bubble',
+                              definition: {},
+                              conf: bad_conf)
+
+          legend.valid?
+
+          legend.errors[:conf].should be_empty
+        end
+      end
     end
   end
 end

@@ -1,8 +1,5 @@
 {
   "type": "object",
-  "required": [
-    "categories"
-  ],
   "additionalProperties": false,
   "properties": {
     "categories": {

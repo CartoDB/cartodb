@@ -68,7 +68,7 @@ DESC
         u.builder_enabled = true
       end
 
-      if !user.errors.empty?
+      unless user.valid?
         puts
         puts 'There are some problems with the info that you provided to create the new user:'
         user.errors.full_messages.each do |error|

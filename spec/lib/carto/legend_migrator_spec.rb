@@ -417,27 +417,27 @@ module Carto
           }
         end
 
-        it 'migrates old bubble with custom labels to new html' do
+        it 'migrates old bubble with custom labels to new custom' do
           @old_legend = old_bubble_with_custom_labels
         end
 
-        it 'migrates old custom with template to new html' do
+        it 'migrates old custom with template to new custom' do
           @old_legend = old_custom
         end
 
-        it 'migrates old bubble to new html' do
+        it 'migrates old bubble to new custom' do
           @old_legend = old_bubble
         end
 
-        it 'migrates old choropleth to new html' do
+        it 'migrates old choropleth to new custom' do
           @old_legend = old_choropleth
         end
 
-        it 'migrates old density to new html' do
+        it 'migrates old density to new custom' do
           @old_legend = old_density
         end
 
-        it 'migrates old density without labels to new html' do
+        it 'migrates old density without labels to new custom' do
           truncated = old_density.dup
           truncated['items'].delete_at(0)
           truncated['items'].delete_at(0)
@@ -445,11 +445,11 @@ module Carto
           @old_legend = truncated
         end
 
-        it 'migrates old intensity to new html' do
+        it 'migrates old intensity to new custom' do
           @old_legend = old_intensity
         end
 
-        it 'migrates old intensity without labels to new html' do
+        it 'migrates old intensity without labels to new custom' do
           truncated = old_intensity.dup
           truncated['items'].delete_at(0)
           truncated['items'].delete_at(0)
@@ -460,7 +460,7 @@ module Carto
         after(:each) do
           new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
 
-          new_legend.type.should eq 'html'
+          new_legend.type.should eq 'custom'
           new_legend.valid?.should be_true
 
           unless @old_legend['type'] == 'bubble' || @old_legend['type'] == 'custom'

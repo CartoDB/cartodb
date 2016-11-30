@@ -73,7 +73,7 @@ module CartoDB
     private
 
     def visualizations_builder
-      Carto::VisualizationQueryBuilder.with_organization_id(id)
+      Carto::VisualizationQueryBuilder.new.with_organization_id(id)
     end
   end
 end

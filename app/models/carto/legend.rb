@@ -65,6 +65,16 @@ module Carto
       end
     end
 
+    def validate_conf_schema
+      schema = Carto::Definition.instance
+                                .load_from_file('lib/formats/legends/conf.json')
+      errors = JSON::Validator.fully_validate(schema, conf)
+
+      if errors.any?
+        errors.add(:conf, errors.join(', '))
+      end
+    end
+
     def force_notify_layer_change
       layer.force_notify_change
     end

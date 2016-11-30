@@ -2,9 +2,12 @@
 
 require 'active_record'
 require_dependency 'cartodb/errors'
+require_dependency 'carto/user_authenticator'
 
 module Carto
   class Invitation < ActiveRecord::Base
+    include Carto::UserAuthenticator
+
     # Because of an activerecord-postgresql-array bug that makes array
     # insertions unusable we can't set _users_emails mandatory on construction,
     # so we create a creator enforcing desired behaviour.
@@ -57,7 +60,7 @@ module Carto
     end
 
     def token(email)
-      ::User.secure_digest(email, seed)
+      secure_digest(email, seed)
     end
 
     def use(email, token)

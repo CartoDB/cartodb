@@ -113,6 +113,13 @@ module Carto
         legend.errors[:definition].should_not be_empty
         legend.errors[:definition].should_not include('could not be validated')
       end
+
+      it 'rejects empty definitions for custom' do
+        legend = Legend.new(layer_id: @layer.id, type: 'custom', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:definition].should_not be_empty
+      end
     end
   end
 end

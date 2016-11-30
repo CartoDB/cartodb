@@ -192,292 +192,292 @@ module Carto
           category_keys.should include(:icon)
         end
       end
-    end
 
-    describe('#html types') do
-      let(:old_custom) do
-        {
-          "type" => "custom",
-          "show_title" => true,
-          "title" => "",
-          "template" => "<h1>Manolo Escobar</h1>",
-          "visible" => true,
-          "items" => []
-        }
-      end
-
-      let(:old_bubble) do
-        {
-          "type" => "bubble",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true,
-              "value" => 787.5,
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Right Label",
-              "visible" => true,
-              "value" => 6273765,
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Color",
-              "visible" => true,
-              "value" => "#FF5C00",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      let(:old_bubble_with_custom_labels) do
-        {
-          "type" => "bubble",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true,
-              "value" => "few",
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Right Label",
-              "visible" => true,
-              "value" => "many",
-              "legend_type" => "bubble",
-              "type" => "text",
-              "sync" => false
-            },
-            {
-              "name" => "Color",
-              "visible" => true,
-              "value" => "#FF5C00",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      let(:old_choropleth) do
-        {
-          "type" => "choropleth",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true, "value" => "1350.00",
-              "type" => "text"
-            },
-            {
-              "name" => "Right label",
-              "visible" => true,
-              "value" => "6273765.00",
-              "type" => "text"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FFFFB2",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FED976",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FEB24C",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FD8D3C",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FC4E2A",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#E31A1C",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#B10026",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      let(:old_density) do
-        {
-          "type" => "density",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Less",
-              "visible" => true,
-              "value" => "less",
-              "legend_type" => "density",
-              "type" => "text",
-              "sync" => true
-            },
-            {
-              "name" => "More",
-              "visible" => true,
-              "value" => "more",
-              "legend_type" => "density",
-              "type" => "text",
-              "sync" => true
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FFFFB2",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FECC5C",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FD8D3C",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#F03B20",
-              "type" => "color"
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#BD0026",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      let(:old_intensity) do
-        {
-          "type" => "intensity",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "Left label",
-              "visible" => true,
-              "value" => "Less",
-              "legend_type" => "intensity",
-              "type" => "text",
-              "sync" => true
-            },
-            {
-              "name" => "Right label",
-              "visible" => true,
-              "value" => "More",
-              "legend_type" => "intensity",
-              "type" => "text",
-              "sync" => true
-            },
-            {
-              "name" => "Color",
-              "visible" => true, "value" => "#FFCC00",
-              "type" => "color"
-            }
-          ]
-        }
-      end
-
-      it 'migrates old bubble with custom labels to new html' do
-        @old_legend = old_bubble_with_custom_labels
-      end
-
-      it 'migrates old custom with template to new html' do
-        @old_legend = old_custom
-      end
-
-      it 'migrates old bubble to new html' do
-        @old_legend = old_bubble
-      end
-
-      it 'migrates old choropleth to new html' do
-        @old_legend = old_choropleth
-      end
-
-      it 'migrates old density to new html' do
-        @old_legend = old_density
-      end
-
-      it 'migrates old density without labels to new html' do
-        truncated = old_density.dup
-        truncated['items'].delete_at(0)
-        truncated['items'].delete_at(0)
-
-        @old_legend = truncated
-      end
-
-      it 'migrates old intensity to new html' do
-        @old_legend = old_intensity
-      end
-
-      it 'migrates old intensity without labels to new html' do
-        truncated = old_intensity.dup
-        truncated['items'].delete_at(0)
-        truncated['items'].delete_at(0)
-
-        @old_legend = truncated
-      end
-
-      after(:each) do
-        new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
-
-        new_legend.type.should eq 'html'
-        new_legend.valid?.should be_true
-
-        unless @old_legend['type'] == 'bubble' || @old_legend['type'] == 'custom'
-          html = new_legend.definition[:html]
-
-          # Result should have labels, colors, and icons somewhere in generated
-          # html
-          @old_legend['items'].map { |item| item['value'] }.each do |value|
-            html.downcase.should include(value.to_s.downcase)
-          end
-
-          # No incomplete gradients allowed
-          html.scan(/#(?:[0-9a-fA-F]{3}){1,2}/).size.should be >= 2
+      describe('#with html') do
+        let(:old_custom) do
+          {
+            "type" => "custom",
+            "show_title" => true,
+            "title" => "",
+            "template" => "<h1>Manolo Escobar</h1>",
+            "visible" => true,
+            "items" => []
+          }
         end
 
-        @old_legend = nil
+        let(:old_bubble) do
+          {
+            "type" => "bubble",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "Left label",
+                "visible" => true,
+                "value" => 787.5,
+                "legend_type" => "bubble",
+                "type" => "text",
+                "sync" => false
+              },
+              {
+                "name" => "Right Label",
+                "visible" => true,
+                "value" => 6273765,
+                "legend_type" => "bubble",
+                "type" => "text",
+                "sync" => false
+              },
+              {
+                "name" => "Color",
+                "visible" => true,
+                "value" => "#FF5C00",
+                "type" => "color"
+              }
+            ]
+          }
+        end
+
+        let(:old_bubble_with_custom_labels) do
+          {
+            "type" => "bubble",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "Left label",
+                "visible" => true,
+                "value" => "few",
+                "legend_type" => "bubble",
+                "type" => "text",
+                "sync" => false
+              },
+              {
+                "name" => "Right Label",
+                "visible" => true,
+                "value" => "many",
+                "legend_type" => "bubble",
+                "type" => "text",
+                "sync" => false
+              },
+              {
+                "name" => "Color",
+                "visible" => true,
+                "value" => "#FF5C00",
+                "type" => "color"
+              }
+            ]
+          }
+        end
+
+        let(:old_choropleth) do
+          {
+            "type" => "choropleth",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "Left label",
+                "visible" => true, "value" => "1350.00",
+                "type" => "text"
+              },
+              {
+                "name" => "Right label",
+                "visible" => true,
+                "value" => "6273765.00",
+                "type" => "text"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FFFFB2",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FED976",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FEB24C",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FD8D3C",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FC4E2A",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#E31A1C",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#B10026",
+                "type" => "color"
+              }
+            ]
+          }
+        end
+
+        let(:old_density) do
+          {
+            "type" => "density",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "Less",
+                "visible" => true,
+                "value" => "less",
+                "legend_type" => "density",
+                "type" => "text",
+                "sync" => true
+              },
+              {
+                "name" => "More",
+                "visible" => true,
+                "value" => "more",
+                "legend_type" => "density",
+                "type" => "text",
+                "sync" => true
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FFFFB2",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FECC5C",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FD8D3C",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#F03B20",
+                "type" => "color"
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#BD0026",
+                "type" => "color"
+              }
+            ]
+          }
+        end
+
+        let(:old_intensity) do
+          {
+            "type" => "intensity",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "Left label",
+                "visible" => true,
+                "value" => "Less",
+                "legend_type" => "intensity",
+                "type" => "text",
+                "sync" => true
+              },
+              {
+                "name" => "Right label",
+                "visible" => true,
+                "value" => "More",
+                "legend_type" => "intensity",
+                "type" => "text",
+                "sync" => true
+              },
+              {
+                "name" => "Color",
+                "visible" => true, "value" => "#FFCC00",
+                "type" => "color"
+              }
+            ]
+          }
+        end
+
+        it 'migrates old bubble with custom labels to new html' do
+          @old_legend = old_bubble_with_custom_labels
+        end
+
+        it 'migrates old custom with template to new html' do
+          @old_legend = old_custom
+        end
+
+        it 'migrates old bubble to new html' do
+          @old_legend = old_bubble
+        end
+
+        it 'migrates old choropleth to new html' do
+          @old_legend = old_choropleth
+        end
+
+        it 'migrates old density to new html' do
+          @old_legend = old_density
+        end
+
+        it 'migrates old density without labels to new html' do
+          truncated = old_density.dup
+          truncated['items'].delete_at(0)
+          truncated['items'].delete_at(0)
+
+          @old_legend = truncated
+        end
+
+        it 'migrates old intensity to new html' do
+          @old_legend = old_intensity
+        end
+
+        it 'migrates old intensity without labels to new html' do
+          truncated = old_intensity.dup
+          truncated['items'].delete_at(0)
+          truncated['items'].delete_at(0)
+
+          @old_legend = truncated
+        end
+
+        after(:each) do
+          new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
+
+          new_legend.type.should eq 'html'
+          new_legend.valid?.should be_true
+
+          unless @old_legend['type'] == 'bubble' || @old_legend['type'] == 'custom'
+            html = new_legend.definition[:html]
+
+            # Result should have labels, colors, and icons somewhere in generated
+            # html
+            @old_legend['items'].map { |item| item['value'] }.each do |value|
+              html.downcase.should include(value.to_s.downcase)
+            end
+
+            # No incomplete gradients allowed
+            html.scan(/#(?:[0-9a-fA-F]{3}){1,2}/).size.should be >= 2
+          end
+
+          @old_legend = nil
+        end
       end
     end
 

@@ -100,7 +100,7 @@ module Carto
         @legend.errors[:pre_html].should be_empty
       end
 
-      it 'requies a definition' do
+      it 'requires a definition' do
         @legend.errors[:definition].should_not be_empty
         @legend.errors[:definition].should include('could not be validated')
       end

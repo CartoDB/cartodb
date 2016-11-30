@@ -24,7 +24,7 @@ module Carto
              :under_max_legends_per_layer,
              :validate_definition_schema
 
-    before_validation :ensure_definition
+    before_validation :ensure_definition, :ensure_conf
 
     after_commit :force_notify_layer_change
 

@@ -25,6 +25,10 @@ var LEGENDS_METADATA = {
     modelClass: CustomLegendModel,
     definitionAttrs: [ { 'items': 'categories' }, 'html' ]
   },
+  html: {
+    modelClass: CustomLegendModel,
+    definitionAttrs: [ { 'items': 'categories' }, 'html' ]
+  },
   custom_choropleth: {
     modelClass: CustomChoroplethLegendModel,
     definitionAttrs: [ 'prefix', 'suffix', {'leftLabel': 'left_label'}, {'rightLabel': 'right_label'}, 'colors' ]
@@ -46,6 +50,14 @@ var Legends = function (legendsData, deps) {
   _.each(LEGENDS_METADATA, function (legendMetadata, legendType) {
     this[legendType] = this._createLegendModel(legendType, legendMetadata);
   }, this);
+
+  // HOTFIX: TO BE DELETED ONCE MIGRATED
+  var data = this._findDataForLegend('html');
+  if (data) {
+    this['custom'] = this['html'];
+  }
+
+  delete this['html'];
 };
 
 Legends.prototype._createLegendModel = function (legendType, legendMetadata) {

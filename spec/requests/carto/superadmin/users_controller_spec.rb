@@ -189,6 +189,7 @@ describe Carto::Superadmin::UsersController do
         formatted_date = st.created_at.to_date.to_s.to_sym
         tweets[formatted_date].should eq st.retrieved_items
         tweets[(Date.today - 5).to_s.to_sym].should eq 0
+        tweets.find { |h| false }.should be_nil
       end
       st.destroy
     end

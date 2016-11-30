@@ -22,7 +22,8 @@ module Carto
 
     validate :on_data_layer,
              :under_max_legends_per_layer,
-             :validate_definition_schema
+             :validate_definition_schema,
+             :validate_conf_schema
 
     before_validation :ensure_definition, :ensure_conf
 

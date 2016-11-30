@@ -189,8 +189,8 @@ describe Carto::Superadmin::OrganizationsController do
       )
       get_json(usage_superadmin_organization_url(@organization.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]
-        formatted_date = st1.created_at.to_date.to_s.to_sym
-        tweets.find { |h| h['date'] == formatted_date }['value'].should eq st.retrieved_items
+        formatted_date = st1.created_at.to_date.to_s
+        tweets.find { |h| h['date'] == formatted_date }['value'].should eq st1.retrieved_items + st2.retrieved_items
         tweets.find { |h| h['date'] == (Date.today - 5).to_s }['value'].should eq 0
       end
       st1.destroy

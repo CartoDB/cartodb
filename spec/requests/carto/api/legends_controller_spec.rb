@@ -125,6 +125,10 @@ module Carto
         @layer = nil
       end
 
+      before(:each) do
+        bypass_named_maps
+      end
+
       def legend_is_correct(legend)
         legend = legend.deep_symbolize_keys
         saved_legend = LegendPresenter.new(Legend.find(legend[:id])).to_hash
@@ -279,6 +283,82 @@ module Carto
           after(:each) do
             spammy_definition = @payload[:conf].merge(spam: 'hell')
             @payload[:conf] = spammy_definition
+
+            post_json create_lengend_url, @payload do |response|
+              response.status.should eq 422
+            end
+          end
+
+          after(:all) do
+            @payload = nil
+          end
+
+          it 'banned for html' do
+            @payload = html_legend_payload
+          end
+
+          it 'banned for category' do
+            @payload = category_legend_payload
+          end
+
+          it 'banned for custom' do
+            @payload = custom_legend_payload
+          end
+
+          it 'banned for bubble' do
+            @payload = bubble_legend_payload
+          end
+
+          it 'banned for choropleth' do
+            @payload = choropleth_legend_payload
+          end
+
+          it 'banned for custom_choropleth' do
+            @payload = custom_choropleth_legend_payload
+          end
+        end
+
+        describe 'with wrong conf type' do
+          after(:each) do
+            @payload[:conf] = { columns: { not: 'an_array' } }
+
+            post_json create_lengend_url, @payload do |response|
+              response.status.should eq 422
+            end
+          end
+
+          after(:all) do
+            @payload = nil
+          end
+
+          it 'banned for html' do
+            @payload = html_legend_payload
+          end
+
+          it 'banned for category' do
+            @payload = category_legend_payload
+          end
+
+          it 'banned for custom' do
+            @payload = custom_legend_payload
+          end
+
+          it 'banned for bubble' do
+            @payload = bubble_legend_payload
+          end
+
+          it 'banned for choropleth' do
+            @payload = choropleth_legend_payload
+          end
+
+          it 'banned for custom_choropleth' do
+            @payload = custom_choropleth_legend_payload
+          end
+        end
+
+        describe 'with wrong conf columns type' do
+          after(:each) do
+            @payload[:conf] = ['manolo', 'escobar', 2]
 
             post_json create_lengend_url, @payload do |response|
               response.status.should eq 422

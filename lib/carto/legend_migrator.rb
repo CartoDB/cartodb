@@ -54,9 +54,9 @@ module Carto
       elsif type == 'category'
         [build_custom_definition_from_custom_type, 'custom']
       elsif type == 'bubble'
-        [build_html_definition_from_bubble, 'custom']
+        [build_custom_definition_from_bubble, 'custom']
       elsif HTML_RAMP_TYPES.include?(type)
-        [build_html_definition_from_ramp_type, 'custom']
+        [build_custom_definition_from_ramp_type, 'custom']
       else
         [nil, nil]
       end
@@ -85,7 +85,7 @@ module Carto
       { categories: categories }
     end
 
-    def build_html_definition_from_ramp_type
+    def build_custom_definition_from_ramp_type
       left_label, right_label = labels_for_items
       style = style_for_gradient
 
@@ -115,7 +115,7 @@ module Carto
       "background: linear-gradient(90deg, #{gradient_stops})"
     end
 
-    def build_html_definition_from_bubble(steps: 6)
+    def build_custom_definition_from_bubble(steps: 6)
       left, right = labels_for_items
       heights, values = heights_and_values(left, right, steps)
 

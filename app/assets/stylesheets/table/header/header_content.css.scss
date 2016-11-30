@@ -223,6 +223,10 @@
           }
         }
 
+        a.share span {
+          width: 85px;
+        }
+
         &:last-child {
           margin-left: 12px;
           &:after { display:none; }

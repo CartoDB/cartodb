@@ -517,10 +517,6 @@ disabled look for already selected choices in the results dropdown
       padding:0!important;
       border:1px solid transparent!important;
       display: table-cell!important;
-
-      &:first-child {
-        @include border-left-radius(4px);
-      }
       &:last-child {
         border-bottom: 1px solid rgba(229, 229, 229, 0.2)!important;
       }

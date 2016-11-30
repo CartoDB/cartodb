@@ -57,138 +57,140 @@ module Carto
     end
 
     describe('#custom types') do
-      let(:old_category) do
-        {
-          "type" => "category",
-          "show_title" => false,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => 0,
-              "visible" => true,
-              "value" => "super.png"
-            },
-            {
-              "name" => 1350,
-              "visible" => true,
-              "value" => "#1F78B4"
-            },
-            {
-              "name" => 1440,
-              "visible" => true,
-              "value" => "#B2DF8A"
-            },
-            {
-              "name" => 1800,
-              "visible" => true,
-              "value" => "#33A02C"
-            },
-            {
-              "name" => 2250,
-              "visible" => true,
-              "value" => "#FB9A99"
-            },
-            {
-              "name" => 2700,
-              "visible" => true,
-              "value" => "#E31A1C"
-            },
-            {
-              "name" => 4500,
-              "visible" => true,
-              "value" => "#FDBF6F"
-            },
-            {
-              "name" => 450000,
-              "visible" => true,
-              "value" => "#FF7F00"
-            },
-            {
-              "name" => 900,
-              "visible" => true,
-              "value" => "duper.png"
-            },
-            {
-              "name" => 90000,
-              "visible" => true,
-              "value" => "#6A3D9A"
-            },
-            {
-              "name" => "Others",
-              "visible" => true,
-              "value" => "#DDDDDD"
-            }
-          ]
-        }
-      end
+      describe('#with categories') do
+        let(:old_category) do
+          {
+            "type" => "category",
+            "show_title" => false,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => 0,
+                "visible" => true,
+                "value" => "super.png"
+              },
+              {
+                "name" => 1350,
+                "visible" => true,
+                "value" => "#1F78B4"
+              },
+              {
+                "name" => 1440,
+                "visible" => true,
+                "value" => "#B2DF8A"
+              },
+              {
+                "name" => 1800,
+                "visible" => true,
+                "value" => "#33A02C"
+              },
+              {
+                "name" => 2250,
+                "visible" => true,
+                "value" => "#FB9A99"
+              },
+              {
+                "name" => 2700,
+                "visible" => true,
+                "value" => "#E31A1C"
+              },
+              {
+                "name" => 4500,
+                "visible" => true,
+                "value" => "#FDBF6F"
+              },
+              {
+                "name" => 450000,
+                "visible" => true,
+                "value" => "#FF7F00"
+              },
+              {
+                "name" => 900,
+                "visible" => true,
+                "value" => "duper.png"
+              },
+              {
+                "name" => 90000,
+                "visible" => true,
+                "value" => "#6A3D9A"
+              },
+              {
+                "name" => "Others",
+                "visible" => true,
+                "value" => "#DDDDDD"
+              }
+            ]
+          }
+        end
 
-      let(:old_custom) do
-        {
-          "type" => "custom",
-          "show_title" => true,
-          "title" => "",
-          "template" => "",
-          "visible" => true,
-          "items" => [
-            {
-              "name" => "preta",
-              "visible" => true,
-              "value" => "#41006D",
-              "sync" => true
-            },
-            {
-              "name" => "Untitled",
-              "visible" => true,
-              "value" => "superduper.png",
-              "sync" => true
-            },
-            {
-              "name" => "patata",
-              "visible" => true,
-              "value" => "#cccccc",
-              "sync" => true
-            },
-            {
-              "name" => "Untitled",
-              "visible" => true,
-              "value" => "#cccccc",
-              "sync" => true
-            }
-          ]
-        }
-      end
+        let(:old_custom) do
+          {
+            "type" => "custom",
+            "show_title" => true,
+            "title" => "",
+            "template" => "",
+            "visible" => true,
+            "items" => [
+              {
+                "name" => "preta",
+                "visible" => true,
+                "value" => "#41006D",
+                "sync" => true
+              },
+              {
+                "name" => "Untitled",
+                "visible" => true,
+                "value" => "superduper.png",
+                "sync" => true
+              },
+              {
+                "name" => "patata",
+                "visible" => true,
+                "value" => "#cccccc",
+                "sync" => true
+              },
+              {
+                "name" => "Untitled",
+                "visible" => true,
+                "value" => "#cccccc",
+                "sync" => true
+              }
+            ]
+          }
+        end
 
-      it 'omits badly formatted colors' do
-        truncated = old_category.dup
-        truncated['items'].first['value'] = '#fatal#fatal#fatal'
+        it 'omits badly formatted colors' do
+          truncated = old_category.dup
+          truncated['items'].first['value'] = '#fatal#fatal#fatal'
 
-        @old_legend = truncated
-      end
+          @old_legend = truncated
+        end
 
-      it 'migrates old category to new custom' do
-        @old_legend = old_category
-      end
+        it 'migrates old category to new custom' do
+          @old_legend = old_category
+        end
 
-      it 'migrates old custom to new custom with no template' do
-        @old_legend = old_custom
-      end
+        it 'migrates old custom to new custom with no template' do
+          @old_legend = old_custom
+        end
 
-      after(:each) do
-        new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
+        after(:each) do
+          new_legend = Carto::LegendMigrator.new(@layer.id, @old_legend).build
 
-        new_legend.type.should eq 'custom'
-        new_legend.valid?.should be_true
+          new_legend.type.should eq 'custom'
+          new_legend.valid?.should be_true
 
-        category_keys = new_legend.definition[:categories]
-                                  .map(&:keys)
-                                  .flatten
-                                  .uniq
+          category_keys = new_legend.definition[:categories]
+                                    .map(&:keys)
+                                    .flatten
+                                    .uniq
 
-        category_keys.should include(:title)
-        category_keys.should include(:color)
-        category_keys.should include(:icon)
+          category_keys.should include(:title)
+          category_keys.should include(:color)
+          category_keys.should include(:icon)
+        end
       end
     end
 

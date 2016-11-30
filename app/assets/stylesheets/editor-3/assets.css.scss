@@ -1,3 +1,7 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+
+
 .AssetsList-recent {
   overflow: hidden;
 }
@@ -6,9 +10,8 @@
   display: flex;
 }
 .AssetsList {
+  @include display-flex;
   position: relative;
-  width: 945px;
-  margin: 67px auto 60px auto;
 }
 .AssetsList-inner {
   position: relative;
@@ -19,29 +22,20 @@
   margin: 35px 0 70px 0;
   overflow: auto;
 }
-.AssetItem {
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
-  width: 58px;
-  height: 58px;
-  margin: 0 20px 20px 0;
-  border: 1px solid #DDD;
-  border-radius: 3px;
-  overflow: hidden;
-}
+
 .AssetItem-icon {
-  position: absolute;
-  display: inline-block;
-  vertical-align: top;
-  width: 60px;
-  height: 60px;
-  max-width: 60px;
-  max-height: 60px;
-  border-radius: 3px;
-  text-align: center;
-  line-height: 60px;
+  width: 100%;
+  height: 100%;
   background-repeat: no-repeat;
   background-position: center;
-  background-color: #fff;
+  background-size: 24px 24px;
+}
+
+.Modal-inner .AssetsList {
+  @include flex-wrap(wrap);
+  margin: 0 -14px;
+  .Carousel-item--small {
+    margin-bottom: 16px;
+    margin-left: 16px;
+  }
 }

@@ -15,6 +15,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "html",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {
             html: '<h1>Manolo Escobar</h1>'
           }
@@ -27,6 +30,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "category",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {}
         }
       end
@@ -37,6 +43,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "custom",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {
             categories: [
               { title: 'Manolo Escobar' },
@@ -54,6 +63,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "bubble",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {
             color: '#fff'
           }
@@ -66,6 +78,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "choropleth",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {
             prefix: "123",
             suffix: "foo"
@@ -79,6 +94,9 @@ module Carto
           post_html: "<h3>el mejor artista del mundo?</h3>",
           title: "La verdad",
           type: "custom_choropleth",
+          conf: {
+            columns: ['manolo', 'escobar']
+          },
           definition: {
             prefix: "123",
             suffix: "foo",
@@ -118,12 +136,16 @@ module Carto
         saved_legend_definition = saved_legend[:definition]
                                   .with_indifferent_access
 
+        conf = legend[:conf].with_indifferent_access
+        saved_conf = saved_legend[:conf].with_indifferent_access
+
         pruned_legend.should eq pruned_saved_legend
         legend_definition.should eq saved_legend_definition
+        conf.should eq saved_conf
       end
 
       def prune_legend(legend)
-        legend.except(:created_at, :updated_at, :definition)
+        legend.except(:created_at, :updated_at, :definition, :conf)
       end
 
       describe '#create' do
@@ -218,6 +240,45 @@ module Carto
           after(:each) do
             spammy_definition = @payload[:definition].merge(spam: 'hell')
             @payload[:definition] = spammy_definition
+
+            post_json create_lengend_url, @payload do |response|
+              response.status.should eq 422
+            end
+          end
+
+          after(:all) do
+            @payload = nil
+          end
+
+          it 'banned for html' do
+            @payload = html_legend_payload
+          end
+
+          it 'banned for category' do
+            @payload = category_legend_payload
+          end
+
+          it 'banned for custom' do
+            @payload = custom_legend_payload
+          end
+
+          it 'banned for bubble' do
+            @payload = bubble_legend_payload
+          end
+
+          it 'banned for choropleth' do
+            @payload = choropleth_legend_payload
+          end
+
+          it 'banned for custom_choropleth' do
+            @payload = custom_choropleth_legend_payload
+          end
+        end
+
+        describe 'with spammy conf' do
+          after(:each) do
+            spammy_definition = @payload[:conf].merge(spam: 'hell')
+            @payload[:conf] = spammy_definition
 
             post_json create_lengend_url, @payload do |response|
               response.status.should eq 422

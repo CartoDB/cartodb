@@ -3,39 +3,39 @@ require_relative '../../controllers/carto/api/group_presenter'
 module CartoDB
   module OrganizationDecorator
     def data(options = {})
-      {
-        created_at:        self.created_at,
-        description:       self.description,
-        discus_shortname:  self.discus_shortname,
-        display_name:      self.display_name,
-        id:                self.id,
-        name:              self.name,
+      org_presentation = {
+        created_at:        created_at,
+        description:       description,
+        discus_shortname:  discus_shortname,
+        display_name:      display_name,
+        id:                id,
+        name:              name,
         owner: {
-          id:         self.owner ? self.owner.id : nil,
-          username:   self.owner ? self.owner.username : nil,
-          avatar_url: self.owner ? self.owner.avatar : nil,
-          groups:     self.owner && self.owner.groups ? self.owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
+          id:         owner ? owner.id : nil,
+          username:   owner ? owner.username : nil,
+          avatar_url: owner ? owner.avatar : nil,
+          groups:     owner && owner.groups ? owner.groups.map { |g| Carto::Api::GroupPresenter.new(g).to_poro } : []
         },
-        quota_in_bytes:  self.quota_in_bytes,
-        unassigned_quota: self.unassigned_quota,
-        used_quota:      self.db_size_in_bytes,
-        api_calls:       self.get_api_calls(from: self.owner.present? ? self.owner.last_billing_cycle : nil, to: Date.today),
-        api_calls_quota: self.map_view_quota,
+        quota_in_bytes:   quota_in_bytes,
+        unassigned_quota: unassigned_quota,
+        used_quota:       db_size_in_bytes,
+        api_calls:        get_api_calls(from: owner.present? ? owner.last_billing_cycle : nil, to: Date.today),
+        api_calls_quota:  map_view_quota,
         geocoding: {
-          quota:       self.geocoding_quota,
-          monthly_use: self.get_geocoding_calls
+          quota:       geocoding_quota,
+          monthly_use: get_geocoding_calls
         },
         here_isolines: {
-          quota:       self.here_isolines_quota,
-          monthly_use: self.get_here_isolines_calls
+          quota:       here_isolines_quota,
+          monthly_use: get_here_isolines_calls
         },
         mapzen_routing: {
-          quota:       self.mapzen_routing_quota,
-          monthly_use: self.get_mapzen_routing_calls
+          quota:       mapzen_routing_quota,
+          monthly_use: get_mapzen_routing_calls
         },
-        geocoder_provider: self.geocoder_provider,
-        isolines_provider: self.isolines_provider,
-        routing_provider: self.routing_provider,
+        geocoder_provider: geocoder_provider,
+        isolines_provider: isolines_provider,
+        routing_provider:  routing_provider,
         obs_snapshot: {
           quota:       obs_snapshot_quota,
           monthly_use: get_obs_snapshot_calls
@@ -45,19 +45,35 @@ module CartoDB
           monthly_use: get_obs_general_calls
         },
         twitter: {
-          enabled:     self.twitter_datasource_enabled,
-          quota:       self.twitter_datasource_quota,
-          block_price: self.twitter_datasource_block_price,
-          block_size:  self.twitter_datasource_block_size,
-          monthly_use: self.get_twitter_imports_count
+          enabled:     twitter_datasource_enabled,
+          quota:       twitter_datasource_quota,
+          block_price: twitter_datasource_block_price,
+          block_size:  twitter_datasource_block_size,
+          monthly_use: get_twitter_imports_count
         },
-        seats:             self.seats,
-        twitter_username:  self.twitter_username,
-        location:          self.location,
-        updated_at:        self.updated_at,
-        website:           self.website,
-        avatar_url:        self.avatar_url
+        seats:             seats,
+        twitter_username:  twitter_username,
+        location:          location,
+        updated_at:        updated_at,
+        website:           website,
+        avatar_url:        avatar_url
       }
+
+      if options[:extended]
+        dataset_count = visualizations_builder.with_type(Carto::Visualization::TYPE_CANONICAL).build.count
+        org_presentation[:table_count] = dataset_count
+
+        map_count = visualizations_builder.with_type(Carto::Visualization::TYPE_DERIVED).build.count
+        org_presentation[:map_count] = map_count
+      end
+
+      org_presentation
+    end
+
+    private
+
+    def visualizations_builder
+      Carto::VisualizationQueryBuilder.with_organization_id(id)
     end
   end
 end

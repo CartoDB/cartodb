@@ -11,7 +11,7 @@ shared_examples_for 'Layer model' do
 
     it "should not allow to create layers of unkown types" do
       l = layer_class.new(kind: "wadus")
-      expect { l.save }.to raise_error(Sequel::ValidationFailed)
+      expect { l.save! }.to raise_error
     end
 
     it "should allow to be linked to many maps" do

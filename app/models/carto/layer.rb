@@ -76,6 +76,9 @@ module Carto
 
     has_many :layer_node_styles
 
+    ALLOWED_KINDS = %w{ carto tiled background gmapsbase torque wms }.freeze
+    validates :kind, inclusion: { in: ALLOWED_KINDS }
+
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
       'table/views/infowindow_dark' =>                'infowindow_dark',

@@ -49,6 +49,7 @@ shared_examples_for 'Layer model' do
 
     it "should set default order when adding layers to a user" do
       @user.layers.each(&:destroy)
+      @user.reload
       5.times do |i|
         layer = layer_class.create(kind: 'carto')
         add_layer_to_entity(@user, layer)

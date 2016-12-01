@@ -60,10 +60,10 @@ module Carto
     serialize :tooltip, CartoJsonSerializer
 
     has_many :layers_maps
-    has_many :maps, through: :layers_maps
+    has_many :maps, through: :layers_maps, after_add: :set_default_order
 
     has_many :layers_user
-    has_many :users, through: :layers_user
+    has_many :users, through: :layers_user, after_add: :set_default_order
 
     has_many :layers_user_table
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
@@ -88,6 +88,12 @@ module Carto
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }.freeze
+
+    def set_default_order(parent)
+      return unless order.nil?
+      max_order = parent.layers.map(&:order).compact.max || -1
+      update_attribute(:order, max_order + 1)
+    end
 
     def affected_tables_readable_by(user)
       affected_tables.select { |ut| ut.readable_by?(user) }

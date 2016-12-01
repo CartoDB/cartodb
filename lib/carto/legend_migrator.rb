@@ -10,13 +10,10 @@ module Carto
     end
 
     def build
-      new_definition, new_type = definition_and_type
-      legend_title = title if title.present? && legend['show_title']
-
       Legend.new(layer_id: layer_id,
-                 title: legend_title,
-                 type: new_type,
-                 definition: new_definition)
+                 title: title.present? && legend['show_title'] ? title : nil,
+                 type: 'custom',
+                 definition: definition)
     rescue => exception
       CartoDB::Logger.debug(message: 'Carto::LegendMigrator: couldn\'t migrate',
                             exception: exception,
@@ -46,19 +43,17 @@ module Carto
 
     HTML_RAMP_TYPES = %w(choropleth intensity density).freeze
 
-    def definition_and_type
+    def definition
       if template.present?
-        [{ html: template }, 'html']
+        { html: template }
       elsif type == 'custom'
-        [build_custom_definition_from_custom_type, 'custom']
+        build_custom_definition_from_custom_type
       elsif type == 'category'
-        [build_custom_definition_from_custom_type, 'custom']
+        build_custom_definition_from_custom_type
       elsif type == 'bubble'
-        [build_html_definition_from_bubble, 'html']
+        build_custom_definition_from_bubble
       elsif HTML_RAMP_TYPES.include?(type)
-        [build_html_definition_from_ramp_type, 'html']
-      else
-        [nil, nil]
+        build_custom_definition_from_ramp_type
       end
     end
 
@@ -85,7 +80,7 @@ module Carto
       { categories: categories }
     end
 
-    def build_html_definition_from_ramp_type
+    def build_custom_definition_from_ramp_type
       left_label, right_label = labels_for_items
       style = style_for_gradient
 
@@ -115,7 +110,7 @@ module Carto
       "background: linear-gradient(90deg, #{gradient_stops})"
     end
 
-    def build_html_definition_from_bubble(steps: 6)
+    def build_custom_definition_from_bubble(steps: 6)
       left, right = labels_for_items
       heights, values = heights_and_values(left, right, steps)
 

@@ -257,7 +257,7 @@ module Carto
 
     def rename_table(current_table_name, new_table_name)
       return self unless data_layer?
-      target_keys = %w{ table_name tile_style query }
+      target_keys = %w{table_name tile_style query}
 
       targets = options.select { |key, _| target_keys.include?(key) }
       renamed = targets.map do |key, value|

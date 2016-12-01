@@ -245,7 +245,11 @@ shared_examples_for 'Layer model' do
       layer.reload
 
       layer.kind = 'torque'
-      saved = layer.save rescue false
+      saved = begin
+                layer.save
+              rescue
+                false
+              end
       saved.should be_false
     end
   end

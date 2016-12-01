@@ -3,8 +3,11 @@
 require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
+require 'carto/user_authenticator'
 
 feature "Superadmin's users API" do
+  include Carto::UserAuthenticator
+
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(password: "this_is_a_password")
@@ -44,7 +47,7 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      ::User.authenticate(user.username, "this_is_a_password").should == user
+      authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
   end
@@ -62,7 +65,7 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.should be_present
       user.id.should == response.body[:id]
-      ::User.authenticate(user.username, "this_is_a_password").should == user
+      authenticate(user.username, "this_is_a_password").should == user
     end
     ::User.where(username: @user_atts[:username]).first.destroy
   end

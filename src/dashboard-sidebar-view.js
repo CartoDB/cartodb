@@ -9,6 +9,7 @@ var ListContentView = require('./widgets/list/content-view');
 var WidgetViewFactory = require('./widgets/widget-view-factory');
 var template = require('./dashboard-sidebar.tpl');
 var matchMedia = window.matchMedia;
+var MutationObserver = window.MutationObserver;
 
 module.exports = cdb.core.View.extend({
   className: 'CDB-Widget-canvas',
@@ -51,7 +52,7 @@ module.exports = cdb.core.View.extend({
     this._widgets.bind('add', this._maybeRenderWidgetView, this);
     this._widgets.bind('reset', this.render, this);
     this._widgets.bind('orderChanged', this.render, this);
-    this._widgets.bind('change:collapsed', this._onWidgetCollapsed, this);
+    this._widgets.bind('change:collapsed', this._onWidgetUpdate, this);
     this._widgets.bind('add remove reset', this._onUpdate, this); // have to be called _after_ any other add/remove/reset
     this.add_related_model(this._widgets);
 
@@ -60,6 +61,7 @@ module.exports = cdb.core.View.extend({
 
   render: function () {
     this._cleanScroll();
+    this._observer && this._observer.disconnect();
     this.clearSubViews();
 
     this.$el.html(template());
@@ -71,6 +73,7 @@ module.exports = cdb.core.View.extend({
     this._renderShadows();
     this._bindScroll();
     this._initResize();
+    this._observe();
     return this;
   },
 
@@ -80,6 +83,38 @@ module.exports = cdb.core.View.extend({
       var mq = matchMedia(breakpoint);
       mq.addListener(this._resizeHandler);
     }, this);
+  },
+
+  _observe: function () {
+    if (MutationObserver == null) {
+      // the scroll has default behaviour as fallback ?
+      return;
+    }
+
+    var target = this.el;
+    var onMutationObserver = this._updateScrollCss.bind(this);
+    this._observer = new MutationObserver(onMutationObserver);
+    onMutationObserver();
+
+    var config = { childList: true, subtree: true };
+    this._observer.observe(target, config);
+  },
+
+  _updateScrollCss: function () {
+    this._onWidgetUpdate();
+
+    var element = this._container();
+    if (!element) return;
+
+    var containerWidth = element.clientWidth;
+    var containerHeight = element.clientHeight;
+    var contentWidth = element.scrollWidth;
+    var contentHeight = element.scrollHeight;
+    var xScroll = containerWidth < contentWidth;
+    var yScroll = containerHeight < contentHeight;
+
+    this._$container().toggleClass('hasXScroll', xScroll);
+    this._$container().toggleClass('hasYScroll', yScroll);
   },
 
   _$container: function () {
@@ -115,7 +150,7 @@ module.exports = cdb.core.View.extend({
     });
   },
 
-  _onWidgetCollapsed: function () {
+  _onWidgetUpdate: function () {
     Ps.update(this._container());
   },
 
@@ -152,6 +187,7 @@ module.exports = cdb.core.View.extend({
     // trigger actions always if breakpoints changes
     this._updateScroll();
     this._onScroll();
+    this._updateScrollCss();
   },
 
   _onScrollBottom: function () {
@@ -172,6 +208,7 @@ module.exports = cdb.core.View.extend({
 
   clean: function () {
     this._cleanScroll();
+    this._observer && this._observer.disconnect();
     cdb.core.View.prototype.clean.call(this);
   }
 

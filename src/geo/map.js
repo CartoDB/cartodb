@@ -488,6 +488,11 @@ var Map = Model.extend({
     return zoom - 1;
   }
 }, {
+  PROVIDERS: {
+    GMAPS: 'googlemaps',
+    LEAFLET: 'leaflet'
+  },
+
   latlngToMercator: function (latlng, zoom) {
     var ll = new L.LatLng(latlng[0], latlng[1]);
     var pp = L.CRS.EPSG3857.latLngToPoint(ll, zoom);

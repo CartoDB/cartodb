@@ -1,6 +1,6 @@
 var _ = require('underscore');
 
-module.exports = function (multiPathToGeoJSONFunction) {
+module.exports = function () {
   beforeEach(function () {
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 
@@ -15,8 +15,8 @@ module.exports = function (multiPathToGeoJSONFunction) {
 
       this.geometry.remove();
 
-      expect(this.geometry.geometries.all(function (polygon) {
-        return polygon.remove.calls.count() === 1;
+      expect(this.geometry.geometries.all(function (geometry) {
+        return geometry.remove.calls.count() === 1;
       })).toBe(true);
     });
 

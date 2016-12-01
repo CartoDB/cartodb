@@ -16,6 +16,12 @@ var Polygon = PathBase.extend({
     return this.points.length >= this.MIN_NUMBER_OF_VERTICES;
   },
 
+  getCoordinatesForMiddlePoints: function () {
+    var coordinates = this.getCoordinates();
+    coordinates.push(coordinates[0]);
+    return coordinates;
+  },
+
   toGeoJSON: function () {
     var coords = GeoJSONHelper.convertLatLngsToGeoJSONPolygonCoords(this.getCoordinates());
     return {

@@ -18,7 +18,7 @@ var MultiGeometryViewBase = GeometryViewBase.extend({
   _renderGeometry: function (geometry) {
     var polygonView = new this.GeometryViewClass({
       model: geometry,
-      nativeMap: this.leafletMap
+      mapView: this.mapView
     });
     polygonView.render();
   }

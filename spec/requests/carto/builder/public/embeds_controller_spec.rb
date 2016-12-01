@@ -114,7 +114,7 @@ describe Carto::Builder::Public::EmbedsController do
 
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-        response.body.include?('Private map — CARTO').should be true
+        response.body.include?('Embed error | CARTO').should be true
         response.status.should == 404
       end
 
@@ -171,7 +171,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 404
-        response.body.should include 'Private map — CARTO'
+        response.body.should include 'Embed error | CARTO'
       end
 
       it 'embeds private visualizations if logged in as allowed user' do
@@ -198,7 +198,7 @@ describe Carto::Builder::Public::EmbedsController do
         get builder_visualization_public_embed_url(visualization_id: @org_visualization.id)
 
         response.status.should == 404
-        response.body.should include 'Private map — CARTO'
+        response.body.should include 'Embed error | CARTO'
       end
 
       it 'includes auth tokens for privately shared visualizations' do

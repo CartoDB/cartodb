@@ -78,7 +78,7 @@ module Carto
 
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
-    after_save :invalidate_maps, :update_layer_node_style
+    after_save Proc.new { maps.reload }, :invalidate_maps, :update_layer_node_style
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
@@ -95,12 +95,13 @@ module Carto
     }.freeze
 
     def set_default_order(parent)
-      return true unless order.nil?
+      # Reload maps upon adding this layer to a map (AR doesn't do this automatically)
+      maps.reload if persisted?
+
+      return unless order.nil?
       max_order = parent.layers.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
-
-      true
     end
 
     def affected_tables_readable_by(user)

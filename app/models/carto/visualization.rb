@@ -62,9 +62,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
-  has_one :state, class_name: Carto::State
-
-  belongs_to :state, class_name: Carto::State
+  has_one :state, class_name: Carto::State, autosave: true
 
   validates :version, presence: true
 
@@ -468,10 +466,6 @@ class Carto::Visualization < ActiveRecord::Base
     mapcapped? ? latest_mapcap.visualization : self
   end
 
-  def state
-    super ? super : build_state
-  end
-
   def mark_as_vizjson2
     $tables_metadata.SADD(V2_VISUALIZATIONS_REDIS_KEY, id)
   end
@@ -488,6 +482,10 @@ class Carto::Visualization < ActiveRecord::Base
     overlays.builder_incompatible.none?
   end
 
+  def state
+    super ? super : build_state
+  end
+
   private
 
   def auto_generate_indices_for_all_layers
@@ -495,10 +493,6 @@ class Carto::Visualization < ActiveRecord::Base
     user_tables.each do |ut|
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::AutoIndexTable, ut.id)
     end
-  end
-
-  def build_state
-    self.state = Carto::State.new
   end
 
   def named_maps_api

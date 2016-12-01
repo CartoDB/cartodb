@@ -1,6 +1,6 @@
 @import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
-
+@import 'cdb-variables/colors';
 
 .AssetsList-recent {
   overflow: hidden;
@@ -23,6 +23,11 @@
   overflow: auto;
 }
 
+.AssetItem-button {
+  width: 100%;
+  height: 100%;
+}
+
 .AssetItem-icon {
   width: 100%;
   height: 100%;
@@ -34,8 +39,38 @@
 .Modal-inner .AssetsList {
   @include flex-wrap(wrap);
   margin: 0 -14px;
-  .Carousel-item--small {
-    margin-bottom: 16px;
-    margin-left: 16px;
+}
+
+.AssetsList-item {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-bottom: 16px;
+  margin-left: 16px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &:last-child {
+    margin-right: 0;
   }
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
+}
+
+.AssetsList-item.is-selected {
+  border: 2px solid $cBlue;
+}
+
+.AssetsList-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
 }

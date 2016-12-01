@@ -34,7 +34,7 @@
     "edit-map": "Edit your map",
     "toolbar": {
       "title": "Toolbar",
-      "description": "The toolbar provides options to access to your dashboard, edit your map, and configure its settings."
+      "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
       "title": "Editor pane",
@@ -1755,10 +1755,10 @@
         "size": "size"
       },
       "messages": {
-        "migrated-legend": {
-          "title": "IMPORTED LEGEND",
-          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
-          "accept": "Delete imported legend"
+        "custom-legend": {
+          "title": "CUSTOM LEGEND APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "Delete custom html"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",

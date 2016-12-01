@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative '../../../../lib/carto/file_system/sanitize.rb'
 

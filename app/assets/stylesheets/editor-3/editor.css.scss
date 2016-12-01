@@ -200,12 +200,12 @@
     .CDB-Widget-listItemInner {
       margin: 0;
     }
-    .CDB-Widget-canvas .ps-container>.ps-scrollbar-x-rail {
+    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail {
       display: block;
       width: 100%;
       opacity: 0.6;
     }
-    .CDB-Widget-canvas .ps-container>.ps-scrollbar-x-rail>.ps-scrollbar-x {
+    .CDB-Widget-canvas .hasXScroll>.ps-scrollbar-x-rail>.ps-scrollbar-x {
       min-width: 50%;
     }
   }

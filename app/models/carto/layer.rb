@@ -6,8 +6,7 @@ require_dependency 'carto/query_rewriter'
 module Carto
   module LayerTableDependencies
     def affected_tables
-      maps.reload
-      return [] unless maps.first.present? && options.present?
+      return [] unless options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id

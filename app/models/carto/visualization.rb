@@ -73,8 +73,10 @@ class Carto::Visualization < ActiveRecord::Base
     self.version ||= user.try(:new_visualizations_version)
   end
 
+  DELETED_COLUMNS = ['state', 'url_options'].freeze
+
   def self.columns
-    super.reject { |c| c.name == 'url_options' }
+    super.reject { |c| DELETED_COLUMNS.include?(c.name) }
   end
 
   def ==(other_visualization)

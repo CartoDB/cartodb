@@ -6,6 +6,7 @@ require_dependency 'carto/query_rewriter'
 module Carto
   module LayerTableDependencies
     def affected_tables
+      maps.reload
       return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
@@ -78,7 +79,7 @@ module Carto
 
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
-    after_save Proc.new { maps.reload }, :invalidate_maps, :update_layer_node_style
+    after_save :invalidate_maps, :update_layer_node_style
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }

@@ -253,7 +253,26 @@ module Carto
       options && options['category']
     end
 
+    def rename_table(current_table_name, new_table_name)
+      return self unless data_layer?
+      target_keys = %w{ table_name tile_style query }
+
+      targets = options.select { |key, _| target_keys.include?(key) }
+      renamed = targets.map do |key, value|
+        [key, rename_in(value, current_table_name, new_table_name)]
+      end
+
+      self.options = options.merge(renamed.to_h)
+      self
+    end
+
     private
+
+    def rename_in(target, anchor, substitution)
+      return if target.blank?
+      regex = /(\A|\W+)(#{anchor})(\W+|\z)/
+      target.gsub(regex) { |match| match.gsub(anchor, substitution) }
+    end
 
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 

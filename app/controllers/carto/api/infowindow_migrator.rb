@@ -39,7 +39,7 @@ module Carto
             }
           }
         else
-          new_template_name = ALIASED_TEMPLATES.fetch(old_template_name, old_template_name)
+          new_template_name = parse_old_template_name(old_template_name)
 
           templated_element[:template] = get_template(
             old_template_name,
@@ -59,11 +59,6 @@ module Carto
       MIGRATED_TEMPLATES = %w{ infowindow_light_header_blue infowindow_light_header_yellow
                                infowindow_light_header_orange infowindow_light_header_green }.freeze
 
-      ALIASED_TEMPLATES = {
-        'table/views/infowindow_light' => 'infowindow_light',
-        'table/views/infowindow_dark' => 'infowindow_dark'
-      }.freeze
-
       COLOR_MAP = {
         'blue' => '#35AAE5',
         'green' => '#7FC97F',
@@ -73,6 +68,16 @@ module Carto
 
       def extract_color_from_old_template(old_template_name)
         COLOR_MAP[old_template_name.split('_').last]
+      end
+
+      def parse_old_template_name(old_template_name)
+        Pathname.new(old_template_name).basename.to_s
+      rescue => exception
+        CartoDB::Logger.error(message: "#{self.class}: Error parsing template",
+                              exception: exception,
+                              parsing: old_template_name)
+
+        old_template_name
       end
 
       def get_template_name(name)

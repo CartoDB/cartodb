@@ -16,6 +16,7 @@ describe Carto::Builder::VisualizationsController do
       map = FactoryGirl.create(:map, user_id: @user1.id)
       @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id, map_id: map.id)
       @user1.stubs(:has_feature_flag?).with('new_geocoder_quota').returns(true)
+      @user1.stubs(:has_feature_flag?).with('gnip_v2').returns(true)
 
       login(@user1)
     end
@@ -40,25 +41,61 @@ describe Carto::Builder::VisualizationsController do
       response.location.should include '/viz/' + @visualization.id
     end
 
-    it 'automatically migrates visualizations' do
-      @visualization.version = 2
-      @visualization.save
-      get builder_visualization_url(id: @visualization.id)
+    describe 'v2 -> v3 migration' do
+      before(:each) do
+        @visualization.version = 2
+        @visualization.save
+      end
 
-      response.status.should eq 200
-      @visualization.reload
-      @visualization.version.should eq 3
-    end
+      it 'automatically migrates visualizations' do
+        get builder_visualization_url(id: @visualization.id)
 
-    it 'does not automatically migrates visualization with custom overlays' do
-      @visualization.version = 2
-      @visualization.save
-      @visualization.overlays.create(type: 'header')
-      get builder_visualization_url(id: @visualization.id)
+        response.status.should eq 200
+        @visualization.reload
+        @visualization.version.should eq 3
+      end
 
-      response.status.should eq 200
-      @visualization.reload
-      @visualization.version.should eq 2
+      it 'correctly copies queries to analysis nodes' do
+        layer = FactoryGirl.build(:carto_layer)
+        layer.options[:query] = 'SELECT prediction FROM location'
+        layer.save
+        @visualization.map.layers << layer
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 200
+        @visualization.reload
+        @visualization.analyses.count.should eq 1
+        @visualization.analyses.first.analysis_node.params[:query].should eq layer.options[:query]
+      end
+
+      it 'does not automatically migrates visualization with custom overlays' do
+        @visualization.save
+        @visualization.overlays.create(type: 'header')
+        get builder_visualization_url(id: @visualization.id)
+
+        response.status.should eq 200
+        @visualization.reload
+        @visualization.version.should eq 2
+      end
+
+      describe 'overlays' do
+        it 'enables map layer_selector option if there is a layer_selector overlay' do
+          @visualization.map.options[:layer_selector].should eq false
+          @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+
+          get builder_visualization_url(id: @visualization.id)
+
+          @visualization.reload.map.options[:layer_selector].should eq true
+        end
+
+        it 'removes layer selector overlays' do
+          @visualization.overlays << Carto::Overlay.new(type: 'layer_selector')
+
+          get builder_visualization_url(id: @visualization.id)
+
+          @visualization.reload.overlays.any? { |o| o[:type] == 'layer_selector' }.should be_false
+        end
+      end
     end
 
     it 'returns 404 for non-existent visualizations' do

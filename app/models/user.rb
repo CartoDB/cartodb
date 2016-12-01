@@ -21,6 +21,7 @@ require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
+require_dependency 'carto/user_authenticator'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -31,6 +32,7 @@ class User < Sequel::Model
   include Carto::AuthTokenGenerator
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
+  extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
 
@@ -223,6 +225,16 @@ class User < Sequel::Model
           self.max_import_table_row_count ||= organization.max_import_table_row_count
           self.max_concurrent_import_count ||= organization.max_concurrent_import_count
           self.max_layers ||= organization.max_layers
+
+          # Non-owner org users get the free SDK plan
+          if organization.owner && organization.owner.mobile_sdk_enabled?
+            self.mobile_max_open_users = 10000 unless changed_columns.include?(:mobile_max_open_users)
+            self.mobile_max_private_users = 10 unless changed_columns.include?(:mobile_max_private_users)
+            self.mobile_xamarin = true unless changed_columns.include?(:mobile_xamarin)
+            self.mobile_gis_extension = true unless changed_columns.include?(:mobile_gis_extension)
+            self.mobile_custom_watermark = false unless changed_columns.include?(:mobile_custom_watermark)
+            self.mobile_offline_maps = false unless changed_columns.include?(:mobile_offline_maps)
+          end
         end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS
@@ -367,9 +379,13 @@ class User < Sequel::Model
       end
       data_imports.each(&:destroy)
       maps.each(&:destroy)
-      layers.each { |l| remove_layer l }
+      layers.each do |l|
+        remove_layer(l)
+        l.destroy
+      end
       assets.each(&:destroy)
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
+      CartoDB::Visualization::Collection.new.fetch(user_id: id, exclude_shared: true).destroy
 
       destroy_shared_with
 
@@ -427,9 +443,6 @@ class User < Sequel::Model
     options[:regex] ||= '.*'
     CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
-
-  ## Authentication
-  AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
   # allow extra vars for auth
   attr_reader :password
@@ -554,37 +567,12 @@ class User < Sequel::Model
     end
   end
 
-  def self.password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
-  end
-
-  def self.secure_digest(*args)
-    Digest::SHA1.hexdigest(args.flatten.join('--'))
-  end
-
-  def self.make_token
-    secure_digest(Time.now, (1..10).map{ rand.to_s })
-  end
-
   def password=(value)
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
-  end
-
-  def self.authenticate(email, password)
-    sanitized_input = email.strip.downcase
-    if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
-      candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
-    else
-      nil
-    end
   end
 
   # Database configuration setup
@@ -807,10 +795,6 @@ class User < Sequel::Model
     end
   end
 
-  def dedicated_support?
-    Carto::AccountType.new.dedicated_support?(self)
-  end
-
   def remove_logo?
     Carto::AccountType.new.remove_logo?(self)
   end
@@ -899,15 +883,7 @@ class User < Sequel::Model
   end
 
   def private_maps_enabled?
-    flag_enabled = self.private_maps_enabled
-    return true if flag_enabled.present? && flag_enabled == true
-
-    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
-    return false
-  end
-
-  def engine_enabled?
-    has_organization? ? organization.engine_enabled : engine_enabled
+    !!private_maps_enabled
   end
 
   def viewable_by?(user)
@@ -1644,6 +1620,14 @@ class User < Sequel::Model
       organization.builder_enabled
     else
       !!builder_enabled
+    end
+  end
+
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
     end
   end
 

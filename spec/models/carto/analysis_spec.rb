@@ -181,4 +181,52 @@ describe Carto::Analysis do
       @analysis.errors[:user].should eq(["Viewer users can't edit analyses"])
     end
   end
+
+  describe '#source_analysis_for_layer' do
+    include Carto::Factories::Visualizations
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@user)
+      @layer = @visualization.data_layers.first
+    end
+
+    after(:all) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+      # This avoids connection leaking.
+      ::User[@user.id].destroy
+    end
+
+    it 'copies the layer query' do
+      @layer.options[:query] = 'SELECT * FROM wadus'
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.params[:query].should eq 'SELECT * FROM wadus'
+    end
+
+    it 'copies the layer table_name' do
+      @layer.options[:table_name] = 'tt11'
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.options[:table_name].should eq 'tt11'
+    end
+
+    it 'copies only the table_name for non-org users' do
+      @layer.options.merge!(table_name: 'tt11', user_name: 'juan')
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.options[:table_name].should eq 'tt11'
+    end
+
+    it 'always qualifies table_name in organizations' do
+      @layer.options.merge!(table_name: 'tt33', user_name: @user.username)
+      @layer.user.stubs(:organization_user?).returns(true)
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.options[:table_name].should eq "#{@user.username}.tt33"
+    end
+
+    it 'uses default SQL query if missing' do
+      @layer.options.merge!(table_name: 'tt33', user_name: @user.username, query: '')
+      Carto::User.any_instance.stubs(:organization_user?).returns(true)
+      analysis = Carto::Analysis.source_analysis_for_layer(@layer, 0)
+      analysis.analysis_node.params[:query].should eq "SELECT * FROM #{@user.username}.tt33"
+    end
+  end
 end

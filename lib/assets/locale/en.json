@@ -34,7 +34,7 @@
     "edit-map": "Edit your map",
     "toolbar": {
       "title": "Toolbar",
-      "description": "The toolbar provides options to access to your dashboard, edit your map, and configure its settings."
+      "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
       "title": "Editor pane",
@@ -130,6 +130,7 @@
     },
     "connect-with-lines": {
       "title": "Connect with lines",
+      "description": "Create lines from point datasets using a variety of methods",
       "the-geom": "This column was updated to be lines according to the method chosen.",
       "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
       "line-source-to-target": "Link a source point to a target point based on a shared attribute",
@@ -249,7 +250,10 @@
       "title": "Predict trends and volatility",
       "short-title": "Trends"
     },
-    "source": "Source"
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
   },
 
   "analysis-category": {
@@ -260,6 +264,11 @@
   },
   "form-components": {
     "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -982,6 +991,20 @@
           "privacy-change-banned": "You cannot change the privacy of your new datasets.",
           "add-layer": "Add layer"
         }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "This geometry is too big to edit from the web",
+          "desc": "Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.",
+          "cancel": "Cancel",
+          "continue": "Ok, continue"
+        },
+        "delete": {
+          "title": "You are about to delete a feature",
+          "desc": "Are you sure you want to delete it?",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it"
+        }
       }
     },
     "error": {
@@ -998,7 +1021,8 @@
       "operators": {
         "count-message": "If you select 'COUNT' all columns are selected"
       },
-      "interval-error": "Value must be between %{minValue} and %{maxValue}"
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "copy-button": "COPY"
     },
     "codemirror": {
       "no-errors": "No errors",
@@ -1313,7 +1337,8 @@
         "expand": "Expand",
         "export": "Export data",
         "hide": "Hide layer",
-        "show": "Show layer"
+        "show": "Show layer",
+        "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
@@ -1341,7 +1366,7 @@
         "layers": "one layer |||| %{smart_count} layers",
         "affected-items": "Deleting this layer will affect to",
         "and": "and",
-        "link-to-export": "Before deleting your map, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
+        "link-to-export": "Before deleting the layer, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
       },
       "layer": {
         "animated": "Animated",
@@ -1446,9 +1471,10 @@
         "denominator-help": "A column to normalize the target column",
         "desc": "DESC",
         "direction": "Direction",
+        "disabled-by-config": "This analysis type is disabled",
         "dissolved": "Dissolved",
         "dissolved-help": "Combine polygons tracts which have equal ranges",
-        "distance": "Units",
+        "distance": "Distance",
         "enter-latitude": "Enter latitude",
         "enter-longitude": "Enter longitude",
         "filter": "Filter",
@@ -1574,14 +1600,17 @@
         "to-closest": "To closest",
         "top-range": "Top range",
         "tracts": "Tracts",
+        "tracts-help": "Number of AOIs evenly spaced between 0 and RADIUS",
         "tune-analysis": "Tune your analysis",
         "tune-centroid": "Tune your centroid",
         "tune-clusters": "Tune your clusters",
+        "units": "Units",
         "type": "Type",
         "value": "Value",
         "value-aggregation": "Value aggregation",
         "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
         "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
+        "valid-type": "This kind of data is not valid for this type",
         "walk": "Walk",
         "weight": "Weight",
         "weight-column": "Weight column",
@@ -1598,6 +1627,7 @@
         "no-fields": "You haven’t selected any fields to be shown in the popup.",
         "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
         "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
+        "placeholder-geometry": "There's no geometry in your data to add a popup.",
         "style": {
           "title-label": "Style",
           "select-style": "Select style",
@@ -1634,6 +1664,13 @@
         "is-equal-to": "Is equal to",
         "is-greater-than": "Is greater than",
         "is-less-than": "Is less than"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
       }
     },
     "data": {
@@ -1700,7 +1737,7 @@
       }
     },
     "legend": {
-      "message": "Unfortunately, legends are not available yet and they are disabled. We will add them very soon, so stay tuned!",
+      "no-geometry-data": "There's no geometry in your data to add a legend.",
       "data-toggle": {
         "values": "VALUES",
         "html": "HTML"
@@ -1718,10 +1755,10 @@
         "size": "size"
       },
       "messages": {
-        "migrated-legend": {
-          "title": "IMPORTED LEGEND",
-          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
-          "accept": "Delete imported legend"
+        "custom-legend": {
+          "title": "CUSTOM LEGEND APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "Delete custom html"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
@@ -1754,7 +1791,14 @@
         "fill": "Fill",
         "by-size": "By Size",
         "by-color": "By Color",
-        "untitled": "Untitled"
+        "untitled": "Untitled",
+        "prefix": "Prefix",
+        "suffix": "Suffix",
+        "left-label": "Left Label",
+        "right-label": "Right Label",
+        "top-label": "Top Label",
+        "bottom-label": "Bottom Label",
+        "custom-label-placeholder": "Override dynamic value"
       },
       "pixel-title": "Amount"
     },
@@ -1980,6 +2024,26 @@
           "no": "No"
         }
       }
+    },
+    "edit-feature": {
+      "features": {
+        "point": "point",
+        "line": "line",
+        "polygon": "polygon"
+      },
+      "overlay-text": "Start clicking on the map to draw your %{featureType}",
+      "add": "Add",
+      "save": "Save",
+      "attributes": "Attributes",
+      "attributes-columns": "Change column names and type in table mode",
+      "cancel": "Cancel",
+      "geometry": "Geometry",
+      "geometry-edit": "You can also edit it on the map",
+      "valid-lng": "Must be a valid longitude",
+      "valid-lat": "Must be a valid latitude",
+      "valid": "Only numbers allowed",
+      "delete": "Delete %{featureType}",
+      "edit": "Edit %{featureType}"
     }
   },
   "notifications": {
@@ -1996,7 +2060,8 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped"
+        "timeout": "The execution of the analysis timed out and was stopped",
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },
     "widgets": {
@@ -2013,7 +2078,7 @@
     },
     "layer": {
       "error": "Layer error: %{error}",
-      "added": "Layer added successfully."
+      "added": "Layer added successfully"
     },
     "cartocss": {
         "error": {
@@ -2031,6 +2096,22 @@
         "title": "Error in SQL query:"
       },
       "success": "SQL query applied"
+    },
+    "edit-feature": {
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Deleting feature…",
+        "error": "Error deleting feature",
+        "success": "Feature deleted correctly"
+      },
+      "save": {
+        "loading": "Saving feature…",
+        "error": "Error saving feature",
+        "success": "Feature successfully saved"
+      },
+      "adding": "Adding feature…",
     }
   }
 }

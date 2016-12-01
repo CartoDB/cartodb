@@ -4,7 +4,7 @@ include UniqueNamesHelper
 
 FactoryGirl.define do
 
-  factory :feature_flag do
+  factory :feature_flag, class: ::FeatureFlag do
     id { unique_integer }
     sequence(:name) { |n| "FF#{n}" }
     restricted true

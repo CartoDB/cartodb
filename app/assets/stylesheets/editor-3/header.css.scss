@@ -50,7 +50,6 @@
 .Editor-HeaderInfo-title {
   @include display-flex();
   @include align-items(center);
-  margin-bottom: 7px;
 }
 .Editor-HeaderInfo-titleText {
   @include flex(1);
@@ -111,6 +110,15 @@
     color: $cWhite;
   }
 }
+
 .Editor-HeaderInfo-publishDate {
   @include flex(1);
+}
+
+.Editor-HeaderInfo-zoom {
+  fill: $cBlue;
+}
+
+.Editor-HeaderInfo-zoom.is-white {
+  fill: $cWhite;
 }

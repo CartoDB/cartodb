@@ -384,8 +384,19 @@ describe Carto::VisualizationsExportService2 do
     end
   end
 
+  def clean_analysis_definition(analysis_definition)
+    # Remove options[:style_history] from all nested nodes for comparison
+    definition_node = Carto::AnalysisNode.new(analysis_definition.deep_symbolize_keys)
+    definition_node.descendants.each do |n|
+      n.definition[:options].delete(:style_history) if n.definition[:options].present?
+      n.definition.delete(:options) if n.definition[:options] == {}
+    end
+
+    definition_node.definition
+  end
+
   def verify_analysis_vs_export(analysis, analysis_export)
-    analysis.analysis_definition.deep_symbolize_keys.should eq analysis_export[:analysis_definition].deep_symbolize_keys
+    clean_analysis_definition(analysis.analysis_definition.deep_symbolize_keys).should eq clean_analysis_definition(analysis_export[:analysis_definition].deep_symbolize_keys)
   end
 
   def verify_overlays_vs_export(overlays, overlays_export)
@@ -554,6 +565,14 @@ describe Carto::VisualizationsExportService2 do
         visualization.privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
       end
 
+      it 'imports protected maps as public if the user does not have private maps enabled' do
+        @user.stubs(:private_maps_enabled).returns(false)
+        imported = Carto::VisualizationsExportService2.new.build_visualization_from_json_export(export.to_json)
+        imported.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
+        visualization.privacy.should eq Carto::Visualization::PRIVACY_PUBLIC
+      end
+
       it 'does not import more layers than the user limit' do
         old_max_layers = @user.max_layers
         @user.max_layers = 1
@@ -609,14 +628,26 @@ describe Carto::VisualizationsExportService2 do
           imported_viz.widgets.first.style.should == {}
         end
 
-        it '2.0.6 (without map options)' do
-          export_2_0_6 = export
-          export_2_0_6[:visualization][:map].delete(:options)
+        describe '2.0.6 (without map options)' do
+          it 'missing options' do
+            export_2_0_6 = export
+            export_2_0_6[:visualization][:map].delete(:options)
 
-          service = Carto::VisualizationsExportService2.new
-          visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
 
-          visualization.map.options.should be
+            visualization.map.options.should be
+          end
+
+          it 'partial options' do
+            export_2_0_6 = export
+            export_2_0_6[:visualization][:map][:options].delete(:dashboard_menu)
+
+            service = Carto::VisualizationsExportService2.new
+            visualization = service.build_visualization_from_json_export(export_2_0_6.to_json)
+
+            visualization.map.options[:dashboard_menu].should be
+          end
         end
 
         it '2.0.5 (without version)' do

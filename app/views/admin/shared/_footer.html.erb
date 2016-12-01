@@ -1,19 +1,18 @@
 <% light = false if !light.present? %>
 
-<div class="CDB-Text CDB-FontSize-medium Footer <%= 'Footer--light' if light %>">
+<div class="CDB-Text CDB-FontSize-medium u-tSpace-xl Footer <%= 'Footer--light' if light %>">
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <% unless cartodb_com_hosted? %>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/gallery/">Gallery</a></li>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/docs/tutorials/">Getting started</a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/learn/guides/">Guides</a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/docs">Documentation</a></li>
       <% end %>
       <% unless cartodb_onpremise_version.blank? %>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium">Version: <%= cartodb_onpremise_version %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium">Version: <%= cartodb_onpremise_version %></li>
       <% end %>
     </ul>
 
     <ul class="Footer-list Footer-list--secondary">
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/docs">Documentation</a></li>
       <% unless cartodb_com_hosted? %>
         <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="mailto:support@carto.com">Support</a></li>
       <% else %>

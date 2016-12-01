@@ -1,4 +1,6 @@
-# encoding utf-8
+# encoding: utf-8
+
+require 'hubspot/events_api'
 
 module Resque
   module TrackingJobs
@@ -16,6 +18,22 @@ module Resque
                                 exception: exception,
                                 event: name,
                                 properties: properties)
+      end
+    end
+
+    module SendHubspotEvent
+      @queue = :tracker
+
+      def self.perform(id, params)
+        events_api = ::Hubspot::EventsAPI.instance
+        return unless events_api.enabled?
+
+        code, body = events_api.report(id, params: params)
+
+        unless code == '200' && body.present?
+          message = 'Carto::Tracking: Hubspot service error'
+          CartoDB::Logger.error(message: message, event_id: id, params: params)
+        end
       end
     end
   end

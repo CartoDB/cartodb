@@ -409,7 +409,7 @@ module CartoDB
             end
           end
 
-          prepared_fields = Addressable::URI.encode(fields.map { |field| "#{field[:name]}" }.join(','))
+          prepared_fields = fields.map { |field| "#{field[:name]}" }.join(',')
 
           prepared_url = FEATURE_DATA_POST_URL % [url]
           # @see http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Query_Map_Service_Layer/02r3000000p1000000/

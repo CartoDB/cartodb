@@ -600,7 +600,7 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
         layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
         layer_with_table.should_not be_nil
-        layer_with_table.affected_tables.should be_empty
+        layer_with_table.user_tables.should be_empty
       end
 
       it "Register layer tables dependencies if user table exists" do
@@ -609,8 +609,8 @@ describe Carto::VisualizationsExportService2 do
         visualization = Carto::VisualizationsExportPersistenceService.new.save_import(@user, imported)
         layer_with_table = visualization.layers.find { |l| l.options[:table_name].present? }
         layer_with_table.should_not be_nil
-        layer_with_table.affected_tables.should_not be_empty
-        layer_with_table.affected_tables.first.id.should eq user_table.id
+        layer_with_table.user_tables.should_not be_empty
+        layer_with_table.user_tables.first.id.should eq user_table.id
       end
 
       describe 'maintains backwards compatibility with' do

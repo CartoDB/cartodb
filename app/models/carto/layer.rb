@@ -6,7 +6,7 @@ require_dependency 'carto/query_rewriter'
 module Carto
   module LayerTableDependencies
     def affected_tables
-      return [] unless options.present?
+      return [] unless maps.first.present? && options.present?
       node_id = options.symbolize_keys[:source]
       if node_id.present?
         visualization_id = map.visualization.id
@@ -223,7 +223,10 @@ module Carto
     end
 
     def register_table_dependencies
-      self.user_tables = affected_tables if data_layer?
+      if data_layer?
+        maps.reload if persisted?
+        self.user_tables = affected_tables
+      end
     end
 
     def fix_layer_user_information(old_username, new_user, renamed_tables)

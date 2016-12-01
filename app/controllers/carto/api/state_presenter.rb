@@ -8,10 +8,10 @@ module Carto
       def to_hash
         {
           id: @state.id,
+          visualization_id: @state.visualization_id,
           created_at: @state.created_at,
           updated_at: @state.updated_at,
-          json: @state.json,
-          user: Carto::Api::UserPresenter.new(@state.user).to_public_poro
+          json: @state.json
         }
       end
     end

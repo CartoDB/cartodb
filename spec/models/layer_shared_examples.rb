@@ -99,7 +99,8 @@ shared_examples_for 'Layer model' do
       layer = layer_class.create(kind: 'carto')
       after = layer.updated_at
       Delorean.jump(1.minute)
-      after.should < layer.save.updated_at
+      layer.save
+      after.should < layer.updated_at
       Delorean.back_to_the_present
     end
 

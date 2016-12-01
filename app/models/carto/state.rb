@@ -5,7 +5,7 @@ require_relative './carto_json_serializer'
 
 class Carto::State < ActiveRecord::Base
   belongs_to :visualization,
-             class_name: Carto::visualization,
+             class_name: Carto::Visualization,
              dependent: :destroy
 
   serialize :json, ::Carto::CartoJsonSymbolizerSerializer

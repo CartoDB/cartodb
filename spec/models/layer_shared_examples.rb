@@ -10,8 +10,7 @@ shared_examples_for 'Layer model' do
     end
 
     it "should not allow to create layers of unkown types" do
-      l = layer_class.new(kind: "wadus")
-      expect { l.save! }.to raise_error
+      expect { layer_class.create(kind: "wadus").save! }.to raise_error
     end
 
     it "should allow to be linked to many maps" do
@@ -24,6 +23,7 @@ shared_examples_for 'Layer model' do
 
       add_layer_to_entity(map, layer)
       add_layer_to_entity(map2, layer)
+      layer.reload
 
       map.layers.first.id.should  == layer.id
       map2.layers.first.id.should == layer.id
@@ -69,7 +69,7 @@ shared_examples_for 'Layer model' do
 
         @layer.maps.count.should eq 1
         @layer.maps.each do |map|
-          map.expects(:invalidate_vizjson_varnish_cache).times(1)
+          map.expects(:notify_map_change).times(1)
         end
 
         @layer.save
@@ -85,7 +85,7 @@ shared_examples_for 'Layer model' do
 
       it "should not invalidate its related tables varnish cache" do
         @layer.maps.each do |map|
-          map.expects(:invalidate_vizjson_varnish_cache).times(1)
+          map.expects(:notify_map_change).times(1)
         end
 
         @layer.affected_tables.each do |table|

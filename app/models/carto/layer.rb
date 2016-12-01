@@ -76,6 +76,9 @@ module Carto
 
     has_many :layer_node_styles
 
+    before_destroy :invalidate_maps
+    after_save :invalidate_maps
+
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
 
@@ -90,6 +93,7 @@ module Carto
     }.freeze
 
     def set_default_order(parent)
+      maps.reload
       return unless order.nil?
       max_order = parent.layers.map(&:order).compact.max || -1
       update_attribute(:order, max_order + 1)
@@ -264,6 +268,10 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
+    end
+
+    def invalidate_maps
+      maps.each(&:notify_map_change)
     end
   end
 end

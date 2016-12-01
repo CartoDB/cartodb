@@ -114,6 +114,13 @@ module Carto
         legend.errors[:definition].should_not include('could not be validated')
       end
 
+      it 'rejects empty definitions for custom' do
+        legend = Legend.new(layer_id: @layer.id, type: 'custom', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:definition].should_not be_empty
+      end
+
       describe('#conf') do
         it 'rejects spam' do
           bad_conf = { not_column_name: 'not array' }

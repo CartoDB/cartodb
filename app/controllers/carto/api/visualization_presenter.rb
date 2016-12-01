@@ -58,7 +58,7 @@ module Carto
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,
           active_child: @visualization.active_child,
-          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission, @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
+          table: Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
@@ -132,7 +132,7 @@ module Carto
           @visualization.related_tables
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
         end
       end
 

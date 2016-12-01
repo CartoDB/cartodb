@@ -15,10 +15,8 @@ module Carto
           PRIVACY_LINK => 'link'
       }
 
-      # INFO: this permission comes from user table associated visualization, which makes not much sense (at least, it should not be passed as a parameter but fetched through the association), but it's preserved (for the moment) for compatibility reasons.
-      def initialize(user_table, permission, current_viewer)
+      def initialize(user_table, current_viewer)
         @user_table = user_table
-        @permission = permission
         @current_viewer = current_viewer
         @presenter_cache = Carto::Api::PresenterCache.new
       end
@@ -34,7 +32,7 @@ module Carto
         poro = {
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
-          permission: Carto::Api::PermissionPresenter.new(@permission, current_viewer: @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
+          permission: Carto::Api::PermissionPresenter.new(@user_table.visualization.permission, current_viewer: @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@user_table.synchronization).to_poro,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,

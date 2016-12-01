@@ -503,9 +503,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def save_state_if_needed
-    if state.changed?
-      update_attribute(:state_id, state.id) if state.save && !state_id
-    end
+    state.save if state.changed?
   end
 
   def named_maps_api

@@ -167,10 +167,10 @@
 }
 
 .OpacityEditor-slider {
-  width: 169px;
+  width: 171px;
   height: $baseSize;
   margin-top: $baseSize;
-  border-radius: 2px;
+  border-radius: $baseSize - 2;
   position: relative;
   background-image: image-url('layout/colorpicker/alpha-horizontal.png');
   background-size: contain;
@@ -184,7 +184,7 @@
   bottom: 0;
   left: 0;
   border: 1px solid rgba(0, 0, 0, 0.24);
-  border-radius: 2px;
+  border-radius: $baseSize - 2;
   pointer-events: none;
   content: '';
 }

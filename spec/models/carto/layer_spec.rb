@@ -1,9 +1,38 @@
 # encoding: utf-8
 
 require 'spec_helper_min'
+require 'models/layer_shared_examples'
 
 describe Carto::Layer do
   include Carto::Factories::Visualizations
+
+  it_behaves_like 'Layer model' do
+    let(:layer_class) { Carto::Layer }
+    def create_map(options = {})
+      options.delete(:table_id)
+      Carto::Map.create(options)
+    end
+
+    def add_layer_to_entity(entity, layer)
+      entity.layers << layer
+    end
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+
+      @table = Table.new
+      @table.user_id = @user.id
+      @table.save
+    end
+
+    before(:each) do
+      bypass_named_maps
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+  end
 
   describe '#affected_tables' do
     before(:all) do

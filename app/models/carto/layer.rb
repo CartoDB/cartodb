@@ -76,7 +76,7 @@ module Carto
 
     has_many :layer_node_styles
 
-    ALLOWED_KINDS = %w{ carto tiled background gmapsbase torque wms }.freeze
+    ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
 
     TEMPLATES_MAP = {

@@ -1,3 +1,5 @@
+require_dependency 'carto/user_authenticator'
+
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
   manager.failure_app = SessionsController
@@ -15,13 +17,15 @@ class Warden::SessionSerializer
 end
 
 Warden::Strategies.add(:password) do
+  include Carto::UserAuthenticator
+
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
 
   def authenticate!
     if params[:email] && params[:password]
-      if (user = ::User.authenticate(params[:email], params[:password]))
+      if (user = authenticate(params[:email], params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
           success!(user, :message => "Success")
           request.flash['logged'] = true

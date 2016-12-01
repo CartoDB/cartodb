@@ -65,7 +65,6 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :state, class_name: Carto::State
 
   belongs_to :state, class_name: Carto::State
-  after_save :save_state_if_needed
 
   validates :version, presence: true
 
@@ -500,10 +499,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def build_state
     self.state = Carto::State.new
-  end
-
-  def save_state_if_needed
-    state.save if state.changed?
   end
 
   def named_maps_api

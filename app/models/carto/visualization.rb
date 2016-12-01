@@ -62,6 +62,8 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :analyses, class_name: Carto::Analysis
   has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
 
+  has_one :state, class_name: Carto::State
+
   belongs_to :state, class_name: Carto::State
   after_save :save_state_if_needed
 

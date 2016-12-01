@@ -10,7 +10,7 @@ class Carto::State < ActiveRecord::Base
   after_initialize :ensure_json
 
   def self.columns
-    super.reject { |c| ['user_id', 'visualization_id'].include?(c.name) }
+    super.reject { |c| c.name == 'user_id' }
   end
 
   private

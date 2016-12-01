@@ -57,10 +57,10 @@ describe Layer do
     end
 
     before(:each) do
-      @hyphen_user_layer = layer_class.new
+      @hyphen_user_layer = Layer.new
       @hyphen_user_layer.stubs(:user).returns(@hyphen_user)
 
-      @owner_layer = layer_class.new
+      @owner_layer = Layer.new
       @owner_layer.stubs(:user).returns(@owner)
     end
 

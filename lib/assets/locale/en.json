@@ -34,7 +34,7 @@
     "edit-map": "Edit your map",
     "toolbar": {
       "title": "Toolbar",
-      "description": "The toolbar provides options to access to your dashboard, edit your map, and configure its settings."
+      "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
       "title": "Editor pane",

@@ -142,17 +142,6 @@ shared_examples_for 'Layer model' do
     end
   end
 
-  describe '#copy' do
-    it 'returns a copy of the layer' do
-      layer       = layer_class.new(kind: 'carto', options: { style: 'bogus' }).save
-      layer_copy  = layer.copy
-
-      layer_copy.kind.should    == layer.kind
-      layer_copy.options.should == layer.options
-      layer_copy.id.should be_nil
-    end
-  end
-
   describe '#base_layer?' do
     it 'returns true if its kind is a base layer' do
       layer = layer_class.new(kind: 'tiled')

@@ -30,6 +30,17 @@ describe Layer do
     after(:all) do
       @user.destroy
     end
+
+    describe '#copy' do
+      it 'returns a copy of the layer' do
+        layer       = layer_class.create(kind: 'carto', options: { style: 'bogus' })
+        layer_copy  = layer.copy
+
+        layer_copy.kind.should    == layer.kind
+        layer_copy.options.should == layer.options
+        layer_copy.id.should be_nil
+      end
+    end
   end
 
   describe '#affected_table_names' do

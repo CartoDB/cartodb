@@ -83,6 +83,7 @@ WORKING_SPECS_1 = \
 	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
+	spec/services/carto/user_authenticator_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	$(NULL)

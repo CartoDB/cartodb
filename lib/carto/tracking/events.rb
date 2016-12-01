@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/segment'

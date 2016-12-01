@@ -135,7 +135,7 @@ module Carto
       gmapsbase? || tiled?
     end
 
-    def base?
+    def base_layer?
       tiled? || background? || gmapsbase? || wms?
     end
 
@@ -144,7 +144,7 @@ module Carto
     end
 
     def data_layer?
-      !base?
+      !base_layer?
     end
 
     def user_layer?

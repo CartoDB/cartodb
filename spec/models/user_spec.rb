@@ -16,7 +16,6 @@ require 'factories/database_configuration_contexts'
 include UniqueNamesHelper
 
 describe 'refactored behaviour' do
-
   it_behaves_like 'user models' do
     def get_twitter_imports_count_by_user_id(user_id)
       get_user_by_id(user_id).get_twitter_imports_count
@@ -30,7 +29,6 @@ describe 'refactored behaviour' do
       FactoryGirl.create(:valid_user)
     end
   end
-
 end
 
 describe User do
@@ -63,89 +61,6 @@ describe User do
     bypass_named_maps
     @user.destroy
     @user2.destroy
-  end
-
-  it "Should properly report ability to change (or not) email & password when proceeds" do
-    @user.google_sign_in = false
-    password_change_date = @user.last_password_change_date
-    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(false)
-
-    @user.can_change_email?.should eq true
-    @user.can_change_password?.should eq true
-
-    @user.google_sign_in = true
-    @user.can_change_email?.should eq false
-
-    @user.last_password_change_date = nil
-    @user.can_change_email?.should eq false
-
-    Carto::Ldap::Manager.any_instance.stubs(:configuration_present?).returns(true)
-    @user.can_change_email?.should eq false
-
-    @user.last_password_change_date = password_change_date
-    @user.google_sign_in = false
-    @user.can_change_email?.should eq false
-
-    @user.can_change_password?.should eq false
-
-  end
-
-  it "should set a default database_host" do
-    @user.database_host.should eq ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
-  end
-
-  it "should set a default api_key" do
-    @user.reload.api_key.should_not be_blank
-  end
-
-  it "should set created_at" do
-    @user.created_at.should_not be_nil
-  end
-
-  it "should update updated_at" do
-    expect { @user.save }.to change(@user, :updated_at)
-  end
-
-  it "should set up a user after create" do
-    @new_user = new_user
-    @new_user.save
-    @new_user.reload
-    @new_user.should_not be_new
-    @new_user.database_name.should_not be_nil
-    @new_user.in_database.test_connection.should == true
-    @new_user.destroy
-  end
-
-  it "should have a crypted password" do
-    @user.crypted_password.should_not be_blank
-    @user.crypted_password.should_not == 'admin123'
-  end
-
-  it "should authenticate if given email and password are correct" do
-    response_user = ::User.authenticate('admin@example.com', 'admin123')
-    response_user.id.should eq @user.id
-    response_user.email.should eq @user.email
-
-    ::User.authenticate('admin@example.com', 'admin321').should be_nil
-    ::User.authenticate('', '').should be_nil
-  end
-
-  it "should authenticate with case-insensitive email and username" do
-    response_user = ::User.authenticate('admin@example.com', 'admin123')
-    response_user.id.should eq @user.id
-    response_user.email.should eq @user.email
-
-    response_user_2 = ::User.authenticate('aDMin@eXaMpLe.Com', 'admin123')
-    response_user_2.id.should eq @user.id
-    response_user_2.email.should eq @user.email
-
-    response_user_3 = ::User.authenticate('admin', 'admin123')
-    response_user_3.id.should eq @user.id
-    response_user_3.email.should eq @user.email
-
-    response_user_4 = ::User.authenticate('ADMIN', 'admin123')
-    response_user_4.id.should eq @user.id
-    response_user_4.email.should eq @user.email
   end
 
   it "should only allow legal usernames" do

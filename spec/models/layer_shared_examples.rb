@@ -243,7 +243,8 @@ shared_examples_for 'Layer model' do
       layer.reload
 
       layer.kind = 'torque'
-      expect { layer.save }.to raise_error(Sequel::ValidationFailed, "maps Viewer users can't edit layers")
+      saved = layer.save rescue false
+      saved.should be_false
     end
   end
 

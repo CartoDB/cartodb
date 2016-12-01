@@ -76,11 +76,13 @@ module Carto
 
     has_many :layer_node_styles
 
+    before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
     after_save :invalidate_maps
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
+    validate :validate_not_viewer
 
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
@@ -272,6 +274,14 @@ module Carto
 
     def invalidate_maps
       maps.each(&:notify_map_change)
+    end
+
+    def ensure_not_viewer
+      raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+    end
+
+    def validate_not_viewer
+      errors.add(:maps, "Viewer users can't edit layers") if maps.find { |m| m.user && m.user.viewer }
     end
   end
 end

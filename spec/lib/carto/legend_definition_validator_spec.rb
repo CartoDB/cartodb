@@ -14,7 +14,7 @@ module Carto
     end
 
     let(:bubble_definition) do
-      definition_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+      definition_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
       Carto::Definition.instance
                        .load_from_file(definition_location)
     end
@@ -266,19 +266,19 @@ module Carto
       it 'returns location for existent locations' do
         validator = LegendDefinitionValidator.new(:bubble, nil)
 
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator.send(:location).should eq expected_location
       end
 
       it 'returns location for existent locations when type is string' do
         validator = LegendDefinitionValidator.new('bubble', nil)
 
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator.send(:location).should eq expected_location
       end
 
       it 'is memoized' do
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator = LegendDefinitionValidator.new('bubble', nil)
 
         File.expects(:exists?)

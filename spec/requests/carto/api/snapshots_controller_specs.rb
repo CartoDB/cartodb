@@ -86,20 +86,6 @@ describe Carto::Api::SnapshotsController do
       end
     end
 
-    it 'should not list visualization state for owner' do
-      get_json(snapshots_index_url, Hash.new) do |response|
-        response.status.should eq 200
-
-        response_ids = response.body
-                               .map { |snapshot| snapshot['id'] }
-                               .compact
-                               .sort
-        response_ids.should_not be_empty
-
-        response_ids.should_not include(@visualization.id)
-      end
-    end
-
     it 'lists only snapshots for user and visualization' do
       buddy_url = snapshots_index_url(user_domain: @buddy.subdomain,
                                       api_key: @buddy.api_key)

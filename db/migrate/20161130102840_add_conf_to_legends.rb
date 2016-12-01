@@ -1,9 +1,12 @@
-Sequel.migration do
-  up do
-    add_column :legends, :conf, :json, null: false, default: '{}'
-  end
+require 'carto/db/migration_helper'
 
-  down do
+include Carto::Db::MigrationHelper
+
+migration(
+  Proc.new do
+    add_column :legends, :conf, :json, null: false, default: '{}'
+  end,
+  Proc.new do
     drop_column :legends, :conf
   end
-end
+)

@@ -6,25 +6,19 @@ describe Layer do
   before(:all) do
     @quota_in_bytes = 500.megabytes
     @table_quota = 500
-  end
 
-  after(:all) do
-    # Using Mocha stubs until we update RSpec (@see http://gofreerange.com/mocha/docs/Mocha/ClassMethods.html)
-    bypass_named_maps
-  end
-
-  before(:each) do
     @user = FactoryGirl.create(:valid_user, private_tables_enabled: true)
-
-    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-    bypass_named_maps
 
     @table = Table.new
     @table.user_id = @user.id
     @table.save
   end
 
-  after(:each) do
+  before(:each) do
+    bypass_named_maps
+  end
+
+  after(:all) do
     @user.destroy
   end
 
@@ -39,7 +33,7 @@ describe Layer do
     end
 
     it "should not allow to create layers of unkown types" do
-      l = Layer.new(:kind => "wadus")
+      l = Layer.new(kind: "wadus")
       expect { l.save }.to raise_error(Sequel::ValidationFailed)
     end
 
@@ -47,9 +41,9 @@ describe Layer do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save
-      layer = Layer.create(:kind => 'carto')
-      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
-      map2  = Map.create(:user_id => @user.id, :table_id => table2.id)
+      layer = Layer.create(kind: 'carto')
+      map   = Map.create(user_id: @user.id, table_id: @table.id)
+      map2  = Map.create(user_id: @user.id, table_id: table2.id)
 
       map.add_layer(layer)
       map2.add_layer(layer)
@@ -60,7 +54,7 @@ describe Layer do
     end
 
     it "should allow to be linked to many users" do
-      layer = Layer.create(:kind => 'carto')
+      layer = Layer.create(kind: 'carto')
       layer.add_user(@user)
 
       @user.reload.layers.map(&:id).should include(layer.id)
@@ -68,17 +62,18 @@ describe Layer do
     end
 
     it "should set default order when adding layers to a map" do
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map = Map.create(user_id: @user.id, table_id: @table.id)
       5.times do |i|
-        layer = Layer.create(:kind => 'carto')
+        layer = Layer.create(kind: 'carto')
         map.add_layer(layer)
         layer.reload.order.should == i
       end
     end
 
     it "should set default order when adding layers to a user" do
+      @user.layers.each(&:destroy)
       5.times do |i|
-        layer = Layer.create(:kind => 'carto')
+        layer = Layer.create(kind: 'carto')
         @user.add_layer(layer)
         layer.reload.order.should == i
       end
@@ -94,12 +89,10 @@ describe Layer do
       it "should invalidate its maps" do
         CartoDB::Varnish.any_instance.stubs(:purge).returns(true)
 
+        @layer.maps.count.should eq 1
         @layer.maps.each do |map|
           map.expects(:invalidate_vizjson_varnish_cache).times(1)
         end
-
-        vizjson_key = @layer.affected_tables.first.table_visualization.varnish_vizjson_key
-        CartoDB::Varnish.any_instance.expects(:purge).at_least(1).with(vizjson_key.to_s).returns(true)
 
         @layer.save
       end
@@ -126,7 +119,7 @@ describe Layer do
     end
 
     it "should update updated_at after saving" do
-      layer = Layer.create(:kind => 'carto')
+      layer = Layer.create(kind: 'carto')
       after = layer.updated_at
       Delorean.jump(1.minute)
       after.should < layer.save.updated_at
@@ -137,7 +130,7 @@ describe Layer do
       table2 = Table.new
       table2.user_id = @user.id
       table2.save
-      map = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map = Map.create(user_id: @user.id, table_id: @table.id)
       layer = Layer.create(
         kind: 'carto',
         options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
@@ -167,26 +160,6 @@ describe Layer do
       map.add_layer(layer)
 
       layer.affected_tables.map(&:name).should =~ [@table.name]
-    end
-  end
-
-  context "redis syncs" do
-    pending "should have a unique key to be identified in Redis" do
-      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
-      layer.key.should == "rails:layer_styles:#{layer.id}"
-    end
-
-    pending "should store styles in Redis" do
-      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
-
-      $layers_metadata.hget(layer.key,"style").should == "wadus"
-    end
-
-    pending "should remove the metadata from Redis when removing the layer" do
-      layer = Layer.create(:kind => 'carto', :options => { :style => 'wadus' })
-      $layers_metadata.exists(layer.key).should be_true
-      layer.destroy
-      $layers_metadata.exists(layer.key).should be_false
     end
   end
 
@@ -222,13 +195,13 @@ describe Layer do
 
       tile_style      = "##{table_name} { color:red; }"
       query           = "SELECT * FROM table_name, other_table"
-      options         = {
-                          table_name: table_name,
-                          tile_style: tile_style,
-                          query:      query
-                        }
+      options = {
+        table_name: table_name,
+        tile_style: tile_style,
+        query:      query
+      }
 
-      layer           = Layer.create(kind: 'carto', options: options)
+      layer = Layer.create(kind: 'carto', options: options)
       layer.rename_table(table_name, new_table_name)
       layer.save
       layer.reload
@@ -248,12 +221,12 @@ describe Layer do
 
       tile_style      = "##{table_name} { color:red; }"
       query           = "SELECT * FROM foo"
-      options         = {
-                          table_name: table_name,
-                          tile_style: tile_style,
-                          query:      query
-                        }
-      layer           = Layer.create(kind: 'carto', options: options)
+      options = {
+        table_name: table_name,
+        tile_style: tile_style,
+        query:      query
+      }
+      layer = Layer.create(kind: 'carto', options: options)
       layer.rename_table(table_name, new_table_name)
       layer.save
       layer.reload
@@ -264,11 +237,11 @@ describe Layer do
 
   describe '#before_destroy' do
     it 'invalidates the vizjson cache of all related maps' do
-      map   = Map.create(:user_id => @user.id, :table_id => @table.id)
+      map   = Map.create(user_id: @user.id, table_id: @table.id)
       layer = Layer.create(kind: 'carto')
       map.add_layer(layer)
 
-      layer.maps.each { |map| map.expects(:invalidate_vizjson_varnish_cache) }
+      layer.maps.each { |m| m.expects(:invalidate_vizjson_varnish_cache) }
       layer.destroy
     end
   end

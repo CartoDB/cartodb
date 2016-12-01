@@ -95,10 +95,12 @@ module Carto
     }.freeze
 
     def set_default_order(parent)
-      maps.reload
-      return unless order.nil?
+      return true unless order.nil?
       max_order = parent.layers.map(&:order).compact.max || -1
-      update_attribute(:order, max_order + 1)
+      self.order = max_order + 1
+      save if persisted?
+
+      true
     end
 
     def affected_tables_readable_by(user)
@@ -304,7 +306,7 @@ module Carto
     end
 
     def validate_not_viewer
-      errors.add(:maps, "Viewer users can't edit layers") if maps.find { |m| m.user && m.user.viewer }
+      errors.add(:maps, "Viewer users can't edit layers") if maps.any? { |m| m.user && m.user.viewer }
     end
 
     def update_layer_node_style

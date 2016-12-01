@@ -115,6 +115,7 @@ shared_examples_for 'Layer model' do
         options: { query: "select * from #{@table.name}, #{table2.name};select 1;select * from #{table2.name}" }
       )
       add_layer_to_entity(map, layer)
+      layer.reload
 
       layer.affected_tables.map(&:name).should =~ [table2.name, @table.name]
     end
@@ -137,6 +138,7 @@ shared_examples_for 'Layer model' do
         options: { query: "select 1", table_name: @table.name }
       )
       add_layer_to_entity(map, layer)
+      layer.reload
 
       layer.affected_tables.map(&:name).should =~ [@table.name]
     end

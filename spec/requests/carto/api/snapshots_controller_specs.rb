@@ -2,10 +2,8 @@
 
 require 'spec_helper_min'
 require 'support/helpers'
-require 'factories/carto_visualizations'
 
 describe Carto::Api::SnapshotsController do
-  include Carto::Factories::Visualizations
   include HelperMethods
 
   let(:fake_state) { { manolo: 'escobar' } }
@@ -13,13 +11,13 @@ describe Carto::Api::SnapshotsController do
   before(:all) do
     @user = FactoryGirl.create(:carto_user)
     @intruder = FactoryGirl.create(:carto_user)
-    @_m, @_t, @_tv, @visualization = create_full_visualization(@user)
-    @_om, @_ot, @_otv, @other_visualization = create_full_visualization(@user)
+    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
+    @other_visualization = FactoryGirl.create(:carto_visualization, user: @user)
   end
 
   after(:all) do
-    destroy_full_visualzation(@_m, @_t, @_tv, @visualization)
-    destroy_full_visualzation(@_om, @_ot, @_otv, @other_visualization)
+    @visualization.destroy
+    @other_visualization.destroy
     @intruder.destroy
     @user.destroy
   end

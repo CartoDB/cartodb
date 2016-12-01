@@ -113,21 +113,17 @@ module Carto
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def infowindow_template_path
-      if self.infowindow.present? && self.infowindow['template_name'].present?
-        template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
+      if infowindow.present? && infowindow['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], infowindow['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
-      else
-        nil
       end
     end
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def tooltip_template_path
-      if self.tooltip.present? && self.tooltip['template_name'].present?
-        template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+      if tooltip.present? && tooltip['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(tooltip['template_name'], tooltip['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
-      else
-        nil
       end
     end
 

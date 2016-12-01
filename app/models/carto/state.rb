@@ -1,4 +1,4 @@
-# encoding: uft-8
+# encoding: utf-8
 
 require 'json'
 require_relative './carto_json_serializer'

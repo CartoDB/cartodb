@@ -53,9 +53,7 @@ describe Carto::Api::SnapshotsController do
     end
 
     after(:all) do
-      Carto::Snapshot.where(user_id: @user.id).map(&:destroy)
-      Carto::Snapshot.where(user_id: @buddy.id).map(&:destroy)
-
+      Carto::Snapshot.all.map(&:destroy)
       @buddy.destroy
     end
 

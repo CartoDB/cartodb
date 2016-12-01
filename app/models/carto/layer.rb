@@ -78,7 +78,7 @@ module Carto
 
     before_destroy :ensure_not_viewer
     before_destroy :invalidate_maps
-    after_save :invalidate_maps
+    after_save :invalidate_maps, :update_layer_node_style
 
     ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
     validates :kind, inclusion: { in: ALLOWED_KINDS }
@@ -272,6 +272,10 @@ module Carto
       options.symbolize_keys[:query]
     end
 
+    def source_id
+      options.symbolize_keys[:source]
+    end
+
     def invalidate_maps
       maps.each(&:notify_map_change)
     end
@@ -282,6 +286,19 @@ module Carto
 
     def validate_not_viewer
       errors.add(:maps, "Viewer users can't edit layers") if maps.find { |m| m.user && m.user.viewer }
+    end
+
+    def update_layer_node_style
+      style = current_layer_node_style
+      if style
+        style.update_from_layer(self)
+        style.save
+      end
+    end
+
+    def current_layer_node_style
+      return nil unless source_id
+      layer_node_styles.where(source_id: source_id).first || LayerNodeStyle.new(layer: self, source_id: source_id)
     end
   end
 end

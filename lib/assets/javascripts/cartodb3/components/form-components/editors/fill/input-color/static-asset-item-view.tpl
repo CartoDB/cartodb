@@ -1,1 +1,1 @@
-<button class="AssetItem-icon js-asset" style="background-image:url(<%- public_url %>)" title="<%- name %>"></button>
+<div class="AssetItem-icon js-asset" style="background-image:url(<%- public_url %>)" title="<%- name %>"></div>

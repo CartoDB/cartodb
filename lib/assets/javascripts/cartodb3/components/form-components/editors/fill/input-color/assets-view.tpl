@@ -15,11 +15,7 @@
           </li>
         </ul>
       </div>
-      <div class="Modal-inner Modal-inner--with-navigation">
-        <div class="ScrollView">
-          <div class="ScrollView-content js-body js-uploads"></div>
-        </div>
-      </div>
+      <div class="Modal-inner Modal-inner--with-navigation js-body"></div>
     </div>
   </div>
 

@@ -1146,8 +1146,8 @@
     },
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
-      "from": "cartodb/deep-insights.js#builder-responsive-scroll",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#d1aad085431f6861e3d15539586634d44805de27",
+      "from": "cartodb/deep-insights.js#master",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#ff0950ea359ecf5778901608fbcb66591e4c8688",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",

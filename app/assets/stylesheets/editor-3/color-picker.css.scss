@@ -167,11 +167,11 @@
 }
 
 .OpacityEditor-slider {
+  position: relative;
   width: 171px;
   height: $baseSize;
   margin-top: $baseSize;
   border-radius: $baseSize - 2;
-  position: relative;
   background-image: image-url('layout/colorpicker/alpha-horizontal.png');
   background-size: contain;
   cursor: col-resize;
@@ -190,21 +190,21 @@
 }
 
 .OpacityEditor-slider .ui-slider-handle {
+  position: absolute;
   width: $baseSize;
   height: $baseSize;
   margin-top: -1px;
   margin-left: -4px;
   border-radius: 50%;
+  outline: none;  
   background: $cWhite;
   box-shadow: 1px 1px 1px #333;
-  position: absolute;
-  outline: none; 
 }
 
 .OpacityEditor-inputWrapper {
   position: absolute;
-  bottom: 0;
   right: 0;
+  bottom: 0;
 }
 
 .OpacityEditor-inputWrapper input {

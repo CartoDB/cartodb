@@ -495,7 +495,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def build_state
-    self.state = Carto::State.new(user: user, visualization: self)
+    self.state = Carto::State.new(visualization: self)
   end
 
   def save_state_if_needed

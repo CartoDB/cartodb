@@ -143,7 +143,7 @@ module.exports = WindshaftFilterBase.extend({
   },
 
   remove: function () {
-    this.cleanFilter();
+    this.cleanFilter(false);
     WindshaftFilterBase.prototype.remove.call(this);
   }
 });

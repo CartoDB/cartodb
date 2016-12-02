@@ -1078,7 +1078,8 @@ class Table
     end
     raise if row.nil?
 
-    db_schema = schema.map { |i| i.first(2) }.to_h
+    # `.schema` returns [name, type] pairs, except for geometry types where it returns additional data we don't need
+    db_schema = schema.map { |col_data| col_data.first(2) }.to_h
     row.map { |name, value|
       parsed_value = (db_schema[name] == DATATYPE_DATE && !value.nil?) ? DateTime.parse(value) : value
       [name, parsed_value]

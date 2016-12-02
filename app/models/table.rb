@@ -27,8 +27,8 @@ class Table
 
   # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
-  CARTODB_REQUIRED_COLUMNS = %{cartodb_id the_geom}.freeze
-  CARTODB_COLUMNS = %{cartodb_id created_at updated_at the_geom}.freeze
+  CARTODB_REQUIRED_COLUMNS = %w{cartodb_id the_geom}.freeze
+  CARTODB_COLUMNS = %w{cartodb_id created_at updated_at the_geom}.freeze
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   CARTODB_ID = :cartodb_id

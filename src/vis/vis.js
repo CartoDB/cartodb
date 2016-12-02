@@ -321,6 +321,15 @@ var VisModel = Backbone.Model.extend({
       // When new dataviews are defined, a new instance of the map needs to be created
       this._dataviewsCollection.on('add reset remove', _.debounce(this.invalidateSize, 10), this);
       this.listenTo(this._dataviewsCollection, 'add', _.debounce(this._onDataviewAdded.bind(this), 10));
+      this.listenTo(this._dataviewsCollection, 'remove', this._onDataviewRemoved);
+    }
+  },
+
+  _onDataviewRemoved: function (dataviewModel) {
+    if (dataviewModel.isFiltered()) {
+      this.reload({
+        sourceId: dataviewModel.getSourceId()
+      });
     }
   },
 

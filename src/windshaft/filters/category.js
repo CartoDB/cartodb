@@ -140,10 +140,5 @@ module.exports = WindshaftFilterBase.extend({
 
   getRejectedCategoryNames: function () {
     return this.rejectedCategories.map(function (category) { return category.get('name'); });
-  },
-
-  remove: function () {
-    this.cleanFilter(false);
-    WindshaftFilterBase.prototype.remove.call(this);
   }
 });

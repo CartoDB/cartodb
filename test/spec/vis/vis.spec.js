@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
+var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 
 var fakeVizJSON = function () {
   return {
@@ -972,6 +973,36 @@ describe('vis/vis', function () {
   describe('when a vizjson has been loaded', function () {
     beforeEach(function () {
       this.vis = new Vis();
+    });
+
+    describe('remove dataview', function () {
+      beforeEach(function () {
+        spyOn(this.vis, 'reload');
+        this.vis.load(new VizJSON(fakeVizJSON()));
+        this.vis.instantiateMap();
+      });
+
+      it('should reload vis', function () {
+        var layer = this.vis.map.layers.at(0);
+        layer.getDataProvider = jasmine.createSpy('getDataProvider');
+
+        var dataview = new DataviewModelBase({
+          source: {id: 'a0'}
+        }, {
+          layer: layer,
+          map: this.vis.map,
+          vis: this.vis,
+          analysisCollection: this.vis._analysisCollection
+        });
+
+        dataview.isFiltered = function () {
+          return true;
+        };
+
+        this.vis._dataviewsCollection.add(dataview);
+        dataview.remove();
+        expect(this.vis.reload).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('.getLayers', function () {

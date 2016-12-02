@@ -27,10 +27,5 @@ module.exports = WindshaftFilterBase.extend({
     };
 
     return json;
-  },
-
-  remove: function () {
-    this.unsetRange(false);
-    WindshaftFilterBase.prototype.remove.call(this);
   }
 });

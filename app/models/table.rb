@@ -32,6 +32,7 @@ class Table
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   CARTODB_ID = :cartodb_id
+  DATATYPE_DATE = 'date'
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
@@ -629,7 +630,7 @@ class Table
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
-      elsif column_type == 'date' || column_type == 'timestamptz'
+      elsif column_type == DATATYPE_DATE || column_type == 'timestamptz'
         database.run(%Q{
           ALTER TABLE #{qualified_table_name}
           ALTER COLUMN #{column}
@@ -1065,7 +1066,7 @@ class Table
         name, type = column
         if name == THE_GEOM
           "ST_AsGeoJSON(the_geom,8) as the_geom"
-        elsif type == "date"
+        elsif type == DATATYPE_DATE
           %{CAST("#{name}" AS text) AS "#{name}"}
         else
           %{"#{name}"}
@@ -1079,7 +1080,7 @@ class Table
 
     db_schema = schema.map { |i| i.first(2) }.to_h
     row.map { |name, value|
-      if db_schema[name] == 'date' && !value.nil?
+      if db_schema[name] == DATATYPE_DATE && !value.nil?
         value = DateTime.parse(value)
       end
       [name, value]

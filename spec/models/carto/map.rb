@@ -3,15 +3,11 @@ require_relative '../../spec_helper'
 
 describe Carto::Map do
   before(:all) do
-    @user = create_user({
-        email: 'admin@cartotest.com', 
-        username: 'admin', 
-        password: '123456'
-      })
+    @user = create_user
   end
 
   before(:each) do
-    byepass_named_maps
+    bypass_named_maps
     delete_user_data(@user)
   end
 
@@ -27,7 +23,7 @@ describe Carto::Map do
 
     map = ::Map.create(user_id: @user.id, table_id: table.id)
 
-    5.times do 
+    5.times do
       map.add_layer(::Layer.create(kind: 'carto'))
     end
 
@@ -68,13 +64,13 @@ describe Carto::Map do
     torque_layers_count.should eq map_new.torque_layers.count
     other_layers_count.should eq map_new.other_layers.count
 
-    map.layers.collect(&:id).should eq map_new.layers.collect(&:id)
-    map.base_layers.collect(&:id).should eq map_new.base_layers.collect(&:id)
-    map.data_layers.collect(&:id).should eq map_new.data_layers.collect(&:id)
-    map.user_layers.collect(&:id).should eq map_new.user_layers.collect(&:id)
-    map.carto_and_torque_layers.collect(&:id).should eq map_new.carto_and_torque_layers.collect(&:id)
-    map.torque_layers.collect(&:id).should eq map_new.torque_layers.collect(&:id)
-    map.other_layers.collect(&:id).should eq map_new.other_layers.collect(&:id)
+    map.layers.map(&:id).should eq map_new.layers.map(&:id)
+    map.base_layers.map(&:id).should eq map_new.base_layers.map(&:id)
+    map.data_layers.map(&:id).should eq map_new.data_layers.map(&:id)
+    map.user_layers.map(&:id).should eq map_new.user_layers.map(&:id)
+    map.carto_and_torque_layers.map(&:id).should eq map_new.carto_and_torque_layers.map(&:id)
+    map.torque_layers.map(&:id).should eq map_new.torque_layers.map(&:id)
+    map.other_layers.map(&:id).should eq map_new.other_layers.map(&:id)
 
     map.destroy
   end

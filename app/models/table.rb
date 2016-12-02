@@ -1061,17 +1061,29 @@ class Table
   def record(identifier)
     row = nil
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ',ST_AsGeoJSON(the_geom,8) as the_geom'
-      else
-        schema.map{|c| %Q{"#{c[0]}"} }.join(',')
-      end
+      select_sql = schema.map { |column|
+        name, type = column
+        if name == THE_GEOM
+          "ST_AsGeoJSON(the_geom,8) as the_geom"
+        elsif type == "date"
+          %{CAST("#{name}" AS text) AS "#{name}"}
+        else
+          %{"#{name}"}
+        end
+      }.join(',')
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      row = user_database["SELECT #{select} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
+      row = user_database["SELECT #{select_sql} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
     end
     raise if row.nil?
-    row
+
+    db_schema = schema.map { |i| i.first(2) }.to_h
+    row.map { |name, value|
+      if db_schema[name] == 'date' && !value.nil?
+        value = DateTime.parse(value)
+      end
+      [name, value]
+    }.to_h
   end
 
   def run_query(query)

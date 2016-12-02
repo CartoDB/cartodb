@@ -1080,10 +1080,8 @@ class Table
 
     db_schema = schema.map { |i| i.first(2) }.to_h
     row.map { |name, value|
-      if db_schema[name] == DATATYPE_DATE && !value.nil?
-        value = DateTime.parse(value)
-      end
-      [name, value]
+      parsed_value = (db_schema[name] == DATATYPE_DATE && !value.nil?) ? DateTime.parse(value) : value
+      [name, parsed_value]
     }.to_h
   end
 

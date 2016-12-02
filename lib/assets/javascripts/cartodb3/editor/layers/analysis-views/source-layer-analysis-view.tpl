@@ -12,7 +12,7 @@
 </p>
 <% if (isSync) { %>
   <span class="Editor-ListAnalysis-itemInfoIcon">
-    <div class="u-flex u-alignCenter CDB-Text CDB-Size-small u-altTextColor SyncInfo-message--<%- syncState %>">
+    <div class="u-flex u-alignCenter CDB-Text CDB-Size-small u-altTextColor SyncInfo-message--<%- state %> js-sync" data-tooltip="<% if (errorCode || errorMessage) { %><%- _t('dataset.sync.sync-failed') %><% } else { %><%- ranAt %><% } %>">
       <i class="CDB-IconFont CDB-IconFont-wifi"></i>
     </div>
   </span>

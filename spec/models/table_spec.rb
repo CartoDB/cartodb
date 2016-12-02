@@ -1188,7 +1188,7 @@ describe Table do
     end
 
     it 'correctly returns dates' do
-      table = create_table(:user_id => @user.id)
+      table = create_table(user_id: @user.id)
       table.add_column!(name: "without_tz", type: "timestamp without time zone")
       table.add_column!(name: "with_tz", type: "timestamp with time zone")
       table.add_column!(name: "date", type: "date ") # Add a space to avoid auto-conversion to timestampz

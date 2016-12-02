@@ -25,18 +25,18 @@ class Table
   extend Forwardable
   include Carto::TableUtils
 
-   # TODO Part of a service along with schema
+  # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
-  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  CARTODB_REQUIRED_COLUMNS = %{cartodb_id the_geom}.freeze
+  CARTODB_COLUMNS = %{cartodb_id created_at updated_at the_geom}.freeze
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   CARTODB_ID = :cartodb_id
-  DATATYPE_DATE = 'date'
+  DATATYPE_DATE = 'date'.freeze
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
-  STATEMENT_TIMEOUT = 1.hour*1000
+  STATEMENT_TIMEOUT = 1.hour * 1000
 
   # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
@@ -1081,7 +1081,7 @@ class Table
     # `.schema` returns [name, type] pairs, except for geometry types where it returns additional data we don't need
     db_schema = schema.map { |col_data| col_data.first(2) }.to_h
     row.map { |name, value|
-      parsed_value = (db_schema[name] == DATATYPE_DATE && value) ? DateTime.parse(value) : value
+      parsed_value = db_schema[name] == DATATYPE_DATE && value ? DateTime.parse(value) : value
       [name, parsed_value]
     }.to_h
   end

@@ -1201,7 +1201,7 @@ describe Table do
 
       record = table.record(1)
       record[:with_tz].is_a?(DateTime).should be_true
-      record[:with_tz].to_s.should eq '2016-12-02T10:10:10+01:00'
+      record[:with_tz].should eq DateTime.parse('2016-12-02T10:10:10+01:00')
 
       record[:without_tz].is_a?(DateTime).should be_true
       record[:without_tz].to_s.should eq '2016-12-02T10:10:10+00:00'

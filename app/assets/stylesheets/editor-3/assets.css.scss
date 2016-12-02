@@ -6,20 +6,20 @@
   overflow: hidden;
 }
 .AssetsList-recentInner {
-  width: 1000px;
   display: flex;
+  width: 1000px;
 }
 .AssetsList {
   @include display-flex;
   position: relative;
 }
 .AssetsList-inner {
-  position: relative;
   display: block;
+  position: relative;
   height: auto;
   max-height: none;
-  padding-left: 5px;
-  margin: 35px 0 70px 0;
+  margin: 35px 0 70px;
+  padding: 0 0 0 5px;
   overflow: auto;
 }
 

@@ -32,6 +32,9 @@ module Carto
                                                                                            .with_presenter_cache(@presenter_cache)
                                                                                            .to_poro
 
+        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer)
+                                                                .with_presenter_cache(@presenter_cache).to_poro
+
         poro = {
           id: @visualization.id,
           name: @visualization.name,
@@ -58,7 +61,7 @@ module Carto
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,
           active_child: @visualization.active_child,
-          table: Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
+          table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },

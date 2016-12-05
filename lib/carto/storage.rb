@@ -21,8 +21,8 @@ module Carto
       @storage.remove(location, file)
     end
 
-    def kind?
-      @kind ||= @storage.class.name.demodulize.downcase
+    def type
+      @type ||= @storage.class.name.demodulize.downcase
     end
   end
 end

@@ -458,7 +458,8 @@
       "days-pluralize": "1 day |||| %{smart_count} days",
       "weeks-pluralize": "1 week |||| %{smart_count} weeks",
       "hours-pluralize": "hour week |||| %{smart_count} hours",
-      "gmt-convertion": "Date will be converted to GMT +0"
+      "gmt-convertion": "Date will be converted to GMT +0",
+      "invalid-date": "Invalid date"
     },
     "taglist": {
       "none": "No tags",
@@ -1265,7 +1266,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Show blue bar"
+            "dashboard_menu": "Show toolbar"
           }
         }
       }

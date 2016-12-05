@@ -5,16 +5,19 @@ require_relative './carto_json_serializer'
 
 class Carto::State < ActiveRecord::Base
   belongs_to :visualization, class_name: Carto::Visualization
-  belongs_to :user, class_name: Carto::User
 
   default_scope order('created_at DESC')
 
   serialize :json, ::Carto::CartoJsonSymbolizerSerializer
 
   validates :json, carto_json_symbolizer: true
-  validates :visualization, :user, presence: true
+  validates :visualization, presence: true
 
   after_initialize :ensure_json
+
+  def self.columns
+    super.reject { |c| c.name == 'user_id' }
+  end
 
   private
 

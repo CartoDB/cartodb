@@ -28,7 +28,7 @@ module Carto
       end
 
       def config
-        @config ||= Cartodb.config.fetch(:aws, 's3')
+        @config ||= Cartodb.config.fetch(:aws, 's3')['s3']
       end
 
       private
@@ -36,9 +36,9 @@ module Carto
       def bucket
         return @bucket if @bucket
 
-        existing_bucket = s3.buckets[bucket_name]
-        @bucket = if existing_bucket
-                    existing_bucket
+        remote_bucket = s3.buckets[bucket_name]
+        @bucket = if remote_bucket.exists?
+                    remote_bucket
                   else
                     s3.buckets.create(bucket_name)
                   end

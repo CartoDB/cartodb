@@ -9,7 +9,8 @@ class Carto::StorageOptions::Local
 
     FileUtils.mv(file.path, target_full_path)
 
-    "#{protocol}://#{CartoDB.account_host}/#{target_full_path}"
+    url_path = target_full_path.gsub('public/', '')
+    "#{protocol}://#{CartoDB.account_host}/#{url_path}"
   end
 
   def remove(namespaced_name)

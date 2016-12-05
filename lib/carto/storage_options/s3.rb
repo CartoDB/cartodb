@@ -12,7 +12,7 @@ module Carto
       def initialize(bucket_name)
         @bucket_name = bucket_name
 
-        AWS::config(config) if config.any?
+        AWS::config(config) if config.try(:any?)
       end
 
       def upload(namespaced_name, file)
@@ -28,7 +28,8 @@ module Carto
       end
 
       def config
-        @config ||= Cartodb.config.fetch(:aws, 's3')['s3']
+        s3_conf = Cartodb.config.fetch(:aws, 's3')
+        @config ||= s3_conf['s3'] if s3_conf
       end
 
       private

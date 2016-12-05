@@ -71,9 +71,9 @@ module ApplicationHelper
   module_function :sql_api_template, :sql_api_url
 
   def app_assets_base_url
-    asset_host = Cartodb.get_config(:app_assets, 'asset_host')
-    (asset_host.present? ? asset_host : '/public') + '/assets/' \
-      + JSON::parse(File.read(Rails.root.join('package.json')))['version']
+    asset_host = CartoDB.get_absolute_url(Cartodb.get_config(:app_assets, 'asset_host'))
+    base_url = asset_host.present? ? asset_host : CartoDB.base_url_from_request(request)
+    "#{base_url}/assets/unversioned"
   end
 
   def frontend_config

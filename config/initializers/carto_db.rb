@@ -255,4 +255,12 @@ module CartoDB
       Cartodb.config[:importer]['python_bin_path']
     end
   end
+
+  def self.get_absolute_url(url)
+    uri = URI.parse(url)
+    uri.schema = protocol unless uri.schema.present?
+    uri.to_s
+  rescue
+    nil
+  end
 end

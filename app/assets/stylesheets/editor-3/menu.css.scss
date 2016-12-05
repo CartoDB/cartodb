@@ -111,3 +111,23 @@
   width: 100%;
   border-radius: $baseSize / 2;
 }
+
+
+/* Responsive views */
+@media (max-width: 1280px) {
+  .EditorMenu {
+    @include flex(0 0 48px);
+    width: 48px;
+  }
+  .EditorMenu-logo svg {
+    width: 24px;
+    height: 24px;
+  }
+  .EditorMenu-navigationIcon {
+    font-size: 14px;
+  }
+  .EditorMenu-navigationItem {
+    width: $baseSize * 3;
+    height: $baseSize * 3;
+  }
+}

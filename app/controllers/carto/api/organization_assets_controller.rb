@@ -31,22 +31,21 @@ module Carto
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id)
 
-        filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
-        @file = Tempfile.new(filename)
-
+        tmp_filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
+        file = Tempfile.new(tmp_filename)
         begin
-          IO.copy_stream(open(url), @file)
+          IO.copy_stream(open(@url), file)
+
+          remote_asset_location = File.join(Rails.env,
+                                            'organization-assets',
+                                            @organization.id,
+                                            asset.id)
+
+          public_url = Storage.instance.upload(remote_asset_location, file)
         ensure
-          @file.close
+          file.close
+          file.unlink
         end
-
-        remote_asset_location = File.join(Rails.env,
-                                          'organization-assets',
-                                          @organization.id,
-                                          asset.id)
-
-        public_url = Storage.instance.upload(remote_asset_location, @file)
-        @file.unlink
 
         asset.update_attributes!(public_url: public_url)
 

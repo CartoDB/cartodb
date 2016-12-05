@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative './carto_json_serializer'
 require_relative '../../controllers/carto/api/legend_presenter'
@@ -10,7 +10,7 @@ module Carto
 
     belongs_to :layer, class_name: Carto::Layer
 
-    VALID_LEGEND_TYPES = %(html category bubble choropleth custom custom_choropleth).freeze
+    VALID_LEGEND_TYPES = %(category bubble choropleth custom custom_choropleth).freeze
 
     serialize :definition, ::Carto::CartoJsonSerializer
 

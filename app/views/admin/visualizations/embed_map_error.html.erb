@@ -1,23 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <link rel="shortcut icon" href="/favicons/favicon.ico" />
+    <meta charset="utf-8">
     <title>Embed error | CARTO</title>
-    <style type="text/css">
-      html, body {position:relative; height:100%; width:100%; padding:0; margin:0; background-color:#EEEEEE; font-family:Helvetica, sans-serif; color:#666666; font-size:15px;}
-      #cartodb-embed-error-container { position: absolute; top: 50%; left: 50%; width: 251px; margin:-70px 0 0 -125px; text-align:center; }
-      #cartodb-embed-error-container p { margin-top: 20px; }
-    </style>
+    <%= stylesheet_link_tag 'password_protected.css' %>
   </head>
-  <body>
-    <div id="cartodb-embed-error-container">
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAABBAgMAAAA8txUVAAAAA3NCSVQICAjb4U/gAAAACVBMVEX///8AAAAAAAB+UaldAAAAA3RSTlMAESJ8z6YqAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1cbXjNgAAABV0RVh0Q3JlYXRpb24gVGltZQAzLzI3LzEzT4Iz9QAAAPdJREFUKJG1kjEOwjAMRdNIdOjO0iPkFFUHBqYOTD0ByinKwlwGmIsUocanJLGb2EXtiKe8wfZ3/lcKq5gUV+0E2JnfBXiGUkINwGAAGu4HGDIAwMjDAPJW/QtJQnEKkCTU9wA+tUeAtF4AEDQkEl4RnotIBNQQdH0QZtJF5Wi7R/DYn6pRFcMQh6UaJUzx/E1w/wQrl/YStAS+NH4CNw1K3NDku3v8U5owa/pghEdLpqCGc0t2VeHtjSYj0cRrSeZHr9+uWmIR1t4m43Ny2tEudocJOudFBwM4Y+F17HKoRCiVkWBFKNXxonbq0AlY9axhd49xG/AFZkoK7FTkQ84AAAAASUVORK5CYII=">
-      <p>
-        Looks like this map no longer exists or is set as private
-      </p>
+
+  <body class='PublicPage-body PublicPage-background--grey'>
+    <div class='PublicPage-centerContainer'>
+      <div class='PublicPage-container'>
+        <div class='PublicPage-protectedEmbed-iconContainer'>
+          <svg version="1.1" id="Outline_Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px" viewBox="0 0 24 24">
+            <g id="Editor-private-embed" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            	<path fill='#27353C' d="M17.479,11.035c-3.584,0-6.5,2.916-6.5,6.5s2.916,6.5,6.5,6.5s6.5-2.916,6.5-6.5S21.062,11.035,17.479,11.035z
+            		 M17.479,23.035c-3.033,0-5.5-2.467-5.5-5.5s2.467-5.5,5.5-5.5s5.5,2.467,5.5,5.5S20.511,23.035,17.479,23.035z"/>
+            	<circle fill='#27353C' cx="17.479" cy="20.802" r="0.593"/>
+            	<path fill='#27353C' d="M17.479,13.484c-1.256,0-2.277,1.022-2.277,2.278c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5
+            		c0-0.705,0.573-1.278,1.277-1.278c0.706,0,1.279,0.573,1.279,1.278c0,0.705-0.574,1.278-1.279,1.278c-0.276,0-0.5,0.224-0.5,0.5
+            		v1.779c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5v-1.334c1.017-0.229,1.779-1.138,1.779-2.223
+            		C19.758,14.506,18.735,13.484,17.479,13.484z"/>
+            	<path fill='#27353C' d="M1,1h10v4.5C11,5.776,11.224,6,11.5,6H16v4h1V5.5c0-0.067-0.014-0.132-0.039-0.192c-0.025-0.061-0.062-0.116-0.108-0.162
+            		l-4.999-4.999c-0.046-0.046-0.101-0.083-0.162-0.108C11.632,0.014,11.567,0,11.5,0h-11C0.224,0,0,0.224,0,0.5v21
+            		C0,21.776,0.224,22,0.5,22H11v-1H1V1z M12,1.707L15.293,5H12V1.707z"/>
+            </g>
+          </svg>
+        </div>
+
+        <p class='CDB-Text CDB-Size-large'>Looks like this map is set as private or no longer exists</p>
+      </div>
     </div>
+
     <%= insert_trackjs('embeds') %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

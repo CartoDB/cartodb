@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require 'spec_helper_min'
 require 'factories/carto_visualizations'
@@ -100,7 +100,7 @@ module Carto
         @legend.errors[:pre_html].should be_empty
       end
 
-      it 'requies a definition' do
+      it 'requires a definition' do
         @legend.errors[:definition].should_not be_empty
         @legend.errors[:definition].should include('could not be validated')
       end
@@ -112,6 +112,20 @@ module Carto
 
         legend.errors[:definition].should_not be_empty
         legend.errors[:definition].should_not include('could not be validated')
+      end
+
+      it 'rejects empty definitions for custom' do
+        legend = Legend.new(layer_id: @layer.id, type: 'custom', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:definition].should_not be_empty
+      end
+
+      it 'rejects html type' do
+        legend = Legend.new(layer_id: @layer.id, type: 'html', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:type].should_not be_empty
       end
     end
   end

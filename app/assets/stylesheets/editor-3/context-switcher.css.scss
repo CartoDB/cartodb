@@ -53,8 +53,56 @@
 .Editor-contextSwitcherMedia {
   fill: $cWhite;
 }
-@media (max-width: 1300px) {
+.Editor .CDB-Widget-content--timeSeries {
+  margin-right: 16px;
+  margin-left: 16px;
+}
+@media (max-width: 1600px) {
   .Editor-contextSwitcher.is-moved {
-    right: 318px;
+    right: 317px;
+    bottom: 32px;
+  }
+  .Editor-contextSwitcher.has-timeSeries {
+    bottom: 151px;
+  }
+  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
+    bottom: 174px;
+  }
+  .Editor-contextSwitcher--geom.is-moved {
+    right: 390px;
+  }
+
+}
+@media (max-width: 1280px) {
+  .Editor-contextSwitcher.is-moved {
+    right: 28px;
+    bottom: 222px;
+  }
+  .Editor-contextSwitcher--geom.is-moved {
+    right: 101px;
+  }
+  .Editor-contextSwitcher.has-timeSeries {
+    bottom: 341px;
+  }
+  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
+    bottom: 364px;
   }
 }
+@media (max-width: 1200px) {
+  .Editor-contextSwitcher.in-table {
+    right: 16px;
+    bottom: 16px;
+  }
+  .Editor-contextSwitcher.is-moved {
+    bottom: 214px;
+  }
+  .Editor-contextSwitcher.has-timeSeries {
+    bottom: 333px;
+  }
+  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
+    bottom: 358px;
+  }
+}
+
+
+

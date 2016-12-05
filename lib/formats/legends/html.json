@@ -1,8 +1,0 @@
-{
-  "type": "object",
-  "required": ["html"],
-  "additionalProperties": false,
-  "properties": {
-    "html": { "type": "string" }
-  }
-}

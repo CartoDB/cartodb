@@ -37,6 +37,8 @@ module Carto
                                           asset.id)
 
         public_url = Storage.instance.upload(remote_asset_location, @file)
+        @file.unlink
+
         asset.update_attributes!(public_url: public_url)
 
         render json: AssetPresenter.new(asset), status: :created

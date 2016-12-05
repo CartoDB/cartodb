@@ -75,7 +75,7 @@ module Carto
           raise UnprocesableEntityError.new('Missing url for asset')
         end
 
-        filename = current_viewer.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
+        filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
         @file = Tempfile.new(filename)
 
         begin

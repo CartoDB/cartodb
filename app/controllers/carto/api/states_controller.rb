@@ -10,27 +10,32 @@ module Carto
       before_filter :load_visualization,
                     :check_writer, only: :update
 
-      rescue_from Carto::LoadError,
-                  Carto::UnauthorizedError, with: :rescue_from_carto_error
+      rescue_from LoadError,
+                  UnauthorizedError,
+                  UnprocesableEntityError, with: :rescue_from_carto_error
 
       def update
         @visualization.state.json = params[:json]
         @visualization.save!
 
-        render_jsonp(Carto::Api::StatePresenter.new(@visualization.state).to_hash)
+        render json: StatePresenter.new(@visualization.state).to_hash
+      rescue ActiveRecord::RecordInvalid
+        message = @visualization.errors.full_messages.join(', ')
+        raise UnprocesableEntityError.new(message)
       end
 
       private
 
       def load_visualization
-        visualization_id = params[:visualization_id]
-
-        @visualization = Carto::Visualization.where(id: visualization_id).first if visualization_id
-        raise Carto::LoadError.new("Visualization not found: #{visualization_id}") unless @visualization
+        @visualization = Visualization.find(params[:visualization_id])
+      rescue ActiveRecord::RecordNotFound
+        raise LoadError.new('Visualization not found')
       end
 
       def check_writer
-        raise Carto::UnauthorizedError.new unless @visualization.writable_by?(current_viewer)
+        unless @visualization.writable_by?(current_viewer)
+          raise UnauthorizedError.new
+        end
       end
     end
   end

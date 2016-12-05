@@ -82,8 +82,8 @@ WORKING_SPECS_1 = \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
-	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/user_authenticator_spec.rb \
+	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
 	$(NULL)
@@ -291,6 +291,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
 	spec/lib/carto/legend_migrator_spec.rb \
+	spec/requests/carto/api/snapshots_controller_specs.rb \
+	spec/models/carto/snapshot_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

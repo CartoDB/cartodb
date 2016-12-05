@@ -258,7 +258,7 @@ module CartoDB
 
   def self.get_absolute_url(url)
     uri = URI.parse(url)
-    uri.schema = protocol unless uri.schema.present?
+    uri.scheme = protocol unless uri.scheme.present?
     uri.to_s
   rescue
     nil

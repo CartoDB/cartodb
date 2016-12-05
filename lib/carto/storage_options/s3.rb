@@ -5,7 +5,7 @@ module Carto
     class S3
       def self.new_if_available(bucket_name)
         s3 = Carto::StorageOptions::S3.new(bucket_name)
-        s3 if s3.config.present? && s3.buc
+        s3 if s3.config.present? && s3.bucket.exists?
       end
 
       attr_reader :bucket_name
@@ -32,11 +32,11 @@ module Carto
         @config ||= s3_conf['s3'] if s3_conf
       end
 
-      private
-
       def bucket
         @bucket ||= s3.buckets[bucket_name]
       end
+
+      private
 
       def s3
         @s3 ||= AWS::S3.new

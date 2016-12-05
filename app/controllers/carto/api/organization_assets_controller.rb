@@ -27,7 +27,7 @@ module Carto
         render json: AssetPresenter.new(@asset).to_hash
       end
 
-      ORGANIZATION_ASSETS_LOCATION = 'organization-assets'.freeze
+      ORGANIZATION_ASSETS_LOCATION = 'com.carto.assets.organization'.freeze
 
       def create
         asset = Asset.create!(kind: params[:kind],
@@ -38,13 +38,8 @@ module Carto
         begin
           IO.copy_stream(open(@url), file)
 
-          remote_asset_location = File.join(Rails.env,
-                                            'assets',
-                                            'organizations',
-                                            @organization.id)
-
           public_url = Storage.instance.upload(ORGANIZATION_ASSETS_LOCATION,
-                                               remote_asset_location,
+                                               @organization.id,
                                                file)
         ensure
           file.close

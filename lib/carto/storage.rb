@@ -17,7 +17,7 @@ module Carto
     end
 
     def remove(location, path)
-      get_or_set_location(location).remove(path, file)
+      get_or_set_location(location).remove(path)
     end
 
     def get_or_set_location(location)

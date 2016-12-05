@@ -29,7 +29,9 @@ module Carto
       end
 
       def bucket_name
-        @bucket_name ||= Cartodb.config.fetch(:assets, 's3_bucket_name')
+        @bucket_name ||= Cartodb.config.fetch(:assets,
+                                              'organizations',
+                                              's3_bucket_name')
       end
 
       private

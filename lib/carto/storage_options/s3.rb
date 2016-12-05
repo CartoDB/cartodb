@@ -34,7 +34,14 @@ module Carto
       private
 
       def bucket
-        @bucket ||= s3.new.buckets[bucket_name]
+        return @bucket if @bucket
+
+        existing_bucket = s3.buckets[bucket_name]
+        @bucket = if existing_bucket
+                    existing_bucket
+                  else
+                    s3.buckets.create(bucket_name)
+                  end
       end
 
       def s3

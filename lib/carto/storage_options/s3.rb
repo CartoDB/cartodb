@@ -3,12 +3,15 @@
 module Carto
   module StorageOptions
     class S3
-      def self.new_if_available
-        s3 = Carto::StorageOptions::S3.new
+      def self.new_if_available(bucket_name)
+        s3 = Carto::StorageOptions::S3.new(bucket_name)
         s3 if s3.config.present? && s3.bucket_name.present?
       end
 
-      def initailize
+      attr_reader :bucket_name
+      def initailize(bucket_name)
+        @bucket_name = bucket_name
+
         AWS::config(config) if config.present
       end
 
@@ -26,12 +29,6 @@ module Carto
 
       def config
         @config ||= Cartodb.config.fetch(:aws, 's3')
-      end
-
-      def bucket_name
-        @bucket_name ||= Cartodb.config.fetch(:assets,
-                                              'organizations',
-                                              's3_bucket_name')
       end
 
       private

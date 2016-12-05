@@ -12,7 +12,7 @@ module Carto
       before_filter :load_organization,
                     :organization_owners_only
       before_filter :load_asset, only: [:show, :destroy]
-      before_filter :load_file, only: :create
+      before_filter :load_url, only: :create
 
       rescue_from LoadError,
                   UnprocesableEntityError, with: :rescue_from_carto_error
@@ -69,19 +69,10 @@ module Carto
         raise LoadError.new('Asset not found')
       end
 
-      def load_file
+      def load_url
         url = params[:url]
         unless url.present?
           raise UnprocesableEntityError.new('Missing url for asset')
-        end
-
-        filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
-        @file = Tempfile.new(filename)
-
-        begin
-          IO.copy_stream(open(url), @file)
-        ensure
-          @file.close
         end
       end
     end

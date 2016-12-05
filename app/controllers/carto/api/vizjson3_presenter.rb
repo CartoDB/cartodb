@@ -325,6 +325,13 @@ module Carto
         if @layer.base?
           vizjson.merge(as_base)
         else
+          # TODO: This code is a hack to fix ghost nodes before presenting
+          # layers. It shouldn't exist and should be removed as soon as analysis
+          # logic lives in the backend
+          if @layer.builder? && !@layer.has_valid_source?
+            @layer.attempt_source_fix
+          end
+
           vizjson.merge(as_data).merge(@layer.torque? ? as_torque : as_carto)
         end
       end

@@ -13,7 +13,8 @@ describe Carto::Layer do
       @table2 = FactoryGirl.create(:carto_user_table, user_id: @user.id, map_id: @map.id)
       @analysis = FactoryGirl.create(:analysis_point_in_polygon,
                                      user: @user, visualization: @visualization,
-                                     source_table: @table1.name, target_table: @table2.name)
+                                     source_table: @table1.name,
+                                     target_table: @table2.name)
       @layer = @map.data_layers.first
     end
 
@@ -80,6 +81,84 @@ describe Carto::Layer do
       it 'should return the affected tables' do
         sql = "select coalesce('tabname', null) from cdb_tablemetadata;select 1;select * from spatial_ref_sys"
         @layer.send(:affected_table_names, sql).should =~ ["cartodb.cdb_tablemetadata", "public.spatial_ref_sys"]
+      end
+    end
+
+    describe 'source_id recovery' do
+      before(:each) do
+        @layer.options['source'] = @analysis.natural_id
+        @layer.options['previous_source'] = nil
+      end
+
+      let(:bad_source) do
+        real_source = @analysis.natural_id
+
+        letter = real_source.first
+        number = real_source[1..-1].to_i + 1
+
+        "#{letter}#{number}"
+      end
+
+      it 'recognizes a valid source' do
+        @layer.has_valid_source?.should be_true
+      end
+
+      it 'should backup automatically when changing source' do
+        @layer.source = bad_source
+        @layer.source.should eq bad_source
+        @layer.options['previous_source'].should eq @analysis.natural_id
+      end
+
+      it 'uses #previous_source strategy if available' do
+        @layer.expects(:last_same_letter_source).never
+        @layer.expects(:guessed_source).never
+
+        @layer.source = bad_source
+        @layer.source.should eq bad_source
+        @layer.options['previous_source'] = @analysis.natural_id
+
+        @layer.has_valid_source?.should be_false
+        @layer.attempt_source_fix
+
+        @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
+      end
+
+      it 'uses #last_same_letter_source strategy when no #previous_source' do
+        @layer.stubs(:previous_source)
+        @layer.expects(:guessed_source).never
+
+        @layer.source = bad_source
+        @layer.source.should eq bad_source
+
+        @layer.has_valid_source?.should be_false
+        @layer.attempt_source_fix
+
+        @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
+      end
+
+      it 'uses #guessed_source when no #previous_source nor #last_same_letter_source' do
+        @layer.stubs(:previous_source)
+        @layer.stubs(:last_same_letter_source)
+
+        letter = @analysis.natural_id.first
+        number = @analysis.natural_id[1..-1].to_i
+        new_source = "#{letter}#{number + 1}"
+
+        @layer.source = new_source
+        @layer.source.should eq new_source
+
+        @layer.has_valid_source?.should be_false
+        @layer.attempt_source_fix
+
+        @layer.source.should eq @analysis.natural_id
+        @layer.has_valid_source?.should be_true
+      end
+
+      it 'never #guessed_source to < 0' do
+        @layer.source = 'a0'
+        @layer.send(:guessed_source).should eq 'a0'
       end
     end
   end

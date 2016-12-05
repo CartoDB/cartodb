@@ -242,7 +242,82 @@ module Carto
       options && options['category']
     end
 
+    def builder?
+      visualization.builder? if visualization
+    end
+
+    def has_valid_source?
+      valid_source?
+    end
+
+    def source
+      options['source']
+    end
+
+    def source=(source)
+      self.previous_source = self.source if self.source.present?
+      options['source'] = source
+    end
+
+    def attempt_source_fix
+      strategies = [method(:previous_source),
+                    method(:last_same_letter_source),
+                    method(:guessed_source)]
+
+      strategies.each do |strategy|
+        source_candidate = strategy.call
+
+        if valid_source?(source_candidate)
+          self.source = source_candidate
+          break
+        end
+      end
+    end
+
     private
+
+    def last_same_letter_source
+      letter = options['letter'] || source.to_s.first
+      return unless letter.present?
+
+      if visualization
+        analysis_nodes = visualization.analyses
+                                      .map(&:analysis_node)
+                                      .map(&:descendants)
+                                      .flatten
+
+        letter_analysis_nodes = analysis_nodes.select do |analysis_node|
+          analysis_node.id.first == letter
+        end
+
+        letter_analysis_nodes.map(&:id).sort.last
+      end
+    end
+
+    def guessed_source
+      letter = options['letter'] || source.first
+      number = source[1..-1].to_i
+
+      "#{letter}#{number > 0 ? number - 1 : 0}"
+    end
+
+    def previous_source
+      options['previous_source']
+    end
+
+    def previous_source=(previous_source)
+      options['previous_source'] = previous_source
+    end
+
+    def analysis_node(source = self.source)
+      if source && visualization
+        Carto::AnalysisNode.find_by_natural_id(visualization.id, source)
+      end
+    end
+
+    def valid_source?(source = self.source)
+      analysis_node(source).present?
+    end
 
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 

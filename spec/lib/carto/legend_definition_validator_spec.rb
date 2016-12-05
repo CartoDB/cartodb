@@ -19,39 +19,6 @@ module Carto
                        .load_from_file(definition_location)
     end
 
-    describe '#html' do
-      let(:definition) do
-        {
-          html: '<h1>Manolo Escobar</h1>'
-        }
-      end
-
-      it 'accepts a correct definition' do
-        validator = LegendDefinitionValidator.new(:html, definition)
-        validator.errors.should be_empty
-      end
-
-      it 'rejects spammy definitions' do
-        spammed_definition = definition.merge(spam: 'the ham')
-
-        validator = LegendDefinitionValidator.new(:html, spammed_definition)
-
-        validator.errors.should_not be_empty
-        joint_errors = validator.errors.join(', ')
-        joint_errors.should include('additional properties')
-      end
-
-      it 'rejects incomplete definitions' do
-        incomplete_definition = definition.except(:html)
-
-        validator = LegendDefinitionValidator.new(:html, incomplete_definition)
-
-        validator.errors.should_not be_empty
-        joint_errors = validator.errors.join(', ')
-        joint_errors.should include('did not contain a required property')
-      end
-    end
-
     describe '#bubble' do
       let(:definition) do
         {

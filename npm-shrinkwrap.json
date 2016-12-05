@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.42",
+  "version": "4.5.47",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -966,7 +966,7 @@
                     },
                     "inherits": {
                       "version": "2.0.3",
-                      "from": "inherits@>=2.0.1 <2.1.0",
+                      "from": "inherits@>=2.0.0 <3.0.0",
                       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
                     }
                   }

@@ -201,6 +201,7 @@ describe Api::Json::LayersController do
       @original_layer = @map.data_layers.first
       @original_layer.options[:source] = 'a2'
       @original_layer.save
+      @original_layer.layer_node_styles.each(&:destroy)
 
       ['a2', 'a1', 'a0'].each do |node_id|
         LayerNodeStyle.create(
@@ -220,6 +221,7 @@ describe Api::Json::LayersController do
 
     def verify_layer_node_styles(layer, styles_map)
       # Map original_source_id -> new_source_id
+      layer.layer_node_styles.reload
       actual_styles_map = layer.layer_node_styles.map { |lns| [lns.options[:original_id], lns.source_id] }.to_h
       actual_styles_map.should eq styles_map
     end

@@ -173,6 +173,13 @@ module Carto
           legend.errors[:conf].should be_empty
         end
       end
+
+      it 'rejects html type' do
+        legend = Legend.new(layer_id: @layer.id, type: 'html', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:type].should_not be_empty
+      end
     end
   end
 end

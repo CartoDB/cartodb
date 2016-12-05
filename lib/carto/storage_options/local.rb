@@ -3,9 +3,16 @@
 class Carto::StorageOptions::Local
   include Carto::Configuration
 
+  attr_reader :subfolder
+  def initialize(subfolder)
+    @subfolder = subfolder
+  end
+
   def upload(namespaced_name, file, protocol: 'https')
     filename = Pathname.new(file.path).basename
-    target_full_path = File.join(public_uploads_path, namespaced_name)
+    target_full_path = File.join(public_uploads_path,
+                                 subfolder,
+                                 namespaced_name)
     FileUtils.mkdir_p(target_full_path)
 
     FileUtils.mv(file.path, target_full_path)

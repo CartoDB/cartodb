@@ -72,7 +72,8 @@ module ApplicationHelper
 
   def app_assets_base_url
     asset_host = Cartodb.get_config(:app_assets, 'asset_host')
-    (asset_host.present? ? asset_host : '/public') + '/assets/' + JSON::parse(File.read(Rails.root.join('package.json')))['version']
+    (asset_host.present? ? asset_host : '/public') + '/assets/' \
+      + JSON::parse(File.read(Rails.root.join('package.json')))['version']
   end
 
   def frontend_config

@@ -97,7 +97,7 @@ module Carto
 
             options = options_for_carto_and_torque_layers(layer, layer_index, is_builder)
             layers.push(id: layer.id, type: 'cartodb', options: options)
-          elsif layer.base?
+          elsif layer.base_layer?
             layer_options = layer.options
 
             if layer_options['type'] == 'Plain'

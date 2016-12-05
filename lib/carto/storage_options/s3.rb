@@ -4,8 +4,7 @@ module Carto
   module StorageOptions
     class S3
       def self.new_if_available(bucket_name)
-        s3 = Carto::StorageOptions::S3.new(bucket_name)
-        s3 if s3.config.present? && s3.bucket_name.present?
+        Carto::StorageOptions::S3.new(bucket_name) if s3.config.present?
       end
 
       attr_reader :bucket_name

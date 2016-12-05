@@ -15,16 +15,16 @@ module Carto
         AWS::config(config) if config.try(:any?)
       end
 
-      def upload(namespaced_name, file)
+      def upload(namespace, file)
         filename = Pathname.new(file.path).basename
-        asset = bucket.objects[File.join(namespaced_name, filename)]
+        asset = bucket.objects[File.join(namespace, filename)]
         asset.write(file: file)
 
         asset.url_for(:read)
       end
 
-      def remove(namespaced_name)
-        bucket.delete(namespaced_name)
+      def remove(path)
+        bucket.objects[path].delete
       end
 
       def config

@@ -27,6 +27,8 @@ module Carto
         render json: AssetPresenter.new(@asset).to_hash
       end
 
+      ORGANIZATION_ASSETS_LOCATION = 'organization-assets'.freeze
+
       def create
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id)
@@ -41,7 +43,9 @@ module Carto
                                             'organizations',
                                             @organization.id)
 
-          public_url = Storage.instance.upload(remote_asset_location, file)
+          public_url = Storage.instance.upload(ORGANIZATION_ASSETS_LOCATION,
+                                               remote_asset_location,
+                                               file)
         ensure
           file.close
           file.unlink

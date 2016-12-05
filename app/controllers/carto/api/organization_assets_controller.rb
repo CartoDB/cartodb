@@ -37,7 +37,8 @@ module Carto
           IO.copy_stream(open(@url), file)
 
           remote_asset_location = File.join(Rails.env,
-                                            'organization-assets',
+                                            'assets',
+                                            'organizations',
                                             @organization.id)
 
           public_url = Storage.instance.upload(remote_asset_location, file)

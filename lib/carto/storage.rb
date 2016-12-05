@@ -13,8 +13,8 @@ module Carto
                  Carto::StorageOptions::Local.new
     end
 
-    def upload(location, file)
-      @storage.upload(location, file)
+    def upload(location, file, protocol: 'http')
+      @storage.upload(location, file, protocol: protocol)
     end
 
     def remove(location)

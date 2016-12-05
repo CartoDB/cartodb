@@ -31,6 +31,15 @@ module Carto
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id)
 
+        filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
+        @file = Tempfile.new(filename)
+
+        begin
+          IO.copy_stream(open(url), @file)
+        ensure
+          @file.close
+        end
+
         remote_asset_location = File.join(Rails.env,
                                           'organization-assets',
                                           @organization.id,
@@ -70,8 +79,8 @@ module Carto
       end
 
       def load_url
-        url = params[:url]
-        unless url.present?
+        @url = params[:url]
+        unless @url.present?
           raise UnprocesableEntityError.new('Missing url for asset')
         end
       end

@@ -4,10 +4,9 @@ class Carto::StorageOptions::Local
   include Carto::Configuration
 
   def upload(namespaced_name, file, protocol: 'https')
-    FileUtils.mkdir_p(public_uploads_path)
-
-    target_full_path = File.join(public_uploads_path, namespaced_name)
+    target_full_path = public_uploads_path(subfolder: namespaced_name)
     FileUtils.mkdir_p(target_full_path)
+
     FileUtils.mv(file.path, target_full_path)
 
     "#{protocol}://#{CartoDB.account_host}/#{target_full_path}"

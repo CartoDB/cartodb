@@ -100,7 +100,7 @@ module Carto
         @legend.errors[:pre_html].should be_empty
       end
 
-      it 'requies a definition' do
+      it 'requires a definition' do
         @legend.errors[:definition].should_not be_empty
         @legend.errors[:definition].should include('could not be validated')
       end
@@ -119,6 +119,13 @@ module Carto
 
         legend.valid?.should be_false
         legend.errors[:definition].should_not be_empty
+      end
+
+      it 'rejects html type' do
+        legend = Legend.new(layer_id: @layer.id, type: 'html', definition: {})
+
+        legend.valid?.should be_false
+        legend.errors[:type].should_not be_empty
       end
     end
   end

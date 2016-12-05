@@ -64,6 +64,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   has_one :state, class_name: Carto::State, autosave: true
 
+  has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
+
   validates :version, presence: true
 
   before_validation :set_default_version

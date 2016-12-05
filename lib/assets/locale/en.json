@@ -284,7 +284,8 @@
         "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
-          "value": "By value"
+          "value": "By value",
+          "img": "img"
         },
         "input-number": {
           "fixed": "Fixed",

@@ -9,16 +9,29 @@ module Carto
     include Singleton
 
     def initialize
-      @storage = Carto::StorageOptions::S3.new_if_available ||
-                 Carto::StorageOptions::Local.new
+      @storages = Hash.new
     end
 
-    def upload(location, file, protocol: 'http')
-      @storage.upload(location, file, protocol: protocol)
+    def upload(location, path, file, protocol: 'http')
+      get_or_set_location(location).upload(path, file, protocol: protocol)
     end
 
-    def remove(location)
-      @storage.remove(location, file)
+    def remove(location, path)
+      get_or_set_location(location).remove(path, file)
+    end
+
+    def get_or_set_location(location)
+      existing_location = @storages[location]
+      if existing_location
+        existing_location
+      else
+        @storages[location] = available_storage_option(location)
+      end
+    end
+
+    def available_storage_option(location)
+      Carto::StorageOptions::S3.new_if_available(location) ||
+        Carto::StorageOptions::Local.new(location)
     end
 
     def type

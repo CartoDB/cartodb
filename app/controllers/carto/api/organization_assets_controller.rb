@@ -31,15 +31,14 @@ module Carto
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id)
 
-        tmp_filename = @organization.id.to_s + Time.now.strftime("%Y%m%d%H%M%S")
+        tmp_filename = asset.id
         file = Tempfile.new(tmp_filename)
         begin
           IO.copy_stream(open(@url), file)
 
           remote_asset_location = File.join(Rails.env,
                                             'organization-assets',
-                                            @organization.id,
-                                            asset.id)
+                                            @organization.id)
 
           public_url = Storage.instance.upload(remote_asset_location, file)
         ensure

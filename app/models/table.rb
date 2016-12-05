@@ -25,17 +25,18 @@ class Table
   extend Forwardable
   include Carto::TableUtils
 
-   # TODO Part of a service along with schema
+  # TODO Part of a service along with schema
   # INFO: created_at and updated_at cannot be dropped from existing tables without dropping the triggers first
-  CARTODB_REQUIRED_COLUMNS = %W{ cartodb_id the_geom }
-  CARTODB_COLUMNS = %W{ cartodb_id created_at updated_at the_geom }
+  CARTODB_REQUIRED_COLUMNS = %w{cartodb_id the_geom}.freeze
+  CARTODB_COLUMNS = %w{cartodb_id created_at updated_at the_geom}.freeze
   THE_GEOM_WEBMERCATOR = :the_geom_webmercator
   THE_GEOM = :the_geom
   CARTODB_ID = :cartodb_id
+  DATATYPE_DATE = 'date'.freeze
 
   NO_GEOMETRY_TYPES_CACHING_TIMEOUT = 5.minutes
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
-  STATEMENT_TIMEOUT = 1.hour*1000
+  STATEMENT_TIMEOUT = 1.hour * 1000
 
   # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
   PG_IDENTIFIER_MAX_LENGTH = 63
@@ -629,7 +630,7 @@ class Table
           ALTER COLUMN #{column}
           SET DEFAULT now()
         })
-      elsif column_type == 'date' || column_type == 'timestamptz'
+      elsif column_type == DATATYPE_DATE || column_type == 'timestamptz'
         database.run(%Q{
           ALTER TABLE #{qualified_table_name}
           ALTER COLUMN #{column}
@@ -1061,17 +1062,28 @@ class Table
   def record(identifier)
     row = nil
     owner.in_database do |user_database|
-      select = if schema.flatten.include?(THE_GEOM)
-        schema.select{|c| c[0] != THE_GEOM }.map{|c| %Q{"#{c[0]}"} }.join(',') + ',ST_AsGeoJSON(the_geom,8) as the_geom'
-      else
-        schema.map{|c| %Q{"#{c[0]}"} }.join(',')
-      end
+      select_sql = schema.map { |column|
+        name, type = column
+        if name == THE_GEOM
+          "ST_AsGeoJSON(the_geom,8) as the_geom"
+        elsif type == DATATYPE_DATE
+          %{CAST("#{name}" AS text) AS "#{name}"}
+        else
+          %{"#{name}"}
+        end
+      }.join(',')
       # If we force to get the name from an schema, we avoid the problem of having as
       # table name a reserved word, such 'as'
-      row = user_database["SELECT #{select} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
+      row = user_database["SELECT #{select_sql} FROM #{qualified_table_name} WHERE cartodb_id = #{identifier}"].first
     end
     raise if row.nil?
-    row
+
+    # `.schema` returns [name, type] pairs, except for geometry types where it returns additional data we don't need
+    db_schema = schema.map { |col_data| col_data.first(2) }.to_h
+    row.map { |name, value|
+      parsed_value = db_schema[name] == DATATYPE_DATE && value ? DateTime.parse(value) : value
+      [name, parsed_value]
+    }.to_h
   end
 
   def run_query(query)

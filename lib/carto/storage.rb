@@ -12,8 +12,8 @@ module Carto
       @storages = Hash.new
     end
 
-    def upload(location, path, file, protocol: 'http')
-      get_or_set_location(location).upload(path, file, protocol: protocol)
+    def upload(location, path, file)
+      get_or_set_location(location).upload(path, file)
     end
 
     def remove(location, path)
@@ -32,10 +32,6 @@ module Carto
     def available_storage_option(location)
       Carto::StorageOptions::S3.new_if_available(location) ||
         Carto::StorageOptions::Local.new(location)
-    end
-
-    def type
-      @type ||= @storage.class.name.demodulize.downcase
     end
   end
 end

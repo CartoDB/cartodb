@@ -12,9 +12,10 @@ module Carto
         AWS::config(config) if config.present
       end
 
-      def upload(namespaced_name, file_path)
-        asset = bucket.objects[namespaced_name]
-        asset.write(file: file_path)
+      def upload(namespaced_name, file)
+        filename = Pathname.new(file.path).basename
+        asset = bucket.objects[File.join(namespaced_name, filename)]
+        asset.write(file: file)
 
         asset.url_for(:read)
       end

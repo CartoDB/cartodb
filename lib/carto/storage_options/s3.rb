@@ -23,6 +23,7 @@ module Carto
         asset.url_for(:read)
       end
 
+      # el identificador es sin el / inicial
       def remove(path)
         bucket.objects[path].delete
       end

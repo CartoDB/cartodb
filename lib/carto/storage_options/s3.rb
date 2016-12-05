@@ -4,14 +4,15 @@ module Carto
   module StorageOptions
     class S3
       def self.new_if_available(bucket_name)
-        Carto::StorageOptions::S3.new(bucket_name) if s3.config.present?
+        s3 = Carto::StorageOptions::S3.new(bucket_name)
+        s3 if s3.config.present?
       end
 
       attr_reader :bucket_name
-      def initailize(bucket_name)
+      def initialize(bucket_name)
         @bucket_name = bucket_name
 
-        AWS::config(config) if config.present
+        AWS::config(config) if config.any?
       end
 
       def upload(namespaced_name, file)

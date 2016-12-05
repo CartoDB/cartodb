@@ -8,7 +8,7 @@ class Carto::StorageOptions::Local
     @subfolder = subfolder
   end
 
-  def upload(namespaced_name, file, protocol: 'https')
+  def upload(namespaced_name, file)
     filename = Pathname.new(file.path).basename
     target_full_path = File.join(public_uploads_path,
                                  subfolder,
@@ -18,7 +18,7 @@ class Carto::StorageOptions::Local
     FileUtils.mv(file.path, target_full_path)
 
     url_path = File.join(target_full_path.gsub('public/', ''), filename)
-    "#{protocol}://#{CartoDB.account_host}/#{url_path}"
+    "#{CartoDB.protocol}://#{CartoDB.account_host}/#{url_path}"
   end
 
   def remove(namespaced_name)

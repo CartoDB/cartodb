@@ -9,6 +9,7 @@ module Carto
 
       def to_hash
         {
+          conf: @legend.conf,
           created_at: @legend.created_at,
           definition: @legend.definition,
           id: @legend.id,

@@ -208,5 +208,7 @@
 }
 
 .OpacityEditor-inputWrapper input {
-  height: 22px;
+  min-height: auto;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }

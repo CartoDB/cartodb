@@ -1186,6 +1186,29 @@ describe Table do
       @user.in_database.run("CREATE TABLE cdb_importer.repeated_table (id integer)")
       expect { create_table(user_id: @user.id, name: 'repeated_table') }.to_not raise_error
     end
+
+    it 'correctly returns dates' do
+      table = create_table(user_id: @user.id)
+      table.add_column!(name: "without_tz", type: "timestamp without time zone")
+      table.add_column!(name: "with_tz", type: "timestamp with time zone")
+      table.add_column!(name: "date", type: "date ") # Add a space to avoid auto-conversion to timestampz
+
+      table.insert_row!(
+        with_tz: '2016-12-02T10:10:10+01:00',
+        without_tz: '2016-12-02T10:10:10',
+        date: '2016-12-02'
+      )
+
+      record = table.record(1)
+      record[:with_tz].is_a?(DateTime).should be_true
+      record[:with_tz].should eq DateTime.parse('2016-12-02T10:10:10+01:00')
+
+      record[:without_tz].is_a?(DateTime).should be_true
+      record[:without_tz].to_s.should eq '2016-12-02T10:10:10+00:00'
+
+      record[:date].is_a?(DateTime).should be_true
+      record[:date].to_s.should eq '2016-12-02T00:00:00+00:00'
+    end
   end
 
   context "insert and update rows" do

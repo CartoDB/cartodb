@@ -19,9 +19,9 @@ module Carto
 
     attr_reader :url, :organization, :errors
 
-    def initialize(url, organization)
-      @url = url
+    def initialize(organization, url)
       @organization = organization
+      @url = url
       @errors = Hash.new
     end
 

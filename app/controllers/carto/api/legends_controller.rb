@@ -44,7 +44,7 @@ module Carto
       def update
         @legend.update_attributes!(legend_params)
 
-        legend_presentation = LegendPresenter.new(@legend).to_hash
+        legend_presentation = LegendPresenter.new(@legend.reload).to_hash
         render_jsonp(legend_presentation, :ok)
       rescue ActiveRecord::RecordInvalid
         error = @legend.errors.full_messages.join(', ')
@@ -84,7 +84,7 @@ module Carto
       end
 
       def legend_params
-        params.slice(:title, :pre_html, :post_html, :type, :definition)
+        params.slice(:title, :pre_html, :post_html, :type, :definition, :conf)
       end
     end
   end

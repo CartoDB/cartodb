@@ -293,7 +293,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/legend_migrator_spec.rb \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
-	spec/helpers/applications_helper_spec.rb \
+	spec/helpers/application_helper_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

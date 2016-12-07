@@ -1,31 +1,42 @@
 # encoding: utf-8
 
+require 'carto/storage'
+
 module Carto
   class OrganizationAssetFile
-    attr_reader :url
-    def initialize(url)
+    attr_reader :url, :organization, :errors
+    def initialize(url, organization)
       @url = url
+      @organization = organization
       @errors = Hash.new
     end
 
+    def public_url
+      Storage.instance.upload(namespace, organization.id, file) if valid?
+    end
+
     def valid?
-      errors.empty?
+      file && errors.empty?
+    end
+
+    def file
+      @file ||= fetch_file
     end
 
     private
 
     def fetch_file
-      file = Tempfile.new(Time.now.utc)
+      temp_file = Tempfile.new(Time.now.utc)
 
-      read = IO.copy_stream(open(url), file, max_size_in_bytes + 1)
+      read = IO.copy_stream(open(url), temp_file, max_size_in_bytes + 1)
       if read < max_size_in_bytes
         errors[:file] = "too big (> #{max_size_in_bytes})"
       end
     ensure
-      file.close
-      file.unlink
+      temp_file.close
+      temp_file.unlink
 
-      file
+      temp_file
     end
 
     def namespace

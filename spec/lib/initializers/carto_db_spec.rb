@@ -189,4 +189,28 @@ describe CartoDB do
 
   end
 
+  describe '#base_domain_from_request' do
+    it 'extracts subdomain without domain based urls' do
+      CartoDB.stubs(:subdomainless_urls?).returns(false)
+      CartoDB.stubs(:session_domain).returns('.localhost.lan')
+      CartoDB.stubs(:protocol).returns('http')
+
+      CartoDB.base_domain_from_request(
+        OpenStruct.new(host: 'auser.localhost.lan', params: { user_domain: 'auser' })
+      ).should == "http://auser.localhost.lan#{CartoDB.http_port}"
+      CartoDB.base_domain_from_request(
+        OpenStruct.new(host: 'localhost.lan', params: { user_domain: 'auser' })
+      ).should == "http://auser.localhost.lan#{CartoDB.http_port}"
+    end
+
+    it 'extracts subdomain with subdomainless urls' do
+      CartoDB.stubs(:subdomainless_urls?).returns(true)
+      CartoDB.stubs(:session_domain).returns('localhost.lan')
+      CartoDB.stubs(:protocol).returns('http')
+
+      CartoDB.base_domain_from_request(
+        OpenStruct.new(host: 'localhost.lan', params: { user_domain: 'auser' })
+      ).should == "http://localhost.lan#{CartoDB.http_port}"
+    end
+  end
 end

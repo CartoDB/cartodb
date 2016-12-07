@@ -18,12 +18,12 @@ module Carto
       def upload(namespace, file)
         filename = Pathname.new(file.path).basename
         asset = bucket.objects[File.join(namespace, filename)]
-        asset.write(file: file)
+        asset.write(file: file,
+                    content_type: MIME::Types.type_for(filename).first.to_s)
 
         asset.url_for(:read)
       end
 
-      # el identificador es sin el / inicial
       def remove(path)
         bucket.objects[path].delete
       end

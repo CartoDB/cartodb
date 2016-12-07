@@ -2,16 +2,30 @@
 
 module Carto
   class OrganizationAssetFile
-    def initialize
+    attr_reader :url
+    def initialize(url)
+      @url = url
+      @errors = Hash.new
     end
 
     def valid?
     end
 
-    def errors
-    end
-
     private
+
+    def fetch_file
+      file = Tempfile.new(Time.now.utc)
+
+      read = IO.copy_stream(open(url), file, max_size_in_bytes + 1)
+      if read < max_size_in_bytes
+        errors[:file] = "too big (> #{max_size_in_bytes})"
+      end
+    ensure
+      file.close
+      file.unlink
+
+      file
+    end
 
     def namespace
       @namespace ||= CartoDB.config.fetch(:assets, 'organizations', 'namespace')

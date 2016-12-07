@@ -458,7 +458,8 @@
       "days-pluralize": "1 day |||| %{smart_count} days",
       "weeks-pluralize": "1 week |||| %{smart_count} weeks",
       "hours-pluralize": "hour week |||| %{smart_count} hours",
-      "gmt-convertion": "Date will be converted to GMT +0"
+      "gmt-convertion": "Date will be converted to GMT +0",
+      "invalid-date": "Invalid date"
     },
     "taglist": {
       "none": "No tags",
@@ -1265,7 +1266,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Show blue bar"
+            "dashboard_menu": "Show toolbar"
           }
         }
       }
@@ -2038,7 +2039,11 @@
       "valid-lat": "Must be a valid latitude",
       "valid": "Only numbers allowed",
       "delete": "Delete %{featureType}",
-      "edit": "Edit %{featureType}"
+      "edit": "Edit %{featureType}",
+      "analysis": "layers with analysis nodes",
+      "custom-sql": "layers with custom SQL applied",
+      "sync": "read only layers",
+      "disabled": "Feature edition is disabled in %{disabledLayerType}. Flatten your layer to edit data on it."
     }
   },
   "notifications": {

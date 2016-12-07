@@ -73,7 +73,7 @@ module ApplicationHelper
   def app_assets_base_url
     asset_host = CartoDB.get_absolute_url(Cartodb.get_config(:app_assets, 'asset_host'))
     base_url = asset_host.present? ? asset_host : CartoDB.base_url_from_request(request)
-    "#{base_url}/assets/unversioned"
+    "#{base_url}/assets"
   end
 
   def frontend_config

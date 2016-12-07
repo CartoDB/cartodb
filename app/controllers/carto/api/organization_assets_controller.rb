@@ -68,7 +68,7 @@ module Carto
           raise UnprocesableEntityError.new('Missing url for asset')
         end
 
-        @asset_file = Carto::OrganizationAssetFile.new(@organization, @url)
+        @asset_file = OrganizationAssetFile.new(@organization, @url)
         unless asset_file.valid?
           raise UnprocesableEntityError.new(asset_file.errors)
         end

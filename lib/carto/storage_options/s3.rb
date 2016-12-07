@@ -17,9 +17,10 @@ module Carto
 
       def upload(namespace, file)
         filename = Pathname.new(file.path).basename
+        mime_type = MIME::Types.type_for(filename).first.to_s
+
         asset = bucket.objects[File.join(namespace, filename)]
-        asset.write(file: file,
-                    content_type: MIME::Types.type_for(filename).first.to_s)
+        asset.write(file: file, content_type: mime_type)
 
         asset.url_for(:read)
       end

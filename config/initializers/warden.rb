@@ -201,6 +201,34 @@ Warden::Strategies.add(:http_header_authentication) do
   end
 end
 
+Warden::Strategies.add(:saml) do
+  def valid?
+    Cartodb.config[:saml_authentication].present? && params[:SAMLResponse].present?
+  end
+
+  def authenticate!
+    return fail! unless params[:SAMLResponse]
+    settings = CartoDB.saml_settings(Cartodb.config[:saml_authentication])
+    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
+
+    return fail! unless response.is_valid?
+
+    email = response.attributes['name_id']
+    # Can't match the subdomain because ADFS can only redirect to one endpoint.
+    # So this just checks to see if we have a user with this email address.
+    # We can log them in at that point since identity is confirmed by BCG's ADFS.
+    if user = User.filter("email ILIKE ?", email).first and user.enabled?
+      success!(user, :message => "Success")
+      request.flash['logged'] = true
+    else
+      return fail!("No user with that email.")
+    end
+  rescue => e
+    CartoDB.report_exception(e, "Authenticating with SAML")
+    return fail!
+  end
+end
+
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)

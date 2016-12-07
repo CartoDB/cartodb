@@ -196,6 +196,19 @@ module CartoDB
     "#{protocol}://#{self.domain}#{self.http_port}"
   end
 
+  # Transforms an email address (e.g. firstname.lastname@example.com) into a string
+  # which can serve as a subdomain.
+  # firstname.lastname@example.com -> firstname-lastname
+  # Replaces all non-allowable characters with
+  # hyphens. This could potentially result in collisions between two specially-
+  # constructed names (e.g. John Smith-Bob and Bob-John Smith).
+  # We're ignoring this for now since this type of email is unlikely to come up.
+  # This method is used by the SAML authentication framework to create appropriate
+  # usernames automatically from the user's login email.
+  def self.email_to_subdomain(email)
+    return email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/,'-').downcase
+  end
+
   def self.get_http_port
     config_port = Cartodb.config[:http_port]
     config_port.nil? || config_port == '' || config_port.to_i == 80 ? '' : ":#{config_port}"
@@ -254,5 +267,15 @@ module CartoDB
     else
       Cartodb.config[:importer]['python_bin_path']
     end
+  end
+
+  # Our SAML library expects object properties
+  # Adapted from https://github.com/hryk/warden-saml-example/blob/master/application.rb
+  def self.saml_settings(settings_hash)
+    settings = OneLogin::RubySaml::Settings.new
+    settings_hash.each do |k, v|
+      settings.__send__ "#{k}=", v
+    end
+    settings
   end
 end

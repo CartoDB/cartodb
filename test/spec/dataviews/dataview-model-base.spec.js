@@ -405,10 +405,6 @@ describe('dataviews/dataview-model-base', function () {
       expect(this.removeSpy).toHaveBeenCalledWith(this.model);
     });
 
-    it('should reload the map if there is a filter and it is not empty', function () {
-      expect(this.vis.reload).toHaveBeenCalled();
-    });
-
     it('should stop listening to events', function () {
       expect(this.model.stopListening).toHaveBeenCalled();
       expect(this.a0.off).toHaveBeenCalledWith('change:status', jasmine.any(Function), this.model);

@@ -349,7 +349,7 @@ var VisModel = Backbone.Model.extend({
     });
   },
 
-  _onDataviewAdded: function (layerModel) {
+  _onDataviewAdded: function () {
     this.reload();
   },
 

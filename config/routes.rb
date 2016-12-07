@@ -584,6 +584,10 @@ CartoDB::Application.routes.draw do
         resources :mapcaps, only: [:index, :show, :create, :destroy], constraints: { id: /[^\/]+/ }
         resource :state, only: [:update]
 
+        resources :snapshots,
+                  only: [:index, :show, :create, :update, :destroy],
+                  constraints: { id: UUID_REGEXP }
+
         scope '/layer/:layer_id', constraints: { layer_id: /[^\/]+/ } do
           resources :legends,
                     only: [:index, :show, :create, :update, :destroy],

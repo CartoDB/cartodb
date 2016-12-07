@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 module Carto
   module Api
@@ -84,7 +84,7 @@ module Carto
       end
 
       def legend_params
-        params.slice(:title, :pre_html, :post_html, :type, :definition)
+        params.slice(:title, :pre_html, :post_html, :type, :definition, :conf)
       end
     end
   end

@@ -1,5 +1,5 @@
 {
-  "feedback": "Give us some feedback!",
+  "feedback": "Give us feedback!",
   "user": {
     "you": "You"
   },
@@ -28,16 +28,16 @@
     "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
-    "title": "Welcome to the Builder,",
-    "description": "Let us show you all the new and exciting things that you can do with CARTO.",
+    "title": "Welcome to Builder,",
+    "description": "Discover the new and exciting analyses you can perform with location intelligence.",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",
     "toolbar": {
       "title": "Toolbar",
-      "description": "The toolbar provides options to access to your dashboard, edit your map, and configure its settings."
+      "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
-      "title": "Editor pane",
+      "title": "Edit pane",
       "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {
@@ -264,6 +264,11 @@
   },
   "form-components": {
     "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -453,7 +458,8 @@
       "days-pluralize": "1 day |||| %{smart_count} days",
       "weeks-pluralize": "1 week |||| %{smart_count} weeks",
       "hours-pluralize": "hour week |||| %{smart_count} hours",
-      "gmt-convertion": "Date will be converted to GMT +0"
+      "gmt-convertion": "Date will be converted to GMT +0",
+      "invalid-date": "Invalid date"
     },
     "taglist": {
       "none": "No tags",
@@ -1260,7 +1266,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Show blue bar"
+            "dashboard_menu": "Show toolbar"
           }
         }
       }
@@ -1333,7 +1339,7 @@
         "export": "Export data",
         "hide": "Hide layer",
         "show": "Show layer",
-        "center-map": "Center map"
+        "center-map": "Center map on layer"
       },
       "drag-n-drop-analysis": {
         "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
@@ -1750,10 +1756,10 @@
         "size": "size"
       },
       "messages": {
-        "migrated-legend": {
-          "title": "IMPORTED LEGEND",
-          "body": "We changed the way we show legends within the Builder, so you need to delete the imported legend before start to create a new one.",
-          "accept": "Delete imported legend"
+        "custom-legend": {
+          "title": "CUSTOM LEGEND APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "Delete custom html"
         },
         "layer-hidden": {
           "title": "LAYER HIDDEN",
@@ -2033,7 +2039,11 @@
       "valid-lat": "Must be a valid latitude",
       "valid": "Only numbers allowed",
       "delete": "Delete %{featureType}",
-      "edit": "Edit %{featureType}"
+      "edit": "Edit %{featureType}",
+      "analysis": "layers with analysis nodes",
+      "custom-sql": "layers with custom SQL applied",
+      "sync": "read only layers",
+      "disabled": "Feature edition is disabled in %{disabledLayerType}. Flatten your layer to edit data on it."
     }
   },
   "notifications": {

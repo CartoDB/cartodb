@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/valid_table_name_proposer.rb'

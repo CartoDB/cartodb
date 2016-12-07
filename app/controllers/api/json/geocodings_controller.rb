@@ -1,4 +1,4 @@
-#encoding: UTF-8
+# encoding: utf-8
 require Rails.root.join('services', 'sql-api', 'sql_api')
 
 class Api::Json::GeocodingsController < Api::ApplicationController

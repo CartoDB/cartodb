@@ -36,7 +36,7 @@ class Carto::User < ActiveRecord::Base
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
-  has_many :layers, :through => :layers_user
+  has_many :layers, through: :layers_user, after_add: Proc.new { |user, layer| layer.set_default_order(user) }
 
   belongs_to :organization, inverse_of: :users
   has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
@@ -73,6 +73,9 @@ class Carto::User < ActiveRecord::Base
   alias_method :assets_dataset, :assets
   alias_method :data_imports_dataset, :data_imports
   alias_method :geocodings_dataset, :geocodings
+
+  before_create :set_database_host
+  before_create :generate_api_key
 
   # Auto creates notifications on first access
   def notifications_with_creation
@@ -505,11 +508,33 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
+    end
+  end
+
   def new_visualizations_version
     builder_enabled? ? 3 : 2
   end
 
-  def engine_enabled?
-    has_organization? ? organization.engine_enabled : engine_enabled
+  def can_change_email?
+    (!google_sign_in || last_password_change_date.present?) && !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  def can_change_password?
+    !Carto::Ldap::Manager.new.configuration_present?
+  end
+
+  private
+
+  def set_database_host
+    self.database_host ||= ::Rails::Sequel.configuration.environment_for(Rails.env)['host']
+  end
+
+  def generate_api_key
+    self.api_key ||= service.class.make_token
   end
 end

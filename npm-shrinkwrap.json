@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.40",
+  "version": "4.5.48",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -472,9 +472,9 @@
                                   "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
                                 },
                                 "tweetnacl": {
-                                  "version": "0.14.3",
+                                  "version": "0.14.4",
                                   "from": "tweetnacl@>=0.14.0 <0.15.0",
-                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.3.tgz"
+                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.4.tgz"
                                 },
                                 "jodid25519": {
                                   "version": "1.0.2",
@@ -1147,7 +1147,7 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#640d360f2fc8011fd5e4a524894848e9450d3726",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#ff0950ea359ecf5778901608fbcb66591e4c8688",
       "dependencies": {
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
@@ -1263,7 +1263,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <1.1.0",
+                  "from": "turf-jenks@>=1.0.1 <2.0.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1288,7 +1288,7 @@
             "torque.js": {
               "version": "2.15.2",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#65a115e9b1124293ccc9d095c898f78cd4e65f65",
+              "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1568,7 +1568,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <1.1.0",
+              "from": "turf-jenks@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {
@@ -1593,7 +1593,7 @@
         "torque.js": {
           "version": "2.15.2",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#65a115e9b1124293ccc9d095c898f78cd4e65f65",
+          "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -1794,7 +1794,7 @@
     "torque.js": {
       "version": "2.15.2",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#65a115e9b1124293ccc9d095c898f78cd4e65f65",
+      "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb1",

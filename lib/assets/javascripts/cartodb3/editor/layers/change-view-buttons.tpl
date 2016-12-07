@@ -22,7 +22,7 @@
   </li>
 </ul>
 
-<% if (isSourceType && !isCustomQueryApplied) { %>
+<% if (!isReadOnly) { %>
   <div class="EditOverlay js-editOverlay is-hidden"><p class="EditOverlay-inner CDB-Text CDB-Size-medium u-whiteTextColor js-editOverlay-text"></p></div>
 
   <ul class="u-flex u-alignRight Editor-contextSwitcher Editor-contextSwitcher--geom js-mapTableView js-newGeometryView
@@ -30,8 +30,8 @@
   <% if (isThereTimeSeries) { %>has-timeSeries <% if (isThereAnimatedTimeSeries) { %>has-timeSeries--animated<% } %><% } %>
   ">
     <% if (queryGeometryModel === 'point' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem">
-        <div class="Editor-contextSwitcherButton Editor-contextSwitcherButton--geom js-newGeometry" data-feature-type='point'>
+      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+        <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='point'>
           <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
               <path d="M0 2h3v1H0V2zm0-2h3v1H0V0zm2 1h1v1H2V1zM0 1h1v1H0V1z" id="a"/>
@@ -64,8 +64,8 @@
       </li>
     <% } %>
     <% if (queryGeometryModel === 'line' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem">
-        <div class="Editor-contextSwitcherButton Editor-contextSwitcherButton--geom js-newGeometry" data-feature-type='line'>
+      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+        <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='line'>
           <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
               <path d="M0 2h3v1H0V2zm0-2h3v1H0V0zm2 1h1v1H2V1zM0 1h1v1H0V1z" id="a"/>
@@ -92,8 +92,8 @@
       </li>
     <% } %>
     <% if (queryGeometryModel === 'polygon' || !queryGeometryModel) { %>
-      <li class="Editor-contextSwitcherItem">
-        <div class="Editor-contextSwitcherButton Editor-contextSwitcherButton--geom js-newGeometry" data-feature-type='polygon'>
+      <li class="Editor-contextSwitcherItem js-newGeometryItem <% if (!isVisible) { %>is-disabled<% } %>">
+        <div class="Editor-contextSwitcherButton js-newGeometry" data-feature-type='polygon'>
           <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <defs>
               <path d="M0 2h3v1H0V2zm0-2h3v1H0V0zm2 1h1v1H2V1zM0 1h1v1H0V1z" id="a"/>

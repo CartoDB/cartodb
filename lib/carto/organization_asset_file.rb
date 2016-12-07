@@ -10,11 +10,11 @@ module Carto
     end
 
     def self.namespace
-      CartoDB.config.fetch(:assets, 'organizations', 'namespace')
+      CartoDB.get_config(:assets, :organizations, :namespace)
     end
 
     def self.max_size_in_bytes
-      CartoDB.config.fetch(:assets, 'organizations', 'max_size_in_bytes')
+      CartoDB.get_config(:assets, :organizations, :max_size_in_bytes)
     end
 
     attr_reader :url, :organization, :errors

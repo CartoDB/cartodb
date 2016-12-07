@@ -67,11 +67,19 @@ module ApplicationHelper
       end
   end
 
+  def app_assets_base_url
+    asset_host = CartoDB.get_absolute_url(Cartodb.get_config(:app_assets, 'asset_host'))
+    base_url = asset_host.present? ? asset_host : CartoDB.base_domain_from_request(request)
+    "#{base_url}/assets"
+  end
+
   module_function :maps_api_template
   module_function :sql_api_template, :sql_api_url
+  module_function :app_assets_base_url
 
   def frontend_config
     config = {
+      app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),

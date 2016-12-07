@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.50-8142-opacity-ramp",
+  "version": "4.5.50",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

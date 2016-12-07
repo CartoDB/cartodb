@@ -27,8 +27,6 @@ module Carto
         render json: AssetPresenter.new(@asset).to_hash
       end
 
-      ORGANIZATION_ASSETS_LOCATION = 'com.carto.assets.organization'.freeze
-
       def create
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,

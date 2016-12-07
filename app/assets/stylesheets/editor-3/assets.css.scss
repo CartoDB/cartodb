@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 .AssetsList-recentInner {
-  display: flex;
+  @include display-flex;
   width: 1000px;
 }
 .AssetsList {
@@ -36,7 +36,20 @@
   background-size: 24px 24px;
 }
 
+.AssetItem-label {
+  @include align-items(center);
+  @include justify-content(center);
+  @include display-flex;
+  width: 100%;
+  height: 100%;
+}
+
 .Modal-inner .AssetsList {
+  @include flex-wrap(wrap);
+  margin: 0 -14px 20px;
+}
+
+.Modal-inner .AssetsList:last-child {
   @include flex-wrap(wrap);
   margin: 0 -14px;
 }

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/storage'
+require 'carto/organization_asset_file'
 
 module Carto
   module Api
@@ -12,7 +12,7 @@ module Carto
       before_filter :load_organization,
                     :organization_owners_only
       before_filter :load_asset, only: [:show, :destroy]
-      before_filter :load_url, only: :create
+      before_filter :load_asset_file, only: :create
 
       rescue_from LoadError,
                   UnprocesableEntityError, with: :rescue_from_carto_error
@@ -31,22 +31,8 @@ module Carto
 
       def create
         asset = Asset.create!(kind: params[:kind],
-                              organization_id: @organization.id)
-
-        tmp_filename = asset.id
-        file = Tempfile.new(tmp_filename)
-        begin
-          IO.copy_stream(open(@url), file)
-
-          public_url = Storage.instance.upload(ORGANIZATION_ASSETS_LOCATION,
-                                               @organization.id,
-                                               file)
-        ensure
-          file.close
-          file.unlink
-        end
-
-        asset.update_attributes!(public_url: public_url)
+                              organization_id: @organization.id,
+                              public_url: @asset_file.public_url)
 
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception
@@ -76,10 +62,15 @@ module Carto
         raise LoadError.new('Asset not found')
       end
 
-      def load_url
+      def load_asset_file
         @url = params[:url]
         unless @url.present?
           raise UnprocesableEntityError.new('Missing url for asset')
+        end
+
+        @asset_file = Carto::OrganizationAssetFile.new(@organization, @url)
+        unless asset_file.valid?
+          raise UnprocesableEntityError.new(asset_file.errors)
         end
       end
     end

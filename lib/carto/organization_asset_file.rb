@@ -4,7 +4,23 @@ require 'carto/storage'
 
 module Carto
   class OrganizationAssetFile
+    def self.enabled?
+      Carto::OrganizationAssetFile.namespace.present? &&
+        Carto::OrganizationAssetFile.max_size_in_bytes.present?
+    end
+
+    def self.namespace
+      @namespace ||= CartoDB.config.fetch(:assets, 'organizations', 'namespace')
+    end
+
+    def self.max_size_in_bytes
+      @max_size_in_bytes ||= CartoDB.config.fetch(:assets,
+                                                  'organizations',
+                                                  'max_size_in_bytes')
+    end
+
     attr_reader :url, :organization, :errors
+
     def initialize(url, organization)
       @url = url
       @organization = organization
@@ -37,16 +53,6 @@ module Carto
       temp_file.unlink
 
       temp_file
-    end
-
-    def namespace
-      @namespace ||= CartoDB.config.fetch(:assets, 'organizations', 'namespace')
-    end
-
-    def max_size_in_bytes
-      @max_size_in_bytes ||= CartoDB.config.fetch(:assets,
-                                                  'organizations',
-                                                  'max_size_in_bytes')
     end
   end
 end

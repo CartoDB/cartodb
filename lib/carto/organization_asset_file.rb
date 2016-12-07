@@ -10,13 +10,11 @@ module Carto
     end
 
     def self.namespace
-      @namespace ||= CartoDB.config.fetch(:assets, 'organizations', 'namespace')
+      CartoDB.config.fetch(:assets, 'organizations', 'namespace')
     end
 
     def self.max_size_in_bytes
-      @max_size_in_bytes ||= CartoDB.config.fetch(:assets,
-                                                  'organizations',
-                                                  'max_size_in_bytes')
+      CartoDB.config.fetch(:assets, 'organizations', 'max_size_in_bytes')
     end
 
     attr_reader :url, :organization, :errors
@@ -28,7 +26,9 @@ module Carto
     end
 
     def public_url
-      Storage.instance.upload(namespace, organization.id, file) if valid?
+      if valid?
+        Storage.instance.upload(self.class.namespace, organization.id, file)
+      end
     end
 
     def valid?
@@ -44,6 +44,7 @@ module Carto
     def fetch_file
       temp_file = Tempfile.new(Time.now.utc)
 
+      max_size_in_bytes = self.class.max_size_in_bytes
       read = IO.copy_stream(open(url), temp_file, max_size_in_bytes + 1)
       if read < max_size_in_bytes
         errors[:file] = "too big (> #{max_size_in_bytes})"

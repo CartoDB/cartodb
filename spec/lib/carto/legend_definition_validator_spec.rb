@@ -14,42 +14,9 @@ module Carto
     end
 
     let(:bubble_definition) do
-      definition_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+      definition_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
       Carto::Definition.instance
                        .load_from_file(definition_location)
-    end
-
-    describe '#html' do
-      let(:definition) do
-        {
-          html: '<h1>Manolo Escobar</h1>'
-        }
-      end
-
-      it 'accepts a correct definition' do
-        validator = LegendDefinitionValidator.new(:html, definition)
-        validator.errors.should be_empty
-      end
-
-      it 'rejects spammy definitions' do
-        spammed_definition = definition.merge(spam: 'the ham')
-
-        validator = LegendDefinitionValidator.new(:html, spammed_definition)
-
-        validator.errors.should_not be_empty
-        joint_errors = validator.errors.join(', ')
-        joint_errors.should include('additional properties')
-      end
-
-      it 'rejects incomplete definitions' do
-        incomplete_definition = definition.except(:html)
-
-        validator = LegendDefinitionValidator.new(:html, incomplete_definition)
-
-        validator.errors.should_not be_empty
-        joint_errors = validator.errors.join(', ')
-        joint_errors.should include('did not contain a required property')
-      end
     end
 
     describe '#bubble' do
@@ -266,19 +233,19 @@ module Carto
       it 'returns location for existent locations' do
         validator = LegendDefinitionValidator.new(:bubble, nil)
 
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator.send(:location).should eq expected_location
       end
 
       it 'returns location for existent locations when type is string' do
         validator = LegendDefinitionValidator.new('bubble', nil)
 
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator.send(:location).should eq expected_location
       end
 
       it 'is memoized' do
-        expected_location = "#{Rails.root}/lib/formats/legends/bubble.json"
+        expected_location = "#{Rails.root}/lib/formats/legends/definitions/bubble.json"
         validator = LegendDefinitionValidator.new('bubble', nil)
 
         File.expects(:exists?)

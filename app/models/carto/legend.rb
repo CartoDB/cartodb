@@ -13,16 +13,19 @@ module Carto
     VALID_LEGEND_TYPES = %(category bubble choropleth custom custom_choropleth).freeze
 
     serialize :definition, ::Carto::CartoJsonSerializer
+    serialize :conf, ::Carto::CartoJsonSerializer
 
     validates :definition, carto_json_symbolizer: true
+    serialize :conf, ::Carto::CartoJsonSerializer
     validates :type, :layer, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 
     validate :on_data_layer,
              :under_max_legends_per_layer,
-             :validate_definition_schema
+             :validate_definition_schema,
+             :validate_conf_schema
 
-    before_validation :ensure_definition
+    before_validation :ensure_definition, :ensure_conf
 
     after_commit :force_notify_layer_change
 
@@ -30,6 +33,10 @@ module Carto
 
     def ensure_definition
       self.definition ||= Hash.new
+    end
+
+    def ensure_conf
+      self.conf ||= Hash.new
     end
 
     def on_data_layer
@@ -56,6 +63,18 @@ module Carto
 
       if definition_errors.any?
         errors.add(:definition, definition_errors.join(', '))
+      end
+    end
+
+    def validate_conf_schema
+      schema = Carto::Definition.instance
+                                .load_from_file('lib/formats/legends/conf.json')
+
+      parsed_conf = conf.try(:is_a?, Hash) ? conf.with_indifferent_access : conf
+      conf_errors = JSON::Validator.fully_validate(schema, parsed_conf)
+
+      if conf_errors.any?
+        errors.add(:conf, conf_errors.join(', '))
       end
     end
 

@@ -9,21 +9,6 @@ module Carto
     describe Carto::Api::LegendsController do
       include Carto::Factories::Visualizations, HelperMethods
 
-      let(:html_legend_payload) do
-        {
-          pre_html: "<h3>Es acaso</h3>",
-          post_html: "<h3>el mejor artista del mundo?</h3>",
-          title: "La verdad",
-          type: "html",
-          conf: {
-            columns: ['manolo', 'escobar']
-          },
-          definition: {
-            html: '<h1>Manolo Escobar</h1>'
-          }
-        }
-      end
-
       let(:category_legend_payload) do
         {
           pre_html: "<h3>Es acaso</h3>",
@@ -285,10 +270,6 @@ module Carto
             @payload = nil
           end
 
-          it 'banned for html' do
-            @payload = html_legend_payload
-          end
-
           it 'banned for category' do
             @payload = category_legend_payload
           end
@@ -323,10 +304,6 @@ module Carto
             @payload = nil
           end
 
-          it 'banned for html' do
-            @payload = html_legend_payload
-          end
-
           it 'banned for category' do
             @payload = category_legend_payload
           end
@@ -359,10 +336,6 @@ module Carto
 
           after(:all) do
             @payload = nil
-          end
-
-          it 'banned for html' do
-            @payload = html_legend_payload
           end
 
           it 'banned for category' do

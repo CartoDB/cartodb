@@ -52,7 +52,6 @@ module Carto
       end
     ensure
       temp_file.close
-      temp_file.unlink
 
       temp_file
     end

@@ -290,6 +290,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
 	spec/lib/carto/legend_migrator_spec.rb \
+	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

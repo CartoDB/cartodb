@@ -49,5 +49,4 @@ describe 'CartoDB' do
       CartoDB.extract_subdomain(OpenStruct.new(host: '192.168.1.1', params: { user_domain: 'otheruser' })).should == 'otheruser'
     end
   end
-
 end

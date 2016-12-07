@@ -596,6 +596,10 @@ module CartoDB
             schemas = [@user.database_schema].uniq
             schemas.each do |schema|
               revoke_privileges(user_database, schema, 'PUBLIC')
+
+              # _CDB_UserQuotaInBytes is called by the quota trigger, and need to be open so
+              # other users in the organization can run it (when updating shared datasets)
+              user_database.run("GRANT ALL ON FUNCTION \"#{schema}\"._CDB_UserQuotaInBytes() TO PUBLIC")
             end
             yield(user_database) if block_given?
           end

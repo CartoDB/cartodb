@@ -28,7 +28,7 @@
     "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
-    "title": "Welcome to the Builder,",
+    "title": "Welcome to Builder,",
     "description": "Let us show you all the new and exciting things that you can do with CARTO.",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",

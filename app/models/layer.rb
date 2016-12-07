@@ -82,8 +82,7 @@ class Layer < Sequel::Model
 
   def after_save
     super
-    maps.each(&:update_related_named_maps)
-    maps.each(&:invalidate_vizjson_varnish_cache)
+    maps.each(&:notify_map_change)
 
     if data_layer?
       register_table_dependencies
@@ -93,8 +92,7 @@ class Layer < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
-    maps.each(&:update_related_named_maps)
-    maps.each(&:invalidate_vizjson_varnish_cache)
+    maps.each(&:notify_map_change)
     super
   end
 

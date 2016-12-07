@@ -60,10 +60,10 @@ module Carto
     serialize :tooltip, CartoJsonSerializer
 
     has_many :layers_maps
-    has_many :maps, through: :layers_maps
+    has_many :maps, through: :layers_maps, after_add: :set_default_order
 
     has_many :layers_user
-    has_many :users, through: :layers_user
+    has_many :users, through: :layers_user, after_add: :set_default_order
 
     has_many :layers_user_table
     has_many :user_tables, through: :layers_user_table, class_name: Carto::UserTable
@@ -76,6 +76,14 @@ module Carto
 
     has_many :layer_node_styles
 
+    before_destroy :ensure_not_viewer
+    before_destroy :invalidate_maps
+    after_save :invalidate_maps, :update_layer_node_style
+
+    ALLOWED_KINDS = %w{carto tiled background gmapsbase torque wms}.freeze
+    validates :kind, inclusion: { in: ALLOWED_KINDS }
+    validate :validate_not_viewer
+
     TEMPLATES_MAP = {
       'table/views/infowindow_light' =>               'infowindow_light',
       'table/views/infowindow_dark' =>                'infowindow_dark',
@@ -85,6 +93,16 @@ module Carto
       'table/views/infowindow_light_header_green' =>  'infowindow_light_header_green',
       'table/views/infowindow_header_with_image' =>   'infowindow_header_with_image'
     }.freeze
+
+    def set_default_order(parent)
+      # Reload maps upon adding this layer to a map (AR doesn't do this automatically)
+      maps.reload if persisted?
+
+      return unless order.nil?
+      max_order = parent.layers.map(&:order).compact.max || -1
+      self.order = max_order + 1
+      save if persisted?
+    end
 
     def affected_tables_readable_by(user)
       affected_tables.select { |ut| ut.readable_by?(user) }
@@ -110,21 +128,17 @@ module Carto
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def infowindow_template_path
-      if self.infowindow.present? && self.infowindow['template_name'].present?
-        template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
+      if infowindow.present? && infowindow['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], infowindow['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
-      else
-        nil
       end
     end
 
     # INFO: for vizjson v3 this is not used, see VizJSON3LayerPresenter#to_vizjson_v3
     def tooltip_template_path
-      if self.tooltip.present? && self.tooltip['template_name'].present?
-        template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
+      if tooltip.present? && tooltip['template_name'].present?
+        template_name = TEMPLATES_MAP.fetch(tooltip['template_name'], tooltip['template_name'])
         Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
-      else
-        nil
       end
     end
 
@@ -132,7 +146,7 @@ module Carto
       gmapsbase? || tiled?
     end
 
-    def base?
+    def base_layer?
       tiled? || background? || gmapsbase? || wms?
     end
 
@@ -141,7 +155,7 @@ module Carto
     end
 
     def data_layer?
-      !base?
+      !base_layer?
     end
 
     def user_layer?
@@ -209,7 +223,10 @@ module Carto
     end
 
     def register_table_dependencies
-      self.user_tables = affected_tables if data_layer?
+      if data_layer?
+        maps.reload if persisted?
+        self.user_tables = affected_tables
+      end
     end
 
     def fix_layer_user_information(old_username, new_user, renamed_tables)
@@ -242,7 +259,26 @@ module Carto
       options && options['category']
     end
 
+    def rename_table(current_table_name, new_table_name)
+      return self unless data_layer?
+      target_keys = %w{table_name tile_style query}
+
+      targets = options.select { |key, _| target_keys.include?(key) }
+      renamed = targets.map do |key, value|
+        [key, rename_in(value, current_table_name, new_table_name)]
+      end
+
+      self.options = options.merge(renamed.to_h)
+      self
+    end
+
     private
+
+    def rename_in(target, anchor, substitution)
+      return if target.blank?
+      regex = /(\A|\W+)(#{anchor})(\W+|\z)/
+      target.gsub(regex) { |match| match.gsub(anchor, substitution) }
+    end
 
     CUSTOM_CATEGORIES = %w{Custom NASA TileJSON Mapbox WMS}.freeze
 
@@ -259,6 +295,35 @@ module Carto
 
     def query
       options.symbolize_keys[:query]
+    end
+
+    def source_id
+      options.symbolize_keys[:source]
+    end
+
+    def invalidate_maps
+      maps.each(&:notify_map_change)
+    end
+
+    def ensure_not_viewer
+      raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
+    end
+
+    def validate_not_viewer
+      errors.add(:maps, "Viewer users can't edit layers") if maps.any? { |m| m.user && m.user.viewer }
+    end
+
+    def update_layer_node_style
+      style = current_layer_node_style
+      if style
+        style.update_from_layer(self)
+        style.save
+      end
+    end
+
+    def current_layer_node_style
+      return nil unless source_id
+      layer_node_styles.where(source_id: source_id).first || LayerNodeStyle.new(layer: self, source_id: source_id)
     end
   end
 end

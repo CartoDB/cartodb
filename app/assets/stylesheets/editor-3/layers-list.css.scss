@@ -267,6 +267,10 @@
 
 .Editor-ListAnalysis-itemInfoIcon {
   line-height: 18px;
+
+  + .Editor-ListAnalysis-itemInfoIcon {
+    margin-left: 5px;
+  }
 }
 
 .Editor-ListAnalysis-title {

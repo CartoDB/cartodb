@@ -161,3 +161,54 @@
   margin: 0;
   border: 0;
 }
+
+.OpacityEditor {
+  position: relative;
+}
+
+.OpacityEditor-slider {
+  position: relative;
+  width: 171px;
+  height: $baseSize;
+  margin-top: $baseSize;
+  border-radius: $baseSize - 2;
+  background-image: image-url('layout/colorpicker/alpha-horizontal.png');
+  background-size: contain;
+  cursor: col-resize;
+}
+
+.OpacityEditor-slider .ui-slider-range::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+  border-radius: $baseSize - 2;
+  pointer-events: none;
+  content: '';
+}
+
+.OpacityEditor-slider .ui-slider-handle {
+  position: absolute;
+  width: $baseSize;
+  height: $baseSize;
+  margin-top: -1px;
+  margin-left: -4px;
+  border-radius: 50%;
+  outline: none;
+  background: $cWhite;
+  box-shadow: 1px 1px 1px #333;
+}
+
+.OpacityEditor-inputWrapper {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.OpacityEditor-inputWrapper input {
+  min-height: auto;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}

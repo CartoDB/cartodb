@@ -9,6 +9,7 @@ module Carto
     end
 
     def valid?
+      errors.empty?
     end
 
     private

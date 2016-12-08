@@ -512,7 +512,11 @@ div.map {
 
     @include position(-1px, 0px, 0, 0);
     @include size(auto);
-
+    overflow: hidden;
+    outline: 0;
+    z-index: 1;
+    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background: #000;
   }
 
   div.cartodb-map {

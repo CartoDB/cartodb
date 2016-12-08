@@ -10,6 +10,8 @@
   width: 100%;
   height: 100%;
   cursor: crosshair;
+  top: 0;
+  left: 0;
 }
 .ExportImageView-Header {
   @include transition(all, 200ms, ease-in-out);

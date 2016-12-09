@@ -21,7 +21,11 @@ LeafletMarkerAdapter.prototype.isAddedToMap = function (leafletMap) {
 };
 
 LeafletMarkerAdapter.prototype.getCoordinates = function () {
-  return this._nativeMarker.getLatLng();
+  var latLng = this._nativeMarker.getLatLng();
+  return {
+    lat: latLng.lat,
+    lng: latLng.lng
+  };
 };
 
 LeafletMarkerAdapter.prototype.setCoordinates = function (coordinates) {

@@ -1,39 +1,39 @@
 var _ = require('underscore');
-var MapViewBase = require('../../../../../src/geo/map-view.js');
+var GMapsMapView = require('../../../../../src/geo/gmaps/gmaps-map-view.js');
+var CoordinatesComparator = require('../coordinates-comparator');
 
-var FakeMapView = MapViewBase.extend({
+module.exports = GMapsMapView.extend({
   initialize: function () {
-    MapViewBase.prototype.initialize.apply(this, arguments);
+    GMapsMapView.prototype.initialize.apply(this, arguments);
 
-    // Markers and paths
     this._markers = [];
     this._paths = [];
   },
 
   addMarker: function (marker) {
+    GMapsMapView.prototype.addMarker.apply(this, arguments);
     this._markers.push(marker);
   },
 
-  addPath: function (path) {
-    this._paths.push(path);
-  },
-
   removeMarker: function (marker) {
+    GMapsMapView.prototype.removeMarker.apply(this, arguments);
     var index = this._markers.indexOf(marker);
     if (index >= 0) {
       this._markers.splice(index, 1);
     }
   },
 
+  addPath: function (path) {
+    GMapsMapView.prototype.addPath.apply(this, arguments);
+    this._paths.push(path);
+  },
+
   removePath: function (path) {
+    GMapsMapView.prototype.removePath.apply(this, arguments);
     var index = this._paths.indexOf(path);
     if (index >= 0) {
       this._paths.splice(index, 1);
     }
-  },
-
-  hasMarker: function (marker) {
-    return this._markers.indexOf(marker) >= 0;
   },
 
   getMarkers: function () {
@@ -44,26 +44,10 @@ var FakeMapView = MapViewBase.extend({
     return this._paths;
   },
 
-  latLngToContainerPoint: function (latlng) {
-    return {
-      x: latlng[0],
-      y: latlng[1]
-    };
-  },
-
-  containerPointToLatLng: function (point) {
-    return {
-      lat: point[0],
-      lng: point[1]
-    };
-  },
-
   findMarkerByLatLng: function (latlng) {
     var markers = this.getMarkers();
     return _.find(markers, function (marker) {
-      return _.isEqual(marker.getCoordinates(), latlng);
-    });
+      return CoordinatesComparator.areCoordinatesSimilar([marker.getCoordinates()], [latlng]);
+    }, this);
   }
 });
-
-module.exports = FakeMapView;

@@ -28,8 +28,8 @@ MarkerAdapterBase.prototype.getIconURL = function () {
   throw new Error('subclasses of MarkerAdapterBase must implement getIconURL');
 };
 
-MarkerAdapterBase.prototype.setIconURL = function (iconURL) {
-  throw new Error('subclasses of MarkerAdapterBase must implement setIconURL');
+MarkerAdapterBase.prototype.setIcon = function (iconURL, iconAnchor) {
+  throw new Error('subclasses of MarkerAdapterBase must implement setIcon');
 };
 
 MarkerAdapterBase.prototype.on = function () {

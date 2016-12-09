@@ -7,7 +7,9 @@ var defaultOptions = {
   vendor: [
     // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
     'node_modules/source-map-support/browser-source-map-support.js',
-    'test/install-source-map-support.js'
+    'test/install-source-map-support.js',
+    // TODO: Use a different (company generated one) API key?
+    'http://maps.googleapis.com/maps/api/js?key=AIzaSyA4KzmztukvT7C49NSlzWkz75Xg3J_UyFI'
   ]
 };
 
@@ -23,22 +25,14 @@ module.exports = {
     ],
     options: _.defaults({
       outfile: 'test/SpecRunner-cartodb.html',
-      specs: '<%= config.tmp %>/cartodb-specs.js',
-      vendor: defaultOptions.vendor
-        .concat([
-          'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12'
-        ])
+      specs: '<%= config.tmp %>/cartodb-specs.js'
     }, defaultOptions)
   },
   'cartodb-src': {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js',
-      vendor: defaultOptions.vendor
-        .concat([
-          'http://maps.googleapis.com/maps/api/js?sensor=false&v=3.12'
-        ])
+      specs: '<%= config.tmp %>/src-specs.js'
     }, defaultOptions)
   }
 };

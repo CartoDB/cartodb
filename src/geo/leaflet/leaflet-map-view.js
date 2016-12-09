@@ -293,37 +293,28 @@ var LeafletMapView = MapView.extend({
   // GEOMETRY
 
   addMarker: function (marker) {
-    marker.addToMap(this._leafletMap);
+    marker.addToMap(this.getNativeMap());
   },
 
   removeMarker: function (marker) {
-    marker.removeFromMap(this._leafletMap);
+    marker.removeFromMap(this.getNativeMap());
   },
 
   hasMarker: function (marker) {
-    return marker.isAddedToMap(this._leafletMap);
+    return marker.isAddedToMap(this.getNativeMap());
   },
 
   addPath: function (path) {
-    path.addToMap(this._leafletMap);
+    path.addToMap(this.getNativeMap());
   },
 
   removePath: function (path) {
-    path.removeFromMap(this._leafletMap);
+    path.removeFromMap(this.getNativeMap());
   },
 
   // TODO: Replace usages of this method by latLngToContainerPoint
   latLonToPixel: function (latlng) {
     return this.latLngToContainerPoint(latlng);
-  },
-
-  latLngToContainerPoint: function (latlng) {
-    var point = this._leafletMap.latLngToLayerPoint(new L.LatLng(latlng[0], latlng[1]));
-    return this._leafletMap.layerPointToContainerPoint(point);
-  },
-
-  containerPointToLatLng: function (point) {
-    return this._leafletMap.containerPointToLatLng([point[0], point[1]]);
   }
 });
 

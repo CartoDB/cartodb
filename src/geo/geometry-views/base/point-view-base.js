@@ -116,7 +116,7 @@ var PointViewBase = GeometryViewBase.extend({
 
   _updateMarkersIcon: function () {
     if (this._marker) {
-      this._marker.setIconURL(this.model.get('iconUrl'));
+      this._marker.setIconURL(this.model.get('iconUrl'), this.model.get('iconAnchor'));
     }
   },
 
@@ -125,19 +125,17 @@ var PointViewBase = GeometryViewBase.extend({
   },
 
   _unbindMarkerEvents: function () {
+    this._marker.off('mousedown', this._onMouseDown);
     this._marker.off('dragstart', this._onDragStart);
     this._marker.off('drag', this._onDrag);
     this._marker.off('dragend', this._onDragEnd);
-    this._marker.off('mousedown', this._onMouseDown);
-    this._marker.off('click', this._onMouseClick);
   },
 
   _bindMarkerEvents: function () {
+    this._marker.on('mousedown', this._onMouseDown);
     this._marker.on('dragstart', this._onDragStart);
     this._marker.on('drag', this._onDrag);
     this._marker.on('dragend', this._onDragEnd);
-    this._marker.on('mousedown', this._onMouseDown);
-    this._marker.on('click', this._onMouseClick);
   }
 });
 

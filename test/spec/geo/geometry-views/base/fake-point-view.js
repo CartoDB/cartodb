@@ -10,10 +10,6 @@ var PointView = PointViewBase.extend({
     });
   },
 
-  _updateMarkersIcon: function () {
-    this._marker.setIconURL(this.model.get('iconUrl'));
-  },
-
   _bindMarkerEvents: function () {
     this._marker.on('dragstart', this._onDragStart);
     this._marker.on('drag', this._onDrag);

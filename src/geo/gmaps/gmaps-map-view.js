@@ -1,6 +1,5 @@
 /* global google */
 var _ = require('underscore');
-var Backbone = require('backbone');
 var log = require('cdb.log');
 var MapView = require('../map-view');
 var Projector = require('./projector');
@@ -162,19 +161,6 @@ var GoogleMapsMapView = MapView.extend({
     return layerView;
   },
 
-  // TODO: This is not used
-  pixelToLatLon: function (pos) {
-    var latLng = this.projector.pixelToLatLng(new google.maps.Point(pos[0], pos[1]));
-    return {
-      lat: latLng.lat(),
-      lng: latLng.lng()
-    };
-  },
-
-  latLonToPixel: function (latlon) {
-    return this.projector.latLngToPixel(new google.maps.LatLng(latlon[0], latlon[1]));
-  },
-
   getSize: function () {
     return {
       x: this.$el.width(),
@@ -187,6 +173,8 @@ var GoogleMapsMapView = MapView.extend({
     var pc = this.latLonToPixel(c);
     p.x += pc.x;
     p.y += pc.y;
+    // TODO: Use containerPointToLatLng here and get rid of this.projector,
+    // which is only being used here
     var ll = this.projector.pixelToLatLng(p);
     this.map.setCenter([ll.lat(), ll.lng()]);
   },
@@ -220,8 +208,34 @@ var GoogleMapsMapView = MapView.extend({
 
   invalidateSize: function () {
     google.maps.event.trigger(this._gmapsMap, 'resize');
-  }
+  },
 
+  // GEOMETRY
+
+  addMarker: function (marker) {
+    marker.addToMap(this.getNativeMap());
+  },
+
+  removeMarker: function (marker) {
+    marker.removeFromMap(this.getNativeMap());
+  },
+
+  hasMarker: function (marker) {
+    return marker.isAddedToMap(this.getNativeMap());
+  },
+
+  addPath: function (path) {
+    path.addToMap(this.getNativeMap());
+  },
+
+  removePath: function (path) {
+    path.removeFromMap(this.getNativeMap());
+  },
+
+  // TODO: Replace usages of this method by latLngToContainerPoint
+  latLonToPixel: function (latlng) {
+    return this.latLngToContainerPoint(latlng);
+  }
 });
 
 module.exports = GoogleMapsMapView;

@@ -21,7 +21,7 @@ var FakeMarker = Backbone.Model.extend({
     return this.get('iconURL');
   },
 
-  setIconURL: function (url) {
+  setIconURL: function (url, anchor) {
     return this.set('iconURL', url);
   }
 });

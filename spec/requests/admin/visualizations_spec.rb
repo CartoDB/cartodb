@@ -161,6 +161,47 @@ describe Admin::VisualizationsController do
           get "/viz/#{@id}", {}, @headers
           last_response.status.should eq 200
         end
+
+        it 'never for vizjson2 visualizations' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+          Carto::Visualization::any_instance.stubs(:uses_vizjson2?).returns(true)
+
+          login_as(@user, scope: @user.username)
+          get public_visualizations_show_path(id: @id), {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'never for maps with google basemaps' do
+          @user.stubs(:builder_enabled).returns(true)
+          @user.stubs(:builder_enabled?).returns(true)
+
+          Carto::Visualization.find(@id).layers.create(kind: 'gmapsbase')
+
+          login_as(@user, scope: @user.username)
+          get public_visualizations_show_path(id: @id), {}, @headers
+          last_response.status.should eq 200
+        end
+
+        it 'embed redirects to builder for v3 when needed' do
+          # These two tests are in the same testcase to test proper embed cache invalidation
+          @user.stubs(:builder_enabled).returns(false)
+          @user.stubs(:builder_enabled?).returns(false)
+          visualization = CartoDB::Visualization::Member.new(id: @id).fetch
+          visualization.version = 2
+          visualization.store
+
+          login_as(@user, scope: @user.username)
+          get public_visualizations_embed_map_path(id: @id), {}, @headers
+          last_response.status.should eq 200
+
+          visualization.version = 3
+          visualization.store
+
+          login_as(@user, scope: @user.username)
+          get public_visualizations_embed_map_path(id: @id), {}, @headers
+          last_response.status.should eq 302
+        end
       end
     end
   end # GET /viz/:id
@@ -325,7 +366,7 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
-      last_response.body.should =~ /cartodb-embed-error/
+      last_response.body.should include("Looks like this map is set as private or no longer exists")
     end
 
     it 'renders embed map error when an exception is raised' do
@@ -456,9 +497,10 @@ describe Admin::VisualizationsController do
       # --------TEST ITSELF-----------
 
       org = Organization.new
-      org.name = 'vis-spec-org'
+      org.name = 'vis-spec-org-2'
       org.quota_in_bytes = 1024 ** 3
       org.seats = 10
+      org.builder_enabled = false
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)
@@ -557,6 +599,7 @@ describe Admin::VisualizationsController do
       org.name = 'vis-spec-org'
       org.quota_in_bytes = 1024**3
       org.seats = 10
+      org.builder_enabled = false
       org.save
 
       ::User.any_instance.stubs(:remaining_quota).returns(1000)

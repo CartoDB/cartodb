@@ -2,9 +2,11 @@
 require_dependency 'google_plus_api'
 require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
+require_dependency 'dummy_password_generator'
 
 class Admin::OrganizationUsersController < Admin::AdminController
   include OrganizationUsersHelper
+  include DummyPasswordGenerator
 
   # Organization actions
   ssl_required  :new, :create, :edit, :update, :destroy
@@ -28,6 +30,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_obs_snapshot_limit = current_user.soft_obs_snapshot_limit
     @user.soft_obs_general_limit = current_user.soft_obs_general_limit
     @user.soft_twitter_datasource_limit = current_user.soft_twitter_datasource_limit
+    @user.soft_mapzen_routing_limit = current_user.soft_mapzen_routing_limit
 
     @user.viewer = organization.remaining_seats <= 0 && organization.remaining_viewer_seats > 0
 
@@ -50,12 +53,20 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # The error is deferred to display values in the form in the error scenario.
     validation_failure = !soft_limits_validation(@user, params[:user], current_user.organization.owner)
 
+    if (!current_user.organization.auth_username_password_enabled &&
+            !params[:user][:password].present? &&
+            !params[:user][:password_confirmation].present?)
+      dummy_password = generate_dummy_password
+      params[:user][:password] = dummy_password
+      params[:user][:password_confirmation] = dummy_password
+    end
+
     @user.set_fields(
       params[:user],
       [
         :username, :email, :password, :quota_in_bytes, :password_confirmation,
         :twitter_datasource_enabled, :soft_geocoding_limit, :soft_here_isolines_limit,
-        :soft_obs_snapshot_limit, :soft_obs_general_limit
+        :soft_obs_snapshot_limit, :soft_obs_general_limit, :soft_mapzen_routing_limit
       ])
     @user.viewer = params[:user][:viewer] == 'true'
     @user.organization = current_user.organization
@@ -127,6 +138,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.soft_obs_general_limit = attributes[:soft_obs_general_limit] if attributes[:soft_obs_general_limit].present?
     @user.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] if attributes[:twitter_datasource_enabled].present?
     @user.soft_twitter_datasource_limit = attributes[:soft_twitter_datasource_limit] if attributes[:soft_twitter_datasource_limit].present?
+    @user.soft_mapzen_routing_limit = attributes[:soft_mapzen_routing_limit] if attributes[:soft_mapzen_routing_limit].present?
 
     model_validation_ok = @user.valid?
     if attributes[:password].present? || attributes[:password_confirmation].present?

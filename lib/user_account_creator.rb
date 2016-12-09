@@ -3,10 +3,12 @@
 require 'securerandom'
 require_dependency 'google_plus_api'
 require_dependency 'carto/strong_password_validator'
+require_dependency 'dummy_password_generator'
 
 # This class is quite coupled to UserCreation.
 module CartoDB
   class UserAccountCreator
+    include DummyPasswordGenerator
 
     PARAM_USERNAME = :username
     PARAM_EMAIL = :email
@@ -18,7 +20,9 @@ module CartoDB
     PARAM_SOFT_OBS_SNAPSHOT_LIMIT = :soft_obs_snapshot_limit
     PARAM_SOFT_OBS_GENERAL_LIMIT = :soft_obs_general_limit
     PARAM_SOFT_TWITTER_DATASOURCE_LIMIT = :soft_twitter_datasource_limit
+    PARAM_SOFT_MAPZEN_ROUTING_LIMIT = :soft_mapzen_routing_limit
     PARAM_QUOTA_IN_BYTES = :quota_in_bytes
+    PARAM_VIEWER = :viewer
 
     def initialize(created_via)
       @built = false
@@ -62,8 +66,16 @@ module CartoDB
       with_param(PARAM_SOFT_TWITTER_DATASOURCE_LIMIT, value)
     end
 
+    def with_soft_mapzen_routing_limit(value)
+      with_param(PARAM_SOFT_MAPZEN_ROUTING_LIMIT, value)
+    end
+
     def with_quota_in_bytes(value)
       with_param(PARAM_QUOTA_IN_BYTES, value)
+    end
+
+    def with_viewer(value)
+      with_param(PARAM_VIEWER, value)
     end
 
     def with_organization(organization)
@@ -160,7 +172,7 @@ module CartoDB
         @user.github_user_id = @github_api.id
         @user.username = @github_api.username
         @user.email = @user_params[PARAM_EMAIL] || @github_api.email
-        dummy_password = (0...15).map { ('a'..'z').to_a[rand(26)] }.join
+        dummy_password = generate_dummy_password
         @user.password = dummy_password
         @user.password_confirmation = dummy_password
       else
@@ -177,7 +189,9 @@ module CartoDB
       @user.soft_obs_snapshot_limit = @user_params[PARAM_SOFT_OBS_SNAPSHOT_LIMIT] == 'true'
       @user.soft_obs_general_limit = @user_params[PARAM_SOFT_OBS_GENERAL_LIMIT] == 'true'
       @user.soft_twitter_datasource_limit = @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true'
+      @user.soft_mapzen_routing_limit = @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true'
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
+      @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
 
       @built = true
       @user
@@ -202,6 +216,9 @@ module CartoDB
       end
       if @user_params[PARAM_SOFT_TWITTER_DATASOURCE_LIMIT] == 'true' && !owner.soft_twitter_datasource_limit
         @custom_errors[:soft_twitter_datasource_limit] = ["Owner can't assign soft twitter datasource limit"]
+      end
+      if @user_params[PARAM_SOFT_MAPZEN_ROUTING_LIMIT] == 'true' && !owner.soft_mapzen_routing_limit
+        @custom_errors[:soft_mapzen_routing_limit] = ["Owner can't assign soft mapzen routing limit"]
       end
     end
 

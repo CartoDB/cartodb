@@ -3,7 +3,7 @@
     <%- name === 'cartodb_id' || (type === 'geometry' && geometry !== 'point') ? 'Table-headItemWrapper--short' : '' %>
   ">
   <div class="u-flex u-justifySpace">
-    <input class="Table-headItemName CDB-Text CDB-Size-medium is-semibold u-ellipsis js-attribute" value="<%- name %>" readonly />
+    <input class="Table-headItemName CDB-Text CDB-Size-medium is-semibold u-ellipsis js-attribute" value="<%- name %>" title="<%- name %>" readonly />
 
     <% if (isOrderBy) { %>
       <i class="CDB-Size CDB-Size-small CDB-IconFont CDB-IconFont-arrowNext
@@ -13,13 +13,11 @@
       "></i>
     <% } %>
 
-    <% if (type !== 'geometry') { %>
-      <button class="CDB-Shape-threePoints is-blue is-small js-options">
-        <div class="CDB-Shape-threePointsItem"></div>
-        <div class="CDB-Shape-threePointsItem"></div>
-        <div class="CDB-Shape-threePointsItem"></div>
-      </button>
-    <% } %>
+    <button class="CDB-Shape-threePoints is-blue is-small js-options">
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+      <div class="CDB-Shape-threePointsItem"></div>
+    </button>
   </div>
   <p class="CDB-Size-small Table-headItemInfo u-altTextColor"><%- type %></p>
 </div>

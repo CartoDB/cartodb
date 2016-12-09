@@ -29,6 +29,10 @@
 }
 .BlockList-item.BlockList-item--noAction {
   cursor: default;
+
+  .BlockList-titleText {
+    cursor: default;
+  }
 }
 .BlockList-item.BlockList-item--noAction:hover {
   border: 1px solid $cSecondaryLine;
@@ -129,6 +133,9 @@
 .HorizontalBlockList-item.is-add {
   border: 1px dashed $cMainLine;
   background: $cWhite;
+  &:hover {
+    border: 1px solid $cHoverLine;
+  }
 }
 .HorizontalBlockList-item.is-selected {
   color: $cWhite;

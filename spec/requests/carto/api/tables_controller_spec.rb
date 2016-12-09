@@ -46,7 +46,7 @@ describe Carto::Api::TablesController do
     it "check imported table metadata" do
       data_import = DataImport.create(
                                       user_id: @user.id,
-                                      data_source: '/../spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip'
+                                      data_source: Rails.root.join('spec/support/data/TM_WORLD_BORDERS_SIMPL-0.3.zip').to_s
                                       ).run_import!
 
       get_json api_v1_tables_show_url(params.merge(id: data_import.table_id)) do |response|

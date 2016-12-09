@@ -8,11 +8,26 @@ FactoryGirl.define do
     order 1
     type 'formula'
     title 'The Title'
+    source_id 'a0'
     options do
       {
         type: "formula",
         column: column_name,
         operation: "min"
+      }
+    end
+    style do
+      {
+        widget_style: {
+          definition: {
+            fill: { color: { fixed: '#FFF' } }
+          }
+        },
+        auto_style: {
+          definition: {
+            fill: { color: { fixed: '#FFF' } }
+          }
+        }
       }
     end
     created_at { Time.now }

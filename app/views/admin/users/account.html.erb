@@ -125,29 +125,12 @@
             <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your billing plan</label>
           </div>
           <div class="FormAccount-rowData">
-            <div class="FormAccount-planTag CDB-Size-medium"><%= current_user.account_type %></div>
+            <div class="FormAccount-planTag CDB-Size-medium"><%= plan_name(current_user.account_type) %></div>
             <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
               <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= current_user.plan_url(request.protocol) %>" class="FormAccount-link">View details</a></p>
             </div>
           </div>
         </div>
-      <% end %>
-
-      <% if (@user.builder_enabled?)  %>
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Builder</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <div class="Toggler">
-            <%= f.check_box :builder_enabled, id: "builder_enabled" %>
-            <%= label_tag(:builder_enabled, '') %>
-          </div>
-          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="CDB-Text CDB-Size-small u-altTextColor">Use the Builder for creating and updating maps</p>
-          </div>
-        </div>
-      </div>
       <% end %>
 
       <%# if none of the services are activated, this block shouldn't appear %>

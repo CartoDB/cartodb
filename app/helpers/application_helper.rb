@@ -67,11 +67,19 @@ module ApplicationHelper
       end
   end
 
+  def app_assets_base_url
+    asset_host = CartoDB.get_absolute_url(Cartodb.get_config(:app_assets, 'asset_host'))
+    base_url = asset_host.present? ? asset_host : CartoDB.base_domain_from_request(request)
+    "#{base_url}/assets"
+  end
+
   module_function :maps_api_template
   module_function :sql_api_template, :sql_api_url
+  module_function :app_assets_base_url
 
   def frontend_config
     config = {
+      app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
       sql_api_template:           sql_api_template,
       user_name:                  CartoDB.extract_subdomain(request),
@@ -85,6 +93,8 @@ module ApplicationHelper
       oauth_gdrive:               Cartodb.get_config(:oauth, 'gdrive', 'client_id'),
       oauth_instagram:            Cartodb.get_config(:oauth, 'instagram', 'app_key'),
       oauth_mailchimp:            Cartodb.get_config(:oauth, 'mailchimp', 'app_key'),
+      arcgis_enabled:             Cartodb.get_config(:datasources, 'arcgis_enabled'),
+      salesforce_enabled:         Cartodb.get_config(:datasources, 'salesforce_enabled'),
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
@@ -95,7 +105,11 @@ module ApplicationHelper
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
-      config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
+      if current_user.has_feature_flag?('gnip_v2')
+        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url_v2']
+      else
+        config[:datasource_search_twitter] = Cartodb.config[:datasource_search]['twitter_search']['standard']['search_url']
+      end
     end
 
     if Cartodb.config[:graphite_public].present?
@@ -114,6 +128,10 @@ module ApplicationHelper
 
     if Cartodb.config[:cdn_url].present?
       config[:cdn_url] = Cartodb.config[:cdn_url]
+    end
+
+    if !Cartodb.get_config(:dataservices, 'enabled').nil?
+      config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
     config.to_json

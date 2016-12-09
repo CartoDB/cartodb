@@ -39,7 +39,7 @@ module OrganizationUsersHelper
   def permit(*permitted)
     hardened_params = params.dup
 
-    hardened_params.keep_if { |k, _v| permitted.include?(k.to_sym) }
+    hardened_params.keep_if { |k, _v| permitted.flatten.include?(k.to_sym) }
 
     hardened_params.symbolize_keys
   end
@@ -68,6 +68,10 @@ module OrganizationUsersHelper
     soft_twitter_datasource_limit = soft_param_to_boolean(params_to_update[:soft_twitter_datasource_limit])
     if user.soft_twitter_datasource_limit != soft_twitter_datasource_limit && soft_twitter_datasource_limit && !owner.soft_twitter_datasource_limit
       errors.add(:soft_twitter_datasource_limit, "Organization owner hasn't this soft limit")
+    end
+    soft_mapzen_routing_limit = soft_param_to_boolean(params_to_update[:soft_mapzen_routing_limit])
+    if user.soft_mapzen_routing_limit != soft_mapzen_routing_limit && soft_mapzen_routing_limit && !owner.soft_mapzen_routing_limit
+      errors.add(:soft_mapzen_routing_limit, "Organization owner hasn't this soft limit")
     end
 
     errors.empty?

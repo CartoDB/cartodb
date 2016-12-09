@@ -1,6 +1,9 @@
 # encoding: UTF-8
+require_dependency 'carto/user_authenticator'
 
 class Carto::UserCreation < ActiveRecord::Base
+  include Carto::UserAuthenticator
+
   CREATED_VIA_LDAP = 'ldap'
   CREATED_VIA_ORG_SIGNUP = 'org_signup'
   CREATED_VIA_API = 'api'
@@ -37,10 +40,12 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.soft_obs_snapshot_limit = user.soft_obs_snapshot_limit
     user_creation.soft_obs_general_limit = user.soft_obs_general_limit
     user_creation.soft_twitter_datasource_limit = user.soft_twitter_datasource_limit.nil? ? false : user.soft_twitter_datasource_limit
+    user_creation.soft_mapzen_routing_limit = user.soft_mapzen_routing_limit
     user_creation.google_sign_in = user.google_sign_in
     user_creation.github_user_id = user.github_user_id
     user_creation.log = Carto::Log.new_user_creation
     user_creation.created_via = created_via
+    user_creation.viewer = user.viewer || false
 
     user_creation
   end
@@ -195,7 +200,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.github_user_id = github_user_id
     @cartodb_user.invitation_token = invitation_token
-    @cartodb_user.enable_account_token = ::User.make_token if requires_validation_email?
+    @cartodb_user.enable_account_token = make_token if requires_validation_email?
 
     unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first
@@ -210,6 +215,8 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_obs_snapshot_limit = soft_obs_snapshot_limit unless soft_obs_snapshot_limit.nil?
     @cartodb_user.soft_obs_general_limit = soft_obs_general_limit unless soft_obs_general_limit.nil?
     @cartodb_user.soft_twitter_datasource_limit = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
+    @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
+    @cartodb_user.viewer = viewer if viewer
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer

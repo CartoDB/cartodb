@@ -9,7 +9,10 @@ require_relative '../../app/helpers/bounding_box_helper'
 require_relative 'log'
 require_relative '../../lib/cartodb/stats/geocoding'
 
+require_dependency 'carto/configuration'
+
 class Geocoding < Sequel::Model
+  include Carto::Configuration
 
   ALLOWED_KINDS   = %w(admin0 admin1 namedplace postalcode high-resolution ipaddress)
 
@@ -65,7 +68,7 @@ class Geocoding < Sequel::Model
   end
 
   def geocoding_logger
-    @@geocoding_logger ||= Logger.new("#{Rails.root}/log/geocodings.log")
+    @@geocoding_logger ||= Logger.new(log_file_path('geocodings.log'))
   end
 
   def error
@@ -224,10 +227,7 @@ class Geocoding < Sequel::Model
     if translated_formatter =~ SANITIZED_FORMATTER_REGEXP
       translated_formatter
     else
-      # TODO better remove this trace once everything is fine
-      Rollbar.report_message(%Q{Incorrect formatter string received: "#{formatter}"},
-                             'warning',
-                             {user_id: user.id})
+      CartoDB::Logger.warning(message: %{Incorrect formatter string received: "#{formatter}"}, user: user)
       ''
     end
   end

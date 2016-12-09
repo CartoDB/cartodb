@@ -27,8 +27,6 @@ WORKING_SPECS_1 = \
 	spec/requests/application_controller_spec.rb \
 	spec/requests/sessions_spec.rb \
 	spec/requests/api/json/layer_presenter_spec.rb \
-	spec/requests/carto/admin/bi_visualizations_controller_spec.rb \
-	spec/requests/carto/api/bi_visualizations_controller_spec.rb \
 	spec/requests/carto/api/layer_presenter_spec.rb \
 	spec/requests/carto/api/data_import_presenter_spec.rb \
 	spec/requests/carto/api/database_groups_controller_spec.rb \
@@ -63,7 +61,6 @@ WORKING_SPECS_1 = \
 	spec/models/common_data_spec.rb \
 	spec/lib/api_calls_spec.rb \
 	spec/lib/errors_spec.rb \
-	spec/lib/sql_parser_spec.rb \
 	spec/lib/url_signer_spec.rb \
 	spec/lib/string_spec.rb \
 	spec/lib/image_metadata_spec.rb \
@@ -73,19 +70,19 @@ WORKING_SPECS_1 = \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
 	spec/lib/carto/users_metadata_redis_cache_spec.rb \
+	spec/lib/carto/visualization_migrator_spec.rb \
 	spec/lib/carto/http/client_spec.rb \
 	spec/lib/carto/bolt_spec.rb \
 	spec/lib/carto/table_utils_spec.rb \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
-	spec/models/carto/bi_dataset_spec.rb \
-	spec/models/carto/bi_visualization_spec.rb \
 	spec/models/carto/visualization_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
 	spec/models/carto/widget_spec.rb \
 	spec/models/carto/ldap/configuration_spec.rb \
+	spec/services/carto/user_authenticator_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
 	spec/services/carto/visualizations_export_service_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
@@ -134,6 +131,8 @@ WORKING_SPECS_2 = \
 	services/importer/spec/unit/source_file_spec.rb \
 	services/importer/spec/unit/content_guesser_spec.rb \
 	services/importer/spec/unit/namedplaces_guesser_spec.rb \
+	services/importer/spec/unit/connector_spec.rb \
+	services/importer/spec/unit/connector_runner_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_4 = \
@@ -153,6 +152,7 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/imports_controller_spec.rb \
 	spec/connectors/importer_spec.rb \
 	spec/connectors/importer_overviews_spec.rb \
+	spec/requests/carto/api/connectors_controller_spec.rb \
 	spec/requests/api/geocodings_spec.rb \
 	services/importer/spec/unit/url_translator/osm_spec.rb \
 	services/importer/spec/unit/url_translator/osm2_spec.rb \
@@ -262,6 +262,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/user_notifications_controller_spec.rb \
 	spec/requests/carto/api/visualization_exports_controller_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/superadmin/organizations_controller_spec.rb \
+	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/admin/users_controller_spec.rb \
@@ -281,9 +283,17 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/point_spec.rb \
 	spec/lib/carto/styles/polygon_spec.rb \
 	spec/lib/carto/styles/line_spec.rb \
+	spec/lib/carto/styles/geometry_spec.rb \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/models/carto/legend_spec.rb \
+	spec/requests/carto/api/legends_controller_spec.rb \
+	spec/lib/carto/legend_definition_validator_spec.rb \
+	spec/lib/carto/legend_migrator_spec.rb \
+	spec/requests/carto/api/snapshots_controller_specs.rb \
+	spec/models/carto/snapshot_spec.rb \
+	spec/helpers/application_helper_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

@@ -49,6 +49,11 @@ describe Carto::TableUtils do
       table_utils.safe_schema_and_table_quoting('public', 'my""ta-ble').should eq 'public."my""ta-ble"'
     end
 
+    it 'quotes table names starting with numbers' do
+      table_utils.safe_schema_and_table_quoting('public', '42').should eq 'public."42"'
+      table_utils.safe_schema_and_table_quoting('public', 'a42').should eq 'public.a42'
+    end
+
     it 'does not quote already quoted strings' do
       table_utils.safe_schema_and_table_quoting('public', '"my-table"').should eq 'public."my-table"'
       table_utils.safe_schema_and_table_quoting('public', '"my""ta-ble"').should eq 'public."my""ta-ble"'

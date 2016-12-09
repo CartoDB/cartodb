@@ -29,9 +29,12 @@ module Carto
           type: params[:type],
           title: params[:title],
           options: params[:options],
+          style: params[:style],
           source_id: source_id_from_params)
         widget.save!
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
+      rescue ActiveRecord::RecordInvalid
+        render json: { errors: widget.errors }, status: 422
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error creating widget", widget: (widget ? widget : 'not created'))
         render json: { errors: e.message }, status: 500
@@ -42,6 +45,7 @@ module Carto
         update_params[:source_id] = source_id_from_params if source_id_from_params
         @widget.update_attributes(update_params)
         @widget.options = params[:options]
+        @widget.style = params[:style]
         @widget.save!
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)

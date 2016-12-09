@@ -37,6 +37,7 @@ class Layer < Sequel::Model
     self.update(:order => order) if self.order.blank?
   end
 
+  one_to_many  :layer_node_styles
   many_to_many :maps,  :after_add => proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :users, :after_add => proc { |layer, parent| layer.set_default_order(parent) }
   many_to_many :user_tables,
@@ -81,16 +82,17 @@ class Layer < Sequel::Model
 
   def after_save
     super
-    maps.each(&:update_related_named_maps)
-    maps.each(&:invalidate_vizjson_varnish_cache)
+    maps.each(&:notify_map_change)
 
-    register_table_dependencies if data_layer?
+    if data_layer?
+      register_table_dependencies
+      update_layer_node_style
+    end
   end
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy layers") if user && user.viewer
-    maps.each(&:update_related_named_maps)
-    maps.each(&:invalidate_vizjson_varnish_cache)
+    maps.each(&:notify_map_change)
     super
   end
 
@@ -122,7 +124,7 @@ class Layer < Sequel::Model
   end
 
   def data_layer?
-    kind == 'carto'
+    !base_layer?
   end
 
   def torque_layer?
@@ -215,7 +217,8 @@ class Layer < Sequel::Model
   end
 
   def affected_table_names(query)
-    CartoDB::SqlParser.new(query, connection: user.in_database).affected_tables
+    query_tables = user.in_database["SELECT unnest(CDB_QueryTablesText(?))", query]
+    query_tables.map(:unnest)
   end
 
   def map
@@ -224,5 +227,22 @@ class Layer < Sequel::Model
 
   def query
     options.symbolize_keys[:query]
+  end
+
+  def source_id
+    options && options.symbolize_keys[:source]
+  end
+
+  def update_layer_node_style
+    style = current_layer_node_style
+    if style
+      style.update_from_layer(self)
+      style.save
+    end
+  end
+
+  def current_layer_node_style
+    return nil unless source_id
+    LayerNodeStyle.find(layer_id: id, source_id: source_id) || LayerNodeStyle.new(layer: self, source_id: source_id)
   end
 end

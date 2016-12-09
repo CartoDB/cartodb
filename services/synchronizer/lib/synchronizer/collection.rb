@@ -5,11 +5,10 @@ require_relative '../../../../app/models/log'
 require_relative '../../../../app/models/synchronization/member'
 require_relative '../../../../lib/resque/synchronization_jobs'
 require_relative '../../../../services/platform-limits/platform_limits'
+require 'carto/configuration'
 
 unless defined? Cartodb
-  config = YAML.load_file(
-      File.join(File.dirname(__FILE__), '../../../../config/app_config.yml')
-    )[ENV['RAILS_ENV'] || 'development']
+  config = Carto::Conf.new.app_config[ENV['RAILS_ENV'] || 'development']
   Resque.redis = "#{config['redis']['host']}:#{config['redis']['port']}"
 end
 

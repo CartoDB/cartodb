@@ -115,6 +115,7 @@ Style/CollectionMethods:
     collect: map
     collect!: map!
     find_all: select
+    find:
     detect: find
     inject: reduce
 Style/CommentAnnotation:

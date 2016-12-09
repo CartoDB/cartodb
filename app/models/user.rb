@@ -19,6 +19,9 @@ require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/helpers/has_connector_configuration'
+require_dependency 'carto/helpers/batch_queries_statement_timeout'
+require_dependency 'carto/user_authenticator'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -27,6 +30,9 @@ class User < Sequel::Model
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
+  include Carto::HasConnectorConfiguration
+  include Carto::BatchQueriesStatementTimeout
+  extend Carto::UserAuthenticator
 
   self.strict_param_setting = false
 
@@ -84,11 +90,13 @@ class User < Sequel::Model
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
   OBS_GENERAL_BLOCK_SIZE = 1000
+  MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
+  DEFAULT_MAPZEN_ROUTING_QUOTA = nil
   DEFAULT_OBS_SNAPSHOT_QUOTA = 0
   DEFAULT_OBS_GENERAL_QUOTA = 0
 
@@ -190,6 +198,7 @@ class User < Sequel::Model
     self.here_isolines_quota ||= DEFAULT_HERE_ISOLINES_QUOTA
     self.obs_snapshot_quota ||= DEFAULT_OBS_SNAPSHOT_QUOTA
     self.obs_general_quota ||= DEFAULT_OBS_GENERAL_QUOTA
+    self.mapzen_routing_quota ||= DEFAULT_MAPZEN_ROUTING_QUOTA
   end
 
   def before_create
@@ -216,12 +225,26 @@ class User < Sequel::Model
           self.max_import_table_row_count ||= organization.max_import_table_row_count
           self.max_concurrent_import_count ||= organization.max_concurrent_import_count
           self.max_layers ||= organization.max_layers
+
+          # Non-owner org users get the free SDK plan
+          if organization.owner && organization.owner.mobile_sdk_enabled?
+            self.mobile_max_open_users = 10000 unless changed_columns.include?(:mobile_max_open_users)
+            self.mobile_max_private_users = 10 unless changed_columns.include?(:mobile_max_private_users)
+            self.mobile_xamarin = true unless changed_columns.include?(:mobile_xamarin)
+            self.mobile_gis_extension = true unless changed_columns.include?(:mobile_gis_extension)
+            self.mobile_custom_watermark = false unless changed_columns.include?(:mobile_custom_watermark)
+            self.mobile_offline_maps = false unless changed_columns.include?(:mobile_offline_maps)
+          end
         end
       end
       self.max_layers ||= DEFAULT_MAX_LAYERS
       self.private_tables_enabled ||= true
       self.private_maps_enabled ||= true
       self.sync_tables_enabled ||= true
+
+      # Make the default of new organization users nil (inherit from organization) instead of the DB default
+      # but only if not explicitly set otherwise
+      self.builder_enabled = nil if new? && !changed_columns.include?(:builder_enabled)
     end
 
     if viewer
@@ -356,9 +379,13 @@ class User < Sequel::Model
       end
       data_imports.each(&:destroy)
       maps.each(&:destroy)
-      layers.each { |l| remove_layer l }
+      layers.each do |l|
+        remove_layer(l)
+        l.destroy
+      end
       assets.each(&:destroy)
       CartoDB::Synchronization::Collection.new.fetch(user_id: id).destroy
+      CartoDB::Visualization::Collection.new.fetch(user_id: id, exclude_shared: true).destroy
 
       destroy_shared_with
 
@@ -416,9 +443,6 @@ class User < Sequel::Model
     options[:regex] ||= '.*'
     CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
   end
-
-  ## Authentication
-  AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
   # allow extra vars for auth
   attr_reader :password
@@ -506,7 +530,10 @@ class User < Sequel::Model
         limit = u.obs_general_quota.to_i - (u.obs_general_quota.to_i * delta)
         over_obs_general = u.get_obs_general_calls > limit
 
-        if over_geocodings || over_twitter_imports || over_here_isolines || over_obs_snapshot || over_obs_general
+        limit = u.mapzen_routing_quota.to_i - (u.mapzen_routing_quota.to_i * delta)
+        over_mapzen_routing = u.get_mapzen_routing_calls > limit
+
+        if over_geocodings || over_twitter_imports || over_here_isolines || over_mapzen_routing || over_obs_snapshot || over_obs_general
           users_overquota.push(u)
         end
     end
@@ -540,37 +567,12 @@ class User < Sequel::Model
     end
   end
 
-  def self.password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
-  end
-
-  def self.secure_digest(*args)
-    Digest::SHA1.hexdigest(args.flatten.join('--'))
-  end
-
-  def self.make_token
-    secure_digest(Time.now, (1..10).map{ rand.to_s })
-  end
-
   def password=(value)
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
-  end
-
-  def self.authenticate(email, password)
-    sanitized_input = email.strip.downcase
-    if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
-      candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
-    else
-      nil
-    end
   end
 
   # Database configuration setup
@@ -793,10 +795,6 @@ class User < Sequel::Model
     end
   end
 
-  def dedicated_support?
-    Carto::AccountType.new.dedicated_support?(self)
-  end
-
   def remove_logo?
     Carto::AccountType.new.remove_logo?(self)
   end
@@ -870,12 +868,22 @@ class User < Sequel::Model
     self[:soft_twitter_datasource_limit] = !val
   end
 
-  def private_maps_enabled?
-    flag_enabled = self.private_maps_enabled
-    return true if flag_enabled.present? && flag_enabled == true
+  def soft_mapzen_routing_limit?
+    Carto::AccountType.new.soft_mapzen_routing_limit?(self)
+  end
+  alias_method :soft_mapzen_routing_limit, :soft_mapzen_routing_limit?
 
-    return true if self.private_tables_enabled # Note private_tables_enabled => private_maps_enabled
-    return false
+  def hard_mapzen_routing_limit?
+    !self.soft_mapzen_routing_limit?
+  end
+  alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
+
+  def hard_mapzen_routing_limit=(val)
+    self[:soft_mapzen_routing_limit] = !val
+  end
+
+  def private_maps_enabled?
+    !!private_maps_enabled
   end
 
   def viewable_by?(user)
@@ -919,6 +927,8 @@ class User < Sequel::Model
       'soft_obs_snapshot_limit', soft_obs_snapshot_limit,
       'obs_general_quota', obs_general_quota,
       'soft_obs_general_limit', soft_obs_general_limit,
+      'mapzen_routing_quota', mapzen_routing_quota,
+      'soft_mapzen_routing_limit', soft_mapzen_routing_limit,
       'google_maps_client_id', google_maps_key,
       'google_maps_api_key', google_maps_private_key,
       'period_end_date', period_end_date,
@@ -986,6 +996,11 @@ class User < Sequel::Model
     get_user_obs_general_data(self, date_from, date_to)
   end
 
+  def get_mapzen_routing_calls(options = {})
+    date_from, date_to = quota_dates(options)
+    get_user_mapzen_routing_data(self, date_from, date_to)
+  end
+
   def effective_twitter_block_price
     organization.present? ? organization.twitter_datasource_block_price : self.twitter_datasource_block_price
   end
@@ -1043,6 +1058,15 @@ class User < Sequel::Model
       remaining = organization.remaining_twitter_quota
     else
       remaining = self.twitter_datasource_quota - get_twitter_imports_count
+    end
+    (remaining > 0 ? remaining : 0)
+  end
+
+  def remaining_mapzen_routing_quota
+    if organization.present?
+      remaining = organization.remaining_mapzen_routing_quota
+    else
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls
     end
     (remaining > 0 ? remaining : 0)
   end
@@ -1184,7 +1208,7 @@ class User < Sequel::Model
       begin
         in_database(:as => :superuser).fetch("ANALYZE")
       rescue => ee
-        Rollbar.report_exception(ee)
+        CartoDB::Logger.error(exception: ee)
         raise ee
       end
       retry unless attempts > 1
@@ -1591,19 +1615,24 @@ class User < Sequel::Model
     viewer
   end
 
-  # The builder is enabled/disabled based on a feature flag
-  # The builder_enabled is used to allow the user to turn it on/off
   def builder_enabled?
-    has_feature_flag?('editor-3') || (has_organization? && organization.owner.has_feature_flag?('editor-3'))
+    if has_organization? && builder_enabled.nil?
+      organization.builder_enabled
+    else
+      !!builder_enabled
+    end
   end
 
-  def force_builder?
-    builder_enabled? && builder_enabled == true
+  def engine_enabled?
+    if has_organization? && engine_enabled.nil?
+      organization.engine_enabled
+    else
+      !!engine_enabled
+    end
   end
 
-  def force_editor?
-    # Explicit test to false is necessary, as builder_enabled = nil, doesn't force anything
-    builder_enabled == false || !builder_enabled?
+  def new_visualizations_version
+    builder_enabled? ? 3 : 2
   end
 
   private
@@ -1650,7 +1679,7 @@ class User < Sequel::Model
       st.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning search tweets to org owner', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
@@ -1662,7 +1691,7 @@ class User < Sequel::Model
       g.save
     }
   rescue => e
-    Rollbar.report_message('Error assigning geocodings to org owner, fallback to deletion', 'error', { user: self.inspect, error: e.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
     self.geocodings.each { |g| g.destroy }
   end
 

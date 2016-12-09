@@ -23,6 +23,9 @@ module Carto
       'header', 'search', 'layer_selector', 'share', 'zoom', 'logo', 'loader', 'fullscreen'
     ].freeze
 
+    BUILDER_COMPATIBLE_TYPES = ['search', 'layer_selector', 'share', 'fullscreen', 'loader', 'logo', 'zoom'].freeze
+    scope :builder_incompatible, where("type NOT IN ('#{BUILDER_COMPATIBLE_TYPES.join("','")}')")
+
     def hide
       options['display'] = false
       self

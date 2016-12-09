@@ -10,10 +10,10 @@
       </svg>
     </div>
     <div>
-      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--m">
+      <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl">
         <%- _t('components.table.columns.change-type.title', { columnName: columnName, newType: newType }) %>
       </h2>
-      <p class="CDB-Text CDB-Size-medium u-altTextColor">
+      <p class="CDB-Text CDB-Size-large u-altTextColor">
         <%- _t('components.table.columns.change-type.desc') %>
       </p>
       <ul class="Modal-listActions u-flex u-alignCenter">

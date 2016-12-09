@@ -3,6 +3,7 @@
 @import 'cdb-variables/sizes';
 
 .Share-input {
+  width: 100%;
   position: relative;
 }
 
@@ -61,6 +62,11 @@
 .Share-user--huge {
   width: 38px;
   height: 38px;
+}
+
+.Share-user--medium {
+  width: 32px;
+  height: 32px;
 }
 
 .Share-permission {

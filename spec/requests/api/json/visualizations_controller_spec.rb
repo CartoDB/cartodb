@@ -160,7 +160,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(false)
+        User.any_instance.stubs(:builder_enabled?).returns(false)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -178,7 +178,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(true)
+        User.any_instance.stubs(:builder_enabled?).returns(true)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -196,7 +196,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(false)
+        User.any_instance.stubs(:builder_enabled?).returns(false)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -214,7 +214,7 @@ describe Api::Json::VisualizationsController do
         payload = {
           tables: [table1.name]
         }
-        User.any_instance.stubs(:force_builder?).returns(true)
+        User.any_instance.stubs(:builder_enabled?).returns(true)
         post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
                   payload) do |response|
           response.status.should eq 200
@@ -263,6 +263,35 @@ describe Api::Json::VisualizationsController do
           v = CartoDB::Visualization::Member.new(id: vid).fetch
           new_layer = v.map.data_layers.first
           new_layer.options['query'].should eq layer.options['query']
+        end
+      end
+
+      it 'sets table privacy if the user has private_maps' do
+        table1 = create_table(user_id: @org_user_1.id)
+        payload = {
+          tables: [table1.name]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_1.username, api_key: @org_user_1.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PRIVATE
+        end
+      end
+
+      it 'sets PUBLIC privacy if the user doesn\'t have private_maps' do
+        @carto_org_user_2.update_column(:private_maps_enabled, false) # Direct to DB to skip validations
+        table1 = create_table(user_id: @org_user_2.id)
+        payload = {
+          tables: [table1.name]
+        }
+        post_json(api_v1_visualizations_create_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key),
+                  payload) do |response|
+          response.status.should eq 200
+          vid = response.body[:id]
+          v = CartoDB::Visualization::Member.new(id: vid).fetch
+          v.privacy.should eq CartoDB::Visualization::Member::PRIVACY_PUBLIC
         end
       end
     end

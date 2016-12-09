@@ -31,7 +31,7 @@
 .List-row.List-row.is-disabled { opacity: 0.4 }
 .List-row:last-child > .List-rowItem {
   // to have same height as the other items, w/o the visible border
-  border-bottom: 1px solid transparent
+  border-bottom: 1px solid transparent;
 }
 .List-rowItem {
   @include display-flex();

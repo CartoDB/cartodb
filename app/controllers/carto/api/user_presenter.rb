@@ -3,6 +3,7 @@ require_relative 'group_presenter'
 module Carto
   module Api
     class UserPresenter
+      include AccountTypeHelper
 
       # options:
       # - fetch_groups
@@ -83,10 +84,12 @@ module Carto
           name: @user.name,
           username: @user.username,
           account_type: @user.account_type,
+          account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
           public_visualization_count: @user.public_visualization_count,
+          owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,
           failed_import_count: failed_import_count,
@@ -112,6 +115,12 @@ module Carto
             block_price: @user.organization_user? ? @user.organization.here_isolines_block_price : @user.here_isolines_block_price,
             monthly_use: @user.organization_user? ? @user.organization.get_here_isolines_calls : @user.get_here_isolines_calls,
             hard_limit:  @user.hard_here_isolines_limit?
+          },
+          mapzen_routing: {
+            quota:       @user.organization_user? ? @user.organization.mapzen_routing_quota : @user.mapzen_routing_quota,
+            block_price: @user.organization_user? ? @user.organization.mapzen_routing_block_price : @user.mapzen_routing_block_price,
+            monthly_use: @user.organization_user? ? @user.organization.get_mapzen_routing_calls : @user.get_mapzen_routing_calls,
+            hard_limit:  @user.hard_mapzen_routing_limit?
           },
           geocoder_provider: @user.geocoder_provider,
           isolines_provider: @user.isolines_provider,
@@ -139,6 +148,9 @@ module Carto
           salesforce: {
             enabled:     @user.organization_user? ? @user.organization.salesforce_datasource_enabled : @user.salesforce_datasource_enabled
           },
+          mailchimp: {
+            enabled: Carto::AccountType.new.mailchimp?(@user)
+          },
           billing_period: @user.last_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
@@ -151,11 +163,12 @@ module Carto
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
-            dedicated_support: @user.dedicated_support?,
             remove_logo: @user.remove_logo?,
             sync_tables: @user.sync_tables_enabled,
             google_maps_geocoder_enabled: @user.google_maps_geocoder_enabled?,
-            google_maps_enabled: @user.google_maps_enabled?
+            google_maps_enabled: @user.google_maps_enabled?,
+            engine_enabled: @user.engine_enabled?,
+            builder_enabled: @user.builder_enabled?
           },
           limits: {
             concurrent_syncs: CartoDB::PlatformLimits::Importer::UserConcurrentSyncsAmount::MAX_SYNCS_PER_USER,

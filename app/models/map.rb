@@ -6,6 +6,8 @@ require_relative '../helpers/bounding_box_helper'
 class Map < Sequel::Model
   self.raise_on_save_failure = false
 
+  plugin :serialization, :json, :options
+
   one_to_many :tables, class: ::UserTable
   many_to_one :user
 
@@ -91,6 +93,7 @@ class Map < Sequel::Model
 
   def before_destroy
     raise CartoDB::InvalidMember.new(user: "Viewer users can't destroy maps") if user && user.viewer
+    layers.each(&:destroy)
     super
     invalidate_vizjson_varnish_cache
   end
@@ -166,8 +169,8 @@ class Map < Sequel::Model
     return self unless layer.uses_private_tables?
 
     visualizations.each do |visualization|
-      unless visualization.organization?
-        visualization.privacy = 'private'
+      if visualization.can_be_private?
+        visualization.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
         visualization.store
       end
     end

@@ -23,6 +23,10 @@
 .Onboarding-fake {
   @include flex(0 0 415px);
   height: 100%;
+
+  .is-editing & {
+    @include flex(0 0 560px);
+  }
 }
 
 .Onboarding-body {
@@ -58,8 +62,9 @@
 .Onboarding-headerDescription {
   margin-bottom: $sMargin-group;
   color: #FFF;
-  font-size: $sFontSize-larger;
+  font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
 }
 
 .Onboarding-description {
@@ -159,5 +164,17 @@
   100% {
     @include opacity(1);
     @include transform(scale(1));
+  }
+}
+
+.has-dark-text {
+  .Onboarding-headerTitle,
+  .Onboarding-headerText,
+  .Onboarding-headerDescription,
+  .Onboarding-description,
+  .Onboarding-listItem,
+  .Onboarding-listItemValue,
+  .Onboarding-readMore {
+    color: #333;
   }
 }

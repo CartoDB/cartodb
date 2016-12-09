@@ -1,6 +1,10 @@
 3.14.0 (2016-XX-XX)
 -------------------
 ### NOTICE
+- This release introduces the Magic Positioner helper to render context menus in the best position inside the
+viewport.
+
+### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
  - `bundle exec rake carto:db:set_carto_attribution`
  - Update basemaps configuration to use CARTO as a category instead of CartoDB
@@ -13,15 +17,57 @@ ghost tables, importing common data and automatic index creation.
 This release changes the way visualization tokens are stored, so am igration task has to be run for password
 protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_auth_tokens`
 
+### NOTICE
+PostgreSQL 9.5 is needed.
+
+### NOTICE
+This release upgrades the CartoDB PostgreSQL extension to `0.18.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 ### Features
 * Automatic creation of indexes on columns affected by a widget
+* Update CartoDB PostgreSQL extension to 0.18.1:
+  * Change CDB_ZoomFromScale() to use a formula and raise
+    maximum overview level from 23 to 29. (0.16.4)
+    [#259](https://github.com/CartoDB/cartodb-postgresql/pull/259)
+  * Fix bug in overview creating causing it to fail when `x` or
+    `y` columns exist with non-integer type. Prevent also
+    potential integer overflows limiting maximum overview level
+    to 23.
+    [#258](https://github.com/CartoDB/cartodb-postgresql/pull/258) (0.16.4)
+  * Add export config for cdb_analysis_catalog table (0.17.0)
+  * Add some extra fields to cdb_analysis_catalog table. Track user, error_message for failures, and last entity modifying the node (0.17.0)
+  * Exclude overviews from user data size (0.17.0)
+  * Add cache_tables column to cdb_analysis_catalog table (0.17.1)
+  * Fix: exclude NULL geometries when creating Overviews (0.18.0)
+  * Function to check analysis tables limits (0.18.0)
+  * Exclude analysis cache tables from the quota (0.18.0)
+  * Increase analysis limit factor to 2 [#284](https://github.com/CartoDB/cartodb-postgresql/pull/284) (0.18.1)
 * Viewer users for organizations.
 * Oauth integration with GitHub
 * Configurable [Redis timeouts: connect_timeout, read_timeout, write_timeout](https://github.com/redis/redis-rb#timeouts).
+* Configurable paths for logs and configurations through environment variables. If not set, they default to `Rails.root` as usual.
+  * `RAILS_CONFIG_BASE_PATH`. Example: /etc/carto
+  * `RAILS_LOG_BASE_PATH`. Example: /tmp/carto
+  Both are replacements for `Rails.root` and expect the same internal structure so, for example,
+  if you place `app_config.yml` at `/etc/carto/config/app_config.yml`, `RAILS_CONFIG_BASE_PATH` must be `/etc/carto`.
+    The same happens with logs, which are stored into `#{RAILS_LOG_BASE_PATH}/logs/filename.log`).
+    This way those variables can be a drop-in replacement for `Rails.root`, guaranteeing compatibility with Rails project structure.
+* Configurable path for public uploads:
+  * `RAILS_PUBLIC_UPLOADS_PATH`. Example: /var/carto/assets. Defaults to `env_app_config[:importer]["uploads_path"]`
+  This will store user uploaded assets at `#{RAILS_PUBLIC_UPLOADS_PATH}/uploads` (needed for backwards compatibility).
+* Don't display Twitter or MailChimp if user can't import it.
 * Updated ogr2ogr version to 2.1.1, configurable in `app_config.yml`. To install it in the system:
   * `sudo apt-get update`
   * `sudo apt-get install gdal2.1-static-bin`
   * edit your `config/app_config.yml` and make sure the `ogr2ogr` entry contains the following `binary: 'which ogr2ogr2.1'`. See [app_config.yml.sample](https://github.com/CartoDB/cartodb/blob/0529b291623a9d9d78c8f21ff201f9938aa51aca/config/app_config.yml.sample#L8) for an example.
+* Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
+* Custom labels for legends (#10763)
+* Builder is enabled by default
+* New option for centering the map according a layer data (#10116).
 
 ### Bug Fixes
 * Incorrect error message when password validation failed
@@ -30,9 +76,19 @@ protected visualizations to keep working: `bundle exec rake cartodb:vizs:update_
 * Fixes for organization invitations
 * Fix for updating tables with an `id` column
 * Prefer city guessing over country guessing when possible for file imports
+* Fixed an issue registering table dependencies for users with hyphens in the username
+* Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
+* Correctly copy map privacy from source tables
 * Several auth_token related fixes
+* Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
+* Fixed list of layers in Add basemap WMS URL tab
+* Removed non used fonts (Lato and Proxima Nova) and the font loader.
+* Fixed problem generating Histogram stats in columns with only one value (#9737).
+* 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).
+* Minimum buckets is 2 for histogram widgets (#10645).
+* Fixed with category widgets and aggregation (#10773)
 
 3.13.0 (2016-XX-XX)
 -------------------

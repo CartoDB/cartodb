@@ -36,6 +36,7 @@ describe Visualization::Member do
     @user_mock.stubs(:api_key).returns(user_apikey)
     @user_mock.stubs(:viewer).returns(false)
     @user_mock.stubs(:has_feature_flag?).returns(false)
+    @user_mock.stubs(:new_visualizations_version).returns(2)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -579,14 +580,16 @@ describe Visualization::Member do
           privacy: Visualization::Member::PRIVACY_PUBLIC,
           name: 'test',
           type: Visualization::Member::TYPE_CANONICAL,
-          user_id:  user_id
+          user_id: user_id
       )
 
       user_mock.stubs(:private_tables_enabled).returns(true)
-      visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_LINK
+      visualization.stubs(:user).returns(user_mock)
+      visualization.default_privacy.should eq Visualization::Member::PRIVACY_LINK
 
       user_mock.stubs(:private_tables_enabled).returns(false)
-      visualization.default_privacy(user_mock).should eq  Visualization::Member::PRIVACY_PUBLIC
+      visualization.stubs(:user).returns(user_mock)
+      visualization.default_privacy.should eq Visualization::Member::PRIVACY_PUBLIC
     end
   end
 

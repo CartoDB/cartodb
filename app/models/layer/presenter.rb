@@ -82,10 +82,10 @@ module CartoDB
         return poro unless poro['options']
 
         # INFO changed to support new  presenter's way of sending owner
-        if @options[:user] && !poro['options']['user_name']
+        if @options[:user] && !poro['options']['user_name'].present?
           user_name = @options[:user].username
           schema_name = @options[:user].sql_safe_database_schema
-        elsif poro['options']['user_name']
+        elsif poro['options']['user_name'].present?
           user_name = poro['options']['user_name']
           schema_name = poro['options']['user_name']
         end
@@ -162,21 +162,21 @@ module CartoDB
       def infowindow_data_v1
         with_template(layer.infowindow, layer.infowindow_template_path)
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 
       def infowindow_data_v2
         whitelisted_infowindow(with_template(layer.infowindow, layer.infowindow_template_path))
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 
       def tooltip_data_v2
         whitelisted_infowindow(with_template(layer.tooltip, layer.tooltip_template_path))
       rescue => e
-        Rollbar.report_exception(e)
+        CartoDB::Logger.error(exception: e)
         throw e
       end
 

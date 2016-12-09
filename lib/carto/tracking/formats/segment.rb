@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 module Carto
   module Tracking
@@ -58,6 +58,7 @@ module Carto
           {
             username: @user.username,
             email: @user.email,
+            event_origin: @user.builder_enabled? ? 'Builder' : 'Editor',
             plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
@@ -105,7 +106,7 @@ module Carto
         end
 
         def event_properties
-          { event_origin: 'Editor', creation_time: now }
+          { creation_time: now }
         end
 
         def days_with_decimals(time_object)

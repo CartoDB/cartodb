@@ -11,6 +11,7 @@ module CartoDB
       organization.here_isolines_quota =    attributes[:here_isolines_quota] || 1000
       organization.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
       organization.obs_general_quota = attributes[:obs_general_quota] || 1000
+      organization.mapzen_routing_quota =    attributes[:mapzen_routing_quota] || 1000
       organization.map_view_quota =   attributes[:map_view_quota] || 100000
       organization.website =          attributes[:website] || 'carto.com'
       organization.description =      attributes[:description] || 'Lorem ipsum dolor sit amet'
@@ -21,6 +22,7 @@ module CartoDB
       organization.twitter_datasource_enabled = attributes[:twitter_datasource_enabled] || false
       organization.google_maps_key = attributes[:google_maps_key] || nil
       organization.google_maps_private_key = attributes[:google_maps_private_key] || nil
+      organization.builder_enabled = attributes[:builder_enabled] || false
 
       organization
     end

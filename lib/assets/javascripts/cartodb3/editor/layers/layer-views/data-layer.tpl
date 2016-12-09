@@ -1,3 +1,7 @@
+<% if (hasError) { %>
+  <div class="Editor-ListLayer-itemError js-error"></div>
+<% } %>
+
 <% if (!isTorque) { %>
   <div class="Editor-ListLayer-dragIcon">
     <div class="CDB-Shape">
@@ -76,4 +80,4 @@
     </div>
   </div>
 </div>
-<ul class="Editor-ListAnalysis js-analyses <%- isCollapsed ? 'is-hidden' : '' %>"></ul>
+<ul class="Editor-ListAnalysis js-analyses <%- isVisible ? '' : 'is-hidden' %>  <%- isCollapsed ? 'is-collapsed' : '' %>"></ul>

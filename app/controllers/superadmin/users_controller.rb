@@ -7,8 +7,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
-  before_filter :get_user, only: [ :update, :destroy, :show, :dump, :data_imports, :data_import ]
-  before_filter :get_carto_user, only: [ :synchronizations, :synchronization ]
+  before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
+  before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
   layout 'application'
 
@@ -59,7 +59,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.destroy
     respond_with(:superadmin, @user)
   rescue => e
-    Rollbar.report_message('Error destroying user', 'error', { error: e.inspect, user: @user.inspect })
+    CartoDB::Logger.error(exception: e, message: 'Error destroying user', user: @user)
     render json: { "error": "Error destroying user: #{e.message}" }, status: 422
   end
 
@@ -114,6 +114,21 @@ class Superadmin::UsersController < Superadmin::SuperadminController
                    data: data_import.to_hash,
                    log: data_import.nil? ? nil : data_import.log.to_s
                  })
+  end
+
+  def geocodings
+    respond_with(@user.geocodings.map do |entry|
+      {
+        id: entry.id,
+        date: entry.updated_at,
+        status: entry.state
+      }
+    end)
+  end
+
+  def geocoding
+    geocoding = @user.geocodings.find(params[:geocoding_id])
+    respond_with(data: geocoding.attributes, log: geocoding && geocoding.log.to_s)
   end
 
   def synchronizations

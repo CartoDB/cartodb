@@ -1,13 +1,14 @@
 require 'active_record'
 
 require_relative '../../helpers/bounding_box_helper'
+require_relative './carto_json_serializer'
 
 class Carto::Map < ActiveRecord::Base
-
   has_many :layers_maps
   has_many :layers, class_name: 'Carto::Layer',
                     order: '"order"',
-                    through: :layers_maps
+                    through: :layers_maps,
+                    after_add: Proc.new { |map, layer| layer.set_default_order(map) }
 
   has_many :base_layers, class_name: 'Carto::Layer',
                          order: '"order"',
@@ -27,6 +28,14 @@ class Carto::Map < ActiveRecord::Base
     provider:        'leaflet',
     center:          [30, 0]
   }.freeze
+
+  serialize :options, ::Carto::CartoJsonSerializer
+  validates :options, carto_json_symbolizer: true
+
+  validate :validate_options
+
+  after_initialize :ensure_options
+  after_commit :force_notify_map_change
 
   def data_layers
     layers.select(&:carto?)
@@ -123,7 +132,42 @@ class Carto::Map < ActiveRecord::Base
     data_layers.each(&:register_table_dependencies)
   end
 
+  def dashboard_menu=(value)
+    options[:dashboard_menu] = value
+  end
+
+  def dashboard_menu
+    options[:dashboard_menu]
+  end
+
+  def layer_selector=(value)
+    options[:layer_selector] = value
+  end
+
+  def layer_selector
+    options[:layer_selector]
+  end
+
   private
+
+  def ensure_options
+    self.options ||= {}
+    options[:dashboard_menu] = true if options[:dashboard_menu].nil?
+    options[:layer_selector] = false if options[:layer_selector].nil?
+    options[:legends] = legends if options[:legends].nil?
+    options[:scrollwheel] = scrollwheel if options[:scrollwheel].nil?
+
+    options
+  end
+
+  def validate_options
+    location = "#{Rails.root}/lib/formats/map/options.json"
+    schema = Carto::Definition.instance.load_from_file(location)
+
+    options_wia = options.with_indifferent_access
+    json_errors = JSON::Validator.fully_validate(schema, options_wia)
+    errors.add(:options, json_errors.join(', ')) if json_errors.any?
+  end
 
   def get_the_last_time_tiles_have_changed_to_render_it_in_vizjsons
     table       = user_tables.first

@@ -12,9 +12,11 @@ require_relative '../../../../lib/static_maps_url_helper'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualizations_export_service_2'
+require_dependency 'carto/visualization_migrator'
 
 class Api::Json::VisualizationsController < Api::ApplicationController
   include CartoDB
+  include Carto::VisualizationMigrator
 
   ssl_allowed :notify_watching, :list_watching, :add_like, :remove_like
   ssl_required :create, :update, :destroy, :set_next_id
@@ -37,8 +39,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         # Don't allow to modify next_id/prev_id, force to use set_next_id()
         prev_id = vis_data.delete(:prev_id) || vis_data.delete('prev_id')
         next_id = vis_data.delete(:next_id) || vis_data.delete('next_id')
-
-        vis_data = add_default_privacy(vis_data)
 
         param_tables = params[:tables]
         current_user_id = current_user.id
@@ -71,8 +71,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
                 Visualization::Member.new(vis_data.merge(name: name_candidate, user_id:  current_user_id))
               end
 
-        vis.privacy = vis.default_privacy(current_user)
-
+        vis.ensure_valid_privacy
         # both null, make sure is the first children or automatically link to the tail of the list
         if !vis.parent_id.nil? && prev_id.nil? && next_id.nil?
           parent_vis = Visualization::Member.new(id: vis.parent_id).fetch
@@ -103,7 +102,8 @@ class Api::Json::VisualizationsController < Api::ApplicationController
         end
 
         render_jsonp(vis)
-      rescue CartoDB::InvalidMember
+      rescue CartoDB::InvalidMember => e
+        CartoDB::Logger.error(message: "Invalid member creating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors }, 400)
       end
     end
@@ -149,18 +149,27 @@ class Api::Json::VisualizationsController < Api::ApplicationController
             end
           end
         else
+          old_version = vis.version
+
           vis.attributes = vis_data
           vis = @stats_aggregator.timing('save') do
             vis.store.fetch
           end
+
+          if version_needs_migration?(old_version, vis.version)
+            migrate_visualization_to_v3(vis)
+          end
         end
 
         render_jsonp(vis)
-      rescue KeyError
+      rescue KeyError => e
+        CartoDB::Logger.error(message: "KeyError updating visualization", visualization_id: vis.id, exception: e)
         head(404)
-      rescue CartoDB::InvalidMember
+      rescue CartoDB::InvalidMember => e
+        CartoDB::Logger.error(message: "InvalidMember updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: vis.full_errors.empty? ? ['Error saving data'] : vis.full_errors }, 400)
       rescue => e
+        CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
         render_jsonp({ errors: ['Unknown error'] }, 400)
       end
     end
@@ -330,6 +339,7 @@ class Api::Json::VisualizationsController < Api::ApplicationController
       visualization_hash = export_service.export_visualization_json_hash(source, user)
       visualization_copy = export_service.build_visualization_from_hash_export(visualization_hash)
       visualization_copy.name = name_candidate
+      visualization_copy.version = user.new_visualizations_version
       Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_copy)
       visualization_copy.id
     end
@@ -393,14 +403,6 @@ class Api::Json::VisualizationsController < Api::ApplicationController
   def payload
     request.body.rewind
     ::JSON.parse(request.body.read.to_s || String.new, {symbolize_names: true})
-  end
-
-  def add_default_privacy(data)
-    { privacy: default_privacy }.merge(data)
-  end
-
-  def default_privacy
-    current_user.private_tables_enabled ? Visualization::Member::PRIVACY_PRIVATE : Visualization::Member::PRIVACY_PUBLIC
   end
 
   def name_candidate

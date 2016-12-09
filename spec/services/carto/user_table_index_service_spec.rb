@@ -120,7 +120,7 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'wadus', column: 'number', valid: true }])
       @table1.service.stubs(:estimated_row_count).returns(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
@@ -131,7 +131,8 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not create indices for indexed columns (in multi-column indexes)' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+                                                  { name: 'idx', column: 'date', valid: true }])
       @table1.service.stubs(:estimated_row_count).returns(100000)
       create_widget(@analysis1, column: 'number')
       create_widget(@analysis12_1, column: 'date', type: 'time-series')
@@ -159,11 +160,22 @@ describe Carto::UserTableIndexService do
     end
 
     it 'does not drop manual indices' do
-      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number' }, { name: 'idx', column: 'date' }])
+      @table1.service.stubs(:pg_indexes).returns([{ name: 'idx', column: 'number', valid: true },
+                                                  { name: 'idx', column: 'date', valid: false }])
       @table1.service.stubs(:estimated_row_count).returns(100)
       create_widget(@analysis1, column: 'number')
 
       @table1.service.stubs(:drop_index).never
+      Carto::UserTableIndexService.new(@table1).send(:generate_indices)
+    end
+
+    it 'drops and recreates invalid auto indices' do
+      @table1.service.stubs(:pg_indexes).returns([automatic_index_record(@table1, 'number', valid: false)])
+      @table1.service.stubs(:estimated_row_count).returns(100000)
+      create_widget(@analysis1, column: 'number')
+
+      stub_drop_index('number').once
+      stub_create_index('number').once
       Carto::UserTableIndexService.new(@table1).send(:generate_indices)
     end
   end
@@ -265,8 +277,12 @@ describe Carto::UserTableIndexService do
 
   private
 
-  def automatic_index_record(table, column)
-    { name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX), column: column }
+  def automatic_index_record(table, column, valid: true)
+    {
+      name: table.service.send(:index_name, column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX),
+      column: column,
+      valid: valid
+    }
   end
 
   def stub_create_index(column)
@@ -274,7 +290,7 @@ describe Carto::UserTableIndexService do
   end
 
   def stub_drop_index(column)
-    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX)
+    @table1.service.stubs(:drop_index).with(column, Carto::UserTableIndexService::AUTO_INDEX_PREFIX, concurrent: true)
   end
 
   def create_widget(analysis, child: false, column: 'col', type: 'histogram')

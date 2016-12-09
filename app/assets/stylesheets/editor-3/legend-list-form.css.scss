@@ -1,0 +1,59 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.LegendItem {
+  @include flex(1);
+  position: relative;
+  cursor: move;
+
+  [data-fieldsets],
+  [data-fields] {
+    @include flex(1);
+  }
+}
+
+.LegendItem-deteleButton {
+  position: absolute;
+  top: 16px;
+  right: -16px;
+  opacity: 0;
+
+  .LegendItem:hover & {
+    @include opacity(1);
+  }
+}
+
+.LegendItem-listFieldsOrder {
+  @include opacity(0);
+  position: absolute;
+  top: 16px;
+  left: -19px;
+
+  .LegendItem:hover & {
+    @include opacity(1);
+  }
+}
+
+// To show fill component on the left
+.LegendItem .Editor-FormDialog {
+  left: 0;
+}
+
+.LegendItem .Editor-fieldset {
+  @include display-flex();
+  @include justify-content(space-between);
+}
+
+.LegendItem .Editor-fieldset .Editor-formInner:nth-child(1) {
+  @include flex(0 100px);
+  margin-right: 4px;
+}
+
+.LegendItem .Editor-fieldset .Editor-formInner:nth-child(2) {
+  @include flex(2);
+}
+
+.LegendItems-container {
+  margin-top: -$baseSize;
+}

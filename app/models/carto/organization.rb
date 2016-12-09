@@ -52,6 +52,13 @@ module Carto
       get_organization_here_isolines_data(self, date_from, date_to)
     end
 
+    def get_mapzen_routing_calls(options = {})
+      require_organization_owner_presence!
+      date_to = (options[:to] ? options[:to].to_date : Date.today)
+      date_from = (options[:from] ? options[:from].to_date : owner.last_billing_cycle)
+      get_organization_mapzen_routing_data(self, date_from, date_to)
+    end
+
     def get_obs_snapshot_calls(options = {})
       require_organization_owner_presence!
       date_to = (options[:to] ? options[:to].to_date : Date.today)
@@ -87,6 +94,11 @@ module Carto
       (remaining > 0 ? remaining : 0)
     end
 
+    def remaining_mapzen_routing_quota(options = {})
+      remaining = mapzen_routing_quota.to_i - get_mapzen_routing_calls(options)
+      (remaining > 0 ? remaining : 0)
+    end
+
     def remaining_obs_snapshot_quota(options = {})
       remaining = obs_snapshot_quota.to_i - get_obs_snapshot_calls(options)
       (remaining > 0 ? remaining : 0)
@@ -98,7 +110,11 @@ module Carto
     end
 
     def signup_page_enabled
-      !whitelisted_email_domains.nil? && !whitelisted_email_domains.empty?
+      whitelisted_email_domains.present? && auth_enabled?
+    end
+
+    def auth_enabled?
+      auth_username_password_enabled || auth_google_enabled || auth_github_enabled
     end
 
     def database_name

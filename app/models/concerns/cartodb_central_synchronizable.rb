@@ -70,7 +70,8 @@ module Concerns
           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
           :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
-          :isolines_provider, :routing_provider]
+          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
+          :mapzen_routing_quota, :mapzen_routing_block_price]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
           :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -81,7 +82,8 @@ module Concerns
           :auth_google_enabled, :here_isolines_quota, :here_isolines_block_price,
           :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
           :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
-          :isolines_provider, :routing_provider]
+          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
+          :mapzen_routing_quota, :mapzen_routing_block_price]
         end
       elsif self.is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -93,6 +95,7 @@ module Concerns
          :period_end_date, :private_tables_enabled, :quota_in_bytes, :salt,
          :sync_tables_enabled, :table_quota, :twitter_username, :upgraded_at,
          :user_timeout, :username, :website, :soft_geocoding_limit,
+         :batch_queries_statement_timeout,
          :twitter_datasource_enabled, :twitter_datasource_block_size,
          :twitter_datasource_block_price, :twitter_datasource_quota,
          :soft_twitter_datasource_limit,
@@ -104,7 +107,8 @@ module Concerns
          :mobile_xamarin, :mobile_custom_watermark, :mobile_offline_maps,
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
-         :isolines_provider, :routing_provider]
+         :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
+         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit]
       end
     end
 
@@ -132,7 +136,8 @@ module Concerns
           :google_maps_key, :google_maps_private_key, :here_isolines_quota, :here_isolines_block_price,
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
-          :viewer, :geocoder_provider, :isolines_provider, :routing_provider
+          :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled,
+          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit
         )
         case action
         when :create
@@ -140,6 +145,7 @@ module Concerns
           attrs.delete(:organization_id)
           return attrs
         when :update
+          attrs[:batch_queries_statement_timeout] = batch_queries_statement_timeout
           attrs
         end
       end

@@ -32,6 +32,9 @@ module Carto
                                                                                            .with_presenter_cache(@presenter_cache)
                                                                                            .to_poro
 
+        user_table_presentation = Carto::Api::UserTablePresenter.new(@visualization.table, @current_viewer)
+                                                                .with_presenter_cache(@presenter_cache).to_poro
+
         poro = {
           id: @visualization.id,
           name: @visualization.name,
@@ -58,14 +61,15 @@ module Carto
           next_id: @visualization.next_id,
           transition_options: @visualization.transition_options,
           active_child: @visualization.active_child,
-          table: Carto::Api::UserTablePresenter.new(@visualization.table, @visualization.permission, @current_viewer).with_presenter_cache(@presenter_cache).to_poro,
+          table: user_table_presentation,
           external_source: Carto::Api::ExternalSourcePresenter.new(@visualization.external_source).to_poro,
           synchronization: Carto::Api::SynchronizationPresenter.new(@visualization.synchronization).to_poro,
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           url: url,
           uses_builder_features: @visualization.uses_builder_features?,
-          auth_tokens: auth_tokens
+          auth_tokens: auth_tokens,
+          version: @visualization.version || 2
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)
         poro
@@ -131,7 +135,7 @@ module Carto
           @visualization.related_tables
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @visualization.permission, @current_viewer).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
         end
       end
 

@@ -1,9 +1,49 @@
 # encoding: utf-8
 
 require 'spec_helper_min'
+require 'models/layer_shared_examples'
 
 describe Carto::Layer do
   include Carto::Factories::Visualizations
+
+  it_behaves_like 'Layer model' do
+    let(:layer_class) { Carto::Layer }
+    def create_map(options = {})
+      options.delete(:table_id)
+      Carto::Map.create(options)
+    end
+
+    def add_layer_to_entity(entity, layer)
+      entity.layers << layer
+    end
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user, private_tables_enabled: true)
+
+      @table = Table.new
+      @table.user_id = @user.id
+      @table.save
+    end
+
+    before(:each) do
+      bypass_named_maps
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    describe '#copy' do
+      it 'returns a copy of the layer' do
+        layer       = layer_class.create(kind: 'carto', options: { style: 'bogus' })
+        layer_copy  = layer.dup
+
+        layer_copy.kind.should    == layer.kind
+        layer_copy.options.should == layer.options
+        layer_copy.id.should be_nil
+      end
+    end
+  end
 
   describe '#affected_tables' do
     before(:all) do
@@ -67,14 +107,20 @@ describe Carto::Layer do
       affected.should eq [@table2]
     end
 
-    it 'returns values from both query and table_name' do
+    it 'returns values only from query (overrides table_name) if both specified' do
       query = "SELECT * FROM #{@table2.name}"
       @layer.stubs(:options).returns(table_name: @table1.name, query: query)
       @layer.stubs(:affected_table_names).with(query).returns([@table2.name]).once
       affected = @layer.affected_tables
-      affected.count.should eq 2
-      affected.should include @table1
+      affected.count.should eq 1
       affected.should include @table2
+    end
+
+    describe '#affected_table_names' do
+      it 'should return the affected tables' do
+        sql = "select coalesce('tabname', null) from cdb_tablemetadata;select 1;select * from spatial_ref_sys"
+        @layer.send(:affected_table_names, sql).should =~ ["cartodb.cdb_tablemetadata", "public.spatial_ref_sys"]
+      end
     end
   end
 end

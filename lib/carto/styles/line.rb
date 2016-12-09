@@ -1,4 +1,4 @@
-# encoding utf-8
+# encoding: utf-8
 
 require_relative './style.rb'
 require_relative '../definition.rb'
@@ -24,8 +24,8 @@ module Carto::Styles
       color = stroke[:color][:fixed]
       opacity = stroke[:color][:opacity]
 
-      ["line-width: #{width};",
-       "line-color: #{color};",
+      ["line-color: #{color};",
+       "line-width: #{width};",
        "line-opacity: #{opacity};"]
     end
   end

@@ -80,6 +80,7 @@ sudo make install
 * Support for export visualizations with characters outside iso-8859-1
 * Forward compatibility for infowindows at Builder
 * Correctly copy map privacy from source tables
+* Fix permissions in quota trigger for shared datasets. Run `bundle exec rake cartodb:db:reset_trigger_check_quota_for_user[<username>]` to fix existing users.
 * Several auth_token related fixes
 * Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.

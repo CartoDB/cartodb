@@ -82,6 +82,10 @@
   box-shadow: 0 $baseSize $baseSize * 2 0 rgba(0, 0, 0, 0.16);
 }
 
+.Editor-boxModal--darked {
+  background: $cSecondaryDark;
+}
+
 .Editor-boxModalHeader {
   border-bottom: 1px solid $cMainLine;
   background: $cSecondaryBackground;

@@ -18,6 +18,7 @@ module Carto
       end
 
       def to_poro
+        return nil unless @permission
         return to_public_poro unless !@options[:current_viewer].nil? && @permission.user_has_read_permission?(@options[:current_viewer])
 
         owner = @presenter_cache.get_poro(@permission.owner) do

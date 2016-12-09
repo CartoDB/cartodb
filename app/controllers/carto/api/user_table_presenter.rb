@@ -31,7 +31,7 @@ module Carto
         row_count_and_size = @user_table.row_count_and_size
 
         permission_presentation = Carto::Api::PermissionPresenter.new(
-          @user_table.visualization.permission, current_viewer: @current_viewer
+          @user_table.permission, current_viewer: @current_viewer
         ).with_presenter_cache(@presenter_cache).to_poro
 
         poro = {

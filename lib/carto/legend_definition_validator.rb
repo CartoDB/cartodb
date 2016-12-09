@@ -21,7 +21,7 @@ module Carto
 
     private
 
-    LEGEND_FORMATS_LOCATION = 'lib/formats/legends'.freeze
+    LEGEND_FORMATS_LOCATION = 'lib/formats/legends/definitions'.freeze
 
     def location
       return @location if @location

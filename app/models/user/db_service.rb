@@ -227,6 +227,9 @@ module CartoDB
           else
             db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
           end
+          # _CDB_UserQuotaInBytes is called by the quota trigger, and need to be open so
+          # other users in the organization can run it (when updating shared datasets)
+          db.run(%{GRANT ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() TO PUBLIC;})
           db.run("SET search_path TO #{search_path};")
         end
       end
@@ -595,11 +598,7 @@ module CartoDB
           user_database.transaction do
             schemas = [@user.database_schema].uniq
             schemas.each do |schema|
-              revoke_privileges(user_database, schema, 'PUBLIC', functions: false)
-
-              # _CDB_UserQuotaInBytes is called by the quota trigger, and need to be open so
-              # other users in the organization can run it (when updating shared datasets)
-              revoke_function_privileges(user_database, schema, 'PUBLIC', skip: ['_cdb_userquotainbytes()'])
+              revoke_privileges(user_database, schema, 'PUBLIC')
             end
             yield(user_database) if block_given?
           end
@@ -946,27 +945,11 @@ module CartoDB
         !db.fetch("SELECT 1 FROM pg_roles WHERE rolname='#{role}'").first.nil?
       end
 
-      def revoke_privileges(db, schema, user, functions: true)
+      def revoke_privileges(db, schema, user)
         db.run("REVOKE ALL ON SCHEMA \"#{schema}\" FROM #{user} CASCADE")
         db.run("REVOKE ALL ON ALL SEQUENCES IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
+        db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
         db.run("REVOKE ALL ON ALL TABLES IN SCHEMA \"#{schema}\" FROM #{user} CASCADE")
-        db.run("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA \"#{schema}\" FROM #{user} CASCADE") if functions
-      end
-
-      def revoke_function_privileges(db, schema, user, skip: [])
-        get_database_functions(db, schema).reject { |f| skip.include?(f) }.each do |f|
-          db.run("REVOKE ALL ON FUNCTION \"#{schema}\".#{f} FROM #{user} CASCADE")
-        end
-      end
-
-      def get_database_functions(db, schema)
-        functions = db.fetch(%{
-          SELECT proname || '(' || oidvectortypes(proargtypes) || ')'
-          AS signature
-          FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid)
-          WHERE ns.nspname = '#{schema}'
-        })
-        functions.map { |f| f[:signature] }
       end
 
       def organization_member_group_role_member_name

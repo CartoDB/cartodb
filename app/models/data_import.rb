@@ -36,6 +36,7 @@ class DataImport < Sequel::Model
   include Carto::Configuration
 
   MERGE_WITH_UNMATCHING_COLUMN_TYPES_RE = /No .*matches.*argument type.*/
+  DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
 
   attr_accessor   :log, :results
 
@@ -498,8 +499,10 @@ class DataImport < Sequel::Model
     save
 
     table_name = Carto::ValidTableNameProposer.new(current_user.id).propose_valid_table_name(name)
-
-    current_user.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
+    # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
+    current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+        user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
+    end
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
       current_user.in_database.run(%{DROP TABLE #{table_name}})

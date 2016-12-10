@@ -9,5 +9,7 @@
       <% } %>
     </p>
   </div>
-  <button class="CDB-Text CDB-Size-small u-upperCase js-options SyncInfo-viewOptions"><%- _t('dataset.sync.view-options') %></button>
+  <% if (isOwner) { %>
+    <button class="CDB-Text CDB-Size-small u-upperCase js-options SyncInfo-viewOptions"><%- _t('dataset.sync.view-options') %></button>
+  <% } %>
 </div>

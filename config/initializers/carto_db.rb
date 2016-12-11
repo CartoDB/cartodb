@@ -183,6 +183,10 @@ module CartoDB
     end
   end
 
+  def self.base_domain_from_request(request)
+    subdomainless_urls? ? domainless_base_domain : subdomain_based_base_url(subdomain_from_request(request))
+  end
+
   def self.ip?(string)
     !!(string =~ Resolv::IPv4::Regex)
   end
@@ -254,5 +258,14 @@ module CartoDB
     else
       Cartodb.config[:importer]['python_bin_path']
     end
+  end
+
+  def self.get_absolute_url(url)
+    return unless url.present?
+    uri = URI.parse(url)
+    uri.scheme = protocol unless uri.scheme.present?
+    uri.to_s
+  rescue
+    nil
   end
 end

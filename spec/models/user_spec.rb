@@ -732,8 +732,8 @@ describe User do
         formatter: 'b'
       }
 
-      FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
-      FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
+      gc1 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
+      gc2 = FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
 
       tweet_attributes = {
         user: u2,
@@ -743,20 +743,21 @@ describe User do
         state: ::SearchTweet::STATE_COMPLETE
       }
 
-      SearchTweet.create(tweet_attributes.merge(retrieved_items: 5))
-      SearchTweet.create(tweet_attributes.merge(retrieved_items: 10))
+      st1 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 5))
+      st2 = SearchTweet.create(tweet_attributes.merge(retrieved_items: 10))
 
       u1.reload
       u2.reload
-      u2.get_geocoding_calls.should == 3
-      u2.get_twitter_imports_count.should == 15
+      byebug
+      u2.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
+      u2.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
       u1.get_geocoding_calls.should == 0
       u1.get_twitter_imports_count.should == 0
 
       u2.destroy
       u1.reload
-      u1.get_geocoding_calls.should == 3
-      u1.get_twitter_imports_count.should == 15
+      u1.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
+      u1.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
 
       org.destroy
     end

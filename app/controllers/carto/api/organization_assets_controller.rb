@@ -55,7 +55,7 @@ module Carto
       end
 
       def load_asset
-        @asset = Organization.find(params[:asset_id])
+        @asset = Organization.find(params[:id])
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Asset not found')
       end

@@ -133,7 +133,7 @@ class Asset < Sequel::Model
   end
 
   def use_s3?
-    Cartodb.config[:assets]["s3_bucket_name"].present? &&
+    Cartodb.config.fetch(:assets, 'users', 'namespace').present? &&
     Cartodb.config[:aws]["s3"].present?
   end
 
@@ -159,7 +159,7 @@ class Asset < Sequel::Model
   def s3_bucket
     AWS.config(Cartodb.config[:aws]["s3"])
     s3 = AWS::S3.new
-    bucket_name = Cartodb.config[:assets]["s3_bucket_name"]
+    bucket_name = Cartodb.config.fetch(:assets, 'users', 'namespace')
     @s3_bucket ||= s3.buckets[bucket_name]
   end
 

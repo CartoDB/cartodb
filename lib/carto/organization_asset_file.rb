@@ -16,7 +16,7 @@ module Carto
         DEFAULT_NAMESPACE
     end
 
-    DEFAULT_MAX_SIZE_IN_BYTES = 1_048_576
+    DEFAULT_MAX_SIZE_IN_BYTES = 1_048_576 # 1 MB
 
     def self.max_size_in_bytes
       Cartodb.get_config(:assets, :organizations, :max_size_in_bytes) ||

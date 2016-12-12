@@ -33,5 +33,9 @@ module Carto
       Carto::StorageOptions::S3.new_if_available(location) ||
         Carto::StorageOptions::Local.new(location)
     end
+
+    def type(location)
+      get_or_set_location(location).class.name.demodulize.downcase
+    end
   end
 end

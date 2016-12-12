@@ -30,7 +30,10 @@ module Carto
       def create
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,
-                              public_url: @asset_file.public_url)
+                              public_url: @asset_file.url,
+                              path: @asset.path,
+                              location: @asset.location,
+                              storage_type: @asset_file.type)
 
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception

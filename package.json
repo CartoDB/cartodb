@@ -23,7 +23,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "backbone": "1.2.3",
-    "cartocolor": "^3.0.0",
+    "cartocolor": "4.0.0",
     "cartodb.js": "CartoDB/cartodb.js#v4",
     "d3": "3.5.17",
     "jquery": "2.1.4",

@@ -27,9 +27,25 @@ module Carto
       @errors = Hash.new
     end
 
-    def public_url
+    def path
+      path_and_url[0]
+    end
+
+    def url
+      path_and_url[1]
+    end
+
+    def location
+      @location ||= self.class.location
+    end
+
+    def path_and_url
+      return @path_and_url if @path_and_url
+
       if valid?
-        Storage.instance.upload(self.class.location, organization.id, file)
+        @path_and_url = Storage.instance.upload(location, organization.id, file)
+      else
+        [nil, nil]
       end
     end
 

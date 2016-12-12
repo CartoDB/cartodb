@@ -1673,26 +1673,26 @@ class User < Sequel::Model
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
-    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-    self.search_tweets_dataset.each { |st|
-      st.user = self.organization.owner
-      st.save
-    }
+    return if organization.nil? || organization.owner.nil? || organization_owner?
+    search_tweets_dataset.each do |st|
+      st.user = organization.owner
+      st.save(raise_on_failure: true)
+    end
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error assigning search tweets to org owner', user: self)
   end
 
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
-    return if self.organization.nil? || self.organization.owner.nil? || self.id == self.organization.owner.id
-    self.geocodings.each { |g|
-      g.user = self.organization.owner
+    return if organization.nil? || organization.owner.nil? || organization_owner?
+    geocodings_dataset.each do |g|
+      g.user = organization.owner
       g.data_import_id = nil
-      g.save
-    }
+      g.save(raise_on_failure: true)
+    end
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error assigning geocodings to org owner', user: self)
-    self.geocodings.each { |g| g.destroy }
+    geocodings.each(&:destroy)
   end
 
   def name_exists_in_organizations?

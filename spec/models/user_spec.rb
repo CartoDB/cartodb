@@ -725,8 +725,15 @@ describe User do
 
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
 
-      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
-      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 2, formatter: 'c')
+      geocoding_attributes = {
+        user: u2,
+        kind: 'high-resolution',
+        created_at: Time.now,
+        formatter: 'b'
+      }
+
+      FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 1))
+      FactoryGirl.create(:geocoding, geocoding_attributes.merge(processed_rows: 2))
 
       tweet_attributes = {
         user: u2,

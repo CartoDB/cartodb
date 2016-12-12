@@ -4,11 +4,6 @@ require 'carto/storage'
 
 module Carto
   class OrganizationAssetFile
-    def self.enabled?
-      Carto::OrganizationAssetFile.namespace.present? &&
-        Carto::OrganizationAssetFile.max_size_in_bytes.present?
-    end
-
     DEFAULT_NAMESPACE = 'organization_assets'.freeze
 
     def self.namespace

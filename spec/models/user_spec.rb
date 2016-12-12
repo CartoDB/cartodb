@@ -726,27 +726,30 @@ describe User do
       u2 = create_user(email: 'u2@exampleb.com', username: 'ub2', password: 'admin123', organization: org)
 
       FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 1, formatter: 'b')
+      FactoryGirl.create(:geocoding, user: u2, kind: 'high-resolution', created_at: Time.now, processed_rows: 2, formatter: 'c')
 
-      st = SearchTweet.new
-      st.user = u2
-      st.table_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.data_import_id = '96a86fb7-0270-4255-a327-15410c2d49d4'
-      st.service_item_id = '555'
-      st.retrieved_items = 5
-      st.state = ::SearchTweet::STATE_COMPLETE
-      st.save
+      tweet_attributes = {
+        user: u2,
+        table_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        data_import_id: '96a86fb7-0270-4255-a327-15410c2d49d4',
+        service_item_id: '555',
+        state: ::SearchTweet::STATE_COMPLETE
+      }
+
+      SearchTweet.create(tweet_attributes.merge(retrieved_items: 5))
+      SearchTweet.create(tweet_attributes.merge(retrieved_items: 10))
 
       u1.reload
       u2.reload
-      u2.get_geocoding_calls.should == 1
-      u2.get_twitter_imports_count.should == 5
+      u2.get_geocoding_calls.should == 3
+      u2.get_twitter_imports_count.should == 15
       u1.get_geocoding_calls.should == 0
       u1.get_twitter_imports_count.should == 0
 
       u2.destroy
       u1.reload
-      u1.get_geocoding_calls.should == 1
-      u1.get_twitter_imports_count.should == 5
+      u1.get_geocoding_calls.should == 3
+      u1.get_twitter_imports_count.should == 15
 
       org.destroy
     end

@@ -748,7 +748,7 @@ describe User do
 
       u1.reload
       u2.reload
-      byebug
+
       u2.get_geocoding_calls.should == gc1.processed_rows + gc2.processed_rows
       u2.get_twitter_imports_count.should == st1.retrieved_items + st2.retrieved_items
       u1.get_geocoding_calls.should == 0

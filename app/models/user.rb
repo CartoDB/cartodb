@@ -1674,7 +1674,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_search_tweets_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
-    search_tweets_dataset.each do |st|
+    search_tweets_dataset.all.each do |st|
       st.user = organization.owner
       st.save(raise_on_failure: true)
     end
@@ -1685,7 +1685,7 @@ class User < Sequel::Model
   # INFO: assigning to owner is necessary because of payment reasons
   def assign_geocodings_to_organization_owner
     return if organization.nil? || organization.owner.nil? || organization_owner?
-    geocodings_dataset.each do |g|
+    geocodings_dataset.all.each do |g|
       g.user = organization.owner
       g.data_import_id = nil
       g.save(raise_on_failure: true)

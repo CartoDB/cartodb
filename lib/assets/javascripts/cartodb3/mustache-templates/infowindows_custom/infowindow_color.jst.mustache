@@ -5,13 +5,23 @@
       {{#loading}}…{{/loading}}
       <ul class="CDB-infowindow-list">
         {{#content.fields}}
-          {{^index}}
-            <li class="CDB-infowindow-listItem">
-              {{#title}}<h5 class="CDB-infowindow-subtitle">{{=<% %>=}}{{<%={{ }}=%>{{{ title }}}{{=<% %>=}}}}<%={{ }}=%></h5>{{/title}}
-              {{#value}}<h4 class="CDB-infowindow-title {{#type}}{{=<% %>=}}{{<%={{ }}=%>{{{ type }}}{{=<% %>=}}}}<%={{ }}=%>{{/type}}">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>{{/value}}
-            </li>
-            {{^value}}{{/value}}
-          {{/index}}
+          {{^position}}
+        <li class="CDB-infowindow-listItem">
+          {{#title}}
+            {{#alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{alternative_name}}}</h5>
+            {{/alternative_name}}
+            {{^alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{name}}}</h5>
+            {{/alternative_name}}
+          {{/title}}
+          {{#name}}
+          <h4 class="CDB-infowindow-title {{#type}}{{=<% %>=}}{{<%={{ }}=%>{{{ type }}}{{=<% %>=}}}}<%={{ }}=%>{{/type}}">
+            {{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%>
+          </h4>
+          {{/name}}
+        </li>
+          {{/position}}
         {{/content.fields}}
       </ul>
     </div>
@@ -21,19 +31,19 @@
       {{/loading}}
       <ul class="CDB-infowindow-list js-content">
         {{#content.fields}}
-          {{#index}}
-            <li class="CDB-infowindow-listItem">
-              {{#title}}
-                {{#alternative_name}}
-                <h5 class="CDB-infowindow-subtitle">{{alternative_name}}</h5>
-                {{/alternative_name}}
-                {{^alternative_name}}
-                <h5 class="CDB-infowindow-subtitle">{{name}}</h5>
-                {{/alternative_name}}
-              {{/title}}
-              <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
-            </li>
-          {{/index}}
+          {{#position}}
+        <li class="CDB-infowindow-listItem">
+          {{#title}}
+            {{#alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{alternative_name}}}</h5>
+            {{/alternative_name}}
+            {{^alternative_name}}
+          <h5 class="CDB-infowindow-subtitle">{{{name}}}</h5>
+            {{/alternative_name}}
+          {{/title}}
+          <h4 class="CDB-infowindow-title">{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></h4>
+        </li>
+          {{/position}}
         {{/content.fields}}
       </ul>
     </div>

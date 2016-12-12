@@ -112,6 +112,10 @@ module Carto
       self.table_id = service.get_table_id
     end
 
+    def permission
+      visualization.permission if visualization
+    end
+
     private
 
     def fully_qualified_name
@@ -147,7 +151,7 @@ module Carto
     end
 
     def visualization_readable_by?(user)
-      user && visualization && visualization.permission && visualization.permission.user_has_read_permission?(user)
+      user && permission && permission.user_has_read_permission?(user)
     end
   end
 

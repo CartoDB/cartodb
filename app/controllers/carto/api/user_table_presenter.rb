@@ -30,9 +30,10 @@ module Carto
         return {} if @user_table.nil?
         row_count_and_size = @user_table.row_count_and_size
 
+        permission = @user_table.permission
         permission_presentation = Carto::Api::PermissionPresenter.new(
-          @user_table.permission, current_viewer: @current_viewer
-        ).with_presenter_cache(@presenter_cache).to_poro
+          permission, current_viewer: @current_viewer
+        ).with_presenter_cache(@presenter_cache).to_poro if permission
 
         poro = {
           id: @user_table.id,

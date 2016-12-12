@@ -272,8 +272,12 @@ defaults: &defaults
       access_key_id: "test"
       secret_access_key: "test"
   assets:
-    s3_bucket_name: "tests"
-    max_file_size: 5242880 # 5.megabytes
+    users:
+      namespace: "user-assets-test"
+      max_file_size: 1048576 # 1.megabytes
+    organizations:
+      namespace: "org-assets-test"
+      max_file_size: 1048576 # 1.megabytes
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:

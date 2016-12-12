@@ -13,7 +13,7 @@ module Cartodb
   end
 
   def self.get_config_if_present(*chain)
-    fetched_config = Cartodb.get_config(chain)
+    fetched_config = Cartodb.get_config(*chain)
     return fetched_config if fetched_config.present?
   end
 

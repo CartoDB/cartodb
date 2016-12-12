@@ -12,24 +12,6 @@ module Cartodb
     current
   end
 
-  def self.fetch_config(*chain)
-    current = Cartodb.config
-    chain.each do |link|
-      pruned = case current
-               when Hash
-                 current.with_indifferent_access
-               when NilClass
-                 break
-               else
-                 current
-               end
-
-      current = pruned[link]
-    end
-
-    current
-  end
-
   def self.config
     return @config if @config
 

@@ -9,12 +9,18 @@ module Carto
         Carto::OrganizationAssetFile.max_size_in_bytes.present?
     end
 
+    DEFAULT_NAMESPACE = 'organization_assets'.freeze
+
     def self.namespace
-      CartoDB.get_config(:assets, :organizations, :namespace)
+      Cartodb.get_config(:assets, :organization, :bucket) ||
+        DEFAULT_NAMESPACE
     end
 
+    DEFAULT_MAX_SIZE_IN_BYTES = 1048576
+
     def self.max_size_in_bytes
-      CartoDB.get_config(:assets, :organizations, :max_size_in_bytes)
+      Cartodb.get_config(:assets, :organizations, :max_size_in_bytes) ||
+        DEFAULT_MAX_SIZE_IN_BYTES
     end
 
     attr_reader :url, :organization, :errors

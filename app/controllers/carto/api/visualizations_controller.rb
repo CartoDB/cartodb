@@ -42,7 +42,7 @@ module Carto
         return true unless current_user.present?
         begin
           visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
-          ::User.where(id: current_user.id).first.load_common_data(visualizations_api_url) if current_user.should_load_common_data?
+          current_user.load_common_data(visualizations_api_url) if current_user.should_load_common_data?
         rescue Exception => e
           # We don't block the load of the dashboard because we aren't able to load common data
           CartoDB.notify_exception(e, {user:current_user})

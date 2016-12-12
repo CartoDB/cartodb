@@ -44,16 +44,18 @@ module Carto
     private
 
     def fetch_file
-      temp_file = Tempfile.new(Time.now.utc)
-
+      temp_file = Tempfile.new("org_asset_download_#{Time.now.utc.to_i}")
       max_size_in_bytes = self.class.max_size_in_bytes
-      read = IO.copy_stream(open(url), temp_file, max_size_in_bytes + 1)
 
-      if read > max_size_in_bytes
-        errors[:file] = "too big (> #{max_size_in_bytes})"
+      begin
+        read = IO.copy_stream(open(url), temp_file, max_size_in_bytes + 1)
+
+        if read > max_size_in_bytes
+          errors[:file] = "too big (> #{max_size_in_bytes})"
+        end
+      ensure
+        temp_file.close
       end
-    ensure
-      temp_file.close
 
       temp_file
     end

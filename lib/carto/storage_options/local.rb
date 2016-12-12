@@ -9,15 +9,17 @@ class Carto::StorageOptions::Local
 
   def upload(path, file)
     filename = Pathname.new(file.path).basename
-    target_full_path = File.join(public_uploads_path,
+    target_directory = File.join(public_uploads_path,
                                  @location,
                                  path)
-    FileUtils.mkdir_p(target_full_path)
 
-    FileUtils.mv(file.path, target_full_path)
+    FileUtils.mkdir_p(target_directory)
+    FileUtils.mv(file.path, target_directory)
 
-    url_path = File.join(target_full_path.gsub('public/', ''), filename)
-    "#{CartoDB.protocol}://#{CartoDB.account_host}/#{url_path}"
+    target_full_path = File.join(target_directory, filename)
+    url_path = target_full_path.gsub('public/', '')
+
+    [target_full_path, url_path]
   end
 
   def remove(path)

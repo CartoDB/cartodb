@@ -209,6 +209,28 @@
           grunt.config('copy.app.files.' + i + '.src', []);
         }
       }
+
+      // configure copy js_core to only run on changed file
+      var files = grunt.config.get('copy.js_core.files');
+      for (var i = 0; i < files.length; ++i) {
+        var cfg = grunt.config.get('copy.js_core.files.' + i);
+        if (filepath.indexOf(cfg.cwd) !== -1) {
+          grunt.config('copy.js_core.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+        } else {
+          grunt.config('copy.js_core.files.' + i + '.src', []);
+        }
+      }
+
+      // configure copy js_client to only run on changed file
+      var files = grunt.config.get('copy.js_client.files');
+      for (var i = 0; i < files.length; ++i) {
+        var cfg = grunt.config.get('copy.js_client.files.' + i);
+        if (filepath.indexOf(cfg.cwd) !== -1) {
+          grunt.config('copy.js_client.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+        } else {
+          grunt.config('copy.js_client.files.' + i + '.src', []);
+        }
+      }
     });
 
     grunt.registerTask('setConfig', 'Set a config property', function(name, val) {

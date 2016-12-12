@@ -4,11 +4,11 @@ require 'carto/storage'
 
 module Carto
   class OrganizationAssetFile
-    DEFAULT_NAMESPACE = 'organization_assets'.freeze
+    DEFAULT_LOCATION = 'organization_assets'.freeze
 
-    def self.namespace
+    def self.location
       Cartodb.get_config(:assets, :organization, :bucket) ||
-        DEFAULT_NAMESPACE
+        DEFAULT_LOCATION
     end
 
     DEFAULT_MAX_SIZE_IN_BYTES = 1_048_576 # 1 MB
@@ -28,7 +28,7 @@ module Carto
 
     def public_url
       if valid?
-        Storage.instance.upload(self.class.namespace, organization.id, file)
+        Storage.instance.upload(self.class.location, organization.id, file)
       end
     end
 

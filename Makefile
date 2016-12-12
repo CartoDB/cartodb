@@ -293,6 +293,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/legend_migrator_spec.rb \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
+	spec/helpers/application_helper_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
@@ -300,7 +301,7 @@ WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
 	$(NULL)
 
-CDB_PATH=lib/assets/javascripts/cdb
+CDB_PATH=lib/assets/core/javascripts/cdb
 
 prepare-test-db:
 	# Else coverage reports add up and hits/line metric is invalid

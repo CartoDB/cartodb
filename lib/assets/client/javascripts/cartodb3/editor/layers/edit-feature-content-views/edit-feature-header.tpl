@@ -1,1 +1,1 @@
-<%- tableName %>
+client template

@@ -44,6 +44,7 @@ cartodb.sublime-project
 app/assets/images/sprites/*.png
 npm-debug.log
 .ruby-gemset
+lib/assets/javascripts/*
 lib/build/dist
 lib/build/grunt-aws.json
 lib/build/app_config.js

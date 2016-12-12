@@ -1,5 +1,5 @@
 {
-  "feedback": "Give us some feedback!",
+  "feedback": "Give us feedback!",
   "user": {
     "you": "You"
   },
@@ -28,8 +28,8 @@
     "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
-    "title": "Welcome to the Builder,",
-    "description": "Let us show you all the new and exciting things that you can do with CARTO.",
+    "title": "Welcome to Builder,",
+    "description": "Discover the new and exciting analyses you can perform with location intelligence.",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",
     "toolbar": {
@@ -37,7 +37,7 @@
       "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
-      "title": "Editor pane",
+      "title": "Edit pane",
       "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {

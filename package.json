@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.53",
+  "version": "4.5.58",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -130,8 +130,8 @@
       "/db",
       "/doc",
       "/engines",
-      "/lib/assets/javascripts/cdb",
-      "/lib/assets/javascripts/utils",
+      "/lib/assets/core/javascripts/cdb",
+      "/lib/assets/core/javascripts/utils",
       "/lib/assets/test/lib",
       "/lib/build",
       "/lib/carto",

@@ -67,7 +67,7 @@ module Carto
         end
 
         @asset_file = OrganizationAssetFile.new(@organization, @url)
-        unless asset_file.valid?
+        unless @asset_file.valid?
           raise UnprocesableEntityError.new(asset_file.errors)
         end
       end

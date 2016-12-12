@@ -9,6 +9,7 @@ module Carto
       end
 
       attr_reader :bucket_name
+
       def initialize(bucket_name)
         @bucket_name = bucket_name
 

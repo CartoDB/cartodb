@@ -2,6 +2,7 @@ require 'carto/mapcapped_visualization_updater'
 
 namespace :carto do
   namespace :db do
+    include Carto::MapcappedVisualizationUpdater
 
     desc "get modified layers"
     task :get_modified_layers => :environment do
@@ -102,7 +103,7 @@ namespace :carto do
           visualization = layer.visualization
           next unless visualization
 
-          success = Carto::MapcappedVisualizationUpdater.update_visualization(visualization) do |vis, persisted|
+          success = update_visualization_and_mapcap(visualization) do |vis, persisted|
             vis.user_layers.each do |l|
               layer_class = l.options[:className]
               if basemaps.keys.include?(layer_class)

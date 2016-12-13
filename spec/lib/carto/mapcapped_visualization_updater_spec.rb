@@ -4,6 +4,7 @@ require 'carto/mapcapped_visualization_updater'
 module Carto
   describe MapcappedVisualizationUpdater do
     include Factories::Visualizations
+    include MapcappedVisualizationUpdater
 
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
@@ -18,7 +19,7 @@ module Carto
     it 'updates a non-mapcapped visualization' do
       Map.any_instance.stubs(:notify_map_change).once
 
-      success = MapcappedVisualizationUpdater.update_visualization(@visualization) do |visualization, persisted|
+      success = update_visualization_and_mapcap(@visualization) do |visualization, persisted|
         layer = visualization.layers.first
         layer.options[:wadus] = 'wadus!'
         layer.save if persisted
@@ -35,7 +36,7 @@ module Carto
       @visualization.layers.first.update_attribute(:tooltip, do_not_publish_this: true)
       Map.any_instance.stubs(:notify_map_change).once
 
-      success = MapcappedVisualizationUpdater.update_visualization(@visualization) do |visualization, persisted|
+      success = update_visualization_and_mapcap(@visualization) do |visualization, persisted|
         layer = visualization.layers.first
         layer.options[:something] = 'else'
         layer.save if persisted

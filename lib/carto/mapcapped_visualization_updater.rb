@@ -1,8 +1,12 @@
+require_relative '../../app/services/carto/visualizations_export_service_2'
+
 module Carto
   module MapcappedVisualizationUpdater
+    include VisualizationsExportService2Exporter
+
     # Takes a block |visualization, persisted| in which you should do the modifications
     # Only call .save (or equivalent) if persisted is true or this will fail. Return the result of saving
-    def self.update_visualization(visualization)
+    def update_visualization_and_mapcap(visualization)
       # Update the persisted visualization
       return false unless yield visualization, true
 
@@ -20,14 +24,15 @@ module Carto
       true
     end
 
+    private
+
     # Reimplementation of VisualizationExportService2.export_visualization_json_hash
     # that works with in-memory visualizations
-    def self.export_in_memory_visualization(visualization, user)
+    def export_in_memory_visualization(visualization, user)
       {
-        version: Carto::VisualizationsExportService2::CURRENT_VERSION,
-        visualization: Carto::VisualizationsExportService2.new.send(:export, visualization, user)
+        version: CURRENT_VERSION,
+        visualization: export(visualization, user)
       }
     end
-    private_class_method :export_in_memory_visualization
   end
 end

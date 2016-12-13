@@ -17,7 +17,9 @@ class Carto::StorageOptions::Local
     FileUtils.mv(file.path, target_directory)
 
     target_full_path = File.join(target_directory, filename)
-    url_path = target_full_path.gsub('public/', '')
+    url_path = File.join('http://',
+                         CartoDB.account_host,
+                         target_full_path.gsub('public/', ''))
 
     [target_full_path, url_path]
   end

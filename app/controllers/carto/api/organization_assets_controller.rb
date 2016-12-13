@@ -31,8 +31,8 @@ module Carto
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,
                               public_url: @asset_file.url,
-                              path: @asset.path,
-                              location: @asset.location,
+                              path: @asset_file.path,
+                              location: @asset_file.location,
                               storage_type: @asset_file.type)
 
         render json: AssetPresenter.new(asset), status: :created

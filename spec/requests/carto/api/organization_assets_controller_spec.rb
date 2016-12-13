@@ -35,5 +35,19 @@ describe Carto::Api::OrganizationAssetsController do
     after(:all) do
       Carto::Asset.all.map(&:destroy)
     end
+
+    def index_url(subdomain: @owner.subdomain,
+                  organization_id: @carto_organization.id,
+                  api_key: @owner.api_key)
+      assets_url(user_domain: subdomain,
+                 organization_id: organization_id,
+                 api_key: api_key)
+    end
+
+    it 'works for organization users' do
+      get_json index_url, {} do |response|
+        response.status.should eq 200
+      end
+    end
   end
 end

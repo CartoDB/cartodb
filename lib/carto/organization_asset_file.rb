@@ -19,7 +19,7 @@ module Carto
         DEFAULT_MAX_SIZE_IN_BYTES
     end
 
-    attr_reader :resource, :organization, :errors
+    attr_reader :errors
 
     def initialize(organization, resource)
       @organization = organization
@@ -39,6 +39,12 @@ module Carto
       storage.class.name.demodulize.downcase
     end
 
+    def valid?
+      file && errors.empty?
+    end
+
+    private
+
     def identifier_and_url
       return @identifier_and_url if @identifier_and_url
 
@@ -49,15 +55,9 @@ module Carto
       end
     end
 
-    def valid?
-      file && errors.empty?
-    end
-
     def file
       @file ||= fetch_file
     end
-
-    private
 
     def storage
       @storage ||= Storage.instance.for(self.class.location)

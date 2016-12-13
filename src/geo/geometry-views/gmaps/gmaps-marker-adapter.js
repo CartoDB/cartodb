@@ -1,5 +1,5 @@
 /* global google */
-var MarkerAdapterBase = require('../../geometry-views/base/marker-adapter-base');
+var MarkerAdapterBase = require('../base/marker-adapter-base');
 
 var GMapsMarkerAdapter = function (nativeMarker) {
   this._listeners = {};

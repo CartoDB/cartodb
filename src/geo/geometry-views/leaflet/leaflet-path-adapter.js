@@ -1,4 +1,4 @@
-var PathAdapterBase = require('../../geometry-views/base/path-adapter-base');
+var PathAdapterBase = require('../base/path-adapter-base');
 
 var LeafletPathAdapter = function (nativePath) {
   this._nativePath = nativePath;

@@ -1,5 +1,5 @@
 var _ = require('underscore');
-var PathAdapterBase = require('../../geometry-views/base/path-adapter-base');
+var PathAdapterBase = require('../base/path-adapter-base');
 var GMapsCoordinates = require('./gmaps-coordinates');
 
 var GMapsPathAdapter = function (nativePath) {

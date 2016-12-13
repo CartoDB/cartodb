@@ -1,5 +1,5 @@
 /* global google */
-var PointViewBase = require('../../geometry-views/base/point-view-base.js');
+var PointViewBase = require('../base/point-view-base.js');
 var GMapsMarkerAdapter = require('./gmaps-marker-adapter');
 
 var PointView = PointViewBase.extend({
@@ -13,8 +13,9 @@ var PointView = PointViewBase.extend({
 
     var marker = new google.maps.Marker({
       position: position,
+      icon: icon,
       draggable: this.model.isEditable(),
-      icon: icon
+      crossOnDrag: false
     });
 
     // iconAnchor: this.model.get('iconAnchor')

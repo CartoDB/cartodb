@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var GeometryViewBase = require('./geometry-view-base');
 
-var DRAG_DEBOUNCE_TIME_IN_MILIS = 0;
+var DRAG_DEBOUNCE_TIME_IN_MILIS = 10;
 
 var PointViewBase = GeometryViewBase.extend({
   initialize: function (options) {

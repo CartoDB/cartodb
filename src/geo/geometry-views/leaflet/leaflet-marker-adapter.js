@@ -1,5 +1,5 @@
 var L = require('leaflet');
-var MarkerAdapterBase = require('../../geometry-views/base/marker-adapter-base');
+var MarkerAdapterBase = require('../base/marker-adapter-base');
 
 var LeafletMarkerAdapter = function (nativeMarker) {
   this._nativeMarker = nativeMarker;

@@ -21,12 +21,12 @@ var getGeometryViewForGeometry = function (provider, geometry) {
 
 /* Leaflet */
 
-var LeafletPointView = require('../leaflet/geometries/point-view');
-var LeafletPolygonView = require('../leaflet/geometries/polygon-view');
-var LeafletPolylineView = require('../leaflet/geometries/polyline-view');
-var LeafletMultiPointView = require('../leaflet/geometries/multi-point-view');
-var LeafletMultiPolygonView = require('../leaflet/geometries/multi-polygon-view');
-var LeafletMultiPolylineView = require('../leaflet/geometries/multi-polyline-view');
+var LeafletPointView = require('./leaflet/point-view');
+var LeafletPolygonView = require('./leaflet/polygon-view');
+var LeafletPolylineView = require('./leaflet/polyline-view');
+var LeafletMultiPointView = require('./leaflet/multi-point-view');
+var LeafletMultiPolygonView = require('./leaflet/multi-polygon-view');
+var LeafletMultiPolylineView = require('./leaflet/multi-polyline-view');
 
 var getLeafletGeometryViewForGeometry = function (geometry) {
   var GeometryView;
@@ -48,12 +48,12 @@ var getLeafletGeometryViewForGeometry = function (geometry) {
 
 /* Google Maps */
 
-var GoogleMapsPointView = require('../gmaps/geometries/point-view');
-var GoogleMapsPolygonView = require('../gmaps/geometries/polygon-view');
-var GoogleMapsPolylineView = require('../gmaps/geometries/polyline-view');
-var GoogleMapsMultiPointView = require('../gmaps/geometries/multi-point-view');
-var GoogleMapsMultiPolygonView = require('../gmaps/geometries/multi-polygon-view');
-var GoogleMapsMultiPolylineView = require('../gmaps/geometries/multi-polyline-view');
+var GoogleMapsPointView = require('./gmaps/point-view');
+var GoogleMapsPolygonView = require('./gmaps/polygon-view');
+var GoogleMapsPolylineView = require('./gmaps/polyline-view');
+var GoogleMapsMultiPointView = require('./gmaps/multi-point-view');
+var GoogleMapsMultiPolygonView = require('./gmaps/multi-polygon-view');
+var GoogleMapsMultiPolylineView = require('./gmaps/multi-polyline-view');
 
 var getGoogleMapsGeometryViewForGeometry = function (geometry) {
   var GeometryView;

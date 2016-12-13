@@ -1,5 +1,5 @@
 /* global google */
-var PathViewBase = require('../../geometry-views/base/path-view-base');
+var PathViewBase = require('../base/path-view-base');
 var PointView = require('./point-view');
 var GMapsPathAdapter = require('./gmaps-path-adapter');
 var GMapsCoordinates = require('./gmaps-coordinates');

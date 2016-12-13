@@ -1,5 +1,5 @@
 var L = require('leaflet');
-var PointViewBase = require('../../geometry-views/base/point-view-base.js');
+var PointViewBase = require('../base/point-view-base.js');
 var LeafletMarkerAdapter = require('./leaflet-marker-adapter');
 
 var PointView = PointViewBase.extend({

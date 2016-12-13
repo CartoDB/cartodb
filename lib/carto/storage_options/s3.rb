@@ -4,8 +4,7 @@ module Carto
   module StorageOptions
     class S3
       def self.conf
-        s3_conf = Cartodb.get_config_if_present(:aws, 's3')
-        s3_conf['s3'] if s3_conf
+        Cartodb.get_config_if_present(:aws, 's3')
       end
 
       def initialize(bucket_name)
@@ -15,7 +14,7 @@ module Carto
       end
 
       def upload(namespace, file)
-        filename = Pathname.new(file.path).basename
+        filename = Pathname.new(file.path).basename.to_s
         mime_type = MIME::Types.type_for(filename).first.to_s
 
         asset = bucket.objects[File.join(namespace, filename)]

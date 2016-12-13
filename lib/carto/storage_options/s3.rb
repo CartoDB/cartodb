@@ -28,14 +28,10 @@ module Carto
         bucket.objects[path].delete
       end
 
-      def bucket
-        @bucket ||= s3.buckets[@bucket_name]
-      end
-
       private
 
-      def s3
-        @s3 ||= AWS::S3.new
+      def bucket
+        @bucket ||= AWS::S3.new.buckets[@bucket_name]
       end
     end
   end

@@ -12,8 +12,15 @@ module Carto
       @storages = Hash.new
     end
 
-    def for(location)
-      get_or_set_location(location)
+    def for(location, preferred_storage_type: nil)
+      case preferred_storage_type.to_s
+      when 's3'
+        Carto::StorageOptions::S3.new_if_available(location)
+      when 'local'
+        Carto::StorageOptions::Local.new(location)
+      else
+        get_or_set_location(location)
+      end
     end
 
     def get_or_set_location(location)

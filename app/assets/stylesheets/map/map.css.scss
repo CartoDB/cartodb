@@ -19,7 +19,7 @@ div.map {
   @include box-sizing(border-box);
   @include position(0px, 0, 0, 0); // 1px to cause header opacity black border needs to be present
   @include size(100%);
-  background: #333 image-url('layout/noise.png') repeat 0 0;
+  background: #000;
   z-index:1;
 }
 
@@ -60,6 +60,25 @@ div.map {
     }
     span.tooltip p {
       font-size: 11px;
+    }
+  }
+
+  div.ol-cartodb-attribution {
+    position: absolute;
+    right: 0em;
+    bottom: 0em;
+    margin: 0;
+    text-decoration: none;
+    background: rgba(0,0,0,0.32);
+    color: #d8d8d8;
+    padding: 0 5px;
+    display: inline;
+    z-index: 7;
+    pointer-events: auto;
+    font: 11px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    cursor: auto;
+    a {
+      color: #0078a8;
     }
   }
 
@@ -488,7 +507,11 @@ div.map {
 
     @include position(-1px, 0px, 0, 0);
     @include size(auto);
-
+    overflow: hidden;
+    outline: 0;
+    z-index: 1;
+    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background: #000;
   }
 
   div.cartodb-map {
@@ -606,7 +629,7 @@ div.map {
     top: 0px;
   }
 
-  div.cartodb-layer-selector-box a.layers .count, &:hover{
+  div.cartodb-layer-selector-box a.layers .count {
     background: none;
   }
 

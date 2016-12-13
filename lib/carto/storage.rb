@@ -16,7 +16,7 @@ module Carto
       proposed_location = get_or_set_location(location)
       proposed_type = proposed_location.type
 
-      if (preferred_type || proposed_type) == proposed_type
+      if proposed_type == (preferred_type || proposed_type)
         proposed_location
       elsif proposed_type == 'local'
         Carto::StorageOptions::Local.new(location)

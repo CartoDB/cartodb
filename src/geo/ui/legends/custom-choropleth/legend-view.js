@@ -7,6 +7,7 @@ var ChoroplethLegendView = LegendViewBase.extend({
       colors: this.model.get('colors'),
       prefix: this.model.get('prefix'),
       suffix: this.model.get('suffix'),
+      hasCustomLabels: this._hasCustomLabels(),
       leftLabel: this.model.get('leftLabel'),
       rightLabel: this.model.get('rightLabel')
     });

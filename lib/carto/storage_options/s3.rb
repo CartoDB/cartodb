@@ -3,17 +3,15 @@
 module Carto
   module StorageOptions
     class S3
-      def self.new_if_available(bucket_name)
-        s3 = Carto::StorageOptions::S3.new(bucket_name)
-        s3 if s3.config.present? && s3.bucket.exists?
+      def self.conf
+        s3_conf = Cartodb.get_config_if_present(:aws, 's3')
+        s3_conf['s3'] if s3_conf
       end
-
-      attr_reader :bucket_name
 
       def initialize(bucket_name)
         @bucket_name = bucket_name
 
-        AWS::config(config) if config.try(:any?)
+        AWS::config(self.class.conf)
       end
 
       def upload(namespace, file)
@@ -28,11 +26,6 @@ module Carto
 
       def remove(path)
         bucket.objects[path].delete
-      end
-
-      def config
-        s3_conf = Cartodb.config.fetch(:aws, 's3')
-        @config ||= s3_conf['s3'] if s3_conf
       end
 
       def bucket

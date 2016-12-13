@@ -16,12 +16,12 @@ class Carto::StorageOptions::Local
     FileUtils.mkdir_p(target_directory)
     FileUtils.mv(file.path, target_directory)
 
-    target_full_path = File.join(target_directory, filename)
+    identifier = File.join(target_directory, filename)
     url_path = File.join('http://',
                          CartoDB.account_host,
-                         target_full_path.gsub('public/', ''))
+                         identifier.gsub('public/', ''))
 
-    [target_full_path, url_path]
+    [identifier, url_path]
   end
 
   def remove(path)

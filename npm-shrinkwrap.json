@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.48",
+  "version": "4.5.60",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -472,9 +472,9 @@
                                   "resolved": "https://registry.npmjs.org/jsbn/-/jsbn-0.1.0.tgz"
                                 },
                                 "tweetnacl": {
-                                  "version": "0.14.4",
+                                  "version": "0.14.5",
                                   "from": "tweetnacl@>=0.14.0 <0.15.0",
-                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.4.tgz"
+                                  "resolved": "https://registry.npmjs.org/tweetnacl/-/tweetnacl-0.14.5.tgz"
                                 },
                                 "jodid25519": {
                                   "version": "1.0.2",
@@ -934,7 +934,7 @@
                 },
                 "xtend": {
                   "version": "4.0.1",
-                  "from": "xtend@>=4.0.0 <4.1.0",
+                  "from": "xtend@>=4.0.1 <4.1.0",
                   "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
                 }
               }
@@ -1147,8 +1147,20 @@
     "cartodb-deep-insights.js": {
       "version": "0.0.2",
       "from": "cartodb/deep-insights.js#master",
-      "resolved": "git://github.com/cartodb/deep-insights.js.git#ff0950ea359ecf5778901608fbcb66591e4c8688",
+      "resolved": "git://github.com/cartodb/deep-insights.js.git#22a735f4324af216fa70683626504ef6585e28d1",
       "dependencies": {
+        "cartocolor": {
+          "version": "4.0.0",
+          "from": "cartocolor@4.0.0",
+          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz",
+          "dependencies": {
+            "colorbrewer": {
+              "version": "1.0.0",
+              "from": "colorbrewer@1.0.0",
+              "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+            }
+          }
+        },
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
@@ -1207,6 +1219,11 @@
                       "version": "1.0.0",
                       "from": "colorbrewer@1.0.0",
                       "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+                    },
+                    "cartocolor": {
+                      "version": "3.0.0",
+                      "from": "cartocolor@3.0.0",
+                      "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-3.0.0.tgz"
                     },
                     "debug": {
                       "version": "2.2.0",
@@ -1286,9 +1303,9 @@
               "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
             },
             "torque.js": {
-              "version": "2.15.2",
+              "version": "2.16.1",
               "from": "cartodb/torque#master",
-              "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
+              "resolved": "git://github.com/cartodb/torque.git#16bac52b91bd7b57e020c90a8bffc17e86a2db7b",
               "dependencies": {
                 "carto": {
                   "version": "0.15.1-cdb1",
@@ -1320,9 +1337,9 @@
                   }
                 },
                 "turbo-carto": {
-                  "version": "0.16.0",
-                  "from": "turbo-carto@0.16.0",
-                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
+                  "version": "0.19.0",
+                  "from": "turbo-carto@0.19.0",
+                  "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.19.0.tgz",
                   "dependencies": {
                     "colorbrewer": {
                       "version": "1.0.0",
@@ -1591,9 +1608,9 @@
           "resolved": "https://registry.npmjs.org/mustache/-/mustache-1.1.0.tgz"
         },
         "torque.js": {
-          "version": "2.15.2",
+          "version": "2.16.1",
           "from": "cartodb/torque#master",
-          "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
+          "resolved": "git://github.com/cartodb/torque.git#16bac52b91bd7b57e020c90a8bffc17e86a2db7b",
           "dependencies": {
             "carto": {
               "version": "0.15.1-cdb1",
@@ -1625,14 +1642,19 @@
               }
             },
             "turbo-carto": {
-              "version": "0.16.0",
-              "from": "turbo-carto@0.16.0",
-              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
+              "version": "0.19.0",
+              "from": "turbo-carto@0.19.0",
+              "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.19.0.tgz",
               "dependencies": {
                 "colorbrewer": {
                   "version": "1.0.0",
                   "from": "colorbrewer@1.0.0",
                   "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+                },
+                "cartocolor": {
+                  "version": "4.0.0",
+                  "from": "cartocolor@4.0.0",
+                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1738,14 +1760,14 @@
       "resolved": "https://registry.npmjs.org/clipboard/-/clipboard-1.5.12.tgz",
       "dependencies": {
         "good-listener": {
-          "version": "1.2.0",
+          "version": "1.2.1",
           "from": "good-listener@>=1.1.6 <2.0.0",
-          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.0.tgz",
+          "resolved": "https://registry.npmjs.org/good-listener/-/good-listener-1.2.1.tgz",
           "dependencies": {
             "delegate": {
-              "version": "3.1.0",
-              "from": "delegate@>=3.1.0 <4.0.0",
-              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.0.tgz"
+              "version": "3.1.1",
+              "from": "delegate@>=3.1.1 <4.0.0",
+              "resolved": "https://registry.npmjs.org/delegate/-/delegate-3.1.1.tgz"
             }
           }
         },
@@ -1792,9 +1814,9 @@
       "resolved": "https://registry.npmjs.org/queue-async/-/queue-async-1.2.1.tgz"
     },
     "torque.js": {
-      "version": "2.15.2",
+      "version": "2.16.1",
       "from": "cartodb/torque#master",
-      "resolved": "git://github.com/cartodb/torque.git#2e1a020c3cc43f0e467ca243d35250f92b8a8dc3",
+      "resolved": "git://github.com/cartodb/torque.git#16bac52b91bd7b57e020c90a8bffc17e86a2db7b",
       "dependencies": {
         "carto": {
           "version": "0.15.1-cdb1",
@@ -1831,14 +1853,19 @@
           "resolved": "https://registry.npmjs.org/d3/-/d3-3.5.17.tgz"
         },
         "turbo-carto": {
-          "version": "0.16.0",
-          "from": "turbo-carto@0.16.0",
-          "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.16.0.tgz",
+          "version": "0.19.0",
+          "from": "turbo-carto@0.19.0",
+          "resolved": "https://registry.npmjs.org/turbo-carto/-/turbo-carto-0.19.0.tgz",
           "dependencies": {
             "colorbrewer": {
               "version": "1.0.0",
               "from": "colorbrewer@1.0.0",
               "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
+            },
+            "cartocolor": {
+              "version": "4.0.0",
+              "from": "cartocolor@4.0.0",
+              "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
             },
             "debug": {
               "version": "2.2.0",

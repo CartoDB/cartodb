@@ -84,7 +84,7 @@ namespace :carto do
       puts "Finished. Total: #{total}. Errors: #{errors}"
     end
 
-    desc "Nokia -> HERE layer update"
+    desc "Nokia -> HERE layer update (platform #2815)"
     task update_nokia_layers: :environment do
       basemaps = Cartodb.get_config(:basemaps, 'Here')
 

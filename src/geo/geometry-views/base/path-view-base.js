@@ -7,7 +7,7 @@ var computeMidLatLng = function (mapView, latLngA, latLngB) {
   var rightPoint = mapView.latLngToContainerPoint(latLngB);
   var y = (leftPoint.y + rightPoint.y) / 2;
   var x = (leftPoint.x + rightPoint.x) / 2;
-  var latlng = mapView.containerPointToLatLng([x, y]);
+  var latlng = mapView.containerPointToLatLng({ x: x, y: y });
   return [ latlng.lat, latlng.lng ];
 };
 

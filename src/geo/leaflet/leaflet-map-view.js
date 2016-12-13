@@ -322,7 +322,7 @@ var LeafletMapView = MapView.extend({
 
   // returns { lat: 0, lng: 0}
   containerPointToLatLng: function (point) {
-    var latlng = this.getNativeMap().containerPointToLatLng(point);
+    var latlng = this.getNativeMap().containerPointToLatLng([point.x, point.y]);
     return {
       lat: latlng.lat,
       lng: latlng.lng

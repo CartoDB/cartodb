@@ -175,8 +175,8 @@ var GoogleMapsMapView = MapView.extend({
     p.y += pc.y;
     // TODO: Use containerPointToLatLng here and get rid of this.projector,
     // which is only being used here
-    var ll = this.projector.pixelToLatLng(p);
-    this.map.setCenter([ll.lat(), ll.lng()]);
+    var ll = this.containerPointToLatLng(p);
+    this.map.setCenter([ll.lat, ll.lng]);
   },
 
   getBounds: function () {
@@ -241,7 +241,7 @@ var GoogleMapsMapView = MapView.extend({
   },
 
   containerPointToLatLng: function (point) {
-    var latlng = this.projector.pixelToLatLng(new google.maps.Point(point[0], point[1]));
+    var latlng = this.projector.pixelToLatLng(new google.maps.Point(point.x, point.y));
     return {
       lat: latlng.lat(),
       lng: latlng.lng()

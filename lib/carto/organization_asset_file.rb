@@ -35,15 +35,15 @@ module Carto
       path_and_url[1]
     end
 
-    def location
-      @location ||= self.class.location
+    def type
+      storage.class.name.demodulize.downcase
     end
 
     def path_and_url
       return @path_and_url if @path_and_url
 
       if valid?
-        @path_and_url = Storage.instance.upload(location, organization.id, file)
+        @path_and_url = storage.upload(organization.id, file)
       else
         [nil, nil]
       end
@@ -58,6 +58,10 @@ module Carto
     end
 
     private
+
+    def storage
+      @storage ||= Storage.instance.for(self.class.location)
+    end
 
     def fetch_file
       temp_file = Tempfile.new("org_asset_download_#{Time.now.utc.to_i}")

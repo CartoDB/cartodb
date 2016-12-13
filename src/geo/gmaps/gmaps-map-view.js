@@ -173,8 +173,6 @@ var GoogleMapsMapView = MapView.extend({
     var pc = this.latLngToContainerPoint(c);
     p.x += pc.x;
     p.y += pc.y;
-    // TODO: Use containerPointToLatLng here and get rid of this.projector,
-    // which is only being used here
     var ll = this.containerPointToLatLng(p);
     this.map.setCenter([ll.lat, ll.lng]);
   },

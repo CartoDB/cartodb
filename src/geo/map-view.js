@@ -5,7 +5,6 @@ var overlayTemplate = require('./ui/overlays-container.tpl');
 var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
 
-// TODO: Rename to map-view-base
 var MapView = View.extend({
   initialize: function () {
     this.options = this.options || {};
@@ -22,9 +21,6 @@ var MapView = View.extend({
     // A map of the LayerViews that is linked to each of the Layer models.
     // The cid of the layer model is used as the key for this mapping.
     this._layerViews = {};
-
-    // TODO: this._geometries?
-    this._layers = {};
 
     this.map.layers.bind('reset', this._addLayers, this);
     this.map.layers.bind('add', this._addLayer, this);

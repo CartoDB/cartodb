@@ -1,4 +1,4 @@
-var GMapsMapView = require('./gmaps-map-for-tests');
+var GMapsMapView = require('../../../../../src/geo/gmaps/gmaps-map-view.js');
 var GMapsPolygonView = require('../../../../../src/geo/gmaps/geometries/polygon-view.js');
 var SharedTestsForPolygonViews = require('../shared-tests-for-polygon-views');
 

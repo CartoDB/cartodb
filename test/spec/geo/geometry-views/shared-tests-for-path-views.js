@@ -4,9 +4,6 @@ var createMapView = require('./create-map-view');
 var CoordinatesComparator = require('./coordinates-comparator');
 
 module.exports = function (Path, MapView, PathView) {
-  if (!Path) throw new Error('Path is required');
-  if (!PathView) throw new Error('PathView is required');
-
   beforeEach(function () {
     spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
 

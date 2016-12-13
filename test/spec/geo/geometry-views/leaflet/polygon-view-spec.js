@@ -1,4 +1,4 @@
-var LeafletMapView = require('./leaflet-map-view-for-tests');
+var LeafletMapView = require('../../../../../src/geo/leaflet/leaflet-map-view.js');
 var LeafletPolygonView = require('../../../../../src/geo/leaflet/geometries/polygon-view.js');
 var SharedTestsForPolygonViews = require('../shared-tests-for-polygon-views');
 

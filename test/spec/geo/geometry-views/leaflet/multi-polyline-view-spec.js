@@ -1,4 +1,4 @@
-var LeafletMapView = require('./leaflet-map-view-for-tests');
+var LeafletMapView = require('../../../../../src/geo/leaflet/leaflet-map-view.js');
 var LeafletMultiPolylineView = require('../../../../../src/geo/leaflet/geometries/multi-polyline-view.js');
 var SharedTestsForMultiPolylineViews = require('../shared-tests-for-multi-polyline-views');
 

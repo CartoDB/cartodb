@@ -13,8 +13,8 @@ describe('geo/ui/legends/custom-choropleth/legend-view.js', function () {
       preHTMLSnippet: '',
       prefix: '',
       suffix: '',
-      leftLabel: 'left',
-      rightLabel: 'right',
+      leftLabel: 'low',
+      rightLabel: 'high',
       colors: [
         {
           label: '1',
@@ -59,8 +59,8 @@ describe('geo/ui/legends/custom-choropleth/legend-view.js', function () {
       expect(this.legendView.$('h3').text()).toBe('Foo');
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
       expect(this.legendView.$('h3 ~ div p').length).toBe(2);
-      expect(this.legendView.$('h3 ~ div p').eq(0).text()).toContain('left');
-      expect(this.legendView.$('h3 ~ div p').eq(1).text()).toContain('right');
+      expect(this.legendView.$('h3 ~ div p').eq(0).text()).toContain('low');
+      expect(this.legendView.$('h3 ~ div p').eq(1).text()).toContain('high');
     });
   });
 });

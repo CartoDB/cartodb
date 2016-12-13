@@ -170,7 +170,7 @@ var GoogleMapsMapView = MapView.extend({
 
   panBy: function (p) {
     var c = this.map.get('center');
-    var pc = this.latLonToPixel(c);
+    var pc = this.latLngToContainerPoint(c);
     p.x += pc.x;
     p.y += pc.y;
     // TODO: Use containerPointToLatLng here and get rid of this.projector,
@@ -232,9 +232,20 @@ var GoogleMapsMapView = MapView.extend({
     path.removeFromMap(this.getNativeMap());
   },
 
-  // TODO: Replace usages of this method by latLngToContainerPoint
-  latLonToPixel: function (latlng) {
-    return this.latLngToContainerPoint(latlng);
+  latLngToContainerPoint: function (latlng) {
+    var point = this.projector.latLngToPixel(new google.maps.LatLng(latlng[0], latlng[1]));
+    return {
+      x: point.x,
+      y: point.y
+    };
+  },
+
+  containerPointToLatLng: function (point) {
+    var latlng = this.projector.pixelToLatLng(new google.maps.Point(point[0], point[1]));
+    return {
+      lat: latlng.lat(),
+      lng: latlng.lng()
+    };
   }
 });
 

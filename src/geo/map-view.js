@@ -4,7 +4,6 @@ var View = require('../core/view');
 var overlayTemplate = require('./ui/overlays-container.tpl');
 var CONTAINED_OVERLAYS = ['fullscreen', 'search', 'attribution', 'zoom', 'logo'];
 var GeometryViewFactory = require('./geometry-views/geometry-view-factory');
-var SphericalMercator = require('@mapbox/sphericalmercator');
 
 // TODO: Rename to map-view-base
 var MapView = View.extend({
@@ -70,22 +69,12 @@ var MapView = View.extend({
 
   // returns { x: 100, y: 200 }
   latLngToContainerPoint: function (latlng) {
-    var sphericalMercator = new SphericalMercator();
-    var point = sphericalMercator.px([latlng[1], latlng[0]], this.map.get('zoom'));
-    return {
-      x: point[0],
-      y: point[1]
-    };
+    throw new Error('subclasses of MapView must implement latLngToContainerPoint');
   },
 
   // returns { lat: 0, lng: 0}
   containerPointToLatLng: function (point) {
-    var sphericalMercator = new SphericalMercator();
-    var lonLat = sphericalMercator.ll(point, this.map.get('zoom'));
-    return {
-      lat: lonLat[1],
-      lng: lonLat[0]
-    };
+    throw new Error('subclasses of MapView must implement containerPointToLatLng');
   },
 
   _onGeometryAdded: function (geometry) {

@@ -68,7 +68,7 @@ var Infowindow = View.extend({
 
     var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
     var containerWidth = this.$el.width();
-    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
     var adjustOffset = {x: 0, y: 0};
     var size = this.mapView.getSize();
     var wait_callback = 0;
@@ -579,7 +579,7 @@ var Infowindow = View.extend({
     }
 
     var offset = this.model.get('offset');
-    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
     var left = pos.x - offset[0];
     var size = this.mapView.getSize();
     var bottom = -1 * (pos.y - offset[1] - size.y);

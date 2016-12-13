@@ -312,9 +312,21 @@ var LeafletMapView = MapView.extend({
     path.removeFromMap(this.getNativeMap());
   },
 
-  // TODO: Replace usages of this method by latLngToContainerPoint
-  latLonToPixel: function (latlng) {
-    return this.latLngToContainerPoint(latlng);
+  latLngToContainerPoint: function (latlng) {
+    var point = this.getNativeMap().latLngToContainerPoint(latlng);
+    return {
+      x: point.x,
+      y: point.y
+    };
+  },
+
+  // returns { lat: 0, lng: 0}
+  containerPointToLatLng: function (point) {
+    var latlng = this.getNativeMap().containerPointToLatLng(point);
+    return {
+      lat: latlng.lat,
+      lng: latlng.lng
+    };
   }
 });
 

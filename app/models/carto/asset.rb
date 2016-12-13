@@ -9,8 +9,7 @@ module Carto
 
     def destroy
       if organization_id
-        Storage.instance.for(location, preferred_type: storage_type)
-               .remove(identifier)
+        Storage.instance.for(location, preferred_type: storage_type).remove(identifier)
       end
 
       super

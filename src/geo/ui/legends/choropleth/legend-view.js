@@ -1,6 +1,7 @@
 var LegendViewBase = require('../base/legend-view-base');
 var template = require('./legend-template.tpl');
 var formatter = require('../../../../util/formatter');
+var Sanitize = require('../../../../core/sanitize');
 
 var ChoroplethLegendView = LegendViewBase.extend({
   _getCompiledTemplate: function () {
@@ -27,8 +28,8 @@ var ChoroplethLegendView = LegendViewBase.extend({
     var leftLabel = this.model.get('leftLabel');
     var rightLabel = this.model.get('rightLabel');
     var o = {};
-    o.left = formatter.formatNumber(colors[0].label);
-    o.right = formatter.formatNumber(colors[colors.length - 1].label);
+    o.left = Sanitize.html(formatter.formatNumber(colors[0].label));
+    o.right = Sanitize.html(formatter.formatNumber(colors[colors.length - 1].label));
     if (leftLabel != null && leftLabel !== '') {
       o.left = leftLabel;
     }

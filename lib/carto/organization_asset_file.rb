@@ -71,7 +71,7 @@ module Carto
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
 
         if read > max_size_in_bytes
-          errors[:file] = "too big (> #{max_size_in_bytes})"
+          errors[:file] = "too big (> #{max_size_in_bytes} bytes)"
         end
       ensure
         temp_file.close

@@ -1,3 +1,5 @@
+require 'carto/mapcapped_visualization_updater'
+
 namespace :carto do
   namespace :db do
 
@@ -72,6 +74,46 @@ namespace :carto do
             layer.options['category'] = 'CARTO'
           end
           layer.save
+        rescue => e
+          errors += 1
+          STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"
+        end
+      end
+
+      puts "Finished. Total: #{total}. Errors: #{errors}"
+    end
+
+    desc "Nokia -> HERE layer update"
+    task update_nokia_layers: :environment do
+      basemaps = Cartodb.get_config(:basemaps, 'Here')
+
+      puts "Updating base layer urls"
+      layer_dataset = Carto::Layer.where(kind: 'tiled')
+                                  .where("options LIKE '{%' AND options::json->>'className' IN (?)", basemaps.keys)
+      total = layer_dataset.count
+      acc = 0
+      errors = 0
+
+      puts "Updating #{total} layers"
+      layer_dataset.find_each do |layer|
+        acc += 1
+        puts "#{acc} / #{total}" if acc % 100 == 0
+        begin
+          visualization = layer.visualization
+          next unless visualization
+
+          success = Carto::MapcappedVisualizationUpdater.update_visualization(visualization) do |vis, persisted|
+            vis.user_layers.each do |l|
+              layer_class = l.options[:className]
+              if basemaps.keys.include?(layer_class)
+                l.options[:urlTemplate] = basemaps[layer_class.to_s]['url']
+                l.options[:name] = basemaps[layer_class.to_s]['name']
+                l.save if persisted
+              end
+            end
+          end
+
+          raise 'MapcappedVisualizationUpdater returned false' unless success
         rescue => e
           errors += 1
           STDERR.puts "Error updating layer #{layer.id}: #{e.inspect}. #{e.backtrace.join(',')}"

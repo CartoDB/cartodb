@@ -284,7 +284,8 @@
         "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
-          "value": "By value"
+          "value": "By value",
+          "img": "img"
         },
         "input-number": {
           "fixed": "Fixed",
@@ -296,6 +297,11 @@
         "input-categories": {
           "null": "null",
           "others": "Others"
+        },
+        "image": {
+          "recently-title": "Most used",
+          "none": "None",
+          "show-all": "Show full collections"
         }
       }
     }
@@ -728,6 +734,14 @@
           },
           "add-people": "Add people"
         }
+      },
+      "add-asset": {
+        "modal-title": "Select marker image",
+        "modal-desc": "Upload your icons or just use our nice selection",
+        "set-image": "Set image",
+        "your-uploads": "Your uploads",
+        "simple-icons": "Simple Icons",
+        "pin-icons": "Pin Icons"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",

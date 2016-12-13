@@ -19,11 +19,11 @@ module Carto
         DEFAULT_MAX_SIZE_IN_BYTES
     end
 
-    attr_reader :url, :organization, :errors
+    attr_reader :resource, :organization, :errors
 
-    def initialize(organization, url)
+    def initialize(organization, resource)
       @organization = organization
-      @url = url
+      @resource = resource
       @errors = Hash.new
     end
 

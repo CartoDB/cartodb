@@ -201,7 +201,7 @@
 
       // configure copy app to only run on changed file
       var files = grunt.config.get('copy.app.files');
-      for (var i = 0; i < files.length; ++i) {
+      for (var i = 0, l = files.length; i < l; ++i) {
         var cfg = grunt.config.get('copy.app.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
           grunt.config('copy.app.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
@@ -212,7 +212,7 @@
 
       // configure copy js_core_cartodb3 to only run on changed file
       var files = grunt.config.get('copy.js_core_cartodb3.files');
-      for (var i = 0; i < files.length; ++i) {
+      for (var i = 0, l = files.length; i < l; ++i) {
         var cfg = grunt.config.get('copy.js_core_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
           grunt.config('copy.js_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
@@ -223,7 +223,7 @@
 
       // configure copy js_client_cartodb3 to only run on changed file
       var files = grunt.config.get('copy.js_client_cartodb3.files');
-      for (var i = 0; i < files.length; ++i) {
+      for (var i = 0, l = files.length; i < l; ++i) {
         var cfg = grunt.config.get('copy.js_client_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
           grunt.config('copy.js_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));

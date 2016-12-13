@@ -60,7 +60,7 @@
     "grunt-contrib-jst": "git://github.com/javisantana/grunt-contrib-jst.git#master",
     "grunt-contrib-sass": "0.9.2",
     "grunt-contrib-uglify": "0.9.x",
-    "grunt-contrib-watch": "0.6.1",
+    "grunt-contrib-watch": "1.0.0",
     "grunt-exorcise": "2.1.0",
     "grunt-mustache": "0.1.7",
     "grunt-postcss": "0.5.5",
@@ -73,7 +73,7 @@
     "semistandard": "7.0.4",
     "source-map-support": "0.4.0",
     "uglify-js": "2.4.x",
-    "watchify": "3.1.1"
+    "watchify": "3.7.0"
   },
   "browserify": {
     "transform": [

@@ -44,7 +44,7 @@ module Carto
       def destroy
         @asset.destroy
 
-        render json: Hash.new, status: :no_content
+        head :no_content
       end
 
       private

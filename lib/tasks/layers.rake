@@ -97,7 +97,7 @@ namespace :carto do
       puts "Updating #{total} layers"
       layer_dataset.find_each do |layer|
         acc += 1
-        puts "#{acc} / #{total}" if acc % 100 == 0
+        puts "#{acc} / #{total}" if (acc % 100).zero?
         begin
           visualization = layer.visualization
           next unless visualization

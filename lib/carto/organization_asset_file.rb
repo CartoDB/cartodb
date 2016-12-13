@@ -27,23 +27,23 @@ module Carto
       @errors = Hash.new
     end
 
-    def path
-      path_and_url[0]
+    def identifier
+      identifier_and_url[0]
     end
 
     def url
-      path_and_url[1]
+      identifier_and_url[1]
     end
 
     def type
       storage.class.name.demodulize.downcase
     end
 
-    def path_and_url
-      return @path_and_url if @path_and_url
+    def identifier_and_url
+      return @identifier_and_url if @identifier_and_url
 
       if valid?
-        @path_and_url = storage.upload(organization.id, file)
+        @identifier_and_url = storage.upload(organization.id, file)
       else
         [nil, nil]
       end

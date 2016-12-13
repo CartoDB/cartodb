@@ -32,7 +32,7 @@ module Carto
                               organization_id: @organization.id,
                               public_url: @asset_file.url,
                               path: @asset_file.path,
-                              location: @asset_file.location,
+                              location: OrganizationAssetFile.location,
                               storage_type: @asset_file.type)
 
         render json: AssetPresenter.new(asset), status: :created

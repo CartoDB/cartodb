@@ -1,1 +1,1 @@
-client template
+<%= _t('client-template') %>

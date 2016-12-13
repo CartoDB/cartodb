@@ -1,0 +1,2131 @@
+{
+  "feedback": "Give us feedback!",
+  "user": {
+    "you": "You"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "operators": {
+    "count": "COUNT",
+    "sum": "SUM",
+    "avg": "AVG",
+    "min": "MIN",
+    "max": "MAX"
+  },
+  "builder-activated-notification": {
+    "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
+  },
+  "builder-onboarding": {
+    "title": "Welcome to Builder,",
+    "description": "Discover the new and exciting analyses you can perform with location intelligence.",
+    "take-tour": "Take a tour",
+    "edit-map": "Edit your map",
+    "toolbar": {
+      "title": "Toolbar",
+      "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
+    },
+    "configurator": {
+      "title": "Edit pane",
+      "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
+    },
+    "map": {
+      "title": "Map",
+      "description": "Your map reflects changes instantly."
+    },
+    "widgets": {
+      "title": "Widgets pane",
+      "description": "The widgets you add to your map appear directly on your visualization."
+    },
+    "skip": "skip",
+    "next": "next",
+  },
+  "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE",
+    },
+    "done": "Done",
+    "finished": "has finished",
+    "style-analysis": "Style this analysis",
+    "read-more": "Read more in documentation",
+    "never-show-message": "Never show me this message.",
+    "no-new-columns": "No new columns were created.",
+    "geometries-updated": "The geometries in your table were updated",
+    "new-column-added": "A new column has been added to your dataset.",
+    "new-columns-created": "New columns have been created as a new dataset.",
+    "new-column-included": "A new column has been included with your original data.",
+    "new-columns-included": "New columns has been included with your original data.",
+    "new-columns-included-based-on-input": "New columns have been included with your original data based on the columns chosen for the input.",
+    "sampling": {
+      "title": "Subsample of rows",
+      "description": "A sample of your original table was randomly selected to give approximately %{percentage}% of the rows from your input dataset."
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "description": "This analysis performed a columnar JOIN in order to get columns from two different tables."
+    },
+    "intersection": {
+      "title": "Filter points in polygons",
+      "description": "This analysis performs a spatial intersection, returning only the rows from the target layer which intersect with geometries in the source layer.",
+      "source-cartodb-id": "This number represents the cartodb_id of the source geometry"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "description": "Area of influence creates polygons according to the parameters set by the user.",
+      "the-geom": "This column was updated to show the area of influence requested.",
+    },
+    "aggregate-intersection": {
+      "title": "Intersect second layer",
+      "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the source layer.",
+      "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation",
+      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}"
+
+    },
+    "filter": {
+      "title": "Row filtering",
+      "description": "Row filtering allows you to quickly narrow down the total data you display on a map or input into an analysis node."
+    },
+    "filter-by-node-column": {
+      "title": "Filter by layer",
+      "description": "Filter by layer allows you to filter the data in your layer by propagating the filters in the '%{name_of_the_layer}' layer. Now if you filter on widgets added to the attached layer, the results in this layer would be also filtered."
+    },
+    "spatial-markov-trend": {
+      "trend": "The normalized trend for each geometry",
+      "trend_up": "The probability that a geometry's value will move to a higher class",
+      "trend_down": "The probability that a geometry's value will move to a lower class",
+      "volatility": "A measure of the potential for a geometry to possess values in other classes",
+      "description": "Trends and volatility are calculated based on the time series data input. Trends calculated from inputs with a longer history are more precise. Inputs for the time column should equally spaced (e.g., all one week/month/year apart)."
+    },
+    "moran": {
+      "title": "Detect outliers and clusters",
+      "description": "Detect outliers and clusters finds areas in your data where clusters of high values or low values exist, as well as areas which are dissimilar from their neighbors.",
+      "quads": "Classification of the geometry from the analysis",
+      "significance": "The statistical significance of the geometry's classification of one of four quadrant types.",
+      "moran": "The local statistic calculated from the Moran's I analysis for each geometry/value in the dataset.",
+      "rowid": "The original row id of the geometry (cartodb_id)."
+    },
+    "kmeans": {
+      "title": "Calculating point clusters",
+      "cluster-no": "A numeric identifier for each cluster in your dataset. Values start at 1 and go up to the %{clusters} clusters you requested (or max rows if less).",
+      "description": "Point clustering is uses k-means to calculate a predefined number of clusters from your data."
+    },
+    "data-observatory-measure": {
+      "title": "Enrich from the Data Observatory",
+      "custom-column": "This column contains the data requested from the Data Observatory",
+      "description": "The Data Observatory enrichment is the result of the geometry location and the measure requested."
+    },
+    "connect-with-lines": {
+      "title": "Connect with lines",
+      "description": "Create lines from point datasets using a variety of methods",
+      "the-geom": "This column was updated to be lines according to the method chosen.",
+      "line-sequential": "This analysis creates a line by connecting all points in the dataset in a specified order",
+      "line-source-to-target": "Link a source point to a target point based on a shared attribute",
+      "line-to-column": "Create lines from a point to to a geometry stored in another column",
+      "line-to-single-point": "Connect the coordinate from latitude and longitude columns to the point geometry (`the_geom`) in your dataset."
+
+    },
+    "group-points": {
+      "title": "Group points into polygons",
+      "the-geom": "This column was updated to polygons encompassing the input points.",
+      "category": "This will be the category over which the polygons were calculated",
+      "description": "Group points into polygons used '%{method}' to create new polygons."
+    },
+    "georeference": {
+      "title": "Georeference",
+      "the-geom": "This column, which stores the geographic information in your dataset, has been updated to reflect the boundaries or locations from the inputs specified.",
+      "description": "Georeferencing data is a service that uses information from many sources to get the geographical information associated with latitude/longitude columns, city names, postal codes, administrative boundaries, IP addresses, or street addresses."
+    },
+    "centroid": {
+      "title": "Calculating centroids from geometries",
+      "description": "Centroids are calculated from all, groups, or singular geometries. Using the optional parameters of Category, Aggregate, and Weight you can change how they are calculated and what information the result will contain. ",
+      "the-geom": "Point geometries representing the centroid(s) of your input data.",
+      "aggregated-value": "Stores the aggregate value for each centroid.",
+      "non-aggregated-value": "Contains the count of features considered for each centroid",
+      "category": "Stores the category value for each centroid from the source dataset"
+    }
+  },
+
+  "analyses": {
+    "connect-with-lines": {
+      "title": "Connect with lines",
+      "short-title": "Connect with lines"
+    },
+    "georeference": {
+      "title": "Georeference",
+      "short-title": "Georeference"
+    },
+    "data-observatory-measure": {
+      "title": "Enrich from Data Observatory",
+      "short-title": "Data observatory",
+      "age-and-gender": "Age and Gender",
+      "boundaries": "Boundaries",
+      "education": "Education",
+      "employment": "Employment",
+      "families": "Families",
+      "housing": "Housing",
+      "income": "Income",
+      "language": "Language",
+      "migration": "Migration",
+      "nationality": "Nationality",
+      "population-segments": "Population segments",
+      "race-and-ethnicity": "Race and Ethnicity",
+      "religion": "Religion",
+      "transportation": "Transportation"
+    },
+    "merge": {
+      "title": "Join columns from 2nd layer",
+      "short-title": "Join columns"
+    },
+    "filter-by-node-column": {
+      "title": "Filter by layer",
+      "short-title": "Filter by layer"
+    },
+    "centroid": {
+      "title": "Centroid from geometries",
+      "short-title": "Centroid"
+    },
+    "group-points": {
+      "title": "Group points into polygons",
+      "short-title": "Group points"
+    },
+    "convex-hull": {
+      "title": "Convex Hull",
+      "short-title": "Convex Hull"
+    },
+    "concave-hull": {
+      "title": "Concave Hull",
+      "short-title": "Concave Hull"
+    },
+    "bounding-box": {
+      "title": "Bounding Box",
+      "short-title": "Bounding Box"
+    },
+    "bounding-circle": {
+      "title": "Bounding Circle",
+      "short-title": "Bounding Circle"
+    },
+    "area-of-influence": {
+      "title": "Create areas of influence",
+      "short-title": "AOI"
+    },
+    "filter-intersection": {
+      "title": "Filter points in polygons",
+      "short-title": "Filter points in polygons"
+    },
+    "aggregate-intersection": {
+      "title": "Aggregate intersection",
+      "short-title": "Aggregate intersection"
+    },
+    "filter": {
+      "title": "Filter by column value",
+      "short-title": "Filter"
+    },
+    "sampling": {
+      "title": "Subsample percent of rows",
+      "short-title": "Sampling"
+    },
+    "kmeans": {
+      "title": "Calculate clusters of points",
+      "short-title": "Clusters"
+    },
+    "moran-cluster": {
+      "title": "Detect outliers and clusters",
+      "short-title": "Outliers & clusters"
+    },
+    "spatial-markov-trend": {
+      "title": "Predict trends and volatility",
+      "short-title": "Trends"
+    },
+    "source": "Source",
+    "routing": {
+      "short-title": "Routing"
+    }
+  },
+
+  "analysis-category": {
+    "all": "All",
+    "analyze-predict": "Analyze and predict",
+    "create-clean": "Create and clean",
+    "data-transformation": "Transform"
+  },
+  "form-components": {
+    "editors": {
+      "radio": {
+        "true": "True",
+        "false": "False",
+        "null": "Null"
+      },
+      "fill": {
+        "customize": "Custom color set",
+        "quantification": {
+          "title": "Quantification",
+          "methods": {
+            "jenks": "Jenks",
+            "equal": "Equal Interval",
+            "headtails": "Heads/Tails",
+            "quantiles": "Quantiles",
+            "category": "Category"
+          }
+        },
+        "bins": "Buckets",
+        "input-color": {
+          "solid": "Solid",
+          "value": "By value",
+          "img": "img"
+        },
+        "input-number": {
+          "fixed": "Fixed",
+          "value": "By value"
+        },
+        "input-ramp": {
+          "buckets": "bucket |||| buckets"
+        },
+        "input-categories": {
+          "null": "null",
+          "others": "Others"
+        },
+        "image": {
+          "recently-title": "Most used",
+          "none": "None",
+          "show-all": "Show full collections"
+        }
+      }
+    }
+  },
+  "data": {
+    "import-model": {
+      "error-title": "There was an error",
+      "error-starting-import": "Unfortunately, there was an error starting the import"
+    },
+    "upload-model": {
+      "invalid-import": "Invalid import",
+      "one-file": "Unfortunately, only one file is allowed per upload",
+      "file-defined": "File name should be defined",
+      "file-extension": "Unfortunately, this file extension is not allowed",
+      "file-size": "Unfortunately, the size of the file is bigger than your remaining quota",
+      "visualization-id": "The remote visualization id was not specified",
+      "remote-file-size": "Unfortunately, the size of the remote dataset is bigger than your remaining quota",
+      "url-invalid": "Unfortunately, the URL provided is not valid",
+      "error-happened": "There was an error",
+      "connection-error": "Unfortunately, there was a connection error",
+      "twitter-dates-invalid": "Twitter dates are not valid",
+      "twitter-dates-empty": "Twitter dates are empty",
+      "twitter-categories-invalid": "Twitter categories are not valid",
+      "twitter-data": "Twitter data is empty",
+      "dataset-copy-undefined": "Dataset copy is not defined",
+      "query-undefined": "Query is not provided"
+    }
+  },
+  "components": {
+    "geocoding": {
+      "geocoding-error-details": {
+        "close": "close",
+        "description": "There was a problem georeferencing your data",
+        "title": "Geocoding Error",
+        "try-again": "Please try again and if the problem persists, <a href='mailto:support@carto.com?subject=Geocoding error with id:%{id}'>contact us</a> with the following code:",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-success-detail": {
+        "amount-charged": "<strong>$%{price}</strong> will be charged to your account",
+        "credits-consumed": "You have consumed all your credits during this billing cycle, price is $%{price} / 1,000 extra credits.",
+        "description":  "We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %> of <%- processableRowsFormatted %>. |||| We've successfully geocoded <%- realRowsFormatted %> <%- geometryType %>s of <%- processableRowsFormatted %>.",
+        "explanation": "Rows that are not geocoded could have errors in their column values, or don’t exist in our data. Try geocoding again and check the 'override all values' to try again.",
+        "no-extra-charge": "No extra charges have been done",
+        "remainingQuotaFormatted": "You still have %{remainingQuotaFormatted} credits left for this month.",
+        "title": "Data geocoded",
+        "try-again": "Unsuccessful rows don't count against your quota, so we encourage you to take a look and try again.",
+        "view-dataset": "view dataset"
+      },
+      "geocoding-no-result-details": {
+        "close": "close",
+        "description": "These rows contained empty values or perhaps we just didn't know what the values meant. We encourage you to take a look and try again.",
+        "title": "No rows were georeferenced",
+        "view-dataset": "view dataset"
+      }
+    },
+    "background-importer": {
+      "background-importer-item": {
+        "completed": "completed",
+        "error-connecting": "<span class='u-errorTextColor'>Error connecting</span> %{name}",
+        "from": "from",
+        "show": "show"
+      },
+      "warnings-details": {
+        "continue-btn": "Continue",
+        "find-connected-datasets": "You can find all the connected datasets under the datasets section.",
+        "no-more-datasets": "No more than %{maxTablesPerImport} datasets can be imported from a single file.",
+        "unable-to-import-datasets": "Unable to import all datasets in file"
+      },
+      "partial-import-details": {
+        "find-connected-datasets": "You can find all the connected datasets under the datasets section.",
+        "continue-btn": "Continue",
+        "too-many-datasets": "NOTE: The file you uploaded contained too many datasets. No more than %{maxTablesPerImport} datasets can be imported from a single file.",
+        "unable-to-import-as-layers": "Unable to add all imported datasets as layers",
+        "upgrade-your-account": "<a href='https://carto.com/pricing/'>Upgrade your account</a> to add more than %{userMaxLayers} layers to your maps."
+      },
+      "connector-warning-details": {
+        "continue-btn": "Continue",
+        "too-many-rows": "You may have reached the maximum limit.",
+        "unable-to-import-all-rows": "For a database connector import, the number of rows allowed is %{maxRowsPerConnectorImport}. Some of your data may not be imported."
+      },
+      "error-details": {
+        "check-errors": "Check errors",
+        "check-url": "Check that the URL you provided is OK",
+        "close": "close",
+        "dont-panic": "Don’t panic, here's some info that might help",
+        "remote-server-code": "The remote server returned a <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> code.",
+        "send-us-the-error-code": "Persisting error? Please <a href='mailto:support@carto.com'>send us</a> the following code",
+        "unknown-error": "An unknown error has happened"
+      },
+      "upgrade-errors": {
+        "upgrade": "upgrade",
+        "8001": {
+          "description": "Remove some of your datasets to gain available space or upgrade your account",
+          "info": "Keep your data and get a larger quota by upgrading your plan",
+          "title": "Your quota has run out"
+        },
+        "8005": {
+          "description": "Remove any layer or upgrade your account",
+          "info": "Keep your maps and get more layer count quota by upgrading your plan",
+          "title": "You have reached your layer count limit"
+        }
+      },
+      "twitter-import-details": {
+        "new-type-created": "We've created a new dataset containing a total of %{datasetTotalRowsFormatted}<br/>tweet%{tweetPlural} with your search terms",
+        "credit-left": "You still have %{availableTweetsFormatted} credit left for this billing cycle.",
+        "credits-left": "You still have %{availableTweetsFormatted} credits left for this billing cycle.",
+        "no-more-credits": "You have consumed all your credits during this billing cycle (price is $%{blockPriceFormatted}/%{blockSizeFormatted} extra credits).",
+        "twitter-import-title": "Your Twitter dataset is created",
+        "tweet-cost": {
+          "free": "No extra charges have been applied",
+          "paid": "$%{tweetsCostFormatted} will be charged to your account"
+        },
+        "errors": {
+          "no-results": "Your search query was correct but returned no results, \n please try with a different set of parameters before running it again"
+        }
+      },
+      "background-geocoding-item": {
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} row geocoded… |||| %{realRowsFormatted}/%{processableRowsFormatted} rows geocoded…",
+        "geocoded-by-lat-lng": "Geocoded by latitude and longitude",
+        "geocoding": "Geocoding %{tableName} dataset…",
+        "show": "show",
+        "rows-geocoded": {
+          "without-dataset": "%{realRowsFormatted} row geocoded |||| %{realRowsFormatted} rows geocoded",
+          "in-dataset": "%{realRowsFormatted} row geocoded in %{tableName} dataset|||| %{realRowsFormatted} rows geocoded in %{tableName} dataset"
+        },
+        "errors": {
+          "no-rows-geocoded": {
+            "without-dataset": "No rows geocoded",
+            "in-dataset": "No rows geocoded in %{tableName} dataset"
+          },
+          "geocoding-layer": "Ouch! There was an error geocoding %{tableName} layer"
+        }
+      },
+      "background-import-limit": {
+        "hurry": "In a hurry? <a href='%{upgradeUrl}'>Upgrade your account</a> to import several files at a time",
+        "one-file": "Unfortunately, you can only import up to %{importQuota} files at the same time"
+
+      },
+      "free-trial": "Get a %{days} day free trial",
+      "connecting": "Connecting",
+      "dataset": "dataset…",
+      "geocoding": "Geocoding",
+      "working": "Working…"
+    },
+    "likes-pluralize": "like |||| likes",
+    "custom-list": {
+      "placeholder": "Search by %{typeLabel}",
+      "no-items": "There is no %{typeLabel} items",
+      "no-results": "No %{typeLabel} results found with '%{query}'",
+      "add-custom-result": "Add custom value"
+    },
+    "datepicker": {
+      "dates-placeholder": "Choose your dates",
+      "get-last": "Get last",
+      "hour": "hour",
+      "min": "min",
+      "from": "from",
+      "to": "to",
+      "or": "or",
+      "days-pluralize": "1 day |||| %{smart_count} days",
+      "weeks-pluralize": "1 week |||| %{smart_count} weeks",
+      "hours-pluralize": "hour week |||| %{smart_count} hours",
+      "gmt-convertion": "Date will be converted to GMT +0",
+      "invalid-date": "Invalid date"
+    },
+    "taglist": {
+      "none": "No tags",
+      "placeholder": "Add tags"
+    },
+    "pagination-search": {
+      "filter": {
+        "search": "Search",
+        "placeholder": "Search by username or email"
+      },
+      "loading": {
+        "title": "Loading..."
+      },
+      "error": {
+        "title": "Error",
+        "desc": "Oops there was an error."
+      },
+      "no-results": {
+        "title": "Oh! No results",
+        "desc": "Unfortunately we could not find anything with these parameters"
+      }
+    },
+    "modals": {
+      "editor-vis-warning": {
+        "title": "You are about to open an Editor map with the new Builder",
+        "explanation": "Builder offers an easy-to-use and intuitive drag and drop functionality to analyze and visualize your data. However, some of the old Editor features, such as overlays, are not currently available in Builder.",
+        "question": "Opening your map in Builder may cause the loss of any feature not supported yet. Are you sure you want to continue?",
+        "go-back": "No, go back to dashboard",
+        "open": "Yes, open with Builder",
+        "duplicate": "duplicate and open with Builder",
+        "opening-title": "Opening %{name} with Builder"
+      },
+      "add-basemap": {
+        "modal-title": "Add a custom basemap",
+        "modal-desc": "Select from these great resources",
+        "adding-basemap": "Adding new basemap…",
+        "add-basemap-error": "Could not add basemap",
+        "add-btn": "Add basemap",
+        "cancel-btn": "Cancel",
+        "validating": "Validating…",
+        "saving": "Saving layer…",
+        "fetching": "Fetching layers…",
+        "get-layers": "Get layers",
+        "xyz": {
+          "insert": "Insert your XYZ URL",
+          "enter": "Enter a URL",
+          "not-valid": "Insert a valid XYZ URL",
+          "eg": "E.g.",
+          "tms": "TMS",
+          "couldnt-validate": "We couldn't validate this. If you're sure it contains data click \"add basemap\"",
+        },
+        "mapbox": {
+          "insert": "Insert your Mapbox URL",
+          "enter": "Enter your map ID/URL",
+          "enter-token": "Enter your access token",
+          "error": "Error retrieving your basemap. Please check your access token.",
+          "invalid": "This URL is not valid."
+        },
+        "wms": {
+          "insert": "Insert your WMS/WMTS URL",
+          "invalid": "The URL is either invalid or contains unsupported projections",
+          "see-docs": "see docs",
+          "oh-no": "Oh! No results",
+          "unfortunately": "Unfortunately, we couldn't find a layer that matched your search term",
+          "tables-pluralize": "table |||| tables",
+          "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} found, %{layersAvailableCount} %{layersAvailableCountPluralize} available"
+        },
+        "tilejson": {
+          "insert": "Insert your TileJSON URL",
+          "invalid": "Invalid URL, please make sure it is correct"
+        },
+        "nasa": {
+          "select": "Select a date from which you want a NASA Worldview basemap",
+          "day": "Day",
+          "night": "Night",
+          "cant-select": "You can't select a date in night mode"
+        }
+      },
+      "export-data": {
+        "title": "Export data",
+        "desc": "Select the preferred file format",
+        "no-geometry": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+        "loading": {
+          "geometry": "Checking geometries...",
+          "preparing": "Preparing content..."
+        },
+        "errors": {
+          "title": "There was an error",
+          "geometry-error": "We can't read data geometries",
+          "unknown": "An error occurred"
+        },
+        "cancel": "Cancel",
+        "download": "Download"
+      },
+      "maps-metadata": {
+        "modal-title": "Map metadata",
+        "modal-desc": "Edit the attributtes of your map",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "cancel-btn": "Cancel",
+        "form": {
+          "name": "Map Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "tags": "Tags",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibol%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} map <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Dataset metadata",
+        "modal-desc": "Edit the attributtes of your dataset",
+        "back-btn": "GO BACK",
+        "save-btn": "Save",
+        "cancel-btn": "Cancel",
+        "form": {
+          "name": "Dataset Name",
+          "name-placeholder": "Type your name here",
+          "description": "Description",
+          "description-placeholder": "Type your description here",
+          "attributions": "Attributions",
+          "attributions-placeholder": "Type your attributions here",
+          "tags": "Tags",
+          "source": "Source",
+          "source-placeholder": "Enter the source of the data",
+          "license": "License",
+          "markdown": "Markdown supported"
+        },
+        "validation": {
+          "error": {
+            "name": "Name can't be blank"
+          }
+        },
+        "error": {
+          "title": "We couldn't save your data",
+          "subtitle": "We had an error trying to save your data: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Saving your data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> for %{name} dataset <span class='CDB-Text is-semibold'>was saved</span>."
+      },
+      "publish": {
+        "done-btn": "Done",
+        "update-btn": "Update",
+        "publish-btn": "Publish",
+        "publishing-btn": "Publishing",
+        "updating-btn": "Updating",
+        "menu": {
+          "share": "Share with colleagues",
+          "publish": "publish"
+        },
+        "privacy": {
+          "privacy": "privacy",
+          "cta": {
+            "title": "Want some privacy?",
+            "desc-trial": "Check our plans with 14 days trial",
+            "desc-notrial": "Upgrade your account!"
+          },
+          "public": {
+            "type": "PUBLIC",
+            "title": "Public",
+            "body": "Everyone can view your table and download it"
+          },
+          "link": {
+            "type": "LINK",
+            "title": "Only accessible with link",
+            "body": "Only the people with a shared link can view the data"
+          },
+          "password": {
+            "type": "PASSWORD",
+            "title": "Password",
+            "body": "Set a password and share only with specific people",
+            "placeholder": "Type your password"
+          },
+          "private": {
+            "type": "PRIVATE",
+            "title": "Private",
+            "body": "Nobody can access this dataset"
+          },
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "upgrade": {
+            "title": "Interested in sharing within your organization?",
+            "desc": "%{contact} to try one of our Enterprise plans",
+            "contact": "Contact us",
+            "mail": "sales@carto.com"
+          },
+          "loading": "Saving your data..."
+        },
+        "share": {
+          "published": "Published %{when}",
+          "unpublished": "Never published.",
+          "last-published": "Last updated %{date}",
+          "unpublished-header": "Click on Publish to start sharing your map on the web",
+          "unpublished-subheader": "From the moment you click on publish, you will need to use this window to update your changes on the public version.",
+          "upgradeLabel": "Upgrade",
+          "upgradeLink": "https://carto.com/pricing/#pricing-standard",
+          "upgrade": "%{upgradeLink} to share with your colleagues?",
+          "private": "PRIVATE",
+          "get-link": {
+            "title": "Get the link",
+            "body": "Send to your friends, coworkers, or post it in your social networks.",
+            "link": "",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to get the link"
+            }
+          },
+          "embed": {
+            "title": "Embed it",
+            "body": "Insert your map into your blog, website, or simple application.",
+            "link": "Get a simple URL.",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Your map is %{private} Change privacy to embed map"
+            }
+          },
+          "cartodbjs": {
+            "title": "CARTO.js",
+            "body": "Add your map to your applications using this URL.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "mobile-sdk": {
+            "title": "CARTO Mobile SDK",
+            "body": "Add your map to your native mobile applications using this line of code.",
+            "link": "Read more.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "error": {
+            "title": "We couldn't save your data",
+            "subtitle": "We had an internal error trying to save your data. We recommend you try again."
+          },
+          "loading": "Saving your data...",
+          "organization": {
+            "title": "Default settings for your Organization",
+            "desc": "New users will have this permission"
+          },
+          "role": {
+            "viewer": "Viewer",
+            "builder": "Builder"
+          },
+          "tooltip": {
+            "group": "Access is inherited from group %{name}",
+            "org": "Access is inherited from organization",
+          },
+          "toggle": {
+            "read": "Read",
+            "write": "Write"
+          },
+          "add-people": "Add people"
+        }
+      },
+      "add-asset": {
+        "modal-title": "Select marker image",
+        "modal-desc": "Upload your icons or just use our nice selection",
+        "set-image": "Set image",
+        "your-uploads": "Your uploads",
+        "simple-icons": "Simple Icons",
+        "pin-icons": "Pin Icons"
+      },
+      "add-analysis": {
+        "modal-title": "Add a new analysis",
+        "modal-desc": "Select the analysis you want to add",
+        "loading-title": "Loading options",
+        "add-btn": "Add analysis",
+        "disabled-option-desc": "Your layer's geometries are %{simpleGeometryType} and this analysis needs %{requiredInputGeometries}",
+        "unknown-geometry-type": "unknown",
+        "info-analysis": "Info about analysis",
+        "option-types": {
+          "connect-with-lines": {
+            "title": "Connect with lines",
+            "desc": "Create lines from point datasets using a variety of methods"
+          },
+          "group-points": {
+            "title": "Group points into polygons",
+            "desc": "Aggregate points into polygons such as convex hulls or bounding boxes."
+          },
+          "aggregate-intersection": {
+            "title": "Intersect second layer",
+            "desc": "Intersect with a second layer and calculate aggregations on the fly."
+          },
+          "area-of-influence": {
+            "title": "Create areas of influence",
+            "desc": "Use travel time (e.g. walking or driving) or distance to calculate areas of influence from points."
+          },
+          "georeference": {
+            "title": "Georeference",
+            "desc": "Use street addresses, city names, or other location text to generate point geometries."
+          },
+          "filter-intersection": {
+            "title": "Filter points in polygons",
+            "desc": "Filter points intersecting your polygons layer, and augment those with your polygons columns."
+          },
+          "filter": {
+            "title": "Filter by column value",
+            "desc": "Keep or discard rows according to a custom criteria."
+          },
+          "merge": {
+            "title": "Join columns from 2nd layer",
+            "desc": "Join columns from a second layer by linking a shared value found in both datasets."
+          },
+          "moran-cluster": {
+            "title": "Detect outliers and clusters",
+            "desc": "Use Moran's I to find high (HL) and low (LH) outliers and high (HH) and low (LL) clusters.",
+            "high-low": "High-Low (HL)",
+            "high-high": "High-High (HH)",
+            "low-high": "Low-High (LH)",
+            "low-low": "Low-Low (LL)"
+          },
+          "kmeans": {
+            "title": "Calculate clusters of points",
+            "desc": "Spatially separate a layer of points into a specified number (N) of groups."
+          },
+          "centroid": {
+            "title": "Find centroid of geometries",
+            "desc": "Calculate a direct or weighted centroid based on all rows of a layer or by categories."
+          },
+          "filter-by-node-column": {
+            "title": "Filter by layer",
+            "desc": "Filter your layer depending on a second layer such that widgets will effect both."
+          },
+          "sampling": {
+            "title": "Subsample percent of rows",
+            "desc": "Subsample the rows in a dataset based on a specified percent."
+          },
+          "spatial-markov-trend": {
+            "title": "Predict trends and volatility",
+            "desc": "Predict probability of upward and downward trends using spatial Markov chains."
+          },
+          "data-observatory-measure": {
+            "title": "Enrich from Data Observatory",
+            "desc": "Add a new column with contextual demographic and economic measures."
+          }
+        }
+      },
+      "add-widgets": {
+        "modal-title": "Add new widgets",
+        "modal-desc": "Select the widgets you want to add",
+        "continue-btn": "Continue",
+        "loading-title": "Loading columns",
+        "tab-pane": {
+          "histogram-label": "Histogram",
+          "category-label": "Category",
+          "formula-label": "Formula",
+          "time-series-label": "Time-series"
+        },
+        "percentage-in-top-cats": "% in top 10 cat",
+        "time-series-no-option-title": "None",
+        "time-series-no-option-desc": "This option won't show your time-series widget"
+      },
+      "add-layer": {
+        "modal-title": "Add a new layer",
+        "modal-desc": "Select an existing dataset or connect a new one",
+        "navigation": {
+          "search": "Search",
+          "search-placeholder": "by name, description, or :tag",
+          "connect-dataset": "Connect dataset",
+          "shared-with-you": "Shared with you",
+          "data-library": "Data library",
+          "create-empty-map": "Create empty map",
+          "create-empty-dataset": "Create empty dataset",
+          "create-empty-addLayer": "Add an empty layer",
+          "dataset-pluralize": "Dataset |||| Datasets"
+        },
+        "create-loading-title": "Creating an empty dataset…",
+        "adding-new-layer": "Adding new layer…",
+        "add-layer-error": "Could not add layer",
+        "imports": {
+          "ask-for-demo": "ask for demo",
+          "connector": "connector",
+          "demo-email-title": "I am interested in the %{name} connector",
+          "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
+          "tab-options-error": {
+            "no-key": "%{name} key is not specified and the panel can't be enabled",
+            "not-allowed": "%{name} data source is not available for your plan. Please upgrade.",
+            "limits-reached": "You've reached the limits for your account. Please upgrade.",
+            "no-credits": "You've reached the available %{name} credits for your account this month."
+          },
+          "member-pluralize": "member |||| members",
+          "item-pluralize": "item |||| items",
+          "form-import": {
+            "browse": "Browse",
+            "drag-and-drop": "Drag & drop your file",
+            "error-desc": "Error. Your URL doesn’t look correct.",
+            "format": "Format",
+            "or": "or",
+            "title": "Enter a URL",
+            "desc": "Paste a URL and start the import",
+            "submit": "submit"
+          },
+          "header-import": {
+            "import-url": "Import your data from a %{brand} URL",
+            "file-selected": "File selected",
+            "paste-url": "Paste a URL %{fileEnabled} ",
+            "select-a-file": "or select a file like CSV, XLS, ZIP, KML, GPX,",
+            "see-all-formats": "see all formats",
+            "sync-enabled": "Keep it synchronized with the source",
+            "sync-disabled": "Sync options are not available",
+            "type-selected": "%{brand} selected",
+            "type-import": "%{brand} import",
+            "upload-file-url": "Upload a file or a URL |||| Upload a URL"
+          },
+          "service-import": {
+            "and": "and",
+            "account-connected": "Account connected",
+            "connect-with": "Connect with %{title}",
+            "choose": "Choose",
+            "connect": "Connect",
+            "found-in": "%{size} %{pluralize} found in %{title}",
+            "item-selected": "Item selected",
+            "many-more-formats": "many more formats",
+            "no-results-title": "Oouch! There are no results",
+            "no-results-desc": "We haven't found any valid file from your account",
+            "state-idle-login": "Login to your account and select any item.",
+            "state-error": "We are sorry that you can’t connect to your %{title} account. Be sure you have any pop-up blockers deactivated for this website.",
+            "state-token": "Checking Token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{title} files will be displayed in a moment.",
+            "state-selected-sync": "You can choose when to sync the file.",
+            "state-selected-instagram": "A map containing all your georeferenced photos will be created",
+            "state-selected-no-sync": "Sync options are not available.",
+            "supported": "supported",
+            "try-again": "Try again"
+          },
+          "selected-state": {
+            "sync-my-data": "Sync my data",
+            "never": "Never",
+            "every-hour": "Every hour",
+            "every-day": "Every day",
+            "every-week": "Every week",
+            "every-month": "Every month",
+            "free-trial": "%{days} day free trial",
+            "more-features": "more features",
+            "upgrade-desc": "Upgrade your account to get sync options and %{features}",
+            "upgrade": "upgrade"
+          },
+          "twitter": {
+            "category": "Category",
+            "credits-consumed": "Twitter credits for this period consumed - %{extraTweets} will be charged",
+            "credits-left": "%{per}% of your %{remainingFormatted} Twitter credits left",
+            "credits-no-limit": "No limits - %{extraTweets} will be charged",
+            "extra-tweets": "extra tweets",
+            "fallback-title": "Enable the %{brand} connector",
+            "fallback-desc": "The %{brand} connector allows you to map %{brand} data activity related to your brand, event, or any term you may be interested in.",
+            "from-to": "From / to",
+            "terms-desc": "Enter up to four search terms using the category fields.",
+            "terms-placeholder": "Insert your terms separated by commas",
+            "title": "Twitter trends",
+            "twitter-gmt": "Time is in GMT+0",
+            "use": "Use",
+            "your-gmt": "You are in GMT"
+          },
+          "arcgis": {
+            "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CARTO and mantain it in sync with the source.",
+            "input-placeholder": "Paste your %{brand} table URL here",
+            "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
+            "import-data": "Import your data from a %{brand} instance",
+            "sync-options": "Sync options only available for a layer"
+          },
+          "instagram": {
+            "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CARTO."
+          },
+          "box": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your %{brand} files in CARTO or mantain your CARTO maps in sync with your Box data."
+          },
+          "mailchimp": {
+            "campaign-selected": "%{brand} campaign selected",
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
+            "map-campaign": "Map your %{brand} campaigns",
+            "state-idle": "Connect your %{brand} account to select any of your campaigns.",
+            "state-error": "We are sorry, there has been an error while connecting to your %{brand} account. Just in case it helps, be sure you have the pop-up blocker deactivated for this website.",
+            "state-token": "Checking %{brand} token.",
+            "state-oauth": "Requesting oAuth.",
+            "state-retrieving": "A list of your %{brand} campaigns will be displayed in a moment.",
+            "state-selected": "Campaign selected."
+          },
+          "salesforce": {
+            "fallback-desc": "Enable the %{brand} connector in your account to map your user lists from %{brand} in CARTO or mantain your CARTO maps in sync with your %{brand} data.",
+            "input-placeholder": "Paste your %{brand} URL here"
+          }
+        },
+        "datasets": {
+          "item": {
+            "sync-failed": "Sync failed, the last attempt was",
+            "syncing": "Syncing",
+            "synced": "Synced",
+            "read": "read",
+            "from": "from",
+            "by": "by",
+            "no-description": "No description",
+            "rows-pluralize": "row |||| rows",
+            "tags-more": "and %{tagsCount} more",
+            "no-tags": "No tags"
+          },
+          "loading": "Loading",
+          "searching": "Searching",
+          "error": {
+            "title": "Ouch! There has been an error loading your datasets",
+            "desc": "If the problem persists contact us at"
+          },
+          "no-datasets": {
+            "title": "You have not connected any datasets yet",
+            "desc": "You can %{connectDataset} or %{search} in all our data library",
+            "connect-datasets": "connect datasets",
+            "search": "search"
+          },
+          "no-results": {
+            "desc": "There are no results in this page",
+            "found": "found",
+            "there-are-no": "There are no",
+            "no-fun": "No %{type}, no fun"
+          }
+        },
+        "footer": {
+          "guessing-desc": "Let CARTO automatically guess data types and content on import.",
+          "twitter-desc": "To get access to historical data (older than 30 days) you need to",
+          "contact-team": "contact our team",
+          "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
+          "privacy-change": "Your new dataset will be %{privacy}",
+          "privacy-click": "Click to change it to %{nextPrivacy}",
+          "privacy-change-banned": "You cannot change the privacy of your new datasets.",
+          "add-layer": "Add layer"
+        }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "This geometry is too big to edit from the web",
+          "desc": "Editing this geometry could freeze or crash your browser, and you could lose your work. We encourage you to edit this feature through the API.",
+          "cancel": "Cancel",
+          "continue": "Ok, continue"
+        },
+        "delete": {
+          "title": "You are about to delete a feature",
+          "desc": "Are you sure you want to delete it?",
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it"
+        }
+      }
+    },
+    "error": {
+      "default-title": "Oops, there was a problem",
+      "default-desc": "Reload the page again. If the problem persists contact us at <a href='mailto:support@carto.com'>support@carto.com</a>"
+    },
+    "backbone-forms": {
+      "select": {
+        "placeholder": "Select a %{keyAttr}",
+        "loading": "loading…",
+        "empty": "No values",
+        "selected": "%{count} selected"
+      },
+      "operators": {
+        "count-message": "If you select 'COUNT' all columns are selected"
+      },
+      "interval-error": "Value must be between %{minValue} and %{maxValue}",
+      "copy-button": "COPY"
+    },
+    "codemirror": {
+      "no-errors": "No errors",
+      "docs": "DOCS",
+      "syntax-error": "Syntax error",
+      "line": "Line"
+    },
+    "undo-redo": {
+      "clear": "CLEAR",
+      "apply": "APPLY"
+    },
+    "table": {
+      "columns": {
+        "change-type": {
+          "confirm": "ok, change it",
+          "cancel": "Cancel",
+          "desc": "Maps using this column will be affected and unconvertible data will be lost. Are you sure?",
+          "error": "There was an error changing %{columnName} column: %{error}",
+          "loading": "Changing %{columnName} column...",
+          "title": "%{columnName} column will change to %{newType}",
+          "success": "Column %{columnName} changed to %{newType}"
+        },
+        "create": {
+          "loading": "Adding new column...",
+          "error": "Error adding new column: %{error}",
+          "success": "%{columnName} column added"
+        },
+        "destroy": {
+          "cancel": "Cancel",
+          "confirm": "Ok, delete it",
+          "desc": "Maps using this column will be affected, are you sure you want to delete it?",
+          "error": "Error deleting %{columnName} column: %{error}",
+          "loading": "Removing your column %{columnName}...",
+          "success": "%{columnName} column deleted",
+          "title": "You are about to delete %{columnName} column "
+        },
+        "rename": {
+          "cancel": "Cancel",
+          "confirm": "ok, rename it",
+          "desc": "Maps using this column will be affected, are you sure you want to rename it?",
+          "error": "Error renaming column %{columnName} to %{newName}: %{error}",
+          "loading": "Renaming your column %{columnName} to %{newName}...",
+          "success": "Column %{columnName} renamed to %{newName}",
+          "title": "You are about to rename column %{columnName} to %{newName}"
+        },
+        "options": {
+          "order": "Order",
+          "rename": "Rename column",
+          "change": "Change data type",
+          "create": "Add new column",
+          "delete": "Delete this column..."
+        },
+        "types": {
+          "boolean": "Boolean",
+          "date": "Date",
+          "number": "Number",
+          "string": "String"
+        }
+      },
+      "rows": {
+        "loading": {
+          "title": "Loading rows..."
+        },
+        "error": {
+          "title": "There was an error...",
+          "desc": "It was not possible to obtain any results, check the query applied"
+        },
+        "result": {
+          "no-page-title": "Ouch! Sorry",
+          "no-page-desc": "This page %{page} doesn't contain any results...",
+          "no-results-title": "There is no data",
+          "no-results-desc": "",
+          "no-results-button": ""
+        },
+        "options": {
+          "copy": "Copy cell value",
+          "create": "Add new row",
+          "edit": "Edit this cell",
+          "delete": "Delete this row..."
+        },
+        "create": {
+          "loading": "Adding new row...",
+          "error": "Error adding new row: %{error}",
+          "success": "New row added"
+        },
+        "edit": {
+          "loading": "Editing %{attribute} with cartodb_id %{cartodbId}...",
+          "error": "Error editing %{attribute} with cartodb_id %{cartodbId}: %{error}",
+          "success": "Edited %{attribute} with cartodb_id %{cartodbId}"
+        },
+        "destroy": {
+          "cancel": "Cancel",
+          "confirm": "ok, delete",
+          "desc": "Are you sure you want to delete it?",
+          "error": "Error deleting row with cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Removing your row with cartodb_id %{cartodb_id}...",
+          "success": "Row with cartodb_id %{cartodb_id} deleted",
+          "title": "You are about to delete row with cartodb_id %{cartodb_id}"
+        },
+        "paginator": {
+          "error": "There was an error with pagination: %{error}",
+          "to": "to"
+        }
+      }
+    }
+  },
+  "data": {
+    "analysis-definition-node-model": {
+      "validation": {
+        "missing-required": "Required",
+        "invalid-source": "Invalid source",
+        "invalid-value": "Invalid value",
+        "invalid-enum": "Invalid value, must be any of %{expectedValues}"
+      }
+    }
+  },
+  "dataset": {
+    "sql": "SQL",
+    "data": "Metadata",
+    "updated": "Updated %{ago}",
+    "read": "Read",
+    "options": {
+      "add-row": "Add row",
+      "add-column": "Add column",
+      "export": "Export"
+    },
+    "preview-map": {
+      "preview": "preview",
+      "back": "back"
+    },
+    "create-map": {
+      "title": "Create map",
+      "loading": "Creating a map from %{tableName}",
+      "error": "There was an error creating the map"
+    },
+    "delete": {
+      "option": "Delete dataset...",
+      "cancel": "Cancel",
+      "confirm": "Ok, delete it",
+      "desc": "The deleted dataset cannot be recovered, be sure before proceeding. We recommend you to export your dataset before deleting it.",
+      "error": "Error deleting %{tableName}",
+      "loading": "Deleting your dataset %{tableName}...",
+      "title": "You are about to delete the %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} map affected |||| %{smart_count} maps affected",
+      "affected-vis-count-extended": "%{affectedVisCount} maps affected, some of them are",
+      "affected-entities-count": "%{smart_count} user will lose access |||| %{smart_count} users will lose access",
+      "affected-entities-count-extended": "%{affectedEntitiesCount} users will lose access, some of them are",
+      "whole-organization-affected": "All users from your organization will be affected"
+    },
+    "metadata": {
+      "option": "Edit metadata",
+      "error": "There was an error edititng metadata of your dataset %{name}",
+      "loading": "Editing metadata of your dataset %{name}..."
+    },
+    "duplicate": {
+      "option": "Duplicate dataset",
+      "query": "applied query",
+      "customOption": "Create Dataset from query",
+      "error": "There was an error duplicating %{name}",
+      "loading": "Duplicating your dataset %{name}..."
+    },
+    "lock": {
+      "option": "Lock dataset",
+      "error": "There was an error locking %{tableName}",
+      "loading": "Locking your dataset %{tableName}..."
+    },
+    "rename": {
+      "option": "Rename dataset",
+      "cancel": "Cancel",
+      "confirm": "ok, rename it",
+      "desc": "If you are accessing this dataset via API, don't forget to use the new name in your API calls afterwards.",
+      "error": "Error renaming %{tableName}: %{error}",
+      "loading": "Renaming your dataset %{tableName}...",
+      "success": "Dataset %{tableName} renamed",
+      "title": "Renaming %{tableName} will affect your API calls, maps, analyses, ..."
+    },
+    "sync": {
+      "in-a-moment": "in a few moments",
+      "synced": "Synced %{ranAt}",
+      "syncing": "Syncing",
+      "loading": "Syncing dataset %{tableName}",
+      "sync-failed": "Sync failed",
+      "next": "Next will be %{runAt}",
+      "error-code": "Error code %{errorCode}",
+      "sync-now": "Sync now",
+      "view-options": "View options",
+      "disabled": "You will be able to sync manually %{gap} minutes after your last synchronization",
+      "title": "Sync dataset options",
+      "desc": "Your dataset is in sync with a %{service} file: <br/>%{url}",
+      "label": "Sync my data",
+      "error": "There was an error setting the interval",
+      "confirm": "Save",
+      "cancel": "Cancel"
+    },
+    "unlock": {
+      "cancel": "back to dashboard",
+      "confirm": "ok, unlock it",
+      "desc": "That means you need to unlock it before doing anything. Are you sure?",
+      "error": "Error unlocking %{tableName}: %{error}",
+      "loading": "Unlocking your dataset %{tableName}...",
+      "success": "Dataset %{tableName} unlocked",
+      "title": "Your dataset %{tableName} is locked."
+    }
+  },
+  "editor": {
+    "map": "map",
+    "map_name": "%{name} map",
+    "published": "Published %{when}",
+    "unpublished": "Map not published yet",
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} maps",
+    "button_add": "Add",
+    "button_share": "SHARE",
+    "unpublished-changes": "Unpublished changes",
+    "error-query": {
+      "body": "Errors found in your SQL query. %{action} before continuing.",
+      "label": "Fix them"
+    },
+    "settings": {
+      "menu-tab-pane-labels": {
+        "preview": "Preview",
+        "snapshots": "Snapshots"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mode"
+        },
+        "options": {
+          "title": "Map Options",
+          "subtitle": "Components that are shown in the map",
+          "description": {
+            "title": "Components",
+            "subtitle": "Change map elements"
+          },
+          "elements": {
+            "search": "Search box",
+            "zoom": "Zoom controls",
+            "fullscreen": "Fullscreen",
+            "scrollwheel": "Scroll wheel zoom",
+            "layer_selector": "Layer selector",
+            "logo": "CARTO Logo",
+            "widgets": "Widgets column",
+            "legends": "Legends",
+            "dashboard_menu": "Show toolbar"
+          }
+        }
+      }
+    },
+    "maps": {
+      "options": {
+        "rename": "Rename",
+        "duplicate": "Duplicate",
+        "export-map": "Export map",
+        "edit-metadata": "Edit metadata…",
+        "remove": "Delete map…"
+      },
+      "duplicate": {
+        "error": "There was an error duplicating %{name}",
+        "loading": "Duplicating your map %{name}..."
+      },
+      "delete": {
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
+        "desc": "The deleted map cannot be recovered, be sure before proceeding.",
+        "title": "You are about to delete map %{name}",
+        "error": "Error deleting map %{name}: %{error}",
+        "loading": "Removing the map %{name}...",
+        "success": "Map %{name} deleted"
+      },
+      "export": {
+        "confirmation": {
+          "confirm": "Ok, export",
+          "cancel": "Cancel",
+          "desc": "This map, and the connected data, will be exported as a .carto file",
+          "title": "Export \"%{name}\""
+        },
+        "download": {
+          "confirm": "Download",
+          "tip": "Tip: Allow pop-ups from CARTO in your web browser.",
+          "desc": "Click Download to begin the .carto file download.",
+          "title": "Ready to Download"
+        },
+        "error": {
+          "title": "An error occured while exporting your map",
+          "desc": "Please try again. If the problem persists, please contact support"
+        }
+      },
+      "rename": {
+        "loading": "Renaming map...",
+        "success": "Map renamed to %{name}",
+        "error": "Error renaming map %{name}: %{error}"
+      }
+    },
+    "tab-pane": {
+      "layers": {
+        "title-label": "Layers"
+      },
+      "elements": {
+        "title-label": "Elements"
+      },
+      "widgets": {
+        "title-label": "Widgets"
+      }
+    },
+    "elements": {
+      "message": "Unfortunately, map overlays are not available yet, but they will be very soon. Stay tuned!"
+    },
+    "layers": {
+      "options": {
+        "rename": "Rename",
+        "delete": "Delete layer…",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "export": "Export data",
+        "hide": "Hide layer",
+        "show": "Show layer",
+        "center-map": "Center map on layer"
+      },
+      "drag-n-drop-analysis": {
+        "upgrade-max-layers-err": "%{a_start}Upgrade your account%{a_end} to add more than %{userMaxLayers} layers to your maps."
+      },
+      "rename": {
+        "loading": "Renaming layer…",
+        "success": "Layer renamed to %{name}",
+        "error": "<span class='u-errorTextColor'>Error renaming layer</span> %{name}: %{error}"
+      },
+      "moveTorqueLayer": {
+        "loading": "Moving torque layer to first position...",
+        "success": "Layer moved",
+        "error": "Error moving the layer..."
+      },
+      "delete": {
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
+        "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerVisName}</span> will be affected, are you sure you want to delete it?",
+        "title": "You are about to delete the layer %{layerName}",
+        "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
+        "loading": "Removing layer…",
+        "success": "Layer deleted correctly.",
+        "widgets": "one widget |||| %{smart_count} widgets",
+        "analyses": "one analysis |||| %{smart_count} analyses",
+        "layers": "one layer |||| %{smart_count} layers",
+        "affected-items": "Deleting this layer will affect to",
+        "and": "and",
+        "link-to-export": "Before deleting the layer, you can <a href='#' data-event='exportMapAction'>export as .CARTO file</a>"
+      },
+      "layer": {
+        "animated": "Animated",
+        "heatmap": "Pixel",
+        "analysis": "Analysis",
+        "add-analysis": "Add analysis",
+        "analyses-count": "(%{smart_count}) Analysis |||| (%{smart_count}) Analyses",
+        "add-layer": "Add layer",
+        "delete": "Delete",
+        "cancel-delete-analysis": "Cancel"
+      },
+      "basemap": {
+        "remove-baselayer": "Remove baselayer",
+        "custom-basemap": "Custom basemap",
+        "title-label": "Basemap",
+        "by": "by",
+        "category": {
+          "title-label": "Source",
+          "select-category": "Select source"
+        },
+        "style": {
+          "title-label": "Style",
+          "select-style": "Select style",
+          "color": "Color"
+        },
+        "saving": {
+          "loading": "Saving new basemap...",
+          "error": "Error saving new basemap.",
+          "success": "Basemap saved successfully."
+        }
+      },
+      "labels": {
+        "title-label": "Labels"
+      },
+      "color": {
+        "title-label": "Color"
+      },
+      "image": {
+        "title-label": "Image"
+      },
+      "menu-tab-pane-labels": {
+        "data": "Data",
+        "analyses": "Analysis",
+        "style": "Style",
+        "infowindow": "Pop-up",
+        "legends": "Legend"
+      },
+      "infowindow-menu-tab-pane-labels": {
+        "click": "Click",
+        "hover": "Hover"
+      },
+      "analysis-form": {
+        "merge-type": {
+          "left": "Returns all rows from #1, with the matching rows in #2 or NULL when there is no match.",
+          "inner": "Returns the result of #1 intersecting #2 (i.e. the inner part of a Venn diagram intersection)"
+        },
+        "admin-region": "Admin. Region",
+        "admin-region-help": "In which column are your region names stored?",
+        "aggregate": "Aggregate",
+        "aggregate-by": "Aggregate by",
+        "aggregate-by-help": "Will calculate aggregate values for each centroid",
+        "aggregate-column": "Aggregate column",
+        "all-to-all": "All to all",
+        "allow-holes": "Allow holes",
+        "apply-btn": "Apply",
+        "asc": "ASC",
+        "bicycle": "Bicycle",
+        "boundaries": "Boundaries",
+        "bounding-box": "Bounding Box",
+        "bounding-circle": "Bounding Circle",
+        "by": "By",
+        "by-bike": "bike",
+        "by-car": "car",
+        "by-walk": "walk",
+        "car": "Car",
+        "categorize-by": "Categorize by",
+        "categorize-by-help": "If selected a centroid will be found for each category",
+        "category-column": "Category column",
+        "city": "City",
+        "city-help": "In which column are your city names stored?",
+        "clusters-num": "# of clusters",
+        "column": "Column",
+        "columns": "Columns",
+        "concave-hull": "Concave Hull",
+        "confirm-analysis": "Confirm",
+        "convex-hull": "Convex Hull",
+        "country": "Country",
+        "country-help": "In which column are your country names stored?",
+        "create-btn": "Apply",
+        "data-observatory-measurement-area": "Country",
+        "data-observatory-measurement-column": "New col. name",
+        "data-observatory-measurement-column-help": "Adds a new column to your layer to store result",
+        "data-observatory-measurement-desc": "enrich your data",
+        "data-observatory-measurement-measurement": "Measurement",
+        "data-observatory-measurement-refine": "Choose a measure",
+        "data-observatory-measurement-segments": "Segments",
+        "define-columns": "Define column to find similarities with",
+        "define-reference-and-target": "Define reference and target layers",
+        "define-two-layers": "Define two layers",
+        "define-two-layers": "Define two layers",
+        "denominator": "Denominator",
+        "denominator-help": "A column to normalize the target column",
+        "desc": "DESC",
+        "direction": "Direction",
+        "disabled-by-config": "This analysis type is disabled",
+        "dissolved": "Dissolved",
+        "dissolved-help": "Combine polygons tracts which have equal ranges",
+        "distance": "Distance",
+        "enter-latitude": "Enter latitude",
+        "enter-longitude": "Enter longitude",
+        "filter": "Filter",
+        "filter-aggregate": "Aggregate your results",
+        "filter-column": "2nd. layer col.",
+        "filter-column": "Filter column",
+        "foreign-keys": "Foreign Keys",
+        "foreign-keys": "Foreign Keys",
+        "geometry-from": "Geometry from",
+        "georeference-admin-region": "Admin. Regions",
+        "georeference-city": "City names",
+        "georeference-country": "Country names",
+        "georeference-ip-address": "IP Addresses",
+        "georeference-long-lat": "Lon/Lat Columns",
+        "georeference-postal-code": "Postal Codes",
+        "georeference-street-address": "Street Addresses",
+        "group-by": "Group by",
+        "hide": "Hide",
+        "inner": "Inner",
+        "input": "Input",
+        "input-layer": "Define your input layer",
+        "input-num": "Input #%{num}",
+        "intact": "Intact",
+        "intact-help": "Keep all polygon tracts as individual polygons",
+        "ip-address": "Col. IP AD.",
+        "ip-address-help": "In which column are your IP addresses stored?",
+        "join-type": "Join Type",
+        "keep-columns": "Select the columns you want to keep",
+        "key-columns": "Key columns",
+        "key-columns-desc": "Choose similar columns to relate them",
+        "kilometers": "km",
+        "latitude": "Latitude",
+        "left": "Left",
+        "line-sequential": "Sequential",
+        "line-source-to-target": "To Source",
+        "line-to-column": "To Column",
+        "line-to-single-point": "To Single Point",
+        "link-layer": "Link to col.",
+        "link-layer-desc": "Specify a second layer to filter by",
+        "linked-layer": "Filter by layer",
+        "loading": "loading…",
+        "longitude": "Longitude",
+        "max": "Max",
+        "measure-by": "Measure by",
+        "meters": "m",
+        "method": "Method",
+        "miles": "mi",
+        "min": "Min",
+        "mode": "Mode",
+        "neighbors": "Neighbors",
+        "neighbors-help": "Define the local neighborhood as this many nearest-neighbors",
+        "no": "No",
+        "no-coincidence": "When no coincidence no row will be added",
+        "numerator": "Target column",
+        "numerator-help": "Measure spatial autocorrelation of this column",
+        "operation": "Operation",
+        "order": "Order",
+        "order-by": "Order by",
+        "order-results": "Order your results",
+        "parameters": "Parameters",
+        "parameters-description": "Tune your analysis",
+        "permutations": "Permutations",
+        "placeholder-text": "You have not added any analysis yet. Add new analysis to discover new things.",
+        "points_source": "Point source",
+        "polygons_source": "Polygon source",
+        "postal-code": "Postal Code",
+        "postal-code-help": "In which column are your postal codes stored?",
+        "quota": {
+          "title": "confirm your analysis",
+          "loading": "Obtaining your quotas...",
+          "credits-left-body": "This might incur into an extra cost. Extra credits will be charged at $%{blockPrice}/%{blockSize}.",
+          "credits-left-message": "%{smart_count} credit left |||| %{smart_count} credits left",
+          "no-quota-assigned-body": "To get access to the %{analysis} function, %{contact}.",
+          "no-quota-assigned-contact": "contact our team",
+          "no-credits-body": "You have consumed all your credits during this billing cycle. %{contact} to get some more.",
+          "no-credits-contact": "Contact us",
+          "no-credits-mail": "sales@carto.com",
+          "no-credits-message": "No credits available",
+          "cancel": "Cancel",
+          "confirm": "confirm",
+          "analysis-type": {
+            "routing": "Routing",
+            "trade-area": "Trade area",
+            "georeference-street-address": "Georeference street address",
+            "data-observatory-measure": "Data Observatory"
+          }
+        },
+        "public_transport": "Public transport",
+        "radius": "Distance",
+        "reference-layer-pluralize": "Define your reference layer |||| Define your reference layers",
+        "result": "Result",
+        "right": "Right",
+        "sampling": "Sampling",
+        "sampling-desc": "Select a sample of the data",
+        "sampling-rate": "% of data ",
+        "second-geom-required": "This analysis requires a second geometry column",
+        "select-column": "Select a column",
+        "setup-analysis": "Setup analysis",
+        "show": "Show",
+        "significance": "Significance",
+        "significance-help": "Filter outliers and clusters to this significance. Smaller numbers are more significant.",
+        "source": "Source",
+        "source-col": "Source col.",
+        "source-column": "Source column",
+        "spatial-markov-trend-desc": "select a column for each time period",
+        "spatial-markov-trend-time-columns": "Input columns",
+        "spatial-markov-trend-time-columns-help": "Each column should contain values for a time period",
+        "state": "State",
+        "state-help": "In which column are your state names stored?",
+        "street-address": "COL. Street AD.",
+        "street-address-help": "In which column are your street addresses stored?",
+        "target": "Target",
+        "target-layer": "Target layer",
+        "intersection-layer": "Intersect layer",
+        "filtering-layer": "Filtering layer",
+        "base-layer": "Base layer",
+        "target-col": "Target col.",
+        "target-column": "Target column",
+        "target-percent": "Target percent",
+        "target-percent-help": "Convex hull lookalike",
+        "time": "Time",
+        "time-seconds": "Time (Seconds)",
+        "to-closest": "To closest",
+        "top-range": "Top range",
+        "tracts": "Tracts",
+        "tracts-help": "Number of AOIs evenly spaced between 0 and RADIUS",
+        "tune-analysis": "Tune your analysis",
+        "tune-centroid": "Tune your centroid",
+        "tune-clusters": "Tune your clusters",
+        "units": "Units",
+        "type": "Type",
+        "value": "Value",
+        "value-aggregation": "Value aggregation",
+        "value-aggregation-desc": "Aggregate the desired value in your polygon(s)",
+        "value-aggregation-centroids": "Aggregate the desired value in your centroid(s)",
+        "valid-type": "This kind of data is not valid for this type",
+        "walk": "Walk",
+        "weight": "Weight",
+        "weight-column": "Weight column",
+        "weight-type": "Weight type",
+        "weighted-by": "Weighted by",
+        "weighted-by-help": "Weights contribution by a value for each point",
+        "workflow": "Your workflow",
+        "write-max-value": "Write max value",
+        "write-min-value": "Write min value",
+        "yes": "Yes"
+      },
+      "infowindow": {
+        "select-fields": "Select fields",
+        "no-fields": "You haven’t selected any fields to be shown in the popup.",
+        "placeholder-interactivity-text": "Popups are disabled because interactivity is not available for this layer.",
+        "placeholder-columns-text": "Popups are disabled because there are no columns available for this layer.",
+        "placeholder-geometry": "There's no geometry in your data to add a popup.",
+        "style": {
+          "title-label": "Style",
+          "select-style": "Select style",
+          "window-size": "Window size",
+          "header-color": "Header color",
+          "none": "None",
+          "custom": "Custom",
+          "infowindow_light": "Light",
+          "infowindow_dark": "Dark",
+          "infowindow_color": "Color",
+          "infowindow_header_with_image": "Image"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
+      },
+      "tooltip": {
+        "style": {
+          "none": "None",
+          "custom": "Custom",
+          "tooltip_light": "Light",
+          "tooltip_dark": "Dark"
+        },
+        "items": {
+          "title-label": "Show items",
+          "description": "Add items"
+        }
+      },
+      "filter-options": {
+        "top": "Top",
+        "bottom": "Bottom",
+        "between": "Between",
+        "is-equal-to": "Is equal to",
+        "is-greater-than": "Is greater than",
+        "is-less-than": "Is less than"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Calculating coordinates...",
+          "success": "Map centered",
+          "error": "Error centering map"
+        }
+      }
+    },
+    "data": {
+      "no-geometry-data": "Your dataset doesn't contain any geometry data.",
+      "stats": {
+        "add-widget": "Add as a widget",
+        "edit": "EDIT",
+        "top-cat": "% in top 10 cat.",
+        "trues": "% true",
+        "null": "% null",
+        "number-of": "%{geometry} count",
+        "geometry-fallback": "features"
+      },
+      "data-toggle": {
+        "values": "VALUES",
+        "cartocss": "SQL"
+      },
+      "code-mirror": {
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
+      },
+      "notifier": {
+        "sql-alter-loading": "Modifying table…",
+        "sql-alter-error": "Error in SQL query.",
+        "sql-alter-success": "Modification applied.",
+        "sql-applying": "Applying query…",
+        "sql-error": "Error in SQL query.",
+        "sql-success": "SQL query applied."
+      },
+      "messages": {
+        "sql-readonly": {
+          "title": "SQL ONLY READ",
+          "body": "You just applied an analysis to this layer. The SQL is now read only.",
+          "accept": "CLOSE"
+        },
+        "empty-data": {
+          "title": "NO DATA AVAILABLE",
+          "body": "There is no data available to be displayed."
+        }
+      }
+    },
+    "infowindow": {
+      "apply": "APPLY",
+      "html-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can't be empty."
+        }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "CUSTOM HTML APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "CONTINUE"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        }
+      }
+    },
+    "legend": {
+      "no-geometry-data": "There's no geometry in your data to add a legend.",
+      "data-toggle": {
+        "values": "VALUES",
+        "html": "HTML"
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your html.",
+        "errors": {
+          "empty": "Template can't be empty."
+        },
+        "pre-html": "<!-- insert your custom html code above this line -->",
+        "post-html": "<!-- insert your custom html code below this line -->"
+      },
+      "menu-tab-pane-labels": {
+        "color": "color",
+        "size": "size"
+      },
+      "messages": {
+        "custom-legend": {
+          "title": "CUSTOM LEGEND APPLIED",
+          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
+          "accept": "Delete custom html"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden. Changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        },
+        "legends-disabled": {
+          "title": "LEGENDS DISABLED",
+          "body": "The legends setting is disabled. Changes made will not be shown until you enable legends.",
+          "show": "ENABLE"
+        }
+      },
+      "types": {
+        "none": "none",
+        "category": "category",
+        "gradient": "gradient",
+        "bubble": "bubble",
+        "custom": "custom"
+      },
+      "legend-form": {
+        "type": {
+          "title": "Select Style"
+        },
+        "properties": {
+          "title": "Creating your legend",
+          "subtitle": "Add items"
+        },
+        "add": "Add item",
+        "title": "Title",
+        "fill": "Fill",
+        "by-size": "By Size",
+        "by-color": "By Color",
+        "untitled": "Untitled",
+        "prefix": "Prefix",
+        "suffix": "Suffix",
+        "left-label": "Left Label",
+        "right-label": "Right Label",
+        "top-label": "Top Label",
+        "bottom-label": "Bottom Label",
+        "custom-label-placeholder": "Override dynamic value"
+      },
+      "pixel-title": "Amount"
+    },
+    "style": {
+      "types": {
+        "none": "-",
+        "simple": "none",
+        "hexabins": "hexbins",
+        "squares": "squares",
+        "regions": "Adm. Regions",
+        "heatmap": "pixel",
+        "animation": "animated"
+      },
+      "style-form": {
+        "type": {
+          "title-label": "Aggregation"
+        },
+        "aggregation": {
+          "title-label": "Aggregation Options",
+          "desc": "Configure how the aggregation works"
+        },
+        "properties": {
+          "title-label-point": "Style",
+          "title-label-line": "Lines style",
+          "title-label-polygon": "Polygons style",
+          "placeholder-text": "There's no geometry in your data that could be styled.",
+          "desc": "Change the visualization"
+        },
+        "unanimatable": {
+          "desc": "Not any numeric or date column found in your data.",
+          "body": "You can change your column's type in the %{link}.",
+          "label": "table view"
+        }
+      },
+      "code-mirror": {
+        "save": "CMD + S to apply your styles."
+      },
+      "style-toggle": {
+        "values": "VALUES",
+        "cartocss": "CARTOCSS"
+      },
+      "messages": {
+        "fetched": "Schema fetched, select a style",
+        "fetching": "Schema is being fetched, when it is done, different styles will be avaiable",
+        "unavailable": "There was a problem getting schema, try to reload",
+        "none": "Your styles were reset, choose new styles for your layer, or get back to your previous style.",
+        "cartocss-applied": {
+          "title": "CARTOCSS APPLIED",
+          "body": "You just applied styles with CartoCSS editor. You can continue or clear all styles.",
+          "accept": "CONTINUE",
+          "cancel": "CLEAR"
+        },
+        "layer-hidden": {
+          "title": "LAYER HIDDEN",
+          "body": "This layer is hidden, changes won't be shown until you make it visible.",
+          "show": "SHOW"
+        },
+        "torque-exists": {
+          "title": "TORQUE LAYER",
+          "body": "There is already a torque layer in the layers collection. If you continue, this layer will get the default style.",
+          "accept": "CONTINUE",
+          "cancel": "CANCEL"
+        },
+      },
+      "components": {
+        "fill": "Fill",
+        "stroke": {
+          "label": "Stroke",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "blending": {
+          "label": "Blending",
+          "options": {
+            "none": "none",
+            "darken": "darken",
+            "lighten": "lighten",
+            "lighter": "lighter",
+            "color-dodge": "color-dodge",
+            "color-burn": "color-burn",
+            "multiply": "multiply",
+            "screen": "screen",
+            "overlay": "overlay",
+            "src-over": "src-over",
+            "source-over": "source-over",
+            "xor": "xor"
+          }
+        },
+        "type": {
+          "label": "Type",
+          "options": {
+            "heatmap": "Heatmap",
+            "points": "Points"
+          }
+        },
+        "aggregation-value": "Operation",
+        "aggregation-size": {
+          "label": "Size",
+          "help": "In pixels"
+        },
+        "aggregation-dataset": "Admin. level",
+        "labels-enabled": {
+          "label": "labels",
+          "not-with-animated": "It won't be available with animations"
+        },
+        "labels-attribute": {
+          "label": "column",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "labels-font": "font",
+        "labels-offset": "offset",
+        "labels-fill": "size/color",
+        "labels-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "True",
+            "false": "False"
+          }
+        },
+        "labels-halo": "halo",
+        "labels-placement": {
+          "label": "placement",
+          "options": {
+            "point": "point",
+            "line": "line",
+            "vertex": "vertex",
+            "interior": "interior"
+          }
+        },
+        "animated-enabled": {
+          "label": "animated",
+          "already-one-torque": "There is already a torque layer in your map",
+          "not-with-labels": "It won't be available with labels"
+        },
+        "animated-attribute": {
+          "label": "column",
+          "fetching": "Loading node schema...",
+          "unavailable": "Error getting node schema",
+          "error": "There was an error fetching node schema..."
+        },
+        "animated-overlap": {
+          "label": "overlap",
+          "options": {
+            "true": "Accum.",
+            "false": "None"
+          }
+        },
+        "animated-trails": "trails",
+        "animated-resolution": "resolution",
+        "animated-steps": "steps",
+        "animated-duration": "duration"
+      }
+    },
+    "widgets": {
+      "no-geometry-data": "Your dataset lacks geometry data and it's not possible to add a widget.",
+      "options": {
+        "remove": "Delete...",
+        "rename": "Rename",
+        "edit": "Edit"
+      },
+      "delete": {
+        "confirm": "Ok, delete it",
+        "cancel": "Cancel",
+        "desc": "The widget cannot be recovered, be sure before proceeding.",
+        "title": "You are about to delete the widget %{name}",
+        "error": "Error deleting widget %{name}: %{error}",
+        "loading": "Removing the widget %{name}...",
+        "success": "Widget %{name} deleted"
+      },
+      "widgets-view": {
+        "add_widget": "Add widget"
+      },
+      "widgets-types": {
+        "histogram": "Histogram",
+        "category": "Category",
+        "formula": "Formula",
+        "time-series": "Time series"
+      },
+      "widgets-form": {
+        "placeholder-text": "You have not added any widgets yet. Add new widgets to discover new things.",
+        "type": {
+          "title-label": "Type",
+          "description": "Choose the widget type",
+          "category": "Category",
+          "formula": "Formula",
+          "histogram": "Histogram",
+          "time_series": "Time Series"
+        },
+        "data": {
+          "columns-unavailable": "No columns available",
+          "aggregation": "Aggregation",
+          "aggregation_column": "Aggregation Column",
+          "bins": "Buckets",
+          "column": "Column",
+          "description": "Configure your values",
+          "end": "End",
+          "loading": "loading…",
+          "operation": "Operation",
+          "prefix": "Prefix",
+          "start": "Start",
+          "suffix": "Suffix",
+          "title": "Title",
+          "title-label": "Data",
+          "value": "Value",
+          "aggregate-by": "aggregate by",
+          "operation-column": "operation column"
+        },
+        "style": {
+          "title-label": "Behaviour",
+          "description": "Apply style to your visualization",
+          "sync_on_data_change": "Unfiltered",
+          "sync_on_bbox_change": "Dynamic",
+          "description": "Description",
+          "yes": "Yes",
+          "no": "No"
+        }
+      }
+    },
+    "edit-feature": {
+      "features": {
+        "point": "point",
+        "line": "line",
+        "polygon": "polygon"
+      },
+      "overlay-text": "Start clicking on the map to draw your %{featureType}",
+      "add": "Add",
+      "save": "Save",
+      "attributes": "Attributes",
+      "attributes-columns": "Change column names and type in table mode",
+      "cancel": "Cancel",
+      "geometry": "Geometry",
+      "geometry-edit": "You can also edit it on the map",
+      "valid-lng": "Must be a valid longitude",
+      "valid-lat": "Must be a valid latitude",
+      "valid": "Only numbers allowed",
+      "delete": "Delete %{featureType}",
+      "edit": "Edit %{featureType}",
+      "analysis": "layers with analysis nodes",
+      "custom-sql": "layers with custom SQL applied",
+      "sync": "read only layers",
+      "disabled": "Feature edition is disabled in %{disabledLayerType}. Flatten your layer to edit data on it."
+    }
+  },
+  "notifications": {
+    "vis": {
+      "failed": {
+        "title": "This map couldn't be rendered",
+        "body": "Please refresh the page and contact us if the error persists"
+      }
+    },
+    "analysis": {
+      "pending": "Analysis %{nodeId} running...",
+      "waiting": "Analysis %{nodeId} enqueued...",
+      "completed": "Analysis %{nodeId} completed",
+      "failed": "Analysis %{nodeId} failed",
+      "removed": "Analysis %{nodeId} deleted",
+      "errors": {
+        "timeout": "The execution of the analysis timed out and was stopped",
+        "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
+      }
+    },
+    "widgets": {
+      "delete": "Widget deleted correctly.",
+      "success": "Widget successfully added",
+      "error": {
+        "title": "Error adding widget:",
+        "body": "%{body} %{error}"
+      },
+      "loading": "Adding widget…",
+      "updating": "Updating widget…",
+      "restoring": "Restoring widgets…",
+      "restored": "Widgets restored"
+    },
+    "layer": {
+      "error": "Layer error: %{error}",
+      "added": "Layer added successfully"
+    },
+    "cartocss": {
+        "error": {
+          "body": "%{body} %{error}",
+          "title": "Error in CartoCSS styles:"
+        },
+        "success": "CartoCSS applied"
+    },
+    "sql": {
+      "alter-loading": "Modifying table…",
+      "alter-success": "Modification applied",
+      "applying": "Applying query…",
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Error in SQL query:"
+      },
+      "success": "SQL query applied"
+    },
+    "edit-feature": {
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Deleting feature…",
+        "error": "Error deleting feature",
+        "success": "Feature deleted correctly"
+      },
+      "save": {
+        "loading": "Saving feature…",
+        "error": "Error saving feature",
+        "success": "Feature successfully saved"
+      },
+      "adding": "Adding feature…",
+    }
+  }
+}

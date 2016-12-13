@@ -1,0 +1,89 @@
+@import 'cdb-utilities/mixins';
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.AssetsList-recent {
+  overflow: hidden;
+}
+.AssetsList-recentInner {
+  @include display-flex;
+  width: 1000px;
+}
+.AssetsList {
+  @include display-flex;
+  position: relative;
+}
+.AssetsList-inner {
+  display: block;
+  position: relative;
+  height: auto;
+  max-height: none;
+  margin: 35px 0 70px;
+  padding: 0 0 0 5px;
+  overflow: auto;
+}
+
+.AssetItem-button {
+  width: 100%;
+  height: 100%;
+}
+
+.AssetItem-icon {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+}
+
+.AssetItem-label {
+  @include align-items(center);
+  @include justify-content(center);
+  @include display-flex;
+  width: 100%;
+  height: 100%;
+}
+
+.Modal-inner .AssetsList {
+  @include flex-wrap(wrap);
+  margin: 0 -14px 20px;
+}
+
+.Modal-inner .AssetsList:last-child {
+  @include flex-wrap(wrap);
+  margin: 0 -14px;
+}
+
+.AssetsList-item {
+  @include display-flex();
+  @include align-items(center);
+  @include justify-content(center);
+  width: $baseSize * 11;
+  min-width: $baseSize * 11;
+  height: $baseSize * 7;
+  margin-bottom: 16px;
+  margin-left: 16px;
+  border: 1px solid $cSecondaryLine;
+  border-radius: 4px;
+  background: $cThirdBackground;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &:last-child {
+    margin-right: 0;
+  }
+  &:hover {
+    border: 1px solid $cMainLine;
+    cursor: pointer;
+  }
+}
+
+.AssetsList-item.is-selected {
+  border: 2px solid $cBlue;
+}
+
+.AssetsList-item--small {
+  width: $baseSize * 5;
+  min-width: $baseSize * 5;
+  height: $baseSize * 5;
+}

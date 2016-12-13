@@ -28,7 +28,7 @@ module Carto
       end
 
       def bucket
-        @bucket ||= s3.buckets[bucket_name]
+        @bucket ||= s3.buckets[@bucket_name]
       end
 
       private

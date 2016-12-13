@@ -6,8 +6,16 @@ var ChoroplethLegendView = LegendViewBase.extend({
     return template({
       colors: this.model.get('colors'),
       prefix: this.model.get('prefix'),
-      suffix: this.model.get('suffix')
+      suffix: this.model.get('suffix'),
+      leftLabel: this.model.get('leftLabel'),
+      rightLabel: this.model.get('rightLabel')
     });
+  },
+
+  _hasCustomLabels: function () {
+    var leftLabel = this.model.get('leftLabel');
+    var rightLabel = this.model.get('rightLabel');
+    return ((leftLabel != null && leftLabel !== '') || (rightLabel != null && rightLabel !== ''));
   }
 });
 

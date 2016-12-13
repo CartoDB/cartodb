@@ -66,12 +66,12 @@ module Carto
       end
 
       def load_asset_file
-        @url = params[:url]
-        unless @url.present?
-          raise UnprocesableEntityError.new('Missing url for asset')
+        @resource = params[:resource]
+        unless @resource.present?
+          raise UnprocesableEntityError.new('Missing resource for asset')
         end
 
-        @asset_file = OrganizationAssetFile.new(@organization, @url)
+        @asset_file = OrganizationAssetFile.new(@organization, @resource)
         unless @asset_file.valid?
           raise UnprocesableEntityError.new(@asset_file.errors)
         end

@@ -5,6 +5,7 @@ require 'rspec_configuration'
 require 'helpers/spec_helper_helpers'
 require 'support/redis'
 require 'helpers/named_maps_helper'
+require 'helpers/storage_helper'
 
 ENV['RAILS_ENV'] ||= 'test'
 # INFO: this is the only slow step of the test boot process
@@ -16,6 +17,7 @@ Resque.inline = true
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
+  config.include StorageHelper
 
   unless ENV['PARALLEL']
     config.before(:suite) do

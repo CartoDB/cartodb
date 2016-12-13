@@ -14,7 +14,7 @@ module Carto
 
     def for(location, preferred_type: nil)
       proposed_location = get_or_set_location(location)
-      proposed_type = proposed_location.type
+      proposed_type = proposed_location.class.name.demodulize.downcase
 
       if proposed_type == (preferred_type || proposed_type)
         proposed_location

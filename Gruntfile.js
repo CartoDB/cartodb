@@ -260,7 +260,7 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    grunt.registerTask('js',          ['cdb', 'copy:js_core_cartodb3', 'copy:js_client_cartodb3', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('js',          ['cdb', 'copy:js_core', 'copy:js_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);

@@ -19,9 +19,9 @@ module Carto
         identifier = File.join(namespace, filename)
 
         asset = bucket.objects[identifier]
-        asset.write(file: file, content_type: mime_type)
+        asset.write(file: file, content_type: mime_type, acl: :public_read)
 
-        [identifier, asset.url_for(:public_read).to_s]
+        [identifier, asset.public_url(secure: true).to_s]
       end
 
       def remove(path)

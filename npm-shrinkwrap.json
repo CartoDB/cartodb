@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "4.5.57",
+  "version": "4.5.60",
   "dependencies": {
     "backbone": {
       "version": "1.2.3",
@@ -1133,9 +1133,9 @@
       }
     },
     "cartocolor": {
-      "version": "3.0.0",
-      "from": "cartocolor@3.0.0",
-      "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-3.0.0.tgz",
+      "version": "4.0.0",
+      "from": "cartocolor@4.0.0",
+      "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz",
       "dependencies": {
         "colorbrewer": {
           "version": "1.0.0",
@@ -1149,22 +1149,10 @@
       "from": "cartodb/deep-insights.js#master",
       "resolved": "git://github.com/cartodb/deep-insights.js.git#22a735f4324af216fa70683626504ef6585e28d1",
       "dependencies": {
-        "cartocolor": {
-          "version": "4.0.0",
-          "from": "cartocolor@4.0.0",
-          "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz",
-          "dependencies": {
-            "colorbrewer": {
-              "version": "1.0.0",
-              "from": "colorbrewer@1.0.0",
-              "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
-            }
-          }
-        },
         "cartodb.js": {
           "version": "4.0.0-alpha.1",
           "from": "cartodb/cartodb.js#v4",
-          "resolved": "git://github.com/cartodb/cartodb.js.git#be1da170e3e8a91f2b5565ef00a6ef4887612165",
+          "resolved": "git://github.com/cartodb/cartodb.js.git#55a4ba92981c9fc295af37507a843966e8447d0a",
           "dependencies": {
             "backbone-poller": {
               "version": "1.1.3",
@@ -1275,7 +1263,7 @@
                 },
                 "turf-jenks": {
                   "version": "1.0.1",
-                  "from": "turf-jenks@>=1.0.1 <1.1.0",
+                  "from": "turf-jenks@>=1.0.1 <2.0.0",
                   "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
                   "dependencies": {
                     "simple-statistics": {
@@ -1464,7 +1452,7 @@
     "cartodb.js": {
       "version": "4.0.0-alpha.1",
       "from": "cartodb/cartodb.js#v4",
-      "resolved": "git://github.com/cartodb/cartodb.js.git#be1da170e3e8a91f2b5565ef00a6ef4887612165",
+      "resolved": "git://github.com/cartodb/cartodb.js.git#55a4ba92981c9fc295af37507a843966e8447d0a",
       "dependencies": {
         "backbone-poller": {
           "version": "1.1.3",
@@ -1525,11 +1513,6 @@
                   "from": "colorbrewer@1.0.0",
                   "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
                 },
-                "cartocolor": {
-                  "version": "4.0.0",
-                  "from": "cartocolor@4.0.0",
-                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
-                },
                 "debug": {
                   "version": "2.2.0",
                   "from": "debug@2.2.0",
@@ -1585,7 +1568,7 @@
             },
             "turf-jenks": {
               "version": "1.0.1",
-              "from": "turf-jenks@>=1.0.1 <1.1.0",
+              "from": "turf-jenks@>=1.0.1 <2.0.0",
               "resolved": "https://registry.npmjs.org/turf-jenks/-/turf-jenks-1.0.1.tgz",
               "dependencies": {
                 "simple-statistics": {
@@ -1650,11 +1633,6 @@
                   "version": "1.0.0",
                   "from": "colorbrewer@1.0.0",
                   "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
-                },
-                "cartocolor": {
-                  "version": "4.0.0",
-                  "from": "cartocolor@4.0.0",
-                  "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
                 },
                 "debug": {
                   "version": "2.2.0",
@@ -1861,11 +1839,6 @@
               "version": "1.0.0",
               "from": "colorbrewer@1.0.0",
               "resolved": "https://registry.npmjs.org/colorbrewer/-/colorbrewer-1.0.0.tgz"
-            },
-            "cartocolor": {
-              "version": "4.0.0",
-              "from": "cartocolor@4.0.0",
-              "resolved": "https://registry.npmjs.org/cartocolor/-/cartocolor-4.0.0.tgz"
             },
             "debug": {
               "version": "2.2.0",

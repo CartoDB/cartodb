@@ -13,10 +13,15 @@ module Carto
     end
 
     def for(location, preferred_type: nil)
-      if preferred_type == 'local'
+      proposed_location = get_or_set_location(location)
+      proposed_type = proposed_location.type
+
+      if (preferred_type || proposed_type) == proposed_type
+        proposed_location
+      elsif proposed_type == 'local'
         Carto::StorageOptions::Local.new(location)
       else
-        get_or_set_location(location)
+        available_storage_option.new(location)
       end
     end
 

@@ -7,3 +7,9 @@
   @include flex-direction(column);
   min-height: 0;
 }
+
+.Tab-paneLabel-image {
+  display: inline-block;
+  max-width: 15px;
+  height: 15px;
+}

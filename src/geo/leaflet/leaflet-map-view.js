@@ -321,8 +321,8 @@ var LeafletMapView = MapView.extend({
 // set the image path in order to be able to get leaflet icons
 // code adapted from leaflet
 L.Icon.Default.imagePath = (function () {
-  var scripts = document.getElementsByTagName('script'),
-    leafletRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
+  var scripts = document.getElementsByTagName('script');
+  var leafletRe = /\/?cartodb[\-\._]?([\w\-\._]*)\.js\??/;
 
   var i, len, src, matches;
 

@@ -301,7 +301,7 @@ WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
 	$(NULL)
 
-CDB_PATH=lib/assets/core/javascripts/cdb
+CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
 	# Else coverage reports add up and hits/line metric is invalid

@@ -210,25 +210,25 @@
         }
       }
 
-      // configure copy js_core to only run on changed file
-      var files = grunt.config.get('copy.js_core.files');
+      // configure copy js_core_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_core_cartodb3.files');
       for (var i = 0; i < files.length; ++i) {
-        var cfg = grunt.config.get('copy.js_core.files.' + i);
+        var cfg = grunt.config.get('copy.js_core_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_core.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          grunt.config('copy.js_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
         } else {
-          grunt.config('copy.js_core.files.' + i + '.src', []);
+          grunt.config('copy.js_core_cartodb3.files.' + i + '.src', []);
         }
       }
 
-      // configure copy js_client to only run on changed file
-      var files = grunt.config.get('copy.js_client.files');
+      // configure copy js_client_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_client_cartodb3.files');
       for (var i = 0; i < files.length; ++i) {
-        var cfg = grunt.config.get('copy.js_client.files.' + i);
+        var cfg = grunt.config.get('copy.js_client_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_client.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          grunt.config('copy.js_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
         } else {
-          grunt.config('copy.js_client.files.' + i + '.src', []);
+          grunt.config('copy.js_client_cartodb3.files.' + i + '.src', []);
         }
       }
     });
@@ -260,8 +260,7 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    // Order in terms of task dependencies
-    grunt.registerTask('js',          ['cdb', 'copy:js_core', 'copy:js_client', 'browserify', 'concat:js', 'jst']);
+    grunt.registerTask('js',          ['cdb', 'copy:js_core_cartodb3', 'copy:js_client_cartodb3', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +
     'For manual testing use `grunt jasmine` directly', ['pre_default', 'npm-test', 'jasmine', 'lint']);

@@ -103,7 +103,7 @@ class Layer < Sequel::Model
   def infowindow_template_path
     if self.infowindow.present? && self.infowindow['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.infowindow['template_name'], self.infowindow['template_name'])
-      Rails.root.join("lib/assets/core/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
     else
       nil
     end
@@ -112,7 +112,7 @@ class Layer < Sequel::Model
   def tooltip_template_path
     if self.tooltip.present? && self.tooltip['template_name'].present?
       template_name = TEMPLATES_MAP.fetch(self.tooltip['template_name'], self.tooltip['template_name'])
-      Rails.root.join("lib/assets/core/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+      Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
     else
       nil
     end

@@ -656,7 +656,7 @@ module Carto
         }
       end
 
-      # Taken from `lib/assets/core/javascripts/cartodb/models/color_ramps.js`
+      # Taken from `lib/assets/javascripts/cartodb/models/color_ramps.js`
       COLOR_ARRAYS_FROM_RAMPS = {
         'pink' => "['#E7E1EF', '#C994C7', '#DD1C77']",
         'red' => "['#FFEDA0', '#FEB24C', '#F03B20']",

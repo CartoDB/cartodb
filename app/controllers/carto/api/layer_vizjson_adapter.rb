@@ -53,7 +53,7 @@ module Carto
       def infowindow_template_path
         if infowindow.present? && infowindow['template_name'].present?
           template_name = TEMPLATES_MAP.fetch(infowindow['template_name'], self.infowindow['template_name'])
-          Rails.root.join("lib/assets/core/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
+          Rails.root.join("lib/assets/javascripts/cartodb/table/views/infowindow/templates/#{template_name}.jst.mustache")
         else
           nil
         end
@@ -62,7 +62,7 @@ module Carto
       def tooltip_template_path
         if tooltip.present? && tooltip['template_name'].present?
           template_name = TEMPLATES_MAP.fetch(tooltip['template_name'], tooltip['template_name'])
-          Rails.root.join("lib/assets/core/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
+          Rails.root.join("lib/assets/javascripts/cartodb/table/views/tooltip/templates/#{template_name}.jst.mustache")
         else
           nil
         end

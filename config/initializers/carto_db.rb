@@ -210,7 +210,7 @@ module CartoDB
   # This method is used by the SAML authentication framework to create appropriate
   # usernames automatically from the user's login email.
   def self.email_to_subdomain(email)
-    return email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/,'-').downcase
+    email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
   end
 
   def self.get_http_port

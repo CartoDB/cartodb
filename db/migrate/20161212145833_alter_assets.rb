@@ -1,5 +1,9 @@
-Sequel.migration do
-  up do
+require 'carto/db/migration_helper'
+
+include Carto::Db::MigrationHelper
+
+migration(
+  Proc.new do
     alter_table :assets do
       add_foreign_key :organization_id,
                       :organizations,
@@ -8,18 +12,13 @@ Sequel.migration do
 
       add_index :organization_id
 
-      add_column :storage_type, :text
-      add_column :identifier, :text
-      add_column :location, :text
+      add_column :storage_info, :json
     end
-  end
-
-  down do
+  end,
+  Proc.new do
     alter_table :assets do
       drop_column :organization_id
-      drop_column :storage_type
-      drop_column :identifier
-      drop_column :location
+      drop_column :storage_info
     end
   end
-end
+)

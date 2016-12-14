@@ -2,8 +2,6 @@ require 'carto/mapcapped_visualization_updater'
 
 namespace :carto do
   namespace :db do
-    include Carto::MapcappedVisualizationUpdater
-
     desc "get modified layers"
     task :get_modified_layers => :environment do
       if ENV['DATE_AFTER'].blank?
@@ -86,6 +84,8 @@ namespace :carto do
 
     desc "Nokia -> HERE layer update (platform #2815)"
     task update_nokia_layers: :environment do
+      include Carto::MapcappedVisualizationUpdater
+
       basemaps = Cartodb.get_config(:basemaps, 'Here')
 
       puts "Updating base layer urls"

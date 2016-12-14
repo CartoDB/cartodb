@@ -7,11 +7,11 @@ class Carto::Api::AssetPresenter
 
   def self.collection_to_hash(assets)
     assets.map do |asset|
-      AssetPresenter.new(asset).public_values
+      new(asset).public_values
     end
   end
 
-  def to_hash
+  def public_values
     {
       id: @asset.id,
       public_url: @asset.public_url,

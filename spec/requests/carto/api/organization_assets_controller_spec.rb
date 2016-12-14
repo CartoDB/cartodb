@@ -21,7 +21,7 @@ describe Carto::Api::OrganizationAssetsController do
     @sub = nil
   end
 
-  let(:storage_options) do
+  let(:storage_info) do
     {
       type: 'local',
       location: 'manolo_folder',
@@ -39,7 +39,8 @@ describe Carto::Api::OrganizationAssetsController do
   describe('#index') do
     before(:all) do
       5.times do
-        Carto::Asset.create!(organization_id: @carto_organization.id,
+        Carto::Asset.create!(storage_info: storage_info,
+                             organization_id: @carto_organization.id,
                              public_url: 'manolo')
       end
     end
@@ -91,7 +92,8 @@ describe Carto::Api::OrganizationAssetsController do
 
   describe('#show') do
     before(:all) do
-      @asset = Carto::Asset.create!(organization_id: @carto_organization.id,
+      @asset = Carto::Asset.create!(storage_info: storage_info,
+                                    organization_id: @carto_organization.id,
                                     public_url: 'manolo')
     end
 
@@ -151,7 +153,8 @@ describe Carto::Api::OrganizationAssetsController do
 
   describe('#destroy') do
     before(:each) do
-      @asset = Carto::Asset.create!(organization_id: @carto_organization.id,
+      @asset = Carto::Asset.create!(storage_info: storage_info,
+                                    organization_id: @carto_organization.id,
                                     public_url: 'manolo')
     end
 

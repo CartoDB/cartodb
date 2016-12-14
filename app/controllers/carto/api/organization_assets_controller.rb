@@ -10,7 +10,8 @@ module Carto
       ssl_required :index, :show, :create, :destroy
 
       before_filter :load_organization,
-                    :organization_owners_only
+                    :organization_members_only
+      before_filter :organization_owners_only, only: [:create, :destroy]
       before_filter :load_asset, only: [:show, :destroy]
       before_filter :load_asset_file, only: :create
 
@@ -54,6 +55,10 @@ module Carto
         @organization = Organization.find(params[:organization_id])
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Organization not found')
+      end
+
+      def organization_members_only
+        raise UnauthorizedError.new unless @organization.member?(current_viewer)
       end
 
       def organization_owners_only

@@ -21,6 +21,14 @@ describe Carto::Api::OrganizationAssetsController do
     @sub = nil
   end
 
+  let(:storage_options) do
+    {
+      type: 'local',
+      location: 'manolo_folder',
+      identifier: 'could_be_a_manolo_hash_23as4g5sh6sd7hd8j9jfgk'
+    }
+  end
+
   def asset_should_be_correct(asset_response)
     indifferent_response = asset_response.with_indifferent_access
     asset = Carto::Asset.find(indifferent_response['id'])

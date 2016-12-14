@@ -128,6 +128,17 @@ describe Carto::Api::OrganizationAssetsController do
         response.status.should eq 401
       end
     end
+
+    it 'fails for inexistent assets' do
+      unauthenticated_url = asset_url(user_domain: @owner.username,
+                                      organization_id: @carto_organization.id,
+                                      id: random_uuid,
+                                      api_key: @owner.api_key)
+
+      delete_json unauthenticated_url, {} do |response|
+        response.status.should eq 404
+      end
+    end
   end
 
   describe('#destroy') do

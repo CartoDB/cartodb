@@ -22,9 +22,10 @@ describe Carto::Api::OrganizationAssetsController do
   end
 
   def asset_should_be_correct(asset_response)
-    asset = Carto::Asset.find(asset_response['id'])
+    indifferent_response = asset_response.with_indifferent_access
+    asset = Carto::Asset.find(indifferent_response['id'])
 
-    asset.public_url.should eq asset_response['public_url']
+    asset.public_url.should eq indifferent_response['public_url']
   end
 
   describe('#index') do
@@ -74,6 +75,55 @@ describe Carto::Api::OrganizationAssetsController do
     it 'fails for unauthenticated' do
       unauthenticated_url = assets_url(organization_id: @carto_organization.id,
                                        user_domain: @owner.username)
+      get_json unauthenticated_url, {} do |response|
+        response.status.should eq 401
+      end
+    end
+  end
+
+  describe('#show') do
+    before(:all) do
+      @asset = Carto::Asset.create!(organization_id: @carto_organization.id,
+                                    public_url: 'manolo')
+    end
+
+    after(:all) do
+      @asset.destroy
+    end
+
+    def show_url(user: @owner, organization: @carto_organization, asset: @asset)
+      asset_url(user_domain: user.username,
+                organization_id: organization.id,
+                id: asset.id,
+                api_key: user.api_key)
+    end
+
+    it 'works for organization owners' do
+      get_json show_url, {} do |response|
+        response.status.should eq 200
+        response.body.should_not be_empty
+        asset_should_be_correct(response.body)
+      end
+    end
+
+    it 'works for organization users' do
+      get_json show_url(user: @sub), {} do |response|
+        response.status.should eq 200
+        response.body.should_not be_empty
+        asset_should_be_correct(response.body)
+      end
+    end
+
+    it 'fails for intruders' do
+      get_json show_url(user: @intruder), {} do |response|
+        response.status.should eq 403
+      end
+    end
+
+    it 'fails for unauthenticated' do
+      unauthenticated_url = asset_url(organization_id: @carto_organization.id,
+                                      id: @asset.id,
+                                      user_domain: @owner.username)
       get_json unauthenticated_url, {} do |response|
         response.status.should eq 401
       end

@@ -129,4 +129,61 @@ describe Carto::Api::OrganizationAssetsController do
       end
     end
   end
+
+  describe('#destroy') do
+    before(:each) do
+      @asset = Carto::Asset.create!(organization_id: @carto_organization.id,
+                                    public_url: 'manolo')
+    end
+
+    after(:each) do
+      @asset.destroy
+    end
+
+    def destroy_url(user: @owner, organization: @carto_organization, asset: @asset)
+      asset_url(user_domain: user.username,
+                organization_id: organization.id,
+                id: asset.id,
+                api_key: user.api_key)
+    end
+
+    it 'works for organization owners' do
+      delete_json destroy_url, {} do |response|
+        response.status.should eq 204
+        response.body.should be_empty
+      end
+    end
+
+    it 'fails for organization users' do
+      delete_json destroy_url(user: @sub), {} do |response|
+        response.status.should eq 403
+      end
+    end
+
+    it 'fails for intruders' do
+      delete_json destroy_url(user: @intruder), {} do |response|
+        response.status.should eq 403
+      end
+    end
+
+    it 'fails for unauthenticated' do
+      unauthenticated_url = asset_url(organization_id: @carto_organization.id,
+                                      id: @asset.id,
+                                      user_domain: @owner.username)
+      delete_json unauthenticated_url, {} do |response|
+        response.status.should eq 401
+      end
+    end
+
+    it 'fails for inexistent assets' do
+      unauthenticated_url = asset_url(user_domain: @owner.username,
+                                      organization_id: @carto_organization.id,
+                                      id: random_uuid,
+                                      api_key: @owner.api_key)
+
+      delete_json unauthenticated_url, {} do |response|
+        response.status.should eq 404
+      end
+    end
+  end
 end

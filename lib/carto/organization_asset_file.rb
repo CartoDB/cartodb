@@ -49,7 +49,7 @@ module Carto
       return @identifier_and_url if @identifier_and_url
 
       if valid?
-        @identifier_and_url = storage.upload(organization.id, file)
+        @identifier_and_url = storage.upload(@organization.id, file)
       else
         [nil, nil]
       end
@@ -68,7 +68,7 @@ module Carto
       max_size_in_bytes = self.class.max_size_in_bytes
 
       begin
-        read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
+        read = IO.copy_stream(open(@resource), temp_file, max_size_in_bytes + 1)
 
         if read > max_size_in_bytes
           errors[:file] = "too big (> #{max_size_in_bytes} bytes)"

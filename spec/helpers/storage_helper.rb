@@ -1,6 +1,6 @@
 module StorageHelper
   def bypass_storage(identifier: 'es/co/bar.png', url: "https://manolo.es/#{identifier}")
-    Carto::StorageOptions::S3.stubs(:conf).returns(Hash.new)
+    Carto::Storage.instance.stubs(:s3_enabled?).returns(false)
     Carto::StorageOptions::Local.any_instance
                                 .stubs(:upload)
                                 .returns([identifier, url])

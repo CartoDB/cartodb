@@ -85,6 +85,10 @@ module Carto
       owner_id == user.id
     end
 
+    def member?(user)
+      id == user.organization_id
+    end
+
     def remaining_geocoding_quota(options = {})
       remaining = geocoding_quota.to_i - get_geocoding_calls(options)
       (remaining > 0 ? remaining : 0)

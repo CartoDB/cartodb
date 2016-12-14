@@ -7,9 +7,7 @@ describe Carto::Api::OrganizationAssetsController do
   include HelperMethods
   include_context 'organization with users helper'
 
-  before(:each) do
-    bypass_storage
-  end
+  before(:each) { bypass_storage }
 
   before(:all) do
     @owner = @carto_organization.owner
@@ -33,7 +31,7 @@ describe Carto::Api::OrganizationAssetsController do
       Carto::Asset.all.map(&:destroy)
     end
 
-    def index_url(subdomain: @owner.subdomain,
+    def index_url(subdomain: @owner.username,
                   organization_id: @carto_organization.id,
                   api_key: @owner.api_key)
       assets_url(user_domain: subdomain,

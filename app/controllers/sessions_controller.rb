@@ -42,14 +42,13 @@ class SessionsController < ApplicationController
   end
 
   def create
-    # Try LDAP authentication first
-    user = authenticate_with_ldap if Carto::Ldap::Manager.new.configuration_present?
-
-    # Try SAML authentication next
-    user = authenticate_with_saml if saml_authentication?
-
-    # Fallback to google/password if LDAP deactivated or failed
-    user = authenticate_with_credentials_or_google unless user
+    user = if ldap_authentication?
+             authenticate_with_ldap
+           elsif saml_authentication?
+             authenticate_with_saml
+           else
+             authenticate_with_credentials_or_google
+           end
 
     (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 
@@ -216,6 +215,10 @@ class SessionsController < ApplicationController
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
+  end
+
+  def ldap_authentication?
+    Carto::Ldap::Manager.new.configuration_present?
   end
 
   def saml_authentication?

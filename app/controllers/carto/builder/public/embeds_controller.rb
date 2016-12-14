@@ -38,7 +38,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          render_404 unless @visualization
+          render('admin/visualizations/embed_map_error', status: 404) unless @visualization
         end
 
         def load_auth_tokens

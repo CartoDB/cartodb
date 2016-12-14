@@ -29,7 +29,7 @@ module Carto
             show
           else
             flash[:error] = 'Invalid password'
-            response.status = 403
+            response.status = :forbidden
           end
         end
 
@@ -38,7 +38,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          render_embed_error(status: 404) unless @visualization
+          render_embed_error(status: :not_found) unless @visualization
         end
 
         def load_auth_tokens
@@ -61,15 +61,15 @@ module Carto
         def ensure_viewable
           if @visualization.password_protected?
             if @visualization.published?
-              render 'show_protected', status: 403
+              render 'show_protected', status: :forbidden
             else
-              render_embed_error(status: 404)
+              render_embed_error(status: :not_found)
             end
           elsif !@visualization.is_viewable_by_user?(current_viewer)
             if @visualization.published?
-              render_embed_error(status: 403)
+              render_embed_error(status: :forbidden)
             else
-              render_embed_error(status: 404)
+              render_embed_error(status: :not_found)
             end
           end
         end

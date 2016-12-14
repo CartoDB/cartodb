@@ -38,7 +38,7 @@ module Carto
         def load_visualization
           @visualization = load_visualization_from_id_or_name(params[:visualization_id])
 
-          render_embed_error(404) unless @visualization
+          render_embed_error(status: 404) unless @visualization
         end
 
         def load_auth_tokens
@@ -63,18 +63,18 @@ module Carto
             if @visualization.published?
               render 'show_protected', status: 403
             else
-              render_embed_error(404)
+              render_embed_error(status: 404)
             end
           elsif !@visualization.is_viewable_by_user?(current_viewer)
             if @visualization.published?
-              render_embed_error(403)
+              render_embed_error(status: 403)
             else
-              render_embed_error(404)
+              render_embed_error(status: 404)
             end
           end
         end
 
-        def render_embed_error(status)
+        def render_embed_error(status:)
           render('admin/visualizations/embed_map_error', status: status)
         end
 

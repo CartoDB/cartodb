@@ -14,6 +14,11 @@ class SessionsController < ApplicationController
                :ldap_user_not_at_cartodb
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
+  # Disables CSRF protection for the login view (create). I *think* this is safe
+  # since the only transaction that a user can be tricked into doing is logging in
+  # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
+  # If SAML data isn't passed at all, then authentication is manually failed.
+  skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
 
@@ -26,11 +31,22 @@ class SessionsController < ApplicationController
     if logged_in?(CartoDB.extract_subdomain(request))
       redirect_to CartoDB.path(self, 'dashboard', {trailing_slash: true}) and return
     end
+
+    # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
+    if saml_authentication? && user.nil?
+      puts "Starting redirect to SAML endpoint"
+      request = OneLogin::RubySaml::Authrequest.new
+      saml_settings = CartoDB.saml_settings(Cartodb.config[:saml_authentication])
+      redirect_to(request.create(saml_settings))
+    end
   end
 
   def create
     # Try LDAP authentication first
     user = authenticate_with_ldap if Carto::Ldap::Manager.new.configuration_present?
+
+    # Try SAML authentication next
+    user = authenticate_with_saml if saml_authentication?
 
     # Fallback to google/password if LDAP deactivated or failed
     user = authenticate_with_credentials_or_google unless user
@@ -163,6 +179,20 @@ class SessionsController < ApplicationController
     authenticate(:ldap, scope: Carto::Ldap::Manager.sanitize_for_cartodb(username))
   end
 
+  def authenticate_with_saml
+    return nil unless params[:SAMLResponse].present?
+
+    settings = CartoDB.saml_settings(Cartodb.config[:saml_authentication])
+    saml_response = OneLogin::RubySaml::Response.new(params[:SAMLResponse],
+                                                     :settings => settings,
+                                                     :allowed_clock_drift => 3600)
+    return nil unless saml_response.is_valid?
+    return nil unless saml_response.attributes['name_id'].present?
+
+    subdomain = CartoDB.email_to_subdomain(saml_response.attributes['name_id'])
+    authenticate!(:saml, :scope => subdomain)
+  end
+
   def authenticate_with_credentials_or_google
     user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
         user = GooglePlusAPI.new.get_user(params[:google_access_token])
@@ -186,6 +216,10 @@ class SessionsController < ApplicationController
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
+  end
+
+  def saml_authentication?
+    Cartodb.config[:saml_authentication].present?
   end
 
   def load_organization

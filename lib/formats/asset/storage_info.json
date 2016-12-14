@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "required": ["type", "location", "identifier"],
   "additionalProperties": false,
   "properties": {
     "type": {

@@ -33,7 +33,7 @@ module Carto
           indifferent_storage_info = storage_info.with_indifferent_access
 
           errs = JSON::Validator::fully_validate(schema, indifferent_storage_info)
-          errors.add(:conf, errs.join(', ')) if errs.any?
+          errors.add(:storage_info, errs.join(', ')) if errs.any?
         else
           errors.add(:storage_info, 'can\'t be blank')
         end

@@ -15,7 +15,8 @@ module Carto
       before_filter :load_asset_file, only: :create
 
       rescue_from LoadError,
-                  UnprocesableEntityError, with: :rescue_from_carto_error
+                  UnprocesableEntityError,
+                  UnauthorizedError, with: :rescue_from_carto_error
 
       def index
         presentation = AssetPresenter.collection_to_hash(@organization.assets)

@@ -21,6 +21,12 @@ describe Carto::Api::OrganizationAssetsController do
     @sub = nil
   end
 
+  def asset_should_be_correct(asset_response)
+    asset = Carto::Asset.find(asset_response['id'])
+
+    asset.public_url.should eq asset_response['public_url']
+  end
+
   describe('#index') do
     before(:all) do
       5.times do
@@ -42,14 +48,20 @@ describe Carto::Api::OrganizationAssetsController do
     it 'works for organization owners' do
       get_json index_url, {} do |response|
         response.status.should eq 200
-        response.should_not be_empty
+        response.body.should_not be_empty
+        response.body.each do |response_asset|
+          asset_should_be_correct(response_asset)
+        end
       end
     end
 
     it 'works for organization users' do
       get_json index_url(user: @sub), {} do |response|
         response.status.should eq 200
-        response.should_not be_empty
+        response.body.should_not be_empty
+        response.body.each do |response_asset|
+          asset_should_be_correct(response_asset)
+        end
       end
     end
 

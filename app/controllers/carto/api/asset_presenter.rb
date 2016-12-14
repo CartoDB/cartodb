@@ -6,9 +6,7 @@ class Carto::Api::AssetPresenter
   end
 
   def self.collection_to_hash(assets)
-    assets.map do |asset|
-      new(asset).to_hash
-    end
+    assets.map { |asset| new(asset).to_hash }
   end
 
   def to_hash

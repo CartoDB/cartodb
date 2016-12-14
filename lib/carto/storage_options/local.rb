@@ -23,6 +23,6 @@ class Carto::StorageOptions::Local
   end
 
   def remove(path)
-    File.delete(path) if File.exist?(path)
+    File.delete(path) if path && File.exist?(path)
   end
 end

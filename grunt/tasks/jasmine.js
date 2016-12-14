@@ -24,14 +24,16 @@ module.exports = {
     ],
     options: _.defaults({
       outfile: 'test/SpecRunner-cartodb.html',
-      specs: '<%= config.tmp %>/cartodb-specs.js'
+      specs: '<%= config.tmp %>/cartodb-specs.js',
+      vendor: defaultOptions.vendor
     }, defaultOptions)
   },
   'cartodb-src': {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js'
+      specs: '<%= config.tmp %>/src-specs.js',
+      vendor: defaultOptions.vendor
     }, defaultOptions)
   }
 };

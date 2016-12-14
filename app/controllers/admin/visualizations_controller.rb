@@ -31,9 +31,11 @@ class Admin::VisualizationsController < Admin::AdminController
   before_filter :get_viewed_user, only: [:public_map, :public_table]
   before_filter :load_common_data, only: [:index]
 
-  before_filter :resolve_visualization_and_table, only: [:show, :public_table, :public_map,
-                                                         :show_organization_public_map, :show_organization_embed_map,
-                                                         :show_protected_public_map, :show_protected_embed_map]
+  before_filter :resolve_visualization_and_table,
+                :ensure_visualization_viewable,
+                only: [:show, :public_table, :public_map,
+                       :show_organization_public_map, :show_organization_embed_map,
+                       :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
@@ -434,6 +436,10 @@ class Admin::VisualizationsController < Admin::AdminController
     render 'embed_map_error', layout: false, status: :forbidden
   end
 
+  def embed_not_found
+    render 'embed_map_error', layout: false, status: :not_found
+  end
+
   def track_embed
     response.headers['X-Cache-Channel'] = "embeds_google_analytics"
     response.headers['Cache-Control']   = "no-cache,max-age=86400,must-revalidate, public"
@@ -508,6 +514,9 @@ class Admin::VisualizationsController < Admin::AdminController
     if @visualization && @visualization.user
       @more_visualizations = more_visualizations(@visualization.user, @visualization)
     end
+  end
+
+  def ensure_visualization_viewable
     render_pretty_404 if disallowed_type?(@visualization)
   end
 
@@ -517,6 +526,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @cached_embed = embed_redis_cache.get(@table_id, is_https)
     if !@cached_embed
       resolve_visualization_and_table
+      embed_not_found if disallowed_type?(@visualization)
     end
   end
 

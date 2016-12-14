@@ -27,16 +27,12 @@ module Carto
       @errors = Hash.new
     end
 
-    def identifier
-      identifier_and_url[0]
+    def storage_info
+      { type: type, location: self.class.location, identifier: identifier }
     end
 
     def url
       identifier_and_url[1]
-    end
-
-    def type
-      storage.class.name.demodulize.downcase
     end
 
     def valid?
@@ -44,6 +40,14 @@ module Carto
     end
 
     private
+
+    def identifier
+      identifier_and_url[0]
+    end
+
+    def type
+      storage.class.name.demodulize.downcase
+    end
 
     def identifier_and_url
       return @identifier_and_url if @identifier_and_url

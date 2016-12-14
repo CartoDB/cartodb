@@ -197,4 +197,59 @@ describe Carto::Api::OrganizationAssetsController do
       end
     end
   end
+
+  describe('#create') do
+    def create_url(user: @owner, organization: @carto_organization)
+      assets_url(user_domain: user.username,
+                 organization_id: organization.id,
+                 api_key: user.api_key)
+    end
+
+    let(:payload) do
+      {
+        resource: 'https://manolo.es/es/co/bar.png'
+      }
+    end
+
+    after(:all) do
+      Carto::Asset.all.map(&:destroy)
+    end
+
+    it 'works for organization owners' do
+      Carto::OrganizationAssetFile.any_instance
+                                  .stubs(:file)
+                                  .returns(Tempfile.new('test'))
+      post_json create_url, payload do |response|
+        response.status.should eq 201
+        asset_should_be_correct(response.body)
+      end
+    end
+
+    it 'fails for organization users' do
+      post_json create_url(user: @sub), payload do |response|
+        response.status.should eq 403
+      end
+    end
+
+    it 'fails for intruders' do
+      post_json create_url(user: @intruder), payload do |response|
+        response.status.should eq 403
+      end
+    end
+
+    it 'fails for unauthenticated' do
+      unauthenticated_url = assets_url(organization_id: @carto_organization.id,
+                                       user_domain: @owner.username)
+      post_json unauthenticated_url, payload do |response|
+        response.status.should eq 401
+      end
+    end
+
+    it 'fails if resource unspecified' do
+      post_json create_url, {} do |response|
+        response.status.should eq 422
+        response.body.should eq(errors: 'Missing resource for asset')
+      end
+    end
+  end
 end

@@ -4,6 +4,7 @@
 
 .CustomRamp {
   @include display-flex();
+  @include justify-content(space-between);
 }
 .CustomRamp-list {
   border-top: 1px solid #DDD;
@@ -20,5 +21,13 @@
   width: 50px;
 }
 .RampItem-text {
-  max-width: calc(100% - 60px);
+  max-width: calc(100% - 30px);
+}
+.RampItem-secondaryContainer {
+  @include display-flex();
+  @include justify-content(space-between);
+  @include align-items(center);
+}
+.RampItem-img {
+  margin-left: 10px;
 }

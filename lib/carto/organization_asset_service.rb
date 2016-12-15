@@ -34,7 +34,7 @@ module Carto
         identifier: identifier
       }
 
-      [url, storage_info]
+      [storage_info, url]
     end
 
     def remove(storage_info)

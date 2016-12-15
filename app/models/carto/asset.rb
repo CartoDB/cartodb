@@ -12,7 +12,7 @@ module Carto
 
     validate :validate_storage_info
 
-    def destroy
+    def before_destroy
       if organization_id
         location = storage_info[:location]
         storage_type = storage_info[:type]
@@ -20,8 +20,6 @@ module Carto
 
         Storage.instance.for(location, preferred_type: storage_type).remove(identifier)
       end
-
-      super
     end
 
     private

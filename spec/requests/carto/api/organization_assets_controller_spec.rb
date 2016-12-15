@@ -232,9 +232,9 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     it 'works for organization owners' do
-      Carto::OrganizationAssetFile.any_instance
-                                  .stubs(:file)
-                                  .returns(Tempfile.new('test'))
+      Carto::OrganizationAssetService.any_instance
+                                     .stubs(:fetch_file)
+                                     .returns(Tempfile.new('test'))
       post_json create_url, payload do |response|
         response.status.should eq 201
         asset_should_be_correct(response.body)

@@ -374,7 +374,6 @@ describe Admin::VisualizationsController do
 
       get "/viz/220d2f46-b371-11e4-93f7-080027880ca6/embed_map", {}, @headers
       last_response.status.should == 404
-      last_response.body.should =~ /404/
     end
 
     it 'doesnt serve X-Frame-Options: DENY on embedded with name' do

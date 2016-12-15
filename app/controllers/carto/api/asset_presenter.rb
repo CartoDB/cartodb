@@ -5,10 +5,6 @@ class Carto::Api::AssetPresenter
     @asset = asset
   end
 
-  def self.collection_to_hash(assets)
-    assets.map { |asset| new(asset).to_hash }
-  end
-
   def to_hash
     {
       id: @asset.id,

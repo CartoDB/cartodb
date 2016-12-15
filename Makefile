@@ -297,6 +297,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/asset_spec.rb \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/asset_service_spec.rb \
+	spec/lib/carto/organization_asset_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

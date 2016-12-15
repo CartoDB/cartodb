@@ -57,7 +57,8 @@ module Carto
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
 
         if read > max_size_in_bytes
-          raise "file too big (> #{max_size_in_bytes} bytes)"
+          message = "resource is too big (> #{max_size_in_bytes} bytes)"
+          raise UnprocesableEntityError.new(message)
         end
       ensure
         temp_file.close

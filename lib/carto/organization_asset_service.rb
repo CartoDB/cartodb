@@ -24,7 +24,7 @@ module Carto
       return @max_size_in_bytes if @max_size_in_bytes
 
       configured = Cartodb.get_config_if_present(:assets,
-                                                 'organizations',
+                                                 'organization',
                                                  'max_size_in_bytes')
 
       @max_size_in_bytes = configured || DEFAULT_MAX_SIZE_IN_BYTES

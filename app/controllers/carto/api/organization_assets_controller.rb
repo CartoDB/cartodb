@@ -20,7 +20,7 @@ module Carto
                   UnauthorizedError, with: :rescue_from_carto_error
 
       def index
-        presentation = @organization.assets.each do |asset|
+        presentation = @organization.assets.map do |asset|
           AssetPresenter.new(asset).to_hash
         end
 

@@ -13,7 +13,9 @@ module Carto
     DEFAULT_LOCATION = 'organization_assets'.freeze
 
     def location
-      @location ||= DEFAULT_LOCATION
+      @location ||= Cartodb.get_config_if_present(:assets, 'organization', 'bucket') ||
+                    Cartodb.get_config_if_present(:assets, 'organization', 'location') ||
+                    DEFAULT_LOCATION
     end
 
     DEFAULT_MAX_SIZE_IN_BYTES = 1_048_576 # 1 MB

@@ -29,7 +29,7 @@ module Carto
       identifier, url = storage.upload(@organization.id, file)
 
       storage_info = {
-        type: type,
+        type: storage.class.name.demodulize.downcase,
         location: self.class.location,
         identifier: identifier
       }
@@ -44,10 +44,6 @@ module Carto
     end
 
     private
-
-    def type
-      storage.class.name.demodulize.downcase
-    end
 
     def fetch_file(resource)
       temp_file = Tempfile.new("org_asset_download_#{Time.now.utc.to_i}")

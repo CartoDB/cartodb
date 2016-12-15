@@ -79,7 +79,7 @@ module Carto
           raise UnprocesableEntityError.new('Missing resource for asset')
         end
 
-        @asset_file = OrganizationAssetService.new(@organization).upload
+        @asset_file = OrganizationAssetService.new(@organization).upload(@resource)
         unless @asset_file.valid?
           raise UnprocesableEntityError.new(@asset_file.errors)
         end

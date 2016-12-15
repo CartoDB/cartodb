@@ -3,7 +3,7 @@ var _ = require('underscore');
 var defaultOptions = {
   keepRunner: true,
   summary: true,
-  display: 'short',
+  display: 'full',
   vendor: [
     // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
     'node_modules/source-map-support/browser-source-map-support.js',
@@ -24,16 +24,14 @@ module.exports = {
     ],
     options: _.defaults({
       outfile: 'test/SpecRunner-cartodb.html',
-      specs: '<%= config.tmp %>/cartodb-specs.js',
-      vendor: defaultOptions.vendor
+      specs: '<%= config.tmp %>/cartodb-specs.js'
     }, defaultOptions)
   },
   'cartodb-src': {
     src: [], // actual src files are require'd in the *.spec.js files
     options: _.defaults({
       outfile: 'test/SpecRunner-src.html',
-      specs: '<%= config.tmp %>/src-specs.js',
-      vendor: defaultOptions.vendor
+      specs: '<%= config.tmp %>/src-specs.js'
     }, defaultOptions)
   }
 };

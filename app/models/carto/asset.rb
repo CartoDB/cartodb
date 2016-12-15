@@ -25,7 +25,7 @@ module Carto
     end
 
     def remove_asset_from_storage
-      Carto::OrganizationAssetService(organization).remove(storage_info)
+      Carto::OrganizationAssetService.new(organization).remove(storage_info)
     end
   end
 end

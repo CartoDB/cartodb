@@ -3,8 +3,8 @@
     <p class="CDB-Text CDB-Size-small"><%- prefix %> <%= labels.left %> <%- suffix %></p>
     <p class="CDB-Text CDB-Size-small"><%- prefix %> <%= labels.right %> <%- suffix %></p>
   <% } else { %>
-    <p class="CDB-Text CDB-Size-small"><%- prefix %> <%- labels.left %> <%- suffix %></p>
-    <p class="CDB-Text CDB-Size-small"><%- prefix %> <%- labels.right %> <%- suffix %></p>
+    <p class="CDB-Text CDB-Size-small"><%- prefix %> <%= labels.left %> <%- suffix %></p>
+    <p class="CDB-Text CDB-Size-small"><%- prefix %> <%= labels.right %> <%- suffix %></p>
   <% } %>
 </div>
 <div class="Legend-choropleth" style="opacity:1; background: linear-gradient(90deg <% for(var i in colors) { %>,<%= colors[i].value %><% } %>);">

@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/organization_asset_file'
+require 'carto/organization_asset_service'
 
 module Carto
   module Api
@@ -32,10 +32,12 @@ module Carto
       end
 
       def create
+        storage_info, url = OrganizationAssetServive.new(@organization).upload(resource)
+
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,
-                              public_url: @asset_file.url,
-                              storage_info: @asset_file.storage_info)
+                              public_url: url,
+                              storage_info: storage_info)
 
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception
@@ -77,7 +79,7 @@ module Carto
           raise UnprocesableEntityError.new('Missing resource for asset')
         end
 
-        @asset_file = OrganizationAssetFile.new(@organization, @resource)
+        @asset_file = OrganizationAssetServive.new(@organization).upload
         unless @asset_file.valid?
           raise UnprocesableEntityError.new(@asset_file.errors)
         end

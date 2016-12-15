@@ -4,7 +4,7 @@
   "additionalProperties": false,
   "properties": {
     "type": {
-      "description": "Describes in what service an asset is hosted",
+      "description": "Describes in what service this asset is hosted in",
       "enum": [ "s3", "local" ]
     },
     "location": {

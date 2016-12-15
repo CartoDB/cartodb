@@ -20,6 +20,8 @@ module Carto
 
         Storage.instance.for(location, preferred_type: storage_type).remove(identifier)
       end
+
+      super
     end
 
     private

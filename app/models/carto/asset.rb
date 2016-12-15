@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/storage'
+require 'carto/organization_asset_service'
 
 module Carto
   class Asset < ActiveRecord::Base
@@ -12,17 +12,7 @@ module Carto
     validates :storage_info, presence: true, if: :organization
     validate :validate_storage_info, if: Proc.new { organization && storage_info }
 
-    def before_destroy
-      if organization_id
-        location = storage_info[:location]
-        storage_type = storage_info[:type]
-        identifier = storage_info[:identifier]
-
-        Storage.instance.for(location, preferred_type: storage_type).remove(identifier)
-      end
-
-      super
-    end
+    before_destroy :remove_asset_from_storage, if: :organization
 
     private
 
@@ -32,6 +22,10 @@ module Carto
 
       errs = JSON::Validator::fully_validate(schema, indifferent_storage_info)
       errors.add(:storage_info, errs.join(', ')) if errs.any?
+    end
+
+    def remove_asset_from_storage
+      Carto::OrganizationAssetService(organization).remove(storage_info)
     end
   end
 end

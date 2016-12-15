@@ -13,7 +13,7 @@ module Carto
                     :organization_members_only
       before_filter :organization_owners_only, only: [:create, :destroy]
       before_filter :load_asset, only: [:show, :destroy]
-      before_filter :load_asset_file, only: :create
+      before_filter :load_resource, only: :create
 
       rescue_from LoadError,
                   UnprocesableEntityError,
@@ -32,7 +32,7 @@ module Carto
       end
 
       def create
-        storage_info, url = OrganizationAssetServive.new(@organization).upload(resource)
+        storage_info, url = OrganizationAssetService.new(@organization).upload(@resource)
 
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,
@@ -73,15 +73,10 @@ module Carto
         raise LoadError.new('Asset not found')
       end
 
-      def load_asset_file
+      def load_resource
         @resource = params[:resource]
         unless @resource.present?
           raise UnprocesableEntityError.new('Missing resource for asset')
-        end
-
-        @asset_file = OrganizationAssetService.new(@organization).upload(@resource)
-        unless @asset_file.valid?
-          raise UnprocesableEntityError.new(@asset_file.errors)
         end
       end
     end

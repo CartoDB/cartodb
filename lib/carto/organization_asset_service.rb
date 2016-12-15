@@ -19,63 +19,45 @@ module Carto
         DEFAULT_MAX_SIZE_IN_BYTES
     end
 
-    attr_reader :errors
-
-    def initialize(organization, resource)
+    def initialize(organization)
       @organization = organization
-      @resource = resource
-      @errors = Hash.new
     end
 
-    def storage_info
-      { type: type, location: self.class.location, identifier: identifier }
+    def upload(resource)
+      file = fetch_file(resource)
+      storage = Storage.instance.for(self.class.location)
+      identifier, url = storage.upload(@organization.id, file)
+
+      storage_info = {
+        type: type,
+        location: self.class.location,
+        identifier: identifier
+      }
+
+      [url, storage_info]
     end
 
-    def url
-      identifier_and_url[1]
-    end
-
-    def valid?
-      file && errors.empty?
+    def remove(storage_info)
+      Storage.instance
+             .for(storage_info[:location], preferred_type: storage_info[:type])
+             .remove(storage_info[:location])
     end
 
     private
-
-    def identifier
-      identifier_and_url[0]
-    end
 
     def type
       storage.class.name.demodulize.downcase
     end
 
-    def identifier_and_url
-      return @identifier_and_url if @identifier_and_url
-
-      if valid?
-        @identifier_and_url = storage.upload(@organization.id, file)
-      else
-        [nil, nil]
-      end
-    end
-
-    def file
-      @file ||= fetch_file
-    end
-
-    def storage
-      @storage ||= Storage.instance.for(self.class.location)
-    end
-
-    def fetch_file
+    def fetch_file(resource)
       temp_file = Tempfile.new("org_asset_download_#{Time.now.utc.to_i}")
       max_size_in_bytes = self.class.max_size_in_bytes
 
       begin
-        read = IO.copy_stream(open(@resource), temp_file, max_size_in_bytes + 1)
+        read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)
 
         if read > max_size_in_bytes
-          errors[:file] = "too big (> #{max_size_in_bytes} bytes)"
+          raise "file too big (> #{max_size_in_bytes} bytes)"
         end
       ensure
         temp_file.close

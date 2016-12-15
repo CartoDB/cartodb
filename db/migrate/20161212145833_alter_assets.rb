@@ -5,13 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     alter_table :assets do
-      add_foreign_key :organization_id,
-                      :organizations,
-                      type: 'uuid',
-                      on_delete: :cascade
-
-      add_index :organization_id
-
+      add_column :organization_id, :uuid
       add_column :storage_info, :json
     end
   end,

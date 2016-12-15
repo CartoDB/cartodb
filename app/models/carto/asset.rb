@@ -7,7 +7,7 @@ module Carto
     belongs_to :user, class_name: Carto::User
     belongs_to :organization, class_name: Carto::Organization
 
-    serialize :storage_info, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
 
     validate :validate_storage_info

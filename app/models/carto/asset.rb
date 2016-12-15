@@ -10,7 +10,7 @@ module Carto
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
     validates :storage_info, presence: true, if: :organization
-    validate :validate_storage_info, if: Proc.new { organization && storage_info }
+    validate :validate_storage_info, if: :storage_info
 
     before_destroy :remove_asset_from_storage, if: :organization
 

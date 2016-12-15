@@ -9,8 +9,8 @@ module Carto
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
-
-    validate :validate_storage_info
+    validates :storage_info, presence: true, if: :organization
+    validate :validate_storage_info, if: Proc.new { organization && storage_info }
 
     def before_destroy
       if organization_id
@@ -27,17 +27,11 @@ module Carto
     private
 
     def validate_storage_info
-      if organization_id
-        if storage_info
-          schema = Definition.instance.load_from_file('lib/formats/asset/storage_info.json')
-          indifferent_storage_info = storage_info.with_indifferent_access
+      schema = Definition.instance.load_from_file('lib/formats/asset/storage_info.json')
+      indifferent_storage_info = storage_info.with_indifferent_access
 
-          errs = JSON::Validator::fully_validate(schema, indifferent_storage_info)
-          errors.add(:storage_info, errs.join(', ')) if errs.any?
-        else
-          errors.add(:storage_info, 'can\'t be blank')
-        end
-      end
+      errs = JSON::Validator::fully_validate(schema, indifferent_storage_info)
+      errors.add(:storage_info, errs.join(', ')) if errs.any?
     end
   end
 end

@@ -28,7 +28,7 @@ module Carto
     end
 
     def fetch_file(resource)
-      temp_file = Tempfile.new("org_asset_download_#{Time.now.utc.to_i}")
+      temp_file = Tempfile.new("asset_download_#{Time.now.utc.to_i}")
 
       begin
         read = IO.copy_stream(open(resource), temp_file, max_size_in_bytes + 1)

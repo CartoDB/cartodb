@@ -2,9 +2,10 @@
 
 require 'spec_helper_min'
 require 'support/helpers'
+require 'helpers/storage_helper'
 
 describe Carto::Api::OrganizationAssetsController do
-  include HelperMethods
+  include HelperMethods, StorageHelper
   include_context 'organization with users helper'
 
   before(:each) { bypass_storage }
@@ -46,6 +47,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     after(:all) do
+      bypass_storage
       Carto::Asset.all.map(&:destroy)
     end
 
@@ -98,6 +100,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     after(:all) do
+      bypass_storage
       @asset.destroy
     end
 
@@ -159,6 +162,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     after(:each) do
+      bypass_storage
       @asset.destroy
     end
 
@@ -223,6 +227,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     after(:all) do
+      bypass_storage
       Carto::Asset.all.map(&:destroy)
     end
 

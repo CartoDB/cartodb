@@ -3,7 +3,7 @@
 require 'carto/storage'
 
 module Carto
-  class OrganizationAssetFile
+  class OrganizationAssetService
     DEFAULT_LOCATION = 'organization_assets'.freeze
 
     def self.location

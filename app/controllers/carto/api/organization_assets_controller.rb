@@ -20,7 +20,9 @@ module Carto
                   UnauthorizedError, with: :rescue_from_carto_error
 
       def index
-        presentation = AssetPresenter.collection_to_hash(@organization.assets)
+        presentation = @organization.assets.each do |asset|
+          AssetPresenter.new(asset).to_hash
+        end
 
         render json: presentation
       end

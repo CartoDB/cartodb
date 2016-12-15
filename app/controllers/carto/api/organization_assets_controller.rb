@@ -32,7 +32,7 @@ module Carto
       end
 
       def create
-        storage_info, url = OrganizationAssetService.new(@organization).upload(@resource)
+        storage_info, url = OrganizationAssetService.instance.upload(@organization, @resource)
 
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,

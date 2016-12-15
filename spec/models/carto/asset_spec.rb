@@ -5,10 +5,12 @@ require 'spec_helper_min'
 describe Carto::Asset do
   before(:all) do
     @organization = FactoryGirl.create(:organization)
+    @user = FactoryGirl.create(:carto_user)
   end
 
   after(:all) do
     @organization.destroy
+    @user.destroy
   end
 
   let(:storage_info) do
@@ -20,6 +22,32 @@ describe Carto::Asset do
   end
 
   describe('#validation') do
+    describe('#user asset') do
+      it 'accepts good asset' do
+        asset = Carto::Asset.new(user: @user)
+        asset.valid?.should be_true
+      end
+
+      it 'accepts nil storage_info' do
+        asset = Carto::Asset.new(user: @user)
+        asset.valid?.should be_true
+      end
+
+      it 'rejects incomplete storage_info' do
+        storage_info.delete(:type)
+        asset = Carto::Asset.new(user: @user, storage_info: storage_info)
+        asset.valid?.should be_false
+        asset.errors[:storage_info].should_not be_empty
+      end
+
+      it 'rejects spammy storage_info' do
+        storage_info[:great_idea] = 'to spam a json!'
+        asset = Carto::Asset.new(user: @user, storage_info: storage_info)
+        asset.valid?.should be_false
+        asset.errors[:storage_info].should_not be_empty
+      end
+    end
+
     describe('#organization asset') do
       it 'accepts good asset' do
         asset = Carto::Asset.new(organization_id: @organization.id,

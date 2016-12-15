@@ -13,9 +13,4 @@ class Carto::Api::AssetPresenter
       kind: @asset.kind
     }
   end
-
-  # TODO: Remove deprecated method. Use .to_hash instead of .public_values
-  def public_values
-    to_hash
-  end
 end

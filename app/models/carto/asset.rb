@@ -39,17 +39,5 @@ module Carto
         end
       end
     end
-
-    def validate_conf_schema
-      schema = Carto::Definition.instance
-                                .load_from_file('lib/formats/legends/conf.json')
-
-      parsed_conf = conf.try(:is_a?, Hash) ? conf.with_indifferent_access : conf
-      conf_errors = JSON::Validator.fully_validate(schema, parsed_conf)
-
-      if conf_errors.any?
-        errors.add(:conf, conf_errors.join(', '))
-      end
-    end
   end
 end

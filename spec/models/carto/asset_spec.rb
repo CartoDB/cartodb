@@ -21,6 +21,22 @@ describe Carto::Asset do
     }
   end
 
+  describe('#destroy') do
+    describe('#user asset') do
+      it 'should not try to remove asset from storage' do
+        Carto::OrganizationAssetService.any_instance.expects(:remove).never
+        Carto::Asset.create(user: @user).destroy
+      end
+    end
+
+    describe('#organization asset') do
+      it 'should not try to remove asset from storage' do
+        Carto::OrganizationAssetService.any_instance.expects(:remove).once
+        Carto::Asset.create(organization_id: @organization.id).destroy
+      end
+    end
+  end
+
   describe('#validation') do
     describe('#user asset') do
       it 'accepts good asset' do

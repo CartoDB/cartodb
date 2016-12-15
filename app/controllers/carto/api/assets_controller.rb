@@ -4,7 +4,7 @@ class Carto::Api::AssetsController < ::Api::ApplicationController
   ssl_required :index
 
   def index
-    assets = current_viewer.assets.each do |asset|
+    assets = current_viewer.assets.map do |asset|
       Carto::Api::AssetPresenter.new(asset).to_hash
     end
 

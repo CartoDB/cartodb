@@ -7,10 +7,10 @@ module Carto
   class OrganizationAssetService
     include Singleton
 
-    def upload(organization_id, resource)
+    def upload(organization, resource)
       file = fetch_file(resource)
       storage = Storage.instance.for(location)
-      identifier, url = storage.upload(organization_id, file)
+      identifier, url = storage.upload(organization.id, file)
 
       storage_info = {
         type: storage.class.name.demodulize.downcase,

@@ -3,7 +3,7 @@ var _ = require('underscore');
 var defaultOptions = {
   keepRunner: true,
   summary: true,
-  display: 'full',
+  display: 'short',
   vendor: [
     // Load & install the source-map-support lib (get proper stack traces from inlined source-maps)
     'node_modules/source-map-support/browser-source-map-support.js',

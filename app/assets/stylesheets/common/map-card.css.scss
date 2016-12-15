@@ -385,6 +385,35 @@ $sEditButtonSize: 50px;
   @include transition(opacity, $opacityTransition);
   z-index: 0;
 }
+.MapCard-first-map {
+  background-image: url("../images/first_map_tile.png");
+  background-size: cover;
+  height: 310px;
+  padding: 10px;
+  text-align: center;
+
+  .first-map-button {
+    cursor: pointer;
+    background:rgba(255,255,255,0.1);
+    width:100%;
+    height:100%;
+    &:hover {
+      background:rgba(255,255,255,0.2);
+    }
+    padding-top:80px;
+    font-size:21px;
+    color:#ff9e24;
+  }
+  
+  .first-map-icon {
+    width:100%;
+    height:100px;
+    background-image: url("../images/first_map_plus.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom:20px;
+  }
+}
 .MapsList.is-loading .MapCard,
 .MapsList.is-loading .MapCard--selectable,
 .MapsList.is-loading .MapCard--selectable.is-selected {

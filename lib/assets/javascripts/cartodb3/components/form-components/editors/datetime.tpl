@@ -1,1 +1,3 @@
-<button type="button" class="CDB-InputText u-txt-left js-input"><%- value %></button>
+<button type="button" class="CDB-InputText
+  <% if (!value) { %> is-empty <% } %>
+  u-txt-left js-input"><%- value ? value : 'null' %></button>

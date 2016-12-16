@@ -36,6 +36,10 @@
   background-size: 8px 8px;
 }
 
+.ColorBarContainer--rampEditing {
+  width: 171px;
+}
+
 .ColorBar {
   position: relative;
   width: 100%;
@@ -54,7 +58,7 @@
 .ColorBar.is-selected::after {
   position: absolute;
   right: 0;
-  bottom: -14px;
+  bottom: -14px - 2 * $baseSize;
   left: 0;
   height: 1px;
   background: $cMainBg;
@@ -81,6 +85,10 @@
   &:last-child {
     margin-right: 0;
   }
+}
+.ColorBar.ColorBar--inline {
+  display: inline-block;
+  width: 30px;
 }
 .ColorBar.ColorBar--spaceless {
   border-width: 1px 0;

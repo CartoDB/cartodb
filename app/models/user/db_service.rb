@@ -227,6 +227,9 @@ module CartoDB
           else
             db.run("SELECT CDB_SetUserQuotaInBytes('#{@user.database_schema}', #{@user.quota_in_bytes});")
           end
+          # _CDB_UserQuotaInBytes is called by the quota trigger, and need to be open so
+          # other users in the organization can run it (when updating shared datasets)
+          db.run(%{GRANT ALL ON FUNCTION "#{@user.database_schema}"._CDB_UserQuotaInBytes() TO PUBLIC;})
           db.run("SET search_path TO #{search_path};")
         end
       end
@@ -518,7 +521,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.18.4'
+          cdb_extension_target_version = '0.18.5'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

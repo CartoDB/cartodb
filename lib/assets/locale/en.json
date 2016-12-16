@@ -1,5 +1,5 @@
 {
-  "feedback": "Give us some feedback!",
+  "feedback": "Give us feedback!",
   "user": {
     "you": "You"
   },
@@ -28,8 +28,8 @@
     "message": "CARTO Builder has been activated in your account. <a href='https://carto.com/blog/categories/new-features' class='onboardingNotification-link'>Learn more</a> about it and let us know what you think or <a href='mailto:builder-support@carto.com' class='onboardingNotification-link'>contact us</a>. Happy mapping!"
   },
   "builder-onboarding": {
-    "title": "Welcome to the Builder,",
-    "description": "Let us show you all the new and exciting things that you can do with CARTO.",
+    "title": "Welcome to Builder,",
+    "description": "Discover the new and exciting analyses you can perform with location intelligence.",
     "take-tour": "Take a tour",
     "edit-map": "Edit your map",
     "toolbar": {
@@ -37,7 +37,7 @@
       "description": "The toolbar provides options to access your dashboard, edit your map, and configure its settings."
     },
     "configurator": {
-      "title": "Editor pane",
+      "title": "Edit pane",
       "description": "Manage all the components of your map: add layers and widgets, import datasets, customize analyses, and change styles."
     },
     "map": {
@@ -284,7 +284,8 @@
         "bins": "Buckets",
         "input-color": {
           "solid": "Solid",
-          "value": "By value"
+          "value": "By value",
+          "img": "img"
         },
         "input-number": {
           "fixed": "Fixed",
@@ -296,6 +297,11 @@
         "input-categories": {
           "null": "null",
           "others": "Others"
+        },
+        "image": {
+          "recently-title": "Most used",
+          "none": "None",
+          "show-all": "Show full collections"
         }
       }
     }
@@ -458,7 +464,8 @@
       "days-pluralize": "1 day |||| %{smart_count} days",
       "weeks-pluralize": "1 week |||| %{smart_count} weeks",
       "hours-pluralize": "hour week |||| %{smart_count} hours",
-      "gmt-convertion": "Date will be converted to GMT +0"
+      "gmt-convertion": "Date will be converted to GMT +0",
+      "invalid-date": "Invalid date"
     },
     "taglist": {
       "none": "No tags",
@@ -727,6 +734,14 @@
           },
           "add-people": "Add people"
         }
+      },
+      "add-asset": {
+        "modal-title": "Select marker image",
+        "modal-desc": "Upload your icons or just use our nice selection",
+        "set-image": "Set image",
+        "your-uploads": "Your uploads",
+        "simple-icons": "Simple Icons",
+        "pin-icons": "Pin Icons"
       },
       "add-analysis": {
         "modal-title": "Add a new analysis",
@@ -1265,7 +1280,7 @@
             "logo": "CARTO Logo",
             "widgets": "Widgets column",
             "legends": "Legends",
-            "dashboard_menu": "Show blue bar"
+            "dashboard_menu": "Show toolbar"
           }
         }
       }
@@ -2038,7 +2053,11 @@
       "valid-lat": "Must be a valid latitude",
       "valid": "Only numbers allowed",
       "delete": "Delete %{featureType}",
-      "edit": "Edit %{featureType}"
+      "edit": "Edit %{featureType}",
+      "analysis": "layers with analysis nodes",
+      "custom-sql": "layers with custom SQL applied",
+      "sync": "read only layers",
+      "disabled": "Feature edition is disabled in %{disabledLayerType}. Flatten your layer to edit data on it."
     }
   },
   "notifications": {

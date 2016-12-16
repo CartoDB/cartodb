@@ -366,7 +366,7 @@ describe Admin::VisualizationsController do
 
       get "/viz/#{name}/embed_map", {}, @headers
       last_response.status.should == 403
-      last_response.body.should =~ /cartodb-embed-error/
+      last_response.body.should include("Looks like this map is set as private or no longer exists")
     end
 
     it 'renders embed map error when an exception is raised' do

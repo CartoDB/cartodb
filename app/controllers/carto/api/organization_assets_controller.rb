@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/organization_asset_service'
+require 'carto/organization_assets_service'
 
 module Carto
   module Api
@@ -32,7 +32,7 @@ module Carto
       end
 
       def create
-        storage_info, url = OrganizationAssetService.instance.upload(@organization, @resource)
+        storage_info, url = OrganizationAssetsService.instance.upload(@organization, @resource)
 
         asset = Asset.create!(kind: params[:kind],
                               organization_id: @organization.id,

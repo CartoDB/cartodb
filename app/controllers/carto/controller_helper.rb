@@ -11,8 +11,7 @@ module Carto
     end
 
     def self.with_full_messages(active_record_exception)
-      message = active_record_exception.record.errors.full_messages.join(', ')
-      new(message)
+      new(active_record_exception.record.errors.full_messages.join(', '))
     end
   end
 

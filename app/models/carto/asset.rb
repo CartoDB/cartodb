@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'carto/organization_asset_service'
+require 'carto/organization_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
@@ -25,7 +25,7 @@ module Carto
     end
 
     def remove_asset_from_storage
-      Carto::OrganizationAssetService.instance.remove(storage_info)
+      Carto::OrganizationAssetsService.instance.remove(storage_info)
     end
   end
 end

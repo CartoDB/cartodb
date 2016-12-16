@@ -19,6 +19,17 @@ module Carto
           self.class.name.demodulize.underscore.humanize.capitalize
         end
 
+        def self.required_properties(*required_properties)
+          @required_properties ||= []
+          @required_properties += required_properties
+        end
+
+        def required_properties
+          these_required_properties = self.class.instance_eval { @required_properties }
+
+          these_required_properties || self.class.superclass.required_properties
+        end
+
         def report
           report!
         rescue => exception
@@ -27,6 +38,8 @@ module Carto
                                 name: name,
                                 properties: @format.to_hash)
         end
+
+        private
 
         def report!
           check_required_properties!
@@ -40,19 +53,6 @@ module Carto
             send(report_method)
           end
         end
-
-        def self.required_properties(*required_properties)
-          @required_properties ||= []
-          @required_properties += required_properties
-        end
-
-        def required_properties
-          these_required_properties = self.class.instance_eval { @required_properties }
-
-          these_required_properties || self.class.superclass.required_properties
-        end
-
-        private
 
         def check_required_properties!
           missing_properties = required_properties - @format.to_hash.symbolize_keys.keys

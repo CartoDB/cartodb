@@ -36,7 +36,7 @@ describe Carto::OrganizationAssetService do
       Carto::OrganizationAssetService.instance.location.should eq 'escobar_location'
     end
 
-    it 'uses default neither bucket nor location are available' do
+    it 'uses default when neither bucket nor location are available' do
       Cartodb.stubs(:get_config_if_present)
              .with(:assets, 'organization', 'bucket')
 
@@ -61,7 +61,7 @@ describe Carto::OrganizationAssetService do
       Carto::OrganizationAssetService.instance.max_size_in_bytes.should eq 123456789
     end
 
-    it 'uses default neither bucket nor location are available' do
+    it 'uses default when conf is not available' do
       Cartodb.stubs(:get_config_if_present)
              .with(:assets, 'organization', 'max_size_in_bytes')
 

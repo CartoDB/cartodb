@@ -59,7 +59,9 @@ module Carto
       end
 
       def organization_members_only
-        raise UnauthorizedError.new unless @organization.member?(current_viewer)
+        unless current_viewer.belongs_to_organization?(@organization)
+          raise UnauthorizedError.new
+        end
       end
 
       def organization_owners_only

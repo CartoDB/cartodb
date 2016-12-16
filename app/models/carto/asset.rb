@@ -18,6 +18,15 @@ module Carto
 
     before_destroy :remove_asset_from_storage, if: :organization
 
+    def self.from_organization(organization:, resource:)
+      storage_info, url = OrganizationAssetsService.instance.upload(organization, resource)
+
+      new(organization: organization,
+          public_url: url,
+          storage_info: storage_info,
+          kind: 'organization_asset')
+    end
+
     private
 
     def validate_storage_info

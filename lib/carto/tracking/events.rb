@@ -216,7 +216,7 @@ module Carto
       end
 
       class AddedWidget < AnalysisEvent; end
-      class RemovedWidget < AnalysisEvent; end
+      class DeletedWidget < AnalysisEvent; end
       class ModifiedWidget < AnalysisEvent; end
     end
   end

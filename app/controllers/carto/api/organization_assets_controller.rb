@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require 'carto/organization_assets_service'
-
 module Carto
   module Api
     class OrganizationAssetsController < ::Api::ApplicationController
@@ -32,12 +30,8 @@ module Carto
       end
 
       def create
-        storage_info, url = OrganizationAssetsService.instance.upload(@organization, @resource)
-
-        asset = Asset.create!(kind: params[:kind],
-                              organization_id: @organization.id,
-                              public_url: url,
-                              storage_info: storage_info)
+        asset = Asset.for_organization(organization: @organization, resource: @resource)
+                     .create!
 
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception

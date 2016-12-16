@@ -25,6 +25,8 @@ module Carto
       end
     end
 
+    private
+
     def get_or_set_location(location)
       existing_location = @storages[location]
       if existing_location
@@ -37,8 +39,6 @@ module Carto
     def available_storage_option
       s3_enabled? ? Carto::StorageOptions::S3 : Carto::StorageOptions::Local
     end
-
-    private
 
     def s3_enabled?
       @s3_enabled ||= Carto::StorageOptions::S3.conf.try(:any?) ? true : false

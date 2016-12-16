@@ -10,8 +10,8 @@ module Carto
       @user_message = user_message
     end
 
-    def self.with_full_messages(active_record_error)
-      message = active_record_error.record.errors.full_messages.join(', ')
+    def self.with_full_messages(active_record_exception)
+      message = active_record_exception.record.errors.full_messages.join(', ')
       new(message)
     end
   end

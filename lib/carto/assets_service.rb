@@ -4,7 +4,7 @@ require 'carto/storage'
 require 'singleton'
 
 module Carto
-  class AssetService
+  class AssetsService
     include Singleton
 
     def upload(namespace, resource)

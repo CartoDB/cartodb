@@ -5,7 +5,7 @@
   "properties": {
     "type": {
       "description": "Describes in what service the asset is hosted in",
-      "enum": [ "s3", "local" ]
+      "enum": ["s3", "local"]
     },
     "location": {
       "description": "The sub-level in which the asset is located (i.e: bucket, subdirectory)",

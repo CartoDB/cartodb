@@ -6,6 +6,8 @@ require 'singleton'
 
 module Carto
   class OrganizationAssetsService < AssetsService
+    include Singleton
+
     def upload(organization, resource)
       super(organization.id, resource)
     end

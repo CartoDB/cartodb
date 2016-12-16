@@ -1,13 +1,6 @@
-require 'helpers/storage_helper'
 require 'spec_helper_min'
 
 describe Carto::OrganizationAssetService do
-  include StorageHelper
-
-  before(:each) do
-    bypass_storage
-  end
-
   describe('#location') do
     after(:each) do
       Carto::OrganizationAssetService.instance.instance_variable_set(:@location, nil)

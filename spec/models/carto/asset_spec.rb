@@ -40,12 +40,12 @@ describe Carto::Asset do
 
   describe('#destroy') do
     it 'doesn\'t try to remove from storage if no storage_info is present' do
-      Carto::OrganizationAssetsService.instance.expects(:remove).never
+      Carto::AssetsService.any_instance.expects(:remove).never
       Carto::Asset.create(user: @user).destroy
     end
 
     it 'removes asset from storage if storage_info is present' do
-      Carto::OrganizationAssetsService.instance.expects(:remove).once
+      Carto::AssetsService.any_instance.expects(:remove).once
       Carto::Asset.create(user: @user, storage_info: storage_info).destroy
     end
   end

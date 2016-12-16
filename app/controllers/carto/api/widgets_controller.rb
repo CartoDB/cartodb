@@ -35,7 +35,7 @@ module Carto
 
         Carto::Tracking::Events::CreatedWidget.new(user_id: current_viewer.id,
                                                    visualization_id: @layer.visualization.id,
-                                                   widget_id: widget.id).report!
+                                                   widget_id: widget.id).report
 
         render_jsonp(WidgetPresenter.new(widget).to_poro, 201)
       rescue ActiveRecord::RecordInvalid
@@ -55,7 +55,7 @@ module Carto
 
         Carto::Tracking::Events::ModifiedWidget.new(user_id: current_viewer.id,
                                                     visualization_id: @layer.visualization.id,
-                                                    widget_id: @widget.id).report!
+                                                    widget_id: @widget.id).report
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
@@ -68,7 +68,7 @@ module Carto
 
         Carto::Tracking::Events::DeletedWidget.new(user_id: current_viewer.id,
                                                    visualization_id: @layer.visualization.id,
-                                                   widget_id: @widget.id).report!
+                                                   widget_id: @widget.id).report
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e

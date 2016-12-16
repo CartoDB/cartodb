@@ -18,8 +18,6 @@ module Carto
                     DEFAULT_LOCATION
     end
 
-    DEFAULT_MAX_SIZE_IN_BYTES = 1_048_576 # 1 MB
-
     def max_size_in_bytes
       return @max_size_in_bytes if @max_size_in_bytes
 
@@ -27,7 +25,7 @@ module Carto
                                                  'organization',
                                                  'max_size_in_bytes')
 
-      @max_size_in_bytes = configured || DEFAULT_MAX_SIZE_IN_BYTES
+      @max_size_in_bytes = configured || super
     end
   end
 end

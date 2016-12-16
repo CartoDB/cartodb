@@ -1,12 +1,9 @@
 # encoding: utf-8
 
 require 'carto/storage'
-require 'singleton'
 
 module Carto
   class AssetsService
-    include Singleton
-
     def upload(namespace, resource)
       file = fetch_file(resource)
       storage = Storage.instance.for(location)

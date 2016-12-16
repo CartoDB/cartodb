@@ -21,6 +21,10 @@ describe Carto::Asset do
     }
   end
 
+  let(:public_url) do
+    'https://manolo.es/es/co/bar'
+  end
+
   describe('#destroy') do
     describe('#user asset') do
       it 'should not try to remove asset from storage' do
@@ -38,34 +42,45 @@ describe Carto::Asset do
   end
 
   describe('#validation') do
-    it 'requires a user or an org' do
+    it 'requires a user or an organization' do
       asset = Carto::Asset.new
       asset.valid?.should be_false
       asset.errors[:user].should_not be_empty
       asset.errors[:organization].should_not be_empty
     end
 
+    it 'requires a public url' do
+      asset = Carto::Asset.new(organization_id: @organization.id,
+                               storage_info: storage_info)
+      asset.valid?.should be_false
+      asset.errors[:public_url].should_not be_empty
+    end
+
     describe('#user asset') do
       it 'accepts good asset' do
-        asset = Carto::Asset.new(user: @user)
+        asset = Carto::Asset.new(user: @user, public_url: public_url)
         asset.valid?.should be_true
       end
 
       it 'accepts nil storage_info' do
-        asset = Carto::Asset.new(user: @user)
+        asset = Carto::Asset.new(user: @user, public_url: public_url)
         asset.valid?.should be_true
       end
 
       it 'rejects incomplete storage_info' do
         storage_info.delete(:type)
-        asset = Carto::Asset.new(user: @user, storage_info: storage_info)
+        asset = Carto::Asset.new(user: @user,
+                                 storage_info: storage_info,
+                                 public_url: public_url)
         asset.valid?.should be_false
         asset.errors[:storage_info].should_not be_empty
       end
 
       it 'rejects spammy storage_info' do
         storage_info[:great_idea] = 'to spam a json!'
-        asset = Carto::Asset.new(user: @user, storage_info: storage_info)
+        asset = Carto::Asset.new(user: @user,
+                                 storage_info: storage_info,
+                                 public_url: public_url)
         asset.valid?.should be_false
         asset.errors[:storage_info].should_not be_empty
       end
@@ -74,12 +89,14 @@ describe Carto::Asset do
     describe('#organization asset') do
       it 'accepts good asset' do
         asset = Carto::Asset.new(organization_id: @organization.id,
-                                 storage_info: storage_info)
+                                 storage_info: storage_info,
+                                 public_url: public_url)
         asset.valid?.should be_true
       end
 
       it 'rejects nil storage_info' do
-        asset = Carto::Asset.new(organization_id: @organization.id)
+        asset = Carto::Asset.new(organization_id: @organization.id,
+                                 public_url: public_url)
         asset.valid?.should be_false
         asset.errors[:storage_info].should_not be_empty
         asset.errors[:storage_info].should eq ["can't be blank"]
@@ -88,7 +105,8 @@ describe Carto::Asset do
       it 'rejects incomplete storage_info' do
         storage_info.delete(:type)
         asset = Carto::Asset.new(organization_id: @organization.id,
-                                 storage_info: storage_info)
+                                 storage_info: storage_info,
+                                 public_url: public_url)
         asset.valid?.should be_false
         asset.errors[:storage_info].should_not be_empty
       end
@@ -96,7 +114,8 @@ describe Carto::Asset do
       it 'rejects spammy storage_info' do
         storage_info[:great_idea] = 'to spam a json!'
         asset = Carto::Asset.new(organization_id: @organization.id,
-                                 storage_info: storage_info)
+                                 storage_info: storage_info,
+                                 public_url: public_url)
         asset.valid?.should be_false
         asset.errors[:storage_info].should_not be_empty
       end

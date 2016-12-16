@@ -203,14 +203,14 @@ end
 
 Warden::Strategies.add(:saml) do
   def valid?
-    Cartodb.config[:saml_authentication].present? && params[:SAMLResponse].present?
+    Carto::SamlService.new.enabled? && params[:SAMLResponse].present?
   end
 
   def authenticate!
     return fail! unless params[:SAMLResponse]
 
-    user = Carto::SamlResponse.new(params[:SAMLResponse]).get_user
-    return fail! unless user
+    user = Carto::SamlService.new.get_user(params[:SAMLResponse])
+    return fail! unless user && user.enabled?
 
     success!(user, message: "Success")
     request.flash['logged'] = true

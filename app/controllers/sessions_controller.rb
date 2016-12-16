@@ -213,7 +213,7 @@ class SessionsController < ApplicationController
   end
 
   def saml_authentication?
-    Cartodb.config[:saml_authentication].present?
+    Carto::SamlService.new.enabled?
   end
 
   def load_organization

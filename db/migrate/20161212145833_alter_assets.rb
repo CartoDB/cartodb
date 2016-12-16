@@ -5,7 +5,12 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     alter_table :assets do
-      add_column :organization_id, :uuid
+      add_foreign_key :organization_id,
+                      :organizations,
+                      type: 'uuid'
+
+      add_index :organization_id
+
       add_column :storage_info, :json
     end
   end,

@@ -215,7 +215,7 @@ module Carto
         required_properties :user_id, :visualization_id, :widget_id
       end
 
-      class AddedWidget < AnalysisEvent
+      class CreatedWidget < AnalysisEvent
         include Carto::Tracking::Validators::Widget::Existence
       end
 

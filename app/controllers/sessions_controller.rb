@@ -2,6 +2,7 @@
 require_dependency 'google_plus_config'
 require_dependency 'google_plus_api'
 require_dependency 'oauth/github/config'
+require_dependency 'carto/saml_service'
 
 require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
@@ -34,10 +35,7 @@ class SessionsController < ApplicationController
 
     # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
     if saml_authentication? && user.nil?
-      puts "Starting redirect to SAML endpoint"
-      request = OneLogin::RubySaml::Authrequest.new
-      saml_settings = CartoDB.saml_settings(Cartodb.config[:saml_authentication])
-      redirect_to(request.create(saml_settings))
+      redirect_to Carto::SamlService.new.authentication_request
     end
   end
 
@@ -181,15 +179,8 @@ class SessionsController < ApplicationController
   def authenticate_with_saml
     return nil unless params[:SAMLResponse].present?
 
-    settings = CartoDB.saml_settings(Cartodb.config[:saml_authentication])
-    saml_response = OneLogin::RubySaml::Response.new(params[:SAMLResponse],
-                                                     :settings => settings,
-                                                     :allowed_clock_drift => 3600)
-    return nil unless saml_response.is_valid?
-    return nil unless saml_response.attributes['name_id'].present?
-
-    subdomain = CartoDB.email_to_subdomain(saml_response.attributes['name_id'])
-    authenticate!(:saml, :scope => subdomain)
+    subdomain = Carto::SamlService.new.subdomain(params[:SAMLResponse])
+    subdomain ? authenticate!(:saml, :scope => subdomain) : nil
   end
 
   def authenticate_with_credentials_or_google

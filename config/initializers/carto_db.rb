@@ -209,10 +209,6 @@ module CartoDB
   # We're ignoring this for now since this type of email is unlikely to come up.
   # This method is used by the SAML authentication framework to create appropriate
   # usernames automatically from the user's login email.
-  def self.email_to_subdomain(email)
-    email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
-  end
-
   def self.get_http_port
     config_port = Cartodb.config[:http_port]
     config_port.nil? || config_port == '' || config_port.to_i == 80 ? '' : ":#{config_port}"
@@ -280,15 +276,5 @@ module CartoDB
     uri.to_s
   rescue
     nil
-  end
-
-  # Our SAML library expects object properties
-  # Adapted from https://github.com/hryk/warden-saml-example/blob/master/application.rb
-  def self.saml_settings(settings_hash)
-    settings = OneLogin::RubySaml::Settings.new
-    settings_hash.each do |k, v|
-      settings.__send__ "#{k}=", v
-    end
-    settings
   end
 end

@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'carto/assets_service'
 require 'carto/organization_assets_service'
 
 module Carto
@@ -17,7 +18,7 @@ module Carto
 
     validate :validate_storage_info, if: :storage_info
 
-    before_destroy :remove_asset_from_storage, if: :organization
+    before_destroy :remove_asset_from_storage, if: :storage_info
 
     def self.for_organization(organization:, resource:)
       storage_info, url = OrganizationAssetsService.instance.upload(organization, resource)
@@ -39,7 +40,7 @@ module Carto
     end
 
     def remove_asset_from_storage
-      Carto::OrganizationAssetsService.instance.remove(storage_info)
+      Carto::AssetsService.instance.remove(storage_info)
     end
   end
 end

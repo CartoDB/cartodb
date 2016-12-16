@@ -39,18 +39,14 @@ describe Carto::Asset do
   end
 
   describe('#destroy') do
-    describe('#user asset') do
-      it 'should not try to remove asset from storage' do
-        Carto::OrganizationAssetsService.instance.expects(:remove).never
-        Carto::Asset.create(user: @user).destroy
-      end
+    it 'doesn\'t try to remove from storage if no storage_info is present' do
+      Carto::OrganizationAssetsService.instance.expects(:remove).never
+      Carto::Asset.create(user: @user).destroy
     end
 
-    describe('#organization asset') do
-      it 'should not try to remove asset from storage' do
-        Carto::OrganizationAssetsService.instance.expects(:remove).once
-        Carto::Asset.create(organization: @organization).destroy
-      end
+    it 'removes asset from storage if storage_info is present' do
+      Carto::OrganizationAssetsService.instance.expects(:remove).once
+      Carto::Asset.create(user: @user, storage_info: storage_info).destroy
     end
   end
 

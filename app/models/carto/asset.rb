@@ -40,7 +40,7 @@ module Carto
     end
 
     def remove_asset_from_storage
-      Carto::AssetsService.remove(storage_info)
+      Carto::AssetsService.new.remove(storage_info)
     end
   end
 end

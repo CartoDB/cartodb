@@ -33,7 +33,8 @@ module Carto
           source_id: source_id_from_params)
         widget.save!
 
-        Carto::Tracking::Events::CreatedWidget.new(user_id: current_viewer.id,
+        Carto::Tracking::Events::CreatedWidget.new(current_viewer.id,
+                                                   user_id: current_viewer.id,
                                                    visualization_id: @layer.visualization.id,
                                                    widget_id: widget.id).report
 
@@ -53,10 +54,6 @@ module Carto
         @widget.style = params[:style]
         @widget.save!
 
-        Carto::Tracking::Events::ModifiedWidget.new(user_id: current_viewer.id,
-                                                    visualization_id: @layer.visualization.id,
-                                                    widget_id: @widget.id).report
-
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e
         CartoDB::Logger.error(exception: e, message: "Error updating widget", widget: @widget)
@@ -65,10 +62,6 @@ module Carto
 
       def destroy
         @widget.destroy
-
-        Carto::Tracking::Events::DeletedWidget.new(user_id: current_viewer.id,
-                                                   visualization_id: @layer.visualization.id,
-                                                   widget_id: @widget.id).report
 
         render_jsonp(WidgetPresenter.new(@widget).to_poro)
       rescue => e

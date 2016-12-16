@@ -9,12 +9,7 @@ module Cartodb
         break
       end
     }
-    current
-  end
-
-  def self.get_config_if_present(*chain)
-    fetched_config = Cartodb.get_config(*chain)
-    fetched_config if fetched_config.present?
+    current if current.present?
   end
 
   def self.config

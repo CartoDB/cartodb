@@ -276,9 +276,6 @@ defaults: &defaults
     max_file_size: 5242880 # 5.megabytes
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
-    # This is the folder relative to the asset_host for CARTO client frontend UI files,
-    # they will overwrite the files in the assets folders
-    client_asset_path: "/client"
   avatars:
     gravatar_enabled: true
     base_url: 'example.com/avatars'

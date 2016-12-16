@@ -200,14 +200,6 @@ module CartoDB
     "#{protocol}://#{self.domain}#{self.http_port}"
   end
 
-  # Transforms an email address (e.g. firstname.lastname@example.com) into a string
-  # which can serve as a subdomain.
-  # firstname.lastname@example.com -> firstname-lastname
-  # Replaces all non-allowable characters with
-  # hyphens. This could potentially result in collisions between two specially-
-  # constructed names (e.g. John Smith-Bob and Bob-John Smith).
-  # We're ignoring this for now since this type of email is unlikely to come up.
-  # This method is used by the SAML authentication framework to create appropriate
   # usernames automatically from the user's login email.
   def self.get_http_port
     config_port = Cartodb.config[:http_port]

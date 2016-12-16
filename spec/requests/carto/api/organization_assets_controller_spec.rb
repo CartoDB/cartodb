@@ -8,8 +8,6 @@ describe Carto::Api::OrganizationAssetsController do
   include HelperMethods, StorageHelper
   include_context 'organization with users helper'
 
-  before(:each) { bypass_storage }
-
   before(:all) do
     @owner = @carto_organization.owner
     @sub = @carto_org_user_1
@@ -156,6 +154,8 @@ describe Carto::Api::OrganizationAssetsController do
 
   describe('#destroy') do
     before(:each) do
+      bypass_storage
+
       @asset = Carto::Asset.create!(storage_info: storage_info,
                                     organization_id: @carto_organization.id,
                                     public_url: 'manolo')
@@ -225,6 +225,8 @@ describe Carto::Api::OrganizationAssetsController do
         resource: 'https://manolo.es/es/co/bar.png'
       }
     end
+
+    before(:each) { bypass_storage }
 
     after(:all) do
       bypass_storage

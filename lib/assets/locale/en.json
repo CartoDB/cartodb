@@ -2055,6 +2055,7 @@
       "geometry": "Geometry",
       "geometry-edit": "You can also edit it on the map",
       "out-of-bounds-lng": "Longitude is out of bounds [-180, 180]",
+      "out-of-bounds-lat": "Latitude is out of bounds [-90, 90]",
       "valid-lng": "Must be a valid longitude",
       "valid-lat": "Must be a valid latitude",
       "valid": "Only numbers allowed",

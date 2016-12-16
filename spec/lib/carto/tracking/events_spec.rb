@@ -41,7 +41,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -59,7 +59,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -71,7 +71,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -79,7 +79,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -88,7 +88,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -98,7 +98,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:is_accesible_by_user?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -130,7 +130,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -148,7 +148,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -160,7 +160,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -168,7 +168,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -177,7 +177,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -187,7 +187,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -221,7 +221,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -239,7 +239,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -251,7 +251,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -259,7 +259,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -268,7 +268,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -278,7 +278,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -310,7 +310,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -328,7 +328,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -340,7 +340,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -348,7 +348,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -357,7 +357,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -367,7 +367,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -409,7 +409,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -429,7 +429,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -441,7 +441,7 @@ module Carto
                                         user_id: @user.id,
                                         connection: connection)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -450,7 +450,7 @@ module Carto
                                      user_id: @user.id,
                                      connection: connection)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -490,7 +490,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -508,7 +508,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -520,7 +520,7 @@ module Carto
                                         user_id: @user.id,
                                         connection: connection)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -529,7 +529,7 @@ module Carto
                                      user_id: @user.id,
                                      connection: connection)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -560,7 +560,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -574,7 +574,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -584,14 +584,14 @@ module Carto
             it 'must be reported by user' do
               @event = @event_class.new(@intruder.id, user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
           it 'reports' do
             event = @event_class.new(@user.id, user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -617,7 +617,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -645,7 +645,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -658,7 +658,7 @@ module Carto
                                         user_id: @intruder.id,
                                         mapviews: 123)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -667,7 +667,7 @@ module Carto
                                         user_id: @user.id,
                                         mapviews: 123)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -677,7 +677,7 @@ module Carto
                                      user_id: @user.id,
                                      mapviews: 123)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -688,7 +688,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -723,7 +723,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -741,7 +741,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -753,7 +753,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -761,7 +761,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -770,7 +770,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -780,7 +780,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -814,7 +814,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -832,7 +832,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -844,7 +844,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @intruder.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -852,7 +852,7 @@ module Carto
                                         visualization_id: @visualization.id,
                                         user_id: @user.id)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -861,7 +861,7 @@ module Carto
                                      visualization_id: @visualization.id,
                                      user_id: @user.id)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -871,7 +871,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -903,7 +903,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -931,7 +931,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -944,7 +944,7 @@ module Carto
                                         user_id: @intruder.id,
                                         action: 'like')
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -953,7 +953,7 @@ module Carto
                                         user_id: @user.id,
                                         action: 'like')
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -963,7 +963,7 @@ module Carto
                                      user_id: @user.id,
                                      action: 'like')
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -977,7 +977,7 @@ module Carto
                                 .with(@intruder)
                                 .returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -1020,7 +1020,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -1048,7 +1048,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -1061,7 +1061,7 @@ module Carto
                                         user_id: @intruder.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -1070,7 +1070,7 @@ module Carto
                                         user_id: @user.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -1080,7 +1080,7 @@ module Carto
                                      user_id: @user.id,
                                      analysis: analysis)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -1091,7 +1091,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -1135,7 +1135,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -1163,7 +1163,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -1176,7 +1176,7 @@ module Carto
                                         user_id: @intruder.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -1185,7 +1185,7 @@ module Carto
                                         user_id: @user.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -1195,7 +1195,7 @@ module Carto
                                      user_id: @user.id,
                                      analysis: analysis)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -1206,7 +1206,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do
@@ -1278,7 +1278,7 @@ module Carto
 
           describe '#properties validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnprocesableEntityError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnprocesableEntityError)
             end
 
             after(:all) do
@@ -1306,7 +1306,7 @@ module Carto
 
           describe '#security validation' do
             after(:each) do
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             after(:all) do
@@ -1319,7 +1319,7 @@ module Carto
                                         user_id: @intruder.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
 
             it 'must be reported by user' do
@@ -1328,7 +1328,7 @@ module Carto
                                         user_id: @user.id,
                                         analysis: analysis)
 
-              expect { @event.report! }.to raise_error(Carto::UnauthorizedError)
+              expect { @event.send(:report!) }.to raise_error(Carto::UnauthorizedError)
             end
           end
 
@@ -1338,7 +1338,7 @@ module Carto
                                      user_id: @user.id,
                                      analysis: analysis)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'reports by user with access' do
@@ -1349,7 +1349,7 @@ module Carto
 
             Carto::Visualization.any_instance.stubs(:writable_by?).with(@intruder).returns(true)
 
-            expect { event.report! }.to_not raise_error
+            expect { event.send(:report!) }.to_not raise_error
           end
 
           it 'matches current prod properites' do

@@ -7,11 +7,11 @@ describe Carto::OrganizationAssetsService do
     end
 
     it 'uses bucket when available' do
-      Cartodb.stubs(:get_config_if_present)
+      Cartodb.stubs(:get_conf)
              .with(:assets, 'organization', 'bucket')
              .returns('manolo_bucket')
 
-      Cartodb.stubs(:get_config_if_present)
+      Cartodb.stubs(:get_conf)
              .with(:assets, 'organization', 'location')
              .returns('escobar_location')
 
@@ -19,10 +19,8 @@ describe Carto::OrganizationAssetsService do
     end
 
     it 'uses location when available if bucket is not' do
-      Cartodb.stubs(:get_config_if_present)
-             .with(:assets, 'organization', 'bucket')
-
-      Cartodb.stubs(:get_config_if_present)
+      Cartodb.stubs(:get_conf).with(:assets, 'organization', 'bucket')
+      Cartodb.stubs(:get_conf)
              .with(:assets, 'organization', 'location')
              .returns('escobar_location')
 
@@ -30,10 +28,8 @@ describe Carto::OrganizationAssetsService do
     end
 
     it 'uses default when neither bucket nor location are available' do
-      Cartodb.stubs(:get_config_if_present)
-             .with(:assets, 'organization', 'bucket')
-
-      Cartodb.stubs(:get_config_if_present)
+      Cartodb.stubs(:get_conf).with(:assets, 'organization', 'bucket')
+      Cartodb.stubs(:get_conf)
              .with(:assets, 'organization', 'location')
 
       default_location = Carto::OrganizationAssetsService::DEFAULT_LOCATION
@@ -47,7 +43,7 @@ describe Carto::OrganizationAssetsService do
     end
 
     it 'uses conf when available' do
-      Cartodb.stubs(:get_config_if_present)
+      Cartodb.stubs(:get_conf)
              .with(:assets, 'organization', 'max_size_in_bytes')
              .returns(123456789)
 
@@ -55,8 +51,7 @@ describe Carto::OrganizationAssetsService do
     end
 
     it 'uses default when conf is not available' do
-      Cartodb.stubs(:get_config_if_present)
-             .with(:assets, 'organization', 'max_size_in_bytes')
+      Cartodb.stubs(:get_conf).with(:assets, 'organization', 'max_size_in_bytes')
 
       default_max_size = Carto::AssetsService.instance.max_size_in_bytes
       Carto::OrganizationAssetsService.instance.max_size_in_bytes.should eq default_max_size

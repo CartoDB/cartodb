@@ -41,8 +41,7 @@ module Carto
 
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception
-        message = exception.record.errors.full_messages.join(', ')
-        raise UnprocesableEntityError.new(message)
+        raise UnprocesableEntityError.with_full_messages(exception)
       end
 
       def destroy

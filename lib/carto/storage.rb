@@ -41,7 +41,7 @@ module Carto
     end
 
     def s3_enabled?
-      @s3_enabled ||= Carto::StorageOptions::S3.conf.try(:any?) ? true : false
+      @s3_enabled ||= Carto::StorageOptions::S3.enabled?
     end
   end
 end

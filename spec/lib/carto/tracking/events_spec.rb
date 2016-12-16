@@ -1236,6 +1236,34 @@ module Carto
           end
         end
 
+        describe CreatedWidget do
+          before(:all) do
+            @widget = FactoryGirl.create(:widget, layer: @visualization.data_layers.first)
+          end
+
+          after(:all) do
+            @widget.destroy
+          end
+
+          it 'should validate the widget exists' do
+            event = Carto::Tracking::Events::CreatedWidget.new(@user.id,
+                                                               user_id: @user.id,
+                                                               visualization_id: @visualization.id,
+                                                               widget_id: random_uuid)
+
+            expect { event.send(:report!) }.to raise_error(Carto::LoadError)
+          end
+
+          it 'should report when valid widget' do
+            event = Carto::Tracking::Events::CreatedWidget.new(@user.id,
+                                                               user_id: @user.id,
+                                                               visualization_id: @visualization.id,
+                                                               widget_id: @widget.id)
+
+            expect { event.send(:report!) }.to_not raise_error
+          end
+        end
+
         describe DeletedAnalysis do
           before (:all) { @event_class = self.class.description.constantize }
           after  (:all) { @event_class = nil }

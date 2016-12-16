@@ -11,14 +11,6 @@ module Carto
             end
           end
         end
-
-        module NonExistence
-          def check_widget_doesnt_exists!
-            if @format.fetch_record!(:widget)
-              raise Carto::UnprocesableEntityError.new('Widget exists')
-            end
-          end
-        end
       end
     end
   end

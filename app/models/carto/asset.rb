@@ -9,7 +9,11 @@ module Carto
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
+
+    validates :user,         presence: true, unless: :organization
+    validates :organization, presence: true, unless: :user
     validates :storage_info, presence: true, if: :organization
+
     validate :validate_storage_info, if: :storage_info
 
     before_destroy :remove_asset_from_storage, if: :organization

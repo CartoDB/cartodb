@@ -58,7 +58,7 @@ describe Carto::OrganizationAssetService do
       Cartodb.stubs(:get_config_if_present)
              .with(:assets, 'organization', 'max_size_in_bytes')
 
-      default_max_size = Carto::OrganizationAssetService::DEFAULT_MAX_SIZE_IN_BYTES
+      default_max_size = Carto::AssetService.instance.max_size_in_bytes
       Carto::OrganizationAssetService.instance.max_size_in_bytes.should eq default_max_size
     end
   end

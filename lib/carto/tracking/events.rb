@@ -207,25 +207,14 @@ module Carto
         required_properties :user_id, :visualization_id
       end
 
-      class WidgetEvent < Event
+      class CreatedWidget < Event
         include Carto::Tracking::Services::Segment
 
+        include Carto::Tracking::Validators::Widget::Existence
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :widget_id
-      end
-
-      class CreatedWidget < AnalysisEvent
-        include Carto::Tracking::Validators::Widget::Existence
-      end
-
-      class ModifiedWidget < AnalysisEvent
-        include Carto::Tracking::Validators::Widget::Existence
-      end
-
-      class DeletedWidget < AnalysisEvent
-        include Carto::Tracking::Validators::Widget::NonExistence
       end
     end
   end

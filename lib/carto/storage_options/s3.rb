@@ -18,10 +18,10 @@ module Carto
         mime_type = MIME::Types.type_for(filename).first.to_s
         identifier = File.join(namespace, filename)
 
-        asset = bucket.objects[identifier]
-        asset.write(file: file, content_type: mime_type, acl: :public_read)
+        s3_object = bucket.objects[identifier]
+        s3_object.write(file: file, content_type: mime_type, acl: :public_read)
 
-        [identifier, asset.public_url(secure: true).to_s]
+        [identifier, s3_object.public_url(secure: true).to_s]
       end
 
       def remove(path)

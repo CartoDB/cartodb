@@ -4,6 +4,8 @@ require 'carto/storage'
 
 module Carto
   class AssetsService
+
+    # resource can be anything accepted by OpenURI#open as a parameter
     def upload(namespace, resource)
       file = fetch_file(resource)
       storage = Storage.instance.for(location)

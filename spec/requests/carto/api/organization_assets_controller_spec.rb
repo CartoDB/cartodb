@@ -234,9 +234,9 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     it 'works for organization owners' do
-      Carto::OrganizationAssetService.instance
-                                     .stubs(:fetch_file)
-                                     .returns(Tempfile.new('test'))
+      Carto::OrganizationAssetsService.instance
+                                      .stubs(:fetch_file)
+                                      .returns(Tempfile.new('test'))
 
       post_json create_url, payload do |response|
         response.status.should eq 201

@@ -13,12 +13,13 @@ module Carto
     validates :user,         presence: true, unless: :organization
     validates :organization, presence: true, unless: :user
     validates :storage_info, presence: true, if: :organization
+    validates :public_url,   presence: true
 
     validate :validate_storage_info, if: :storage_info
 
     before_destroy :remove_asset_from_storage, if: :organization
 
-    def self.from_organization(organization:, resource:)
+    def self.for_organization(organization:, resource:)
       storage_info, url = OrganizationAssetsService.instance.upload(organization, resource)
 
       new(organization: organization,

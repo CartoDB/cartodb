@@ -4,7 +4,7 @@ module Carto
   module StorageOptions
     class S3
       def self.conf
-        Cartodb.get_config_if_present(:aws, 's3')
+        Cartodb.get_config(:aws, 's3')
       end
 
       def initialize(bucket_name)

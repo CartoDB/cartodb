@@ -7,6 +7,10 @@ module Carto
         Cartodb.get_config(:aws, 's3')
       end
 
+      def self.enabled?
+        self.class.conf.try(:any?) ? true : false
+      end
+
       def initialize(bucket_name)
         @bucket_name = bucket_name
 

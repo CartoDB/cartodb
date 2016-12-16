@@ -178,7 +178,7 @@ var Annotation = View.extend({
     var lineWidth  = this.style.get("lineWidth");
     var textAlign  = this.style.get("textAlign");
 
-    var pos        = this.mapView.latLonToPixel(latlng);
+    var pos        = this.mapView.latLngToContainerPoint(latlng);
 
     if (pos) {
 

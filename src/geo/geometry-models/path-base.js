@@ -26,6 +26,10 @@ var PathBase = GeometryBase.extend({
     this._triggerChangeEvent();
   },
 
+  getCoordinatesForMiddlePoints: function () {
+    return this.getCoordinates();
+  },
+
   update: function (latlng) {
     var latlngs = this.getCoordinates();
     latlngs.push(latlng);

@@ -68,7 +68,7 @@ var Infowindow = View.extend({
 
     var containerHeight = this.$el.outerHeight(true) + 15; // Adding some more space
     var containerWidth = this.$el.width();
-    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
     var adjustOffset = {x: 0, y: 0};
     var size = this.mapView.getSize();
     var wait_callback = 0;
@@ -156,7 +156,7 @@ var Infowindow = View.extend({
     _.bindAll(this, '_onKeyUp', '_onLoadImage', '_onLoadImageError');
 
     this.model.bind('change:content change:alternative_names change:width change:maxHeight', this.render, this);
-    this.model.bind('change:latlng', this._update, this);
+    this.model.bind('change:latlng', this._updateAndAdjustPan, this);
     this.model.bind('change:visibility', this.toggle, this);
     this.model.bind('change:template change:sanitizeTemplate', this._compileTemplate, this);
 
@@ -167,7 +167,7 @@ var Infowindow = View.extend({
     }, this);
 
     this.mapView.bind('zoomend', function () {
-      this.show(true);
+      this.show();
     }, this);
 
     this.add_related_model(this.mapView.map);
@@ -453,7 +453,7 @@ var Infowindow = View.extend({
    */
   toggle: function () {
     if (this.model.get('visibility')) {
-      this.show();
+      this.show(true);
     } else {
       this.hide();
     }
@@ -487,14 +487,14 @@ var Infowindow = View.extend({
   /**
    *  Show infowindow (update, pan, etc)
    */
-  show: function (no_pan) {
+  show: function (adjustPan) {
     $(document)
       .off('keyup', this._onKeyUp)
       .on('keyup', this._onKeyUp);
 
     if (this.model.get('visibility')) {
       this.$el.css({ left: -5000 });
-      this._update(no_pan);
+      this._update(adjustPan);
     }
   },
 
@@ -513,14 +513,18 @@ var Infowindow = View.extend({
     if (force || !this.model.get('visibility')) this._animateOut();
   },
 
+  _updateAndAdjustPan: function () {
+    this._update(true);
+  },
+
   /**
    *  Update infowindow
    */
-  _update: function (no_pan) {
+  _update: function (adjustPan) {
     if (!this.isHidden()) {
       var delay = 0;
 
-      if (!no_pan) {
+      if (adjustPan) {
         delay = this.adjustPan();
       }
 
@@ -579,7 +583,7 @@ var Infowindow = View.extend({
     }
 
     var offset = this.model.get('offset');
-    var pos = this.mapView.latLonToPixel(this.model.get('latlng'));
+    var pos = this.mapView.latLngToContainerPoint(this.model.get('latlng'));
     var left = pos.x - offset[0];
     var size = this.mapView.getSize();
     var bottom = -1 * (pos.y - offset[1] - size.y);

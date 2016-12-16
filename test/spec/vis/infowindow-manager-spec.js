@@ -40,6 +40,12 @@ describe('src/vis/infowindow-manager.js', function () {
             return layerView;
           }
         };
+      },
+      latLngToContainerPoint: function (latlng) {
+        return {
+          x: 0,
+          y: 0
+        };
       }
     });
 

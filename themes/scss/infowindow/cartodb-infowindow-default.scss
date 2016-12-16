@@ -3,6 +3,7 @@
 
 .CDB-infowindow-wrapper {
   position: absolute;
+  z-index: 1; // makes infowindows visible with Google Maps
   /* migrate old infowindows */
   .cartodb-popup.v2 {
     position: relative;

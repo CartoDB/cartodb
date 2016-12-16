@@ -33,13 +33,11 @@
 **/src/geo/gmaps/gmaps-cartodb-layer-group-view.js
 **/src/geo/gmaps/gmaps-default-map-style.js
 **/src/geo/gmaps/gmaps-layer-view.js
-**/src/geo/gmaps/gmaps-map-view.js
 **/src/geo/gmaps/gmaps-plain-layer-view.js
 **/src/geo/gmaps/gmaps-tiled-layer-view.js
 **/src/geo/gmaps/projector.js
 **/src/geo/leaflet/leaflet-cartodb-layer-group-view.js
 **/src/geo/leaflet/leaflet-gmaps-tiled-layer-view.js
-**/src/geo/leaflet/leaflet-map-view.js
 **/src/geo/leaflet/leaflet-plain-layer-view.js
 **/src/geo/leaflet/leaflet-wms-layer-view.js
 **/src/geo/map/gmaps-base-layer.js

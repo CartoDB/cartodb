@@ -30,9 +30,10 @@ module Carto
       end
 
       def create
-        asset = Asset.for_organization(organization: @organization, resource: @resource)
-                     .create!
+        asset = Asset.for_organization(organization: @organization,
+                                       resource: @resource)
 
+        asset.save!
         render json: AssetPresenter.new(asset), status: :created
       rescue ActiveRecord::RecordInvalid => exception
         raise UnprocesableEntityError.with_full_messages(exception)

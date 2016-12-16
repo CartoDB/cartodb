@@ -180,7 +180,7 @@ class SessionsController < ApplicationController
     return nil unless params[:SAMLResponse].present?
 
     subdomain = Carto::SamlService.new.subdomain(params[:SAMLResponse])
-    subdomain ? authenticate!(:saml, :scope => subdomain) : nil
+    subdomain ? authenticate!(:saml, scope: subdomain) : nil
   end
 
   def authenticate_with_credentials_or_google

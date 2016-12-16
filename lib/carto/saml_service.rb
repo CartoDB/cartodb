@@ -17,7 +17,7 @@ module Carto
       return nil unless saml_response.is_valid?
       return nil unless saml_response.attributes[username_attribute].present?
 
-      subdomain = email_to_subdomain(saml_response.attributes[username_attribute])
+      email_to_subdomain(saml_response.attributes[username_attribute])
     end
 
     def get_user(saml_response_param)

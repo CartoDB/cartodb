@@ -86,6 +86,10 @@
     margin-right: 0;
   }
 }
+.ColorBar.ColorBar--inline {
+  display: inline-block;
+  width: 30px;
+}
 .ColorBar.ColorBar--spaceless {
   border-width: 1px 0;
   border-radius: 0;

@@ -15,12 +15,34 @@ describe Carto::SamlService do
   end
 
   let(:service) do
-    Carto::SamlService.new
+    Carto::SamlService.new(nil)
   end
 
-  it 'is enabled if there is configuration' do
-    Cartodb.stubs(:config).returns(saml_authentication: saml_config)
-    service.enabled?.should be_true
+  let(:organization_service) do
+    Carto::SamlService.new(@organization)
+  end
+
+  before(:all) do
+    @organization = FactoryGirl.create(:organization, auth_saml_configuration: saml_config)
+  end
+
+  after(:all) do
+    @organization.delete
+  end
+
+  describe 'configuration support' do
+    it 'is disabled if there is no configuration or it is empty' do
+      Cartodb.stubs(:config).returns({})
+      service.enabled?.should be_false
+
+      Cartodb.stubs(:config).returns(saml_authentication: {})
+      service.enabled?.should be_false
+    end
+
+    it 'is enabled if there is configuration' do
+      Cartodb.stubs(:config).returns(saml_authentication: saml_config)
+      service.enabled?.should be_true
+    end
   end
 
   describe 'Integration logic' do
@@ -33,29 +55,29 @@ describe Carto::SamlService do
       service.stubs(:get_saml_response).returns(response_mock)
     end
 
-    describe '#subdomain' do
+    describe '#username' do
       it 'returns nil if response is invalid' do
         response_mock.stubs(:is_valid?).returns(false)
 
-        service.subdomain(saml_response_param_mock).should be_nil
+        service.username(saml_response_param_mock).should be_nil
       end
 
       it 'returns nil if a valid response does not contain the username' do
         response_mock.stubs(:is_valid?).returns(true)
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => nil)
 
-        service.subdomain(saml_response_param_mock).should be_nil
+        service.username(saml_response_param_mock).should be_nil
 
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => '')
 
-        service.subdomain(saml_response_param_mock).should be_nil
+        service.username(saml_response_param_mock).should be_nil
       end
 
       it 'returns email username from the username attribute' do
         response_mock.stubs(:is_valid?).returns(true)
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => 'wadus@carto.com')
 
-        service.subdomain(saml_response_param_mock).should eq 'wadus'
+        service.username(saml_response_param_mock).should eq 'wadus'
       end
     end
 

@@ -1,5 +1,9 @@
 module Carto
   class SamlService
+    def initialize(organization)
+      @organization = organization
+    end
+
     def enabled?
       carto_saml_configuration.present?
     end
@@ -8,12 +12,10 @@ module Carto
       OneLogin::RubySaml::Authrequest.new.create(saml_settings)
     end
 
-    def subdomain(saml_response_param)
-      saml_response = get_saml_response(saml_response_param)
-      return nil unless saml_response.is_valid?
-      return nil unless saml_response.attributes[email_attribute].present?
-
-      email_to_subdomain(saml_response.attributes[email_attribute])
+    # This only works for existing users
+    def username(saml_response_param)
+      user = get_user(saml_response_param)
+      user ? user.username : nil
     end
 
     def get_user(saml_response_param)
@@ -25,7 +27,12 @@ module Carto
       end
 
       email = response.attributes[email_attribute]
-      # Can't match the subdomain because ADFS can only redirect to one endpoint.
+      unless email.present?
+        CartoDB::Logger.debug(message: "SAML response doesn't contain the email", response: response, attribute: email_attribute)
+        return nil 
+      end
+
+      # Can't match the username because ADFS can only redirect to one endpoint.
       # So this just checks to see if we have a user with this email address.
       # We can log them in at that point since identity is confirmed by BCG's ADFS.
       ::User.filter("email ILIKE ?", email).first
@@ -53,6 +60,9 @@ module Carto
     # constructed names (e.g. John Smith-Bob and Bob-John Smith).
     # We're ignoring this for now since this type of email is unlikely to come up.
     # This method is used by the SAML authentication framework to create appropriate
+    #
+    # TODO: this is not currently used because `username` gets it based on the email.
+    # This will be either used or deleted on #11073
     def email_to_subdomain(email)
       email.strip.split('@')[0].gsub(/[^A-Za-z0-9-]/, '-').downcase
     end
@@ -69,7 +79,7 @@ module Carto
     end
 
     def carto_saml_configuration
-      saml_config = Cartodb.config[:saml_authentication]
+      saml_config = (@organization && @organization.auth_saml_configuration) || Cartodb.config[:saml_authentication]
       saml_config ? saml_config.with_indifferent_access : nil
     end
   end

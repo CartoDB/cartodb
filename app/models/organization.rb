@@ -47,6 +47,7 @@ class Organization < Sequel::Model
   one_to_many :groups
   many_to_one :owner, class_name: '::User', key: 'owner_id'
 
+  plugin :serialization, :json, :auth_saml_configuration
   plugin :validation_helpers
 
   DEFAULT_GEOCODING_QUOTA = 0

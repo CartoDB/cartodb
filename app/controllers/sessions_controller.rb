@@ -15,6 +15,7 @@ class SessionsController < ApplicationController
                :ldap_user_not_at_cartodb
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
+
   # Disables CSRF protection for the login view (create). I *think* this is safe
   # since the only transaction that a user can be tricked into doing is logging in
   # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
@@ -35,7 +36,7 @@ class SessionsController < ApplicationController
 
     # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
     if saml_authentication? && user.nil?
-      redirect_to Carto::SamlService.new.authentication_request
+      redirect_to saml_service.authentication_request
     end
   end
 
@@ -176,8 +177,8 @@ class SessionsController < ApplicationController
   def authenticate_with_saml
     return nil unless params[:SAMLResponse].present?
 
-    subdomain = Carto::SamlService.new.subdomain(params[:SAMLResponse])
-    subdomain ? authenticate!(:saml, scope: subdomain) : nil
+    username = saml_service.username(params[:SAMLResponse])
+    username ? authenticate!(:saml, scope: username) : nil
   end
 
   def authenticate_with_credentials_or_google
@@ -210,10 +211,16 @@ class SessionsController < ApplicationController
   end
 
   def saml_authentication?
-    Carto::SamlService.new.enabled?
+    saml_service.enabled?
+  end
+
+  def saml_service
+    @saml_service ||= Carto::SamlService.new(load_organization)
   end
 
   def load_organization
+    return @organization if @organization
+
     subdomain = CartoDB.subdomain_from_request(request)
     @organization = Carto::Organization.where(name: subdomain).first if subdomain
   end

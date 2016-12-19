@@ -65,6 +65,12 @@ module Carto
           end
         end
 
+        # Validators are modules that should be included in Event classes. These
+        # modules contain methods that start with 'check_'. They raise an
+        # exception if whatever condition they validate is not met. All methods
+        # that match this criteria in validator modules included in an Event
+        # class will be run automatically when .report or .report! is called for
+        # that same class.
         def authorize!
           check_methods = methods.select do |method_name|
             method_name.to_s.start_with?('check_')

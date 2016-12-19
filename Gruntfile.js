@@ -232,25 +232,47 @@
         }
       }
 
-      // configure copy js_tests_core_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_tests_core_cartodb3.files');
+      // configure copy js_test_spec_core_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_test_spec_core_cartodb3.files');
       for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_tests_core_cartodb3.files.' + i);
+        var cfg = grunt.config.get('copy.js_test_spec_core_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_tests_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          grunt.config('copy.js_test_spec_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
         } else {
-          grunt.config('copy.js_tests_core_cartodb3.files.' + i + '.src', []);
+          grunt.config('copy.js_test_spec_core_cartodb3.files.' + i + '.src', []);
         }
       }
 
-      // configure copy js_tests_client_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_tests_client_cartodb3.files');
+      // configure copy js_test_spec_client_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_test_spec_client_cartodb3.files');
       for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_tests_client_cartodb3.files.' + i);
+        var cfg = grunt.config.get('copy.js_test_spec_client_cartodb3.files.' + i);
         if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_tests_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          grunt.config('copy.js_test_spec_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
         } else {
-          grunt.config('copy.js_tests_client_cartodb3.files.' + i + '.src', []);
+          grunt.config('copy.js_test_spec_client_cartodb3.files.' + i + '.src', []);
+        }
+      }
+
+      // configure copy js_test_jasmine_core_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_test_jasmine_core_cartodb3.files');
+      for (var i = 0, l = files.length; i < l; ++i) {
+        var cfg = grunt.config.get('copy.js_test_jasmine_core_cartodb3.files.' + i);
+        if (filepath.indexOf(cfg.cwd) !== -1) {
+          grunt.config('copy.js_test_jasmine_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+        } else {
+          grunt.config('copy.js_test_jasmine_core_cartodb3.files.' + i + '.src', []);
+        }
+      }
+
+      // configure copy js_test_jasmine_client_cartodb3 to only run on changed file
+      var files = grunt.config.get('copy.js_test_jasmine_client_cartodb3.files');
+      for (var i = 0, l = files.length; i < l; ++i) {
+        var cfg = grunt.config.get('copy.js_test_jasmine_client_cartodb3.files.' + i);
+        if (filepath.indexOf(cfg.cwd) !== -1) {
+          grunt.config('copy.js_test_jasmine_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+        } else {
+          grunt.config('copy.js_test_jasmine_client_cartodb3.files.' + i + '.src', []);
         }
       }
     });
@@ -282,7 +304,7 @@
     registerCmdTask('npm-test', {cmd: 'npm', args: ['test']});
     registerCmdTask('npm-test-watch', {cmd: 'npm', args: ['run', 'test-watch']});
 
-    grunt.registerTask('pre_client',  ['copy:locale_core', 'copy:locale_client', 'copy:js_core', 'copy:js_client', 'copy:js_tests_core', 'copy:js_tests_client']);
+    grunt.registerTask('pre_client',  ['copy:locale_core', 'copy:locale_client', 'copy:js_core', 'copy:js_client', 'copy:js_test_spec_core', 'copy:js_test_spec_client', 'copy:js_test_jasmine_core', 'copy:js_test_jasmine_client']);
     grunt.registerTask('js',          ['cdb', 'pre_client', 'browserify', 'concat:js', 'jst']);
     grunt.registerTask('pre_default', ['clean', 'config', 'js']);
     grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. ' +

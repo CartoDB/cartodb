@@ -11,9 +11,9 @@ module Carto
     def subdomain(saml_response_param)
       saml_response = get_saml_response(saml_response_param)
       return nil unless saml_response.is_valid?
-      return nil unless saml_response.attributes[username_attribute].present?
+      return nil unless saml_response.attributes[email_attribute].present?
 
-      email_to_subdomain(saml_response.attributes[username_attribute])
+      email_to_subdomain(saml_response.attributes[email_attribute])
     end
 
     def get_user(saml_response_param)
@@ -21,7 +21,7 @@ module Carto
 
       return nil unless response.is_valid?
 
-      email = response.attributes[username_attribute]
+      email = response.attributes[email_attribute]
       # Can't match the subdomain because ADFS can only redirect to one endpoint.
       # So this just checks to see if we have a user with this email address.
       # We can log them in at that point since identity is confirmed by BCG's ADFS.
@@ -38,8 +38,8 @@ module Carto
       )
     end
 
-    def username_attribute
-      carto_saml_configuration['username_attribute'] || 'name_id'
+    def email_attribute
+      carto_saml_configuration['email_attribute'] || 'name_id'
     end
 
     # Transforms an email address (e.g. firstname.lastname@example.com) into a string

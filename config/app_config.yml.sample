@@ -305,7 +305,7 @@ defaults: &defaults
   #   idp_cert_fingerprint: ''
   #   assertion_consumer_service_url: 'https://localhost.lan/saml/finalize'
   #   name_identifier_format: ''
-  #   username_attribute: 'username' # 'name_id' is also common
+  #   email_attribute: 'username' # 'name_id' is also common
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants

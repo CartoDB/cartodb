@@ -23,7 +23,7 @@ module Carto
     def remove(storage_info)
       Storage.instance
              .for(storage_info[:location], preferred_type: storage_info[:type])
-             .remove(storage_info[:location])
+             .remove(storage_info[:identifier])
     end
 
     def fetch_file(resource)

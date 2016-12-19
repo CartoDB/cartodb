@@ -40,8 +40,6 @@ module Carto
                                 properties: @format.to_hash)
         end
 
-        private
-
         def report!
           check_required_properties!
           authorize!
@@ -54,6 +52,8 @@ module Carto
             send(report_method)
           end
         end
+
+        private
 
         def check_required_properties!
           missing_properties = required_properties - @format.to_hash.symbolize_keys.keys

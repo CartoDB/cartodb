@@ -354,6 +354,8 @@ describe Map do
   describe '#notify_map_change' do
     before(:each) do
       @map = Map.create(user_id: @user.id, table_id: @table.id)
+      layer = Layer.new(kind: 'tiled')
+      @map.add_layer(layer)
     end
 
     after(:each) do
@@ -361,14 +363,18 @@ describe Map do
     end
 
     it 'invalidates vizjson cache' do
-      @map.visualization.expects(:invalidate_varnish_vizjson_cache).once
+      CartoDB::Varnish.any_instance.stubs(:purge).with(@map.visualization.varnish_vizjson_key).once
       @map.notify_map_change
-      @map.visualization.stubs(:invalidate_varnish_vizjson_cache) # Needed to avoid counting the call from destroy
+      CartoDB::Varnish.any_instance.stubs(:purge) # Needed to avoid counting the call from destroy
     end
 
     it 'updates_named_maps' do
-      @map.visualization.expects(:save_named_map).once
+      named_maps_api_mock = mock
+      Carto::NamedMaps::Api.stubs(:new).with { |vis| vis.id == @map.visualization.id }.returns(named_maps_api_mock)
+      named_maps_api_mock.stubs(:show).returns(true)
+      named_maps_api_mock.stubs(:update).once
       @map.notify_map_change
+      Carto::NamedMaps::Api.unstub(:new)
     end
   end
 

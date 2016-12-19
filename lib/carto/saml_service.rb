@@ -9,11 +9,7 @@ module Carto
     end
 
     def subdomain(saml_response_param)
-      saml_response = OneLogin::RubySaml::Response.new(
-        saml_response_param,
-        settings: saml_settings,
-        allowed_clock_drift: 3600
-      )
+      saml_response = get_saml_response(saml_response_param)
       return nil unless saml_response.is_valid?
       return nil unless saml_response.attributes[username_attribute].present?
 
@@ -21,7 +17,7 @@ module Carto
     end
 
     def get_user(saml_response_param)
-      response = OneLogin::RubySaml::Response.new(saml_response_param, settings: saml_settings)
+      response = get_saml_response(saml_response_param)
 
       return nil unless response.is_valid?
 
@@ -33,6 +29,14 @@ module Carto
     end
 
     private
+
+    def get_saml_response(saml_response_param)
+      OneLogin::RubySaml::Response.new(
+        saml_response_param,
+        settings: saml_settings,
+        allowed_clock_drift: 3600
+      )
+    end
 
     def username_attribute
       carto_saml_configuration['username_attribute'] || 'name_id'
@@ -62,7 +66,7 @@ module Carto
     end
 
     def carto_saml_configuration
-      Cartodb.config[:saml_authentication]
+      Cartodb.config[:saml_authentication].with_indifferent_access
     end
   end
 end

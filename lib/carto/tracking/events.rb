@@ -1,11 +1,11 @@
 # encoding: utf-8
 
-require 'carto/tracking/formats/internal'
-require 'carto/tracking/services/segment'
-require 'carto/tracking/services/hubspot'
-require 'carto/tracking/validators/visualization'
-require 'carto/tracking/validators/user'
-require 'carto/tracking/validators/widget'
+require_dependency 'carto/tracking/formats/internal'
+require_dependency 'carto/tracking/services/segment'
+require_dependency 'carto/tracking/services/hubspot'
+require_dependency 'carto/tracking/validators/visualization'
+require_dependency 'carto/tracking/validators/user'
+require_dependency 'carto/tracking/validators/widget'
 
 module Carto
   module Tracking

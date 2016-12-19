@@ -41,6 +41,7 @@ describe('dataviews/dataview-model-base', function () {
     this.vis = new VisModel();
     spyOn(this.vis, 'reload');
     spyOn(this.map, 'getViewBounds').and.returnValue([[1, 2], [3, 4]]);
+    this.vis._onMapInstantiatedForTheFirstTime();
 
     this.analysisCollection = new Backbone.Collection();
     this.a0 = this.analysisCollection.add({id: 'a0'});
@@ -56,6 +57,7 @@ describe('dataviews/dataview-model-base', function () {
       analysisCollection: this.analysisCollection
     });
     this.model.toJSON = jasmine.createSpy('toJSON').and.returnValue({});
+    this.vis._dataviewsCollection.add(this.model);
 
     this.analysisFactory = new AnalysisFactory({
       analysisCollection: this.analysisCollection,
@@ -401,14 +403,6 @@ describe('dataviews/dataview-model-base', function () {
 
     it('should trigger a destroy event', function () {
       expect(this.removeSpy).toHaveBeenCalledWith(this.model);
-    });
-
-    it('should remove filter', function () {
-      expect(this.model.filter.remove).toHaveBeenCalled();
-    });
-
-    it('should reload the map if there is a filter and it is not empty', function () {
-      expect(this.model._reloadVis).toHaveBeenCalled();
     });
 
     it('should stop listening to events', function () {

@@ -2,6 +2,7 @@ var $ = require('jquery');
 var _ = require('underscore');
 var Vis = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
+var DataviewModelBase = require('../../../src/dataviews/dataview-model-base');
 
 var fakeVizJSON = function () {
   return {
@@ -970,8 +971,61 @@ describe('vis/vis', function () {
   });
 
   describe('when a vizjson has been loaded', function () {
+    var layer;
+    var dataview;
+
     beforeEach(function () {
+      spyOn(_, 'debounce').and.callFake(function (func) { return function () { func.apply(this, arguments); }; });
+
       this.vis = new Vis();
+      spyOn(this.vis, 'reload');
+      this.vis.load(new VizJSON(fakeVizJSON()));
+      this.vis.instantiateMap();
+      this.vis.reload.calls.mostRecent().args[0].success();
+
+      layer = this.vis.map.layers.at(0);
+      layer.getDataProvider = jasmine.createSpy('getDataProvider');
+
+      dataview = new DataviewModelBase({
+        source: {id: 'a0'}
+      }, {
+        layer: layer,
+        map: this.vis.map,
+        vis: this.vis,
+        analysisCollection: this.vis._analysisCollection
+      });
+    });
+
+    describe('when a dataview is added', function () {
+      it('should reload the map', function () {
+        this.vis.reload.calls.reset();
+        this.vis._dataviewsCollection.add(dataview);
+        expect(this.vis.reload).toHaveBeenCalled();
+      });
+    });
+
+    describe('when a dataview is removed', function () {
+      it('should reload the map if there is a filter and it is not empty', function () {
+        dataview.isFiltered = function () {
+          return true;
+        };
+
+        this.vis._dataviewsCollection.add(dataview);
+        this.vis.reload.calls.reset();
+        dataview.remove();
+        expect(this.vis.reload).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not reload the map if there is not a filter', function () {
+        dataview.isFiltered = function () {
+          return false;
+        };
+
+        this.vis._dataviewsCollection.add(dataview);
+        this.vis.reload.calls.reset();
+        dataview.remove();
+        expect(this.vis.reload).not.toHaveBeenCalled();
+      });
     });
 
     describe('.getLayers', function () {

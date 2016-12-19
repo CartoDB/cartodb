@@ -325,17 +325,16 @@ module.exports = Model.extend({
     return this._ownSourceId() === this.layer.id;
   },
 
+  isFiltered: function () {
+    var isFiltered = false;
+    if (this.filter) {
+      isFiltered = !this.filter.isEmpty();
+    }
+    return isFiltered;
+  },
+
   remove: function () {
     this._removeExistingAnalysisBindings();
-
-    if (this.filter) {
-      var isFilterEmpty = this.filter.isEmpty();
-      this.filter.remove();
-      if (!isFilterEmpty) {
-        this._reloadVis();
-      }
-    }
-
     this.trigger('destroy', this);
     this.stopListening();
   },

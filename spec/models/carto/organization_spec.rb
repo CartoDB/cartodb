@@ -30,12 +30,23 @@ describe Carto::Organization do
 
   end
 
-  describe 'deletion' do
+  describe '#destroy' do
+    before(:each) do
+      @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
+    end
+
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
-      organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-      FactoryGirl.create(:carto_group, organization: organization)
-      organization.destroy
+      FactoryGirl.create(:carto_group, organization: @organization)
+      @organization.destroy
+    end
+
+    it 'destroys organization assets' do
+      asset = FactoryGirl.create(:organization_asset,
+                                 organization_id: @organization.id)
+      @organization.destroy
+
+      asset.persisted?.should be_false
     end
   end
 end

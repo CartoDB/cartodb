@@ -27,10 +27,12 @@ module.exports = AutoStyler.extend({
     var definitions = {};
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
+      var definition = {};
       var geom = item.substring(0, item.indexOf('-'));
-      definitions[geom === 'marker' ? 'point' : geom] = { color:
+      definition = { color:
         { domain: _.pluck(categories, 'name'), range: range, attribute: model.get('column') }
       };
+      definitions[geom === 'marker' ? 'point' : geom] = definition;
     });
 
     return definitions;

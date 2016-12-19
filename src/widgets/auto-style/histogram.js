@@ -1,6 +1,7 @@
 var AutoStyler = require('./auto-styler');
 var StyleUtils = require('./style-utils');
 var cartocolor = require('cartocolor');
+var _ = require('underscore');
 
 var HistogramAutoStyler = AutoStyler.extend({
   getStyle: function () {
@@ -48,19 +49,27 @@ var HistogramAutoStyler = AutoStyler.extend({
     );
     var bins = this.dataviewModel.get('bins');
     var attr = this.dataviewModel.get('column');
+    var styles = this.styles;
+    var isCustomDefinition = this.styles.custom;
 
     ['marker-fill', 'polygon-fill', 'line-color'].forEach(function (item) {
       if (cartocss.search(StyleUtils.getAttrRegex(item, false)) >= 0) {
         var scales = HistogramAutoStyler.SCALES_MAP[item][shape];
         var geom = item.substring(0, item.indexOf('-'));
+        var definition = {};
+        if (isCustomDefinition === true) {
+          definition = _.extend(definition, styles.definition);
+        } else {
+          definition = {
+            color: {
+              range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
+              quantification: scales.quantification,
+              attribute: attr
+            }
+          };
+        }
 
-        definitions[geom === 'marker' ? 'point' : geom] = {
-          color: {
-            range: cartocolor[scales.palette][bins] || cartocolor[scales.palette][Object.keys(cartocolor[scales.palette]).length],
-            quantification: scales.quantification,
-            attribute: attr
-          }
-        };
+        definitions[geom === 'marker' ? 'point' : geom] = definition;
       }
     });
 

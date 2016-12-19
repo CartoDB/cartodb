@@ -28,9 +28,8 @@ module.exports = cdb.core.Model.extend({
     this.bind('change:style', this.activeAutoStyler, this);
   },
 
-  activeAutoStyler: function (e) {
-    var style = e && e.changed && e.changed.style;
-    if (this.isAutoStyleEnabled(style) && !this.autoStyler) {
+  activeAutoStyler: function () {
+    if (this.isAutoStyleEnabled() && !this.autoStyler) {
       this.autoStyler = AutoStylerFactory.get(this.dataviewModel, this.get('style'));
     }
   },
@@ -45,7 +44,18 @@ module.exports = cdb.core.Model.extend({
     var wAttrs = _.pick(attrs, this.get('attrsNames'));
     this.set(wAttrs);
     this.dataviewModel.update(attrs);
+    this._triggerChangesInAutoStyle();
     return !!(this.changedAttributes() || this.dataviewModel.changedAttributes());
+  },
+
+  _triggerChangesInAutoStyle: function () {
+    var changed = this.changed && this.changed.style && this.changed.style.auto_style && this.changed.style.auto_style.definition;
+    var previous = this.previousAttributes();
+    var former = previous.style && previous.style.auto_style && previous.style.auto_style.definition;
+
+    if (!_.isEqual(changed, former)) {
+      this.trigger('customAutoStyle', this);
+    }
   },
 
   /**
@@ -91,14 +101,11 @@ module.exports = cdb.core.Model.extend({
     if (!this.isAutoStyleEnabled()) return;
 
     var layer = this.dataviewModel.layer;
-
-    if (!layer.get('initialStyle')) {
-      var initialStyle = layer.get('cartocss');
-      if (!initialStyle && layer.get('meta')) {
-        initialStyle = layer.get('meta').cartocss;
-      }
-      layer.set('initialStyle', initialStyle);
+    var initialStyle = layer.get('cartocss');
+    if (!initialStyle && layer.get('meta')) {
+      initialStyle = layer.get('meta').cartocss;
     }
+    layer.set('initialStyle', initialStyle);
 
     var style = this.autoStyler.getStyle();
     layer.set('cartocss', style);
@@ -123,9 +130,8 @@ module.exports = cdb.core.Model.extend({
     var cartocss = this.dataviewModel.layer.get('cartocss');
 
     if (style && style.auto_style && style.auto_style.definition) {
-      var toRet = _.extend(style.auto_style, {cartocss: this.dataviewModel.layer.get('cartocss')});
-
-      return _.extend(toRet, {definition: this.autoStyler.getDef(cartocss)});
+      var toRet = _.extend(style.auto_style, {cartocss: cartocss});
+      return _.extend({}, toRet, {definition: this.autoStyler.getDef(cartocss)});
     } else {
       return {
         definition: this.autoStyler.getDef(cartocss),

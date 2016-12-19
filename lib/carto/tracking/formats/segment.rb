@@ -4,9 +4,10 @@ module Carto
   module Tracking
     module Formats
       class Segment
-        def initialize(user: nil, visualization: nil, hash: {})
+        def initialize(user: nil, visualization: nil, widget: nil, hash: {})
           @user = user
           @visualization = visualization
+          @widget = widget
           @connection = hash[:connection]
           @origin = hash[:origin]
           @page = hash[:page]
@@ -25,6 +26,7 @@ module Carto
           properties.merge!(map_liking_properties) if @action
           properties.merge!(trending_map_properties) if @mapviews
           properties.merge!(analysis_properties) if @analysis
+          properties.merge!(widget_properties) if @widget
 
           properties[:page] = @page if @page
           properties[:quota_overage] = @quota_overage if @quota_overage
@@ -103,6 +105,10 @@ module Carto
             vis_author_email: visualization_user.email,
             vis_author_id: visualization_user.id
           }
+        end
+
+        def widget_properties
+          { widget_type: @widget.type }
         end
 
         def event_properties

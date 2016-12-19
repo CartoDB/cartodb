@@ -291,6 +291,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
 	spec/lib/carto/legend_migrator_spec.rb \
+	spec/lib/carto/mapcapped_visualization_updater_spec.rb \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
 	spec/helpers/application_helper_spec.rb \

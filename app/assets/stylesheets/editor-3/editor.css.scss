@@ -85,7 +85,6 @@
   bottom: -1px !Important; // Resets standard scroll bar position
   height: 4px !Important; // Resets standard scroll bar color
   background: #AAA;
-  min-width: 120px;
   pointer-events: all;
   opacity: 0.6;
 }
@@ -114,6 +113,7 @@
     }
     .CDB-Widget.CDB-Widget--timeSeries {
       padding: 12px 0;
+      min-height: auto;
       .CDB-Widget-content {
         margin-right: 12px;
         margin-left: 12px;

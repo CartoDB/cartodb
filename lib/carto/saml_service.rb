@@ -19,7 +19,10 @@ module Carto
     def get_user(saml_response_param)
       response = get_saml_response(saml_response_param)
 
-      return nil unless response.is_valid?
+      unless response.is_valid?
+        CartoDB::Logger.debug(message: "SAML response not valid", response: response)
+        return nil
+      end
 
       email = response.attributes[email_attribute]
       # Can't match the subdomain because ADFS can only redirect to one endpoint.
@@ -66,7 +69,8 @@ module Carto
     end
 
     def carto_saml_configuration
-      Cartodb.config[:saml_authentication].with_indifferent_access
+      saml_config = Cartodb.config[:saml_authentication]
+      saml_config ? saml_config.with_indifferent_access : nil
     end
   end
 end

@@ -44,9 +44,10 @@ class SessionsController < ApplicationController
              authenticate_with_ldap
            elsif saml_authentication?
              authenticate_with_saml
-           else
-             authenticate_with_credentials_or_google
            end
+
+    # This acts as a fallback if previous authentications didn't return a valid user.
+    user = authenticate_with_credentials_or_google unless user
 
     (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 

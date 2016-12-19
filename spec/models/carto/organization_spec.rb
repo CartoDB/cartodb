@@ -1,11 +1,12 @@
 # coding: UTF-8
 require_relative '../../spec_helper'
 require_relative '../organization_shared_examples'
+require 'helpers/storage_helper'
 
 describe Carto::Organization do
+  include StorageHelper
 
   it_behaves_like 'organization models' do
-
     before(:each) do
       # INFO: forcing ActiveRecord initialization so expectations on number of queries don't count AR queries
       @the_organization = Carto::Organization.where(id: @organization.id).first
@@ -42,11 +43,12 @@ describe Carto::Organization do
     end
 
     it 'destroys organization assets' do
+      bypass_storage
       asset = FactoryGirl.create(:organization_asset,
                                  organization_id: @organization.id)
-      @organization.destroy
 
-      asset.persisted?.should be_false
+      @organization.destroy
+      Carto::Asset.exists?(asset.id).should be_false
     end
   end
 end

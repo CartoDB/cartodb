@@ -17,7 +17,7 @@ module Carto
       include VisualizationsControllerHelper
 
       ssl_required :index, :show
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search, :get_type
+      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map, :search
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
       skip_before_filter :api_authorization_required, only: [:index, :vizjson2, :vizjson3, :is_liked, :static_map]
@@ -27,6 +27,7 @@ module Carto
       before_filter :load_by_name_or_id, only: [:vizjson2, :vizjson3]
       before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :show, :stats, :list_watching,
                                                 :static_map]
+      before_filter :load_common_data, only: [:index]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -35,6 +36,18 @@ module Carto
         render_jsonp(to_json(@visualization))
       rescue KeyError
         head(404)
+      end
+
+      def load_common_data
+        return true unless current_user.present? && current_user.should_load_common_data?
+        begin
+          visualizations_api_url = CartoDB::Visualization::CommonDataService.build_url(self)
+          current_user.load_common_data(visualizations_api_url)
+        rescue Exception => e
+          # We don't block the load of the dashboard because we aren't able to load common data
+          CartoDB.notify_exception(e, {user:current_user})
+          return true
+        end
       end
 
       def index
@@ -191,36 +204,6 @@ module Carto
         end
 
         render :json => '{"visualizations":' + layers.to_json + ' ,"total_entries":' + layers.size.to_s + '}'
-      end
-
-      def get_type
-        username = current_user.username
-        query = params[:table]
-
-        layers = Sequel::Model.db.fetch("
-            SELECT type, name FROM (
-              SELECT v.type, v.name, v.user_id, v.id
-              FROM visualizations AS v
-                  INNER JOIN users AS u ON u.id=v.user_id
-                  LEFT JOIN external_sources AS es ON es.visualization_id = v.id
-                  LEFT JOIN external_data_imports AS edi ON edi.external_source_id = es.id AND (SELECT state FROM data_imports WHERE id = edi.data_import_id) <> 'failure'
-              WHERE edi.id IS NULL AND v.user_id=(SELECT id FROM users WHERE username=?) AND v.type = 'table' AND v.name = ?
-            ) AS results",
-            username, query
-          ).all
-
-        if !current_user.has_feature_flag?('bbg_disabled_shared_empty_dataset') then
-          emptyDatasetName = Cartodb.config[:shared_empty_dataset_name]
-
-          layers.each_with_index do |layer, index|
-            if layer[:name] == emptyDatasetName then
-              layers.delete_at(index)
-              break
-            end
-          end
-        end
-
-        render :json => layers[0].to_json
       end
 
       private

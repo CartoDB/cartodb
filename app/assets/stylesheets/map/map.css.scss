@@ -110,6 +110,11 @@ div.map {
       border: solid 1px #666;
     }
   }
+  div.cartodb-legend.choropleth li.graph {
+    border: 1px solid $Black;
+    border-radius: 0;
+
+  }
 
   &.table { // TABLE'S MAP
 
@@ -885,24 +890,49 @@ div.map {
   }
 }
 
-div.cartodb-edit-buttons {
-  border-top:1px solid #E5E5E5;
-  display:block;
-}
-
 // FOR INFOWINDOWS //
+
+div.cartodb-popup.v2 {
+  box-shadow: none;
+    &:before {
+        border-top: 14px solid $DarkGrey3; 
+    }
+
+    a.cartodb-popup-close-button {
+    right: 6px;
+    top: 6px;
+    width: 20px;
+    height: 20px;
+    background: none;
+    border-radius: 18px;
+    box-shadow: none;
+      &:before, &:after {
+          width: 12px;
+          background: $Grey2;
+      }
+      &:hover {
+          box-shadow: none;
+      }
+    }
+  div.cartodb-popup-content-wrapper {
+      background: $DarkGrey3;
+  }
+  div.cartodb-popup-tip-container:before {
+    background: none;
+  }
+}
 
 .cartodb-popup-content-wrapper
 div.cartodb-edit-buttons {
   width:100%;
-  padding:11px 0 6px;
-  margin:10px 0 0;
-  letter-spacing: -4px;
+  padding-top: 6px;
+  margin-top: 6px;
+  border-top: 1px solid $Black;
 
   // CartoDB id
   .cartodb_id {
     @include inline-block();
-    color: #999;
+    color: #Grey2;
     font-size: 13px;
     margin-top:8px;
     letter-spacing:0px;
@@ -913,29 +943,31 @@ div.cartodb-edit-buttons {
   div.right {width:auto; margin-top:4px;}
 
   a.button {
+    @include bb_button_style;
+    background-repeat: no-repeat;
+    color: transparent;
     float:left;
+    margin-right: 6px;
+    width: 19px;
     vertical-align:top;
-    width:29px;
-    height:24px;
-    border-right:0;
-    margin:0;
-    padding:0!important; 
-    margin:0;
-    text-indent: -9999px;
-    font-size:0;
-    line-height:0;
-    letter-spacing:0px;
-    @include border-radius(0);
 
-    &.edit_data {@include edit-bottom-states(10, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-    &.edit_geo {@include edit-bottom-states(-20, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-    &.remove {@include edit-bottom-states(-52, 6, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
+    
+
+    &.edit_data {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: 5px -295px;
+    }
+    &.edit_geo {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: -26px -295px;
+    }
+    &.remove {
+      background-image: url('../images/map-sfff5cc66d9.png');
+      background-position: -58px -296px;
+    }
 
     &.add_point {@include edit-bottom-states(-80, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
     &.add_annotation {@include edit-bottom-states(-110, 7, #F9F9F9, #EBEBEB, #DEDEDE, #E1E1E1);}
-
-    &:first-child {@include border-left-radius(2px);}
-    &:last-child {@include border-right-radius(2px); border-right:1px solid #B0B0B0;}
   }
 }
 
@@ -951,6 +983,34 @@ div.cartodb-popup.dark  {
     }
   }
 }
+
+div.cartodb-popup p,  {
+  font-family: "Bloomberg_Prop_K"; 
+  color: $White;
+}
+
+div.cartodb-popup h4 {
+  font-family: "Bloomberg_Prop_K";
+  font-weight: normal;
+  color: #787878;
+}
+
+
+div.cartodb-tooltip-content-wrapper {
+  background-color: $DarkGrey3;
+  border-radius: 0;
+}
+
+div.cartodb-tooltip-content { 
+    padding: 6px 12px;
+    > h4 {
+      color: #787878;
+    }
+    > p {
+      color: #fff;
+    }
+
+  }
 
 .search-bar-container {
   background: none !important;

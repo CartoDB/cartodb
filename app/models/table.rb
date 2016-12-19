@@ -531,7 +531,9 @@ class Table
       tags:         (@user_table.tags.split(',') if @user_table.tags),
       privacy:      UserTable::PRIVACY_VALUES_TO_TEXTS[default_privacy_value],
       user_id:      self.owner.id,
-      kind:         kind
+      kind:         kind,
+      exportable:   esv.nil? ? true : esv.exportable,
+      export_geom:  esv.nil? ? true : esv.export_geom
     )
 
     member.store

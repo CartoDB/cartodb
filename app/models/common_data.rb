@@ -62,6 +62,8 @@ class CommonData
         "source" => row["source"],
         "license" => row["license"],
         "tags" => row["tags"],
+        "exportable" => row["exportable"],
+        "export_geom" => row["export_geom"],
         "geometry_types" => %Q[{#{row["table"]["geometry_types"].join(',')}}],
         "rows" => row["table"]["row_count"],
         "size" => row["table"]["size"],

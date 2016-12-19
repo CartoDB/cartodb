@@ -78,6 +78,8 @@ module CartoDB
       attribute :permission_id,       String
       attribute :locked,              Boolean, default: false
       attribute :legend_style,        String, default: ''
+      attribute :exportable,          Boolean, default: true
+      attribute :export_geom,         Boolean, default: true
       attribute :parent_id,           String, default: nil
       attribute :kind,                String, default: KIND_GEOM
       attribute :prev_id,             String, default: nil
@@ -106,7 +108,7 @@ module CartoDB
         @old_privacy = @privacy
       end
 
-      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name)
+      def self.remote_member(name, user_id, privacy, description, tags, license, source, attributions, display_name, exportable, export_geom)
         Member.new({
           name: name,
           user_id: user_id,
@@ -117,10 +119,12 @@ module CartoDB
           source: source,
           attributions: attributions,
           display_name: display_name,
+          exportable: exportable,
+          export_geom: export_geom,
           type: TYPE_REMOTE})
       end
 
-      def update_remote_data(privacy, description, tags, license, source, attributions, display_name)
+      def update_remote_data(privacy, description, tags, license, source, attributions, display_name, exportable, export_geom)
         changed = false
         if self.privacy != privacy
           changed = true
@@ -149,6 +153,14 @@ module CartoDB
         if self.attributions != attributions
           changed = true
           self.attributions = attributions
+        end
+        if self.exportable != exportable
+          changed = true
+          self.exportable = exportable
+        end
+        if self.export_geom != export_geom
+          changed = true
+          self.export_geom = export_geom
         end
         changed
       end

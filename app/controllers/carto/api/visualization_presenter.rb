@@ -64,6 +64,8 @@ module Carto
           children: @visualization.children.map { |v| children_poro(v) },
           liked: @current_viewer ? @visualization.is_liked_by_user_id?(@current_viewer.id) : false,
           legend_style: @visualization.legend_style,
+          exportable: @visualization.exportable,
+          export_geom: @visualization.export_geom,
           url: url
         }
         poro.merge!( { related_tables: related_tables } ) if @options.fetch(:related, true)

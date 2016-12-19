@@ -225,8 +225,9 @@ describe SessionsController do
       failed_saml_response.stubs(:is_valid?).returns(false)
       Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)
 
-      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: subdomain).once
-      SessionsController.any_instance.expects(:authenticate!).with(:password, scope: 'www.example.com').returns(nil).once
+      sessions_controller = SessionsController.any_instance
+      sessions_controller.expects(:authenticate!).with(:saml, scope: subdomain).once
+      sessions_controller.expects(:authenticate!).with(:password, scope: 'www.example.com').returns(nil).once
 
       post create_session_url(user_domain: nil, SAMLResponse: 'xx')
 

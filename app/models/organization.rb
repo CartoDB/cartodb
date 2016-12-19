@@ -45,6 +45,7 @@ class Organization < Sequel::Model
 
   one_to_many :users
   one_to_many :groups
+  one_to_many :assets
   many_to_one :owner, class_name: '::User', key: 'owner_id'
 
   plugin :validation_helpers

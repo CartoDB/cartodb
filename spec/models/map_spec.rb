@@ -351,6 +351,27 @@ describe Map do
     end
   end
 
+  describe '#notify_map_change' do
+    before(:each) do
+      @map = Map.create(user_id: @user.id, table_id: @table.id)
+    end
+
+    after(:each) do
+      @map.destroy
+    end
+
+    it 'invalidates vizjson cache' do
+      @map.visualization.expects(:invalidate_varnish_vizjson_cache).once
+      @map.notify_map_change
+      @map.visualization.stubs(:invalidate_varnish_vizjson_cache) # Needed to avoid counting the call from destroy
+    end
+
+    it 'updates_named_maps' do
+      @map.visualization.expects(:save_named_map).once
+      @map.notify_map_change
+    end
+  end
+
   describe '#updated_at' do
     it 'is updated after saving the map' do
       map         = Map.create(user_id: @user.id, table_id: @table.id)

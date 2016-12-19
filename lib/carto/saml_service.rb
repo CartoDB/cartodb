@@ -28,8 +28,8 @@ module Carto
 
       email = response.attributes[email_attribute]
       unless email.present?
-        CartoDB::Logger.debug(message: "SAML response doesn't contain the email", response: response, attribute: email_attribute)
-        return nil 
+        CartoDB::Logger.debug(message: "SAML response lacks email", response: response, attribute: email_attribute)
+        return nil
       end
 
       # Can't match the username because ADFS can only redirect to one endpoint.

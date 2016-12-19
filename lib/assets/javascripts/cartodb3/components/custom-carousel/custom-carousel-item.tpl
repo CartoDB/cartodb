@@ -1,3 +1,0 @@
-<button>
-  <%= template %>
-</button>

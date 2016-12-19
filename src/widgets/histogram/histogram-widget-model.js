@@ -32,10 +32,9 @@ module.exports = WidgetModel.extend({
     this.dataviewModel.set('enabled', !isCollapsed);
   },
 
-  _updateAutoStyle: function (e) {
-    var styles = (e && e.changed && e.changed.style) || this.get('style');
+  _updateAutoStyle: function (m, style) {
     if (this.autoStyler) {
-      this.autoStyler.updateColors(styles);
+      this.autoStyler.updateColors(style);
     }
     if (this.isAutoStyle()) {
       this.reapplyAutoStyle();

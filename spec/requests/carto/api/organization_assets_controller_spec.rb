@@ -38,9 +38,8 @@ describe Carto::Api::OrganizationAssetsController do
   describe('#index') do
     before(:all) do
       5.times do
-        Carto::Asset.create!(storage_info: storage_info,
-                             organization_id: @carto_organization.id,
-                             public_url: 'manolo')
+        FactoryGirl.create(:organization_asset,
+                           organization_id: @carto_organization.id)
       end
     end
 
@@ -92,9 +91,8 @@ describe Carto::Api::OrganizationAssetsController do
 
   describe('#show') do
     before(:all) do
-      @asset = Carto::Asset.create!(storage_info: storage_info,
-                                    organization_id: @carto_organization.id,
-                                    public_url: 'manolo')
+      @asset = FactoryGirl.create(:organization_asset,
+                                  organization_id: @carto_organization.id)
     end
 
     after(:all) do
@@ -156,9 +154,8 @@ describe Carto::Api::OrganizationAssetsController do
     before(:each) do
       bypass_storage
 
-      @asset = Carto::Asset.create!(storage_info: storage_info,
-                                    organization_id: @carto_organization.id,
-                                    public_url: 'manolo')
+      @asset = FactoryGirl.create(:organization_asset,
+                                  organization_id: @carto_organization.id)
     end
 
     after(:each) do

@@ -40,12 +40,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = if ldap_authentication?
-             authenticate_with_ldap
-           elsif saml_authentication?
-             authenticate_with_saml
-           end
-
+    user = authenticate_with_ldap if ldap_authentication?
+    user = authenticate_with_saml if !user && saml_authentication?
     # This acts as a fallback if previous authentications didn't return a valid user.
     user = authenticate_with_credentials_or_google unless user
 

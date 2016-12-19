@@ -31,14 +31,11 @@ describe Carto::Organization do
   end
 
   describe 'deletion' do
-
     it 'destroys its groups through the extension' do
       Carto::Group.any_instance.expects(:destroy_group_with_extension).once
       organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
-      group = FactoryGirl.create(:carto_group, organization: organization)
+      FactoryGirl.create(:carto_group, organization: organization)
       organization.destroy
     end
-
   end
-
 end

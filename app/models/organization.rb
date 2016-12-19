@@ -124,7 +124,7 @@ class Organization < Sequel::Model
   end
 
   def before_destroy
-    destroy_assets
+    ess destroy_assets
     destroy_groups
   end
 
@@ -465,8 +465,7 @@ class Organization < Sequel::Model
   private
 
   def destroy_assets
-    assets.map { |asset| Carto::Asset.find(asset.id) }
-          .map(&:destroy)
+    assets.map { |asset| Carto::Asset.find(asset.id) }.map(&:destroy).all?
   end
 
   def destroy_groups

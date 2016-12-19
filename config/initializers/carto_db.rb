@@ -200,7 +200,6 @@ module CartoDB
     "#{protocol}://#{self.domain}#{self.http_port}"
   end
 
-  # usernames automatically from the user's login email.
   def self.get_http_port
     config_port = Cartodb.config[:http_port]
     config_port.nil? || config_port == '' || config_port.to_i == 80 ? '' : ":#{config_port}"

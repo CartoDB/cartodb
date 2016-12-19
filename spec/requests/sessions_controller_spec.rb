@@ -190,6 +190,28 @@ describe SessionsController do
     end
   end
 
+  describe 'SAML' do
+    it 'redirects to SAML authentication request if enabled' do
+      authentication_request = "http://fakesaml.com/authenticate"
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
+
+      get login_url(user_domain: nil)
+      response.location.should eq authentication_request
+      response.status.should eq 302
+    end
+
+    it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
+      subdomain = "samlsubdomain"
+      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+      Carto::SamlService.any_instance.stubs(:subdomain).returns(subdomain)
+
+      SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: subdomain).once
+
+      post create_session_url(user_domain: nil, SAMLResponse: 'xx')
+    end
+  end
+
   private
 
   def bypass_named_maps

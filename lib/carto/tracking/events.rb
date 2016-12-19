@@ -5,6 +5,7 @@ require_dependency 'carto/tracking/services/segment'
 require_dependency 'carto/tracking/services/hubspot'
 require_dependency 'carto/tracking/validators/visualization'
 require_dependency 'carto/tracking/validators/user'
+require_dependency 'carto/tracking/validators/widget'
 
 module Carto
   module Tracking
@@ -17,6 +18,17 @@ module Carto
 
         def name
           self.class.name.demodulize.underscore.humanize.capitalize
+        end
+
+        def self.required_properties(*required_properties)
+          @required_properties ||= []
+          @required_properties += required_properties
+        end
+
+        def required_properties
+          these_required_properties = self.class.instance_eval { @required_properties }
+
+          these_required_properties || self.class.superclass.required_properties
         end
 
         def report
@@ -41,17 +53,6 @@ module Carto
           end
         end
 
-        def self.required_properties(*required_properties)
-          @required_properties ||= []
-          @required_properties += required_properties
-        end
-
-        def required_properties
-          these_required_properties = self.class.instance_eval { @required_properties }
-
-          these_required_properties || self.class.superclass.required_properties
-        end
-
         private
 
         def check_required_properties!
@@ -64,6 +65,12 @@ module Carto
           end
         end
 
+        # Validators are modules that should be included in Event classes. These
+        # modules contain methods that start with 'check_'. They raise an
+        # exception if whatever condition they validate is not met. All methods
+        # that match this criteria in validator modules included in an Event
+        # class will be run automatically when .report or .report! is called for
+        # that same class.
         def authorize!
           check_methods = methods.select do |method_name|
             method_name.to_s.start_with?('check_')
@@ -204,6 +211,16 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+      end
+
+      class CreatedWidget < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::Widget::Existence
+        include Carto::Tracking::Validators::Visualization::Writable
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :visualization_id, :widget_id
       end
     end
   end

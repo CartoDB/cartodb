@@ -8,7 +8,7 @@ module Carto
       end
 
       def self.enabled?
-        self.class.conf.try(:any?) ? true : false
+        conf.try(:any?) ? true : false
       end
 
       def initialize(bucket_name)

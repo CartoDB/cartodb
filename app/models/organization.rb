@@ -124,7 +124,7 @@ class Organization < Sequel::Model
   end
 
   def before_destroy
-    ess destroy_assets
+    return false unless destroy_assets
     destroy_groups
   end
 

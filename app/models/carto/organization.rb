@@ -10,6 +10,7 @@ module Carto
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization
     has_many :groups, inverse_of: :organization, order: :display_name
+    has_many :assets, class_name: Carto::Asset, dependent: :destroy
 
     before_destroy :destroy_groups_with_extension
 

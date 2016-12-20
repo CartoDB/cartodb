@@ -180,24 +180,6 @@ var Vis = View.extend({
     return overlays.indexOf('zoom') > -1;
   },
 
-  _setupSublayers: function (layers, options) {
-    options.sublayer_options = [];
-
-    _.each(layers.slice(1), function (lyr) {
-      if (lyr.type === 'layergroup') {
-        _.each(lyr.options.layer_definition.layers, function (l) {
-          options.sublayer_options.push({ visible: (l.visible !== undefined ? l.visible : true) });
-        });
-      } else if (lyr.type === 'namedmap') {
-        _.each(lyr.options.named_map.layers, function (l) {
-          options.sublayer_options.push({ visible: (l.visible !== undefined ? l.visible : true) });
-        });
-      } else if (lyr.type === 'torque') {
-        options.sublayer_options.push({ visible: (lyr.options.visible !== undefined ? lyr.options.visible : true) });
-      }
-    });
-  },
-
   _invalidateSize: function () {
     this.mapView.invalidateSize();
   },

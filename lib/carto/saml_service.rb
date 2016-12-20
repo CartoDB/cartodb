@@ -78,7 +78,7 @@ module Carto
       settings = OneLogin::RubySaml::Settings.new
       settings_hash.each do |k, v|
         method = "#{k}="
-        settings.__send__ method, v if settings.respond_to?(method)
+        settings.__send__(method, v) if settings.respond_to?(method)
       end
       settings
     end

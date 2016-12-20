@@ -49,12 +49,12 @@ module Carto
       OneLogin::RubySaml::Response.new(
         saml_response_param,
         settings: saml_settings,
-        allowed_clock_drift: carto_saml_configuration['allowed_clock_drift'] || 3600
+        allowed_clock_drift: carto_saml_configuration[:allowed_clock_drift] || 3600
       )
     end
 
     def email_attribute
-      carto_saml_configuration['email_attribute'] || 'name_id'
+      carto_saml_configuration[:email_attribute] || 'name_id'
     end
 
     # Transforms an email address (e.g. firstname.lastname@example.com) into a string
@@ -84,7 +84,7 @@ module Carto
     end
 
     def carto_saml_configuration
-      @organization.try(:auth_saml_configuration).try(:with_indifferent_access)
+      @organization.try(:auth_saml_configuration)
     end
   end
 end

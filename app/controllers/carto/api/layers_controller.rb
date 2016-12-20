@@ -55,7 +55,7 @@ module Carto
             message: 'Error creating layer',
             errors: layer.errors.full_messages
           )
-          raise UnprocesableEntityError(layer.errors.full_messages)
+          raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end
 
@@ -71,33 +71,16 @@ module Carto
             message: 'Error creating layer',
             errors: layer.errors.full_messages
           )
-          raise UnprocesableEntityError(layer.errors.full_messages)
+          raise UnprocesableEntityError.new(layer.errors.full_messages)
         end
       end
 
       def map_update
-        layers = @layers.map do |layer|
-          layer_params = params[:layers].present? ? params[:layers].find { |p| p['id'] == layer.id } : params
+        update
+      end
 
-          # don't allow to override table_name and user_name
-          new_layer_options = layer_params[:options]
-          if new_layer_options && new_layer_options.include?('table_name')
-            new_layer_options['table_name'] = layer.options['table_name']
-          end
-          if new_layer_options && new_layer_options.include?('user_name')
-            new_layer_options['user_name'] = layer.options['user_name']
-          end
-
-          layer.update_attributes(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
-          layer
-        end
-
-        if layers.count > 1
-          layers_json = layers.map { |l| Carto::Api::LayerPresenter.new(l, viewer_user: current_user).to_poro }
-          render_jsonp(layers: layers_json)
-        else
-          render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
-        end
+      def user_update
+        update
       end
 
       def map_destroy
@@ -145,6 +128,34 @@ module Carto
 
       def show(owner)
         render_jsonp Carto::Api::LayerPresenter.new(@layer, viewer_user: current_user, user: owner).to_json
+      end
+
+      def update
+        layers = @layers.map do |layer|
+          layer_params = params[:layers].present? ? params[:layers].find { |p| p['id'] == layer.id } : params
+
+          # don't allow to override table_name and user_name
+          new_layer_options = layer_params[:options]
+          if new_layer_options && new_layer_options.include?('table_name')
+            new_layer_options['table_name'] = layer.options['table_name']
+          end
+          if new_layer_options && new_layer_options.include?('user_name')
+            new_layer_options['user_name'] = layer.options['user_name']
+          end
+
+          unless layer.update_attributes(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
+            raise UnprocesableEntityError.new(layer.errors.full_messages)
+          end
+
+          layer
+        end
+
+        if layers.count > 1
+          layers_json = layers.map { |l| Carto::Api::LayerPresenter.new(l, viewer_user: current_user).to_poro }
+          render_jsonp(layers: layers_json)
+        else
+          render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
+        end
       end
 
       def destroy

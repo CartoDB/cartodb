@@ -1,6 +1,8 @@
 module Carto
   class SamlService
     def initialize(organization)
+      raise "organization can't be nil" unless organization
+
       @organization = organization
     end
 

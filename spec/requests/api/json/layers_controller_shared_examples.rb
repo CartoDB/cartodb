@@ -4,6 +4,7 @@ shared_examples_for "layers controllers" do
   include Rack::Test::Methods
   include Warden::Test::Helpers
   include CacheHelper
+  include Carto::Factories::Visualizations
 
   include_context 'users helper'
 

@@ -74,7 +74,7 @@ module Carto
 
           from_layer = Carto::Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
           from_letter = params[:from_letter]
-          update_layer_node_styles(@layer, from_layer, from_letter)
+          update_layer_node_styles(layer, from_layer, from_letter)
 
           render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
         else
@@ -174,7 +174,7 @@ module Carto
         nodes_to_move.each do |lns|
           # Move LayerNodeStyles from the old layer if given.
           lns.source_id = lns.source_id.gsub(from_letter, to_letter)
-          to_layer.add_layer_node_style(lns)
+          to_layer.layer_node_styles << lns
         end
       end
 

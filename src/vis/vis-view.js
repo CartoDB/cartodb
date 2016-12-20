@@ -1,16 +1,15 @@
 var _ = require('underscore');
 var $ = require('jquery');
-var util = require('cdb.core.util');
 var View = require('../core/view');
 var MapViewFactory = require('../geo/map-view-factory');
-var OverlaysFactory = require('./overlays-factory');
 var InfowindowManager = require('./infowindow-manager');
 var TooltipManager = require('./tooltip-manager');
 var FeatureEvents = require('./feature-events');
 var MapCursorManager = require('./map-cursor-manager');
 var MapEventsManager = require('./map-events-manager');
 var GeometryManagementController = require('./geometry-management-controller');
-var LegendsView = require('../geo/ui/legends/legends-view.js');
+var LegendsView = require('../geo/ui/legends/legends-view');
+var OverlaysView = require('../geo/ui/overlays-view');
 
 /**
  * Visualization creation
@@ -19,12 +18,11 @@ var Vis = View.extend({
   initialize: function (options) {
     this.model.once('load', this.render, this);
     this.model.on('invalidateSize', this._invalidateSize, this);
-    this.model.on('change:loading', this._toggleLoader, this);
-    this.model.overlaysCollection.on('add remove change', this._resetOverlays, this);
+
+    // TODO: Inject the ovelaysCollection directly
+    this._overlaysCollection = this.model.overlaysCollection;
 
     this.settingsModel = options.settingsModel;
-
-    this._overlayViews = [];
 
     _.bindAll(this, '_onResize');
   },
@@ -91,7 +89,15 @@ var Vis = View.extend({
 
     this._renderLegends();
 
-    this._resetOverlays({});
+    var overlaysView = new OverlaysView({
+      visModel: this.model,
+      visView: this,
+      mapModel: this.model.map,
+      mapView: this.mapView,
+      overlaysCollection: this._overlaysCollection
+    });
+    overlaysView.render();
+    this.$el.append(overlaysView.el);
 
     // If a CartoDB embed map is hidden by default, its
     // height is 0 and it will need to recalculate its size
@@ -123,87 +129,6 @@ var Vis = View.extend({
     }, this);
   },
 
-  _resetOverlays: function (options) {
-    var overlays = this.model.overlaysCollection.toJSON();
-    // Sort the overlays by its internal order
-    overlays = _.sortBy(overlays, function (overlay) {
-      return overlay.order === null ? Number.MAX_VALUE : overlay.order;
-    });
-
-    // clean current overlays
-    while (this._overlayViews.length !== 0) {
-      this._overlayViews.pop().clean();
-    }
-
-    this._createOverlays(overlays, options);
-  },
-
-  _createOverlays: function (overlays, options) {
-    _(overlays).each(function (data) {
-      var type = data.type;
-      var overlay = this._addOverlay(data);
-      var opt = data.options;
-
-      // IE<10 doesn't support the Fullscreen API
-      if (type === 'fullscreen' && util.browser.ie && util.browser.ie.version <= 10) return;
-
-      // Decide to create or not the custom overlays
-      if (type === 'image' || type === 'text' || type === 'annotation') {
-        var isDevice = (data.options.device === 'mobile');
-        if (this.mobile !== isDevice) return;
-        if (!options[type] && options[type] !== undefined) {
-          return;
-        }
-      }
-
-      // We show/hide the overlays
-      if (overlay && (type in options) && options[type] === false) {
-        overlay.hide();
-      }
-
-      if (type === 'fullscreen' && options[type] || type === 'fullscreen' && opt.display && options[type] === undefined) {
-        overlay.show();
-      }
-
-      if (type === 'search' && options[type] || type === 'search' && opt.display && options[type] === undefined) {
-        overlay.show();
-      }
-
-      if (type === 'search') {
-        overlay.updatePosition(this._hasZoomOverlay());
-      }
-    }, this);
-  },
-
-  _addOverlay: function (overlay) {
-    var v = OverlaysFactory.create(overlay.type, overlay, {
-      visView: this,
-      map: this.model.map
-    });
-
-    if (v) {
-      this.mapView.addOverlay(v);
-
-      this._overlayViews.push(v);
-
-      v.bind('clean', function () {
-        for (var i in this._overlayViews) {
-          var o = this._overlayViews[i];
-          if (v.cid === o.cid) {
-            this._overlayViews.splice(i, 1);
-            return;
-          }
-        }
-      }, this);
-    }
-    return v;
-  },
-
-  _hasZoomOverlay: function () {
-    var overlays = this.model.overlaysCollection.pluck('type');
-    return overlays.indexOf('zoom') > -1;
-  },
-
   _invalidateSize: function () {
     this.mapView.invalidateSize();
   },
@@ -214,27 +139,6 @@ var Vis = View.extend({
     return _.compact(this.model.map.layers.map(function (layer) {
       return self.mapView.getLayerViewByLayerCid(layer.cid);
     }));
-  },
-
-  _toggleLoader: function () {
-    var loaderOverlay = this._getLoaderOverlay();
-    if (loaderOverlay) {
-      if (this.model.get('loading')) {
-        loaderOverlay.show();
-      } else {
-        loaderOverlay.hide();
-      }
-    }
-  },
-
-  _getLoaderOverlay: function () {
-    return this._getOverlayViewByType('loader');
-  },
-
-  _getOverlayViewByType: function (type) {
-    return _(this._overlayViews).find(function (v) {
-      return v.type === type;
-    });
   },
 
   _onResize: function () {

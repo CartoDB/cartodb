@@ -228,8 +228,7 @@ describe Carto::Api::LayersController do
         response_body = response.body.with_indifferent_access
         response_body['total_entries'].should eq 2
         response_body['layers'].count { |l| l['kind'] != 'tiled' }.should eq 1
-        response_body['layers'][0]['id'].should eq layer.id
-        response_body['layers'][1]['id'].should eq layer2.id
+        response_body['layers'].map { |l| l['id'] }.sort.should eq [layer.id, layer2.id].sort
       end
     end
 

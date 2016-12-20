@@ -26,7 +26,7 @@ module Carto
       end
 
       def user_index
-        index(@user)
+        index(@user, owner: @user)
       end
 
       def map_show
@@ -118,9 +118,9 @@ module Carto
         end
       end
 
-      def index(parent)
+      def index(parent, owner: nil)
         layers = parent.layers.map do |layer|
-          Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
+          Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner || owner_user(layer)).to_poro
         end
 
         render_jsonp layers: layers, total_entries: layers.size

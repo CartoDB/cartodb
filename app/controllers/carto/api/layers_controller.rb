@@ -8,12 +8,14 @@ module Carto
 
       ssl_required :show, :layers_by_map, :custom_layers_by_user
 
-      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_destroy]
-      before_filter :load_map, only: [:map_index, :map_show, :map_create, :map_destroy]
+      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_update, :user_destroy]
       before_filter :load_user_layer, only: [:user_show, :user_destroy]
-      before_filter :load_map_layer, only: [:map_show, :map_destroy]
+      before_filter :load_user_layers, only: [:user_update]
 
-      before_filter :ensure_writable_map, only: [:map_create, :map_destroy]
+      before_filter :load_map, only: [:map_index, :map_show, :map_create, :map_update, :map_destroy]
+      before_filter :ensure_writable_map, only: [:map_create, :map_update, :map_destroy]
+      before_filter :load_map_layer, only: [:map_show, :map_destroy]
+      before_filter :load_map_layers, only: [:map_update]
 
       rescue_from LoadError,
                   UnprocesableEntityError,
@@ -70,6 +72,31 @@ module Carto
             errors: layer.errors.full_messages
           )
           raise UnprocesableEntityError(layer.errors.full_messages)
+        end
+      end
+
+      def map_update
+        layers = @layers.map do |layer|
+          layer_params = params[:layers].present? ? params[:layers].find { |p| p['id'] == layer.id } : params
+
+          # don't allow to override table_name and user_name
+          new_layer_options = layer_params[:options]
+          if new_layer_options && new_layer_options.include?('table_name')
+            new_layer_options['table_name'] = layer.options['table_name']
+          end
+          if new_layer_options && new_layer_options.include?('user_name')
+            new_layer_options['user_name'] = layer.options['user_name']
+          end
+
+          layer.update_attributes(layer_params.slice(:options, :kind, :infowindow, :tooltip, :order))
+          layer
+        end
+
+        if layers.count > 1
+          layers_json = layers.map { |l| Carto::Api::LayerPresenter.new(l, viewer_user: current_user).to_poro }
+          render_jsonp(layers: layers_json)
+        else
+          render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
         end
       end
 
@@ -132,8 +159,13 @@ module Carto
       end
 
       def load_user_layer
-        layer_id = uuid_parameter(:id)
-        @layer = @user.layers.find(layer_id)
+        load_user_layers
+        raise LoadError.new('Layer not found') unless @layers.length == 1
+        @layer = @layers.first
+      end
+
+      def load_user_layers
+        @layers = layers_ids.map { |id| @user.layers.find(id) }
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Layer not found')
       end
@@ -154,10 +186,25 @@ module Carto
       end
 
       def load_map_layer
-        layer_id = uuid_parameter(:id)
-        @layer = @map.layers.find(layer_id)
+        load_map_layers
+        raise LoadError.new('Layer not found') unless @layers.length == 1
+        @layer = @layers.first
+      end
+
+      def load_map_layers
+        @layers = layers_ids.map { |id| @map.layers.find(id) }
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Layer not found')
+      end
+
+      def layers_ids
+        if params[:id]
+          [params[:id]]
+        elsif params[:layers]
+          params[:layers].map { |l| l['id'] }
+        else
+          raise LoadError.new('Layer not found')
+        end
       end
 
       def owner_user(layer)

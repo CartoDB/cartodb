@@ -360,12 +360,12 @@ CartoDB::Application.routes.draw do
     get     '(/user/:user_domain)(/u/:user_domain)/api/v1/imports/service/:id/oauth_callback/'    => 'imports#service_oauth_callback',      as: :api_v1_imports_service_oauth_callback
 
     # Custom layers grouped by user
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_users_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'              => 'layers#user_index',   as: :api_v1_users_layers_index
     # No show action
 
     # Map layers
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_maps_layers_index
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id'            => 'layers#show_for_map',    as: :api_v1_maps_layers_show
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'                => 'layers#map_index',   as: :api_v1_maps_layers_index
+    get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id'            => 'layers#map_show',    as: :api_v1_maps_layers_show
 
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'                => 'synchronizations#index',     as: :api_v1_synchronizations_index
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show

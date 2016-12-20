@@ -17,26 +17,19 @@ module Carto
                   UnprocesableEntityError,
                   UnauthorizedError, with: :rescue_from_carto_error
 
-      def layers_by_map
-        layers = @map.layers.map do |layer|
-          Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
-        end
-
-        render_jsonp layers: layers, total_entries: layers.size
+      def map_index
+        index(@map)
       end
 
-      def custom_layers_by_user
-        layers = @user.layers.map do |layer|
-          Carto::Api::LayerPresenter.new(layer, viewer_user: @user, user: @user).to_poro
-        end
-        render_jsonp layers: layers, total_entries: layers.size
+      def user_index
+        index(@user)
       end
 
-      def show_for_user
+      def user_show
         show(current_user)
       end
 
-      def show_for_map
+      def map_show
         show(@map.user)
       end
 
@@ -44,6 +37,14 @@ module Carto
 
       def show(owner)
         render_jsonp Carto::Api::LayerPresenter.new(@layer, viewer_user: current_user, user: owner).to_json
+      end
+
+      def index(parent)
+        layers = parent.layers.map do |layer|
+          Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
+        end
+
+        render_jsonp layers: layers, total_entries: layers.size
       end
 
       def ensure_current_user

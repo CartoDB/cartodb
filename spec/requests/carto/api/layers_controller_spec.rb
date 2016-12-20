@@ -12,31 +12,24 @@ describe Carto::Api::LayersController do
       Rails.application.routes.draw do
         scope module: 'carto/api', format: :json do
           # Custom layers grouped by user
-          get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'              => 'layers#custom_layers_by_user',   as: :api_v1_users_layers_index
+          get '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'              => 'layers#user_index',   as: :api_v1_users_layers_index
 
           # Map layers
-          get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'                => 'layers#layers_by_map',   as: :api_v1_maps_layers_index
-          get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id'            => 'layers#show_for_map',    as: :api_v1_maps_layers_show
+          get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'                => 'layers#map_index',   as: :api_v1_maps_layers_index
+          get '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id'            => 'layers#map_show',    as: :api_v1_maps_layers_show
 
           # From old models controller
 
           # User layers
-          get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#show',    as: :api_v1_users_layers_show
-          post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#create',  as: :api_v1_users_layers_create
-          put    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#update',  as: :api_v1_users_layers_update
-          delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#destroy', as: :api_v1_users_layers_destroy
-
-          # User assets
-          post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets'     => 'assets#create',  as: :api_v1_users_assets_create
-          delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/assets/:id' => 'assets#destroy', as: :api_v1_users_assets_destroy
-
-          # Maps
-          put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:id' => 'maps#update',  as: :api_v1_maps_update
+          get    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#user_show',    as: :api_v1_users_layers_show
+          post   '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers'     => 'layers#user_create',  as: :api_v1_users_layers_create
+          put    '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#user_update',  as: :api_v1_users_layers_update
+          delete '(/user/:user_domain)(/u/:user_domain)/api/v1/users/:user_id/layers/:id' => 'layers#user_destroy', as: :api_v1_users_layers_destroy
 
           # Map layers
-          post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#create',  as: :api_v1_maps_layers_create
-          put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers(/:id)' => 'layers#update',  as: :api_v1_maps_layers_update
-          delete '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#destroy', as: :api_v1_maps_layers_destroy
+          post   '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers'     => 'layers#map_create',  as: :api_v1_maps_layers_create
+          put    '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers(/:id)' => 'layers#map_update',  as: :api_v1_maps_layers_update
+          delete '(/user/:user_domain)(/u/:user_domain)/api/v1/maps/:map_id/layers/:id' => 'layers#map_destroy', as: :api_v1_maps_layers_destroy
         end
       end
     end

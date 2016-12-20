@@ -199,58 +199,27 @@
         grunt.config('copy.vendor.src', []);
       }
 
-      // configure copy app to only run on changed file
-      var files = grunt.config.get('copy.app.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.app.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.app.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.app.files.' + i + '.src', []);
-        }
-      }
+      var COPY_PATHS = [
+        'app',
+        'js_core_cartodb3',
+        'js_client_cartodb3',
+        'js_test_spec_core_cartodb3',
+        'js_test_spec_client_cartodb3',
+        'js_test_jasmine_core_cartodb3',
+        'js_test_jasmine_client_cartodb3'
+      ];
 
-      // configure copy js_core_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_core_cartodb3.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_core_cartodb3.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.js_core_cartodb3.files.' + i + '.src', []);
-        }
-      }
-
-      // configure copy js_client_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_client_cartodb3.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_client_cartodb3.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.js_client_cartodb3.files.' + i + '.src', []);
-        }
-      }
-
-      // configure copy js_tests_core_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_tests_core_cartodb3.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_tests_core_cartodb3.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_tests_core_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.js_tests_core_cartodb3.files.' + i + '.src', []);
-        }
-      }
-
-      // configure copy js_tests_client_cartodb3 to only run on changed file
-      var files = grunt.config.get('copy.js_tests_client_cartodb3.files');
-      for (var i = 0, l = files.length; i < l; ++i) {
-        var cfg = grunt.config.get('copy.js_tests_client_cartodb3.files.' + i);
-        if (filepath.indexOf(cfg.cwd) !== -1) {
-          grunt.config('copy.js_tests_client_cartodb3.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
-        } else {
-          grunt.config('copy.js_tests_client_cartodb3.files.' + i + '.src', []);
+      // configure copy paths to only run on changed files
+      for (var j = 0, m = COPY_PATHS.length; j < m; ++j) {
+        var copy_path = COPY_PATHS[j];
+        var files = grunt.config.get('copy.' + copy_path + '.files');
+        for (var i = 0, l = files.length; i < l; ++i) {
+          var cfg = grunt.config.get('copy.' + copy_path + '.files.' + i);
+          if (filepath.indexOf(cfg.cwd) !== -1) {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', filepath.replace(cfg.cwd, ''));
+          } else {
+            grunt.config('copy.' + copy_path + '.files.' + i + '.src', []);
+          }
         }
       }
     });

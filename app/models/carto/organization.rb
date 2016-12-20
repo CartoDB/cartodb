@@ -9,7 +9,7 @@ module Carto
 
     serialize :auth_saml_configuration, CartoJsonSymbolizerSerializer
     before_validation :ensure_auth_saml_configuration
-    validates :json, carto_json_symbolizer: true
+    validates :auth_saml_configuration, carto_json_symbolizer: true
 
     has_many :users, inverse_of: :organization, order: :username
     belongs_to :owner, class_name: Carto::User, inverse_of: :owned_organization

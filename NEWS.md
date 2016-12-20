@@ -25,6 +25,8 @@ Development
 * Snapshots (backend: #10928) allow to save and share map state.
 * Icon styling through in component (#11005)
 * Allow to set opacity for color ramps (#10952)
+* SAML Authentication for organizations. Example:
+  * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://myorg.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username'})`
 
 ### Bug fixes
 * Categories legend are now static (#10972)
@@ -114,8 +116,6 @@ sudo make install
 * Salesforce and ArcGIS connectors can now be enabled independently of `cartodb_com_hosted` (in the `datasources` section in `app_config.yml.sample`)
 * Custom labels for legends (#10763)
 * Builder is enabled by default
-* SAML Authentication for organizations. Example:
-  * `Carto::Organization.where(name: 'orgname').first.update_attribute(:auth_saml_configuration, { issuer: 'localhost.lan', idp_sso_target_url: 'http://example.com/saml/signon/', idp_cert_fingerprint: 'EF:C4:C3:50:BE:F3:14:F3:69:45:8B:A7:95:BF:69:99:BA:26:69:7C', assertion_consumer_service_url: 'https://myorg.localhost.lan/saml/finalize', name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified', email_attribute: 'username'})`
 * New option for centering the map according a layer data (#10116).
 
 ### Bug Fixes

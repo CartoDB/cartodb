@@ -2,8 +2,9 @@ Development
 -----------
 
 ### Features
-* New organization assets:
+* New organization assets (#11034):
   * REST API available at `/api/v1/organization/<org_id>/assets`
+  * Has DB migration
   * Assets stored in s3 if configured, local storage is used otherwise.
     * S3: bucket must exists and its name be present as `bucket` in conf.
     * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
@@ -15,8 +16,34 @@ Development
       max_size_in_bytes: 1048576 # optional, default is 1 MB
       location: 'organization_assets' # optional subdirectory for local assets, default is 'organization_assets'
 ```
+* Pluggable frontends (#11022):
+  * Allow to override some parts of the frontend for customization
+  * Changes the asset build process:
+    * The core frontend is in `lib/assets/core`
+    * The customizations are in `lib/assets/client`
+    * The end result are in `lib/assets/`
+* Snapshots (backend: #10928) allow to save and share map state.
+* Icon styling through in component (#11005)
+* Allow to set opacity for color ramps (#10952)
 
 ### Bug fixes
+* Categories legend are now static (#10972)
+* Fixed a bug with vizjson invalidation (#11092). It was introduced in #10934
+* Refactor Layer model (#10934)
+* Fix bugs where legends where being hidden by reordering layers (#11088)
+* Avoid loading all rake code in resque workers (#11069)
+* Fix analysis notification in running state (#11079)
+* Fix color for "Other" category (#11078)
+* Custom errors for latitude/longitude out of bounds (#11060, #11048)
+* Fix timeseries widget height (#11077)
+* Fix scrollbar in carousel (#11061)
+* Correctly refresh map after adding/editing map geometries (#11064)
+* Return embed private instead of 404 in visualization embeds where the visualization doesn't exist (#11056)
+* Fix error loading builder in visualizations without permissions (#10996)
+* Correctly update legend styles (with custom titles) (#10889, #10904)
+* Hide sync options in builder table view for non-owners (#10986)
+* Fix issues with edition of custom color infowindows (#10985)
+
 
 4.0.x (2016-12-05)
 ------------------

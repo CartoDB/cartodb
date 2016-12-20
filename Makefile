@@ -162,10 +162,8 @@ WORKING_SPECS_4 = \
 WORKING_SPECS_5 = \
 	spec/requests/api/assets_spec.rb \
 	spec/requests/carto/api/assets_controller_spec.rb \
-	spec/requests/api/user_layers_spec.rb \
 	spec/requests/api/json/layers_controller_spec.rb \
 	spec/requests/carto/api/layers_controller_spec.rb \
-	spec/requests/api/map_layers_spec.rb \
 	spec/requests/api/json/records_controller_spec.rb \
 	spec/requests/carto/api/records_controller_spec.rb \
 	spec/requests/api/json/columns_controller_spec.rb \

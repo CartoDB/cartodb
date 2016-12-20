@@ -156,6 +156,12 @@ module Carto
         else
           render_jsonp Carto::Api::LayerPresenter.new(layers[0], viewer_user: current_user).to_poro
         end
+      rescue RuntimeError => e
+        CartoDB::Logger.error(
+          message: 'Error updating layer',
+          exception: e
+        )
+        render_jsonp({ description: e.message }, 400)
       end
 
       def destroy

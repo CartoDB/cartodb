@@ -15,10 +15,6 @@ describe Carto::SamlService do
   end
 
   let(:service) do
-    Carto::SamlService.new(nil)
-  end
-
-  let(:organization_service) do
     Carto::SamlService.new(@organization)
   end
 
@@ -32,15 +28,14 @@ describe Carto::SamlService do
 
   describe 'configuration support' do
     it 'is disabled if there is no configuration or it is empty' do
-      Cartodb.stubs(:config).returns({})
-      service.enabled?.should be_false
+      org = FactoryGirl.build(:organization, auth_saml_configuration: nil)
+      Carto::SamlService.new(org).enabled?.should be_false
 
-      Cartodb.stubs(:config).returns(saml_authentication: {})
-      service.enabled?.should be_false
+      org = FactoryGirl.build(:organization, auth_saml_configuration: {})
+      Carto::SamlService.new(org).enabled?.should be_false
     end
 
     it 'is enabled if there is configuration' do
-      Cartodb.stubs(:config).returns(saml_authentication: saml_config)
       service.enabled?.should be_true
     end
   end

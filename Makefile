@@ -77,6 +77,7 @@ WORKING_SPECS_1 = \
 	spec/helpers/uuidhelper_spec.rb \
 	spec/helpers/url_validator_spec.rb \
 	spec/models/carto/visualization_spec.rb \
+	spec/models/carto/map_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
 	spec/models/carto/template_spec.rb \
 	spec/models/carto/group_spec.rb \
@@ -295,6 +296,10 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
 	spec/helpers/application_helper_spec.rb \
+	spec/models/carto/asset_spec.rb \
+	spec/requests/carto/api/organization_assets_controller_spec.rb \
+	spec/lib/carto/assets_service_spec.rb \
+	spec/lib/carto/organization_assets_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

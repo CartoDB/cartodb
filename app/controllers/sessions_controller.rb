@@ -227,11 +227,13 @@ class SessionsController < ApplicationController
   end
 
   def saml_authentication?
-    saml_service.enabled?
+    saml_service.try(:enabled?)
   end
 
   def saml_service
-    @saml_service ||= Carto::SamlService.new(load_organization)
+    if load_organization
+      @saml_service ||= Carto::SamlService.new(load_organization)
+    end
   end
 
   def load_organization

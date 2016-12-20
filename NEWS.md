@@ -2,6 +2,19 @@ Development
 -----------
 
 ### Features
+* New organization assets:
+  * REST API available at `/api/v1/organization/<org_id>/assets`
+  * Assets stored in s3 if configured, local storage is used otherwise.
+    * S3: bucket must exists and its name be present as `bucket` in conf.
+    * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
+```yaml
+  # app_config.yml example for organization assets
+  assets:
+    organization:
+      bucket: <bucket name> # required, bucket must exist beforehand
+      max_size_in_bytes: 1048576 # optional, default is 1 MB
+      location: 'organization_assets' # optional subdirectory for local assets, default is 'organization_assets'
+```
 
 ### Bug fixes
 
@@ -75,19 +88,6 @@ sudo make install
 * Custom labels for legends (#10763)
 * Builder is enabled by default
 * New option for centering the map according a layer data (#10116).
-* New organization assets:
-  * REST API available at `/api/v1/organization/<org_id>/assets`
-  * Assets stored in s3 if configured, local storage is used otherwise.
-    * S3: bucket must exists and its name be present as `bucket` in conf.
-    * Local: automatic as long as S3 is not configured. You may configure max size in bytes for an asset or a custom subdirectory as shown below.
-```yaml
-  # app_config.yml example for organization assets
-  assets:
-    organization:
-      bucket: <bucket name> # required, bucket must exist beforehand
-      max_size_in_bytes: 1048576 # optional, default is 1 MB
-      location: 'organization_assets' # optional subdirectory for local assets, default is 'organization_assets'
-```
 
 ### Bug Fixes
 * Incorrect error message when password validation failed

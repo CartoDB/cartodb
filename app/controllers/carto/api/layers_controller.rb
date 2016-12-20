@@ -13,8 +13,12 @@ module Carto
       before_filter :load_user_layer, only: [:show_for_user]
       before_filter :load_map_layer, only: [:show_for_map]
 
+      rescue_from LoadError,
+                  UnprocesableEntityError,
+                  UnauthorizedError, with: :rescue_from_carto_error
+
       def layers_by_map
-        layers = @parent.layers(@parent).map do |layer|
+        layers = @map.layers.map do |layer|
           Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner_user(layer)).to_poro
         end
 
@@ -22,8 +26,7 @@ module Carto
       end
 
       def custom_layers_by_user
-        layers = Carto::Layer.joins(:layers_user).where(layers_users: { user_id: current_user.id })
-        layers = layers.map do |layer|
+        layers = @user.layers.map do |layer|
           Carto::Api::LayerPresenter.new(layer, viewer_user: @user, user: @user).to_poro
         end
         render_jsonp layers: layers, total_entries: layers.size
@@ -40,7 +43,7 @@ module Carto
       private
 
       def show(owner)
-        render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user, user: owner).to_json
+        render_jsonp Carto::Api::LayerPresenter.new(@layer, viewer_user: current_user, user: owner).to_json
       end
 
       def ensure_current_user
@@ -51,7 +54,7 @@ module Carto
 
       def load_user_layer
         layer_id = uuid_parameter(:id)
-        @user.layers.find(layer_id)
+        @layer = @user.layers.find(layer_id)
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Layer not found')
       end
@@ -69,7 +72,7 @@ module Carto
 
       def load_map_layer
         layer_id = uuid_parameter(:id)
-        @map.layers.find(layer_id)
+        @layer = @map.layers.find(layer_id)
       rescue ActiveRecord::RecordNotFound
         raise LoadError.new('Layer not found')
       end

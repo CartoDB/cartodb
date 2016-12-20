@@ -8,7 +8,7 @@ module Carto
 
       ssl_required :show, :layers_by_map, :custom_layers_by_user
 
-      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_destroy]
+      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_destroy]
       before_filter :load_map, only: [:map_index, :map_show, :map_create, :map_destroy]
       before_filter :load_user_layer, only: [:user_show, :user_destroy]
       before_filter :load_map_layer, only: [:map_show, :map_destroy]
@@ -35,6 +35,44 @@ module Carto
         show(current_user)
       end
 
+      def map_create
+        layer = Carto::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+        validate_for_map(layer)
+
+        if layer.save
+          @map.layers << layer
+          @map.process_privacy_in(layer)
+
+          from_layer = Carto::Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
+          from_letter = params[:from_letter]
+          update_layer_node_styles(layer, from_layer, from_letter)
+
+          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
+        else
+          CartoDB::Logger.info(
+            message: 'Error creating layer',
+            errors: layer.errors.full_messages
+          )
+          raise UnprocesableEntityError(layer.errors.full_messages)
+        end
+      end
+
+      def user_create
+        layer = Carto::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+
+        if layer.save
+          @user.layers << layer
+
+          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
+        else
+          CartoDB::Logger.info(
+            message: 'Error creating layer',
+            errors: layer.errors.full_messages
+          )
+          raise UnprocesableEntityError(layer.errors.full_messages)
+        end
+      end
+
       def map_destroy
         destroy
       end
@@ -43,8 +81,9 @@ module Carto
         destroy
       end
 
-      def map_create
-        layer = Carto::Layer.new(params.slice(:kind, :options, :infowindow, :tooltip, :order))
+      private
+
+      def validate_for_map(layer)
         unless @map.can_add_layer(current_user)
           raise UnprocesableEntityError.new('Cannot add more layers to this visualization')
         end
@@ -67,23 +106,7 @@ module Carto
             raise UnauthorizedError.new('You do not have permission in the layer you are trying to add')
           end
         end
-
-        if layer.save
-          @map.layers << layer
-          @map.process_privacy_in(layer)
-
-          from_layer = Carto::Layer.where(id: params[:from_layer_id]).first if params[:from_layer_id]
-          from_letter = params[:from_letter]
-          update_layer_node_styles(layer, from_layer, from_letter)
-
-          render_jsonp Carto::Api::LayerPresenter.new(layer, viewer_user: current_user).to_poro
-        else
-          CartoDB::Logger.info "Error creating layer", errors: layer.errors.full_messages
-          render_jsonp({ description: layer.errors.full_messages }, 400)
-        end
       end
-
-      private
 
       def index(parent)
         layers = parent.layers.map do |layer|

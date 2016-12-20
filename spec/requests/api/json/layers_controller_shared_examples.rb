@@ -30,7 +30,8 @@ shared_examples_for "layers controllers" do
         user_domain: @user1.username,
         map_id: map_id,
         id: layer_id,
-        api_key: @user1.api_key)
+        api_key: @user1.api_key
+      )
     end
 
     def delete_map_layer_url(map_id, layer_id)
@@ -38,7 +39,8 @@ shared_examples_for "layers controllers" do
         user_domain: @user1.username,
         map_id: map_id,
         id: layer_id,
-        api_key: @user1.api_key)
+        api_key: @user1.api_key
+      )
     end
 
     let(:layer_json) do
@@ -361,24 +363,24 @@ shared_examples_for "layers controllers" do
     end
 
     it "Update several layers at once" do
-      layer_1 = Layer.create kind: 'carto', order: 0
-      layer_2 = Layer.create kind: 'carto', order: 1
-      @map.add_layer layer_1
-      @map.add_layer layer_2
+      layer1 = Layer.create kind: 'carto', order: 0
+      layer2 = Layer.create kind: 'carto', order: 1
+      @map.add_layer layer1
+      @map.add_layer layer2
 
       data = { layers: [
-        { id: layer_1.id, options: { opt1: 'value' }, infowindow: { fields: ['column1'] }, order: 2, kind: 'carto' },
-        { id: layer_2.id, options: { opt1: 'value' }, infowindow: { fields: ['column1'] }, order: 3, kind: 'carto' }
+        { id: layer1.id, options: { opt1: 'value' }, infowindow: { fields: ['column1'] }, order: 2, kind: 'carto' },
+        { id: layer2.id, options: { opt1: 'value' }, infowindow: { fields: ['column1'] }, order: 3, kind: 'carto' }
       ] }
 
       put_json api_v1_maps_layers_update_url(params.merge(map_id: @map.id)), data do |response|
         response.status.should be_success
         response_layers = response.body[:layers]
         response_layers.count.should == 2
-        response_layers.find { |l| l['id'] == layer_1.id }['order'].should == 2
-        response_layers.find { |l| l['id'] == layer_2.id }['order'].should == 3
-        layer_1.reload.order.should == 2
-        layer_2.reload.order.should == 3
+        response_layers.find { |l| l['id'] == layer1.id }['order'].should == 2
+        response_layers.find { |l| l['id'] == layer2.id }['order'].should == 3
+        layer1.reload.order.should == 2
+        layer2.reload.order.should == 3
       end
     end
 

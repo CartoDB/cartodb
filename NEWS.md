@@ -1,8 +1,15 @@
-3.14.0 (2016-XX-XX)
--------------------
+Development
+-----------
+
+### Features
+
+### Bug fixes
+
+4.0.x (2016-12-05)
+------------------
+
 ### NOTICE
-- This release introduces the Magic Positioner helper to render context menus in the best position inside the
-viewport.
+This release includes the new Builder, so it includes major changes. The logs only includes changes to editor.
 
 ### NOTICE
 This release rebrands CartoDB as CARTO, so a few maintenance tasks have to be run:
@@ -98,6 +105,7 @@ sudo make install
 * Fix issue importing/duplicating maps where the original had an incomplete map.options
 * New builder default geometry styles are now properly initialized at the backend upon dataset import.
 * Fixed list of layers in Add basemap WMS URL tab
+* This release introduces the Magic Positioner helper to render context menus in the best position inside the viewport.
 * Removed non used fonts (Lato and Proxima Nova) and the font loader.
 * Fixed problem generating Histogram stats in columns with only one value (#9737).
 * 'Clear' button in SQL view shows up if the first SQL edition fails (#9869).

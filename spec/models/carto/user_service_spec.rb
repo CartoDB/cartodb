@@ -3,11 +3,7 @@ require_relative '../../spec_helper'
 
 describe Carto::UserService do
   before(:all) do
-    @user = create_user({
-        email: 'admin@cartotest.com',
-        username: 'admin',
-        password: '123456'
-      })
+    @user = create_user
 
   end
 

@@ -198,11 +198,7 @@ describe Carto::Api::LayersController do
 
   describe '#show legacy tests' do
     before(:all) do
-      @user = create_user(
-        username: 'test',
-        email:    'client@example.com',
-        password: 'clientex'
-      )
+      @user = create_user
 
       host! "#{@user.username}.localhost.lan"
     end

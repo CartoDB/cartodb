@@ -621,6 +621,14 @@ CartoDB::Application.routes.draw do
     scope 'v1/' do
       resources :maps, only: [:show], constraints: { id: UUID_REGEXP }
 
+      # Organization assets
+      scope '/organization/:organization_id', constraints: { id: UUID_REGEXP } do
+        resources :assets,
+                  controller: 'organization_assets',
+                  only: [:index, :show, :create, :destroy],
+                  constraints: { id: UUID_REGEXP }
+      end
+
       # EUMAPI
       scope 'organization/:id_or_name/' do
         post   'users',             to: 'organization_users#create',  as: :api_v1_organization_users_create

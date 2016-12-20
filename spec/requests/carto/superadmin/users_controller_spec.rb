@@ -52,17 +52,17 @@ describe Carto::Superadmin::UsersController do
       it 'returns usage metrics' do
         get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
           success = response.body[@service][:success_responses]
-          success[@date.to_s.to_sym].should eq 10
-          success[(@date - 2).to_s.to_sym].should eq 100
+          success.find { |h| h['date'] == @date.to_s }['value'].should eq 10
+          success.find { |h| h['date'] == (@date - 2).to_s }['value'].should eq 100
 
           empty = response.body[@service][:empty_responses]
-          empty[(@date - 2).to_s.to_sym].should eq 20
+          empty.find { |h| h['date'] == (@date - 2).to_s }['value'].should eq 20
 
           error = response.body[@service][:failed_responses]
-          error[(@date - 1).to_s.to_sym].should eq 30
+          error.find { |h| h['date'] == (@date - 1).to_s }['value'].should eq 30
 
           total = response.body[@service][:total_requests]
-          total[@date.to_s.to_sym].should eq 40
+          total.find { |h| h['date'] == @date.to_s }['value'].should eq 40
         end
       end
 
@@ -171,7 +171,7 @@ describe Carto::Superadmin::UsersController do
       $users_metadata.ZADD(key, 23, "20160915")
       get_json(usage_superadmin_user_url(@user.id), { from: "2016-09-14" }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        mapviews[:"2016-09-15"].should eq 23
+        mapviews.find { |h| h['date'] == "2016-09-15" }['value'].should eq 23
       end
     end
 
@@ -186,9 +186,9 @@ describe Carto::Superadmin::UsersController do
       )
       get_json(usage_superadmin_user_url(@user.id), { from: Date.today - 5 }, superadmin_headers) do |response|
         tweets = response.body[:twitter_imports][:retrieved_items]
-        formatted_date = st.created_at.to_date.to_s.to_sym
-        tweets[formatted_date].should eq st.retrieved_items
-        tweets[(Date.today - 5).to_s.to_sym].should eq 0
+        formatted_date = st.created_at.to_date.to_s
+        tweets.find { |h| h['date'] == formatted_date }['value'].should eq st.retrieved_items
+        tweets.find { |h| h['date'] == (Date.today - 5).to_s }['value'].should eq 0
       end
       st.destroy
     end

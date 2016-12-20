@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var log = require('cdb.log');
 var View = require('../core/view');
 var overlayTemplate = require('./ui/overlays-container.tpl');
@@ -16,7 +15,6 @@ var MapView = View.extend({
     this.add_related_model(this.map);
 
     this._cartoDBLayerGroupView = null;
-    this.autoSaveBounds = false;
 
     // A map of the LayerViews that is linked to each of the Layer models.
     // The cid of the layer model is used as the key for this mapping.
@@ -123,9 +121,6 @@ var MapView = View.extend({
         view_bounds_sw: b[0],
         view_bounds_ne: b[1]
       });
-      if (this.autoSaveBounds) {
-        this._saveLocation();
-      }
     }
     this._bindModel();
   },
@@ -272,15 +267,7 @@ var MapView = View.extend({
 
   _removeGeomFromMap: function (geo) {
     throw new Error('Subclasses of src/geo/map-view.js must implement ._removeGeomFromMap');
-  },
-
-  setAutoSaveBounds: function () {
-    this.autoSaveBounds = true;
-  },
-
-  _saveLocation: _.debounce(function () {
-    this.map.save(null, { silent: true });
-  }, 1000)
+  }
 });
 
 module.exports = MapView;

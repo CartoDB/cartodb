@@ -148,7 +148,41 @@ class Carto::Map < ActiveRecord::Base
     options[:layer_selector]
   end
 
+  def admits_layer?(layer)
+    return admits_more_torque_layers? if layer.torque?
+    return admits_more_data_layers? if layer.data_layer?
+    return admits_more_base_layers?(layer) if layer.base_layer?
+  end
+
+  def can_add_layer(user)
+    return false if user.max_layers && user.max_layers <= carto_and_torque_layers.count
+
+    visualization.writable_by?(user)
+  end
+
+  def process_privacy_in(layer)
+    if layer.uses_private_tables? && visualization.can_be_private?
+      visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
+      visualization.save
+    end
+  end
+
   private
+
+  def admits_more_data_layers?
+    data_layers.any? && visualization.canonical? ? false : true
+  end
+
+  def admits_more_torque_layers?
+    torque_layers.any? && visualization.canonical? ? false : true
+  end
+
+  def admits_more_base_layers?(layer)
+    # no basemap layer, always allow
+    return true if user_layers.empty?
+    # have basemap? then allow only if comes on top (for labels)
+    layer.order >= layers.last.order
+  end
 
   def ensure_options
     self.options ||= {}

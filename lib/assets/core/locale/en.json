@@ -2076,7 +2076,7 @@
       "failed": "Analysis %{nodeId} failed",
       "removed": "Analysis %{nodeId} deleted",
       "errors": {
-        "timeout": "The execution of the analysis timed out and was stopped",
+        "timeout": "Your analysis has taken too long. Try to sample your data or contact us for further assistance",
         "without-geom-webmercator": "The column \"the_geom_webmercator\" does not exist"
       }
     },

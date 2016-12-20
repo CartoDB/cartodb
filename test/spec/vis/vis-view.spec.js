@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('backbone');
-var View = require('../../../src/core/view');
 // required due to implicit dependency in vis --> map-view
 var cdb = require('cdb');
 _.extend(cdb.geo, require('../../../src/geo/leaflet'));
@@ -10,8 +9,6 @@ _.extend(cdb.geo, require('../../../src/geo/gmaps'));
 var VisView = require('../../../src/vis/vis-view');
 var VisModel = require('../../../src/vis/vis');
 var VizJSON = require('../../../src/api/vizjson');
-
-var OverlaysFactory = require('../../../src/vis/overlays-factory');
 
 describe('vis/vis-view', function () {
   beforeEach(function () {
@@ -127,9 +124,11 @@ describe('vis/vis-view', function () {
   });
 
   it('should display/hide the loader while loading', function () {
-    this.visView.addOverlay({
+    this.visModel.overlaysCollection.add({
       type: 'loader'
     });
+
+    expect(this.visView.$el.find('.CDB-Loader:not(.is-visible)').length).toEqual(1);
 
     this.visModel.set('loading', true);
 
@@ -199,18 +198,6 @@ describe('vis/vis-view', function () {
         }
       ];
       this.visModel.load(new VizJSON(this.mapConfig));
-    });
-  });
-
-  describe('.addOverlay', function () {
-    it('should add an overlay to the map', function () {
-      spyOn(this.visView.mapView, 'addOverlay');
-      var overlay = this.visView.addOverlay({
-        type: 'zoom'
-      });
-
-      expect(this.visView.mapView.addOverlay).toHaveBeenCalledWith(overlay);
-      overlay.clean();
     });
   });
 });

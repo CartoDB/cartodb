@@ -141,7 +141,7 @@ var Vis = View.extend({
   _createOverlays: function (overlays, options) {
     _(overlays).each(function (data) {
       var type = data.type;
-      var overlay = this.addOverlay(data);
+      var overlay = this._addOverlay(data);
       var opt = data.options;
 
       // IE<10 doesn't support the Fullscreen API
@@ -175,16 +175,7 @@ var Vis = View.extend({
     }, this);
   },
 
-  _hasZoomOverlay: function () {
-    var overlays = this.model.overlaysCollection.pluck('type');
-    return overlays.indexOf('zoom') > -1;
-  },
-
-  _invalidateSize: function () {
-    this.mapView.invalidateSize();
-  },
-
-  addOverlay: function (overlay) {
+  _addOverlay: function (overlay) {
     var v = OverlaysFactory.create(overlay.type, overlay, {
       visView: this,
       map: this.model.map
@@ -206,6 +197,15 @@ var Vis = View.extend({
       }, this);
     }
     return v;
+  },
+
+  _hasZoomOverlay: function () {
+    var overlays = this.model.overlaysCollection.pluck('type');
+    return overlays.indexOf('zoom') > -1;
+  },
+
+  _invalidateSize: function () {
+    this.mapView.invalidateSize();
   },
 
   // returns an array of layers

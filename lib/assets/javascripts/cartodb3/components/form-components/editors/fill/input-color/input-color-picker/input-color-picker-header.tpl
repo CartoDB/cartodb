@@ -1,11 +1,27 @@
 <div class="CDB-Box-modalHeader">
   <ul class="CDB-Box-modalHeaderItem CDB-Box-modalHeaderItem--block CDB-Box-modalHeaderItem--paddingHorizontal">
-    <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
-      <button class="u-rSpace u-actionTextColor js-back">
-        <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
-      </button>
-      <span class="label js-label"><%- label %></span>
+    <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-ListDecoration-itemDisplay--flex CDB-Text CDB-Size-medium u-secondaryTextColor">
+      <div class='CDB-ListDecoration-secondaryContainer'>
+        <button class="u-rSpace u-actionTextColor js-back">
+          <i class="CDB-IconFont CDB-IconFont-arrowPrev Size-large"></i>
+        </button>
+        <span class="label js-label"><%- label %></span>
+      </div>
+
+      <div class='CDB-ListDecoration-secondaryContainer'>
+        <nav class='CDB-NavMenu'>
+          <ul class='CDB-NavMenu-Inner CDB-NavMenu-inner--no-margin js-menu'>
+            <li class='CDB-NavMenu-item is-selected'>
+              <div class="ColorBar CDB-ListDecoration-rampItemBar u-rSpace--xl js-colorPicker" style="background-color: <%= color %>;"></div>
+            </li>
+            <li class='CDB-NavMenu-item'>
+              <button class="RCDB-ListDecoration-rampImg CDB-Text u-actionTextColor js-assetPicker"><%= _t('form-components.editors.fill.input-color.img') %></button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </li>
+
     <li class="CDB-ListDecoration-item CDB-ListDecoration-itemPadding--vertical CDB-Text CDB-Size-medium u-secondaryTextColor">
       <ul class="ColorBarContainer ColorBarContainer--rampEditing">
         <% _.each(ramp, function (color, i) { %>

@@ -8,10 +8,10 @@ module Carto
 
       ssl_required :show, :layers_by_map, :custom_layers_by_user
 
-      before_filter :ensure_current_user, only: [:custom_layers_by_user, :show_for_user]
-      before_filter :load_map, only: [:layers_by_map, :show_for_map]
-      before_filter :load_user_layer, only: [:show_for_user]
-      before_filter :load_map_layer, only: [:show_for_map]
+      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_destroy]
+      before_filter :load_map, only: [:map_index, :map_show, :map_destroy]
+      before_filter :load_user_layer, only: [:user_show, :user_destroy]
+      before_filter :load_map_layer, only: [:map_show, :map_destroy]
 
       rescue_from LoadError,
                   UnprocesableEntityError,
@@ -33,7 +33,20 @@ module Carto
         show(@map.user)
       end
 
+      def map_destroy
+        destroy
+      end
+
+      def user_destroy
+        destroy
+      end
+
       private
+
+      def destroy
+        @layer.destroy
+        head :no_content
+      end
 
       def show(owner)
         render_jsonp Carto::Api::LayerPresenter.new(@layer, viewer_user: current_user, user: owner).to_json

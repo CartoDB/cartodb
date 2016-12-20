@@ -210,7 +210,7 @@ describe SessionsController do
 
     it 'authenticates with SAML if SAMLResponse is present and SAML is enabled' do
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:subdomain).returns(subdomain)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
 
       SessionsController.any_instance.expects(:authenticate!).with(:saml, scope: subdomain).returns(user).once
 
@@ -220,7 +220,7 @@ describe SessionsController do
     # If SAML returns authentication error we should fallback to login
     it 'fallbacks to login if SAMLResponse is present and SAML is enabled but subdomain is nil' do
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:subdomain).returns(subdomain)
+      Carto::SamlService.any_instance.stubs(:username).returns(subdomain)
       failed_saml_response = mock
       failed_saml_response.stubs(:is_valid?).returns(false)
       Carto::SamlService.any_instance.stubs(:get_saml_response).returns(failed_saml_response)

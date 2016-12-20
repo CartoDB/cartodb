@@ -42,13 +42,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = authenticate_with_ldap if ldap_authentication?
-    user = authenticate_with_saml if !user && saml_authentication?
-    if !user && saml_authentication?
-      verify_authenticity_token
-    end
-    # This acts as a fallback if previous authentications didn't return a valid user.
-    user = authenticate_with_credentials_or_google unless user
+    user = ldap_user || saml_user || credentials_or_google_user
 
     (render :action => 'new' and return) unless (params[:user_domain].present? || user.present?)
 
@@ -56,7 +50,6 @@ class SessionsController < ApplicationController
 
     redirect_to user.public_url << CartoDB.path(self, 'dashboard', {trailing_slash: true})
   end
-
 
   def destroy
     # Make sure sessions are destroyed on both scopes: username and default
@@ -172,6 +165,24 @@ class SessionsController < ApplicationController
 
   private
 
+  def ldap_user
+    authenticate_with_ldap if ldap_authentication?
+  end
+
+  def saml_user
+    user = authenticate_with_saml if saml_authentication?
+    if !user && saml_authentication?
+      # Convenient because it's disabled on SAML
+      verify_authenticity_token
+    end
+    user
+  end
+
+  # This acts as a fallback if previous authentications didn't return a valid user.
+  def credentials_or_google_user
+    authenticate_with_credentials_or_google
+  end
+
   def authenticate_with_ldap
     username = params[:user_domain].present? ?  params[:user_domain] : params[:email]
     # INFO: LDAP allows characters that we don't
@@ -185,6 +196,7 @@ class SessionsController < ApplicationController
     username ? authenticate!(:saml, scope: username) : nil
   end
 
+  # TODO: split
   def authenticate_with_credentials_or_google
     user = if !user_password_authentication? && params[:google_access_token].present? && @google_plus_config.present?
         user = GooglePlusAPI.new.get_user(params[:google_access_token])

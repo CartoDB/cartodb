@@ -216,12 +216,12 @@ Warden::Strategies.add(:saml) do
     return fail! unless params[:SAMLResponse]
 
     user = saml_service.get_user(params[:SAMLResponse])
-    return fail! unless user && user.enabled?
+    return fail! unless user.try(:enabled?)
 
     success!(user, message: "Success")
     request.flash['logged'] = true
   rescue => e
-    CartoDB.report_exception(e, "Authenticating with SAML")
+    CartoDB::Logger.error(message: "Authenticating with SAML", exception: e)
     return fail!
   end
 end

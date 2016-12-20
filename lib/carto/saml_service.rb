@@ -16,8 +16,7 @@ module Carto
 
     # This only works for existing users
     def username(saml_response_param)
-      user = get_user(saml_response_param)
-      user ? user.username : nil
+      get_user(saml_response_param).try(:username)
     end
 
     def get_user(saml_response_param)

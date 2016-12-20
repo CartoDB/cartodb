@@ -84,8 +84,7 @@ module Carto
     end
 
     def carto_saml_configuration
-      saml_config = (@organization && @organization.auth_saml_configuration)
-      saml_config ? saml_config.with_indifferent_access : nil
+      @organization.try(:auth_saml_configuration).try(:with_indifferent_access)
     end
   end
 end

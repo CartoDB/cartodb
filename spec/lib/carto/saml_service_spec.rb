@@ -106,7 +106,7 @@ describe Carto::SamlService do
 
     def create_test_saml_user
       ::User.any_instance.stubs(:after_create).returns(true)
-      user = FactoryGirl.create(:carto_user)
+      FactoryGirl.create(:carto_user)
     end
   end
 end

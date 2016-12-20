@@ -2,24 +2,12 @@ require 'carto/saml_service'
 require 'spec_helper_min'
 
 describe Carto::SamlService do
-  let(:saml_config) do
-    {
-      issuer: 'localhost.lan',
-      idp_sso_target_url: 'https://example.com/saml/signon/',
-      idp_slo_target_url: 'https://example.com/saml/signon/',
-      idp_cert_fingerprint: '',
-      assertion_consumer_service_url: 'https://localhost.lan/saml/finalize',
-      name_identifier_format: '',
-      email_attribute: 'username'
-    }
-  end
-
   let(:service) do
     Carto::SamlService.new(@organization)
   end
 
   before(:all) do
-    @organization = FactoryGirl.create(:organization, auth_saml_configuration: saml_config)
+    @organization = FactoryGirl.create(:saml_organization)
   end
 
   after(:all) do
@@ -44,6 +32,7 @@ describe Carto::SamlService do
     # This stubs the SAML external integration
     let(:response_mock) { mock }
     let(:saml_response_param_mock) { mock }
+    let(:saml_config) { @organization.auth_saml_configuration }
 
     before(:each) do
       Cartodb.stubs(:config).returns(saml_authentication: saml_config)

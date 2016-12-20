@@ -194,7 +194,13 @@ describe SessionsController do
     let(:subdomain) { "samlsubdomain" }
     let(:user) { FactoryGirl.create(:carto_user) }
 
-    after(:each) do
+    before(:all) do
+      @organization = FactoryGirl.create(:saml_organization)
+      host! "#{@organization.name}.localhost.lan"
+    end
+
+    after(:all) do
+      @organization.delete
       user.delete
     end
 
@@ -203,7 +209,7 @@ describe SessionsController do
       Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
       Carto::SamlService.any_instance.stubs(:authentication_request).returns(authentication_request)
 
-      get login_url(user_domain: nil)
+      get login_url(user_domain: @organization.name)
       response.location.should eq authentication_request
       response.status.should eq 302
     end
@@ -227,7 +233,7 @@ describe SessionsController do
 
       sessions_controller = SessionsController.any_instance
       sessions_controller.expects(:authenticate!).with(:saml, scope: subdomain).once
-      sessions_controller.expects(:authenticate!).with(:password, scope: 'www.example.com').returns(nil).once
+      sessions_controller.expects(:authenticate!).with(:password, scope: @organization.name).returns(nil).once
 
       post create_session_url(user_domain: nil, SAMLResponse: 'xx')
 

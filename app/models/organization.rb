@@ -364,7 +364,7 @@ class Organization < Sequel::Model
   end
 
   def auth_enabled?
-    auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled
+    auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled?
   end
 
   def total_seats
@@ -459,6 +459,10 @@ class Organization < Sequel::Model
 
   def max_layers
     owner ? owner.max_layers : ::User::DEFAULT_MAX_LAYERS
+  end
+
+  def auth_saml_enabled?
+    auth_saml_configuration.present?
   end
 
   private

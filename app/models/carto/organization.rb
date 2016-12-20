@@ -116,7 +116,7 @@ module Carto
     end
 
     def auth_enabled?
-      auth_username_password_enabled || auth_google_enabled || auth_github_enabled
+      auth_username_password_enabled || auth_google_enabled || auth_github_enabled || auth_saml_enabled?
     end
 
     def database_name
@@ -143,6 +143,10 @@ module Carto
       if owner.nil?
         raise ::Organization::OrganizationWithoutOwner.new(self)
       end
+    end
+
+    def auth_saml_enabled?
+      auth_saml_configuration.present?
     end
 
     private

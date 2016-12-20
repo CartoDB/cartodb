@@ -53,6 +53,7 @@ describe Carto::SamlService do
     before(:each) do
       Cartodb.stubs(:config).returns(saml_authentication: saml_config)
       service.stubs(:get_saml_response).returns(response_mock)
+      service.stubs(:debug_response)
     end
 
     describe '#username' do
@@ -73,11 +74,13 @@ describe Carto::SamlService do
         service.username(saml_response_param_mock).should be_nil
       end
 
-      it 'returns email username from the username attribute' do
+      it 'returns username from the user with the matching email' do
+        user = create_test_saml_user
         response_mock.stubs(:is_valid?).returns(true)
-        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => 'wadus@carto.com')
+        response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
 
-        service.username(saml_response_param_mock).should eq 'wadus'
+        service.username(saml_response_param_mock).should eq user.username
+        user.delete
       end
     end
 
@@ -96,9 +99,7 @@ describe Carto::SamlService do
       end
 
       it 'returns the user with matching email' do
-        ::User.any_instance.stubs(:after_create).returns(true)
-        user = FactoryGirl.create(:carto_user)
-
+        user = create_test_saml_user
         response_mock.stubs(:is_valid?).returns(true)
         response_mock.stubs(:attributes).returns(saml_config[:email_attribute] => user.email)
 
@@ -106,6 +107,11 @@ describe Carto::SamlService do
 
         user.delete
       end
+    end
+
+    def create_test_saml_user
+      ::User.any_instance.stubs(:after_create).returns(true)
+      user = FactoryGirl.create(:carto_user)
     end
   end
 end

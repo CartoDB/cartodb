@@ -22,13 +22,13 @@ module Carto
       response = get_saml_response(saml_response_param)
 
       unless response.is_valid?
-        CartoDB::Logger.debug(message: "SAML response not valid", response: response)
+        debug_response("SAML response not valid", response)
         return nil
       end
 
       email = response.attributes[email_attribute]
       unless email.present?
-        CartoDB::Logger.debug(message: "SAML response lacks email", response: response, attribute: email_attribute)
+        debug_response("SAML response lacks email", response)
         return nil
       end
 
@@ -39,6 +39,10 @@ module Carto
     end
 
     private
+
+    def debug_response(message, response)
+      CartoDB::Logger.debug(message: message, response_settings: response.settings, response_options: response.options)
+    end
 
     def get_saml_response(saml_response_param)
       OneLogin::RubySaml::Response.new(

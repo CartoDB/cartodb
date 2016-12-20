@@ -36,7 +36,7 @@ module Carto
       # Can't match the username because ADFS can only redirect to one endpoint.
       # So this just checks to see if we have a user with this email address.
       # We can log them in at that point since identity is confirmed by BCG's ADFS.
-      ::User.filter("email ILIKE ?", email).first
+      ::User.filter("email = ?", email.strip.downcase).first
     end
 
     private

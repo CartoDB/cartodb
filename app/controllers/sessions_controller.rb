@@ -20,6 +20,7 @@ class SessionsController < ApplicationController
   # since the only transaction that a user can be tricked into doing is logging in
   # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
   # If SAML data isn't passed at all, then authentication is manually failed.
+  # In case of fallback on SAML authorization failed, it will be manually checked.
   skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
   skip_before_filter :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb]
@@ -35,7 +36,7 @@ class SessionsController < ApplicationController
     end
 
     # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
-    if saml_authentication? && user.nil?
+    if saml_authentication? && !user
       redirect_to saml_service.authentication_request
     end
   end
@@ -43,6 +44,9 @@ class SessionsController < ApplicationController
   def create
     user = authenticate_with_ldap if ldap_authentication?
     user = authenticate_with_saml if !user && saml_authentication?
+    if !user && saml_authentication?
+      verify_authenticity_token
+    end
     # This acts as a fallback if previous authentications didn't return a valid user.
     user = authenticate_with_credentials_or_google unless user
 

@@ -202,33 +202,6 @@ describe('vis/vis-view', function () {
     });
   });
 
-  describe('.getOverlaysByType', function () {
-    it('should retrieve the overlays of a given type', function () {
-      OverlaysFactory.register('wadus', function (data, vis) {
-        return new View();
-      });
-
-      var tooltip1 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltip2 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltip3 = this.visView.addOverlay({
-        type: 'wadus'
-      });
-      var tooltips = this.visView.getOverlaysByType('wadus');
-      expect(tooltips.length).toEqual(3);
-      expect(tooltips[0]).toEqual(tooltip1);
-      expect(tooltips[1]).toEqual(tooltip2);
-      expect(tooltips[2]).toEqual(tooltip3);
-      tooltip1.clean();
-      tooltip2.clean();
-      tooltip3.clean();
-      expect(this.visView.getOverlaysByType('wadus').length).toEqual(0);
-    });
-  });
-
   describe('.addOverlay', function () {
     it('should add an overlay to the map', function () {
       spyOn(this.visView.mapView, 'addOverlay');
@@ -237,11 +210,7 @@ describe('vis/vis-view', function () {
       });
 
       expect(this.visView.mapView.addOverlay).toHaveBeenCalledWith(overlay);
-      expect(this.visView.overlays).toContain(overlay);
-
       overlay.clean();
-
-      expect(this.visView.overlays).not.toContain(overlay);
     });
   });
 });

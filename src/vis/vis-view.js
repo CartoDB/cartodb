@@ -24,7 +24,7 @@ var Vis = View.extend({
 
     this.settingsModel = options.settingsModel;
 
-    this.overlays = [];
+    this._overlayViews = [];
 
     _.bindAll(this, '_onResize');
   },
@@ -131,8 +131,8 @@ var Vis = View.extend({
     });
 
     // clean current overlays
-    while (this.overlays.length !== 0) {
-      this.overlays.pop().clean();
+    while (this._overlayViews.length !== 0) {
+      this._overlayViews.pop().clean();
     }
 
     this._createOverlays(overlays, options);
@@ -211,13 +211,13 @@ var Vis = View.extend({
     if (v) {
       this.mapView.addOverlay(v);
 
-      this.overlays.push(v);
+      this._overlayViews.push(v);
 
       v.bind('clean', function () {
-        for (var i in this.overlays) {
-          var o = this.overlays[i];
+        for (var i in this._overlayViews) {
+          var o = this._overlayViews[i];
           if (v.cid === o.cid) {
-            this.overlays.splice(i, 1);
+            this._overlayViews.splice(i, 1);
             return;
           }
         }
@@ -234,22 +234,6 @@ var Vis = View.extend({
     }));
   },
 
-  getOverlays: function () {
-    return this.overlays;
-  },
-
-  getOverlay: function (type) {
-    return _(this.overlays).find(function (v) {
-      return v.type === type;
-    });
-  },
-
-  getOverlaysByType: function (type) {
-    return _(this.overlays).filter(function (v) {
-      return v.type === type;
-    });
-  },
-
   _toggleLoader: function () {
     var loaderOverlay = this._getLoaderOverlay();
     if (loaderOverlay) {
@@ -262,7 +246,13 @@ var Vis = View.extend({
   },
 
   _getLoaderOverlay: function () {
-    return this.getOverlay('loader');
+    return this._getOverlayViewByType('loader');
+  },
+
+  _getOverlayViewByType: function (type) {
+    return _(this._overlayViews).find(function (v) {
+      return v.type === type;
+    });
   },
 
   _onResize: function () {

@@ -49,7 +49,7 @@ module Carto
       OneLogin::RubySaml::Response.new(
         saml_response_param,
         settings: saml_settings,
-        allowed_clock_drift: 3600
+        allowed_clock_drift: carto_saml_configuration['allowed_clock_drift'] || 3600
       )
     end
 

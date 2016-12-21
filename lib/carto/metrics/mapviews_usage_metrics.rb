@@ -5,7 +5,8 @@ module Carto::Metrics
     ].freeze
 
     VALID_SERVICES = [
-      :mapviews
+      :mapviews,
+      :mapviews_es
     ].freeze
 
     def initialize(user, orgname)

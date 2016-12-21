@@ -9,13 +9,13 @@ module Carto::Metrics
       :mapviews_es
     ].freeze
 
-    def initialize(user, orgname)
-      @user = user
+    def initialize(username, orgname)
+      @user = Carto::User.where(username: username).first
       @organization = Carto::Organization.where(name: orgname).first
     end
 
     def get(_service, _metric, date)
-      (@organization ? @organization.users : @user).sum do |user|
+      (@organization ? @organization.users : [@user]).sum do |user|
         VALID_SERVICES.sum do |service|
           CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(
             user.username, service.to_s, from: date, to: date

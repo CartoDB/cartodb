@@ -15,14 +15,12 @@ module Carto::Metrics
     end
 
     def get(_service, _metric, date)
-      if @organization
-        @organization.users.map { |user|
+      (@organization ? @organization.users : @user).sum do |user|
+        VALID_SERVICES.sum do |service|
           CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(
-            user.username, 'mapviews', from: date, to: date
-          ).values[0]
-        }.sum
-      else
-        CartoDB::Stats::APICalls.new.get_api_calls_from_redis_source(@user, 'mapviews', from: date, to: date).values[0]
+            user.username, service.to_s, from: date, to: date
+          ).values.first
+        end
       end
     end
   end

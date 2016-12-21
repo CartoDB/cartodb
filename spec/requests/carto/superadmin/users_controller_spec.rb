@@ -168,10 +168,12 @@ describe Carto::Superadmin::UsersController do
 
     it 'returns mapviews' do
       key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews')
-      $users_metadata.ZADD(key, 23, "20160915")
+      $users_metadata.ZADD(key, 1, "20160915")
+      key = CartoDB::Stats::APICalls.new.redis_api_call_key(@user.username, 'mapviews_es')
+      $users_metadata.ZADD(key, 1, "20160915")
       get_json(usage_superadmin_user_url(@user.id), { from: "2016-09-14" }, superadmin_headers) do |response|
         mapviews = response.body[:mapviews][:total_views]
-        mapviews.find { |h| h['date'] == "2016-09-15" }['value'].should eq 23
+        mapviews.find { |h| h['date'] == "2016-09-15" }['value'].should eq 2
       end
     end
 

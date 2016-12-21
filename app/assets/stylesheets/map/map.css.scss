@@ -951,7 +951,9 @@ div.cartodb-edit-buttons {
     width: 19px;
     vertical-align:top;
 
-    
+    &.disabled {
+      color: transparent;
+    }
 
     &.edit_data {
       background-image: url('../images/map-sfff5cc66d9.png');
